@@ -1,0 +1,91 @@
+#pragma once
+
+#include <stdint.h>
+
+#define UART_BAUD 921600
+#define UART_RX_BUF_SIZE 256
+
+// Link selection (UNO Q -> Blue Pill)
+// 0 = UART (PA2/PA3), 1 = SPI1 slave (PA4/PA5/PA6/PA7)
+#define LINK_USE_SPI 0
+
+#define PWM_FREQ_HZ 10000
+#define PWM_DEADTIME_NS 800
+#define PWM_MIN_PERCENT 5
+#define PWM_MAX_PERCENT 95
+
+#define TIMEOUT_MS 300
+
+// STEVAL-IPM15B: EM_STOP on J2-1 is the shutdown line (active-low on the IPM).
+// EM_STOP is driven as a GPIO output by default.
+#define BRAKE_ACTIVE_STATE 0
+#define EM_STOP_GPIO_PORT GPIOB
+#define EM_STOP_GPIO_PIN GPIO_PIN_12
+
+// Optional hardware break input (TIM1_BKIN on PB12).
+// If enabled, you MUST move EM_STOP to a different GPIO pin.
+#define USE_TIM1_BKIN 0
+#define BKIN_ACTIVE_LOW 1
+#define BKIN_ENABLE_PULLUP 1
+// Set to 1 if EM_STOP is currently on PB12 (default wiring).
+#define EM_STOP_IS_PB12 1
+
+#if USE_TIM1_BKIN && EM_STOP_IS_PB12
+#error "EM_STOP uses PB12 which is TIM1_BKIN. Move EM_STOP to another pin or disable USE_TIM1_BKIN."
+#endif
+
+// ADC scaling (per-unit)
+#define ADC_CALIB_SAMPLES 256
+#define ADC_I_SCALE (1.0f / 2048.0f)
+#define ADC_VBUS_SCALE (1.0f / 4096.0f)
+
+// IPM15 (UM2014) optional I/O
+#if LINK_USE_SPI
+// SPI1 uses PA4..PA7 so keep these free.
+#define USE_PHASE_MEAS 0
+#else
+#define USE_PHASE_MEAS 1
+#endif
+#define PHASE_MEAS_A_PORT GPIOA
+#define PHASE_MEAS_A_PIN GPIO_PIN_6   // J2-31 measure phase A (ADC1_IN6)
+#define PHASE_MEAS_B_PORT GPIOA
+#define PHASE_MEAS_B_PIN GPIO_PIN_7   // J2-33 measure phase B (ADC1_IN7)
+#define PHASE_MEAS_C_PORT GPIOB
+#define PHASE_MEAS_C_PIN GPIO_PIN_0   // J2-34 measure phase C (ADC1_IN8)
+
+#define NTC_RELAY_PORT GPIOB
+#define NTC_RELAY_PIN GPIO_PIN_1      // J2-21 NTC bypass relay
+#define NTC_RELAY_ACTIVE_STATE 1
+
+#define PFC_SYNC_PORT GPIOB
+#define PFC_SYNC_PIN GPIO_PIN_5       // J2-27 PFC sync
+#define PFC_SYNC_ACTIVE_STATE 1
+
+#define USE_BRAKE_PWM 1
+#define BRAKE_PWM_PORT GPIOB
+#define BRAKE_PWM_PIN GPIO_PIN_9      // J2-23 dissipative brake PWM (TIM4_CH4)
+#define BRAKE_PWM_FREQ_HZ 1000
+
+// AS5600 magnetic encoder (I2C)
+#define USE_AS5600 1
+#define AS5600_I2C_SPEED 100000
+#define AS5600_I2C_ADDR 0x36
+// Set to your motor pole pairs (electrical = mechanical * pole_pairs).
+// Keep this aligned with UNOQ_MOTOR.ino:POLE_PAIRS.
+#define AS5600_POLE_PAIRS 2
+
+// FOC controller gains and limits (per-unit)
+#define FOC_ID_KP 1.0f
+#define FOC_ID_KI 50.0f
+#define FOC_IQ_KP 1.0f
+#define FOC_IQ_KI 50.0f
+#define FOC_V_LIMIT 0.95f
+
+// Hall sensor inputs (120-degree, 3-phase). UM2014 Table 6: J9 H1/H2/H3 -> PB6/PB7/PB8.
+#define HALL_GPIO_PORT GPIOB
+#define HALL_PIN1 GPIO_PIN_6
+#define HALL_PIN2 GPIO_PIN_7
+#define HALL_PIN3 GPIO_PIN_8
+#define HALL_GPIO_PULL GPIO_PULLUP
+#define HALL_TIMEOUT_MS 100
+#define FOC_REQUIRE_HALL 1

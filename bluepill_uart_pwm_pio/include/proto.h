@@ -1,0 +1,80 @@
+#pragma once
+
+#include <stdbool.h>
+#include <stdint.h>
+
+#define FRAME_LEN 20
+
+#define CMD_HDR0 0xAA
+#define CMD_HDR1 0x55
+#define RSP_HDR0 0x55
+#define RSP_HDR1 0xAA
+
+#define CMD_OFF_HDR0 0
+#define CMD_OFF_HDR1 1
+#define CMD_OFF_VER  2
+#define CMD_OFF_FLAGS 3
+#define CMD_OFF_MODE 4
+#define CMD_OFF_SEQ 5
+#define CMD_OFF_DU 6
+#define CMD_OFF_DV 8
+#define CMD_OFF_DW 10
+#define CMD_OFF_RESERVED 12
+#define CMD_OFF_EXT_FLAGS 14
+#define CMD_OFF_EXT_DUTY_LO 15
+#define CMD_OFF_EXT_DUTY_HI 16
+#define CMD_OFF_EXT_RSV0 17
+#define CMD_OFF_EXT_RSV1 18
+#define CMD_OFF_CRC 19
+
+#define FLAG_ENABLE      0x01
+#define FLAG_ESTOP       0x02
+#define FLAG_DIAG_PWM    0x04
+#define FLAG_CLEAR_FAULT 0x08
+#define FLAG_VECTOR_ROTATE 0x10
+
+#define MODE_OFF    0
+#define MODE_DIAG   1
+#define MODE_DUTY   2
+#define MODE_SCALAR 3
+#define MODE_VECTOR 4
+#define MODE_FOC    5
+
+// Extended flags (bytes 14..18)
+#define EXT_NTC_RELAY   0x01
+#define EXT_PFC_SYNC    0x02
+#define EXT_BRAKE_PWM   0x04
+
+#define RSP_OFF_HDR0 0
+#define RSP_OFF_HDR1 1
+#define RSP_OFF_VER  2
+#define RSP_OFF_STATUS 3
+#define RSP_OFF_SEQ 4
+#define RSP_OFF_GOOD_LO 5
+#define RSP_OFF_GOOD_HI 6
+#define RSP_OFF_BAD_LO 7
+#define RSP_OFF_BAD_HI 8
+#define RSP_OFF_FAULT 9
+#define RSP_OFF_LAST_MODE 10
+#define RSP_OFF_RESERVED 11
+#define RSP_OFF_EXT_FLAGS 14
+#define RSP_OFF_EXT_DUTY_LO 15
+#define RSP_OFF_EXT_DUTY_HI 16
+#define RSP_OFF_CRC 19
+
+#define STATUS_LINK_OK     0x01
+#define STATUS_ENABLED     0x02
+#define STATUS_ESTOP       0x04
+#define STATUS_FAULT       0x08
+#define STATUS_TIMEOUT     0x10
+#define STATUS_PWM_ACTIVE  0x20
+
+#define FAULT_OK        0
+#define FAULT_ESTOP     1
+#define FAULT_TIMEOUT   2
+#define FAULT_BAD_CRC   3
+#define FAULT_BAD_HDR   4
+#define FAULT_INTERNAL  5
+
+uint8_t proto_crc_xor(const uint8_t *frame);
+bool proto_cmd_crc_ok(const uint8_t *frame);

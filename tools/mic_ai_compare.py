@@ -1,0 +1,385 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import sys
+import time
+from dataclasses import dataclass
+from datetime import datetime
+
+# Reuse UI helpers (HTTP + timeouts + safe_stop)
+sys.path.insert(0, os.path.dirname(__file__))
+from ui_pwm_case import (  # noqa: E402
+    get_status,
+    log,
+    safe_stop,
+    send_cmds,
+    st_num,
+    wait_for,
+)
+
+
+@dataclass
+class Sample:
+    t_s: float
+    st: dict
+
+
+def _ts_tag() -> str:
+    return datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+def _mean(xs: list[float]) -> float | None:
+    if not xs:
+        return None
+    return float(sum(xs) / len(xs))
+
+
+def _as_float(v) -> float | None:
+    try:
+        if v is None:
+            return None
+        return float(v)
+    except Exception:
+        return None
+
+
+def _compute_enc_rpm(samples: list[Sample]) -> list[float | None]:
+    # Use firmware-provided enc_rpm if present, else estimate from enc_raw deltas.
+    fw_vals: list[float | None] = []
+    for s in samples:
+        fw_vals.append(_as_float(s.st.get("enc_rpm", None)))
+    fw_non_none = [v for v in fw_vals if v is not None]
+    fw_has_motion = any(abs(v) > 0.5 for v in fw_non_none)
+    # If firmware exposes a non-trivial speed signal, trust it.
+    # If it is all zeros, derive from enc_raw to avoid false "0 rpm" summaries.
+    if fw_non_none and fw_has_motion:
+        return fw_vals
+
+    out = [None for _ in samples]
+    prev_raw = None
+    prev_t = None
+    for i, s in enumerate(samples):
+        if int(st_num(s.st, "enc_ok", 0.0)) != 1:
+            prev_raw = None
+            prev_t = None
+            continue
+        raw = int(st_num(s.st, "enc_raw", -1.0))
+        if raw < 0:
+            continue
+        if prev_raw is None:
+            prev_raw = raw
+            prev_t = s.t_s
+            continue
+        dt = s.t_s - (prev_t if prev_t is not None else s.t_s)
+        if dt <= 1e-6:
+            continue
+        dr = raw - prev_raw
+        if dr > 2048:
+            dr -= 4096
+        elif dr < -2048:
+            dr += 4096
+        rpm = (dr / 4096.0) / dt * 60.0
+        out[i] = float(rpm)
+        prev_raw = raw
+        prev_t = s.t_s
+    return out
+
+
+def _write_timeseries_csv(path: str, samples: list[Sample], extra_cols: dict[str, list[float | None]]) -> None:
+    keys = [
+        "ts",
+        "state",
+        "mode",
+        "pwm",
+        "freq_cmd",
+        "freq",
+        "speed",
+        "vdc",
+        "i_rms",
+        "id",
+        "iq",
+        "mic_active",
+        "id_ref",
+        "mic_saving_pct",
+        "enc_ok",
+        "enc_raw",
+        "enc_deg",
+    ]
+    cols = ["t_s"] + keys + list(extra_cols.keys())
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(cols)
+        for i, s in enumerate(samples):
+            st = s.st
+            row = [f"{s.t_s:.6f}"]
+            for k in keys:
+                row.append(st.get(k, ""))
+            for k in extra_cols.keys():
+                v = extra_cols[k][i]
+                row.append("" if v is None else f"{float(v):.6f}")
+            w.writerow(row)
+
+
+def _summarize(samples: list[Sample], enc_rpm: list[float | None]) -> dict:
+    pwm_ones = sum(1 for s in samples if int(st_num(s.st, "pwm", 0.0)) == 1)
+    enc_ok = sum(1 for s in samples if int(st_num(s.st, "enc_ok", 0.0)) == 1)
+    mic_on = sum(1 for s in samples if int(st_num(s.st, "mic_active", 0.0)) == 1)
+
+    def f(key: str) -> list[float]:
+        out: list[float] = []
+        for s in samples:
+            v = _as_float(s.st.get(key, None))
+            if v is None:
+                continue
+            out.append(float(v))
+        return out
+
+    p_proxy: list[float] = []
+    for s in samples:
+        vdc = _as_float(s.st.get("vdc", None))
+        i_rms = _as_float(s.st.get("i_rms", None))
+        if vdc is None or i_rms is None:
+            continue
+        p_proxy.append(float(vdc * i_rms))
+
+    out = {
+        "samples": len(samples),
+        "pwm_ratio": (pwm_ones / len(samples)) if samples else 0.0,
+        "enc_ok_ratio": (enc_ok / len(samples)) if samples else 0.0,
+        "mic_active_ratio": (mic_on / len(samples)) if samples else 0.0,
+        "mean_i_rms": _mean(f("i_rms")),
+        "mean_vdc": _mean(f("vdc")),
+        "mean_speed_cmd_rpm": _mean(f("speed")),
+        "mean_freq_cmd_hz": _mean(f("freq_cmd")),
+        "mean_freq_ref_hz": _mean(f("freq")),
+        "mean_id": _mean(f("id")),
+        "mean_iq": _mean(f("iq")),
+        "mean_id_ref": _mean(f("id_ref")),
+        "mean_mic_saving_pct": _mean(f("mic_saving_pct")),
+        "mean_enc_rpm": _mean([x for x in enc_rpm if x is not None]),
+        "mean_p_proxy": _mean(p_proxy),
+    }
+    if out["mean_speed_cmd_rpm"] is not None and out["mean_enc_rpm"] is not None:
+        out["mean_speed_err_rpm"] = float(out["mean_speed_cmd_rpm"] - out["mean_enc_rpm"])
+    else:
+        out["mean_speed_err_rpm"] = None
+    return out
+
+
+def _run_mode(
+    base: str,
+    mode: str,
+    freq: float,
+    duration_s: float,
+    poll_s: float,
+    warmup_s: float,
+    status_timeout_s: float,
+) -> tuple[bool, dict | None, list[Sample]]:
+    cmds = ["CLEAR", f"MODE {mode}", f"SET FREQ {freq:.1f}", "START"]
+    if not send_cmds(base, cmds):
+        return False, None, []
+
+    def pred(st: dict) -> bool:
+        if st.get("mode") != mode:
+            return False
+        if int(st_num(st, "pwm", 0.0)) != 1:
+            return False
+        if abs(st_num(st, "freq_cmd", 0.0) - float(freq)) > 0.06:
+            return False
+        return True
+
+    ok, st, dt = wait_for(base, pred, timeout_s=status_timeout_s, poll_s=max(0.02, poll_s))
+    log(f"Status mode={mode} ok={ok} dt={dt*1000:.1f}ms st={st}")
+    if not ok:
+        return False, st, []
+
+    if warmup_s > 0:
+        time.sleep(warmup_s)
+
+    samples: list[Sample] = []
+    start = time.monotonic()
+    while (time.monotonic() - start) < duration_s:
+        st = get_status(base)
+        if st is not None:
+            samples.append(Sample(t_s=(time.monotonic() - start), st=st))
+        time.sleep(poll_s)
+    return True, st, samples
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="FOC vs MIC timeseries compare via UNOQ /api/status (finite).")
+    ap.add_argument("--url", default="http://127.0.0.1:18080")
+    ap.add_argument("--freq", type=float, default=10.0)
+    ap.add_argument("--duration", type=float, default=8.0, help="Seconds per mode (finite)")
+    ap.add_argument("--poll", type=float, default=0.05)
+    ap.add_argument("--warmup", type=float, default=0.8, help="Seconds to wait after START before sampling")
+    ap.add_argument("--status-timeout", type=float, default=1.2)
+    ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_mic_ai_exports"))
+    ap.add_argument("--tag", default="")
+    ap.add_argument("--min-mic-active-ratio", type=float, default=0.05)
+    ap.add_argument("--max-i-rms-increase-pct", type=float, default=2.0)
+    ap.add_argument("--max-p-proxy-increase-pct", type=float, default=3.0)
+    ap.add_argument("--max-enc-rpm-delta-pct", type=float, default=8.0)
+    ap.add_argument("--min-enc-rpm-for-speed-check", type=float, default=50.0)
+    ap.add_argument("--min-mic-saving-pct", type=float, default=0.0)
+    ap.add_argument("--require-encoder", action="store_true")
+    args = ap.parse_args()
+
+    base = args.url.rstrip("/")
+    freq = float(args.freq)
+    duration_s = max(0.2, float(args.duration))
+    poll_s = max(0.01, float(args.poll))
+    warmup_s = max(0.0, float(args.warmup))
+    status_timeout_s = max(0.2, float(args.status_timeout))
+
+    tag = args.tag.strip() or f"mic_compare_{freq:.1f}Hz".replace(".", "p")
+    outdir = os.path.abspath(args.outdir)
+    os.makedirs(outdir, exist_ok=True)
+    run_dir = os.path.join(outdir, f"{tag}_{_ts_tag()}")
+    os.makedirs(run_dir, exist_ok=True)
+
+    log(f"START mic_ai_compare tag={tag} freq={freq:.1f} url={base}")
+    log(f"OUT {run_dir}")
+
+    try:
+        ok_foc, st_foc, samples_foc = _run_mode(
+            base=base,
+            mode="FOC",
+            freq=freq,
+            duration_s=duration_s,
+            poll_s=poll_s,
+            warmup_s=warmup_s,
+            status_timeout_s=status_timeout_s,
+        )
+        safe_stop(base)
+        if not ok_foc or not samples_foc:
+            log("FAIL: FOC sampling failed")
+            return 2
+
+        ok_mic, st_mic, samples_mic = _run_mode(
+            base=base,
+            mode="MIC",
+            freq=freq,
+            duration_s=duration_s,
+            poll_s=poll_s,
+            warmup_s=warmup_s,
+            status_timeout_s=status_timeout_s,
+        )
+        safe_stop(base)
+        if not ok_mic or not samples_mic:
+            log("FAIL: MIC sampling failed")
+            return 3
+
+        enc_rpm_foc = _compute_enc_rpm(samples_foc)
+        enc_rpm_mic = _compute_enc_rpm(samples_mic)
+
+        foc_csv = os.path.join(run_dir, "timeseries_foc.csv")
+        mic_csv = os.path.join(run_dir, "timeseries_mic.csv")
+        _write_timeseries_csv(foc_csv, samples_foc, {"enc_rpm_est": enc_rpm_foc})
+        _write_timeseries_csv(mic_csv, samples_mic, {"enc_rpm_est": enc_rpm_mic})
+
+        foc_sum = _summarize(samples_foc, enc_rpm_foc)
+        mic_sum = _summarize(samples_mic, enc_rpm_mic)
+
+        def pct_delta(a: float | None, b: float | None) -> float | None:
+            if a is None or b is None:
+                return None
+            if abs(a) < 1e-9:
+                return None
+            return float((b - a) / a * 100.0)
+
+        diff = {
+            "i_rms_pct": pct_delta(foc_sum.get("mean_i_rms"), mic_sum.get("mean_i_rms")),
+            "id_ref_pct": pct_delta(foc_sum.get("mean_id_ref"), mic_sum.get("mean_id_ref")),
+            "mic_saving_pct_mean": mic_sum.get("mean_mic_saving_pct"),
+            "enc_rpm_pct": pct_delta(foc_sum.get("mean_enc_rpm"), mic_sum.get("mean_enc_rpm")),
+            "p_proxy_pct": pct_delta(foc_sum.get("mean_p_proxy"), mic_sum.get("mean_p_proxy")),
+        }
+
+        mic_active_ratio = float(mic_sum.get("mic_active_ratio") or 0.0)
+        i_rms_pct = diff.get("i_rms_pct")
+        p_proxy_pct = diff.get("p_proxy_pct")
+        enc_rpm_pct = diff.get("enc_rpm_pct")
+        mic_saving_mean = mic_sum.get("mean_mic_saving_pct")
+        foc_mean_enc_rpm = foc_sum.get("mean_enc_rpm")
+        foc_enc_ok_ratio = float(foc_sum.get("enc_ok_ratio") or 0.0)
+        mic_enc_ok_ratio = float(mic_sum.get("enc_ok_ratio") or 0.0)
+
+        checks: dict[str, bool] = {}
+        checks["mic_active_ratio"] = mic_active_ratio >= float(args.min_mic_active_ratio)
+        checks["i_rms_not_worse"] = (i_rms_pct is not None) and (float(i_rms_pct) <= float(args.max_i_rms_increase_pct))
+        checks["p_proxy_not_worse"] = (p_proxy_pct is not None) and (
+            float(p_proxy_pct) <= float(args.max_p_proxy_increase_pct)
+        )
+        checks["mic_saving_estimate"] = (mic_saving_mean is not None) and (
+            float(mic_saving_mean) >= float(args.min_mic_saving_pct)
+        )
+
+        use_enc_speed_check = (foc_mean_enc_rpm is not None) and (
+            abs(float(foc_mean_enc_rpm)) >= float(args.min_enc_rpm_for_speed_check)
+        )
+        speed_ok = True
+        if use_enc_speed_check and enc_rpm_pct is not None:
+            speed_ok = abs(float(enc_rpm_pct)) <= float(args.max_enc_rpm_delta_pct)
+        elif use_enc_speed_check and bool(args.require_encoder):
+            speed_ok = False
+        checks["speed_preserved"] = speed_ok
+
+        if bool(args.require_encoder):
+            checks["encoder_present"] = (foc_enc_ok_ratio >= 0.7) and (mic_enc_ok_ratio >= 0.7)
+        else:
+            checks["encoder_present"] = True
+
+        passed = all(checks.values())
+
+        summary = {
+            "tag": tag,
+            "freq_cmd_hz": freq,
+            "duration_s": duration_s,
+            "poll_s": poll_s,
+            "warmup_s": warmup_s,
+            "thresholds": {
+                "min_mic_active_ratio": float(args.min_mic_active_ratio),
+                "max_i_rms_increase_pct": float(args.max_i_rms_increase_pct),
+                "max_p_proxy_increase_pct": float(args.max_p_proxy_increase_pct),
+                "max_enc_rpm_delta_pct": float(args.max_enc_rpm_delta_pct),
+                "min_enc_rpm_for_speed_check": float(args.min_enc_rpm_for_speed_check),
+                "min_mic_saving_pct": float(args.min_mic_saving_pct),
+                "require_encoder": bool(args.require_encoder),
+            },
+            "foc": foc_sum,
+            "mic": mic_sum,
+            "diff": diff,
+            "checks": checks,
+            "pass": passed,
+            "files": {"foc_csv": foc_csv, "mic_csv": mic_csv},
+        }
+        summary_path = os.path.join(run_dir, "summary.json")
+        with open(summary_path, "w", encoding="utf-8") as f:
+            json.dump(summary, f, ensure_ascii=False, indent=2)
+
+        log(
+            f"FOC mean_i_rms={foc_sum.get('mean_i_rms')} MIC mean_i_rms={mic_sum.get('mean_i_rms')} i_rms_pct={diff.get('i_rms_pct')}"
+        )
+        log(
+            f"FOC mean_p_proxy={foc_sum.get('mean_p_proxy')} MIC mean_p_proxy={mic_sum.get('mean_p_proxy')} p_proxy_pct={diff.get('p_proxy_pct')}"
+        )
+        log(
+            f"MIC mic_active_ratio={mic_active_ratio:.3f} mic_saving_pct_mean={mic_sum.get('mean_mic_saving_pct')} enc_rpm_pct={diff.get('enc_rpm_pct')}"
+        )
+        log(f"Checks: {checks}")
+        log(f"Summary: {summary_path}")
+        log(f"PASS={passed}")
+        return 0 if passed else 4
+    finally:
+        safe_stop(base)
+
+
+if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(line_buffering=True)
+    raise SystemExit(main())

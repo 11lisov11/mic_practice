@@ -1,0 +1,41 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# PlatformIO / embedded build artifacts
+.pio/
+*.o
+*.a
+*.elf
+*.bin
+*.map
+*.tmp
+*.dblite
+*.checksum
+
+# Project-generated measurement exports
+tools/_la_exports/
+tools/_mic_ai_exports/
+
+# Local secrets (keep template in repo)
+unoq_spi_master/arduino_secrets.h
+
+# Generic logs / temp
+*.log

@@ -9,6 +9,10 @@ static inline float unoq_lerp(float a, float b, float t) {
   return a + (b - a) * t;
 }
 
+static inline int32_t unoq_round_to_i32(float v) {
+  return (int32_t)(v >= 0.0f ? (v + 0.5f) : (v - 0.5f));
+}
+
 static inline float unoq_interp_1d(const float *x, const float *y, uint8_t n, float v) {
   if (n == 0) return 0.0f;
   if (v <= x[0]) return y[0];
@@ -45,7 +49,7 @@ static inline int16_t unoq_motor1_id_ref_query(float omega_ref, float load_pu) {
   if (id_ref_a < 0.5f) id_ref_a = 0.5f;
   if (id_ref_a > 1.2f) id_ref_a = 1.2f;
 
-  int32_t q10 = (int32_t)lroundf(id_ref_a * 1024.0f);
+  int32_t q10 = unoq_round_to_i32(id_ref_a * 1024.0f);
   if (q10 > 32767) q10 = 32767;
   if (q10 < -32768) q10 = -32768;
   return (int16_t)q10;

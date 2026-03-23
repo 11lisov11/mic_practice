@@ -53,8 +53,10 @@ static const bool USE_EXTERNAL_PWM = true;
 static const bool USE_NUCLEO_SPI = false;
 static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
-static const uint32_t NUCLEO_UART_BAUD = 921600;
+static const uint32_t NUCLEO_UART_BAUD = 460800;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
+static const uint32_t NUCLEO_RUN_MIN_SEND_US = 900;
+static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 1800;
 // Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
 static const uint8_t BP_VER = 0x01;
 static const uint8_t BP_FLAG_ENABLE = 0x01;
@@ -163,7 +165,8 @@ typedef struct {
   float out_max;
 } PIController;
 static void pwm_force_off();
-static void schedule_mode_switch(ControlMode next_mode);
+static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switch);
+static void request_mode(ControlMode next_mode, bool duty_mode, bool diag_pwm);
 static void matrix_init();
 static void matrix_update();
 static void matrix_set_pixel(int x, int y);
@@ -285,6 +288,13 @@ static float g_mic_p_loss = 0.0f;
 static float g_mic_p_loss_base = 0.0f;
 static int16_t g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
 static uint8_t g_mic_gated = 0;
+static uint8_t g_mic_enable_ai = 0;
+static bool g_mic_enc_used = false;
+static float g_mic_freq_meas_hz = 0.0f;
+static float g_mic_speed_err_hz = 0.0f;
+static float g_mic_speed_tol_hz = 0.0f;
+static uint16_t g_mic_link_flags = 0u;
+static uint16_t g_mic_status_flags = 0u;
 static bool g_estop_latched = false;
 static uint32_t g_estop_auto_clear_deadline_ms = 0;
 static bool g_mode_switch_pending = false;
@@ -298,6 +308,10 @@ static uint16_t g_brake_q15 = 0;
 static bool g_clear_fault_req = false;
 static uint8_t g_nucleo_seq = 0;
 static uint32_t g_nucleo_last_send_ms = 0;
+static uint32_t g_nucleo_last_send_us = 0;
+static bool g_nucleo_waiting_rsp = false;
+static uint8_t g_nucleo_waiting_seq = 0;
+static uint32_t g_nucleo_last_ack_us = 0;
 static uint32_t g_nucleo_keepalive_ms = 0;
 static uint32_t g_uart_bridge_ms = 0;
 static Arduino_LED_Matrix g_matrix;
@@ -792,7 +806,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(37);
+  mp_tx_array(45);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -847,6 +861,14 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_float(enc_ok ? g_enc_rpm : 0.0f);
   mp_tx_float(enc_ok ? g_enc_mech_hz : 0.0f);
   mp_tx_float(enc_ok ? g_enc_elec_hz : 0.0f);
+  mp_tx_int((int32_t)g_mic_gated);
+  mp_tx_int((int32_t)g_mic_enable_ai);
+  mp_tx_int(g_mic_enc_used ? 1 : 0);
+  mp_tx_float(g_mic_freq_meas_hz);
+  mp_tx_float(g_mic_speed_err_hz);
+  mp_tx_float(g_mic_speed_tol_hz);
+  mp_tx_int((int32_t)g_mic_link_flags);
+  mp_tx_int((int32_t)g_mic_status_flags);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1024,34 +1046,19 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       const char *p = cmd + 4;
       while (*p == ' ' || *p == '\t') p++;
       if (icmp(p, "VF")) {
-        g_duty_mode = false;
-        g_diag_pwm = false;
-        if (g_state == STATE_SAFE) g_mode = MODE_VF;
-        else schedule_mode_switch(MODE_VF);
+        request_mode(MODE_VF, false, false);
       } else if (icmp(p, "FOC")) {
-        g_duty_mode = false;
-        g_diag_pwm = false;
-        if (g_state == STATE_SAFE) g_mode = MODE_FOC;
-        else schedule_mode_switch(MODE_FOC);
+        request_mode(MODE_FOC, false, false);
       } else if (icmp(p, "MIC")) {
-        g_duty_mode = false;
-        g_diag_pwm = false;
-        if (g_state == STATE_SAFE) g_mode = MODE_MIC;
-        else schedule_mode_switch(MODE_MIC);
+        request_mode(MODE_MIC, false, false);
       } else if (icmp(p, "DUTY")) {
-        g_duty_mode = true;
-        g_diag_pwm = false;
-        if (g_state == STATE_SAFE) g_mode = MODE_VF;
-        else schedule_mode_switch(MODE_VF);
+        request_mode(MODE_VF, true, false);
       }
     } else if (starts_ci(cmd, "DIAG")) {
       const char *p = cmd + 4;
       while (*p == ' ' || *p == '\t') p++;
       if (icmp(p, "ON") || icmp(p, "1")) {
-        g_diag_pwm = true;
-        g_duty_mode = false;
-        if (g_state == STATE_SAFE) g_mode = MODE_VF;
-        else schedule_mode_switch(MODE_VF);
+        request_mode(MODE_VF, false, true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         g_diag_pwm = false;
       }
@@ -1253,6 +1260,37 @@ static void bridge_notify_line(const String &line) {
   LOG_SERIAL.println(line);
 #endif
 }
+static String format_fixed(float value, uint8_t decimals) {
+  if (isnan(value)) return String("nan");
+  if (isinf(value)) return value < 0.0f ? String("-inf") : String("inf");
+
+  bool negative = value < 0.0f;
+  float mag = negative ? -value : value;
+  uint32_t scale = 1U;
+  for (uint8_t i = 0; i < decimals; ++i) {
+    scale *= 10U;
+  }
+  uint32_t scaled = (uint32_t)(mag * (float)scale + 0.5f);
+  uint32_t whole = (scale > 0U) ? (scaled / scale) : scaled;
+  uint32_t frac = (scale > 0U) ? (scaled % scale) : 0U;
+
+  String out;
+  out.reserve(20);
+  if (negative && (whole != 0U || frac != 0U)) {
+    out += '-';
+  }
+  out += String((unsigned long)whole);
+  if (decimals == 0U) {
+    return out;
+  }
+  out += '.';
+  uint32_t div = scale / 10U;
+  while (div > 0U) {
+    out += (char)('0' + ((frac / div) % 10U));
+    div /= 10U;
+  }
+  return out;
+}
 static float mic_estimate_p_loss(float id, float iq, float omega_e) {
   float i2 = (id * id) + (iq * iq);
   float p_cu = 1.5f * MIC_RS * i2;
@@ -1305,6 +1343,20 @@ static void mic_update_metrics() {
   g_mic_p_loss = p_loss;
   g_mic_p_loss_base = p_loss_base;
   g_mic_saving_pct = saving;
+}
+static void mic_diag_reset() {
+  g_mic_active = false;
+  g_mic_id_ref = RUN_ID_REF_A;
+  g_mic_saving_pct = 0.0f;
+  g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+  g_mic_gated = 0;
+  g_mic_enable_ai = 0;
+  g_mic_enc_used = false;
+  g_mic_freq_meas_hz = 0.0f;
+  g_mic_speed_err_hz = 0.0f;
+  g_mic_speed_tol_hz = 0.0f;
+  g_mic_link_flags = 0u;
+  g_mic_status_flags = 0u;
 }
 static void scope_set(bool enabled) {
   if (USE_EXTERNAL_PWM && enabled) {
@@ -1405,35 +1457,19 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
     const char *p = cmd + 4;
     while (*p == ' ' || *p == '	') p++;
     if (icmp(p, "VF")) {
-      g_duty_mode = false;
-      g_diag_pwm = false;
-      if (g_state == STATE_SAFE) g_mode = MODE_VF;
-      else schedule_mode_switch(MODE_VF);
-
+      request_mode(MODE_VF, false, false);
     } else if (icmp(p, "FOC")) {
-      g_duty_mode = false;
-      g_diag_pwm = false;
-      if (g_state == STATE_SAFE) g_mode = MODE_FOC;
-      else schedule_mode_switch(MODE_FOC);
+      request_mode(MODE_FOC, false, false);
     } else if (icmp(p, "MIC")) {
-      g_duty_mode = false;
-      g_diag_pwm = false;
-      if (g_state == STATE_SAFE) g_mode = MODE_MIC;
-      else schedule_mode_switch(MODE_MIC);
+      request_mode(MODE_MIC, false, false);
     } else if (icmp(p, "DUTY")) {
-      g_duty_mode = true;
-      g_diag_pwm = false;
-      if (g_state == STATE_SAFE) g_mode = MODE_VF;
-      else schedule_mode_switch(MODE_VF);
+      request_mode(MODE_VF, true, false);
     }
   } else if (starts_ci(cmd, "DIAG")) {
     const char *p = cmd + 4;
     while (*p == ' ' || *p == '\t') p++;
     if (icmp(p, "ON") || icmp(p, "1")) {
-      g_diag_pwm = true;
-      g_duty_mode = false;
-      if (g_state == STATE_SAFE) g_mode = MODE_VF;
-      else schedule_mode_switch(MODE_VF);
+      request_mode(MODE_VF, false, true);
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       g_diag_pwm = false;
     }
@@ -1527,38 +1563,46 @@ static String rpc_get() {
   float speed_rpm = (g_freq_ref * 60.0f) / POLE_PAIRS;
   String s;
   s.reserve(160);
-  s += "DATA freq="; s += String(g_freq_ref, 2);
-  s += " speed="; s += String(speed_rpm, 1);
-  s += " ia="; s += String(ia, 2);
-  s += " ib="; s += String(ib, 2);
-  s += " ic="; s += String(ic, 2);
-  s += " vdc="; s += String(g_vdc, 2);
+  s += "DATA freq="; s += format_fixed(g_freq_ref, 2);
+  s += " speed="; s += format_fixed(speed_rpm, 1);
+  s += " ia="; s += format_fixed(ia, 2);
+  s += " ib="; s += format_fixed(ib, 2);
+  s += " ic="; s += format_fixed(ic, 2);
+  s += " vdc="; s += format_fixed(g_vdc, 2);
   s += " state="; s += String(state_name(g_state));
   s += " mode="; s += String(mode_name(g_mode));
   s += " pwm="; s += String(g_pwm_enabled ? 1 : 0);
-  s += " id="; s += String(g_last_id, 2);
-  s += " iq="; s += String(g_last_iq, 2);
-  s += " irm="; s += String(g_last_i_rms, 2);
+  s += " id="; s += format_fixed(g_last_id, 2);
+  s += " iq="; s += format_fixed(g_last_iq, 2);
+  s += " irm="; s += format_fixed(g_last_i_rms, 2);
   s += " mic="; s += String(g_mic_active ? 1 : 0);
-  s += " idref="; s += String(g_mic_id_ref, 2);
-  s += " save="; s += String(g_mic_saving_pct, 2);
-  s += " freqcmd="; s += String(g_freq_cmd, 2);
+  s += " idref="; s += format_fixed(g_mic_id_ref, 2);
+  s += " save="; s += format_fixed(g_mic_saving_pct, 2);
+  s += " freqcmd="; s += format_fixed(g_freq_cmd, 2);
   s += " estop="; s += String(g_estop_latched ? 1 : 0);
   s += " ntc="; s += String((g_ext_flags & BP_EXT_NTC) ? 1 : 0);
   s += " pfc="; s += String((g_ext_flags & BP_EXT_PFC) ? 1 : 0);
   float brake = (g_ext_flags & BP_EXT_BRAKE_PWM) ? ((float)g_brake_q15 / 32767.0f) : 0.0f;
   s += " brake="; s += String((g_ext_flags & BP_EXT_BRAKE_PWM) ? 1 : 0);
-  s += " brake_duty="; s += String(brake, 2);
+  s += " brake_duty="; s += format_fixed(brake, 2);
   s += " diag="; s += String(g_diag_pwm ? 1 : 0);
   s += " duty="; s += String(g_duty_mode ? 1 : 0);
   bool enc_recent = (uint32_t)(millis() - g_bp_enc_ms) < 500U;
   float enc_deg = ((float)g_bp_enc_raw * 360.0f) / 4096.0f;
   s += " enc_raw="; s += String((int)g_bp_enc_raw);
   s += " enc_ok="; s += String((g_bp_enc_ok && enc_recent) ? 1 : 0);
-  s += " enc_deg="; s += String(enc_deg, 1);
-  s += " enc_rpm="; s += String((g_bp_enc_ok && enc_recent) ? g_enc_rpm : 0.0f, 1);
-  s += " enc_mech_hz="; s += String((g_bp_enc_ok && enc_recent) ? g_enc_mech_hz : 0.0f, 2);
-  s += " enc_elec_hz="; s += String((g_bp_enc_ok && enc_recent) ? g_enc_elec_hz : 0.0f, 2);
+  s += " enc_deg="; s += format_fixed(enc_deg, 1);
+  s += " enc_rpm="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_rpm : 0.0f, 1);
+  s += " enc_mech_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_mech_hz : 0.0f, 2);
+  s += " enc_elec_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_elec_hz : 0.0f, 2);
+  s += " mic_gated="; s += String((int)g_mic_gated);
+  s += " mic_enable_ai="; s += String((int)g_mic_enable_ai);
+  s += " mic_enc_used="; s += String(g_mic_enc_used ? 1 : 0);
+  s += " mic_fmeas="; s += format_fixed(g_mic_freq_meas_hz, 2);
+  s += " mic_ferr="; s += format_fixed(g_mic_speed_err_hz, 2);
+  s += " mic_ftol="; s += format_fixed(g_mic_speed_tol_hz, 2);
+  s += " mic_lflags="; s += String((int)g_mic_link_flags);
+  s += " mic_sflags="; s += String((int)g_mic_status_flags);
   uint32_t bp_age = (g_nucleo_last_rx_ms == 0) ? 999999U : (uint32_t)(millis() - g_nucleo_last_rx_ms);
   s += " bp_good="; s += String((int)g_nucleo_rx_good);
   s += " bp_bad="; s += String((int)g_nucleo_rx_bad);
@@ -1572,7 +1616,7 @@ static String rpc_get() {
   s += " bp_bad_cnt="; s += String((int)g_bp_bad_cnt);
   s += " bp_ext="; s += String((int)g_bp_ext_flags);
   float bp_brake = (float)g_bp_brake_q15 / 32767.0f;
-  s += " bp_brake_duty="; s += String(bp_brake, 2);
+  s += " bp_brake_duty="; s += format_fixed(bp_brake, 2);
   uint32_t bp_rsp_age = (g_bp_last_rsp_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_last_rsp_ms);
   s += " bp_rsp_age_ms="; s += String((int)bp_rsp_age);
   uint32_t ping_age = (g_bp_ping_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_ping_ms);
@@ -1694,25 +1738,25 @@ static void send_telemetry() {
   String line;
   line.reserve(192);
   line += "DATA freq=";
-  line += String(g_freq_ref, 2);
+  line += format_fixed(g_freq_ref, 2);
   line += " speed=";
-  line += String(speed_rpm, 1);
+  line += format_fixed(speed_rpm, 1);
   line += " ia=";
-  line += String(g_last_ia, 2);
+  line += format_fixed(g_last_ia, 2);
   line += " ib=";
-  line += String(g_last_ib, 2);
+  line += format_fixed(g_last_ib, 2);
   line += " ic=";
-  line += String(g_last_ic, 2);
+  line += format_fixed(g_last_ic, 2);
   line += " vdc=";
-  line += String(g_vdc, 2);
+  line += format_fixed(g_vdc, 2);
   line += " id=";
-  line += String(g_last_id, 2);
+  line += format_fixed(g_last_id, 2);
   line += " iq=";
-  line += String(g_last_iq, 2);
+  line += format_fixed(g_last_iq, 2);
   line += " vd=";
-  line += String(g_last_vd, 2);
+  line += format_fixed(g_last_vd, 2);
   line += " vq=";
-  line += String(g_last_vq, 2);
+  line += format_fixed(g_last_vq, 2);
   line += " pwm=";
   line += (g_pwm_enabled ? 1 : 0);
   bridge_notify_line(line);
@@ -1729,6 +1773,12 @@ static void rpc_service() {
 static float clampf(float v, float lo, float hi) {
   if (v < lo) return lo;
   if (v > hi) return hi;
+  return v;
+}
+static float sanitize_small_float(float v, float eps = 1e-6f) {
+  if (!isfinite(v) || fabsf(v) < eps) {
+    return 0.0f;
+  }
   return v;
 }
 static float ramp_toward(float v, float target, float step) {
@@ -1832,6 +1882,9 @@ static void enc_speed_update(uint16_t raw, bool ok, uint32_t now_ms) {
   g_enc_rpm = g_enc_rpm + alpha * (rpm_inst - g_enc_rpm);
   g_enc_mech_hz = g_enc_rpm / 60.0f;
   g_enc_elec_hz = (g_enc_rpm * POLE_PAIRS) / 60.0f;
+  g_enc_rpm = sanitize_small_float(g_enc_rpm);
+  g_enc_mech_hz = sanitize_small_float(g_enc_mech_hz);
+  g_enc_elec_hz = sanitize_small_float(g_enc_elec_hz);
   g_enc_accum_counts = 0;
   g_enc_accum_ms = 0;
 }
@@ -1854,6 +1907,10 @@ static bool nucleo_check_reply(const uint8_t *rx) {
   g_bp_ext_flags = rx[14];
   g_bp_brake_q15 = (uint16_t)rx[15] | ((uint16_t)rx[16] << 8);
   g_bp_last_rsp_ms = now_ms;
+  if (g_nucleo_waiting_rsp && g_bp_last_seq == g_nucleo_waiting_seq) {
+    g_nucleo_waiting_rsp = false;
+    g_nucleo_last_ack_us = micros();
+  }
   // Clear is held until we observe "no fault" from the Blue Pill.
   if (g_clear_fault_req) {
     bool fault = (g_bp_fault_code != 0) || ((g_bp_status & 0x08u) != 0u);
@@ -1986,9 +2043,23 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
     return;
   }
   uint32_t now = millis();
+  uint32_t now_us = micros();
   // When outputs are off we throttle updates to a heartbeat rate,
   // but if a CLEAR is pending we keep sending until it is acknowledged.
   if (!enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
+    return;
+  }
+  if (enable && !g_clear_fault_req && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
+    nucleo_uart_poll();
+    if (g_nucleo_waiting_rsp) {
+      if ((uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_REPLY_GUARD_US) {
+        return;
+      }
+      g_nucleo_waiting_rsp = false;
+    }
+  }
+  if (enable && !g_clear_fault_req &&
+      (uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_MIN_SEND_US) {
     return;
   }
   uint8_t pkt[20] = {0};
@@ -2063,9 +2134,16 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
   }
   if (USE_NUCLEO_UART_FALLBACK) {
     NUCLEO_SERIAL.write(pkt, sizeof(pkt));
+    if (enable_eff && !estop_eff && !clear_eff) {
+      g_nucleo_waiting_rsp = true;
+      g_nucleo_waiting_seq = seq;
+    } else {
+      g_nucleo_waiting_rsp = false;
+    }
     nucleo_uart_poll();
   }
   g_nucleo_last_send_ms = now;
+  g_nucleo_last_send_us = now_us;
   g_nucleo_last_tx_ms = now;
 }
 static void nucleo_send_stop() {
@@ -2173,10 +2251,7 @@ static void hard_stop(bool clear_cmd) {
   g_id_target = 0.0f;
   g_iq_target = 0.0f;
   g_theta = 0.0f;
-  g_mic_active = false;
-  g_mic_id_ref = RUN_ID_REF_A;
-  g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
-  g_mic_gated = 0;
+  mic_diag_reset();
   g_last_vd = 0.0f;
   g_last_vq = 0.0f;
   if (clear_cmd) {
@@ -2224,11 +2299,37 @@ static void apply_mode_if_safe() {
     g_mode_change_pending = false;
   }
 }
-static void schedule_mode_switch(ControlMode next_mode) {
+static void cancel_mode_switch() {
+  g_mode_pending = g_mode;
+  g_mode_change_pending = false;
+  g_mode_switch_pending = false;
+  g_mode_switch_deadline_ms = 0;
+  g_restart_after_mode_switch = false;
+}
+static bool should_restart_after_mode_switch() {
+  return g_pwm_enabled && !g_stop_req && !g_stop_requested && !g_estop_latched;
+}
+static void request_mode(ControlMode next_mode, bool duty_mode, bool diag_pwm) {
+  bool same_mode = (g_mode == next_mode);
+  bool same_flags = (g_duty_mode == duty_mode && g_diag_pwm == diag_pwm);
+  g_duty_mode = duty_mode;
+  g_diag_pwm = diag_pwm;
+  if (g_state == STATE_SAFE) {
+    cancel_mode_switch();
+    g_mode = next_mode;
+    return;
+  }
+  if (same_mode && same_flags) {
+    cancel_mode_switch();
+    return;
+  }
+  schedule_mode_switch(next_mode, should_restart_after_mode_switch());
+}
+static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switch) {
   g_mode_pending = next_mode;
   g_mode_change_pending = true;
   g_mode_switch_pending = true;
-  g_restart_after_mode_switch = true;
+  g_restart_after_mode_switch = restart_after_switch;
   g_mode_switch_deadline_ms = 0;
   g_stop_requested = false;
   g_start_req = false;
@@ -2240,7 +2341,7 @@ static void schedule_mode_switch(ControlMode next_mode) {
   g_id_ref = 0.0f;
   g_theta = 0.0f;
   g_omega_ref = 0.0f;
-  g_mic_active = false;
+  mic_diag_reset();
   pwm_force_off();
   apply_mode_if_safe();
 }
@@ -2371,9 +2472,7 @@ static void control_step() {
     g_omega_ref = 0.0f;
     g_id_ref = 0.0f;
     g_iq_ref = 0.0f;
-    g_mic_active = false;
-    g_mic_gated = 0;
-    g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+    mic_diag_reset();
     g_last_vd = 0.0f;
     g_last_vq = 0.0f;
     return;
@@ -2391,9 +2490,7 @@ static void control_step() {
   float v_alpha = 0.0f;
   float v_beta = 0.0f;
   if (g_state == STATE_FOC_ALIGN) {
-    g_mic_active = false;
-    g_mic_id_ref = RUN_ID_REF_A;
-    g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+    mic_diag_reset();
     if (g_align_ticks > 0) g_align_ticks--;
     if (g_align_ticks == 0) {
       g_state = STATE_FOC_RUN;
@@ -2418,9 +2515,7 @@ static void control_step() {
     g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd, FREQ_RAMP_STEP);
     g_omega_ref = CTRL_TWO_PI * g_freq_ref;
     if (g_stop_requested) {
-      g_mic_active = false;
-      g_mic_id_ref = RUN_ID_REF_A;
-      g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+      mic_diag_reset();
       g_id_target = 0.0f;
       g_iq_target = 0.0f;
     } else if (g_mode == MODE_MIC) {
@@ -2459,7 +2554,14 @@ static void control_step() {
           id_ref_cmd_q10,
           1u,
           1u);
+      g_mic_enc_used = enc_used;
+      g_mic_freq_meas_hz = freq_meas;
+      g_mic_speed_err_hz = freq_err;
+      g_mic_speed_tol_hz = speed_tol;
+      g_mic_link_flags = link_flags;
+      g_mic_status_flags = status;
       g_mic_gated = gate.gated;
+      g_mic_enable_ai = gate.enable_ai;
       int16_t id_ref_target_q10 = gate.id_ref_q10;
       int16_t step_q10 = (int16_t)(MIC_ID_RATE_LIMIT_A_PER_S * CONTROL_DT * 1024.0f);
       if (step_q10 < 1) step_q10 = 1;
@@ -2471,9 +2573,7 @@ static void control_step() {
       g_id_target = id_ref_cmd;
       g_iq_target = RUN_IQ_REF_A;
     } else {
-      g_mic_active = false;
-      g_mic_id_ref = RUN_ID_REF_A;
-      g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+      mic_diag_reset();
       g_id_target = RUN_ID_REF_A;
       g_iq_target = RUN_IQ_REF_A;
     }
@@ -2503,9 +2603,7 @@ static void control_step() {
     v_alpha = (vd * cos_t) - (vq * sin_t);
     v_beta = (vd * sin_t) + (vq * cos_t);
   } else if (g_state == STATE_VF_RUN) {
-    g_mic_active = false;
-    g_mic_id_ref = RUN_ID_REF_A;
-    g_mic_id_ref_q10 = (int16_t)(RUN_ID_REF_A * 1024.0f);
+    mic_diag_reset();
     g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd, FREQ_RAMP_STEP);
     g_omega_ref = CTRL_TWO_PI * g_freq_ref;
     g_theta += g_omega_ref * CONTROL_DT;
@@ -2523,8 +2621,7 @@ static void control_step() {
       g_omega_ref = 0.0f;
     }
   } else if (g_state == STATE_SAFE) {
-    g_mic_active = false;
-    g_mic_id_ref = RUN_ID_REF_A;
+    mic_diag_reset();
     g_id_ref = 0.0f;
     g_iq_ref = 0.0f;
     g_omega_ref = 0.0f;

@@ -196,7 +196,7 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   // Optional encoder telemetry (AS5600 raw angle)
 #if USE_AS5600
   uint16_t enc_raw = 0;
-  bool enc_ok = encoder_as5600_get_raw(&enc_raw);
+  bool enc_ok = encoder_as5600_get_cached_raw(&enc_raw);
   rsp[11] = (uint8_t)(enc_raw & 0xFF);
   rsp[12] = (uint8_t)((enc_raw >> 8) & 0xFF);
   rsp[13] = enc_ok ? 1 : 0;

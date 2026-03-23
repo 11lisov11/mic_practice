@@ -8,12 +8,15 @@
 #if USE_AS5600
 
 #define AS5600_REG_ANGLE_H 0x0E
+#define AS5600_POLL_INTERVAL_MS 5U
+#define AS5600_STALE_MS 50U
 
 static I2C_HandleTypeDef s_hi2c2;
 static bool s_ready = false;
 static uint16_t s_last_raw = 0;
 static uint32_t s_last_ok_ms = 0;
 static uint32_t s_last_recover_ms = 0;
+static uint32_t s_last_poll_ms = 0;
 static uint8_t s_fail_streak = 0;
 
 extern "C" void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c) {
@@ -116,7 +119,28 @@ bool encoder_as5600_init(void) {
   uint16_t raw = 0;
   s_ready = as5600_read_raw(&raw);
   s_fail_streak = 0;
+  s_last_poll_ms = HAL_GetTick();
   return s_ready;
+}
+
+void encoder_as5600_poll(void) {
+  uint32_t now = HAL_GetTick();
+  if ((now - s_last_poll_ms) < AS5600_POLL_INTERVAL_MS) {
+    return;
+  }
+  s_last_poll_ms = now;
+  uint16_t raw = 0;
+  (void)encoder_as5600_get_raw(&raw);
+}
+
+bool encoder_as5600_get_cached_raw(uint16_t *raw) {
+  if (raw) {
+    *raw = s_last_raw;
+  }
+  if (!s_ready) {
+    return false;
+  }
+  return (HAL_GetTick() - s_last_ok_ms) <= AS5600_STALE_MS;
 }
 
 bool encoder_as5600_get_raw(uint16_t *raw) {
@@ -157,6 +181,11 @@ bool encoder_as5600_get_theta(float *theta_rad) {
 #else
 
 bool encoder_as5600_init(void) { return false; }
+void encoder_as5600_poll(void) {}
+bool encoder_as5600_get_cached_raw(uint16_t *raw) {
+  if (raw) *raw = 0;
+  return false;
+}
 bool encoder_as5600_get_raw(uint16_t *raw) {
   if (raw) *raw = 0;
   return false;

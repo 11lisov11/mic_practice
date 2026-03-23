@@ -42,6 +42,12 @@ function setConnection(ok) {
   connText.textContent = ok ? "онлайн" : "офлайн";
 }
 
+function setEstopButton(isLatched) {
+  lastEstop = Boolean(isLatched);
+  estopBtn.classList.toggle("active", lastEstop);
+  estopBtn.textContent = lastEstop ? "Сброс ESTOP" : "Аварийный стоп";
+}
+
 function setModeUI(mode) {
   modeButtons.forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.mode === mode);
@@ -106,13 +112,14 @@ async function apiStatus() {
 
 function setSystemStatus(data) {
   if (!data) {
+    setEstopButton(false);
     sysText.textContent = "СТОП";
     sysChip.classList.remove("run", "estop");
     sysChip.classList.add("stop");
     return;
   }
   const estop = Number(data.estop || 0) === 1;
-  lastEstop = estop;
+  setEstopButton(estop);
   if (estop) {
     sysText.textContent = "АВАРИЙНЫЙ СТОП";
     sysChip.classList.remove("run", "stop");
@@ -178,7 +185,7 @@ stopBtn.addEventListener("click", async () => {
 });
 
 estopBtn.addEventListener("click", async () => {
-  await apiCmd("STOP");
+  await apiCmd(lastEstop ? "ESTOP CLEAR" : "ESTOP");
 });
 
 if (ntcBtn) {
@@ -260,7 +267,6 @@ async function refreshStatus() {
     setModeUI(data.mode);
     setFreqUI(data.freq, true);
     setSystemStatus(data);
-    estopBtn.textContent = "Аварийный стоп";
     stateVal.textContent = data.state;
     pwmVal.textContent = data.pwm;
     speedVal.textContent = `${data.speed.toFixed(0)} об/мин`;
@@ -322,6 +328,7 @@ async function refreshStatus() {
 setModeUI("FOC");
 setFreqUI(10.0);
 setConnection(false);
+setEstopButton(false);
 setIoButtons();
 if (brakeSlider) {
   updateBrakeReadout(brakeSlider.value);

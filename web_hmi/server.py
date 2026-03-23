@@ -6,13 +6,17 @@ import json
 import os
 import select
 import socket
-import termios
 import threading
 import time
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Deque, List, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
+
+try:
+    import termios
+except Exception:  # pragma: no cover - Windows/local dev without POSIX TTY
+    termios = None
 
 try:
     import msgpack
@@ -231,6 +235,8 @@ class SerialClient:
         self._unpacker = None
 
     def _connect(self) -> None:
+        if termios is None:
+            raise RuntimeError("termios not available on this platform")
         if self._fd is not None:
             return
         fd = os.open(self._device, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
@@ -295,6 +301,8 @@ class TextSerialClient:
         self._rx_buf.clear()
 
     def _connect(self) -> None:
+        if termios is None:
+            raise RuntimeError("termios not available on this platform")
         if self._fd is not None:
             return
         fd = os.open(self._device, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
@@ -384,7 +392,10 @@ class RpcBridge:
         elif endpoint.startswith("/dev/"):
             self._serial_text = TextSerialClient(endpoint)
         else:
-            self._router = RouterClient(endpoint)
+            try:
+                self._router = RouterClient(endpoint)
+            except RuntimeError:
+                self._router = None
             self._serial_text = TextSerialClient("/dev/ttyHS1")
 
     def _call(self, method: str, params: list) -> Optional[list]:
@@ -470,7 +481,7 @@ class RpcBridge:
                 data["brake"] = 0
                 data["brake_duty"] = 0.0
 
-            # Optional extended telemetry (keep in sync with UNOQ_MOTOR.ino rpc_send_response_get()).
+            # Optional extended telemetry (keep in sync with UNOQ_MOTOR/UNOQ_MOTOR.ino rpc_send_response_get()).
             if len(result) >= 24:
                 data["enc_raw"] = int(result[21])
                 data["enc_ok"] = int(result[22])
@@ -521,6 +532,24 @@ class RpcBridge:
                 data["enc_rpm"] = 0.0
                 data["enc_mech_hz"] = 0.0
                 data["enc_elec_hz"] = 0.0
+            if len(result) >= 45:
+                data["mic_gated"] = int(result[37])
+                data["mic_enable_ai"] = int(result[38])
+                data["mic_enc_used"] = int(result[39])
+                data["mic_freq_meas_hz"] = float(result[40])
+                data["mic_speed_err_hz"] = float(result[41])
+                data["mic_speed_tol_hz"] = float(result[42])
+                data["mic_link_flags"] = int(result[43])
+                data["mic_status_flags"] = int(result[44])
+            else:
+                data["mic_gated"] = 0
+                data["mic_enable_ai"] = 0
+                data["mic_enc_used"] = 0
+                data["mic_freq_meas_hz"] = 0.0
+                data["mic_speed_err_hz"] = 0.0
+                data["mic_speed_tol_hz"] = 0.0
+                data["mic_link_flags"] = 0
+                data["mic_status_flags"] = 0
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get()
@@ -577,6 +606,14 @@ class RpcBridge:
                 "enc_rpm": float(kv.get("enc_rpm", "0")),
                 "enc_mech_hz": float(kv.get("enc_mech_hz", "0")),
                 "enc_elec_hz": float(kv.get("enc_elec_hz", "0")),
+                "mic_gated": int(float(kv.get("mic_gated", "0"))),
+                "mic_enable_ai": int(float(kv.get("mic_enable_ai", "0"))),
+                "mic_enc_used": int(float(kv.get("mic_enc_used", "0"))),
+                "mic_freq_meas_hz": float(kv.get("mic_fmeas", "0")),
+                "mic_speed_err_hz": float(kv.get("mic_ferr", "0")),
+                "mic_speed_tol_hz": float(kv.get("mic_ftol", "0")),
+                "mic_link_flags": int(float(kv.get("mic_lflags", "0"))),
+                "mic_status_flags": int(float(kv.get("mic_sflags", "0"))),
                 "bp_good": int(float(kv.get("bp_good", "0"))),
                 "bp_bad": int(float(kv.get("bp_bad", "0"))),
                 "bp_age_ms": int(float(kv.get("bp_age_ms", "0"))),

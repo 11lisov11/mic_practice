@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 
-#define UART_BAUD 921600
-#define UART_RX_BUF_SIZE 256
+#define UART_BAUD 460800
+#define UART_RX_BUF_SIZE 1024
 
 // Link selection (UNO Q -> Blue Pill)
 // 0 = UART (PA2/PA3), 1 = SPI1 slave (PA4/PA5/PA6/PA7)
@@ -71,7 +71,7 @@
 #define AS5600_I2C_SPEED 100000
 #define AS5600_I2C_ADDR 0x36
 // Set to your motor pole pairs (electrical = mechanical * pole_pairs).
-// Keep this aligned with UNOQ_MOTOR.ino:POLE_PAIRS.
+// Keep this aligned with UNOQ_MOTOR/UNOQ_MOTOR.ino:POLE_PAIRS.
 #define AS5600_POLE_PAIRS 2
 
 // FOC controller gains and limits (per-unit)

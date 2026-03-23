@@ -19,6 +19,7 @@ http://<board-ip>:8080
 ## Notes
 - Commands are sent via RPC `cmd` (START/STOP/MODE/SET FREQ).
 - Status is polled via RPC `get` once per second.
+- The single emergency button in the UI sends `ESTOP`, and switches to `ESTOP CLEAR` while the latch is active.
 - Logs are stored locally (RAM + file) and trimmed by size. Use the Download button for last 24h (or a selected range).
 - MIC mode surfaces a real-time savings estimate and id_ref on the Status panel.
 - If the router socket is unavailable, the server falls back to direct serial `/dev/ttyHS1`.

@@ -66,7 +66,7 @@ static void status_led_tick(void) {
     enc_last_ms = now;
 #if USE_AS5600
     uint16_t raw = 0;
-    enc_present = encoder_as5600_get_raw(&raw);
+    enc_present = encoder_as5600_get_cached_raw(&raw);
 #else
     enc_present = false;
 #endif
@@ -161,6 +161,7 @@ int main(void) {
 
   uint32_t last_ping_ms = HAL_GetTick();
   while (1) {
+    encoder_as5600_poll();
     uint8_t fault_code = FAULT_OK;
     int res = 0;
 #if LINK_USE_SPI

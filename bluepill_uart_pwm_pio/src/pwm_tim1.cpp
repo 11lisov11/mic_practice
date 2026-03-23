@@ -26,6 +26,33 @@ static uint32_t q15_to_ccr(uint16_t q15) {
   return (s_pwm_arr + 1U) * pct / 100U;
 }
 
+static uint8_t encode_deadtime_ticks(uint32_t ticks) {
+  // TIM1 BDTR.DTG uses a segmented encoding, not a plain linear counter.
+  // Encode the smallest value whose effective deadtime is >= the requested ticks.
+  if (ticks <= 127U) {
+    return (uint8_t)ticks;
+  }
+  if (ticks <= 254U) {
+    uint32_t scaled = (ticks + 1U) / 2U;
+    if (scaled < 64U) scaled = 64U;
+    if (scaled > 127U) scaled = 127U;
+    return (uint8_t)(0x80U | (scaled - 64U));
+  }
+  if (ticks <= 504U) {
+    uint32_t scaled = (ticks + 7U) / 8U;
+    if (scaled < 32U) scaled = 32U;
+    if (scaled > 63U) scaled = 63U;
+    return (uint8_t)(0xC0U | (scaled - 32U));
+  }
+  if (ticks > 1008U) {
+    ticks = 1008U;
+  }
+  uint32_t scaled = (ticks + 15U) / 16U;
+  if (scaled < 32U) scaled = 32U;
+  if (scaled > 63U) scaled = 63U;
+  return (uint8_t)(0xE0U | (scaled - 32U));
+}
+
 void pwm_tim1_init(void) {
   __HAL_RCC_TIM1_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -95,11 +122,9 @@ void pwm_tim1_init(void) {
   }
   bd.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
 
-  uint32_t dt_ticks = (PWM_DEADTIME_NS * tim_clk + 999999999UL) / 1000000000UL;
-  if (dt_ticks > 127U) {
-    dt_ticks = 127U;
-  }
-  bd.DeadTime = (uint8_t)dt_ticks;
+  uint64_t dt_ticks_64 = ((uint64_t)PWM_DEADTIME_NS * (uint64_t)tim_clk + 999999999ULL) / 1000000000ULL;
+  uint32_t dt_ticks = (dt_ticks_64 > 1008ULL) ? 1008U : (uint32_t)dt_ticks_64;
+  bd.DeadTime = encode_deadtime_ticks(dt_ticks);
   HAL_TIMEx_ConfigBreakDeadTime(&htim1, &bd);
 
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);

@@ -5,7 +5,8 @@
 
 ## Состав репозитория
 - `bluepill_uart_pwm_pio` — прошивка Blue Pill (PWM, UART протокол).
-- `unoq_spi_master` — скетч UNO Q (UART управление, дисплей 7x13).
+- `UNOQ_MOTOR/` — основной sketch-dir UNO Q: `UNOQ_MOTOR.ino`, UI/RPC, режимы `VF/FOC/MIC`, дисплей 7x13, обмен с Blue Pill.
+- `unoq_spi_master` — отдельный/вспомогательный скетч UNO Q для SPI master экспериментов.
 - `web_hmi` — web‑GUI для UNO Q (без пароля, порт 8080).
 - `tools/ui_pwm_case.py` — один тест‑кейс с LA захватом, CSV и `summary.json`.
 - `tools/ui_pwm_suite.py` — полный набор тестов с LA захватами и `summary.csv`.
@@ -14,8 +15,8 @@
 - `tools/ui_http_bridge.py` — HTTP‑мост для доступа к UI с телефона через ПК.
 - `tools/adb_deploy_web_hmi.py` — деплой web‑GUI на UNO Q через ADB.
 - `tools/ui_access.py` — ADB‑форвард + (опц.) мост на LAN.
-- `id_ref_lut_motor1.h`, `uno_q_control.h` — локальная MIC/LUT логика (без внешней зависимости на `C:\mic_ai`).
-- `requirements.txt` — зависимости Python для LA/HTTP.
+- `UNOQ_MOTOR/id_ref_lut_motor1.h`, `UNOQ_MOTOR/uno_q_control.h` — локальная MIC/LUT логика (без внешней зависимости на `C:\mic_ai`).
+- `requirements.txt` — общие зависимости Python для LA/HTTP и локального запуска `web_hmi`.
 
 ## Установка зависимостей (Windows, PowerShell)
 Важно: команды ниже предполагают, что ты находишься в папке `...\mic_practice`.
@@ -36,8 +37,19 @@ Copy-Item .\unoq_spi_master\arduino_secrets.h.example .\unoq_spi_master\arduino_
 ```
 и заполни `SECRET_SSID` / `SECRET_PASS`.
 
+## Build UNO Q (Arduino CLI)
+Основной sketch UNO Q собирается из папки `UNOQ_MOTOR`:
+
+```powershell
+arduino-cli compile --fqbn arduino:zephyr:unoq .\UNOQ_MOTOR
+```
+
 ## Доступ к UI (ПК по USB/ADB + телефон по Wi‑Fi)
 Быстрый запуск: `python tools/ui_access.py --bridge`
+
+В текущем `web_hmi` одна аварийная кнопка работает как переключатель:
+- если `ESTOP` не активен, отправляется `ESTOP`;
+- если `ESTOP` уже активен, кнопка отправляет `ESTOP CLEAR`.
 
 ### ПК (через ADB)
 1. `adb devices`
@@ -179,4 +191,3 @@ git push -u origin main
 ## UNO Q дисплей и LED
 - UNO Q показывает частоту с 1 знаком после запятой (например `50.0`).
 - Blue Pill PC13: RUN (VF/FOC) — мигает, SAFE/STOP — погашен, FAULT/ESTOP — горит.
-

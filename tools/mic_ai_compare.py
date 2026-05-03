@@ -16,9 +16,11 @@ from ui_pwm_case import (  # noqa: E402
     get_status,
     log,
     safe_stop,
-    send_cmds,
+    send_cmds_retry,
+    status_mode_matches,
     st_num,
     wait_for,
+    wait_http_ready,
 )
 
 
@@ -108,6 +110,14 @@ def _write_timeseries_csv(path: str, samples: list[Sample], extra_cols: dict[str
         "enc_ok",
         "enc_raw",
         "enc_deg",
+        "mic_gated",
+        "mic_enable_ai",
+        "mic_enc_used",
+        "mic_freq_meas_hz",
+        "mic_speed_err_hz",
+        "mic_speed_tol_hz",
+        "mic_link_flags",
+        "mic_status_flags",
     ]
     cols = ["t_s"] + keys + list(extra_cols.keys())
     with open(path, "w", newline="", encoding="utf-8") as f:
@@ -128,6 +138,8 @@ def _summarize(samples: list[Sample], enc_rpm: list[float | None]) -> dict:
     pwm_ones = sum(1 for s in samples if int(st_num(s.st, "pwm", 0.0)) == 1)
     enc_ok = sum(1 for s in samples if int(st_num(s.st, "enc_ok", 0.0)) == 1)
     mic_on = sum(1 for s in samples if int(st_num(s.st, "mic_active", 0.0)) == 1)
+    mic_enable_ai = sum(1 for s in samples if int(st_num(s.st, "mic_enable_ai", 0.0)) == 1)
+    mic_gated = sum(1 for s in samples if int(st_num(s.st, "mic_gated", 0.0)) != 0)
 
     def f(key: str) -> list[float]:
         out: list[float] = []
@@ -151,6 +163,8 @@ def _summarize(samples: list[Sample], enc_rpm: list[float | None]) -> dict:
         "pwm_ratio": (pwm_ones / len(samples)) if samples else 0.0,
         "enc_ok_ratio": (enc_ok / len(samples)) if samples else 0.0,
         "mic_active_ratio": (mic_on / len(samples)) if samples else 0.0,
+        "mic_enable_ai_ratio": (mic_enable_ai / len(samples)) if samples else 0.0,
+        "mic_gated_ratio": (mic_gated / len(samples)) if samples else 0.0,
         "mean_i_rms": _mean(f("i_rms")),
         "mean_vdc": _mean(f("vdc")),
         "mean_speed_cmd_rpm": _mean(f("speed")),
@@ -160,8 +174,16 @@ def _summarize(samples: list[Sample], enc_rpm: list[float | None]) -> dict:
         "mean_iq": _mean(f("iq")),
         "mean_id_ref": _mean(f("id_ref")),
         "mean_mic_saving_pct": _mean(f("mic_saving_pct")),
+        "mean_mic_freq_meas_hz": _mean(f("mic_freq_meas_hz")),
+        "mean_mic_speed_err_hz": _mean(f("mic_speed_err_hz")),
+        "mean_mic_speed_tol_hz": _mean(f("mic_speed_tol_hz")),
         "mean_enc_rpm": _mean([x for x in enc_rpm if x is not None]),
         "mean_p_proxy": _mean(p_proxy),
+        "states": sorted({str(s.st.get("state", "")) for s in samples}),
+        "modes": sorted({str(s.st.get("mode", "")) for s in samples}),
+        "mic_link_flags_values": sorted({int(st_num(s.st, "mic_link_flags", 0.0)) for s in samples}),
+        "mic_status_flags_values": sorted({int(st_num(s.st, "mic_status_flags", 0.0)) for s in samples}),
+        "mic_enc_used_values": sorted({int(st_num(s.st, "mic_enc_used", 0.0)) for s in samples}),
     }
     if out["mean_speed_cmd_rpm"] is not None and out["mean_enc_rpm"] is not None:
         out["mean_speed_err_rpm"] = float(out["mean_speed_cmd_rpm"] - out["mean_enc_rpm"])
@@ -178,17 +200,27 @@ def _run_mode(
     poll_s: float,
     warmup_s: float,
     status_timeout_s: float,
+    cmd_retries: int,
+    cmd_retry_delay_s: float,
 ) -> tuple[bool, dict | None, list[Sample]]:
     cmds = ["CLEAR", f"MODE {mode}", f"SET FREQ {freq:.1f}", "START"]
-    if not send_cmds(base, cmds):
+    ui_ok, ui_st, ui_dt = wait_http_ready(base, timeout_s=max(2.0, status_timeout_s), poll_s=max(0.05, poll_s))
+    log(f"UI ready before {mode}: ok={ui_ok} dt={ui_dt*1000:.1f}ms st={ui_st}")
+    if not ui_ok:
+        return False, ui_st, []
+    if not send_cmds_retry(base, cmds, retries=cmd_retries, retry_delay_s=cmd_retry_delay_s):
         return False, None, []
 
     def pred(st: dict) -> bool:
-        if st.get("mode") != mode:
+        if not status_mode_matches(st, mode):
             return False
         if int(st_num(st, "pwm", 0.0)) != 1:
             return False
         if abs(st_num(st, "freq_cmd", 0.0) - float(freq)) > 0.06:
+            return False
+        if mode in ("FOC", "MIC") and st.get("state") not in ("FOC_ALIGN", "FOC_RUN"):
+            return False
+        if mode == "VF" and st.get("state") != "VF_RUN":
             return False
         return True
 
@@ -210,6 +242,46 @@ def _run_mode(
     return True, st, samples
 
 
+def _run_mode_with_retry(
+    base: str,
+    mode: str,
+    freq: float,
+    duration_s: float,
+    poll_s: float,
+    warmup_s: float,
+    status_timeout_s: float,
+    mode_retries: int,
+    cmd_retries: int,
+    cmd_retry_delay_s: float,
+    settle_s: float,
+) -> tuple[bool, dict | None, list[Sample]]:
+    last_st = None
+    last_samples: list[Sample] = []
+    for attempt in range(mode_retries + 1):
+        if attempt:
+            log(f"WARN: retry {mode} compare phase attempt {attempt + 1}/{mode_retries + 1}")
+            safe_stop(base)
+            time.sleep(settle_s)
+        ok, st, samples = _run_mode(
+            base=base,
+            mode=mode,
+            freq=freq,
+            duration_s=duration_s,
+            poll_s=poll_s,
+            warmup_s=warmup_s,
+            status_timeout_s=status_timeout_s,
+            cmd_retries=cmd_retries,
+            cmd_retry_delay_s=cmd_retry_delay_s,
+        )
+        safe_stop(base)
+        last_st = st
+        last_samples = samples
+        if ok and samples:
+            return True, st, samples
+        time.sleep(settle_s)
+    return False, last_st, last_samples
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="FOC vs MIC timeseries compare via UNOQ /api/status (finite).")
     ap.add_argument("--url", default="http://127.0.0.1:18080")
@@ -227,6 +299,10 @@ def main() -> int:
     ap.add_argument("--min-enc-rpm-for-speed-check", type=float, default=50.0)
     ap.add_argument("--min-mic-saving-pct", type=float, default=0.0)
     ap.add_argument("--require-encoder", action="store_true")
+    ap.add_argument("--mode-retries", type=int, default=1)
+    ap.add_argument("--cmd-retries", type=int, default=2)
+    ap.add_argument("--cmd-retry-delay", type=float, default=0.2)
+    ap.add_argument("--settle", type=float, default=0.4, help="Seconds to settle between compare phases/retries")
     args = ap.parse_args()
 
     base = args.url.rstrip("/")
@@ -254,13 +330,29 @@ def main() -> int:
             poll_s=poll_s,
             warmup_s=warmup_s,
             status_timeout_s=status_timeout_s,
+            cmd_retries=int(args.cmd_retries),
+            cmd_retry_delay_s=float(args.cmd_retry_delay),
         )
         safe_stop(base)
+        if not ok_foc or not samples_foc:
+            ok_foc, st_foc, samples_foc = _run_mode_with_retry(
+                base=base,
+                mode="FOC",
+                freq=freq,
+                duration_s=duration_s,
+                poll_s=poll_s,
+                warmup_s=warmup_s,
+                status_timeout_s=status_timeout_s,
+                mode_retries=max(0, int(args.mode_retries)),
+                cmd_retries=int(args.cmd_retries),
+                cmd_retry_delay_s=float(args.cmd_retry_delay),
+                settle_s=max(0.0, float(args.settle)),
+            )
         if not ok_foc or not samples_foc:
             log("FAIL: FOC sampling failed")
             return 2
 
-        ok_mic, st_mic, samples_mic = _run_mode(
+        ok_mic, st_mic, samples_mic = _run_mode_with_retry(
             base=base,
             mode="MIC",
             freq=freq,
@@ -268,8 +360,11 @@ def main() -> int:
             poll_s=poll_s,
             warmup_s=warmup_s,
             status_timeout_s=status_timeout_s,
+            mode_retries=max(0, int(args.mode_retries)),
+            cmd_retries=int(args.cmd_retries),
+            cmd_retry_delay_s=float(args.cmd_retry_delay),
+            settle_s=max(0.0, float(args.settle)),
         )
-        safe_stop(base)
         if not ok_mic or not samples_mic:
             log("FAIL: MIC sampling failed")
             return 3

@@ -806,7 +806,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(45);
+  mp_tx_array(47);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -869,6 +869,8 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_float(g_mic_speed_tol_hz);
   mp_tx_int((int32_t)g_mic_link_flags);
   mp_tx_int((int32_t)g_mic_status_flags);
+  mp_tx_int(g_diag_pwm ? 1 : 0);
+  mp_tx_int(g_duty_mode ? 1 : 0);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {

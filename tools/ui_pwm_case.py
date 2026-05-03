@@ -3,9 +3,11 @@ import argparse
 import csv
 import json
 import os
+import subprocess
 import sys
 import time
 from datetime import datetime
+import urllib.error
 
 import grpc
 from saleae.automation import Manager
@@ -18,21 +20,32 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
-def http_json(url: str, body: dict | None = None, timeout: float = 2.0) -> dict | None:
+def http_json(url: str, body: dict | None = None, timeout: float = 6.5) -> dict | None:
     data = None
     headers = {}
     if body is not None:
         data = json.dumps(body).encode("utf-8")
         headers["Content-Type"] = "application/json"
     req = urllib.request.Request(url, data=data, headers=headers)
-    try:
-        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-        with opener.open(req, timeout=timeout) as resp:
-            raw = resp.read().decode("utf-8")
-            return json.loads(raw)
-    except Exception as exc:
-        log(f"HTTP error: {exc}")
-        return None
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            with opener.open(req, timeout=timeout) as resp:
+                raw = resp.read().decode("utf-8")
+                return json.loads(raw)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            transient = exc.code in (500, 502, 503, 504)
+        except Exception as exc:
+            last_exc = exc
+            transient = True
+        if transient and attempt < 2:
+            time.sleep(0.15 * (attempt + 1))
+            continue
+        break
+    log(f"HTTP error: {last_exc}")
+    return None
 
 
 def post_cmd(base: str, cmd: str) -> bool:
@@ -57,6 +70,56 @@ def st_num(st: dict, key: str, default: float = 0.0) -> float:
         return float(default)
 
 
+def status_is_safe(st: dict | None, allow_estop: bool = False) -> bool:
+    if st is None:
+        return False
+    estop = int(st_num(st, "estop", 0.0))
+    return (
+        st.get("state") == "SAFE"
+        and int(st_num(st, "pwm", 0.0)) == 0
+        and (allow_estop or estop == 0)
+    )
+
+
+def status_mode_matches(st: dict | None, expected_mode: str) -> bool:
+    if st is None:
+        return False
+    mode_name = str(st.get("mode", ""))
+    diag_mode = int(st_num(st, "diag_mode", -1.0))
+    duty_mode = int(st_num(st, "duty_mode", -1.0))
+    if expected_mode == "VF":
+        if diag_mode >= 0 and duty_mode >= 0:
+            return mode_name == "VF" and diag_mode == 0 and duty_mode == 0
+        return mode_name == "VF"
+    if expected_mode == "FOC":
+        return mode_name == "FOC"
+    if expected_mode == "DIAG":
+        return mode_name == "DIAG"
+    if expected_mode == "DUTY":
+        return mode_name == "DUTY"
+    return mode_name == expected_mode
+
+
+def vf_steady_matches(
+    st: dict | None,
+    freq_cmd: float,
+    freq_tol_abs: float = 0.25,
+    freq_tol_rel: float = 0.03,
+) -> bool:
+    if st is None:
+        return False
+    tol = max(freq_tol_abs, abs(freq_cmd) * freq_tol_rel)
+    return (
+        st.get("state") == "VF_RUN"
+        and status_mode_matches(st, "VF")
+        and int(st_num(st, "pwm", 0.0)) == 1
+        and int(st_num(st, "estop", 0.0)) == 0
+        and int(st_num(st, "bp_fault", 0.0)) == 0
+        and abs(st_num(st, "freq_cmd", 0.0) - float(freq_cmd)) <= 0.06
+        and abs(st_num(st, "freq", 0.0) - float(freq_cmd)) <= tol
+    )
+
+
 def wait_for(base: str, predicate, timeout_s: float, poll_s: float) -> tuple[bool, dict | None, float]:
     start = time.monotonic()
     last = None
@@ -70,11 +133,92 @@ def wait_for(base: str, predicate, timeout_s: float, poll_s: float) -> tuple[boo
     return False, last, (time.monotonic() - start)
 
 
+def wait_http_ready(base: str, timeout_s: float, poll_s: float) -> tuple[bool, dict | None, float]:
+    return wait_for(base, lambda _st: True, timeout_s=timeout_s, poll_s=poll_s)
+
+
+def wait_status_retry(
+    base: str,
+    predicate,
+    timeout_s: float,
+    poll_s: float,
+    retries: int = 0,
+    retry_delay_s: float = 0.15,
+    label: str = "status",
+) -> tuple[bool, dict | None, float]:
+    st = None
+    dt = 0.0
+    for attempt in range(retries + 1):
+        ok, st, dt = wait_for(base, predicate, timeout_s=timeout_s, poll_s=poll_s)
+        if ok:
+            return True, st, dt
+        if attempt < retries:
+            log(f"WARN: {label} timeout or mismatch, retry {attempt + 1}/{retries}")
+            time.sleep(retry_delay_s)
+    return False, st, dt
+
+
 # StartCapture can sporadically take a few seconds on Logic2 (USB reconnect, device reconfig, app hiccup).
 # Keep it finite, but less brittle than 5s.
 _START_CAPTURE_TIMEOUT_S = 15.0
 _START_CAPTURE_RETRIES = 2
+_DEVICE_REAPPEAR_TIMEOUT_S = 12.0
 DEFAULT_MAX_OVERLAP_RATIO = 5e-4
+
+
+def refresh_manager_connection(mgr: Manager, port: int) -> bool:
+    try:
+        try:
+            mgr.channel.close()
+        except Exception:
+            pass
+        new_mgr = Manager.connect(port=port, connect_timeout_seconds=5)
+        mgr.channel = new_mgr.channel
+        mgr._stub = new_mgr._stub
+        mgr.logic2_process = None
+        mgr._codex_port = port
+        return True
+    except Exception as exc:
+        log(f"WARN: failed to refresh Saleae manager connection: {exc}")
+        return False
+
+
+def recover_logic2(mgr: Manager) -> bool:
+    port = int(getattr(mgr, "_codex_port", 10430))
+    script = os.path.join(os.path.dirname(__file__), "logic2_recover.py")
+    cmd = [
+        sys.executable,
+        script,
+        "--restart",
+        "--port",
+        str(port),
+        "--wait-app",
+        "30",
+        "--wait-device",
+        "30",
+    ]
+    log(f"WARN: attempting Logic2 recovery on port {port}")
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except Exception as exc:
+        log(f"WARN: Logic2 recovery launch failed: {exc}")
+        return False
+    if proc.stdout.strip():
+        for line in proc.stdout.strip().splitlines():
+            log(line)
+    if proc.stderr.strip():
+        for line in proc.stderr.strip().splitlines():
+            log(line)
+    if proc.returncode != 0:
+        log(f"WARN: Logic2 recovery failed rc={proc.returncode}")
+        return False
+    return refresh_manager_connection(mgr, port)
 
 
 def start_capture(mgr: Manager, channels: list[int], rate: int, duration: float) -> Capture:
@@ -103,7 +247,35 @@ def start_capture(mgr: Manager, channels: list[int], rate: int, duration: float)
                 grpc.StatusCode.UNAVAILABLE,
                 grpc.StatusCode.INTERNAL,
                 grpc.StatusCode.UNKNOWN,
+                grpc.StatusCode.ABORTED,
             )
+            no_device = "No physical devices found" in msg
+            if no_device:
+                reappear_deadline = time.monotonic() + _DEVICE_REAPPEAR_TIMEOUT_S
+                seen = False
+                while time.monotonic() < reappear_deadline:
+                    try:
+                        if mgr.get_devices():
+                            seen = True
+                            break
+                    except Exception:
+                        pass
+                    time.sleep(0.25)
+                if not seen:
+                    log("WARN: Saleae device did not reappear before retry deadline")
+                    if recover_logic2(mgr):
+                        seen = False
+                        recover_deadline = time.monotonic() + 5.0
+                        while time.monotonic() < recover_deadline:
+                            try:
+                                if mgr.get_devices():
+                                    seen = True
+                                    break
+                            except Exception:
+                                pass
+                            time.sleep(0.25)
+                        if seen:
+                            log("WARN: Saleae device restored after Logic2 recovery")
             if attempt < _START_CAPTURE_RETRIES and transient:
                 log(
                     f"WARN: StartCapture failed attempt={attempt+1}/{_START_CAPTURE_RETRIES+1} code={code} details={msg}"
@@ -279,6 +451,82 @@ def overlap_ratio(times_a: list[float], levels_a: list[int], times_b: list[float
     return overlap / total
 
 
+def edge_times(times: list[float], levels: list[int]) -> tuple[list[float], list[float]]:
+    rises: list[float] = []
+    falls: list[float] = []
+    if len(times) < 2:
+        return rises, falls
+    for i in range(1, len(times)):
+        if levels[i - 1] == 0 and levels[i] == 1:
+            rises.append(times[i])
+        elif levels[i - 1] == 1 and levels[i] == 0:
+            falls.append(times[i])
+    return rises, falls
+
+
+def handoff_gap_stats(
+    times_a: list[float],
+    levels_a: list[int],
+    times_b: list[float],
+    levels_b: list[int],
+    max_gap_s: float = 20e-6,
+    trim_edge_s: float = 100e-6,
+) -> dict[str, float] | None:
+    rises_a, falls_a = edge_times(times_a, levels_a)
+    rises_b, falls_b = edge_times(times_b, levels_b)
+    if not rises_a or not rises_b or not falls_a or not falls_b:
+        return None
+
+    gaps_s: list[float] = []
+    t_start = max(times_a[0], times_b[0])
+    t_end = min(times_a[-1], times_b[-1])
+    if t_end <= t_start:
+        return None
+    valid_from = t_start + max(0.0, trim_edge_s)
+    valid_to = t_end - max(0.0, trim_edge_s)
+    if valid_to <= valid_from:
+        valid_from = t_start
+        valid_to = t_end
+
+    def collect(falls_from: list[float], rises_to: list[float], rises_from: list[float]) -> None:
+        if not falls_from or not rises_to:
+            return
+        j = 0
+        k = 0
+        for tf in falls_from:
+            if tf < valid_from or tf > valid_to:
+                continue
+            while j < len(rises_to) and rises_to[j] <= tf:
+                j += 1
+            if j >= len(rises_to):
+                break
+            while k < len(rises_from) and rises_from[k] <= tf:
+                k += 1
+            next_same_rise = rises_from[k] if k < len(rises_from) else None
+            tr = rises_to[j]
+            if tr < valid_from or tr > valid_to:
+                continue
+            gap = tr - tf
+            if gap <= 0.0 or gap > max_gap_s:
+                continue
+            if next_same_rise is not None and tr >= next_same_rise:
+                continue
+            gaps_s.append(gap)
+
+    collect(falls_a, rises_b, rises_a)
+    collect(falls_b, rises_a, rises_b)
+
+    if not gaps_s:
+        return None
+    gaps_ns = [gap * 1e9 for gap in gaps_s]
+    return {
+        "min": min(gaps_ns),
+        "mean": sum(gaps_ns) / len(gaps_ns),
+        "max": max(gaps_ns),
+        "count": float(len(gaps_ns)),
+    }
+
+
 def analyze(
     csv_path: str,
     channels: list[int],
@@ -287,9 +535,17 @@ def analyze(
     expect_estop: bool,
     expect_brake_active: bool | None = None,
     max_overlap_ratio: float = DEFAULT_MAX_OVERLAP_RATIO,
+    min_handoff_gap_ns: float = 0.0,
 ) -> dict:
     times, levels, t0, t_last = load_transitions(csv_path, channels)
-    metrics = {"channels": {}, "brake_high": None, "overlap": {}, "max_overlap_ratio": max_overlap_ratio}
+    metrics = {
+        "channels": {},
+        "brake_high": None,
+        "overlap": {},
+        "handoff_gap_ns": {},
+        "max_overlap_ratio": max_overlap_ratio,
+        "min_handoff_gap_ns": float(min_handoff_gap_ns),
+    }
 
     pwm_ok = True
     for ch in [0, 2, 4]:
@@ -340,17 +596,24 @@ def analyze(
             brake_ok = False
 
     overlap_ok = True
+    deadtime_ok = True
     if expect_pwm:
         for a, b in [(0, 1), (2, 3), (4, 5)]:
             r = overlap_ratio(times.get(a, []), levels.get(a, []), times.get(b, []), levels.get(b, []))
             metrics["overlap"][f"{a}-{b}"] = r
             if r is not None and r > max_overlap_ratio:
                 overlap_ok = False
+            gap_stats = handoff_gap_stats(times.get(a, []), levels.get(a, []), times.get(b, []), levels.get(b, []))
+            metrics["handoff_gap_ns"][f"{a}-{b}"] = gap_stats
+            if min_handoff_gap_ns > 0.0:
+                if gap_stats is None or gap_stats["min"] < min_handoff_gap_ns:
+                    deadtime_ok = False
 
-    metrics["pass"] = bool(pwm_ok and brake_ok and overlap_ok)
+    metrics["pass"] = bool(pwm_ok and brake_ok and overlap_ok and deadtime_ok)
     metrics["pwm_ok"] = pwm_ok
     metrics["brake_ok"] = brake_ok
     metrics["overlap_ok"] = overlap_ok
+    metrics["deadtime_ok"] = deadtime_ok
     return metrics
 
 
@@ -363,25 +626,69 @@ def send_cmds(base: str, cmds: list[str]) -> bool:
     return ok
 
 
+def send_cmds_retry(base: str, cmds: list[str], retries: int = 1, retry_delay_s: float = 0.15) -> bool:
+    for attempt in range(retries + 1):
+        ok = send_cmds(base, cmds)
+        if ok:
+            return True
+        if attempt < retries:
+            log(f"WARN: cmd send failed, retry {attempt + 1}/{retries}")
+            time.sleep(retry_delay_s)
+    return False
+
+
+def control_retry_reason(cmd_ok: bool, status_ok: bool, metrics: dict | None) -> str:
+    if metrics is None:
+        return "capture"
+    if not metrics.get("pass"):
+        return ""
+    reasons = []
+    if not cmd_ok:
+        reasons.append("cmd")
+    if not status_ok:
+        reasons.append("status")
+    return "+".join(reasons)
+
+
 def safe_stop(base: str) -> None:
-    # Best-effort stop + clear to force PWM off and brake on.
-    # This must never block forever (tooling requirement).
+    # Best-effort bounded cleanup:
+    # 1. Normal STOP.
+    # 2. If run did not stop, force ESTOP.
+    # 3. CLEAR estop latch and confirm SAFE without PWM.
+    # This must never block forever.
     try:
-        send_cmds(base, ["STOP"])
+        wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+        send_cmds_retry(base, ["STOP"], retries=2, retry_delay_s=0.2)
         ok, st, dt = wait_for(
             base,
-            lambda s: int(st_num(s, "pwm", 0.0)) == 0,
-            timeout_s=0.9,
+            lambda s: status_is_safe(s, allow_estop=True),
+            timeout_s=1.5,
             poll_s=0.05,
         )
         if not ok:
             log(f"WARN: STOP not confirmed after {dt*1000:.1f}ms st={st}")
+            wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+            send_cmds_retry(base, ["ESTOP"], retries=2, retry_delay_s=0.2)
+            estop_ok, estop_st, estop_dt = wait_for(
+                base,
+                lambda s: status_is_safe(s, allow_estop=True),
+                timeout_s=1.5,
+                poll_s=0.05,
+            )
+            if not estop_ok:
+                log(f"WARN: ESTOP cleanup not confirmed after {estop_dt*1000:.1f}ms st={estop_st}")
+        wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+        send_cmds_retry(base, ["CLEAR"], retries=2, retry_delay_s=0.2)
+        clear_ok, clear_st, clear_dt = wait_for(
+            base,
+            lambda s: status_is_safe(s, allow_estop=False),
+            timeout_s=2.0,
+            poll_s=0.05,
+        )
+        if not clear_ok:
+            log(f"WARN: CLEAR not confirmed after {clear_dt*1000:.1f}ms st={clear_st}")
     except Exception as exc:
-        log(f"WARN: safe_stop STOP failed: {exc}")
-    try:
-        send_cmds(base, ["CLEAR"])
-    except Exception as exc:
-        log(f"WARN: safe_stop CLEAR failed: {exc}")
+        log(f"WARN: safe_stop failed: {exc}")
 
 
 def run_case(args) -> int:
@@ -395,6 +702,7 @@ def run_case(args) -> int:
         if args.saleae_host not in ("127.0.0.1", "localhost"):
             log(f"WARN: saleae-host '{args.saleae_host}' not supported by this Saleae SDK, using localhost")
         mgr = Manager.connect(port=args.saleae_port, connect_timeout_seconds=2)
+        mgr._codex_port = args.saleae_port
         # Logic2 can be running without an attached device. Poll briefly to avoid flakiness on USB reconnect.
         devices = []
         for _ in range(30):
@@ -412,8 +720,12 @@ def run_case(args) -> int:
             log("FIX: Open Logic2 and confirm a device is shown (not Demo mode). Replug USB or restart Logic2.")
             return 2
 
-        log("Send UI commands")
-        cmd_ok = True
+        log("Check UI reachability")
+        ui_ok, ui_st, ui_dt = wait_http_ready(base, timeout_s=args.ui_ready_timeout, poll_s=max(0.05, args.poll))
+        if not ui_ok:
+            log(f"ERROR: UI not reachable after {ui_dt*1000:.1f}ms last_status={ui_st}")
+            return 5
+
         cmds = []
         if not args.skip_clear:
             cmds.append("CLEAR")
@@ -429,63 +741,98 @@ def run_case(args) -> int:
                 duty_str = args.duty.replace(",", " ").strip()
                 cmds += [f"DUTY {duty_str}"]
         cmds += ["START"]
-        cmd_ok = send_cmds(base, cmds)
 
-        log("Wait status")
         def status_predicate(st):
             pwm_ok = int(st_num(st, "pwm", 0.0)) == (1 if args.expect_pwm else 0)
             if args.mode in ("VF", "FOC"):
                 if abs(st_num(st, "freq_cmd", 0.0) - float(args.freq)) > 0.06:
                     return False
+            if not status_mode_matches(st, args.mode):
+                return False
+            if args.mode == "VF" and args.expect_pwm:
+                if not vf_steady_matches(st, args.freq):
+                    return False
             if args.expect_estop:
                 return pwm_ok and int(st_num(st, "estop", 0.0)) == 1
             return pwm_ok
 
-        ok, st, dt = wait_for(
-            base,
-            status_predicate,
-            timeout_s=args.status_timeout,
-            poll_s=args.poll,
-        )
-        if not ok:
-            log("WARN: status timeout or mismatch")
-        log(f"Status ok={ok} dt={dt*1000:.1f}ms st={st}")
+        passed = False
+        cmd_ok = False
+        ok = False
+        dt = 0.0
+        st = None
+        metrics = None
+        csv_path = ""
+        retry_reason = ""
+        attempts = 0
+        for attempt in range(args.case_retries + 1):
+            attempts = attempt + 1
+            if attempt:
+                log(f"WARN: retry case attempt {attempts}/{args.case_retries + 1} after {retry_reason}")
+                safe_stop(base)
+                time.sleep(args.retry_delay)
 
-        log("Start capture")
-        try:
-            capture = start_capture(mgr, channels, args.la_rate, args.la_duration)
-        except grpc.RpcError as exc:
-            code = exc.code() if hasattr(exc, "code") else None
-            details = exc.details() if hasattr(exc, "details") else ""
-            msg = details or str(exc)
-            log(f"ERROR: StartCapture failed code={code} details={msg}")
-            return 3
-        try:
-            wait_capture_with_timeout(mgr, capture, timeout_s=args.la_duration + 2.0)
-        except grpc.RpcError as exc:
-            log(f"ERROR: capture wait failed: {exc.details()}")
-            return 3
+            log("Send UI commands")
+            cmd_ok = send_cmds_retry(base, cmds, retries=args.cmd_retries, retry_delay_s=args.retry_delay)
 
-        outdir = args.outdir
-        csv_path = export_capture(capture, channels, outdir, args.tag)
-        log(f"Capture saved: {csv_path}")
-        capture.close()
+            log("Wait status")
+            ok, st, dt = wait_status_retry(
+                base,
+                status_predicate,
+                timeout_s=args.status_timeout,
+                poll_s=args.poll,
+                retries=args.status_retries,
+                retry_delay_s=args.retry_delay,
+                label="status",
+            )
+            if not ok:
+                log("WARN: status timeout or mismatch")
+            log(f"Status ok={ok} dt={dt*1000:.1f}ms st={st}")
 
-        log("Analyze capture")
-        metrics = analyze(
-            csv_path,
-            channels,
-            args.brake_active_high == 1,
-            args.expect_pwm,
-            args.expect_estop,
-            max_overlap_ratio=args.max_overlap_ratio,
-        )
-        passed = bool(metrics["pass"] and ok and cmd_ok)
+            log("Start capture")
+            try:
+                capture = start_capture(mgr, channels, args.la_rate, args.la_duration)
+            except grpc.RpcError as exc:
+                code = exc.code() if hasattr(exc, "code") else None
+                details = exc.details() if hasattr(exc, "details") else ""
+                msg = details or str(exc)
+                log(f"ERROR: StartCapture failed code={code} details={msg}")
+                return 3
+            try:
+                wait_capture_with_timeout(mgr, capture, timeout_s=args.la_duration + 2.0)
+            except grpc.RpcError as exc:
+                log(f"ERROR: capture wait failed: {exc.details()}")
+                return 3
+
+            outdir = args.outdir
+            csv_path = export_capture(capture, channels, outdir, args.tag)
+            log(f"Capture saved: {csv_path}")
+            capture.close()
+
+            log("Analyze capture")
+            metrics = analyze(
+                csv_path,
+                channels,
+                args.brake_active_high == 1,
+                args.expect_pwm,
+                args.expect_estop,
+                max_overlap_ratio=args.max_overlap_ratio,
+                min_handoff_gap_ns=args.min_handoff_gap_ns,
+            )
+            passed = bool(metrics["pass"] and ok and cmd_ok)
+            retry_reason = control_retry_reason(cmd_ok, ok, metrics)
+            if retry_reason and attempt < args.case_retries:
+                log(f"WARN: clean capture with transient {retry_reason}; retrying case")
+                continue
+            break
+
         summary = {
             "tag": args.tag,
             "mode": args.mode,
             "freq": args.freq,
             "duty": args.duty,
+            "attempts": attempts,
+            "retry_reason": retry_reason,
             "cmd_ok": cmd_ok,
             "status_ok": ok,
             "status_dt_ms": dt * 1000.0,
@@ -528,6 +875,12 @@ def main() -> int:
     parser.add_argument("--expect-pwm", type=int, default=1)
     parser.add_argument("--expect-estop", type=int, default=0)
     parser.add_argument("--max-overlap-ratio", type=float, default=DEFAULT_MAX_OVERLAP_RATIO)
+    parser.add_argument("--min-handoff-gap-ns", type=float, default=0.0)
+    parser.add_argument("--ui-ready-timeout", type=float, default=3.0)
+    parser.add_argument("--cmd-retries", type=int, default=1)
+    parser.add_argument("--status-retries", type=int, default=1)
+    parser.add_argument("--case-retries", type=int, default=1)
+    parser.add_argument("--retry-delay", type=float, default=0.2)
     parser.add_argument("--skip-clear", action="store_true")
     args = parser.parse_args()
 

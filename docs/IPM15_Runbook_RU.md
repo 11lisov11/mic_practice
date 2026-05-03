@@ -16,15 +16,17 @@ UM2014 прямо пишет: **плата требует +5 V и +3.3 V чер�
 * J2-25 `+V power` -> стабильные `+5V`
 * J2-28 `VDD_m` -> `+3.3V`
 * J2-29 `PWM VREF` -> `+3.3V` (как опорное для логики PWM)
+* J4 `VCC supply` -> внешний auxiliary БП, типично `+15V`, максимум `20V`
 * Любой(ые) `GND` пины -> общий `GND` (соединить "звездой", короткими проводами)
 
 Важно:
 * Не включать HV (125..400V DC) пока не проверены ШИМ, EM_STOP, таймауты и ESTOP на логическом уровне.
+* Не путать `J4` и `J7`: `J4` это low-voltage auxiliary питание драйвера, `J7` это основная силовая DC bus.
 * Логические уровни и аналоговые сигналы UM2014 должны попадать в диапазон АЦП Blue Pill (0..3.3V). Если UM2014 отдает больше, нужен делитель/буфер.
 
 ## 2. Коммутация (проводка)
 
-### 2.1. UNO Q ↔ Blue Pill (UART, 921600)
+### 2.1. UNO Q ↔ Blue Pill (UART, 460800)
 * UNO Q `D1 (TX)` -> Blue Pill `PA3 (USART2_RX)`
 * UNO Q `D0 (RX)` <- Blue Pill `PA2 (USART2_TX)`
 * `GND` -> `GND`
@@ -85,6 +87,13 @@ Blue Pill делает "силовую" безопасность на своей
 * ПК по USB/ADB: `adb forward tcp:18080 tcp:8080` и `http://127.0.0.1:18080`.
 * Телефон через ПК (если Wi-Fi изоляция): поднять прокси `tools/ui_http_bridge.py` и заходить на `http://<IP ПК>:8080`.
 
+Практически удобнее запускать:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\ui_access.py --bridge
+```
+
+Скрипт сам делает `adb start-server`, поднимает `forward`, проверяет `/api/status` и, если ADB не поднялся, печатает состояние USB-инстансов UNO Q. Если он пишет `phantom`, плата физически не присутствует в Windows и тесты бессмысленно гонять до восстановления USB.
+
 ## 5. Быстрая проверка энкодера (положение магнита)
 Команда (на ПК):
 ```powershell
@@ -95,7 +104,23 @@ Blue Pill делает "силовую" безопасность на своей
 * `enc_raw` меняется при вращении магнита/вала
 * `enc_deg` меняется 0..360
 
+Если Logic2 открыт, но automation/анализатор не поднимается:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\logic2_recover.py --restart
+```
+
+Скрипт отличает два сценария:
+* Logic2 жив, но анализатор не виден;
+* сам `Logic.exe` падает сразу после старта.
+
 ## 6. Тесты ШИМ (UI -> Blue Pill -> PWM -> LA -> метрики)
+Если нужен не набор ручных команд, а один полный regression-run, использовать:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
+```
+
+Этот раннер последовательно делает build, `ui_access`, encoder sanity, scalar preflight, FOC/MIC preflight, полный LA-suite и диагностический `mic_ai_compare`.
+
 Перед запуском убедиться:
 * `/api/status` доступен
 * `tools/la_probe.py` показывает **не пустой** список `devices` (иначе захваты невозможны)
@@ -112,7 +137,71 @@ Blue Pill делает "силовую" безопасность на своей
   --la-channels 0,1,2,3,4,5,6 --la-rate 2000000 --la-duration 0.7
 ```
 
+Рекомендуемый safety-прогон для проверки ключей инвертора:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\scalar_vf_preflight.py --url http://127.0.0.1:18080 ^
+  --freqs 0.1,0.5,1,2,5,10,20,30,40,50 --estop-freqs 0.5,10,50 ^
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 ^
+  --min-handoff-gap-ns 600
+```
+
+Рекомендуемый FOC/MIC preflight:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\foc_mic_preflight.py --url http://127.0.0.1:18080 ^
+  --foc-freqs 0.5,5,10,20,50 --foc-estop-freqs 10,50 --mic-freqs 5,10,20 ^
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 ^
+  --min-handoff-gap-ns 600
+```
+
+Рекомендуемый HV/J7 preflight:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
+  --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 ^
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 ^
+  --min-handoff-gap-ns 600
+```
+
+Если `vdc` на твоём стенде уже откалиброван и его масштаб понятен:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
+  --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 ^
+  --vdc-min <MIN> --vdc-max <MAX> ^
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 ^
+  --min-handoff-gap-ns 600
+```
+
+Полный HIL-suite с deadtime-check:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 ^
+  --capture-every-hz 1.0 --la-channels 0,1,2,3,4,5,6 ^
+  --la-rate 24000000 --la-duration 0.06 --case-retries 2 --retry-delay 0.2 ^
+  --min-handoff-gap-ns 600
+```
+
+Смысл этого режима:
+* `scalar_vf_preflight.py` ждёт реальный steady-state в `VF`, а не только принятие `freq_cmd`.
+* `foc_mic_preflight.py` отдельно ждёт `FOC_RUN` и проверяет `FOC/MIC` без смешивания с переходным `FOC_ALIGN`.
+* `ui_pwm_suite.py` при `--min-handoff-gap-ns 600` валит кейс, если на комплементарной паре не подтверждён deadtime.
+* Logic2 transient `StartCapture ABORTED` обрабатывается как retryable, а не как ложный итоговый FAIL.
+* `hv_j7_preflight.py` нужен уже после успешного low-voltage HIL, когда `J7` действительно подан и требуется отдельно перепроверить ограниченный scalar/VF и `ESTOP/recover` под шиной.
+
+Для единичных ложных `FAIL` из-за краткого сбоя transport/control plane доступны точечные повторы без маскировки реальной PWM-проблемы:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --case-retries 1 --retry-delay 0.2
+.\.venv\Scripts\python.exe -u .\tools\ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 --case-retries 1
+```
+
 Оба скрипта в конце всегда делают `STOP` + `CLEAR` (best-effort).
+
+## 6.1. Когда вообще разрешено переходить к J7/HV
+Перед подачей `J7` должны уже быть закрыты все пункты ниже:
+* `full_system_preflight.py` без `--with-hv` завершился `overall_pass=true`
+* `PASS=80 FAIL=0` в `ui_pwm_suite.py`
+* scalar/VF и FOC/MIC preflight прошли
+* `bp_fault=0`, `bp_bad=0` в финальном SAFE
+* внешний E-STOP, ограничение тока и предохранение по шине готовы до подачи `J7`
+
+После подачи `J7` не идти сразу в “боевой” режим. Сначала прогнать только `hv_j7_preflight.py`, и только если он чистый, двигаться дальше.
 
 ## 7. Если что-то не так (короткий чеклист)
 Saleae: `devices []`

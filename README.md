@@ -10,11 +10,16 @@
 - `web_hmi` — web‑GUI для UNO Q (без пароля, порт 8080).
 - `tools/ui_pwm_case.py` — один тест‑кейс с LA захватом, CSV и `summary.json`.
 - `tools/ui_pwm_suite.py` — полный набор тестов с LA захватами и `summary.csv`.
+- `tools/scalar_vf_preflight.py` — жёсткий preflight scalar/VF: steady-state, ESTOP/recover, overlap и deadtime.
+- `tools/foc_mic_preflight.py` — жёсткий preflight FOC/MIC: `FOC_RUN`, `ESTOP/recover`, overlap и deadtime.
+- `tools/hv_j7_preflight.py` — опциональный HV/J7 preflight после low-voltage HIL: ограниченный scalar/VF, `ESTOP/recover`, overlap и deadtime под силовой шиной.
 - `tools/mic_ai_compare.py` — сравнение FOC vs MIC по телеметрии (`timeseries_*.csv`, `summary.json`).
+- `tools/full_system_preflight.py` — единый regression-runner: build, доступ к UNO Q, encoder sanity, scalar, FOC/MIC, полный LA-suite и MIC-диагностика.
+- `tools/logic2_recover.py` — recovery Logic2/Saleae: рестарт приложения, проверка automation-port и видимости реального анализатора.
 - `tools/la_probe.py` — проверка доступности Saleae Logic2 Automation.
 - `tools/ui_http_bridge.py` — HTTP‑мост для доступа к UI с телефона через ПК.
 - `tools/adb_deploy_web_hmi.py` — деплой web‑GUI на UNO Q через ADB.
-- `tools/ui_access.py` — ADB‑форвард + (опц.) мост на LAN.
+- `tools/ui_access.py` — ADB‑форвард + проверка `/api/status` + (опц.) мост на LAN.
 - `UNOQ_MOTOR/id_ref_lut_motor1.h`, `UNOQ_MOTOR/uno_q_control.h` — локальная MIC/LUT логика (без внешней зависимости на `C:\mic_ai`).
 - `requirements.txt` — общие зависимости Python для LA/HTTP и локального запуска `web_hmi`.
 
@@ -47,6 +52,12 @@ arduino-cli compile --fqbn arduino:zephyr:unoq .\UNOQ_MOTOR
 ## Доступ к UI (ПК по USB/ADB + телефон по Wi‑Fi)
 Быстрый запуск: `python tools/ui_access.py --bridge`
 
+`tools/ui_access.py` теперь:
+- сам делает `adb start-server`;
+- поднимает `adb forward`;
+- проверяет `http://127.0.0.1:18080/api/status`;
+- если ADB-девайс не найден, печатает состояние USB-инстансов UNO Q (`Present=True` vs `phantom`).
+
 В текущем `web_hmi` одна аварийная кнопка работает как переключатель:
 - если `ESTOP` не активен, отправляется `ESTOP`;
 - если `ESTOP` уже активен, кнопка отправляет `ESTOP CLEAR`.
@@ -55,6 +66,8 @@ arduino-cli compile --fqbn arduino:zephyr:unoq .\UNOQ_MOTOR
 1. `adb devices`
 2. `adb -s <DEVICE_ID> forward tcp:18080 tcp:8080`
 3. Открыть `http://127.0.0.1:18080`
+
+Если `ui_access.py` пишет, что UNO Q виден только как `phantom`, это уже не проблема `web_hmi` или тестов: Windows не видит живой USB-девайс платы.
 
 ### Телефон (Wi‑Fi)
 1. Узнать IP UNO Q (например `192.168.31.247`).
@@ -79,6 +92,78 @@ python tools/adb_deploy_web_hmi.py --device <ADB_ID> --restart
 - CH4=PA10
 - CH5=PB15
 - CH6=PB12 (BRAKE)
+
+## Рекомендуемый HIL safety-прогон
+Если нужен один воспроизводимый полный прогон проекта:
+
+```powershell
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
+```
+
+Он:
+- собирает UNO Q и Blue Pill;
+- проверяет ADB/UI доступ;
+- пытается поднять Logic2/Saleae через `tools/logic2_recover.py`;
+- делает короткий `encoder_test`;
+- гоняет `scalar_vf_preflight.py`;
+- гоняет `foc_mic_preflight.py`;
+- гоняет полный `ui_pwm_suite.py`;
+- при явном `--with-hv` гоняет отдельный `hv_j7_preflight.py`;
+- отдельно запускает `mic_ai_compare.py`, но честно помечает его как `diagnostic_only`, если MIC корректно загейтился из-за отсутствия реального вращения.
+
+Артефакт верхнего уровня: `tools/_preflight_exports/full_system_preflight_<timestamp>/summary.json`
+
+Если нужна не просто “наличие PWM”, а проверка на отсутствие сквозного открытия и подтверждение deadtime, использовать 24 MHz захват и порог deadtime:
+
+Scalar/VF preflight:
+```powershell
+py -3 -u .\tools\scalar_vf_preflight.py --url http://127.0.0.1:18080 `
+  --freqs 0.1,0.5,1,2,5,10,20,30,40,50 --estop-freqs 0.5,10,50 `
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 `
+  --min-handoff-gap-ns 600
+```
+
+FOC/MIC preflight:
+```powershell
+py -3 -u .\tools\foc_mic_preflight.py --url http://127.0.0.1:18080 `
+  --foc-freqs 0.5,5,10,20,50 --foc-estop-freqs 10,50 --mic-freqs 5,10,20 `
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 `
+  --min-handoff-gap-ns 600
+```
+
+Полный suite c deadtime-check:
+```powershell
+py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 `
+  --capture-every-hz 1.0 --la-channels 0,1,2,3,4,5,6 `
+  --la-rate 24000000 --la-duration 0.06 --case-retries 2 --retry-delay 0.2 `
+  --min-handoff-gap-ns 600
+```
+
+HV/J7 preflight:
+```powershell
+py -3 -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 `
+  --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 `
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 `
+  --min-handoff-gap-ns 600
+```
+
+Если `vdc` у тебя уже откалиброван и ты понимаешь его масштаб на своей плате, можно добавить окно:
+```powershell
+py -3 -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 `
+  --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 `
+  --vdc-min <MIN> --vdc-max <MAX> `
+  --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 `
+  --min-handoff-gap-ns 600
+```
+
+Полный раннер с опциональным HV/J7 этапом:
+```powershell
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-hv
+```
+
+Ожидаемый признак исправного стенда:
+- `PASS=80 FAIL=0` в `tools/_la_exports/summary.csv`
+- для scalar/VF `freq_pass=True`, `estop_pass=True`, `final_safe=True` в `tools/_preflight_exports/.../summary.json`
 
 ## UNO Q ↔ Blue Pill связь
 Текущая конфигурация использует UART, чтобы не занимать SPI и не конфликтовать с IPM15 аналоговыми входами.
@@ -110,6 +195,12 @@ J2 (Table 6):
 - J2‑31 `measure phase A` → `PA6` (ADC1_IN6)
 - J2‑33 `measure phase B` → `PA7` (ADC1_IN7)
 - J2‑34 `measure phase C` → `PB0` (ADC1_IN8)
+
+Дополнительное питание STEVAL:
+- `J4` = auxiliary `VCC supply`
+- подавать `+15V typ` (`20V max` по UM2014), `+/-`
+- `J7` = основная DC bus силовой части, не подключать до завершения low-voltage проверок
+- `J7` включать только после успешных `scalar_vf_preflight.py`, `foc_mic_preflight.py` и полного `ui_pwm_suite.py`
 - J2‑2/4/6/8/10/12/16/18/20/22/24/30/32 → `GND`
 
 J9 (Hall/Encoder, UM2014):
@@ -152,6 +243,12 @@ python -u tools/ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0
 ```
 python -u tools/ui_pwm_suite.py --url http://127.0.0.1:18080 --capture-every-hz 1.0 \
   --la-channels 0,1,2,3,4,5,6 --la-rate 2000000 --la-duration 0.7
+```
+
+Для единичных transport/control transient доступны аккуратные повторы только чистых PWM-кейсов:
+```
+python -u tools/ui_pwm_suite.py --url http://127.0.0.1:18080 --case-retries 1 --retry-delay 0.2
+python -u tools/ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 --case-retries 1
 ```
 
 Частичные прогоны (например только hot‑switch и ESTOP):

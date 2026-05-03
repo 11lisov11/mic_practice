@@ -69,8 +69,22 @@ PASS/FAIL:
 - `foc.mean_i_rms` vs `mic.mean_i_rms`
 - `mic.mean_mic_saving_pct`
 - `mean_enc_rpm` и `mean_speed_err_rpm` (если энкодер подключен)
+- `mic.mic_enable_ai_ratio`, `mic.mic_gated_ratio`
+- `mic.mean_mic_freq_meas_hz`, `mic.mean_mic_speed_err_hz`, `mic.mean_mic_speed_tol_hz`
+- `mic.mic_link_flags_values`, `mic.mic_status_flags_values`, `mic.mic_enc_used_values`
 
 Важно:
 - На асинхроннике `speed_cmd` (синхронная) и `enc_rpm` (реальная) различаются из‑за скольжения.
   Это нормально: в гейтах используется допуск по slip, чтобы не блокировать MIC в штатном режиме.
 
+Практический смысл новых полей:
+- `mic_enable_ai_ratio > 0`, но `mic_active_ratio = 0` означает, что AI в принципе разрешался, но потом гейт/условия не дали ему удержаться.
+- `mic_gated_ratio = 1.0` при `mic_link_flags_values=[0]` и `mic_status_flags_values=[0]` обычно значит не проблема связи/ошибки, а проблема физики стенда: нет реального вращения или измеренная скорость не совпадает с ожидаемой.
+- Если вал фактически не вращается, `mic_ai_compare.py` должен считаться диагностическим, а не “проходным” тестом эффективности MIC.
+
+Для полного проекта это уже встроено в верхнеуровневый раннер:
+```powershell
+.\.venv\Scripts\python.exe -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
+```
+
+Он не маскирует реальный fail, но и не врёт: если `MIC` корректно загейтился по измеренной скорости, итоговый статус `mic_compare` будет `diagnostic_only`, а не псевдо-ошибка прошивки.

@@ -34,9 +34,32 @@ MODE_NAMES = {
     0: "VF",
     1: "FOC",
     2: "MIC",
+    3: "DIAG",
+    4: "DUTY",
 }
 STATE_CODES = {v: k for k, v in STATE_NAMES.items()}
 MODE_CODES = {v: k for k, v in MODE_NAMES.items()}
+BP_MODE_DIAG = 1
+BP_MODE_DUTY = 2
+
+
+def effective_mode(
+    mode_code: int,
+    bp_mode: int,
+    diag_mode: Optional[int] = None,
+    duty_mode: Optional[int] = None,
+) -> tuple[int, str]:
+    if diag_mode is not None:
+        if int(diag_mode) != 0:
+            return 3, MODE_NAMES[3]
+    elif bp_mode == BP_MODE_DIAG:
+        return 3, MODE_NAMES[3]
+    if duty_mode is not None:
+        if int(duty_mode) != 0:
+            return 4, MODE_NAMES[4]
+    elif bp_mode == BP_MODE_DUTY:
+        return 4, MODE_NAMES[4]
+    return mode_code, MODE_NAMES.get(mode_code, str(mode_code))
 
 
 def _now_ts() -> float:
@@ -398,27 +421,27 @@ class RpcBridge:
                 self._router = None
             self._serial_text = TextSerialClient("/dev/ttyHS1")
 
-    def _call(self, method: str, params: list) -> Optional[list]:
+    def _call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
         if self._router is not None:
-            resp = self._router.call(method, params)
+            resp = self._router.call(method, params, timeout=timeout, retries=retries)
             if resp is not None:
                 return resp
         return None
 
     def cmd(self, cmd: str) -> Tuple[bool, Optional[str]]:
-        resp = self._call("cmd", [cmd])
+        resp = self._call("cmd", [cmd], timeout=0.8, retries=2)
         if resp and len(resp) >= 4:
             err = resp[2]
             if err is not None:
                 return False, str(err)
             return True, None
         if self._serial_text is not None:
-            ok = self._serial_text.cmd(cmd)
+            ok = self._serial_text.cmd(cmd, timeout=0.8, retries=2)
             return (ok, None if ok else "no response")
         return False, "no response"
 
     def get(self) -> Tuple[bool, Optional[dict], Optional[str]]:
-        resp = self._call("get", [])
+        resp = self._call("get", [], timeout=2.0, retries=2)
         if resp and len(resp) >= 4:
             err = resp[2]
             if err is not None:
@@ -433,11 +456,15 @@ class RpcBridge:
                 return False, None, "bad result"
             state_code = int(result[0])
             mode_code = int(result[1])
+            bp_mode = int(result[29]) if len(result) >= 31 else 0
+            diag_mode = int(result[45]) if len(result) >= 47 else None
+            duty_mode = int(result[46]) if len(result) >= 47 else None
+            mode_code_eff, mode_name_eff = effective_mode(mode_code, bp_mode, diag_mode, duty_mode)
             data = {
                 "state_code": state_code,
                 "state": STATE_NAMES.get(state_code, str(state_code)),
-                "mode_code": mode_code,
-                "mode": MODE_NAMES.get(mode_code, str(mode_code)),
+                "mode_code": mode_code_eff,
+                "mode": mode_name_eff,
                 "pwm": int(result[2]),
                 "freq": float(result[3]),
                 "speed": float(result[4]),
@@ -503,7 +530,7 @@ class RpcBridge:
             if len(result) >= 31:
                 data["bp_status"] = int(result[27])
                 data["bp_fault"] = int(result[28])
-                data["bp_mode"] = int(result[29])
+                data["bp_mode"] = bp_mode
                 data["bp_seq"] = int(result[30])
             else:
                 data["bp_status"] = 0
@@ -550,9 +577,15 @@ class RpcBridge:
                 data["mic_speed_tol_hz"] = 0.0
                 data["mic_link_flags"] = 0
                 data["mic_status_flags"] = 0
+            if len(result) >= 47:
+                data["diag_mode"] = int(result[45])
+                data["duty_mode"] = int(result[46])
+            else:
+                data["diag_mode"] = 1 if mode_code_eff == 3 else 0
+                data["duty_mode"] = 1 if mode_code_eff == 4 else 0
             return True, data, None
         if self._serial_text is not None:
-            line = self._serial_text.get()
+            line = self._serial_text.get(timeout=1.2, retries=2)
             if not line:
                 return False, None, "no response"
             parsed = self._parse_status_string(line)
@@ -576,11 +609,14 @@ class RpcBridge:
             mode_s = kv.get("mode", "")
             state_code = STATE_CODES.get(state_s, -1)
             mode_code = MODE_CODES.get(mode_s, -1)
+            diag_mode = int(float(kv.get("diag", "0")))
+            duty_mode = int(float(kv.get("duty", "0")))
+            mode_code_eff, mode_name_eff = effective_mode(mode_code, int(float(kv.get("bp_mode", "0"))), diag_mode, duty_mode)
             return {
                 "state_code": int(state_code),
                 "state": state_s or str(state_code),
-                "mode_code": int(mode_code),
-                "mode": mode_s or str(mode_code),
+                "mode_code": int(mode_code_eff),
+                "mode": mode_name_eff,
                 "pwm": int(float(kv.get("pwm", "0"))),
                 "freq": float(kv.get("freq", "0")),
                 "speed": float(kv.get("speed", "0")),
@@ -614,6 +650,8 @@ class RpcBridge:
                 "mic_speed_tol_hz": float(kv.get("mic_ftol", "0")),
                 "mic_link_flags": int(float(kv.get("mic_lflags", "0"))),
                 "mic_status_flags": int(float(kv.get("mic_sflags", "0"))),
+                "diag_mode": diag_mode,
+                "duty_mode": duty_mode,
                 "bp_good": int(float(kv.get("bp_good", "0"))),
                 "bp_bad": int(float(kv.get("bp_bad", "0"))),
                 "bp_age_ms": int(float(kv.get("bp_age_ms", "0"))),
@@ -649,23 +687,29 @@ class Handler(BaseHTTPRequestHandler):
 
     def _send_json(self, payload: dict, code: int = 200) -> None:
         data = json.dumps(payload).encode("utf-8")
-        self.send_response(code)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(data)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
 
     def _send_text(self, text: str, code: int = 200, filename: Optional[str] = None) -> None:
         data = text.encode("utf-8")
-        self.send_response(code)
-        self.send_header("Content-Type", "text/plain; charset=utf-8")
-        if filename:
-            self.send_header("Content-Disposition", f"attachment; filename=\"{filename}\"")
-        self.send_header("Content-Length", str(len(data)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(data)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            if filename:
+                self.send_header("Content-Disposition", f"attachment; filename=\"{filename}\"")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
 
     def _send_static(self, name: str, content_type: str) -> None:
         base = os.path.dirname(__file__)
@@ -676,11 +720,14 @@ class Handler(BaseHTTPRequestHandler):
         except OSError:
             self.send_error(404)
             return
-        self.send_response(200)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
+        try:
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)

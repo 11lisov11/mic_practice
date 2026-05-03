@@ -12,6 +12,7 @@ from ui_pwm_case import (  # noqa: E402
     post_cmd,
     get_status,
     wait_for,
+    wait_http_ready,
     st_num,
     send_cmds,
     safe_stop,
@@ -20,6 +21,8 @@ from ui_pwm_case import (  # noqa: E402
     export_capture,
     analyze,
     DEFAULT_MAX_OVERLAP_RATIO,
+    status_mode_matches,
+    vf_steady_matches,
 )
 from saleae.automation import Manager
 from saleae.automation.capture import Capture
@@ -46,16 +49,30 @@ def summary_writer(path: str):
             "pwm_ok",
             "brake_ok",
             "overlap_ok",
+            "deadtime_ok",
             "brake_high",
             "io_ok",
             "io_detail",
+            "attempts",
+            "retry_reason",
             "csv",
         ]
     )
     return f, writer
 
 
-def capture_and_analyze(mgr: Manager, channels, la_rate, la_duration, outdir, tag, brake_active_high, expect_pwm, expect_estop):
+def capture_and_analyze(
+    mgr: Manager,
+    channels,
+    la_rate,
+    la_duration,
+    outdir,
+    tag,
+    brake_active_high,
+    expect_pwm,
+    expect_estop,
+    min_handoff_gap_ns: float = 0.0,
+):
     try:
         capture = start_capture(mgr, channels, la_rate, la_duration)
     except grpc.RpcError as exc:
@@ -93,6 +110,7 @@ def capture_and_analyze(mgr: Manager, channels, la_rate, la_duration, outdir, ta
         expect_pwm,
         expect_estop,
         max_overlap_ratio=MAX_OVERLAP_RATIO,
+        min_handoff_gap_ns=min_handoff_gap_ns,
     )
     return csv_path, metrics
 
@@ -106,11 +124,20 @@ def wait_status(
     retries: int = 0,
     expect_freq_cmd: float | None = None,
     freq_tol: float = 0.06,
+    expect_mode: str | None = None,
+    require_vf_steady: bool = False,
 ):
     def predicate(st):
         pwm_ok = int(st_num(st, "pwm", 0.0)) == (1 if expect_pwm else 0)
         if expect_freq_cmd is not None:
             if abs(st_num(st, "freq_cmd", 0.0) - float(expect_freq_cmd)) > freq_tol:
+                return False
+        if expect_mode is not None and not status_mode_matches(st, expect_mode):
+            return False
+        if require_vf_steady:
+            if expect_freq_cmd is None:
+                return False
+            if not vf_steady_matches(st, expect_freq_cmd):
                 return False
         if expect_estop:
             return pwm_ok and int(st_num(st, "estop", 0.0)) == 1
@@ -139,6 +166,21 @@ def send_cmds_retry(base: str, cmds, retries: int = 1):
     return False
 
 
+def control_retry_reason(cmd_ok: bool, status_ok: bool, metrics: dict | None, io_ok=None) -> str:
+    if metrics is None:
+        return "capture"
+    if not metrics.get("pass"):
+        return ""
+    reasons = []
+    if not cmd_ok:
+        reasons.append("cmd")
+    if not status_ok:
+        reasons.append("status")
+    if io_ok is False:
+        reasons.append("io")
+    return "+".join(reasons)
+
+
 def main() -> int:
     global MAX_OVERLAP_RATIO
     parser = argparse.ArgumentParser(description="Full UI->PWM test suite with Saleae captures")
@@ -165,6 +207,10 @@ def main() -> int:
     parser.add_argument("--sweep-max", type=float, default=50.0)
     parser.add_argument("--sweep-step", type=float, default=0.1)
     parser.add_argument("--max-overlap-ratio", type=float, default=DEFAULT_MAX_OVERLAP_RATIO)
+    parser.add_argument("--min-handoff-gap-ns", type=float, default=0.0)
+    parser.add_argument("--ui-ready-timeout", type=float, default=3.0)
+    parser.add_argument("--case-retries", type=int, default=1)
+    parser.add_argument("--retry-delay", type=float, default=0.2)
     args = parser.parse_args()
     MAX_OVERLAP_RATIO = max(0.0, float(args.max_overlap_ratio))
 
@@ -176,6 +222,7 @@ def main() -> int:
     if args.saleae_host not in ("127.0.0.1", "localhost"):
         log(f"WARN: saleae-host '{args.saleae_host}' not supported by this Saleae SDK, using localhost")
     mgr = Manager.connect(port=args.saleae_port, connect_timeout_seconds=2)
+    mgr._codex_port = args.saleae_port
     devices = []
     for _ in range(30):
         devices = mgr.get_devices()
@@ -198,7 +245,22 @@ def main() -> int:
     pass_count = 0
     fail_count = 0
 
-    def record(tag, mode, freq, expect_pwm, expect_estop, metrics, csv_path, cmd_ok, status_ok, status_dt_ms, io_ok=None, io_detail=""):
+    def record(
+        tag,
+        mode,
+        freq,
+        expect_pwm,
+        expect_estop,
+        metrics,
+        csv_path,
+        cmd_ok,
+        status_ok,
+        status_dt_ms,
+        io_ok=None,
+        io_detail="",
+        attempts: int = 1,
+        retry_reason: str = "",
+    ):
         nonlocal pass_count, fail_count
         if metrics is None:
             writer.writerow(
@@ -216,8 +278,11 @@ def main() -> int:
                     "",
                     "",
                     "",
+                    "",
                     "" if io_ok is None else int(bool(io_ok)),
                     io_detail,
+                    attempts,
+                    retry_reason,
                     csv_path or "",
                 ]
             )
@@ -239,9 +304,12 @@ def main() -> int:
                 metrics.get("pwm_ok"),
                 metrics.get("brake_ok"),
                 metrics.get("overlap_ok"),
+                metrics.get("deadtime_ok"),
                 metrics.get("brake_high"),
                 "" if io_ok is None else int(bool(io_ok)),
                 io_detail,
+                attempts,
+                retry_reason,
                 csv_path,
             ]
         )
@@ -277,49 +345,178 @@ def main() -> int:
                 ok = False
             details.append(f"brake_duty={got:.2f}")
         return ok, " ".join(details)
+
+    def run_with_control_retry(tag: str, runner):
+        last = None
+        retry_reason = ""
+        for attempt in range(args.case_retries + 1):
+            if attempt:
+                log(f"WARN: retry {tag} attempt {attempt + 1}/{args.case_retries + 1} after {retry_reason}")
+                safe_stop(base)
+                time.sleep(args.retry_delay)
+            last = runner()
+            retry_reason = control_retry_reason(
+                last["cmd_ok"],
+                last["status_ok"],
+                last["metrics"],
+                last.get("io_ok"),
+            )
+            if not retry_reason:
+                break
+            log(f"WARN: {tag} capture clean but control-plane mismatch ({retry_reason})")
+        if last is None:
+            raise RuntimeError(f"runner returned no data for {tag}")
+        last["attempts"] = attempt + 1
+        last["retry_reason"] = retry_reason
+        return last
     try:
+        ui_ok, ui_st, ui_dt = wait_http_ready(base, timeout_s=args.ui_ready_timeout, poll_s=max(0.05, args.poll))
+        if not ui_ok:
+            log(f"ERROR: UI not reachable after {ui_dt*1000:.1f}ms last_status={ui_st}")
+            return 3
+
         # DIAG
         if not args.skip_diag:
             log("TEST: DIAG")
-            cmd_ok = send_cmds_retry(base, ["CLEAR", "DIAG ON", "START"], retries=1)
-            time.sleep(0.2)
-            status_ok, st, dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
-            csv_path, metrics = capture_and_analyze(
-                mgr, channels, args.la_rate, args.la_duration, args.outdir, "diag", brake_active_high, True, False
+            def diag_runner():
+                cmd_ok = send_cmds_retry(base, ["CLEAR", "DIAG ON", "START"], retries=1)
+                time.sleep(0.2)
+                status_ok, st, dt = wait_status(
+                    base,
+                    True,
+                    False,
+                    args.status_timeout,
+                    args.poll,
+                    retries=1,
+                    expect_mode="DIAG",
+                )
+                csv_path, metrics = capture_and_analyze(
+                    mgr, channels, args.la_rate, args.la_duration, args.outdir, "diag", brake_active_high, True, False, args.min_handoff_gap_ns
+                )
+                return {
+                    "cmd_ok": cmd_ok,
+                    "status_ok": status_ok,
+                    "status": st,
+                    "status_dt_ms": dt * 1000.0,
+                    "csv_path": csv_path,
+                    "metrics": metrics,
+                    "io_ok": None,
+                    "io_detail": "",
+                }
+
+            res = run_with_control_retry("diag", diag_runner)
+            record(
+                "diag",
+                "DIAG",
+                0.0,
+                True,
+                False,
+                res["metrics"],
+                res["csv_path"],
+                res["cmd_ok"],
+                res["status_ok"],
+                res["status_dt_ms"],
+                attempts=res["attempts"],
+                retry_reason=res["retry_reason"],
             )
-            record("diag", "DIAG", 0.0, True, False, metrics, csv_path, cmd_ok, status_ok, dt * 1000.0)
 
         # DUTY
         if not args.skip_duty:
             log("TEST: DUTY")
-            cmd_ok = send_cmds_retry(base, ["CLEAR", "MODE DUTY", "DUTY 0.2 0.4 0.6", "START"], retries=1)
-            time.sleep(0.2)
-            status_ok, st, dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
-            csv_path, metrics = capture_and_analyze(
-                mgr, channels, args.la_rate, args.la_duration, args.outdir, "duty", brake_active_high, True, False
+            def duty_runner():
+                cmd_ok = send_cmds_retry(base, ["CLEAR", "MODE DUTY", "DUTY 0.2 0.4 0.6", "START"], retries=1)
+                time.sleep(0.2)
+                status_ok, st, dt = wait_status(
+                    base,
+                    True,
+                    False,
+                    args.status_timeout,
+                    args.poll,
+                    retries=1,
+                    expect_mode="DUTY",
+                )
+                csv_path, metrics = capture_and_analyze(
+                    mgr, channels, args.la_rate, args.la_duration, args.outdir, "duty", brake_active_high, True, False, args.min_handoff_gap_ns
+                )
+                return {
+                    "cmd_ok": cmd_ok,
+                    "status_ok": status_ok,
+                    "status": st,
+                    "status_dt_ms": dt * 1000.0,
+                    "csv_path": csv_path,
+                    "metrics": metrics,
+                    "io_ok": None,
+                    "io_detail": "",
+                }
+
+            res = run_with_control_retry("duty", duty_runner)
+            record(
+                "duty",
+                "DUTY",
+                0.0,
+                True,
+                False,
+                res["metrics"],
+                res["csv_path"],
+                res["cmd_ok"],
+                res["status_ok"],
+                res["status_dt_ms"],
+                attempts=res["attempts"],
+                retry_reason=res["retry_reason"],
             )
-            record("duty", "DUTY", 0.0, True, False, metrics, csv_path, cmd_ok, status_ok, dt * 1000.0)
 
         # IO (NTC/PFC/BRAKE PWM)
         log("TEST: IO NTC/PFC/BRAKE")
-        cmd_ok = send_cmds(base, ["CLEAR", "MODE VF", "SET FREQ 5.0", "START", "NTC ON", "PFC ON", "BRAKE PWM 0.25"])
-        time.sleep(0.2)
-        ok, st, dt = wait_for(
-            base,
-            lambda s: int(st_num(s, "pwm", 0.0)) == 1
-            and int(st_num(s, "ntc", 0.0)) == 1
-            and int(st_num(s, "pfc", 0.0)) == 1
-            and int(st_num(s, "brake", 0.0)) == 1
-            and abs(st_num(s, "brake_duty", 0.0) - 0.25) <= 0.05,
-            timeout_s=args.status_timeout,
-            poll_s=args.poll,
+        def io_runner():
+            cmd_ok = send_cmds_retry(
+                base,
+                ["CLEAR", "MODE VF", "SET FREQ 5.0", "START", "NTC ON", "PFC ON", "BRAKE PWM 0.25"],
+                retries=1,
+            )
+            time.sleep(0.2)
+            ok, st, dt = wait_for(
+                base,
+                lambda s: int(st_num(s, "pwm", 0.0)) == 1
+                and int(st_num(s, "ntc", 0.0)) == 1
+                and int(st_num(s, "pfc", 0.0)) == 1
+                and int(st_num(s, "brake", 0.0)) == 1
+                and abs(st_num(s, "brake_duty", 0.0) - 0.25) <= 0.05,
+                timeout_s=args.status_timeout,
+                poll_s=args.poll,
+            )
+            log(f"IO status ok={ok} dt={dt*1000:.1f}ms st={st}")
+            csv_path, metrics = capture_and_analyze(
+                mgr, channels, args.la_rate, args.la_duration, args.outdir, "io_ntc_pfc_brake", brake_active_high, True, False, args.min_handoff_gap_ns
+            )
+            io_ok, io_detail = check_io(st, expect_ntc=1, expect_pfc=1, expect_brake=1, expect_brake_duty=0.25)
+            return {
+                "cmd_ok": cmd_ok,
+                "status_ok": ok,
+                "status": st,
+                "status_dt_ms": dt * 1000.0,
+                "csv_path": csv_path,
+                "metrics": metrics,
+                "io_ok": io_ok,
+                "io_detail": io_detail,
+            }
+
+        res = run_with_control_retry("io_ntc_pfc_brake", io_runner)
+        record(
+            "io_ntc_pfc_brake",
+            "VF",
+            5.0,
+            True,
+            False,
+            res["metrics"],
+            res["csv_path"],
+            res["cmd_ok"],
+            res["status_ok"],
+            res["status_dt_ms"],
+            res["io_ok"],
+            res["io_detail"],
+            res["attempts"],
+            res["retry_reason"],
         )
-        log(f"IO status ok={ok} dt={dt*1000:.1f}ms st={st}")
-        csv_path, metrics = capture_and_analyze(
-            mgr, channels, args.la_rate, args.la_duration, args.outdir, "io_ntc_pfc_brake", brake_active_high, True, False
-        )
-        io_ok, io_detail = check_io(st, expect_ntc=1, expect_pfc=1, expect_brake=1, expect_brake_duty=0.25)
-        record("io_ntc_pfc_brake", "VF", 5.0, True, False, metrics, csv_path, cmd_ok, ok, dt * 1000.0, io_ok, io_detail)
         send_cmds(base, ["BRAKE OFF", "NTC OFF", "PFC OFF"])
 
         # Sweep
@@ -348,21 +545,6 @@ def main() -> int:
                 else:
                     step_cmds = [f"SET FREQ {f:.1f}", "START"]
                     expect_pwm = True
-                step_ok = send_cmds_retry(base, step_cmds, retries=1)
-                ok, st, dt = wait_status(
-                    base,
-                    expect_pwm,
-                    False,
-                    args.status_timeout,
-                    args.poll,
-                    retries=1,
-                    expect_freq_cmd=f,
-                )
-                if ok:
-                    log(f"FREQ {f:.1f} status ok=True dt={dt*1000:.1f}ms st={st}")
-                else:
-                    log(f"FREQ {f:.1f} status ok=False dt={dt*1000:.1f}ms st={st}")
-
                 do_cap = False
                 if is_key_freq(f):
                     do_cap = True
@@ -370,20 +552,78 @@ def main() -> int:
                     do_cap = True
                 if do_cap:
                     tag = f"vf_{f:.1f}Hz".replace(".", "p")
-                    csv_path, metrics = capture_and_analyze(
-                        mgr,
-                        channels,
-                        args.la_rate,
-                        args.la_duration,
-                        args.outdir,
+                    def sweep_runner():
+                        local_step_ok = send_cmds_retry(base, step_cmds, retries=1)
+                        local_ok, local_st, local_dt = wait_status(
+                            base,
+                            expect_pwm,
+                            False,
+                            args.status_timeout,
+                            args.poll,
+                            retries=1,
+                            expect_freq_cmd=f,
+                            expect_mode="VF",
+                            require_vf_steady=expect_pwm,
+                        )
+                        csv_path, metrics = capture_and_analyze(
+                            mgr,
+                            channels,
+                            args.la_rate,
+                            args.la_duration,
+                            args.outdir,
+                            tag,
+                            brake_active_high,
+                            expect_pwm,
+                            False,
+                            args.min_handoff_gap_ns,
+                        )
+                        return {
+                            "cmd_ok": bool(cmd_ok and local_step_ok),
+                            "status_ok": local_ok,
+                            "status": local_st,
+                            "status_dt_ms": local_dt * 1000.0,
+                            "csv_path": csv_path,
+                            "metrics": metrics,
+                            "io_ok": None,
+                            "io_detail": "",
+                        }
+
+                    res = run_with_control_retry(tag, sweep_runner)
+                    record(
                         tag,
-                        brake_active_high,
+                        "VF",
+                        f,
                         expect_pwm,
                         False,
+                        res["metrics"],
+                        res["csv_path"],
+                        res["cmd_ok"],
+                        res["status_ok"],
+                        res["status_dt_ms"],
+                        attempts=res["attempts"],
+                        retry_reason=res["retry_reason"],
                     )
-                    record(tag, "VF", f, expect_pwm, False, metrics, csv_path, (cmd_ok and step_ok), ok, dt * 1000.0)
                     if next_cap is not None:
                         next_cap = f + capture_every
+                else:
+                    step_ok = send_cmds_retry(base, step_cmds, retries=1)
+                    ok, st, dt = wait_status(
+                        base,
+                        expect_pwm,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=f,
+                        expect_mode="VF",
+                        require_vf_steady=expect_pwm,
+                    )
+                    if ok:
+                        log(f"FREQ {f:.1f} status ok=True dt={dt*1000:.1f}ms st={st}")
+                    else:
+                        log(f"FREQ {f:.1f} status ok=False dt={dt*1000:.1f}ms st={st}")
+                    if not (cmd_ok and step_ok):
+                        log(f"WARN: sweep step {f:.1f}Hz command not fully acknowledged")
 
                 f = round(f + step, 3)
 
@@ -391,108 +631,327 @@ def main() -> int:
         if not args.skip_hot:
             log("TEST: hot switch VF<->FOC")
             for freq in [0.5, 2.0, 5.0, 10.0, 20.0, 50.0]:
-                cmd_ok = send_cmds_retry(base, [f"SET FREQ {freq:.1f}", "MODE VF", "START"], retries=1)
-                time.sleep(0.2)
-                status_ok, st, dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
                 tag = f"hot_vf_{freq:.1f}".replace(".", "p")
-                csv_path, metrics = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False
-                )
-                record(tag, "VF", freq, True, False, metrics, csv_path, cmd_ok, status_ok, dt * 1000.0)
+                def hot_vf_runner():
+                    cmd_ok = send_cmds_retry(base, [f"SET FREQ {freq:.1f}", "MODE VF", "START"], retries=1)
+                    time.sleep(0.2)
+                    status_ok, st, dt = wait_status(
+                        base,
+                        True,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=freq,
+                        expect_mode="VF",
+                        require_vf_steady=True,
+                    )
+                    csv_path, metrics = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False, args.min_handoff_gap_ns
+                    )
+                    return {
+                        "cmd_ok": cmd_ok,
+                        "status_ok": status_ok,
+                        "status": st,
+                        "status_dt_ms": dt * 1000.0,
+                        "csv_path": csv_path,
+                        "metrics": metrics,
+                        "io_ok": None,
+                        "io_detail": "",
+                    }
 
-                cmd_ok = send_cmds_retry(base, ["MODE FOC", "START"], retries=1)
-                time.sleep(0.2)
-                status_ok, st, dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
+                res = run_with_control_retry(tag, hot_vf_runner)
+                record(
+                    tag,
+                    "VF",
+                    freq,
+                    True,
+                    False,
+                    res["metrics"],
+                    res["csv_path"],
+                    res["cmd_ok"],
+                    res["status_ok"],
+                    res["status_dt_ms"],
+                    attempts=res["attempts"],
+                    retry_reason=res["retry_reason"],
+                )
+
                 tag = f"hot_foc_{freq:.1f}".replace(".", "p")
-                csv_path, metrics = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False
-                )
-                record(tag, "FOC", freq, True, False, metrics, csv_path, cmd_ok, status_ok, dt * 1000.0)
+                def hot_foc_runner():
+                    cmd_ok = send_cmds_retry(base, [f"SET FREQ {freq:.1f}", "MODE FOC", "START"], retries=2)
+                    time.sleep(0.2)
+                    status_ok, st, dt = wait_status(
+                        base,
+                        True,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=freq,
+                        expect_mode="FOC",
+                    )
+                    csv_path, metrics = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False, args.min_handoff_gap_ns
+                    )
+                    return {
+                        "cmd_ok": cmd_ok,
+                        "status_ok": status_ok,
+                        "status": st,
+                        "status_dt_ms": dt * 1000.0,
+                        "csv_path": csv_path,
+                        "metrics": metrics,
+                        "io_ok": None,
+                        "io_detail": "",
+                    }
 
-                cmd_ok = send_cmds_retry(base, ["MODE VF", "START"], retries=1)
-                time.sleep(0.2)
-                status_ok, st, dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
-                tag = f"hot_vf2_{freq:.1f}".replace(".", "p")
-                csv_path, metrics = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False
+                res = run_with_control_retry(tag, hot_foc_runner)
+                record(
+                    tag,
+                    "FOC",
+                    freq,
+                    True,
+                    False,
+                    res["metrics"],
+                    res["csv_path"],
+                    res["cmd_ok"],
+                    res["status_ok"],
+                    res["status_dt_ms"],
+                    attempts=res["attempts"],
+                    retry_reason=res["retry_reason"],
                 )
-                record(tag, "VF", freq, True, False, metrics, csv_path, cmd_ok, status_ok, dt * 1000.0)
+
+                tag = f"hot_vf2_{freq:.1f}".replace(".", "p")
+                def hot_vf2_runner():
+                    cmd_ok = send_cmds_retry(base, [f"SET FREQ {freq:.1f}", "MODE VF", "START"], retries=2)
+                    time.sleep(0.2)
+                    status_ok, st, dt = wait_status(
+                        base,
+                        True,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=freq,
+                        expect_mode="VF",
+                        require_vf_steady=True,
+                    )
+                    csv_path, metrics = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, tag, brake_active_high, True, False, args.min_handoff_gap_ns
+                    )
+                    return {
+                        "cmd_ok": cmd_ok,
+                        "status_ok": status_ok,
+                        "status": st,
+                        "status_dt_ms": dt * 1000.0,
+                        "csv_path": csv_path,
+                        "metrics": metrics,
+                        "io_ok": None,
+                        "io_detail": "",
+                    }
+
+                res = run_with_control_retry(tag, hot_vf2_runner)
+                record(
+                    tag,
+                    "VF",
+                    freq,
+                    True,
+                    False,
+                    res["metrics"],
+                    res["csv_path"],
+                    res["cmd_ok"],
+                    res["status_ok"],
+                    res["status_dt_ms"],
+                    attempts=res["attempts"],
+                    retry_reason=res["retry_reason"],
+                )
 
         # ESTOP
         if not args.skip_estop:
             log("TEST: ESTOP @10Hz and 50Hz")
             for freq in [10.0, 50.0]:
-                run_cmd_ok = send_cmds_retry(base, ["MODE VF", f"SET FREQ {freq:.1f}", "START"], retries=1)
-                time.sleep(0.2)
-                run_status_ok, st_run, run_dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
                 run_tag = f"estop_run_{freq:.1f}".replace(".", "p")
-                run_csv_path, run_metrics = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, run_tag, brake_active_high, True, False
-                )
-
-                estop_cmd_ok = send_cmds_retry(base, ["ESTOP"], retries=1)
-                time.sleep(0.1)
-                estop_status_ok, st_estop, estop_dt = wait_status(base, False, True, args.status_timeout, args.poll, retries=1)
                 estop_tag = f"estop_{freq:.1f}".replace(".", "p")
-                csv_path_estop, metrics_estop = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, estop_tag, brake_active_high, False, True
-                )
-                # Auto-detect brake polarity if it looks inverted
-                if run_metrics and metrics_estop:
-                    run_b = run_metrics.get("brake_high")
-                    estop_b = metrics_estop.get("brake_high")
-                    if run_b is not None and estop_b is not None:
-                        if run_b > 0.95 and estop_b < 0.05 and brake_active_high:
-                            log("Auto-detect: BRAKE polarity inverted (active-low). Re-evaluating.")
-                            brake_active_high = False
-                            run_metrics = analyze(
-                                run_csv_path,
-                                channels,
-                                brake_active_high,
-                                True,
-                                False,
-                                max_overlap_ratio=MAX_OVERLAP_RATIO,
-                            )
-                            metrics_estop = analyze(
-                                csv_path_estop,
-                                channels,
-                                brake_active_high,
-                                False,
-                                True,
-                                max_overlap_ratio=MAX_OVERLAP_RATIO,
-                            )
-                        elif run_b < 0.05 and estop_b > 0.95 and (not brake_active_high):
-                            log("Auto-detect: BRAKE polarity inverted (active-high). Re-evaluating.")
-                            brake_active_high = True
-                            run_metrics = analyze(
-                                run_csv_path,
-                                channels,
-                                brake_active_high,
-                                True,
-                                False,
-                                max_overlap_ratio=MAX_OVERLAP_RATIO,
-                            )
-                            metrics_estop = analyze(
-                                csv_path_estop,
-                                channels,
-                                brake_active_high,
-                                False,
-                                True,
-                                max_overlap_ratio=MAX_OVERLAP_RATIO,
-                            )
-
-                # Record both captures after final brake polarity is known
-                record(run_tag, "VF", freq, True, False, run_metrics, run_csv_path, run_cmd_ok, run_status_ok, run_dt * 1000.0)
-                record(estop_tag, "ESTOP", freq, False, True, metrics_estop, csv_path_estop, estop_cmd_ok, estop_status_ok, estop_dt * 1000.0)
-
-                recover_cmd_ok = send_cmds_retry(base, ["ESTOP CLEAR", "START"], retries=1)
-                time.sleep(0.2)
-                recover_status_ok, st_rec, rec_dt = wait_status(base, True, False, args.status_timeout, args.poll, retries=1)
                 recover_tag = f"recover_{freq:.1f}".replace(".", "p")
-                rec_csv_path, rec_metrics = capture_and_analyze(
-                    mgr, channels, args.la_rate, args.la_duration, args.outdir, recover_tag, brake_active_high, True, False
+                def estop_sequence_runner():
+                    nonlocal brake_active_high
+                    run_cmd_ok = send_cmds_retry(base, ["MODE VF", f"SET FREQ {freq:.1f}", "START"], retries=1)
+                    time.sleep(0.2)
+                    run_status_ok, st_run, run_dt = wait_status(
+                        base,
+                        True,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=freq,
+                        expect_mode="VF",
+                        require_vf_steady=True,
+                    )
+                    run_csv_path, run_metrics = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, run_tag, brake_active_high, True, False, args.min_handoff_gap_ns
+                    )
+
+                    estop_cmd_ok = send_cmds_retry(base, ["ESTOP"], retries=1)
+                    time.sleep(0.1)
+                    estop_status_ok, st_estop, estop_dt = wait_status(
+                        base,
+                        False,
+                        True,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_mode="VF",
+                    )
+                    csv_path_estop, metrics_estop = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, estop_tag, brake_active_high, False, True
+                    )
+                    if run_metrics and metrics_estop:
+                        run_b = run_metrics.get("brake_high")
+                        estop_b = metrics_estop.get("brake_high")
+                        if run_b is not None and estop_b is not None:
+                            if run_b > 0.95 and estop_b < 0.05 and brake_active_high:
+                                log("Auto-detect: BRAKE polarity inverted (active-low). Re-evaluating.")
+                                brake_active_high = False
+                                run_metrics = analyze(
+                                    run_csv_path,
+                                    channels,
+                                    brake_active_high,
+                                    True,
+                                    False,
+                                    max_overlap_ratio=MAX_OVERLAP_RATIO,
+                                )
+                                metrics_estop = analyze(
+                                    csv_path_estop,
+                                    channels,
+                                    brake_active_high,
+                                    False,
+                                    True,
+                                    max_overlap_ratio=MAX_OVERLAP_RATIO,
+                                )
+                            elif run_b < 0.05 and estop_b > 0.95 and (not brake_active_high):
+                                log("Auto-detect: BRAKE polarity inverted (active-high). Re-evaluating.")
+                                brake_active_high = True
+                                run_metrics = analyze(
+                                    run_csv_path,
+                                    channels,
+                                    brake_active_high,
+                                    True,
+                                    False,
+                                    max_overlap_ratio=MAX_OVERLAP_RATIO,
+                                )
+                                metrics_estop = analyze(
+                                    csv_path_estop,
+                                    channels,
+                                    brake_active_high,
+                                    False,
+                                    True,
+                                    max_overlap_ratio=MAX_OVERLAP_RATIO,
+                                )
+
+                    recover_cmd_ok = send_cmds_retry(base, ["ESTOP CLEAR", "START"], retries=1)
+                    time.sleep(0.2)
+                    recover_status_ok, st_rec, rec_dt = wait_status(
+                        base,
+                        True,
+                        False,
+                        args.status_timeout,
+                        args.poll,
+                        retries=1,
+                        expect_freq_cmd=freq,
+                        expect_mode="VF",
+                        require_vf_steady=True,
+                    )
+                    rec_csv_path, rec_metrics = capture_and_analyze(
+                        mgr, channels, args.la_rate, args.la_duration, args.outdir, recover_tag, brake_active_high, True, False, args.min_handoff_gap_ns
+                    )
+                    return {
+                        "run": {
+                            "cmd_ok": run_cmd_ok,
+                            "status_ok": run_status_ok,
+                            "status_dt_ms": run_dt * 1000.0,
+                            "csv_path": run_csv_path,
+                            "metrics": run_metrics,
+                        },
+                        "estop": {
+                            "cmd_ok": estop_cmd_ok,
+                            "status_ok": estop_status_ok,
+                            "status_dt_ms": estop_dt * 1000.0,
+                            "csv_path": csv_path_estop,
+                            "metrics": metrics_estop,
+                        },
+                        "recover": {
+                            "cmd_ok": recover_cmd_ok,
+                            "status_ok": recover_status_ok,
+                            "status_dt_ms": rec_dt * 1000.0,
+                            "csv_path": rec_csv_path,
+                            "metrics": rec_metrics,
+                        },
+                    }
+
+                attempts = 0
+                retry_reason = ""
+                res = None
+                for attempt in range(args.case_retries + 1):
+                    attempts = attempt + 1
+                    if attempt:
+                        log(f"WARN: retry estop {freq:.1f}Hz attempt {attempts}/{args.case_retries + 1} after {retry_reason}")
+                        safe_stop(base)
+                        time.sleep(args.retry_delay)
+                    res = estop_sequence_runner()
+                    reasons = [
+                        control_retry_reason(res["run"]["cmd_ok"], res["run"]["status_ok"], res["run"]["metrics"]),
+                        control_retry_reason(res["estop"]["cmd_ok"], res["estop"]["status_ok"], res["estop"]["metrics"]),
+                        control_retry_reason(res["recover"]["cmd_ok"], res["recover"]["status_ok"], res["recover"]["metrics"]),
+                    ]
+                    retry_reason = ",".join(r for r in reasons if r)
+                    if not retry_reason:
+                        break
+                    log(f"WARN: estop {freq:.1f}Hz capture clean but control-plane mismatch ({retry_reason})")
+                if res is None:
+                    raise RuntimeError(f"estop sequence returned no data for {freq}")
+
+                record(
+                    run_tag,
+                    "VF",
+                    freq,
+                    True,
+                    False,
+                    res["run"]["metrics"],
+                    res["run"]["csv_path"],
+                    res["run"]["cmd_ok"],
+                    res["run"]["status_ok"],
+                    res["run"]["status_dt_ms"],
+                    attempts=attempts,
+                    retry_reason=retry_reason,
                 )
-                record(recover_tag, "VF", freq, True, False, rec_metrics, rec_csv_path, recover_cmd_ok, recover_status_ok, rec_dt * 1000.0)
+                record(
+                    estop_tag,
+                    "ESTOP",
+                    freq,
+                    False,
+                    True,
+                    res["estop"]["metrics"],
+                    res["estop"]["csv_path"],
+                    res["estop"]["cmd_ok"],
+                    res["estop"]["status_ok"],
+                    res["estop"]["status_dt_ms"],
+                    attempts=attempts,
+                    retry_reason=retry_reason,
+                )
+                record(
+                    recover_tag,
+                    "VF",
+                    freq,
+                    True,
+                    False,
+                    res["recover"]["metrics"],
+                    res["recover"]["csv_path"],
+                    res["recover"]["cmd_ok"],
+                    res["recover"]["status_ok"],
+                    res["recover"]["status_dt_ms"],
+                    attempts=attempts,
+                    retry_reason=retry_reason,
+                )
 
         log(f"DONE. Summary: {summary_path}")
         log(f"PASS={pass_count} FAIL={fail_count}")

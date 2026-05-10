@@ -376,9 +376,12 @@ class TextSerialClient:
                 try:
                     self._connect()
                     self._write_line(cmd)
-                    # Drain any queued lines quickly (non-blocking)
-                    self._read_lines(_now_ts() + timeout)
-                    return True
+                    for line in self._read_lines(_now_ts() + timeout):
+                        if line == "OK" or line.startswith("OK "):
+                            return True
+                        if line.startswith("ERR") or line.startswith("ERROR"):
+                            return False
+                    raise RuntimeError("serial command not acknowledged")
                 except Exception:
                     self.close()
             if attempt < retries:
@@ -434,6 +437,8 @@ class RpcBridge:
             err = resp[2]
             if err is not None:
                 return False, str(err)
+            if resp[3] is False:
+                return False, "rejected"
             return True, None
         if self._serial_text is not None:
             ok = self._serial_text.cmd(cmd, timeout=0.8, retries=2)
@@ -524,7 +529,7 @@ class RpcBridge:
                 data["bp_age_ms"] = int(result[26])
             else:
                 data["bp_good"] = 0
-                data["bp_bad"] = 0
+                data["bp_bad"] = 999999
                 data["bp_age_ms"] = 999999
 
             if len(result) >= 31:
@@ -534,7 +539,7 @@ class RpcBridge:
                 data["bp_seq"] = int(result[30])
             else:
                 data["bp_status"] = 0
-                data["bp_fault"] = 0
+                data["bp_fault"] = 255
                 data["bp_mode"] = 0
                 data["bp_seq"] = 0
 
@@ -583,6 +588,15 @@ class RpcBridge:
             else:
                 data["diag_mode"] = 1 if mode_code_eff == 3 else 0
                 data["duty_mode"] = 1 if mode_code_eff == 4 else 0
+            if len(result) >= 50:
+                data["bp_vbus_raw"] = int(result[47])
+                data["bp_vdc"] = float(result[48])
+                data["bp_vbus_age_ms"] = int(result[49])
+                data["vdc"] = data["bp_vdc"]
+            else:
+                data["bp_vbus_raw"] = 0
+                data["bp_vdc"] = 0.0
+                data["bp_vbus_age_ms"] = 999999
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -653,8 +667,22 @@ class RpcBridge:
                 "diag_mode": diag_mode,
                 "duty_mode": duty_mode,
                 "bp_good": int(float(kv.get("bp_good", "0"))),
-                "bp_bad": int(float(kv.get("bp_bad", "0"))),
-                "bp_age_ms": int(float(kv.get("bp_age_ms", "0"))),
+                "bp_bad": int(float(kv.get("bp_bad", "999999"))),
+                "bp_age_ms": int(float(kv.get("bp_age_ms", "999999"))),
+                "bp_status": int(float(kv.get("bp_status", "0"))),
+                "bp_fault": int(float(kv.get("bp_fault", "255"))),
+                "bp_mode": int(float(kv.get("bp_mode", "0"))),
+                "bp_seq": int(float(kv.get("bp_seq", "0"))),
+                "bp_good_cnt": int(float(kv.get("bp_good_cnt", kv.get("bp_good", "0")))),
+                "bp_bad_cnt": int(float(kv.get("bp_bad_cnt", kv.get("bp_bad", "999999")))),
+                "bp_ext": int(float(kv.get("bp_ext", "0"))),
+                "bp_brake_duty": float(kv.get("bp_brake_duty", "0")),
+                "bp_vbus_raw": int(float(kv.get("bp_vbus_raw", "0"))),
+                "bp_vdc": float(kv.get("bp_vdc", kv.get("vdc", "0"))),
+                "bp_vbus_age_ms": int(float(kv.get("bp_vbus_age_ms", "999999"))),
+                "bp_rsp_age_ms": int(float(kv.get("bp_rsp_age_ms", "999999"))),
+                "bp_ping_pairs": int(float(kv.get("bp_ping_pairs", "0"))),
+                "bp_ping_age_ms": int(float(kv.get("bp_ping_age_ms", "999999"))),
                 "ts": int(_now_ts() * 1000.0),
             }
         except Exception:

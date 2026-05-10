@@ -203,6 +203,8 @@ J2 (Table 6):
 - `J7` включать только после успешных `scalar_vf_preflight.py`, `foc_mic_preflight.py` и полного `ui_pwm_suite.py`
 - J2‑2/4/6/8/10/12/16/18/20/22/24/30/32 → `GND`
 
+DC bus telemetry in `/api/status` is sourced from Blue Pill `PA5/J2-14` (`bp_vbus_raw`, `bp_vdc`, `bp_vbus_age_ms`). UNO Q `A0` is only a legacy/fallback local ADC path and is not the primary HV bus measurement.
+
 J9 (Hall/Encoder, UM2014):
 - J9‑1 `Hall input 1 / encoder A+`
 - J9‑2 `Hall input 2 / encoder B+`

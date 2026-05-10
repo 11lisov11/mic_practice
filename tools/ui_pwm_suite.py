@@ -21,6 +21,7 @@ from ui_pwm_case import (  # noqa: E402
     export_capture,
     analyze,
     DEFAULT_MAX_OVERLAP_RATIO,
+    status_fault_free,
     status_mode_matches,
     vf_steady_matches,
 )
@@ -129,6 +130,10 @@ def wait_status(
 ):
     def predicate(st):
         pwm_ok = int(st_num(st, "pwm", 0.0)) == (1 if expect_pwm else 0)
+        if expect_estop and int(st_num(st, "bp_bad", 999999.0)) != 0:
+            return False
+        if not expect_estop and not status_fault_free(st):
+            return False
         if expect_freq_cmd is not None:
             if abs(st_num(st, "freq_cmd", 0.0) - float(expect_freq_cmd)) > freq_tol:
                 return False

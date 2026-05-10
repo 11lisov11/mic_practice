@@ -60,6 +60,8 @@
 #define RSP_OFF_EXT_FLAGS 14
 #define RSP_OFF_EXT_DUTY_LO 15
 #define RSP_OFF_EXT_DUTY_HI 16
+#define RSP_OFF_VBUS_RAW_LO 17
+#define RSP_OFF_VBUS_RAW_HI 18
 #define RSP_OFF_CRC 19
 
 #define STATUS_LINK_OK     0x01

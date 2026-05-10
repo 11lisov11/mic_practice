@@ -37,7 +37,10 @@
 // ADC scaling (per-unit)
 #define ADC_CALIB_SAMPLES 256
 #define ADC_I_SCALE (1.0f / 2048.0f)
-#define ADC_VBUS_SCALE (1.0f / 4096.0f)
+// STEVAL J2-14 HV bus telemetry is sampled on PA5 in UART mode.
+// Calibrated from HV bus measurement: raw=3328 was 314 V on the meter.
+#define ADC_VBUS_FULL_SCALE_V 386.5f
+#define ADC_VBUS_SCALE (ADC_VBUS_FULL_SCALE_V / 4095.0f)
 
 // IPM15 (UM2014) optional I/O
 #if LINK_USE_SPI

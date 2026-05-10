@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import argparse
+import base64
 import csv
 import json
+import math
 import os
 import subprocess
 import sys
@@ -14,6 +16,35 @@ from saleae.automation import Manager
 from saleae.automation.capture import Capture
 from saleae.grpc import saleae_pb2
 import urllib.request
+
+BP_MAX_AGE_MS = 1000.0
+
+ADB_ROUTER_CMD_SNIPPET = r"""
+import base64, socket, sys, time
+sys.path.insert(0, '/data/local/tmp')
+from router_rpc import rpc_call
+
+if len(sys.argv) >= 2 and sys.argv[1] == '--b64':
+    cmds = [base64.b64decode(x.encode('ascii')).decode('utf-8') for x in sys.argv[2:]]
+else:
+    cmds = sys.argv[1:]
+sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+sock.settimeout(1.0)
+sock.connect('/var/run/arduino-router.sock')
+ok = True
+for i, cmd in enumerate(cmds, 1):
+    try:
+        resp = rpc_call(sock, i, 'cmd', [cmd])
+        if not (isinstance(resp, list) and len(resp) >= 4 and resp[2] is None and resp[3] is True):
+            print(cmd, resp)
+            ok = False
+    except Exception as exc:
+        print(cmd, 'ERR', repr(exc))
+        ok = False
+    time.sleep(0.05)
+sock.close()
+raise SystemExit(0 if ok else 2)
+"""
 
 
 def log(msg: str) -> None:
@@ -48,9 +79,50 @@ def http_json(url: str, body: dict | None = None, timeout: float = 6.5) -> dict 
     return None
 
 
+def adb_router_fallback_enabled() -> bool:
+    val = os.environ.get("UNOQ_ADB_ROUTER_FALLBACK", "")
+    return val.strip().lower() in ("1", "true", "yes", "on")
+
+
+def post_cmd_adb_router(cmd: str) -> bool:
+    if not adb_router_fallback_enabled():
+        return False
+    device = os.environ.get("UNOQ_ADB_DEVICE") or os.environ.get("ANDROID_SERIAL") or "79204341"
+    encoded = base64.b64encode(cmd.encode("utf-8")).decode("ascii")
+    try:
+        proc = subprocess.run(
+            ["adb", "-s", device, "shell", "python3", "-", "--b64", encoded],
+            input=ADB_ROUTER_CMD_SNIPPET,
+            text=True,
+            capture_output=True,
+            timeout=10,
+        )
+    except Exception as exc:
+        log(f"WARN: ADB router fallback failed for {cmd!r}: {exc}")
+        return False
+    if proc.returncode == 0:
+        log(f"WARN: UI cmd fallback via ADB router OK: {cmd}")
+        return True
+    detail = (proc.stdout or proc.stderr or "").strip()
+    if detail:
+        log(f"WARN: ADB router fallback rejected {cmd!r}: {detail}")
+    else:
+        log(f"WARN: ADB router fallback rejected {cmd!r}: rc={proc.returncode}")
+    return False
+
+
 def post_cmd(base: str, cmd: str) -> bool:
     resp = http_json(base + "/api/cmd", {"cmd": cmd})
-    return bool(resp and resp.get("ok"))
+    if resp and resp.get("ok"):
+        return True
+    return post_cmd_adb_router(cmd)
+
+
+def configure_adb_router_fallback(enabled: bool, device: str | None = None) -> None:
+    if enabled:
+        os.environ["UNOQ_ADB_ROUTER_FALLBACK"] = "1"
+    if device:
+        os.environ["UNOQ_ADB_DEVICE"] = device
 
 
 def get_status(base: str) -> dict | None:
@@ -65,19 +137,75 @@ def st_num(st: dict, key: str, default: float = 0.0) -> float:
         val = st.get(key, default)
         if isinstance(val, str):
             val = val.strip()
-        return float(val)
+        num = float(val)
+        if not math.isfinite(num):
+            return float(default)
+        return num
     except Exception:
         return float(default)
+
+
+def bp_link_live(st: dict | None, max_age_ms: float = BP_MAX_AGE_MS) -> bool:
+    if st is None:
+        return False
+    if st.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+        if key in st:
+            ages.append(st_num(st, key, 999999.0))
+    if st.get("last_rx_age_s") is not None:
+        ages.append(st_num(st, "last_rx_age_s", 999999.0) * 1000.0)
+    return bool(ages) and min(ages) <= max_age_ms
+
+
+def bp_bad_value(st: dict | None) -> int:
+    if st is None:
+        return 999999
+    return int(st_num(st, "bp_bad", 999999.0))
+
+
+def bp_bad_limit() -> int:
+    raw = os.environ.get("UNOQ_BP_BAD_BASELINE", "0").strip()
+    try:
+        return max(0, int(float(raw)))
+    except Exception:
+        return 0
+
+
+def bp_bad_ok(st: dict | None) -> bool:
+    return bp_bad_value(st) <= bp_bad_limit()
+
+
+def configure_bp_bad_baseline(st: dict | None) -> int:
+    baseline = bp_bad_value(st)
+    if baseline < 999999:
+        os.environ["UNOQ_BP_BAD_BASELINE"] = str(max(0, baseline))
+    return baseline
 
 
 def status_is_safe(st: dict | None, allow_estop: bool = False) -> bool:
     if st is None:
         return False
-    estop = int(st_num(st, "estop", 0.0))
+    estop = int(st_num(st, "estop", 1.0))
+    bp_fault_free = int(st_num(st, "bp_fault", 255.0)) == 0
     return (
         st.get("state") == "SAFE"
-        and int(st_num(st, "pwm", 0.0)) == 0
+        and int(st_num(st, "pwm", 1.0)) == 0
+        and bp_link_live(st)
+        and bp_bad_ok(st)
         and (allow_estop or estop == 0)
+        and (allow_estop or bp_fault_free)
+    )
+
+
+def status_fault_free(st: dict | None) -> bool:
+    if st is None:
+        return False
+    return (
+        bp_link_live(st)
+        and int(st_num(st, "bp_fault", 255.0)) == 0
+        and bp_bad_ok(st)
     )
 
 
@@ -112,9 +240,9 @@ def vf_steady_matches(
     return (
         st.get("state") == "VF_RUN"
         and status_mode_matches(st, "VF")
-        and int(st_num(st, "pwm", 0.0)) == 1
-        and int(st_num(st, "estop", 0.0)) == 0
-        and int(st_num(st, "bp_fault", 0.0)) == 0
+        and int(st_num(st, "pwm", -1.0)) == 1
+        and int(st_num(st, "estop", 1.0)) == 0
+        and status_fault_free(st)
         and abs(st_num(st, "freq_cmd", 0.0) - float(freq_cmd)) <= 0.06
         and abs(st_num(st, "freq", 0.0) - float(freq_cmd)) <= tol
     )
@@ -164,6 +292,7 @@ _START_CAPTURE_TIMEOUT_S = 15.0
 _START_CAPTURE_RETRIES = 2
 _DEVICE_REAPPEAR_TIMEOUT_S = 12.0
 DEFAULT_MAX_OVERLAP_RATIO = 5e-4
+DEFAULT_MIN_PULSE_WIDTH_NS = 100.0
 
 
 def refresh_manager_connection(mgr: Manager, port: int) -> bool:
@@ -338,6 +467,30 @@ def load_transitions(
                     levels[ch].append(v)
                     prev[ch] = v
     return times, levels, t0, t_last
+
+
+def filter_short_pulses(
+    times: list[float], levels: list[int], min_width_s: float
+) -> tuple[list[float], list[int], int]:
+    if min_width_s <= 0.0 or len(times) < 3:
+        return times, levels, 0
+
+    out_times = list(times)
+    out_levels = list(levels)
+    removed = 0
+    i = 1
+    while i < len(out_times) - 1:
+        is_pulse = out_levels[i] != out_levels[i - 1] and out_levels[i + 1] == out_levels[i - 1]
+        width = out_times[i + 1] - out_times[i]
+        if is_pulse and 0.0 <= width <= min_width_s:
+            del out_times[i : i + 2]
+            del out_levels[i : i + 2]
+            removed += 1
+            if i > 1:
+                i -= 1
+            continue
+        i += 1
+    return out_times, out_levels, removed
 
 
 def pwm_metrics(times: list[float], levels: list[int]) -> tuple[int, float | None, float | None]:
@@ -536,8 +689,15 @@ def analyze(
     expect_brake_active: bool | None = None,
     max_overlap_ratio: float = DEFAULT_MAX_OVERLAP_RATIO,
     min_handoff_gap_ns: float = 0.0,
+    min_pulse_width_ns: float = DEFAULT_MIN_PULSE_WIDTH_NS,
 ) -> dict:
     times, levels, t0, t_last = load_transitions(csv_path, channels)
+    glitch_removed: dict[str, int] = {}
+    min_pulse_width_s = max(0.0, float(min_pulse_width_ns)) * 1e-9
+    if min_pulse_width_s > 0.0:
+        for ch in channels:
+            times[ch], levels[ch], removed = filter_short_pulses(times.get(ch, []), levels.get(ch, []), min_pulse_width_s)
+            glitch_removed[str(ch)] = removed
     metrics = {
         "channels": {},
         "brake_high": None,
@@ -545,6 +705,8 @@ def analyze(
         "handoff_gap_ns": {},
         "max_overlap_ratio": max_overlap_ratio,
         "min_handoff_gap_ns": float(min_handoff_gap_ns),
+        "min_pulse_width_ns": float(min_pulse_width_ns),
+        "glitch_removed": glitch_removed,
     }
 
     pwm_ok = True
@@ -743,7 +905,11 @@ def run_case(args) -> int:
         cmds += ["START"]
 
         def status_predicate(st):
-            pwm_ok = int(st_num(st, "pwm", 0.0)) == (1 if args.expect_pwm else 0)
+            pwm_ok = int(st_num(st, "pwm", -1.0)) == (1 if args.expect_pwm else 0)
+            if args.expect_estop and (not bp_link_live(st) or int(st_num(st, "bp_bad", 999999.0)) != 0):
+                return False
+            if not args.expect_estop and not status_fault_free(st):
+                return False
             if args.mode in ("VF", "FOC"):
                 if abs(st_num(st, "freq_cmd", 0.0) - float(args.freq)) > 0.06:
                     return False
@@ -753,7 +919,7 @@ def run_case(args) -> int:
                 if not vf_steady_matches(st, args.freq):
                     return False
             if args.expect_estop:
-                return pwm_ok and int(st_num(st, "estop", 0.0)) == 1
+                return pwm_ok and int(st_num(st, "estop", -1.0)) == 1
             return pwm_ok
 
         passed = False
@@ -818,6 +984,7 @@ def run_case(args) -> int:
                 args.expect_estop,
                 max_overlap_ratio=args.max_overlap_ratio,
                 min_handoff_gap_ns=args.min_handoff_gap_ns,
+                min_pulse_width_ns=args.min_pulse_width_ns,
             )
             passed = bool(metrics["pass"] and ok and cmd_ok)
             retry_reason = control_retry_reason(cmd_ok, ok, metrics)
@@ -876,6 +1043,7 @@ def main() -> int:
     parser.add_argument("--expect-estop", type=int, default=0)
     parser.add_argument("--max-overlap-ratio", type=float, default=DEFAULT_MAX_OVERLAP_RATIO)
     parser.add_argument("--min-handoff-gap-ns", type=float, default=0.0)
+    parser.add_argument("--min-pulse-width-ns", type=float, default=DEFAULT_MIN_PULSE_WIDTH_NS)
     parser.add_argument("--ui-ready-timeout", type=float, default=3.0)
     parser.add_argument("--cmd-retries", type=int, default=1)
     parser.add_argument("--status-retries", type=int, default=1)

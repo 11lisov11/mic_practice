@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "adc_currents.h"
 #include "config.h"
 #include "encoder_as5600.h"
 #include "ipm15_io.h"
@@ -68,11 +69,10 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
     s_state.estop = true;
     s_state.fault_latched = true;
     s_state.fault_code = FAULT_ESTOP;
-  } else {
-    s_state.estop = false;
   }
 
   if (clear_cmd && can_clear_fault(cmd)) {
+    s_state.estop = false;
     s_state.fault_latched = false;
     s_state.fault_code = FAULT_OK;
   }
@@ -134,9 +134,14 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   }
 }
 
+void safety_note_bad_frame(void) {
+  s_state.bad_cnt++;
+}
+
 void safety_on_bad_frame(uint8_t fault_code) {
   s_state.bad_cnt++;
   s_state.link_ok = false;
+  s_state.fault_latched = true;
   s_state.fault_code = fault_code;
   pwm_outputs_enable(false);
   pwm_all_off();
@@ -205,6 +210,12 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   rsp[RSP_OFF_EXT_FLAGS] = s_state.ext_flags;
   rsp[RSP_OFF_EXT_DUTY_LO] = (uint8_t)(s_state.brake_q15 & 0xFF);
   rsp[RSP_OFF_EXT_DUTY_HI] = (uint8_t)((s_state.brake_q15 >> 8) & 0xFF);
+  if (!s_state.pwm_active) {
+    adc_vbus_sample_software(nullptr);
+  }
+  const uint16_t vbus_raw = adc_vbus_raw();
+  rsp[RSP_OFF_VBUS_RAW_LO] = (uint8_t)(vbus_raw & 0xFF);
+  rsp[RSP_OFF_VBUS_RAW_HI] = (uint8_t)((vbus_raw >> 8) & 0xFF);
 
   rsp[RSP_OFF_CRC] = proto_crc_xor(rsp);
 }

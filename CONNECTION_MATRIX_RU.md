@@ -70,7 +70,7 @@
 | `D9` | `PWM_WH_PIN` |
 | `D10` | `PWM_WL_PIN` |
 | `D4` | `BRAKE_PIN` |
-| `A0` | `ADC_VDC_PIN` |
+| `A0` | legacy/fallback local `ADC_VDC_PIN`, не основной HV telemetry path |
 | `A1` | `ADC_IA_PIN` |
 | `A2` | `ADC_IB_PIN` |
 | `A3` | `ADC_IC_PIN` |
@@ -240,6 +240,8 @@
 7. `Saleae <-> Blue Pill` по `CH0..CH6` и `GND`.
 
 ## 9. Что не перепутать
+- Основная телеметрия DC bus в текущем проекте идёт через Blue Pill: `STEVAL J2-14 HV bus voltage -> Blue Pill PA5`.
+- `UNO Q A0` не является основным входом HV bus в рабочей конфигурации; это только legacy/fallback локального ADC.
 - Не подключать Saleae и любые низковольтные измерители к HV-шине.
 - Не забывать общий `GND` между `UNO Q`, `Blue Pill`, `AS5600`, `Saleae`, `ST-Link`, `IPM15` логической частью.
 - Не возвращать baud в старое значение `921600`: текущая рабочая конфигурация проекта `460800`.

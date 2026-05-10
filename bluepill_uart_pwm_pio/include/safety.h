@@ -24,6 +24,7 @@ typedef struct {
 
 void safety_init(void);
 void safety_on_valid_cmd(const uint8_t *cmd);
+void safety_note_bad_frame(void);
 void safety_on_bad_frame(uint8_t fault_code);
 void safety_tick(void);
 void safety_build_reply(uint8_t *rsp, const uint8_t *cmd);

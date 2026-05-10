@@ -13,6 +13,14 @@ static uint16_t s_off_ia = 2048;
 static uint16_t s_off_ib = 2048;
 static uint16_t s_off_ic = 2048;
 
+static uint32_t adc_vbus_channel(void) {
+#if LINK_USE_SPI
+  return ADC_CHANNEL_3; // VBUS PA3
+#else
+  return ADC_CHANNEL_5; // VBUS PA5
+#endif
+}
+
 static void adc_gpio_init(void) {
   __HAL_RCC_GPIOA_CLK_ENABLE();
 #if USE_PHASE_MEAS
@@ -63,11 +71,7 @@ static void adc_injected_config(uint32_t trigger) {
   HAL_ADCEx_InjectedConfigChannel(&s_hadc1, &inj);
 
   inj.InjectedRank = ADC_INJECTED_RANK_4;
-#if LINK_USE_SPI
-  inj.InjectedChannel = ADC_CHANNEL_3; // VBUS PA3
-#else
-  inj.InjectedChannel = ADC_CHANNEL_5; // VBUS PA5
-#endif
+  inj.InjectedChannel = adc_vbus_channel();
   HAL_ADCEx_InjectedConfigChannel(&s_hadc1, &inj);
 }
 
@@ -133,4 +137,33 @@ void adc_currents_get(float *ia, float *ib, float *ic, float *vbus) {
   if (ib) *ib = fb;
   if (ic) *ic = fc;
   if (vbus) *vbus = fv;
+}
+
+uint16_t adc_vbus_raw(void) {
+  return s_raw_vbus;
+}
+
+bool adc_vbus_sample_software(uint16_t *raw) {
+  ADC_ChannelConfTypeDef cfg = {0};
+  cfg.Channel = adc_vbus_channel();
+  cfg.Rank = ADC_REGULAR_RANK_1;
+  cfg.SamplingTime = ADC_SAMPLETIME_28CYCLES_5;
+
+  if (HAL_ADC_ConfigChannel(&s_hadc1, &cfg) != HAL_OK) {
+    return false;
+  }
+  if (HAL_ADC_Start(&s_hadc1) != HAL_OK) {
+    return false;
+  }
+  if (HAL_ADC_PollForConversion(&s_hadc1, 2) != HAL_OK) {
+    HAL_ADC_Stop(&s_hadc1);
+    return false;
+  }
+  uint16_t value = (uint16_t)HAL_ADC_GetValue(&s_hadc1);
+  HAL_ADC_Stop(&s_hadc1);
+  s_raw_vbus = value;
+  if (raw) {
+    *raw = value;
+  }
+  return true;
 }

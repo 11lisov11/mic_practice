@@ -16,15 +16,24 @@ def run(cmd: list[str], check: bool = True) -> None:
     subprocess.run(cmd, check=check)
 
 
-def detect_device() -> str | None:
+def adb_device_ids() -> list[str]:
     try:
         out = subprocess.check_output(["adb", "devices"], text=True)
     except Exception:
-        return None
+        return []
     lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
+    devices: list[str] = []
     for ln in lines[1:]:
         if ln.endswith("\tdevice"):
-            return ln.split("\t")[0]
+            devices.append(ln.split("\t")[0])
+    return devices
+
+
+def detect_device() -> str | None:
+    for device in adb_device_ids():
+        if device.startswith("emulator-"):
+            continue
+        return device
     return None
 
 
@@ -37,7 +46,12 @@ def main() -> int:
 
     device = args.device or detect_device()
     if not device:
-        log("ERROR: ADB device not found. Use --device.")
+        devices = adb_device_ids()
+        if devices:
+            log("ERROR: no non-emulator ADB device found. Use --device only if this is intentionally the UNO Q.")
+            log("ADB devices: " + ", ".join(devices))
+        else:
+            log("ERROR: ADB device not found. Use --device.")
         return 2
 
     local_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "web_hmi"))

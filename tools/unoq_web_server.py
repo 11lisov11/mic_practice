@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import threading
 import time
@@ -30,6 +31,9 @@ MODE_DUTY = 2
 MODE_SCALAR = 3
 MODE_VECTOR = 4
 MODE_FOC = 5
+
+MAX_FREQ_HZ = 50.0
+BP_VBUS_FULL_SCALE_V = 386.5
 
 STATUS_LINK_OK = 0x01
 STATUS_ENABLED = 0x02
@@ -92,6 +96,8 @@ def read_frame(ser: serial.Serial, timeout_s: float) -> bytes | None:
 
 
 def clamp01(x: float) -> float:
+    if not math.isfinite(x):
+        return 0.0
     if x < 0.0:
         return 0.0
     if x > 1.0:
@@ -100,6 +106,8 @@ def clamp01(x: float) -> float:
 
 
 def clamp11(x: float) -> float:
+    if not math.isfinite(x):
+        return 0.0
     if x < -1.0:
         return -1.0
     if x > 1.0:
@@ -113,6 +121,24 @@ def q15_from_unit(x: float) -> int:
 
 def q15_from_signed(x: float) -> int:
     return int(clamp11(x) * 32767.0) & 0xFFFF
+
+
+def clamp_range(x: float, lo: float, hi: float) -> float:
+    if not math.isfinite(x):
+        raise ValueError("non-finite")
+    if x < lo:
+        return lo
+    if x > hi:
+        return hi
+    return x
+
+
+def parse_bounded_float(raw: str, lo: float, hi: float) -> float:
+    return clamp_range(float(raw), lo, hi)
+
+
+def clamp_freq_hz(x: float) -> float:
+    return clamp_range(x, 0.0, MAX_FREQ_HZ)
 
 
 class SharedState:
@@ -140,6 +166,7 @@ class SharedState:
         self.last_seq = 0
         self.last_rtt_ms = None  # type: float | None
         self.last_rx_time = 0.0
+        self.miss_count = 0
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
@@ -266,6 +293,7 @@ def parse_rsp(state: SharedState, rsp: bytes, rtt_ms: float) -> None:
         state.last_seq = rsp[4]
         state.last_rtt_ms = rtt_ms
         state.last_rx_time = time.monotonic()
+        state.miss_count = 0
 
 
 def status_payload(state: SharedState) -> dict[str, Any]:
@@ -274,6 +302,7 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         link_ok = state.link_ok
         last_rtt = state.last_rtt_ms
         last_rx = state.last_rx_time
+        miss_count = state.miss_count
         mode = state.mode
         enable = state.enable
         estop = state.estop
@@ -288,13 +317,35 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "mode_cmd": mode,
         "last_rtt_ms": last_rtt,
         "last_rx_age_s": (time.monotonic() - last_rx) if last_rx > 0 else None,
+        "miss_count": int(miss_count),
+        "status_flags": 0,
+        "pwm": 0,
+        "timeout": 1,
+        "fault": 255,
+        "bp_fault": 255,
+        "fault_text": "NO_RSP",
+        "good": 0,
+        "bad": 999999,
+        "bp_good": 0,
+        "bp_bad": 999999,
+        "bp_age_ms": 999999,
+        "bp_rsp_age_ms": 999999,
+        "bp_vbus_raw": 0,
+        "bp_vdc": 0.0,
+        "bp_vbus_age_ms": 999999,
+        "vdc": 0.0,
+        "last_mode": MODE_OFF,
+        "bp_mode": MODE_OFF,
     }
     if rsp:
+        rx_age_ms = int((time.monotonic() - last_rx) * 1000.0) if last_rx > 0 else 999999
         status = rsp[3]
         good = rsp[5] | (rsp[6] << 8)
         bad = rsp[7] | (rsp[8] << 8)
         fault = rsp[9]
         last_mode = rsp[10]
+        vbus_raw = min(4095, rsp[17] | (rsp[18] << 8))
+        bp_vdc = float(vbus_raw) * BP_VBUS_FULL_SCALE_V / 4095.0
         data.update(
             {
                 "status_flags": status,
@@ -302,10 +353,20 @@ def status_payload(state: SharedState) -> dict[str, Any]:
                 "timeout": int(1 if (status & STATUS_TIMEOUT) else 0),
                 "estop": int(1 if (status & STATUS_ESTOP) else 0),
                 "fault": int(fault),
+                "bp_fault": int(fault),
                 "fault_text": FAULT_MAP.get(int(fault), "UNKNOWN"),
                 "good": int(good),
                 "bad": int(bad),
+                "bp_good": int(good),
+                "bp_bad": int(bad),
+                "bp_age_ms": rx_age_ms,
+                "bp_rsp_age_ms": rx_age_ms,
+                "bp_vbus_raw": int(vbus_raw),
+                "bp_vdc": bp_vdc,
+                "bp_vbus_age_ms": rx_age_ms,
+                "vdc": bp_vdc,
                 "last_mode": int(last_mode),
+                "bp_mode": int(last_mode),
             }
         )
     return data
@@ -320,92 +381,121 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
 
     with state.lock:
         if head == "START":
+            if len(parts) != 1:
+                return False, "bad start args"
+            if state.estop:
+                return False, "estop latched"
             state.enable = True
-            state.estop = False
             return True, "ok"
         if head == "STOP":
+            if len(parts) != 1:
+                return False, "bad stop args"
             state.enable = False
             return True, "ok"
         if head == "ESTOP":
-            if len(parts) > 1 and parts[1].upper() == "CLEAR":
+            if len(parts) == 2 and parts[1].upper() == "CLEAR":
                 state.estop = False
                 state.enable = False
                 state.clear_pending = True
                 return True, "ok"
+            if len(parts) != 1:
+                return False, "bad estop args"
             state.estop = True
             state.enable = False
+            state.clear_pending = False
             return True, "ok"
         if head == "CLEAR":
+            if len(parts) != 1:
+                return False, "bad clear args"
             state.enable = False
             state.estop = False
             state.clear_pending = True
             return True, "ok"
-        if head == "MODE" and len(parts) >= 2:
+        if head == "MODE":
+            if len(parts) != 2:
+                return False, "bad mode args"
             mode = parts[1].upper()
+            next_mode = state.mode
+            next_diag = False
+            next_vector_rotate = state.vector_rotate
             if mode in ("VF", "SCALAR"):
-                state.mode = MODE_SCALAR
-                state.vector_rotate = False
-                state.diag = False
+                next_mode = MODE_SCALAR
+                next_vector_rotate = False
             elif mode in ("VECTOR", "VEC"):
-                state.mode = MODE_VECTOR
-                state.diag = False
+                next_mode = MODE_VECTOR
             elif mode in ("FOC",):
-                state.mode = MODE_FOC
-                state.diag = False
+                next_mode = MODE_FOC
             elif mode in ("DUTY",):
-                state.mode = MODE_DUTY
-                state.diag = False
+                next_mode = MODE_DUTY
             elif mode in ("DIAG",):
-                state.mode = MODE_DIAG
-                state.diag = True
+                next_mode = MODE_DIAG
+                next_diag = True
             elif mode in ("OFF",):
-                state.mode = MODE_OFF
-                state.diag = False
+                next_mode = MODE_OFF
             else:
                 return False, f"unknown mode {mode}"
+            if state.enable and next_mode != state.mode:
+                state.enable = False
+            state.mode = next_mode
+            state.vector_rotate = next_vector_rotate
+            state.diag = next_diag
             return True, "ok"
-        if head == "FREQ" and len(parts) >= 2:
+        if head == "FREQ":
+            if len(parts) != 2:
+                return False, "bad freq args"
             try:
-                f = float(parts[1])
+                f = clamp_freq_hz(float(parts[1]))
             except ValueError:
                 return False, "bad freq"
             state.freq_hz = f
             state.foc_freq_hz = f
             return True, "ok"
-        if head == "FOC_FREQ" and len(parts) >= 2:
+        if head == "FOC_FREQ":
+            if len(parts) != 2:
+                return False, "bad foc_freq args"
             try:
-                f = float(parts[1])
+                f = clamp_freq_hz(float(parts[1]))
             except ValueError:
                 return False, "bad foc_freq"
             state.foc_freq_hz = f
             return True, "ok"
-        if head == "MAG" and len(parts) >= 2:
+        if head == "MAG":
+            if len(parts) != 2:
+                return False, "bad mag args"
             try:
-                state.mag = float(parts[1])
+                state.mag = parse_bounded_float(parts[1], 0.0, 1.0)
             except ValueError:
                 return False, "bad mag"
             return True, "ok"
-        if head == "ALPHA" and len(parts) >= 2:
+        if head == "ALPHA":
+            if len(parts) != 2:
+                return False, "bad alpha args"
             try:
-                state.alpha = float(parts[1])
+                state.alpha = parse_bounded_float(parts[1], -1.0, 1.0)
             except ValueError:
                 return False, "bad alpha"
             return True, "ok"
-        if head == "BETA" and len(parts) >= 2:
+        if head == "BETA":
+            if len(parts) != 2:
+                return False, "bad beta args"
             try:
-                state.beta = float(parts[1])
+                state.beta = parse_bounded_float(parts[1], -1.0, 1.0)
             except ValueError:
                 return False, "bad beta"
             return True, "ok"
-        if head == "ID" and len(parts) >= 2:
+        if head == "ID":
+            if len(parts) != 2:
+                return False, "bad id args"
             try:
-                state.id_ref = float(parts[1])
+                state.id_ref = parse_bounded_float(parts[1], -1.0, 1.0)
             except ValueError:
                 return False, "bad id"
             return True, "ok"
-        if head == "IQ" and len(parts) >= 2:
+        if head == "IQ":
+            if len(parts) != 2:
+                return False, "bad iq args"
             try:
-                state.iq_ref = float(parts[1])
+                state.iq_ref = parse_bounded_float(parts[1], -1.0, 1.0)
             except ValueError:
                 return False, "bad iq"
             return True, "ok"
@@ -414,30 +504,45 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
             if not vals:
                 return False, "missing duty"
             try:
-                flt = [float(v) for v in vals]
+                flt = [parse_bounded_float(v, 0.0, 1.0) for v in vals]
             except ValueError:
                 return False, "bad duty"
             if len(flt) == 1:
                 state.duty_u = flt[0]
                 state.duty_v = flt[0]
                 state.duty_w = flt[0]
-            elif len(flt) >= 3:
+            elif len(flt) == 3:
                 state.duty_u = flt[0]
                 state.duty_v = flt[1]
                 state.duty_w = flt[2]
             else:
                 return False, "need 1 or 3 duty values"
+            if state.enable and state.mode != MODE_DUTY:
+                state.enable = False
             state.mode = MODE_DUTY
             return True, "ok"
-        if head == "VROT" and len(parts) >= 2:
-            state.vector_rotate = parts[1].upper() in ("1", "ON", "TRUE", "YES")
+        if head == "VROT":
+            if len(parts) != 2:
+                return False, "bad vrot args"
+            val = parts[1].upper()
+            if val in ("1", "ON", "TRUE", "YES"):
+                next_vector_rotate = True
+            elif val in ("0", "OFF", "FALSE", "NO"):
+                next_vector_rotate = False
+            else:
+                return False, "bad vrot"
+            if state.enable and state.mode == MODE_VECTOR and next_vector_rotate != state.vector_rotate:
+                state.enable = False
+            state.vector_rotate = next_vector_rotate
             return True, "ok"
-        if head == "SET" and len(parts) >= 3:
+        if head == "SET":
+            if len(parts) != 3:
+                return False, "bad set args"
             key = parts[1].upper()
             val = parts[2]
             if key == "FREQ":
                 try:
-                    f = float(val)
+                    f = clamp_freq_hz(float(val))
                 except ValueError:
                     return False, "bad freq"
                 state.freq_hz = f
@@ -445,7 +550,7 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
                 return True, "ok"
             if key == "MAG":
                 try:
-                    state.mag = float(val)
+                    state.mag = parse_bounded_float(val, 0.0, 1.0)
                 except ValueError:
                     return False, "bad mag"
                 return True, "ok"
@@ -658,6 +763,9 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
                 else:
                     with state.lock:
                         state.link_ok = False
+                        state.miss_count += 1
+                        if state.enable and state.miss_count >= 3:
+                            state.enable = False
                 seq = (seq + 1) & 0xFF
                 next_t += period
                 sleep = next_t - time.monotonic()
@@ -665,6 +773,10 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
                     time.sleep(sleep)
         except Exception as exc:
             log(f"UART error: {exc}")
+            with state.lock:
+                state.link_ok = False
+                state.enable = False
+                state.miss_count += 1
             try:
                 ser.close()
             except Exception:

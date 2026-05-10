@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 #include "uno_q_control.h"
 #if USE_ROUTER_BRIDGE
@@ -73,6 +74,9 @@ static const uint8_t BP_MODE_FOC = 5;
 static const uint8_t BP_EXT_NTC = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
+// Calibrated from HV bus measurement: raw=3328 was 314 V on the meter.
+static const float BP_VBUS_FULL_SCALE_V = 386.5f;
+static const uint32_t BP_VBUS_STALE_MS = 500;
 // SPI pins for UNOQ header
 static const uint8_t NUCLEO_SPI_CS = 10;   // D10
 static const uint8_t NUCLEO_SPI_SCK = 13;  // D13
@@ -116,7 +120,7 @@ static const float ALIGN_ID_REF_A = 1.0f;
 static const float RUN_ID_REF_A = 1.0f;
 static const float RUN_IQ_REF_A = 1.5f;
 static const float IQ_RAMP_A_PER_S = 5.0f;
-static const float FREQ_RAMP_HZ_PER_S = 100.0f; // fast ramp for visible response
+static const float FREQ_RAMP_HZ_PER_S = 5.0f; // scalar open-loop startup must not outrun the rotor
 static const float CONTROL_DT = 1.0f / CONTROL_HZ;
 static const float IQ_RAMP_STEP = IQ_RAMP_A_PER_S * CONTROL_DT;
 static const float FREQ_RAMP_STEP = FREQ_RAMP_HZ_PER_S * CONTROL_DT;
@@ -136,11 +140,17 @@ static const float MIC_K_FE = 1e-4f;
 static const float MIC_K_SW = 1e-5f;
 static const float MIC_F_SW = 10000.0f;
 static const uint32_t MODE_SWITCH_DEADTIME_MS = 500;
-static const uint32_t ESTOP_AUTO_CLEAR_MS = 800;
+// ESTOP must stay latched until an explicit CLEAR/ESTOP CLEAR command.
+static const uint32_t ESTOP_AUTO_CLEAR_MS = 0;
 static const uint32_t BP_REPLY_TIMEOUT_MS = 500;
 static const float CURRENT_LIMIT_A = 6.0f;
 static const float VF_BASE_FREQ_HZ = 50.0f;
 static const float VF_VOLT_PER_HZ_RATIO = 0.5f;
+// Low-frequency scalar boost: enough startup voltage to overcome stiction
+// without changing the high-frequency V/Hz slope.
+static const float VF_START_BOOST_V = 24.0f;
+static const float VF_START_BOOST_TAPER_HZ = 10.0f;
+static const float VF_START_BOOST_MIN_FREQ_HZ = 0.1f;
 static const float CTRL_PI = 3.1415926f;
 static const float CTRL_TWO_PI = 6.2831852f;
 static const float INV_SQRT3 = 0.5773503f;
@@ -173,8 +183,8 @@ static void matrix_set_pixel(int x, int y);
 static void matrix_draw_digit(int x0, int y0, int digit);
 static void hard_stop(bool clear_cmd);
 static void nucleo_uart_init();
-static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable);
-static void nucleo_send_stop();
+static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool force = false);
+static void nucleo_send_stop(bool force = false);
 // ----------------------- Globals -----------------------
 static ControlState g_state = STATE_SAFE;
 static ControlMode g_mode = MODE_FOC;
@@ -239,6 +249,9 @@ static uint8_t g_bp_fault_code = 0;
 static uint8_t g_bp_last_mode = 0;
 static uint8_t g_bp_ext_flags = 0;
 static uint16_t g_bp_brake_q15 = 0;
+static uint16_t g_bp_vbus_raw = 0;
+static float g_bp_vdc = 0.0f;
+static uint32_t g_bp_vbus_ms = 0;
 static uint16_t g_bp_good_cnt = 0;
 static uint16_t g_bp_bad_cnt = 0;
 static uint8_t g_bp_last_seq = 0;
@@ -806,7 +819,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(47);
+  mp_tx_array(50);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -871,6 +884,10 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)g_mic_status_flags);
   mp_tx_int(g_diag_pwm ? 1 : 0);
   mp_tx_int(g_duty_mode ? 1 : 0);
+  uint32_t bp_vbus_age = (g_bp_vbus_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_vbus_ms);
+  mp_tx_int((int32_t)g_bp_vbus_raw);
+  mp_tx_float(g_bp_vdc);
+  mp_tx_int((int32_t)bp_vbus_age);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -917,15 +934,62 @@ static bool starts_ci(const char *s, const char *prefix) {
   }
   return true;
 }
+static bool is_digit_char(char c) {
+  return c >= '0' && c <= '9';
+}
+static bool parse_float_token(const char **p, float *out) {
+  while (**p == ' ' || **p == '\t') (*p)++;
+  if (**p == '\0') return false;
+  const char *start = *p;
+  const char *s = start;
+  if (*s == '+' || *s == '-') s++;
+  bool any_digit = false;
+  while (is_digit_char(*s)) {
+    any_digit = true;
+    s++;
+  }
+  if (*s == '.') {
+    s++;
+    while (is_digit_char(*s)) {
+      any_digit = true;
+      s++;
+    }
+  }
+  if (!any_digit) return false;
+  if (*s == 'e' || *s == 'E') {
+    s++;
+    if (*s == '+' || *s == '-') s++;
+    bool exp_digit = false;
+    while (is_digit_char(*s)) {
+      exp_digit = true;
+      s++;
+    }
+    if (!exp_digit) return false;
+  }
+  if (*s != '\0' && *s != ' ' && *s != '\t') return false;
+  float v = (float)atof(start);
+  if (isnan(v) || isinf(v)) return false;
+  *out = v;
+  *p = s;
+  return true;
+}
+static bool parse_single_float_arg(const char *p, float *out) {
+  if (!parse_float_token(&p, out)) return false;
+  while (*p == ' ' || *p == '\t') p++;
+  return *p == '\0';
+}
 static int parse_duty_triple(const char *p, float *a, float *b, float *c) {
   float vals[3] = {0};
   int count = 0;
   while (*p && count < 3) {
-    while (*p == ' ' || *p == '\t') p++;
-    if (*p == '\0') break;
-    vals[count++] = (float)atof(p);
-    while (*p && *p != ' ' && *p != '\t') p++;
+    float v = 0.0f;
+    if (!parse_float_token(&p, &v)) {
+      return 0;
+    }
+    vals[count++] = v;
   }
+  while (*p == ' ' || *p == '\t') p++;
+  if (*p != '\0') return 0;
   if (count == 1) {
     *a = vals[0];
     *b = vals[0];
@@ -945,11 +1009,16 @@ static void clear_estop_latch() {
   g_fault = 0;
   g_clear_fault_req = true;
   g_estop_auto_clear_deadline_ms = 0;
+  hard_stop(false);
+  brake_set(false);
+  ext_brake_set(0.0f);
 }
 static void request_estop_stop() {
   g_estop_latched = true;
   g_fault = 2;
-  g_estop_auto_clear_deadline_ms = millis() + ESTOP_AUTO_CLEAR_MS;
+  // Emergency stop wins over any pending Blue Pill CLEAR handshake.
+  g_clear_fault_req = false;
+  g_estop_auto_clear_deadline_ms = (ESTOP_AUTO_CLEAR_MS > 0) ? (millis() + ESTOP_AUTO_CLEAR_MS) : 0;
   hard_stop(false);
   brake_set(false);
   ext_brake_set(0.0f);
@@ -1029,9 +1098,11 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
     }
     const char *cmd = cmd_buf;
     while (*cmd == ' ' || *cmd == '\t') cmd++;
+    bool handled = true;
     if (icmp(cmd, "START")) {
       if (g_estop_latched) {
-        clear_estop_latch();
+        rpc_send_response_error(msgid, "estop latched");
+        return;
       }
       if (g_mode == MODE_MIC && g_freq_cmd < 0.1f) {
         g_freq_cmd = (g_last_nonzero_freq > 0.1f) ? g_last_nonzero_freq : 10.0f;
@@ -1055,6 +1126,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         request_mode(MODE_MIC, false, false);
       } else if (icmp(p, "DUTY")) {
         request_mode(MODE_VF, true, false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "DIAG")) {
       const char *p = cmd + 4;
@@ -1063,6 +1136,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         request_mode(MODE_VF, false, true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         g_diag_pwm = false;
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "DUTY")) {
       const char *p = cmd + 4;
@@ -1075,15 +1150,19 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         g_duty_w = clampf(dw, 0.0f, 1.0f);
         g_duty_mode = true;
         g_diag_pwm = false;
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "SET FREQ")) {
       const char *p = cmd + 8;
-      while (*p == ' ' || *p == '\t') p++;
-      float f = atof(p);
-      if (f < 0.0f) f = 0.0f;
-      if (f > 50.0f) f = 50.0f;
-      g_freq_cmd = f;
-      if (f > 0.1f) g_last_nonzero_freq = f;
+      float f = 0.0f;
+      if (parse_single_float_arg(p, &f)) {
+        f = clampf(f, 0.0f, 50.0f);
+        g_freq_cmd = f;
+        if (f > 0.1f) g_last_nonzero_freq = f;
+      } else {
+        handled = false;
+      }
     } else if (starts_ci(cmd, "ESTOP")) {
       const char *p = cmd + 5;
       handle_estop_command(p);
@@ -1094,6 +1173,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         scope_set(true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         scope_set(false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "PWMTEST")) {
       const char *p = cmd + 7;
@@ -1102,6 +1183,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         pwm_test_set(true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         pwm_test_set(false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "NTC")) {
       const char *p = cmd + 3;
@@ -1110,6 +1193,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         ext_flag_set(BP_EXT_NTC, true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         ext_flag_set(BP_EXT_NTC, false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "PFC")) {
       const char *p = cmd + 3;
@@ -1118,24 +1203,35 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         ext_flag_set(BP_EXT_PFC, true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         ext_flag_set(BP_EXT_PFC, false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "BRAKE")) {
       const char *p = cmd + 5;
       while (*p == ' ' || *p == '\t') p++;
       if (starts_ci(p, "PWM")) {
         p += 3;
-        while (*p == ' ' || *p == '\t') p++;
-        float duty = atof(p);
-        if (duty < 0.0f) duty = 0.0f;
-        if (duty > 1.0f) duty = 1.0f;
-        ext_brake_set(duty);
+        float duty = 0.0f;
+        if (parse_single_float_arg(p, &duty)) {
+          ext_brake_set(clampf(duty, 0.0f, 1.0f));
+        } else {
+          handled = false;
+        }
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         brake_set(false);
         ext_brake_set(0.0f);
       } else if (icmp(p, "ON") || icmp(p, "1")) {
         brake_set(true);
         ext_brake_set(0.0f);
+      } else {
+        handled = false;
       }
+    } else {
+      handled = false;
+    }
+    if (!handled) {
+      rpc_send_response_error(msgid, "unknown cmd");
+      return;
     }
     rpc_send_response_bool(msgid, true);
     return;
@@ -1440,9 +1536,11 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
   line += "LOG CMD ";
   line += cmd;
   bridge_notify_line(line);
+  bool handled = true;
   if (icmp(cmd, "START")) {
     if (g_estop_latched) {
-      clear_estop_latch();
+      out.println("ERR estop latched");
+      return;
     }
     if (g_mode == MODE_MIC && g_freq_cmd < 0.1f) {
       g_freq_cmd = (g_last_nonzero_freq > 0.1f) ? g_last_nonzero_freq : 10.0f;
@@ -1466,6 +1564,8 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       request_mode(MODE_MIC, false, false);
     } else if (icmp(p, "DUTY")) {
       request_mode(MODE_VF, true, false);
+    } else {
+      handled = false;
     }
   } else if (starts_ci(cmd, "DIAG")) {
     const char *p = cmd + 4;
@@ -1474,6 +1574,8 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       request_mode(MODE_VF, false, true);
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       g_diag_pwm = false;
+    } else {
+      handled = false;
     }
   } else if (starts_ci(cmd, "DUTY")) {
     const char *p = cmd + 4;
@@ -1486,15 +1588,19 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       g_duty_w = clampf(dw, 0.0f, 1.0f);
       g_duty_mode = true;
       g_diag_pwm = false;
+    } else {
+      handled = false;
     }
   } else if (starts_ci(cmd, "SET FREQ")) {
     const char *p = cmd + 8;
-    while (*p == ' ' || *p == '	') p++;
-    float f = atof(p);
-    if (f < 0.0f) f = 0.0f;
-    if (f > 50.0f) f = 50.0f;
-    g_freq_cmd = f;
-    if (f > 0.1f) g_last_nonzero_freq = f;
+    float f = 0.0f;
+    if (parse_single_float_arg(p, &f)) {
+      f = clampf(f, 0.0f, 50.0f);
+      g_freq_cmd = f;
+      if (f > 0.1f) g_last_nonzero_freq = f;
+    } else {
+      handled = false;
+    }
   } else if (starts_ci(cmd, "ESTOP")) {
     const char *p = cmd + 5;
     handle_estop_command(p);
@@ -1505,6 +1611,8 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       ext_flag_set(BP_EXT_NTC, true);
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       ext_flag_set(BP_EXT_NTC, false);
+    } else {
+      handled = false;
     }
   } else if (starts_ci(cmd, "PFC")) {
     const char *p = cmd + 3;
@@ -1513,6 +1621,8 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       ext_flag_set(BP_EXT_PFC, true);
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       ext_flag_set(BP_EXT_PFC, false);
+    } else {
+      handled = false;
     }
   } else if (starts_ci(cmd, "SCOPE")) {
     const char *p = cmd + 5;
@@ -1521,6 +1631,8 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       scope_set(true);
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       scope_set(false);
+    } else {
+      handled = false;
     }
     } else if (starts_ci(cmd, "PWMTEST")) {
       const char *p = cmd + 7;
@@ -1529,26 +1641,37 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
         pwm_test_set(true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         pwm_test_set(false);
+      } else {
+        handled = false;
       }
     } else if (starts_ci(cmd, "BRAKE")) {
       const char *p = cmd + 5;
       while (*p == ' ' || *p == '	') p++;
       if (starts_ci(p, "PWM")) {
         p += 3;
-        while (*p == ' ' || *p == '	') p++;
-        float duty = atof(p);
-        if (duty < 0.0f) duty = 0.0f;
-        if (duty > 1.0f) duty = 1.0f;
-        ext_brake_set(duty);
+        float duty = 0.0f;
+        if (parse_single_float_arg(p, &duty)) {
+          ext_brake_set(clampf(duty, 0.0f, 1.0f));
+        } else {
+          handled = false;
+        }
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         brake_set(false);
         ext_brake_set(0.0f);
       } else if (icmp(p, "ON") || icmp(p, "1")) {
         brake_set(true);
         ext_brake_set(0.0f);
+      } else {
+        handled = false;
       }
     } else if (icmp(cmd, "GET") || icmp(cmd, "STATUS")) {
       out.println(rpc_get());
+      return;
+    } else {
+      handled = false;
+    }
+    if (!handled) {
+      out.println("ERR unknown cmd");
       return;
     }
     out.println("OK");
@@ -1619,6 +1742,10 @@ static String rpc_get() {
   s += " bp_ext="; s += String((int)g_bp_ext_flags);
   float bp_brake = (float)g_bp_brake_q15 / 32767.0f;
   s += " bp_brake_duty="; s += format_fixed(bp_brake, 2);
+  s += " bp_vbus_raw="; s += String((int)g_bp_vbus_raw);
+  s += " bp_vdc="; s += format_fixed(g_bp_vdc, 2);
+  uint32_t bp_vbus_age = (g_bp_vbus_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_vbus_ms);
+  s += " bp_vbus_age_ms="; s += String((int)bp_vbus_age);
   uint32_t bp_rsp_age = (g_bp_last_rsp_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_last_rsp_ms);
   s += " bp_rsp_age_ms="; s += String((int)bp_rsp_age);
   uint32_t ping_age = (g_bp_ping_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_ping_ms);
@@ -1773,6 +1900,7 @@ static void rpc_service() {
   }
 }
 static float clampf(float v, float lo, float hi) {
+  if (isnan(v) || isinf(v)) return lo;
   if (v < lo) return lo;
   if (v > hi) return hi;
   return v;
@@ -1908,6 +2036,12 @@ static bool nucleo_check_reply(const uint8_t *rx) {
   enc_speed_update(g_bp_enc_raw, g_bp_enc_ok, now_ms);
   g_bp_ext_flags = rx[14];
   g_bp_brake_q15 = (uint16_t)rx[15] | ((uint16_t)rx[16] << 8);
+  g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
+  if (g_bp_vbus_raw > 4095U) {
+    g_bp_vbus_raw = 4095U;
+  }
+  g_bp_vdc = ((float)g_bp_vbus_raw * BP_VBUS_FULL_SCALE_V) / 4095.0f;
+  g_bp_vbus_ms = now_ms;
   g_bp_last_rsp_ms = now_ms;
   if (g_nucleo_waiting_rsp && g_bp_last_seq == g_nucleo_waiting_seq) {
     g_nucleo_waiting_rsp = false;
@@ -2040,7 +2174,7 @@ static void nucleo_spi_transfer(const uint8_t *tx, uint8_t *rx, size_t len) {
   digitalWrite(NUCLEO_SPI_CS, HIGH);
   SPI.endTransaction();
 }
-static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
+static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool force) {
   if (!USE_EXTERNAL_PWM) {
     return;
   }
@@ -2048,10 +2182,10 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
   uint32_t now_us = micros();
   // When outputs are off we throttle updates to a heartbeat rate,
   // but if a CLEAR is pending we keep sending until it is acknowledged.
-  if (!enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
+  if (!force && !enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
     return;
   }
-  if (enable && !g_clear_fault_req && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
+  if (!force && enable && !g_clear_fault_req && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
     nucleo_uart_poll();
     if (g_nucleo_waiting_rsp) {
       if ((uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_REPLY_GUARD_US) {
@@ -2060,7 +2194,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
       g_nucleo_waiting_rsp = false;
     }
   }
-  if (enable && !g_clear_fault_req &&
+  if (!force && enable && !g_clear_fault_req &&
       (uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_MIN_SEND_US) {
     return;
   }
@@ -2148,12 +2282,12 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable) {
   g_nucleo_last_send_us = now_us;
   g_nucleo_last_tx_ms = now;
 }
-static void nucleo_send_stop() {
-  nucleo_send_pwm(0.0f, 0.0f, 0.0f, false);
+static void nucleo_send_stop(bool force) {
+  nucleo_send_pwm(0.0f, 0.0f, 0.0f, false, force);
 }
 static void pwm_force_off() {
   if (USE_EXTERNAL_PWM) {
-    nucleo_send_stop();
+    nucleo_send_stop(true);
     g_pwm_outputs_active = false;
     g_pwm_forced_gpio = false;
     return;
@@ -2348,6 +2482,10 @@ static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switc
   apply_mode_if_safe();
 }
 static float read_vdc() {
+  if (USE_EXTERNAL_PWM && g_bp_vbus_ms != 0 &&
+      (uint32_t)(millis() - g_bp_vbus_ms) <= BP_VBUS_STALE_MS) {
+    return g_bp_vdc;
+  }
   uint16_t raw = analogRead(ADC_VDC_PIN);
   float vdc = ((float)raw * VDC_ADC_VREF * VDC_ADC_DIVIDER) / 4095.0f;
   if (vdc < VDC_ADC_MIN_V || vdc > VDC_ADC_MAX_V) {
@@ -2388,8 +2526,8 @@ static void control_step() {
   if (g_offset_ready && g_pwm_enabled) {
     if (fabsf(ia) > CURRENT_LIMIT_A || fabsf(ib) > CURRENT_LIMIT_A || fabsf(ic) > CURRENT_LIMIT_A) {
       g_fault = 1;
-      g_state = STATE_FAULT;
-      g_pwm_enabled = false;
+      hard_stop(false);
+      ext_brake_set(0.0f);
       pwm_write(0, 0, 0);
       return;
     }
@@ -2611,7 +2749,13 @@ static void control_step() {
     g_theta += g_omega_ref * CONTROL_DT;
     if (g_theta > CTRL_TWO_PI) g_theta -= CTRL_TWO_PI;
     if (g_theta < 0.0f) g_theta += CTRL_TWO_PI;
-    float v_mag = g_vf_v_per_hz * g_freq_ref;
+    float freq_abs = fabsf(g_freq_ref);
+    float boost_v = 0.0f;
+    if (freq_abs >= VF_START_BOOST_MIN_FREQ_HZ) {
+      float boost_taper = 1.0f - clampf(freq_abs / VF_START_BOOST_TAPER_HZ, 0.0f, 1.0f);
+      boost_v = VF_START_BOOST_V * boost_taper;
+    }
+    float v_mag = (g_vf_v_per_hz * g_freq_ref) + boost_v;
     v_mag = clampf(v_mag, 0.0f, g_v_limit);
     v_alpha = v_mag * cos_t;
     v_beta = v_mag * sin_t;

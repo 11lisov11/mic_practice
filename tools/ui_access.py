@@ -86,15 +86,25 @@ def report_unoq_pnp() -> None:
         )
 
 
-def detect_device() -> str | None:
+def adb_device_ids() -> list[str]:
     try:
         out = subprocess.check_output(["adb", "devices"], text=True)
     except Exception:
-        return None
+        return []
     lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
+    devices: list[str] = []
     for ln in lines[1:]:
         if ln.endswith("\tdevice"):
-            return ln.split("\t")[0]
+            devices.append(ln.split("\t")[0])
+    return devices
+
+
+def detect_device() -> str | None:
+    for device in adb_device_ids():
+        # Android emulators are common on dev PCs and are never the UNO Q target.
+        if device.startswith("emulator-"):
+            continue
+        return device
     return None
 
 
@@ -112,7 +122,12 @@ def main() -> int:
     start_adb_server()
     device = args.device or detect_device()
     if not device:
-        log("ERROR: ADB device not found. Use --device.")
+        devices = adb_device_ids()
+        if devices:
+            log("ERROR: no non-emulator ADB device found. Use --device only if this is intentionally the UNO Q.")
+            log("ADB devices: " + ", ".join(devices))
+        else:
+            log("ERROR: ADB device not found. Use --device.")
         report_unoq_pnp()
         return 2
 

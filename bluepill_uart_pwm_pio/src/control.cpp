@@ -197,12 +197,14 @@ void control_tick(void) {
     adc_currents_get(&ia, &ib, &ic, &vbus);
 
     float theta = 0.0f;
+    float enc_theta = 0.0f;
+    float hall_theta = 0.0f;
     float omega = 0.0f;
     bool enc_ok = false;
 #if USE_AS5600
-    enc_ok = encoder_as5600_get_theta(&theta);
+    enc_ok = encoder_as5600_get_theta(&enc_theta);
 #endif
-    bool hall_ok = hall_get_theta(&theta, &omega);
+    bool hall_ok = hall_get_theta(&hall_theta, &omega);
     bool sensor_ok = enc_ok || hall_ok;
     if (!sensor_ok && FOC_REQUIRE_HALL) {
       pwm_outputs_enable(false);
@@ -211,8 +213,12 @@ void control_tick(void) {
       return;
     }
 
-    // Fallback to open-loop angle if no hall
-    if (!sensor_ok) {
+    if (enc_ok) {
+      theta = enc_theta;
+    } else if (hall_ok) {
+      theta = hall_theta;
+    } else {
+      // Fallback to open-loop angle only when the configured safety policy allows it.
       float freq_hz = ((int32_t)s_sp.foc_freq_millihz) / 1000.0f;
       float omega_ol = 2.0f * 3.1415926f * freq_hz;
       float dt_s = ((float)dt_ms) * 0.001f;

@@ -179,8 +179,13 @@ int main(void) {
       uart_link_send(rsp, FRAME_LEN);
 #endif
     } else if (res == -2) {
-      // Bad CRC but full frame received: report error and reply with seq echo.
-      safety_on_bad_frame(fault_code);
+      // A single corrupted frame under inverter EMI must not immediately trip
+      // the bridge. Ignore it and let the existing command timeout perform the
+      // fail-safe shutdown if valid frames stop arriving. Still return a valid
+      // status frame so the upstream controller does not mistake a rejected
+      // command for a dead Blue Pill link.
+      (void)fault_code;
+      safety_note_bad_frame();
       safety_build_reply(rsp, cmd);
 #if LINK_USE_SPI
       spi_link_send(rsp, FRAME_LEN);
@@ -202,8 +207,8 @@ int main(void) {
         last_ping_ms = now;
       }
     }
-    control_tick();
     safety_tick();
+    control_tick();
     status_led_tick();
   }
 }

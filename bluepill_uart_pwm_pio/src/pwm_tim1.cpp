@@ -21,6 +21,9 @@ static uint32_t clamp_percent(uint32_t pct) {
 }
 
 static uint32_t q15_to_ccr(uint16_t q15) {
+  if (q15 == 0U) {
+    return 0U;
+  }
   uint32_t pct = (uint32_t)q15 * 100U / 32767U;
   pct = clamp_percent(pct);
   return (s_pwm_arr + 1U) * pct / 100U;

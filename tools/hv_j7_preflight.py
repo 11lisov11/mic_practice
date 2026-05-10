@@ -15,7 +15,12 @@ from saleae.automation import Manager
 sys.path.insert(0, os.path.dirname(__file__))
 from ui_pwm_case import (  # noqa: E402
     analyze,
+    bp_bad_ok,
+    bp_link_live,
+    configure_adb_router_fallback,
+    configure_bp_bad_baseline,
     control_retry_reason,
+    DEFAULT_MIN_PULSE_WIDTH_NS,
     export_capture,
     get_status,
     log,
@@ -61,8 +66,9 @@ def require_run_status(st: dict | None, freq: float, vdc_min: float | None, vdc_
         return False
     return (
         vf_steady_matches(st, freq)
-        and int(st_num(st, "bp_fault", 0.0)) == 0
-        and int(st_num(st, "bp_bad", 0.0)) == 0
+        and bp_link_live(st)
+        and int(st_num(st, "bp_fault", 255.0)) == 0
+        and bp_bad_ok(st)
         and vdc_in_range(st, vdc_min, vdc_max)
     )
 
@@ -72,8 +78,10 @@ def require_estop_status(st: dict | None, vdc_min: float | None, vdc_max: float 
         return False
     return (
         st.get("state") == "SAFE"
-        and int(st_num(st, "pwm", 0.0)) == 0
-        and int(st_num(st, "estop", 0.0)) == 1
+        and int(st_num(st, "pwm", 1.0)) == 0
+        and int(st_num(st, "estop", -1.0)) == 1
+        and bp_link_live(st)
+        and bp_bad_ok(st)
         and vdc_in_range(st, vdc_min, vdc_max)
     )
 
@@ -89,6 +97,7 @@ def capture_metrics(
     expect_pwm: bool,
     expect_estop: bool,
     min_handoff_gap_ns: float,
+    min_pulse_width_ns: float,
 ) -> tuple[str, dict | None]:
     capture = None
     try:
@@ -102,6 +111,7 @@ def capture_metrics(
             expect_pwm,
             expect_estop,
             min_handoff_gap_ns=min_handoff_gap_ns,
+            min_pulse_width_ns=min_pulse_width_ns,
         )
         return csv_path, metrics
     except grpc.RpcError as exc:
@@ -138,13 +148,19 @@ def main() -> int:
     ap.add_argument("--retry-delay", type=float, default=0.2)
     ap.add_argument("--settle", type=float, default=0.5)
     ap.add_argument("--min-handoff-gap-ns", type=float, default=600.0)
+    ap.add_argument("--min-pulse-width-ns", type=float, default=DEFAULT_MIN_PULSE_WIDTH_NS)
     ap.add_argument("--brake-active-high", type=int, default=0)
     ap.add_argument("--vdc-min", type=float, default=None)
     ap.add_argument("--vdc-max", type=float, default=None)
+    ap.add_argument("--adb-router-fallback", action="store_true", help="Fallback failed HTTP commands to direct ADB router RPC.")
+    ap.add_argument("--adb-device", default=os.environ.get("UNOQ_ADB_DEVICE", ""), help="ADB serial for --adb-router-fallback.")
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     args = ap.parse_args()
 
+    configure_adb_router_fallback(args.adb_router_fallback or bool(args.adb_device), args.adb_device or None)
+
     base = args.url.rstrip("/")
+    configure_bp_bad_baseline(get_status(base))
     vf_freqs = parse_freqs(args.vf_freqs)
     estop_freqs = parse_freqs(args.estop_freqs)
     channels = [int(x) for x in args.la_channels.split(",") if x.strip()]
@@ -189,8 +205,8 @@ def main() -> int:
             "mode": "" if status is None else status.get("mode", ""),
             "pwm": "" if status is None else int(st_num(status, "pwm", 0.0)),
             "estop": "" if status is None else int(st_num(status, "estop", 0.0)),
-            "bp_fault": "" if status is None else int(st_num(status, "bp_fault", 0.0)),
-            "bp_bad": "" if status is None else int(st_num(status, "bp_bad", 0.0)),
+            "bp_fault": "" if status is None else int(st_num(status, "bp_fault", 255.0)),
+            "bp_bad": "" if status is None else int(st_num(status, "bp_bad", 999999.0)),
             "vdc": "" if status is None else f"{st_num(status, 'vdc', 0.0):.6f}",
             "attempts": attempts,
             "retry_reason": retry_reason,
@@ -234,6 +250,7 @@ def main() -> int:
                 True,
                 False,
                 args.min_handoff_gap_ns,
+                args.min_pulse_width_ns,
             )
             retry_reason = control_retry_reason(cmd_ok, status_ok, metrics)
             last = {
@@ -288,6 +305,7 @@ def main() -> int:
                 False,
                 True,
                 args.min_handoff_gap_ns,
+                args.min_pulse_width_ns,
             )
             recover_cmd_ok = send_cmds_retry(
                 base,
@@ -313,6 +331,7 @@ def main() -> int:
                 True,
                 False,
                 args.min_handoff_gap_ns,
+                args.min_pulse_width_ns,
             )
             reasons = [
                 control_retry_reason(run_case["cmd_ok"], run_case["status_ok"], run_case["metrics"]),
@@ -389,6 +408,7 @@ def main() -> int:
             False,
             False,
             args.min_handoff_gap_ns,
+            args.min_pulse_width_ns,
         )
         record("hv_idle_safe", "idle_safe", 0.0, True, True, 0.0, st0, idle_metrics, idle_csv, 1, "")
 

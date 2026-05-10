@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import subprocess
 import sys
@@ -82,14 +83,43 @@ def get_status(base: str, timeout_s: float = 2.0) -> dict | None:
     return resp.get("data")
 
 
+def status_num(st: dict, key: str, default: float = 0.0) -> float:
+    try:
+        val = st.get(key, default)
+        if isinstance(val, str):
+            val = val.strip()
+        num = float(val)
+        if not math.isfinite(num):
+            return float(default)
+        return num
+    except Exception:
+        return float(default)
+
+
+def bp_link_live(st: dict | None, max_age_ms: float = 1000.0) -> bool:
+    if st is None:
+        return False
+    if st.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+        if key in st:
+            ages.append(status_num(st, key, 999999.0))
+    if st.get("last_rx_age_s") is not None:
+        ages.append(status_num(st, "last_rx_age_s", 999999.0) * 1000.0)
+    return bool(ages) and min(ages) <= max_age_ms
+
+
 def status_is_safe(st: dict | None) -> bool:
     if st is None:
         return False
     return (
-        int(st.get("pwm", 0) or 0) == 0
-        and int(st.get("estop", 0) or 0) == 0
+        int(status_num(st, "pwm", 1.0)) == 0
+        and int(status_num(st, "estop", 1.0)) == 0
         and st.get("state") == "SAFE"
-        and int(st.get("bp_fault", 0) or 0) == 0
+        and bp_link_live(st)
+        and int(status_num(st, "bp_fault", 255.0)) == 0
+        and int(status_num(st, "bp_bad", 999999.0)) == 0
     )
 
 
@@ -266,6 +296,9 @@ def main() -> int:
                     sys.executable,
                     "-m",
                     "py_compile",
+                    "tools\\adb_deploy_web_hmi.py",
+                    "tools\\encoder_test.py",
+                    "tools\\logic2_recover.py",
                     "tools\\ui_access.py",
                     "tools\\ui_pwm_case.py",
                     "tools\\ui_pwm_suite.py",
@@ -274,6 +307,7 @@ def main() -> int:
                     "tools\\hv_j7_preflight.py",
                     "tools\\mic_ai_compare.py",
                     "tools\\full_system_preflight.py",
+                    "tools\\unoq_web_server.py",
                     "web_hmi\\server.py",
                 ],
                 repo_root,

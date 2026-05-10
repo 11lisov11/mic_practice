@@ -12,6 +12,10 @@ from datetime import datetime
 sys.path.insert(0, os.path.dirname(__file__))
 from ui_pwm_case import (  # noqa: E402
     analyze,
+    bp_bad_ok,
+    bp_link_live,
+    configure_adb_router_fallback,
+    configure_bp_bad_baseline,
     export_capture,
     get_status,
     log,
@@ -30,10 +34,12 @@ def status_is_safe(st: dict | None) -> bool:
     if st is None:
         return False
     return (
-        int(st_num(st, "pwm", 0.0)) == 0
-        and int(st_num(st, "estop", 0.0)) == 0
+        int(st_num(st, "pwm", 1.0)) == 0
+        and int(st_num(st, "estop", 1.0)) == 0
         and st.get("state") == "SAFE"
-        and int(st_num(st, "bp_fault", 0.0)) == 0
+        and bp_link_live(st)
+        and int(st_num(st, "bp_fault", 255.0)) == 0
+        and bp_bad_ok(st)
     )
 
 
@@ -77,9 +83,11 @@ def wait_scalar_steady(
             ok = (
                 st.get("state") == "VF_RUN"
                 and mode_ok
-                and int(st_num(st, "pwm", 0.0)) == 1
-                and int(st_num(st, "estop", 0.0)) == 0
-                and int(st_num(st, "bp_fault", 0.0)) == 0
+                and int(st_num(st, "pwm", -1.0)) == 1
+                and int(st_num(st, "estop", 1.0)) == 0
+                and bp_link_live(st)
+                and int(st_num(st, "bp_fault", 255.0)) == 0
+                and bp_bad_ok(st)
                 and abs(st_num(st, "freq_cmd", 0.0) - freq_cmd) <= 0.06
                 and abs(st_num(st, "freq", 0.0) - freq_cmd) <= tol
             )
@@ -107,22 +115,24 @@ def soak_status(base: str, duration_s: float, poll_s: float) -> dict:
             "freq_min": None,
             "freq_max": None,
             "freq_mean": None,
+            "bp_link_live_all": False,
             "bp_bad_delta": None,
             "bp_good_delta": None,
             "bp_fault_values": [],
             "states": [],
         }
     freq_vals = [st_num(st, "freq", 0.0) for st in samples]
-    bp_bad_vals = [st_num(st, "bp_bad", 0.0) for st in samples]
+    bp_bad_vals = [st_num(st, "bp_bad", 999999.0) for st in samples]
     bp_good_vals = [st_num(st, "bp_good", 0.0) for st in samples]
     return {
         "count": len(samples),
         "freq_min": min(freq_vals),
         "freq_max": max(freq_vals),
         "freq_mean": sum(freq_vals) / len(freq_vals),
+        "bp_link_live_all": all(bp_link_live(st) for st in samples),
         "bp_bad_delta": max(bp_bad_vals) - min(bp_bad_vals),
         "bp_good_delta": max(bp_good_vals) - min(bp_good_vals),
-        "bp_fault_values": sorted({int(st_num(st, "bp_fault", 0.0)) for st in samples}),
+        "bp_fault_values": sorted({int(st_num(st, "bp_fault", 255.0)) for st in samples}),
         "states": sorted({str(st.get("state", "")) for st in samples}),
     }
 
@@ -204,10 +214,15 @@ def main() -> int:
     ap.add_argument("--case-retries", type=int, default=2)
     ap.add_argument("--capture-retries", type=int, default=2)
     ap.add_argument("--retry-delay", type=float, default=0.2)
+    ap.add_argument("--adb-router-fallback", action="store_true", help="Fallback failed HTTP commands to direct ADB router RPC.")
+    ap.add_argument("--adb-device", default=os.environ.get("UNOQ_ADB_DEVICE", ""), help="ADB serial for --adb-router-fallback.")
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     args = ap.parse_args()
 
+    configure_adb_router_fallback(args.adb_router_fallback or bool(args.adb_device), args.adb_device or None)
+
     base = args.url.rstrip("/")
+    configure_bp_bad_baseline(get_status(base))
     channels = [int(x) for x in args.la_channels.split(",") if x.strip()]
     freqs = [float(x) for x in args.freqs.split(",") if x.strip()]
     estop_freqs = [float(x) for x in args.estop_freqs.split(",") if x.strip()]
@@ -306,6 +321,7 @@ def main() -> int:
                     cmds_ok
                     and steady_ok
                     and metrics.get("pass")
+                    and soak.get("bp_link_live_all")
                     and soak.get("bp_bad_delta") == 0
                     and soak.get("bp_fault_values") == [0]
                     and soak.get("states") == ["VF_RUN"]
@@ -314,7 +330,7 @@ def main() -> int:
                     (capture_error is not None)
                     or (
                         metrics.get("pass")
-                        and (not cmds_ok or not steady_ok or soak.get("bp_bad_delta") != 0 or soak.get("bp_fault_values") != [0] or soak.get("states") != ["VF_RUN"])
+                        and (not cmds_ok or not steady_ok or not soak.get("bp_link_live_all") or soak.get("bp_bad_delta") != 0 or soak.get("bp_fault_values") != [0] or soak.get("states") != ["VF_RUN"])
                     )
                 )
                 if item["pass"] or attempt >= args.case_retries or not retryable:
@@ -352,7 +368,11 @@ def main() -> int:
             estop_cmd_ok = send_cmds_retry(base, ["ESTOP"], retries=1, retry_delay_s=0.2)
             estop_ok, estop_st, estop_dt = wait_for(
                 base,
-                lambda s: int(st_num(s, "pwm", 0.0)) == 0 and int(st_num(s, "estop", 0.0)) == 1 and s.get("state") == "SAFE",
+                lambda s: int(st_num(s, "pwm", 1.0)) == 0
+                and int(st_num(s, "estop", -1.0)) == 1
+                and bp_link_live(s)
+                and bp_bad_ok(s)
+                and s.get("state") == "SAFE",
                 timeout_s=1.5,
                 poll_s=args.poll,
             )

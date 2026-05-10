@@ -112,6 +112,14 @@ int uart_link_poll_frame(uint8_t *frame, uint8_t *fault_code) {
 
   uint8_t b = 0;
   while (rb_pop(&b)) {
+    if (s_rx_resync_req) {
+      __disable_irq();
+      s_rx_tail = s_rx_head;
+      s_rx_resync_req = false;
+      __enable_irq();
+      parser_reset();
+      return 0;
+    }
     switch (s_parser_state) {
       case 0:
         if (b == CMD_HDR0) {

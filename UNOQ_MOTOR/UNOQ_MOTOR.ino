@@ -56,8 +56,11 @@ static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
 static const uint32_t NUCLEO_UART_BAUD = 460800;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
-static const uint32_t NUCLEO_RUN_MIN_SEND_US = 900;
-static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 1800;
+// Keep the UNO Q Zephyr Serial TX path comfortably below line rate.
+// 20 bytes at 460800 baud takes ~0.43 ms on the wire; 2 ms gives headroom for
+// scheduler jitter and prevents partial-frame drops that become CRC errors.
+static const uint32_t NUCLEO_RUN_MIN_SEND_US = 2000;
+static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 4000;
 // Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
 static const uint8_t BP_VER = 0x01;
 static const uint8_t BP_FLAG_ENABLE = 0x01;

@@ -138,6 +138,13 @@ def status_line(st: dict[str, Any] | None) -> str:
     return " ".join(parts)
 
 
+def status_int(st: dict[str, Any] | None, key: str, default: int = 0) -> int:
+    try:
+        return int(fnum(st, key, float(default)))
+    except Exception:
+        return default
+
+
 def parse_step(raw: str) -> Step:
     value = raw.strip()
     lower = value.lower()
@@ -244,6 +251,7 @@ def main() -> int:
     ap.add_argument("--socket-timeout-s", type=float, default=1.0)
     ap.add_argument("--command-delay-s", type=float, default=0.05)
     ap.add_argument("--cleanup-delay-s", type=float, default=0.05)
+    ap.add_argument("--max-bp-bad-delta", type=int, default=0)
     ap.add_argument("--timeout-s", type=float, default=0.0, help="ADB subprocess timeout. 0 = auto.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -257,11 +265,19 @@ def main() -> int:
     cleanup = [] if args.no_cleanup else (args.cleanup if args.cleanup is not None else DEFAULT_CLEANUP)
     can_enable = sequence_can_enable_pwm(steps)
     pre = http_status(args.status_url)
+    pre_bp_bad = status_int(pre, "bp_bad", 999999)
     print(f"PRE: {status_line(pre)}", flush=True)
 
     if pre is None and can_enable:
         print("ERROR: refusing enabling sequence because status precheck is unavailable", file=sys.stderr)
         return 3
+    if pre is not None and can_enable:
+        if not bool(pre.get("link", True)):
+            print("ERROR: refusing enabling sequence because Blue Pill link is down", file=sys.stderr)
+            return 3
+        if fnum(pre, "bp_age_ms", 999999.0) > 1000.0 and fnum(pre, "bp_rsp_age_ms", 999999.0) > 1000.0:
+            print("ERROR: refusing enabling sequence because Blue Pill telemetry is stale", file=sys.stderr)
+            return 3
     if pre is not None and int(fnum(pre, "pwm", 0.0)) != 0 and can_enable:
         print("ERROR: refusing enabling sequence because PWM is already active", file=sys.stderr)
         return 3
@@ -306,10 +322,19 @@ def main() -> int:
     elapsed = time.monotonic() - started
     time.sleep(0.25)
     post = http_status(args.status_url)
+    post_bp_bad = status_int(post, "bp_bad", 999999)
+    bp_bad_delta = max(0, post_bp_bad - pre_bp_bad) if pre_bp_bad < 999999 and post_bp_bad < 999999 else 999999
     print(f"POST: {status_line(post)} elapsed_s={elapsed:.2f}", flush=True)
     if post is not None and int(fnum(post, "pwm", 0.0)) != 0:
         print("ERROR: final status still reports PWM active", file=sys.stderr)
         return 4
+    print(f"BP_BAD_DELTA: {bp_bad_delta}", flush=True)
+    if bp_bad_delta > args.max_bp_bad_delta:
+        print(
+            f"ERROR: bp_bad increased by {bp_bad_delta}, limit is {args.max_bp_bad_delta}",
+            file=sys.stderr,
+        )
+        return 5
     return rc
 
 

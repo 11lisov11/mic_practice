@@ -200,6 +200,8 @@ static bool g_stop_requested = false;
 static bool g_start_req = false;
 static bool g_stop_req = false;
 static bool g_toggle_req = false;
+static uint32_t g_run_limit_ms = 0;
+static uint32_t g_run_deadline_ms = 0;
 static float g_vdc = VDC_NOMINAL;
 static float g_v_limit = 12.0f;
 static float g_vf_v_per_hz = 0.0f;
@@ -1184,6 +1186,14 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
+    } else if (starts_ci(cmd, "SET RUNLIMIT")) {
+      const char *p = cmd + 12;
+      float seconds = 0.0f;
+      if (parse_single_float_arg(p, &seconds)) {
+        set_run_limit(seconds);
+      } else {
+        handled = false;
+      }
     } else if (starts_ci(cmd, "ESTOP")) {
       const char *p = cmd + 5;
       handle_estop_command(p);
@@ -1635,6 +1645,14 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
     float r = 0.0f;
     if (parse_single_float_arg(p, &r)) {
       g_vf_volt_per_hz_ratio = clampf(r, 0.0f, 1.0f);
+    } else {
+      handled = false;
+    }
+  } else if (starts_ci(cmd, "SET RUNLIMIT")) {
+    const char *p = cmd + 12;
+    float seconds = 0.0f;
+    if (parse_single_float_arg(p, &seconds)) {
+      set_run_limit(seconds);
     } else {
       handled = false;
     }
@@ -2414,6 +2432,8 @@ static void hard_stop(bool clear_cmd) {
   g_stop_requested = false;
   g_start_req = false;
   g_stop_req = false;
+  g_run_limit_ms = 0;
+  g_run_deadline_ms = 0;
   g_mode_switch_pending = false;
   g_restart_after_mode_switch = false;
   g_align_ticks = 0;
@@ -2479,6 +2499,18 @@ static void cancel_mode_switch() {
   g_mode_switch_deadline_ms = 0;
   g_restart_after_mode_switch = false;
 }
+static void set_run_limit(float seconds) {
+  if (seconds <= 0.0f) {
+    g_run_limit_ms = 0;
+    g_run_deadline_ms = 0;
+    return;
+  }
+  seconds = clampf(seconds, 0.1f, 600.0f);
+  g_run_limit_ms = (uint32_t)(seconds * 1000.0f + 0.5f);
+  if (g_pwm_enabled) {
+    g_run_deadline_ms = millis() + g_run_limit_ms;
+  }
+}
 static bool should_restart_after_mode_switch() {
   return g_pwm_enabled && !g_stop_req && !g_stop_requested && !g_estop_latched;
 }
@@ -2504,6 +2536,8 @@ static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switc
   g_mode_switch_pending = true;
   g_restart_after_mode_switch = restart_after_switch;
   g_mode_switch_deadline_ms = 0;
+  g_run_limit_ms = 0;
+  g_run_deadline_ms = 0;
   g_stop_requested = false;
   g_start_req = false;
   g_stop_req = false;
@@ -2586,6 +2620,15 @@ static void control_step() {
     pwm_write(0, 0, 0);
     return;
   }
+  if (g_pwm_enabled && g_run_deadline_ms != 0U && (int32_t)(now_ms - g_run_deadline_ms) >= 0) {
+    g_estop_latched = true;
+    g_fault = 4;
+    brake_set(false);
+    hard_stop(true);
+    ext_brake_set(0.0f);
+    pwm_write(0, 0, 0);
+    return;
+  }
   if (g_toggle_req) {
     g_toggle_req = false;
     if (g_state == STATE_SAFE) g_start_req = true;
@@ -2594,6 +2637,7 @@ static void control_step() {
   if (g_stop_req) {
     g_stop_req = false;
     g_stop_requested = true;
+    g_run_deadline_ms = 0;
     g_freq_cmd = 0.0f;
     g_iq_target = 0.0f;
   }
@@ -2609,6 +2653,7 @@ static void control_step() {
       g_freq_ref = 0.0f;
       g_theta = 0.0f;
       g_pwm_enabled = true;
+      g_run_deadline_ms = (g_run_limit_ms > 0U) ? (millis() + g_run_limit_ms) : 0U;
       if (g_mode == MODE_VF) {
         g_state = STATE_VF_RUN;
       } else {

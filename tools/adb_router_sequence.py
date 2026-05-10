@@ -117,6 +117,39 @@ def http_status(base: str, timeout_s: float = 3.0) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
+def http_cmd(base: str, cmd: str, timeout_s: float = 2.0) -> bool:
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    body = json.dumps({"cmd": cmd}).encode("utf-8")
+    req = urllib.request.Request(
+        base.rstrip("/") + "/api/cmd",
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with opener.open(req, timeout=timeout_s) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"WARN: HTTP cleanup command {cmd!r} failed: {exc}", file=sys.stderr)
+        return False
+    ok = bool(payload.get("ok"))
+    if not ok:
+        print(f"WARN: HTTP cleanup command {cmd!r} rejected: {payload}", file=sys.stderr)
+    return ok
+
+
+def http_cleanup(base: str, cleanup: list[str], delay_s: float) -> bool:
+    ok = True
+    for cmd in cleanup:
+        cmd = str(cmd).strip()
+        if not cmd:
+            continue
+        if not http_cmd(base, cmd):
+            ok = False
+        time.sleep(max(0.0, delay_s))
+    return ok
+
+
 def fnum(st: dict[str, Any] | None, key: str, default: float = 0.0) -> float:
     if st is None:
         return default
@@ -244,7 +277,29 @@ def sequence_duration_s(steps: list[Step], command_delay_s: float) -> float:
     return total
 
 
+def sequence_has_run_limit(steps: list[Step]) -> bool:
+    for step in steps:
+        if step.cmd and step.cmd.strip().upper().startswith("SET RUNLIMIT"):
+            return True
+    return False
+
+
+def insert_run_limit_before_start(steps: list[Step], limit_s: float) -> list[Step]:
+    if limit_s <= 0.0 or sequence_has_run_limit(steps):
+        return steps
+    out: list[Step] = []
+    inserted = False
+    for step in steps:
+        if not inserted and step.cmd and step.cmd.strip().upper().startswith("START"):
+            out.append(Step(cmd=f"SET RUNLIMIT {limit_s:.3f}"))
+            inserted = True
+        out.append(step)
+    return out
+
+
 def build_steps(args: argparse.Namespace) -> list[Step]:
+    if args.step and args.cmd:
+        raise ValueError("do not mix --step and --cmd: use ordered --step 'cmd:...' / --step 'sleep:...' entries")
     steps: list[Step] = []
     for raw in args.step or []:
         steps.append(parse_step(raw))
@@ -279,6 +334,11 @@ def main() -> int:
     ap.add_argument("--vf-ratio", type=float, default=None, help="Optional SET VFRATIO value before VF START.")
     ap.add_argument("--cleanup", action="append", help="Cleanup command. Default: STOP, ESTOP, STOP.")
     ap.add_argument("--no-cleanup", action="store_true", help="Disable cleanup commands. Not recommended.")
+    ap.add_argument(
+        "--no-http-cleanup-fallback",
+        action="store_true",
+        help="Disable HTTP /api/cmd cleanup fallback if the direct router socket path fails.",
+    )
     ap.add_argument("--allow-hv", action="store_true", help="Allow enabling sequence when VBUS exceeds --max-vdc.")
     ap.add_argument("--max-vdc", type=float, default=60.0)
     ap.add_argument("--socket-timeout-s", type=float, default=1.0)
@@ -287,6 +347,13 @@ def main() -> int:
     ap.add_argument("--max-bp-bad-delta", type=int, default=0)
     ap.add_argument("--post-settle-s", type=float, default=1.5, help="Poll final status for this long after cleanup.")
     ap.add_argument("--post-settle-poll-s", type=float, default=0.25)
+    ap.add_argument(
+        "--run-limit-s",
+        type=float,
+        default=None,
+        help="One-shot firmware run limit inserted before START. Default: auto for enabling sequences.",
+    )
+    ap.add_argument("--no-run-limit", action="store_true", help="Do not insert SET RUNLIMIT before START.")
     ap.add_argument("--hv-vdc-min", type=float, default=100.0, help="Minimum telemetry VBUS required when --allow-hv is used.")
     ap.add_argument("--skip-hv-vdc-min-check", action="store_true", help="Disable --allow-hv minimum VBUS telemetry check.")
     ap.add_argument("--timeout-s", type=float, default=0.0, help="ADB subprocess timeout. 0 = auto.")
@@ -301,6 +368,11 @@ def main() -> int:
 
     cleanup = [] if args.no_cleanup else (args.cleanup if args.cleanup is not None else DEFAULT_CLEANUP)
     can_enable = sequence_can_enable_pwm(steps)
+    if can_enable and not args.no_run_limit:
+        run_limit_s = args.run_limit_s
+        if run_limit_s is None:
+            run_limit_s = sequence_duration_s(steps, args.command_delay_s) + len(cleanup) * args.cleanup_delay_s + 2.0
+        steps = insert_run_limit_before_start(steps, max(0.1, float(run_limit_s)))
     pre = http_status(args.status_url)
     pre_bp_bad = status_int(pre, "bp_bad", 999999)
     print(f"PRE: {status_line(pre)}", flush=True)
@@ -370,14 +442,45 @@ def main() -> int:
         rc = 124
 
     elapsed = time.monotonic() - started
+    if rc != 0 and cleanup and not args.no_http_cleanup_fallback:
+        print("WARN: direct router sequence failed; attempting HTTP cleanup fallback", file=sys.stderr)
+        http_cleanup(args.status_url, cleanup, args.cleanup_delay_s)
+
     time.sleep(0.25)
     post = http_status(args.status_url)
     post_bp_bad = status_int(post, "bp_bad", 999999)
     bp_bad_delta = max(0, post_bp_bad - pre_bp_bad) if pre_bp_bad < 999999 and post_bp_bad < 999999 else 999999
     print(f"POST: {status_line(post)} elapsed_s={elapsed:.2f}", flush=True)
-    if post is not None and int(fnum(post, "pwm", 0.0)) != 0:
-        print("ERROR: final status still reports PWM active", file=sys.stderr)
+    if post is None and rc != 0:
+        print("ERROR: final status unavailable after failed sequence", file=sys.stderr)
         return 4
+    if post is not None and int(fnum(post, "pwm", 0.0)) != 0:
+        if cleanup and not args.no_http_cleanup_fallback:
+            print("WARN: final status still reports PWM active; attempting HTTP cleanup fallback", file=sys.stderr)
+            http_cleanup(args.status_url, cleanup, args.cleanup_delay_s)
+            time.sleep(0.25)
+            post = http_status(args.status_url)
+            post_bp_bad = status_int(post, "bp_bad", post_bp_bad)
+            print(f"POST_CLEANUP: {status_line(post)}", flush=True)
+        if post is None or int(fnum(post, "pwm", 0.0)) != 0:
+            print("ERROR: final status still reports PWM active", file=sys.stderr)
+            return 4
+    if post is not None and int(fnum(post, "estop", 1.0)) == 0 and cleanup and not args.no_http_cleanup_fallback:
+        print("WARN: final status is not ESTOP-latched; attempting HTTP cleanup fallback", file=sys.stderr)
+        http_cleanup(args.status_url, cleanup, args.cleanup_delay_s)
+        time.sleep(0.25)
+        post = http_status(args.status_url)
+        post_bp_bad = status_int(post, "bp_bad", post_bp_bad)
+        print(f"POST_CLEANUP: {status_line(post)}", flush=True)
+        if post is None:
+            print("ERROR: final status unavailable after HTTP cleanup fallback", file=sys.stderr)
+            return 4
+        if int(fnum(post, "pwm", 0.0)) != 0:
+            print("ERROR: final status still reports PWM active", file=sys.stderr)
+            return 4
+        if int(fnum(post, "estop", 1.0)) == 0:
+            print("ERROR: final status is not ESTOP-latched", file=sys.stderr)
+            return 4
 
     settle_deadline = time.monotonic() + max(0.0, args.post_settle_s)
     settle_idx = 0

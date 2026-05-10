@@ -252,6 +252,8 @@ def main() -> int:
     ap.add_argument("--command-delay-s", type=float, default=0.05)
     ap.add_argument("--cleanup-delay-s", type=float, default=0.05)
     ap.add_argument("--max-bp-bad-delta", type=int, default=0)
+    ap.add_argument("--hv-vdc-min", type=float, default=100.0, help="Minimum telemetry VBUS required when --allow-hv is used.")
+    ap.add_argument("--skip-hv-vdc-min-check", action="store_true", help="Disable --allow-hv minimum VBUS telemetry check.")
     ap.add_argument("--timeout-s", type=float, default=0.0, help="ADB subprocess timeout. 0 = auto.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
@@ -286,6 +288,13 @@ def main() -> int:
         if vdc > args.max_vdc and not args.allow_hv:
             print(
                 f"ERROR: refusing enabling sequence at VBUS={vdc:.1f} V without --allow-hv",
+                file=sys.stderr,
+            )
+            return 3
+        if args.allow_hv and not args.skip_hv_vdc_min_check and vdc < args.hv_vdc_min:
+            print(
+                f"ERROR: refusing HV enabling sequence because telemetry VBUS={vdc:.1f} V is below "
+                f"--hv-vdc-min={args.hv_vdc_min:.1f} V",
                 file=sys.stderr,
             )
             return 3

@@ -218,6 +218,8 @@ J2 (Table 6):
 
 DC bus telemetry in `/api/status` is sourced from Blue Pill `PA5/J2-14` (`bp_vbus_raw`, `bp_vdc`, `bp_vbus_age_ms`). UNO Q `A0` is only a legacy/fallback local ADC path and is not the primary HV bus measurement.
 
+Critical wiring note: in the current UART configuration, Blue Pill `PA5` is only the DC bus ADC input. Do not leave any old SPI wire `UNO Q D13/SCK -> Blue Pill PA5`; it conflicts with `J2-14` and can make `/api/status` report near-zero `bp_vdc` while the DC bus is actually energized.
+
 J9 (Hall/Encoder, UM2014):
 - J9‑1 `Hall input 1 / encoder A+`
 - J9‑2 `Hall input 2 / encoder B+`

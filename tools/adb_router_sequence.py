@@ -332,6 +332,12 @@ def main() -> int:
                 f"--hv-vdc-min={args.hv_vdc_min:.1f} V",
                 file=sys.stderr,
             )
+            print(
+                "ERROR: if the DC bus is physically energized, do not bypass this check. "
+                "Verify STEVAL J2-14 HV bus voltage -> Blue Pill PA5/ADC1_IN5, common GND, "
+                "and remove any old UNO Q SPI SCK/D13 -> PA5 wire.",
+                file=sys.stderr,
+            )
             return 3
 
     payload = {

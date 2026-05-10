@@ -252,6 +252,8 @@ def main() -> int:
     ap.add_argument("--command-delay-s", type=float, default=0.05)
     ap.add_argument("--cleanup-delay-s", type=float, default=0.05)
     ap.add_argument("--max-bp-bad-delta", type=int, default=0)
+    ap.add_argument("--post-settle-s", type=float, default=1.5, help="Poll final status for this long after cleanup.")
+    ap.add_argument("--post-settle-poll-s", type=float, default=0.25)
     ap.add_argument("--hv-vdc-min", type=float, default=100.0, help="Minimum telemetry VBUS required when --allow-hv is used.")
     ap.add_argument("--skip-hv-vdc-min-check", action="store_true", help="Disable --allow-hv minimum VBUS telemetry check.")
     ap.add_argument("--timeout-s", type=float, default=0.0, help="ADB subprocess timeout. 0 = auto.")
@@ -337,7 +339,28 @@ def main() -> int:
     if post is not None and int(fnum(post, "pwm", 0.0)) != 0:
         print("ERROR: final status still reports PWM active", file=sys.stderr)
         return 4
+
+    settle_deadline = time.monotonic() + max(0.0, args.post_settle_s)
+    settle_idx = 0
+    while time.monotonic() < settle_deadline:
+        time.sleep(max(0.05, args.post_settle_poll_s))
+        sample = http_status(args.status_url)
+        if sample is None:
+            print(f"SETTLE {settle_idx}: status=unavailable", flush=True)
+            continue
+        settle_idx += 1
+        sample_bp_bad = status_int(sample, "bp_bad", 999999)
+        if sample_bp_bad > post_bp_bad:
+            post_bp_bad = sample_bp_bad
+        if int(fnum(sample, "pwm", 0.0)) != 0:
+            print(f"SETTLE {settle_idx}: {status_line(sample)}", flush=True)
+            print("ERROR: settled status reports PWM active", file=sys.stderr)
+            return 4
+        print(f"SETTLE {settle_idx}: {status_line(sample)}", flush=True)
+
     print(f"BP_BAD_DELTA: {bp_bad_delta}", flush=True)
+    bp_bad_delta = max(0, post_bp_bad - pre_bp_bad) if pre_bp_bad < 999999 and post_bp_bad < 999999 else 999999
+    print(f"BP_BAD_DELTA_SETTLED: {bp_bad_delta}", flush=True)
     if bp_bad_delta > args.max_bp_bad_delta:
         print(
             f"ERROR: bp_bad increased by {bp_bad_delta}, limit is {args.max_bp_bad_delta}",

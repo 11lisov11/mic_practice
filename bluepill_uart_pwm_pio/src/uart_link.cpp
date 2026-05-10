@@ -14,6 +14,7 @@ static volatile uint16_t s_rx_tail = 0;
 static uint8_t s_parser_state = 0;
 static uint8_t s_parser_idx = 0;
 static uint8_t s_frame_buf[FRAME_LEN];
+static volatile bool s_rx_resync_req = false;
 
 static inline uint16_t rb_next(uint16_t v) {
   return (uint16_t)((v + 1U) % UART_RX_BUF_SIZE);
@@ -29,6 +30,10 @@ static inline bool rb_full(void) {
 
 static void rb_push(uint8_t b) {
   if (rb_full()) {
+    // Dropping a byte would turn the next frame into a synthetic CRC error.
+    // Flush and wait for a clean AA55 header instead.
+    s_rx_tail = s_rx_head;
+    s_rx_resync_req = true;
     return;
   }
   s_rx_buf[s_rx_head] = b;
@@ -44,12 +49,17 @@ static bool rb_pop(uint8_t *b) {
   return true;
 }
 
+static void parser_reset(void) {
+  s_parser_state = 0;
+  s_parser_idx = 0;
+}
+
 void uart_link_init(UART_HandleTypeDef *huart) {
   s_uart = huart;
   s_rx_head = 0;
   s_rx_tail = 0;
-  s_parser_state = 0;
-  s_parser_idx = 0;
+  s_rx_resync_req = false;
+  parser_reset();
 
   __HAL_UART_ENABLE(s_uart);
 
@@ -78,6 +88,11 @@ void uart_link_isr(void) {
     volatile uint32_t tmp2 = s_uart->Instance->DR;
     (void)tmp;
     (void)tmp2;
+    // Do not feed the error byte into the frame parser. A hardware UART error
+    // means the current frame boundary is untrusted; resync on the next header.
+    s_rx_tail = s_rx_head;
+    s_rx_resync_req = true;
+    return;
   }
 
   if (sr & UART_FLAG_RXNE) {
@@ -87,6 +102,14 @@ void uart_link_isr(void) {
 }
 
 int uart_link_poll_frame(uint8_t *frame, uint8_t *fault_code) {
+  if (s_rx_resync_req) {
+    __disable_irq();
+    s_rx_tail = s_rx_head;
+    s_rx_resync_req = false;
+    __enable_irq();
+    parser_reset();
+  }
+
   uint8_t b = 0;
   while (rb_pop(&b)) {
     switch (s_parser_state) {

@@ -190,15 +190,22 @@ def build_duty_rotate_steps(mag: float, dwell_s: float, cycles: int, direction: 
     return steps
 
 
-def build_vf_run_steps(freq_hz: float, hold_s: float, mag: float | None = None) -> list[Step]:
+def build_vf_run_steps(
+    freq_hz: float,
+    hold_s: float,
+    boost_v: float | None = None,
+    ratio: float | None = None,
+) -> list[Step]:
     steps: list[Step] = [
         Step(cmd="STOP"),
         Step(cmd="ESTOP CLEAR"),
         Step(sleep_s=0.20),
         Step(cmd="MODE VF"),
     ]
-    if mag is not None:
-        steps.append(Step(cmd=f"SET MAG {clamp(mag, 0.0, 1.0):.4f}"))
+    if boost_v is not None:
+        steps.append(Step(cmd=f"SET VFBOOST {clamp(boost_v, 0.0, 120.0):.4f}"))
+    if ratio is not None:
+        steps.append(Step(cmd=f"SET VFRATIO {clamp(ratio, 0.0, 1.0):.4f}"))
     steps.extend(
         [
             Step(cmd=f"SET FREQ {max(0.0, freq_hz):.4f}"),
@@ -246,7 +253,7 @@ def build_steps(args: argparse.Namespace) -> list[Step]:
     if args.duty_rotate:
         steps.extend(build_duty_rotate_steps(args.mag, args.dwell_s, args.cycles, args.direction))
     if args.vf_run:
-        steps.extend(build_vf_run_steps(args.freq_hz, args.hold_s, args.vf_mag))
+        steps.extend(build_vf_run_steps(args.freq_hz, args.hold_s, args.vf_boost_v, args.vf_ratio))
     if not steps:
         raise ValueError("no steps specified")
     return steps
@@ -268,7 +275,8 @@ def main() -> int:
     ap.add_argument("--vf-run", action="store_true", help="Generate a bounded scalar/VF run sequence.")
     ap.add_argument("--freq-hz", type=float, default=0.5, help="Scalar/VF target frequency for --vf-run.")
     ap.add_argument("--hold-s", type=float, default=1.0, help="Hold time after START for --vf-run.")
-    ap.add_argument("--vf-mag", type=float, default=None, help="Optional SET MAG value before VF START.")
+    ap.add_argument("--vf-boost-v", type=float, default=None, help="Optional SET VFBOOST value before VF START.")
+    ap.add_argument("--vf-ratio", type=float, default=None, help="Optional SET VFRATIO value before VF START.")
     ap.add_argument("--cleanup", action="append", help="Cleanup command. Default: STOP, ESTOP, STOP.")
     ap.add_argument("--no-cleanup", action="store_true", help="Disable cleanup commands. Not recommended.")
     ap.add_argument("--allow-hv", action="store_true", help="Allow enabling sequence when VBUS exceeds --max-vdc.")

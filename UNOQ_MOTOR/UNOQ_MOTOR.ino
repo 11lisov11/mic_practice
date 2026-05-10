@@ -203,6 +203,8 @@ static bool g_toggle_req = false;
 static float g_vdc = VDC_NOMINAL;
 static float g_v_limit = 12.0f;
 static float g_vf_v_per_hz = 0.0f;
+static float g_vf_volt_per_hz_ratio = VF_VOLT_PER_HZ_RATIO;
+static float g_vf_start_boost_v = VF_START_BOOST_V;
 static float g_theta = 0.0f;
 static float g_omega_ref = 0.0f;
 static float g_freq_cmd = 0.0f;
@@ -1166,6 +1168,22 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
+    } else if (starts_ci(cmd, "SET VFBOOST")) {
+      const char *p = cmd + 11;
+      float v = 0.0f;
+      if (parse_single_float_arg(p, &v)) {
+        g_vf_start_boost_v = clampf(v, 0.0f, 120.0f);
+      } else {
+        handled = false;
+      }
+    } else if (starts_ci(cmd, "SET VFRATIO")) {
+      const char *p = cmd + 11;
+      float r = 0.0f;
+      if (parse_single_float_arg(p, &r)) {
+        g_vf_volt_per_hz_ratio = clampf(r, 0.0f, 1.0f);
+      } else {
+        handled = false;
+      }
     } else if (starts_ci(cmd, "ESTOP")) {
       const char *p = cmd + 5;
       handle_estop_command(p);
@@ -1601,6 +1619,22 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       f = clampf(f, 0.0f, 50.0f);
       g_freq_cmd = f;
       if (f > 0.1f) g_last_nonzero_freq = f;
+    } else {
+      handled = false;
+    }
+  } else if (starts_ci(cmd, "SET VFBOOST")) {
+    const char *p = cmd + 11;
+    float v = 0.0f;
+    if (parse_single_float_arg(p, &v)) {
+      g_vf_start_boost_v = clampf(v, 0.0f, 120.0f);
+    } else {
+      handled = false;
+    }
+  } else if (starts_ci(cmd, "SET VFRATIO")) {
+    const char *p = cmd + 11;
+    float r = 0.0f;
+    if (parse_single_float_arg(p, &r)) {
+      g_vf_volt_per_hz_ratio = clampf(r, 0.0f, 1.0f);
     } else {
       handled = false;
     }
@@ -2756,7 +2790,7 @@ static void control_step() {
     float boost_v = 0.0f;
     if (freq_abs >= VF_START_BOOST_MIN_FREQ_HZ) {
       float boost_taper = 1.0f - clampf(freq_abs / VF_START_BOOST_TAPER_HZ, 0.0f, 1.0f);
-      boost_v = VF_START_BOOST_V * boost_taper;
+      boost_v = g_vf_start_boost_v * boost_taper;
     }
     float v_mag = (g_vf_v_per_hz * g_freq_ref) + boost_v;
     v_mag = clampf(v_mag, 0.0f, g_v_limit);
@@ -3059,7 +3093,7 @@ void setup() {
   pwm_force_off();
   g_vdc = VDC_NOMINAL;
   g_v_limit = 0.577f * g_vdc;
-  g_vf_v_per_hz = (g_vdc * VF_VOLT_PER_HZ_RATIO) / VF_BASE_FREQ_HZ;
+  g_vf_v_per_hz = (g_vdc * g_vf_volt_per_hz_ratio) / VF_BASE_FREQ_HZ;
   pi_init(&g_pi_id, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   pi_init(&g_pi_iq, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   g_last_control_us = micros();
@@ -3122,7 +3156,7 @@ void loop() {
       g_last_control_us += CONTROL_US;
       g_vdc = read_vdc();
       g_v_limit = 0.577f * g_vdc;
-      g_vf_v_per_hz = (g_vdc * VF_VOLT_PER_HZ_RATIO) / VF_BASE_FREQ_HZ;
+      g_vf_v_per_hz = (g_vdc * g_vf_volt_per_hz_ratio) / VF_BASE_FREQ_HZ;
       control_step();
     }
     }

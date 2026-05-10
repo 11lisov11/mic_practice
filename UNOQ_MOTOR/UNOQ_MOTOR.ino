@@ -74,8 +74,8 @@ static const uint8_t BP_MODE_FOC = 5;
 static const uint8_t BP_EXT_NTC = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
-// Calibrated from HV bus measurement: raw=3328 was 314 V on the meter.
-static const float BP_VBUS_FULL_SCALE_V = 386.5f;
+// Calibrated from HV bus measurement: raw=3256 was 315 V on the meter.
+static const float BP_VBUS_FULL_SCALE_V = 396.1f;
 static const uint32_t BP_VBUS_STALE_MS = 500;
 // SPI pins for UNOQ header
 static const uint8_t NUCLEO_SPI_CS = 10;   // D10

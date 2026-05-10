@@ -17,6 +17,7 @@
 - `tools/full_system_preflight.py` — единый regression-runner: build, доступ к UNO Q, encoder sanity, scalar, FOC/MIC, полный LA-suite и MIC-диагностика.
 - `tools/logic2_recover.py` — recovery Logic2/Saleae: рестарт приложения, проверка automation-port и видимости реального анализатора.
 - `tools/la_probe.py` — проверка доступности Saleae Logic2 Automation.
+- `tools/adb_router_sequence.py` — bounded runner для силовых DUTY/VF шагов через один persistent ADB/router socket с обязательным `STOP/ESTOP` cleanup.
 - `tools/ui_http_bridge.py` — HTTP‑мост для доступа к UI с телефона через ПК.
 - `tools/adb_deploy_web_hmi.py` — деплой web‑GUI на UNO Q через ADB.
 - `tools/ui_access.py` — ADB‑форвард + проверка `/api/status` + (опц.) мост на LAN.
@@ -159,6 +160,18 @@ py -3 -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 `
 Полный раннер с опциональным HV/J7 этапом:
 ```powershell
 py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-hv
+```
+
+Для ручных силовых DUTY шагов не запускать отдельный `adb shell` на каждый шаг. Использовать bounded runner, который держит один socket-сеанс и в любом исходе отправляет `STOP`, `ESTOP`, `STOP`:
+
+```powershell
+py -3 -u .\tools\adb_router_sequence.py --cmd STOP --cmd ESTOP
+```
+
+Любая последовательность с `START` при заметном `VBUS` блокируется без явного `--allow-hv`. Пример только для заранее подготовленного HV стенда с внешним E-STOP:
+
+```powershell
+py -3 -u .\tools\adb_router_sequence.py --allow-hv --duty-rotate --mag 0.20 --dwell-s 0.25 --cycles 1
 ```
 
 Ожидаемый признак исправного стенда:

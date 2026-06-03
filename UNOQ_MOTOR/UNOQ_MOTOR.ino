@@ -57,12 +57,14 @@ static const bool USE_NUCLEO_UART_FALLBACK = true;
 static const uint32_t NUCLEO_UART_BAUD = 460800;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // Keep the UNO Q Zephyr Serial TX path comfortably below line rate.
-// 20 bytes at 460800 baud takes ~0.43 ms on the wire; 2 ms gives headroom for
+// 32 bytes at 460800 baud takes ~0.70 ms on the wire; 2 ms gives headroom for
 // scheduler jitter and prevents partial-frame drops that become CRC errors.
 static const uint32_t NUCLEO_RUN_MIN_SEND_US = 2000;
 static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 4000;
 // Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
-static const uint8_t BP_VER = 0x01;
+static const size_t BP_FRAME_LEN = 32;
+static const size_t BP_CRC_OFF = BP_FRAME_LEN - 1;
+static const uint8_t BP_VER = 0x02;
 static const uint8_t BP_FLAG_ENABLE = 0x01;
 static const uint8_t BP_FLAG_ESTOP = 0x02;
 static const uint8_t BP_FLAG_DIAG_PWM = 0x04;
@@ -80,6 +82,15 @@ static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
 // Calibrated from HV bus measurement: raw=3256 was 315 V on the meter.
 static const float BP_VBUS_FULL_SCALE_V = 396.1f;
 static const uint32_t BP_VBUS_STALE_MS = 500;
+static const float BP_TEMP_VREF = 3.3f;
+static const float BP_TEMP_PULLUP_OHM = 12000.0f;
+static const float BP_TEMP_NTC_R25_OHM = 85000.0f;
+static const float BP_TEMP_NTC_BETA_K = 4092.0f;
+static const uint8_t BP_TEMP_FLAG_VALID = 0x01;
+static const uint8_t BP_TEMP_FLAG_FAULT = 0x02;
+static const float BP_PHASE_VREF = 3.3f;
+static const uint8_t BP_PHASE_FLAG_VALID = 0x01;
+static const uint8_t BP_PHASE_FLAG_C_VIRTUAL = 0x02;
 // SPI pins for UNOQ header
 static const uint8_t NUCLEO_SPI_CS = 10;   // D10
 static const uint8_t NUCLEO_SPI_SCK = 13;  // D13
@@ -259,6 +270,19 @@ static uint16_t g_bp_brake_q15 = 0;
 static uint16_t g_bp_vbus_raw = 0;
 static float g_bp_vdc = 0.0f;
 static uint32_t g_bp_vbus_ms = 0;
+static uint16_t g_bp_temp_raw = 0;
+static uint8_t g_bp_temp_flags = 0;
+static float g_bp_temp_v = 0.0f;
+static float g_bp_temp_c = 0.0f;
+static uint32_t g_bp_temp_ms = 0;
+static uint16_t g_bp_phase_a_raw = 0;
+static uint16_t g_bp_phase_b_raw = 0;
+static uint16_t g_bp_phase_c_raw = 2048;
+static uint8_t g_bp_phase_flags = 0;
+static float g_bp_phase_a_v = 0.0f;
+static float g_bp_phase_b_v = 0.0f;
+static float g_bp_phase_c_v = 0.0f;
+static uint32_t g_bp_phase_ms = 0;
 static uint16_t g_bp_good_cnt = 0;
 static uint16_t g_bp_bad_cnt = 0;
 static uint8_t g_bp_last_seq = 0;
@@ -826,7 +850,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(50);
+  mp_tx_array(62);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -895,6 +919,19 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)g_bp_vbus_raw);
   mp_tx_float(g_bp_vdc);
   mp_tx_int((int32_t)bp_vbus_age);
+  mp_tx_int((int32_t)g_bp_temp_raw);
+  mp_tx_float(g_bp_temp_v);
+  mp_tx_float(g_bp_temp_c);
+  mp_tx_int((int32_t)g_bp_temp_flags);
+  mp_tx_int((int32_t)g_bp_phase_a_raw);
+  mp_tx_int((int32_t)g_bp_phase_b_raw);
+  mp_tx_int((int32_t)g_bp_phase_c_raw);
+  mp_tx_float(g_bp_phase_a_v);
+  mp_tx_float(g_bp_phase_b_v);
+  mp_tx_float(g_bp_phase_c_v);
+  mp_tx_int((int32_t)g_bp_phase_flags);
+  uint32_t bp_phase_age = (g_bp_phase_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_phase_ms);
+  mp_tx_int((int32_t)bp_phase_age);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1801,6 +1838,25 @@ static String rpc_get() {
   s += " bp_vdc="; s += format_fixed(g_bp_vdc, 2);
   uint32_t bp_vbus_age = (g_bp_vbus_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_vbus_ms);
   s += " bp_vbus_age_ms="; s += String((int)bp_vbus_age);
+  s += " bp_temp_raw="; s += String((int)g_bp_temp_raw);
+  s += " bp_temp_v="; s += format_fixed(g_bp_temp_v, 3);
+  s += " bp_temp_c="; s += format_fixed(g_bp_temp_c, 1);
+  s += " bp_temp_flags="; s += String((int)g_bp_temp_flags);
+  s += " bp_temp_valid="; s += String((g_bp_temp_flags & BP_TEMP_FLAG_VALID) ? 1 : 0);
+  s += " bp_temp_fault="; s += String((g_bp_temp_flags & BP_TEMP_FLAG_FAULT) ? 1 : 0);
+  uint32_t bp_temp_age = (g_bp_temp_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_temp_ms);
+  s += " bp_temp_age_ms="; s += String((int)bp_temp_age);
+  s += " bp_phase_a_raw="; s += String((int)g_bp_phase_a_raw);
+  s += " bp_phase_b_raw="; s += String((int)g_bp_phase_b_raw);
+  s += " bp_phase_c_raw="; s += String((int)g_bp_phase_c_raw);
+  s += " bp_phase_a_v="; s += format_fixed(g_bp_phase_a_v, 3);
+  s += " bp_phase_b_v="; s += format_fixed(g_bp_phase_b_v, 3);
+  s += " bp_phase_c_v="; s += format_fixed(g_bp_phase_c_v, 3);
+  s += " bp_phase_flags="; s += String((int)g_bp_phase_flags);
+  s += " bp_phase_valid="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_VALID) ? 1 : 0);
+  s += " bp_phase_c_virtual="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_C_VIRTUAL) ? 1 : 0);
+  uint32_t bp_phase_age = (g_bp_phase_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_phase_ms);
+  s += " bp_phase_age_ms="; s += String((int)bp_phase_age);
   uint32_t bp_rsp_age = (g_bp_last_rsp_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_last_rsp_ms);
   s += " bp_rsp_age_ms="; s += String((int)bp_rsp_age);
   uint32_t ping_age = (g_bp_ping_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_ping_ms);
@@ -2019,6 +2075,31 @@ static uint8_t nucleo_crc8(const uint8_t *buf, size_t len) {
   }
   return c;
 }
+static float bp_temp_voltage_from_raw(uint16_t raw) {
+  return ((float)raw * BP_TEMP_VREF) / 4095.0f;
+}
+static float bp_phase_voltage_from_raw(uint16_t raw) {
+  return ((float)raw * BP_PHASE_VREF) / 4095.0f;
+}
+static bool bp_temp_c_from_raw(uint16_t raw, float *temp_c) {
+  if (!temp_c || raw == 0U || raw >= 4095U) {
+    return false;
+  }
+  const float v = bp_temp_voltage_from_raw(raw);
+  if (v <= 0.001f || v >= (BP_TEMP_VREF - 0.001f)) {
+    return false;
+  }
+  const float r_ntc = BP_TEMP_PULLUP_OHM * v / (BP_TEMP_VREF - v);
+  if (!isfinite(r_ntc) || r_ntc <= 0.0f) {
+    return false;
+  }
+  const float inv_t = (1.0f / 298.15f) + (logf(r_ntc / BP_TEMP_NTC_R25_OHM) / BP_TEMP_NTC_BETA_K);
+  if (!isfinite(inv_t) || inv_t <= 0.0f) {
+    return false;
+  }
+  *temp_c = (1.0f / inv_t) - 273.15f;
+  return true;
+}
 static void enc_speed_update(uint16_t raw, bool ok, uint32_t now_ms) {
   if (!ok) {
     g_enc_speed_valid = false;
@@ -2076,8 +2157,8 @@ static void enc_speed_update(uint16_t raw, bool ok, uint32_t now_ms) {
 static bool nucleo_check_reply(const uint8_t *rx) {
   if (!rx) return false;
   if (rx[0] != 0x55 || rx[1] != 0xAA) return false;
-  uint8_t crc = nucleo_crc8(rx, 19);
-  if (crc != rx[19]) return false;
+  uint8_t crc = nucleo_crc8(rx, BP_CRC_OFF);
+  if (crc != rx[BP_CRC_OFF]) return false;
   uint32_t now_ms = millis();
   g_bp_status = rx[3];
   g_bp_last_seq = rx[4];
@@ -2097,6 +2178,30 @@ static bool nucleo_check_reply(const uint8_t *rx) {
   }
   g_bp_vdc = ((float)g_bp_vbus_raw * BP_VBUS_FULL_SCALE_V) / 4095.0f;
   g_bp_vbus_ms = now_ms;
+  g_bp_temp_raw = (uint16_t)rx[19] | ((uint16_t)rx[20] << 8);
+  if (g_bp_temp_raw > 4095U) {
+    g_bp_temp_raw = 4095U;
+  }
+  g_bp_temp_flags = rx[21];
+  g_bp_temp_v = bp_temp_voltage_from_raw(g_bp_temp_raw);
+  float temp_c = 0.0f;
+  if ((g_bp_temp_flags & BP_TEMP_FLAG_VALID) != 0 && bp_temp_c_from_raw(g_bp_temp_raw, &temp_c)) {
+    g_bp_temp_c = temp_c;
+  } else {
+    g_bp_temp_c = 0.0f;
+  }
+  g_bp_temp_ms = now_ms;
+  g_bp_phase_a_raw = (uint16_t)rx[23] | ((uint16_t)rx[24] << 8);
+  g_bp_phase_b_raw = (uint16_t)rx[25] | ((uint16_t)rx[26] << 8);
+  g_bp_phase_c_raw = (uint16_t)rx[27] | ((uint16_t)rx[28] << 8);
+  if (g_bp_phase_a_raw > 4095U) g_bp_phase_a_raw = 4095U;
+  if (g_bp_phase_b_raw > 4095U) g_bp_phase_b_raw = 4095U;
+  if (g_bp_phase_c_raw > 4095U) g_bp_phase_c_raw = 4095U;
+  g_bp_phase_flags = rx[29];
+  g_bp_phase_a_v = bp_phase_voltage_from_raw(g_bp_phase_a_raw);
+  g_bp_phase_b_v = bp_phase_voltage_from_raw(g_bp_phase_b_raw);
+  g_bp_phase_c_v = bp_phase_voltage_from_raw(g_bp_phase_c_raw);
+  g_bp_phase_ms = now_ms;
   g_bp_last_rsp_ms = now_ms;
   if (g_nucleo_waiting_rsp && g_bp_last_seq == g_nucleo_waiting_seq) {
     g_nucleo_waiting_rsp = false;
@@ -2113,11 +2218,11 @@ static bool nucleo_check_reply(const uint8_t *rx) {
 }
 
 // Non-blocking UART reply parser (Blue Pill -> UNOQ).
-// We keep it simple: sync to 0x55 0xAA header, then collect 20 bytes.
+// We keep it simple: sync to 0x55 0xAA header, then collect one reply frame.
 static void nucleo_uart_poll() {
   static uint8_t st = 0;
   static uint8_t idx = 0;
-  static uint8_t buf[20];
+  static uint8_t buf[BP_FRAME_LEN];
   while (NUCLEO_SERIAL.available() > 0) {
     uint8_t b = (uint8_t)NUCLEO_SERIAL.read();
     // Detect the Blue Pill's boot ping (0x5A 0xA5 ...) to diagnose RX wiring/baud
@@ -2253,7 +2358,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
       (uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_MIN_SEND_US) {
     return;
   }
-  uint8_t pkt[20] = {0};
+  uint8_t pkt[BP_FRAME_LEN] = {0};
   uint8_t seq = g_nucleo_seq++;
   bool enable_eff = enable;
   bool estop_eff = g_estop_latched;
@@ -2311,9 +2416,9 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   pkt[16] = (uint8_t)((brake_q15 >> 8) & 0xFF);
   pkt[17] = 0;
   pkt[18] = 0;
-  pkt[19] = nucleo_crc8(pkt, 19);
+  pkt[BP_CRC_OFF] = nucleo_crc8(pkt, BP_CRC_OFF);
   if (USE_NUCLEO_SPI) {
-    uint8_t rx[20] = {0};
+    uint8_t rx[BP_FRAME_LEN] = {0};
     nucleo_spi_transfer(pkt, rx, sizeof(pkt));
     if (nucleo_check_reply(rx)) {
       if (g_nucleo_rx_good < 0xFFFFu) g_nucleo_rx_good++;

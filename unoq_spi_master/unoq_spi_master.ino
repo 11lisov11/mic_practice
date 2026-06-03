@@ -133,7 +133,8 @@ static void matrix_draw_freq_tenths(uint16_t tenths) {
 #endif
 
 #if LINK_BLUEPILL
-static const uint16_t FRAME_LEN = 20;
+static const uint16_t FRAME_LEN = 32;
+static const uint8_t CRC_OFF = FRAME_LEN - 1;
 static const uint8_t CMD_HDR0 = 0xAA;
 static const uint8_t CMD_HDR1 = 0x55;
 static const uint8_t RSP_HDR0 = 0x55;
@@ -173,6 +174,12 @@ static uint8_t last_fault = 0;
 static uint8_t last_mode = MODE_OFF;
 static uint8_t last_ext_flags = 0;
 static uint16_t last_brake_q15 = 0;
+static uint16_t last_temp_raw = 0;
+static uint8_t last_temp_flags = 0;
+static uint16_t last_phase_a_raw = 0;
+static uint16_t last_phase_b_raw = 0;
+static uint16_t last_phase_c_raw = 2048;
+static uint8_t last_phase_flags = 0;
 static uint16_t last_good = 0;
 static uint16_t last_bad = 0;
 static bool clear_fault_pending = false;
@@ -285,12 +292,12 @@ static void build_cmd(uint8_t flags, uint8_t mode) {
   set_u16(&tx_frame[15], cmd_brake_q15);
   tx_frame[17] = 0;
   tx_frame[18] = 0;
-  tx_frame[19] = crc_xor(tx_frame, 19);
+  tx_frame[CRC_OFF] = crc_xor(tx_frame, CRC_OFF);
 }
 
 static void handle_reply(void) {
   if (rx_frame[0] != RSP_HDR0 || rx_frame[1] != RSP_HDR1) return;
-  if (crc_xor(rx_frame, 19) != rx_frame[19]) return;
+  if (crc_xor(rx_frame, CRC_OFF) != rx_frame[CRC_OFF]) return;
   last_status = rx_frame[3];
   last_good = (uint16_t)rx_frame[5] | ((uint16_t)rx_frame[6] << 8);
   last_bad = (uint16_t)rx_frame[7] | ((uint16_t)rx_frame[8] << 8);
@@ -298,6 +305,12 @@ static void handle_reply(void) {
   last_mode = rx_frame[10];
   last_ext_flags = rx_frame[14];
   last_brake_q15 = (uint16_t)rx_frame[15] | ((uint16_t)rx_frame[16] << 8);
+  last_temp_raw = (uint16_t)rx_frame[19] | ((uint16_t)rx_frame[20] << 8);
+  last_temp_flags = rx_frame[21];
+  last_phase_a_raw = (uint16_t)rx_frame[23] | ((uint16_t)rx_frame[24] << 8);
+  last_phase_b_raw = (uint16_t)rx_frame[25] | ((uint16_t)rx_frame[26] << 8);
+  last_phase_c_raw = (uint16_t)rx_frame[27] | ((uint16_t)rx_frame[28] << 8);
+  last_phase_flags = rx_frame[29];
   last_rx_ms = millis();
   have_reply = true;
   blink_rx_led();
@@ -536,6 +549,16 @@ static String rpc_get() {
   float brake = (ext_flags & FLAG_EXT_BRAKE_PWM) ? ((float)brake_q15 / 32767.0f) : 0.0f;
   s += " brake="; s += String((ext_flags & FLAG_EXT_BRAKE_PWM) ? 1 : 0);
   s += " brake_duty="; s += String(brake, 2);
+  s += " bp_temp_raw="; s += String((int)last_temp_raw);
+  s += " bp_temp_flags="; s += String((int)last_temp_flags);
+  s += " bp_temp_valid="; s += String((last_temp_flags & 0x01) ? 1 : 0);
+  s += " bp_temp_fault="; s += String((last_temp_flags & 0x02) ? 1 : 0);
+  s += " bp_phase_a_raw="; s += String((int)last_phase_a_raw);
+  s += " bp_phase_b_raw="; s += String((int)last_phase_b_raw);
+  s += " bp_phase_c_raw="; s += String((int)last_phase_c_raw);
+  s += " bp_phase_flags="; s += String((int)last_phase_flags);
+  s += " bp_phase_valid="; s += String((last_phase_flags & 0x01) ? 1 : 0);
+  s += " bp_phase_c_virtual="; s += String((last_phase_flags & 0x02) ? 1 : 0);
   return s;
 }
 #endif

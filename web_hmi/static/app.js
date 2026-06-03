@@ -20,7 +20,9 @@ const modeVal = document.getElementById("modeVal");
 const pwmVal = document.getElementById("pwmVal");
 const speedVal = document.getElementById("speedVal");
 const vdcVal = document.getElementById("vdcVal");
+const tempVal = document.getElementById("tempVal");
 const currVal = document.getElementById("currVal");
+const phaseVal = document.getElementById("phaseVal");
 const idRefVal = document.getElementById("idRefVal");
 const micSaveVal = document.getElementById("micSaveVal");
 const ioVal = document.getElementById("ioVal");
@@ -271,7 +273,27 @@ async function refreshStatus() {
     pwmVal.textContent = data.pwm;
     speedVal.textContent = `${data.speed.toFixed(0)} об/мин`;
     vdcVal.textContent = `${data.vdc.toFixed(2)} В`;
+    if (tempVal) {
+      const tempRaw = typeof data.bp_temp_raw === "number" ? data.bp_temp_raw : 0;
+      const tempV = typeof data.bp_temp_v === "number" ? data.bp_temp_v : 0;
+      const tempC = typeof data.bp_temp_c === "number" ? data.bp_temp_c : 0;
+      const tempValid = Number(data.bp_temp_valid || 0) === 1;
+      const tempFault = Number(data.bp_temp_fault || 0) === 1 || Number(data.bp_fault || 0) === 6;
+      tempVal.textContent = tempValid
+        ? `${tempC.toFixed(1)} C / ${tempV.toFixed(3)} V (${tempRaw})${tempFault ? " HOT" : ""}`
+        : `-- / ${tempV.toFixed(3)} V (${tempRaw})`;
+    }
     currVal.textContent = `${data.ia.toFixed(2)} / ${data.ib.toFixed(2)} / ${data.ic.toFixed(2)} А`;
+    if (phaseVal) {
+      const phaseValid = Number(data.bp_phase_valid || 0) === 1;
+      const cVirtual = Number(data.bp_phase_c_virtual || 0) === 1;
+      const pa = typeof data.bp_phase_a_v === "number" ? data.bp_phase_a_v : 0;
+      const pb = typeof data.bp_phase_b_v === "number" ? data.bp_phase_b_v : 0;
+      const pc = typeof data.bp_phase_c_v === "number" ? data.bp_phase_c_v : 0;
+      phaseVal.textContent = phaseValid
+        ? `${pa.toFixed(3)} / ${pb.toFixed(3)} / ${pc.toFixed(3)} V${cVirtual ? " (C virt)" : ""}`
+        : "--";
+    }
     if (typeof data.id_ref === "number") {
       idRefVal.textContent = `${data.id_ref.toFixed(2)} А`;
     } else {

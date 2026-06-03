@@ -13,7 +13,8 @@ from typing import Any
 
 import serial
 
-FRAME_LEN = 20
+FRAME_LEN = 32
+CRC_OFF = FRAME_LEN - 1
 CMD_HDR0 = 0xAA
 CMD_HDR1 = 0x55
 RSP_HDR0 = 0x55
@@ -34,6 +35,15 @@ MODE_FOC = 5
 
 MAX_FREQ_HZ = 50.0
 BP_VBUS_FULL_SCALE_V = 396.1
+BP_TEMP_VREF = 3.3
+BP_TEMP_PULLUP_OHM = 12000.0
+BP_TEMP_NTC_R25_OHM = 85000.0
+BP_TEMP_NTC_BETA_K = 4092.0
+BP_TEMP_FLAG_VALID = 0x01
+BP_TEMP_FLAG_FAULT = 0x02
+BP_PHASE_VREF = 3.3
+BP_PHASE_FLAG_VALID = 0x01
+BP_PHASE_FLAG_C_VIRTUAL = 0x02
 
 STATUS_LINK_OK = 0x01
 STATUS_ENABLED = 0x02
@@ -49,6 +59,7 @@ FAULT_MAP = {
     3: "BAD_CRC",
     4: "BAD_HDR",
     5: "INTERNAL",
+    6: "OVERTEMP",
 }
 
 
@@ -58,9 +69,31 @@ def log(msg: str) -> None:
 
 def crc_xor(buf: bytes) -> int:
     c = 0
-    for i in range(FRAME_LEN - 1):
+    for i in range(CRC_OFF):
         c ^= buf[i]
     return c & 0xFF
+
+
+def temp_voltage(raw: int) -> float:
+    return float(max(0, min(4095, raw))) * BP_TEMP_VREF / 4095.0
+
+
+def phase_voltage(raw: int) -> float:
+    return float(max(0, min(4095, raw))) * BP_PHASE_VREF / 4095.0
+
+
+def temp_ntc_c(raw: int) -> float:
+    raw = max(0, min(4095, raw))
+    v = temp_voltage(raw)
+    if raw <= 0 or raw >= 4095 or v <= 0.001 or v >= (BP_TEMP_VREF - 0.001):
+        return 0.0
+    r_ntc = BP_TEMP_PULLUP_OHM * v / (BP_TEMP_VREF - v)
+    if not math.isfinite(r_ntc) or r_ntc <= 0:
+        return 0.0
+    inv_t = (1.0 / 298.15) + (math.log(r_ntc / BP_TEMP_NTC_R25_OHM) / BP_TEMP_NTC_BETA_K)
+    if not math.isfinite(inv_t) or inv_t <= 0:
+        return 0.0
+    return (1.0 / inv_t) - 273.15
 
 
 def read_frame(ser: serial.Serial, timeout_s: float) -> bytes | None:
@@ -274,7 +307,7 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         frame[10] = mag_q15 & 0xFF
         frame[11] = (mag_q15 >> 8) & 0xFF
 
-    frame[19] = crc_xor(frame)
+    frame[CRC_OFF] = crc_xor(frame)
     return bytes(frame)
 
 
@@ -283,7 +316,7 @@ def parse_rsp(state: SharedState, rsp: bytes, rtt_ms: float) -> None:
         return
     if rsp[0] != RSP_HDR0 or rsp[1] != RSP_HDR1:
         return
-    if rsp[19] != crc_xor(rsp):
+    if rsp[CRC_OFF] != crc_xor(rsp):
         return
 
     status = rsp[3]
@@ -333,6 +366,23 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "bp_vbus_raw": 0,
         "bp_vdc": 0.0,
         "bp_vbus_age_ms": 999999,
+        "bp_temp_raw": 0,
+        "bp_temp_v": 0.0,
+        "bp_temp_c": 0.0,
+        "bp_temp_flags": 0,
+        "bp_temp_valid": 0,
+        "bp_temp_fault": 0,
+        "bp_temp_age_ms": 999999,
+        "bp_phase_a_raw": 0,
+        "bp_phase_b_raw": 0,
+        "bp_phase_c_raw": 0,
+        "bp_phase_a_v": 0.0,
+        "bp_phase_b_v": 0.0,
+        "bp_phase_c_v": 0.0,
+        "bp_phase_flags": 0,
+        "bp_phase_valid": 0,
+        "bp_phase_c_virtual": 0,
+        "bp_phase_age_ms": 999999,
         "vdc": 0.0,
         "last_mode": MODE_OFF,
         "bp_mode": MODE_OFF,
@@ -346,6 +396,14 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         last_mode = rsp[10]
         vbus_raw = min(4095, rsp[17] | (rsp[18] << 8))
         bp_vdc = float(vbus_raw) * BP_VBUS_FULL_SCALE_V / 4095.0
+        temp_raw = min(4095, rsp[19] | (rsp[20] << 8))
+        temp_flags = rsp[21]
+        bp_temp_v = temp_voltage(temp_raw)
+        bp_temp_c = temp_ntc_c(temp_raw) if (temp_flags & BP_TEMP_FLAG_VALID) else 0.0
+        phase_a_raw = min(4095, rsp[23] | (rsp[24] << 8))
+        phase_b_raw = min(4095, rsp[25] | (rsp[26] << 8))
+        phase_c_raw = min(4095, rsp[27] | (rsp[28] << 8))
+        phase_flags = rsp[29]
         data.update(
             {
                 "status_flags": status,
@@ -364,6 +422,23 @@ def status_payload(state: SharedState) -> dict[str, Any]:
                 "bp_vbus_raw": int(vbus_raw),
                 "bp_vdc": bp_vdc,
                 "bp_vbus_age_ms": rx_age_ms,
+                "bp_temp_raw": int(temp_raw),
+                "bp_temp_v": bp_temp_v,
+                "bp_temp_c": bp_temp_c,
+                "bp_temp_flags": int(temp_flags),
+                "bp_temp_valid": int(1 if (temp_flags & BP_TEMP_FLAG_VALID) else 0),
+                "bp_temp_fault": int(1 if (temp_flags & BP_TEMP_FLAG_FAULT) else 0),
+                "bp_temp_age_ms": rx_age_ms,
+                "bp_phase_a_raw": int(phase_a_raw),
+                "bp_phase_b_raw": int(phase_b_raw),
+                "bp_phase_c_raw": int(phase_c_raw),
+                "bp_phase_a_v": phase_voltage(phase_a_raw),
+                "bp_phase_b_v": phase_voltage(phase_b_raw),
+                "bp_phase_c_v": phase_voltage(phase_c_raw),
+                "bp_phase_flags": int(phase_flags),
+                "bp_phase_valid": int(1 if (phase_flags & BP_PHASE_FLAG_VALID) else 0),
+                "bp_phase_c_virtual": int(1 if (phase_flags & BP_PHASE_FLAG_C_VIRTUAL) else 0),
+                "bp_phase_age_ms": rx_age_ms,
                 "vdc": bp_vdc,
                 "last_mode": int(last_mode),
                 "bp_mode": int(last_mode),
@@ -757,7 +832,7 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
                 t0 = time.monotonic()
                 ser.write(frame)
                 rsp = read_frame(ser, rx_timeout)
-                if rsp and rsp[19] == crc_xor(rsp):
+                if rsp and rsp[CRC_OFF] == crc_xor(rsp):
                     rtt = (time.monotonic() - t0) * 1000.0
                     parse_rsp(state, rsp, rtt)
                 else:

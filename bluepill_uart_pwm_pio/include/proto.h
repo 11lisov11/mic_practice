@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define FRAME_LEN 20
+#define FRAME_LEN 32
 
 #define CMD_HDR0 0xAA
 #define CMD_HDR1 0x55
@@ -25,7 +25,19 @@
 #define CMD_OFF_EXT_DUTY_HI 16
 #define CMD_OFF_EXT_RSV0 17
 #define CMD_OFF_EXT_RSV1 18
-#define CMD_OFF_CRC 19
+#define CMD_OFF_EXT_RSV2 19
+#define CMD_OFF_EXT_RSV3 20
+#define CMD_OFF_EXT_RSV4 21
+#define CMD_OFF_EXT_RSV5 22
+#define CMD_OFF_EXT_RSV6 23
+#define CMD_OFF_EXT_RSV7 24
+#define CMD_OFF_EXT_RSV8 25
+#define CMD_OFF_EXT_RSV9 26
+#define CMD_OFF_EXT_RSV10 27
+#define CMD_OFF_EXT_RSV11 28
+#define CMD_OFF_EXT_RSV12 29
+#define CMD_OFF_EXT_RSV13 30
+#define CMD_OFF_CRC 31
 
 #define FLAG_ENABLE      0x01
 #define FLAG_ESTOP       0x02
@@ -62,7 +74,25 @@
 #define RSP_OFF_EXT_DUTY_HI 16
 #define RSP_OFF_VBUS_RAW_LO 17
 #define RSP_OFF_VBUS_RAW_HI 18
-#define RSP_OFF_CRC 19
+#define RSP_OFF_TEMP_RAW_LO 19
+#define RSP_OFF_TEMP_RAW_HI 20
+#define RSP_OFF_TEMP_FLAGS 21
+#define RSP_OFF_EXT_RSV0 22
+#define RSP_OFF_PHASE_A_RAW_LO 23
+#define RSP_OFF_PHASE_A_RAW_HI 24
+#define RSP_OFF_PHASE_B_RAW_LO 25
+#define RSP_OFF_PHASE_B_RAW_HI 26
+#define RSP_OFF_PHASE_C_RAW_LO 27
+#define RSP_OFF_PHASE_C_RAW_HI 28
+#define RSP_OFF_PHASE_FLAGS 29
+#define RSP_OFF_EXT_RSV1 30
+#define RSP_OFF_CRC 31
+
+#define TEMP_FLAG_VALID 0x01
+#define TEMP_FLAG_FAULT 0x02
+
+#define PHASE_FLAG_VALID 0x01
+#define PHASE_FLAG_C_VIRTUAL 0x02
 
 #define STATUS_LINK_OK     0x01
 #define STATUS_ENABLED     0x02
@@ -77,6 +107,7 @@
 #define FAULT_BAD_CRC   3
 #define FAULT_BAD_HDR   4
 #define FAULT_INTERNAL  5
+#define FAULT_OVERTEMP  6
 
 uint8_t proto_crc_xor(const uint8_t *frame);
 bool proto_cmd_crc_ok(const uint8_t *frame);

@@ -201,13 +201,13 @@ J2 (Table 6):
 - J2‑21 `NTC bypass relay` → `PB1` (GPIO output, active‑high)
 - J2‑23 `dissipative brake PWM` → `PB9` (TIM4_CH4, по умолчанию OFF)
 - J2‑25 `+V power` → питание (не подключать к GPIO)
-- J2‑26 `heat sink temperature` → вход АЦП (опционально, свободный ADC)
+- J2‑26 `heat sink temperature` → `PB0` (ADC1_IN8, IPM thermal telemetry/protection, SW3=NTC 2-3)
 - J2‑27 `PFC sync.` → `PB5` (GPIO output)
 - J2‑28 `VDD_m` → опорное/питание (не подключать к GPIO)
 - J2‑29 `PWM VREF` → `3.3V`
 - J2‑31 `measure phase A` → `PA6` (ADC1_IN6)
 - J2‑33 `measure phase B` → `PA7` (ADC1_IN7)
-- J2‑34 `measure phase C` → `PB0` (ADC1_IN8)
+- J2‑34 `measure phase C` → not connected; firmware computes virtual C from `J2‑31/J2‑33`
 
 Дополнительное питание STEVAL:
 - `J4` = auxiliary `VCC supply`
@@ -219,6 +219,10 @@ J2 (Table 6):
 DC bus telemetry in `/api/status` is sourced from Blue Pill `PA5/J2-14` (`bp_vbus_raw`, `bp_vdc`, `bp_vbus_age_ms`). UNO Q `A0` is only a legacy/fallback local ADC path and is not the primary HV bus measurement.
 
 Critical wiring note: in the current UART configuration, Blue Pill `PA5` is only the DC bus ADC input. Do not leave any old SPI wire `UNO Q D13/SCK -> Blue Pill PA5`; it conflicts with `J2-14` and can make `/api/status` report near-zero `bp_vdc` while the DC bus is actually energized.
+
+Heat sink temperature protection: set UM2014 `SW3` to `NTC` (`2-3`) and wire `J2-26 -> Blue Pill PB0`. `/api/status` exposes `bp_temp_raw`, `bp_temp_v`, `bp_temp_c`, `bp_temp_valid`, `bp_temp_fault`. Blue Pill latches `bp_fault=6` (`OVERTEMP`) if the NTC line indicates overtemperature or an open sensor line.
+
+Phase measurement note: `J2-31 -> PA6` and `J2-33 -> PA7` are sampled as real phase-measure channels. `J2-34 measure phase C` is not wired because `PB0` is used for heatsink temperature; firmware reports virtual C as `C = center - ((A - center) + (B - center))`. `/api/status` exposes `bp_phase_a_v`, `bp_phase_b_v`, `bp_phase_c_v`, `bp_phase_valid`, `bp_phase_c_virtual`.
 
 J9 (Hall/Encoder, UM2014):
 - J9‑1 `Hall input 1 / encoder A+`

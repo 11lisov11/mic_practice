@@ -27,6 +27,25 @@ static void brake_set(bool active) {
   }
 }
 
+static void force_safe_outputs(void) {
+  pwm_outputs_enable(false);
+  pwm_all_off();
+  brake_set(true);
+  s_state.ext_flags = 0;
+  s_state.brake_q15 = 0;
+  ipm15_set_ntc(false);
+  ipm15_set_pfc_sync(false);
+  ipm15_set_brake_pwm(0.0f);
+  s_state.enabled = false;
+  s_state.pwm_active = false;
+}
+
+static void latch_fault(uint8_t fault_code) {
+  s_state.fault_latched = true;
+  s_state.fault_code = fault_code;
+  force_safe_outputs();
+}
+
 void safety_init(void) {
   memset(&s_state, 0, sizeof(s_state));
   s_state.fault_code = FAULT_OK;
@@ -157,7 +176,25 @@ void safety_on_bad_frame(uint8_t fault_code) {
 
 void safety_tick(void) {
   uint32_t now = HAL_GetTick();
-  if ((now - s_state.last_valid_ms) > TIMEOUT_MS) {
+#if USE_HEATSINK_TEMP
+  if (s_state.heatsink_temp_last_sample_ms == 0 ||
+      (now - s_state.heatsink_temp_last_sample_ms) >= HEATSINK_TEMP_SAMPLE_MS) {
+    s_state.heatsink_temp_last_sample_ms = now;
+    s_state.heatsink_temp_valid = adc_heatsink_sample_software(nullptr);
+    s_state.heatsink_temp_fault = s_state.heatsink_temp_valid && adc_heatsink_fault_active();
+    if (s_state.heatsink_temp_fault && !s_state.fault_latched) {
+      latch_fault(FAULT_OVERTEMP);
+    }
+  }
+#endif
+#if USE_PHASE_MEAS
+  if (s_state.phase_measure_last_sample_ms == 0 ||
+      (now - s_state.phase_measure_last_sample_ms) >= PHASE_MEAS_SAMPLE_MS) {
+    s_state.phase_measure_last_sample_ms = now;
+    s_state.phase_measure_valid = adc_phase_measure_sample_software(nullptr, nullptr, nullptr);
+  }
+#endif
+  if (!s_state.fault_latched && (now - s_state.last_valid_ms) > TIMEOUT_MS) {
     s_state.timeout_active = true;
     s_state.fault_latched = true;
     s_state.fault_code = FAULT_TIMEOUT;
@@ -216,6 +253,27 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   const uint16_t vbus_raw = adc_vbus_raw();
   rsp[RSP_OFF_VBUS_RAW_LO] = (uint8_t)(vbus_raw & 0xFF);
   rsp[RSP_OFF_VBUS_RAW_HI] = (uint8_t)((vbus_raw >> 8) & 0xFF);
+  const uint16_t temp_raw = adc_heatsink_raw();
+  rsp[RSP_OFF_TEMP_RAW_LO] = (uint8_t)(temp_raw & 0xFF);
+  rsp[RSP_OFF_TEMP_RAW_HI] = (uint8_t)((temp_raw >> 8) & 0xFF);
+  uint8_t temp_flags = 0;
+  if (s_state.heatsink_temp_valid) temp_flags |= TEMP_FLAG_VALID;
+  if (s_state.heatsink_temp_fault) temp_flags |= TEMP_FLAG_FAULT;
+  rsp[RSP_OFF_TEMP_FLAGS] = temp_flags;
+  uint16_t phase_a_raw = 0;
+  uint16_t phase_b_raw = 0;
+  uint16_t phase_c_raw = PHASE_MEAS_CENTER_RAW;
+  adc_phase_measure_raw(&phase_a_raw, &phase_b_raw, &phase_c_raw);
+  rsp[RSP_OFF_PHASE_A_RAW_LO] = (uint8_t)(phase_a_raw & 0xFF);
+  rsp[RSP_OFF_PHASE_A_RAW_HI] = (uint8_t)((phase_a_raw >> 8) & 0xFF);
+  rsp[RSP_OFF_PHASE_B_RAW_LO] = (uint8_t)(phase_b_raw & 0xFF);
+  rsp[RSP_OFF_PHASE_B_RAW_HI] = (uint8_t)((phase_b_raw >> 8) & 0xFF);
+  rsp[RSP_OFF_PHASE_C_RAW_LO] = (uint8_t)(phase_c_raw & 0xFF);
+  rsp[RSP_OFF_PHASE_C_RAW_HI] = (uint8_t)((phase_c_raw >> 8) & 0xFF);
+  uint8_t phase_flags = 0;
+  if (s_state.phase_measure_valid) phase_flags |= PHASE_FLAG_VALID;
+  phase_flags |= PHASE_FLAG_C_VIRTUAL;
+  rsp[RSP_OFF_PHASE_FLAGS] = phase_flags;
 
   rsp[RSP_OFF_CRC] = proto_crc_xor(rsp);
 }

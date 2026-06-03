@@ -20,6 +20,11 @@ typedef struct {
   uint8_t last_flags;
   uint8_t ext_flags;
   uint16_t brake_q15;
+  bool heatsink_temp_valid;
+  bool heatsink_temp_fault;
+  uint32_t heatsink_temp_last_sample_ms;
+  bool phase_measure_valid;
+  uint32_t phase_measure_last_sample_ms;
 } safety_state_t;
 
 void safety_init(void);

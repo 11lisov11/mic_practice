@@ -48,11 +48,14 @@ EM_STOP / BRAKE:
 * J2-17 `current phase B` -> `PA1 (ADC1_IN1)`
 * J2-19 `current phase C` -> `PA4 (ADC1_IN4)`
 * J2-14 `HV bus voltage` -> `PA5 (ADC1_IN5)`
+* J2-26 `heat sink temperature` -> `PB0 (ADC1_IN8)`, UM2014 `SW3=NTC 2-3`
 
 Опциональные I/O:
 * J2-21 `NTC bypass relay` -> `PB1` (GPIO out)
 * J2-27 `PFC sync.` -> `PB5` (GPIO out)
 * J2-23 `dissipative brake PWM` -> `PB9` (TIM4_CH4, опционально)
+
+Важно: `PB0` занят тепловой защитой IPM, поэтому `J2-34 measure phase C` в текущей прошивке не подключать. Blue Pill измеряет `J2-31/J2-33`, а `measure phase C` считает виртуально из двух фаз. При перегреве/обрыве NTC Blue Pill сам отключает PWM/EM_STOP и выставляет `bp_fault=6`.
 
 GND:
 * J2-2/4/6/8/10/12/16/18/20/22/24/30/32 -> `GND` (подключить минимум 2-3 земли)

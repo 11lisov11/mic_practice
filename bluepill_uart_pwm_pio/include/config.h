@@ -42,6 +42,24 @@
 #define ADC_VBUS_FULL_SCALE_V 396.1f
 #define ADC_VBUS_SCALE (ADC_VBUS_FULL_SCALE_V / 4095.0f)
 
+// STEVAL-IPM15B J2-26 "heat sink temperature".
+// UM2014 SW3 must be set to NTC (jumper 2-3) for the default protection path.
+// This uses PB0/ADC1_IN8, so do not wire J2-34 "measure phase C" to PB0 at
+// the same time.
+#define USE_HEATSINK_TEMP 1
+#define HEATSINK_TEMP_PORT GPIOB
+#define HEATSINK_TEMP_PIN GPIO_PIN_0
+#define HEATSINK_TEMP_ADC_CHANNEL ADC_CHANNEL_8
+#define HEATSINK_TEMP_SAMPLE_MS 100
+#define HEATSINK_TEMP_PROTECTION_ENABLE 1
+#define HEATSINK_TEMP_VREF 3.3f
+#define HEATSINK_TEMP_PULLUP_OHM 12000.0f
+#define HEATSINK_TEMP_NTC_R25_OHM 85000.0f
+#define HEATSINK_TEMP_NTC_BETA_K 4092.0f
+#define HEATSINK_TEMP_TRIP_C 90.0f
+// Treat an almost full-scale ADC as a disconnected NTC line.
+#define HEATSINK_TEMP_OPEN_RAW 4080U
+
 // IPM15 (UM2014) optional I/O
 #if LINK_USE_SPI
 // SPI1 uses PA4..PA7 so keep these free.
@@ -54,7 +72,10 @@
 #define PHASE_MEAS_B_PORT GPIOA
 #define PHASE_MEAS_B_PIN GPIO_PIN_7   // J2-33 measure phase B (ADC1_IN7)
 #define PHASE_MEAS_C_PORT GPIOB
-#define PHASE_MEAS_C_PIN GPIO_PIN_0   // J2-34 measure phase C (ADC1_IN8)
+#define PHASE_MEAS_C_PIN GPIO_PIN_0   // J2-34 measure phase C (disabled while USE_HEATSINK_TEMP uses PB0)
+#define PHASE_MEAS_SAMPLE_MS 100
+#define PHASE_MEAS_CENTER_RAW 2048
+#define PHASE_MEAS_VREF 3.3f
 
 #define NTC_RELAY_PORT GPIOB
 #define NTC_RELAY_PIN GPIO_PIN_1      // J2-21 NTC bypass relay

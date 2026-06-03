@@ -597,6 +597,46 @@ class RpcBridge:
                 data["bp_vbus_raw"] = 0
                 data["bp_vdc"] = 0.0
                 data["bp_vbus_age_ms"] = 999999
+            if len(result) >= 54:
+                temp_flags = int(result[53])
+                data["bp_temp_raw"] = int(result[50])
+                data["bp_temp_v"] = float(result[51])
+                data["bp_temp_c"] = float(result[52])
+                data["bp_temp_flags"] = temp_flags
+                data["bp_temp_valid"] = 1 if (temp_flags & 0x01) else 0
+                data["bp_temp_fault"] = 1 if (temp_flags & 0x02) else 0
+                data["bp_temp_age_ms"] = data.get("bp_rsp_age_ms", 999999)
+            else:
+                data["bp_temp_raw"] = 0
+                data["bp_temp_v"] = 0.0
+                data["bp_temp_c"] = 0.0
+                data["bp_temp_flags"] = 0
+                data["bp_temp_valid"] = 0
+                data["bp_temp_fault"] = 0
+                data["bp_temp_age_ms"] = 999999
+            if len(result) >= 62:
+                phase_flags = int(result[60])
+                data["bp_phase_a_raw"] = int(result[54])
+                data["bp_phase_b_raw"] = int(result[55])
+                data["bp_phase_c_raw"] = int(result[56])
+                data["bp_phase_a_v"] = float(result[57])
+                data["bp_phase_b_v"] = float(result[58])
+                data["bp_phase_c_v"] = float(result[59])
+                data["bp_phase_flags"] = phase_flags
+                data["bp_phase_valid"] = 1 if (phase_flags & 0x01) else 0
+                data["bp_phase_c_virtual"] = 1 if (phase_flags & 0x02) else 0
+                data["bp_phase_age_ms"] = int(result[61])
+            else:
+                data["bp_phase_a_raw"] = 0
+                data["bp_phase_b_raw"] = 0
+                data["bp_phase_c_raw"] = 0
+                data["bp_phase_a_v"] = 0.0
+                data["bp_phase_b_v"] = 0.0
+                data["bp_phase_c_v"] = 0.0
+                data["bp_phase_flags"] = 0
+                data["bp_phase_valid"] = 0
+                data["bp_phase_c_virtual"] = 0
+                data["bp_phase_age_ms"] = 999999
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -680,6 +720,23 @@ class RpcBridge:
                 "bp_vbus_raw": int(float(kv.get("bp_vbus_raw", "0"))),
                 "bp_vdc": float(kv.get("bp_vdc", kv.get("vdc", "0"))),
                 "bp_vbus_age_ms": int(float(kv.get("bp_vbus_age_ms", "999999"))),
+                "bp_temp_raw": int(float(kv.get("bp_temp_raw", "0"))),
+                "bp_temp_v": float(kv.get("bp_temp_v", "0")),
+                "bp_temp_c": float(kv.get("bp_temp_c", "0")),
+                "bp_temp_flags": int(float(kv.get("bp_temp_flags", "0"))),
+                "bp_temp_valid": int(float(kv.get("bp_temp_valid", "0"))),
+                "bp_temp_fault": int(float(kv.get("bp_temp_fault", "0"))),
+                "bp_temp_age_ms": int(float(kv.get("bp_temp_age_ms", "999999"))),
+                "bp_phase_a_raw": int(float(kv.get("bp_phase_a_raw", "0"))),
+                "bp_phase_b_raw": int(float(kv.get("bp_phase_b_raw", "0"))),
+                "bp_phase_c_raw": int(float(kv.get("bp_phase_c_raw", "0"))),
+                "bp_phase_a_v": float(kv.get("bp_phase_a_v", "0")),
+                "bp_phase_b_v": float(kv.get("bp_phase_b_v", "0")),
+                "bp_phase_c_v": float(kv.get("bp_phase_c_v", "0")),
+                "bp_phase_flags": int(float(kv.get("bp_phase_flags", "0"))),
+                "bp_phase_valid": int(float(kv.get("bp_phase_valid", "0"))),
+                "bp_phase_c_virtual": int(float(kv.get("bp_phase_c_virtual", "0"))),
+                "bp_phase_age_ms": int(float(kv.get("bp_phase_age_ms", "999999"))),
                 "bp_rsp_age_ms": int(float(kv.get("bp_rsp_age_ms", "999999"))),
                 "bp_ping_pairs": int(float(kv.get("bp_ping_pairs", "0"))),
                 "bp_ping_age_ms": int(float(kv.get("bp_ping_age_ms", "999999"))),
@@ -705,7 +762,9 @@ class AppState:
             self._last_status_log = now
         line = (
             f"STAT state={data.get('state')} mode={data.get('mode')} pwm={data.get('pwm')} "
-            f"freq={data.get('freq'):.2f} speed={data.get('speed'):.1f} vdc={data.get('vdc'):.2f}"
+            f"freq={data.get('freq'):.2f} speed={data.get('speed'):.1f} vdc={data.get('vdc'):.2f} "
+            f"bp_temp_c={data.get('bp_temp_c', 0.0):.1f} bp_temp_fault={data.get('bp_temp_fault', 0)} "
+            f"bp_phase_c_v={data.get('bp_phase_c_v', 0.0):.3f} bp_phase_c_virtual={data.get('bp_phase_c_virtual', 0)}"
         )
         self.logs.add(line)
 

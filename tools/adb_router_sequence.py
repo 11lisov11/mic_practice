@@ -163,7 +163,24 @@ def fnum(st: dict[str, Any] | None, key: str, default: float = 0.0) -> float:
 def status_line(st: dict[str, Any] | None) -> str:
     if st is None:
         return "status=unavailable"
-    keys = ["state", "mode", "pwm", "estop", "bp_fault", "bp_bad", "bp_vdc", "i_rms", "enc_raw", "enc_rpm"]
+    keys = [
+        "state",
+        "mode",
+        "pwm",
+        "estop",
+        "bp_fault",
+        "bp_bad",
+        "bp_vdc",
+        "bp_temp_c",
+        "bp_temp_fault",
+        "bp_phase_a_v",
+        "bp_phase_b_v",
+        "bp_phase_c_v",
+        "bp_phase_c_virtual",
+        "i_rms",
+        "enc_raw",
+        "enc_rpm",
+    ]
     parts = []
     for key in keys:
         if key in st:

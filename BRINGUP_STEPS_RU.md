@@ -216,7 +216,7 @@ py -3 -u .\tools\la_probe.py
 - `J2-21` NTC relay
 - `J2-23` brake PWM
 - `J2-27` PFC sync
-- `J2-31/33/34` phase measurement
+- `J2-31/33` phase measurement; `J2-34` stays not connected in this firmware
 
 ### Что категорически НЕ подключать
 - `J7` HV/DC bus
@@ -265,13 +265,14 @@ py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --skip-sweep --ski
 | `J2-15 current phase A` | `PA0` |
 | `J2-17 current phase B` | `PA1` |
 | `J2-19 current phase C` | `PA4` |
+| `J2-26 heat sink temperature` | `PB0` |
 
 ### Опционально
 | IPM15 J2 | Blue Pill |
 |---|---|
 | `J2-31 measure phase A` | `PA6` |
 | `J2-33 measure phase B` | `PA7` |
-| `J2-34 measure phase C` | `PB0` |
+| `J2-34 measure phase C` | not connected, virtual C is computed from A/B |
 
 ### Что проверить
 В `/api/status` должны появляться осмысленные `ia`, `ib`, `ic`, `vdc`.
@@ -373,3 +374,10 @@ py -3 -u .\tools\adb_router_sequence.py --allow-hv --duty-rotate --mag 0.20 --dw
 8. Полный low-voltage suite пройден.
 9. Перед HV пройдена стоп-точка.
 10. Ручные HV шаги выполняются только через bounded runner.
+# CURRENT CRITICAL UPDATE: HEATSINK TEMPERATURE BEFORE HV
+- Before any HV/PWM run, wire STEVAL/IPM15 `J2-26 heat sink temperature` to Blue Pill `PB0 (ADC1_IN8)`.
+- Set UM2014 `SW3` to `NTC` (`2-3`).
+- Do not connect `J2-34 measure phase C` to `PB0`; current firmware uses `PB0` for heatsink temperature.
+- Connect `J2-31 measure phase A -> PA6` and `J2-33 measure phase B -> PA7`; `measure phase C` is virtual in firmware.
+- Required `/api/status` before run: `bp_temp_valid=1`, `bp_temp_fault=0`, `bp_fault=0`.
+- If `bp_fault=6`, this is `OVERTEMP` or open NTC line: keep 220/315V off and fix temperature wiring first.

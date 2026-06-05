@@ -35,6 +35,13 @@ static uint16_t clamp_adc_raw_i32(int32_t value) {
   return (uint16_t)value;
 }
 
+static float adc_vbus_volts_from_raw(uint16_t raw) {
+  if (raw <= ADC_VBUS_ZERO_RAW) {
+    return 0.0f;
+  }
+  return ((float)raw - (float)ADC_VBUS_ZERO_RAW) * ADC_VBUS_SCALE;
+}
+
 static bool adc_sample_regular(uint32_t channel, uint32_t sample_time, uint16_t *raw) {
   ADC_ChannelConfTypeDef cfg = {0};
   cfg.Channel = channel;
@@ -175,7 +182,7 @@ void adc_currents_get(float *ia, float *ib, float *ic, float *vbus) {
   float fa = ((int32_t)a - (int32_t)s_off_ia) * ADC_I_SCALE;
   float fb = ((int32_t)b - (int32_t)s_off_ib) * ADC_I_SCALE;
   float fc = ((int32_t)c - (int32_t)s_off_ic) * ADC_I_SCALE;
-  float fv = (float)v * ADC_VBUS_SCALE;
+  float fv = adc_vbus_volts_from_raw(v);
 
   if (ia) *ia = fa;
   if (ib) *ib = fb;
@@ -224,6 +231,33 @@ uint16_t adc_heatsink_raw(void) {
   return s_raw_heatsink;
 }
 
+static bool adc_heatsink_temp_c_from_raw(uint16_t raw, float *temp_c) {
+  if (!temp_c || raw == 0U || raw >= 4095U) {
+    return false;
+  }
+  const float v = ((float)raw * HEATSINK_TEMP_VREF) / 4095.0f;
+  if (v <= 0.001f || v >= (HEATSINK_TEMP_VREF - 0.001f)) {
+    return false;
+  }
+
+#if HEATSINK_TEMP_SENSOR_MODE == HEATSINK_TEMP_SENSOR_TSO
+  *temp_c = 25.0f + ((v - HEATSINK_TEMP_TSO_V25) * 1000.0f) / HEATSINK_TEMP_TSO_MV_PER_C;
+  return isfinite(*temp_c);
+#else
+  const float r_ntc = HEATSINK_TEMP_PULLUP_OHM * v / (HEATSINK_TEMP_VREF - v);
+  if (r_ntc <= 0.0f || !isfinite(r_ntc)) {
+    return false;
+  }
+  const float t25_k = 298.15f;
+  const float inv_t = (1.0f / t25_k) + (logf(r_ntc / HEATSINK_TEMP_NTC_R25_OHM) / HEATSINK_TEMP_NTC_BETA_K);
+  if (inv_t <= 0.0f || !isfinite(inv_t)) {
+    return false;
+  }
+  *temp_c = (1.0f / inv_t) - 273.15f;
+  return true;
+#endif
+}
+
 bool adc_heatsink_get(float *voltage, float *temp_c) {
 #if USE_HEATSINK_TEMP
   if (!s_heatsink_valid) {
@@ -237,19 +271,9 @@ bool adc_heatsink_get(float *voltage, float *temp_c) {
 
   if (temp_c) {
     *temp_c = 0.0f;
-    if (raw == 0U || raw >= 4095U || v <= 0.001f || v >= (HEATSINK_TEMP_VREF - 0.001f)) {
+    if (!adc_heatsink_temp_c_from_raw(raw, temp_c)) {
       return false;
     }
-    const float r_ntc = HEATSINK_TEMP_PULLUP_OHM * v / (HEATSINK_TEMP_VREF - v);
-    if (r_ntc <= 0.0f || !isfinite(r_ntc)) {
-      return false;
-    }
-    const float t25_k = 298.15f;
-    const float inv_t = (1.0f / t25_k) + (logf(r_ntc / HEATSINK_TEMP_NTC_R25_OHM) / HEATSINK_TEMP_NTC_BETA_K);
-    if (inv_t <= 0.0f || !isfinite(inv_t)) {
-      return false;
-    }
-    *temp_c = (1.0f / inv_t) - 273.15f;
   }
   return true;
 #else
@@ -269,6 +293,9 @@ bool adc_heatsink_fault_active(void) {
     return false;
   }
   const uint16_t raw = s_raw_heatsink;
+  if (raw <= HEATSINK_TEMP_SHORT_RAW) {
+    return true;
+  }
   if (raw >= HEATSINK_TEMP_OPEN_RAW) {
     return true;
   }

@@ -1,11 +1,11 @@
-// Arduino UNO Q motor control sketch (UART protocol via msgpack RPC)
+// Arduino UNO Q motor control sketch (RouterBridge RPC + Blue Pill UART)
 // Target: arduino:zephyr:unoq (STM32U585)
 //
 // IMPORTANT (UNOQ): /dev/ttyHS1 on the Linux side is the control link to the MCU.
-// The safest way is to use our msgpack RPC implementation on Serial1 and let
-// arduino-router expose it to the HTTP UI.
-#define USE_ROUTER_BRIDGE 0
-#define USE_MSGPACK_RPC 1
+// With Arduino_RouterBridge enabled, Serial/Monitor is owned by the Linux router.
+// The Blue Pill control/telemetry link must stay on the physical D0/D1 UART.
+#define USE_ROUTER_BRIDGE 1
+#define USE_MSGPACK_RPC 0
 #include <Arduino.h>
 #include <Arduino_LED_Matrix.h>
 #include <SPI.h>
@@ -30,10 +30,10 @@
 #else
 #define LOG_SERIAL Serial
 #endif
-// Serial1 is reserved for the Linux control link (/dev/ttyHS1).
-// Use Serial (D0/D1) for the Blue Pill link.
-#define NUCLEO_SERIAL Serial
-#define UI_SERIAL Serial1
+// UNO Q D0/D1 hardware UART is Serial1 in the Zephyr core when RouterBridge is
+// active; keep it dedicated to the Blue Pill high-rate control link.
+#define NUCLEO_SERIAL Serial1
+#define UI_SERIAL Serial2
 #define RPC_BAUD 115200
 #define UART_ECHO_TEST 0
 #define PIN_TOGGLE_TEST 0
@@ -57,10 +57,11 @@ static const bool USE_NUCLEO_UART_FALLBACK = true;
 static const uint32_t NUCLEO_UART_BAUD = 460800;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // Keep the UNO Q Zephyr Serial TX path comfortably below line rate.
-// 32 bytes at 460800 baud takes ~0.70 ms on the wire; 2 ms gives headroom for
-// scheduler jitter and prevents partial-frame drops that become CRC errors.
-static const uint32_t NUCLEO_RUN_MIN_SEND_US = 2000;
-static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 4000;
+// 32 bytes at 460800 baud takes ~0.70 ms on the wire. In practice RouterBridge,
+// HTTP polling and Saleae captures can starve Serial polling briefly; 10 ms gives
+// a 100 Hz command stream while leaving much more RX headroom.
+static const uint32_t NUCLEO_RUN_MIN_SEND_US = 10000;
+static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 8000;
 // Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
 static const size_t BP_FRAME_LEN = 32;
 static const size_t BP_CRC_OFF = BP_FRAME_LEN - 1;
@@ -79,13 +80,21 @@ static const uint8_t BP_MODE_FOC = 5;
 static const uint8_t BP_EXT_NTC = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
-// Calibrated from HV bus measurement: raw=3256 was 315 V on the meter.
-static const float BP_VBUS_FULL_SCALE_V = 396.1f;
+// STEVAL J2-14 has a bus-off offset. Live calibration:
+// bus-off median raw ~=1763; raw=3256 was 315 V on the meter.
+static const uint16_t BP_VBUS_ZERO_RAW = 1763U;
+static const uint16_t BP_VBUS_CAL_RAW = 3256U;
+static const float BP_VBUS_CAL_V = 315.0f;
 static const uint32_t BP_VBUS_STALE_MS = 500;
 static const float BP_TEMP_VREF = 3.3f;
+static const uint8_t BP_TEMP_SENSOR_NTC = 0;
+static const uint8_t BP_TEMP_SENSOR_TSO = 1;
+static const uint8_t BP_TEMP_SENSOR_MODE = BP_TEMP_SENSOR_TSO;
 static const float BP_TEMP_PULLUP_OHM = 12000.0f;
 static const float BP_TEMP_NTC_R25_OHM = 85000.0f;
 static const float BP_TEMP_NTC_BETA_K = 4092.0f;
+static const float BP_TEMP_TSO_V25 = 1.16f;
+static const float BP_TEMP_TSO_MV_PER_C = 18.0f;
 static const uint8_t BP_TEMP_FLAG_VALID = 0x01;
 static const uint8_t BP_TEMP_FLAG_FAULT = 0x02;
 static const float BP_PHASE_VREF = 3.3f;
@@ -196,6 +205,8 @@ static void matrix_update();
 static void matrix_set_pixel(int x, int y);
 static void matrix_draw_digit(int x0, int y0, int digit);
 static void hard_stop(bool clear_cmd);
+static void request_normal_stop();
+static void ext_brake_set(float duty);
 static void nucleo_uart_init();
 static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool force = false);
 static void nucleo_send_stop(bool force = false);
@@ -1153,10 +1164,7 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       }
       g_start_req = true;
     } else if (icmp(cmd, "STOP")) {
-      g_stop_req = true;
-      g_restart_after_mode_switch = false;
-      g_mode_switch_pending = false;
-      ext_brake_set(0.0f);
+      request_normal_stop();
     } else if (icmp(cmd, "CLEAR") || icmp(cmd, "RESET")) {
       clear_estop_latch();
     } else if (starts_ci(cmd, "MODE")) {
@@ -1465,6 +1473,11 @@ static float mic_estimate_p_loss(float id, float iq, float omega_e) {
   float p_sw = MIC_K_SW * MIC_F_SW * sqrtf(i2);
   return p_cu + p_fe + p_sw;
 }
+static bool mic_encoder_feedback_recent(uint32_t now_ms) {
+  return g_bp_enc_ok &&
+         g_enc_speed_valid &&
+         ((uint32_t)(now_ms - g_bp_enc_ms) < MIC_ENC_STALE_MS);
+}
 static uint16_t mic_link_flags(uint32_t now_ms) {
   uint16_t flags = 0u;
   if (g_nucleo_last_rx_ms == 0) {
@@ -1481,19 +1494,20 @@ static uint16_t mic_link_flags(uint32_t now_ms) {
   if (g_pwm_enabled && ((g_bp_status & 0x20u) == 0u)) {
     flags |= 0x04u;
   }
+  if (!mic_encoder_feedback_recent(now_ms)) {
+    flags |= 0x08u;
+  }
   return flags;
 }
 static float mic_feedback_elec_hz(uint32_t now_ms, bool *enc_used) {
-  bool enc_recent = g_bp_enc_ok &&
-                    g_enc_speed_valid &&
-                    ((uint32_t)(now_ms - g_bp_enc_ms) < MIC_ENC_STALE_MS);
+  bool enc_recent = mic_encoder_feedback_recent(now_ms);
   if (enc_used) {
     *enc_used = enc_recent;
   }
   if (enc_recent) {
     return fabsf(g_enc_elec_hz);
   }
-  return fabsf(g_freq_ref);
+  return 0.0f;
 }
 static void mic_update_metrics() {
   float omega_e = CTRL_TWO_PI * g_freq_ref;
@@ -1594,10 +1608,10 @@ static void pwm_test_set(bool enabled) {
     pwm_force_off();
   }
 }
-static void handle_command_line_stream(const char *cmd, Stream &out) {
+static bool handle_command_line_stream(const char *cmd, Stream &out) {
   while (*cmd == ' ' || *cmd == '	') cmd++;
   if (*cmd == '\0') {
-    return;
+    return false;
   }
   String line;
   line.reserve(96);
@@ -1608,17 +1622,14 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
   if (icmp(cmd, "START")) {
     if (g_estop_latched) {
       out.println("ERR estop latched");
-      return;
+      return false;
     }
     if (g_mode == MODE_MIC && g_freq_cmd < 0.1f) {
       g_freq_cmd = (g_last_nonzero_freq > 0.1f) ? g_last_nonzero_freq : 10.0f;
     }
     g_start_req = true;
   } else if (icmp(cmd, "STOP")) {
-    g_stop_req = true;
-    g_restart_after_mode_switch = false;
-    g_mode_switch_pending = false;
-    ext_brake_set(0.0f);
+    request_normal_stop();
   } else if (icmp(cmd, "CLEAR") || icmp(cmd, "RESET")) {
     clear_estop_latch();
   } else if (starts_ci(cmd, "MODE")) {
@@ -1758,19 +1769,19 @@ static void handle_command_line_stream(const char *cmd, Stream &out) {
       }
     } else if (icmp(cmd, "GET") || icmp(cmd, "STATUS")) {
       out.println(rpc_get());
-      return;
+      return true;
     } else {
       handled = false;
     }
     if (!handled) {
       out.println("ERR unknown cmd");
-      return;
+      return false;
     }
     out.println("OK");
+    return true;
 }
 static bool rpc_cmd(String cmd) {
-  handle_command_line_stream(cmd.c_str(), g_null_stream);
-  return true;
+  return handle_command_line_stream(cmd.c_str(), g_null_stream);
 }
 
 static String rpc_get() {
@@ -2078,6 +2089,16 @@ static uint8_t nucleo_crc8(const uint8_t *buf, size_t len) {
 static float bp_temp_voltage_from_raw(uint16_t raw) {
   return ((float)raw * BP_TEMP_VREF) / 4095.0f;
 }
+static float bp_vdc_from_raw(uint16_t raw) {
+  if (raw <= BP_VBUS_ZERO_RAW) {
+    return 0.0f;
+  }
+  const float denom = (float)BP_VBUS_CAL_RAW - (float)BP_VBUS_ZERO_RAW;
+  if (denom <= 1.0f) {
+    return 0.0f;
+  }
+  return ((float)raw - (float)BP_VBUS_ZERO_RAW) * (BP_VBUS_CAL_V / denom);
+}
 static float bp_phase_voltage_from_raw(uint16_t raw) {
   return ((float)raw * BP_PHASE_VREF) / 4095.0f;
 }
@@ -2088,6 +2109,10 @@ static bool bp_temp_c_from_raw(uint16_t raw, float *temp_c) {
   const float v = bp_temp_voltage_from_raw(raw);
   if (v <= 0.001f || v >= (BP_TEMP_VREF - 0.001f)) {
     return false;
+  }
+  if (BP_TEMP_SENSOR_MODE == BP_TEMP_SENSOR_TSO) {
+    *temp_c = 25.0f + ((v - BP_TEMP_TSO_V25) * 1000.0f) / BP_TEMP_TSO_MV_PER_C;
+    return isfinite(*temp_c);
   }
   const float r_ntc = BP_TEMP_PULLUP_OHM * v / (BP_TEMP_VREF - v);
   if (!isfinite(r_ntc) || r_ntc <= 0.0f) {
@@ -2176,7 +2201,7 @@ static bool nucleo_check_reply(const uint8_t *rx) {
   if (g_bp_vbus_raw > 4095U) {
     g_bp_vbus_raw = 4095U;
   }
-  g_bp_vdc = ((float)g_bp_vbus_raw * BP_VBUS_FULL_SCALE_V) / 4095.0f;
+  g_bp_vdc = bp_vdc_from_raw(g_bp_vbus_raw);
   g_bp_vbus_ms = now_ms;
   g_bp_temp_raw = (uint16_t)rx[19] | ((uint16_t)rx[20] << 8);
   if (g_bp_temp_raw > 4095U) {
@@ -2557,6 +2582,10 @@ static void hard_stop(bool clear_cmd) {
   }
   pwm_force_off();
 }
+static void request_normal_stop() {
+  ext_brake_set(0.0f);
+  hard_stop(true);
+}
 static uint8_t pwm_level(bool on, bool inverted) {
   if (inverted) {
     return on ? 0 : PWM_MAX;
@@ -2740,11 +2769,8 @@ static void control_step() {
     else g_stop_req = true;
   }
   if (g_stop_req) {
-    g_stop_req = false;
-    g_stop_requested = true;
-    g_run_deadline_ms = 0;
-    g_freq_cmd = 0.0f;
-    g_iq_target = 0.0f;
+    request_normal_stop();
+    return;
   }
   // Auto-stop if target frequency is zero while PWM is enabled
   if (g_pwm_enabled && g_freq_cmd < 0.1f && !g_duty_mode && !g_diag_pwm) {
@@ -3219,7 +3245,7 @@ void setup() {
     rpc_send_mon_write("LOG BOOT");
 #endif
 #endif
-  // Serial1 is owned by RouterBridge (/dev/ttyHS1). Do not re-init it here.
+  // Serial/Monitor is owned by RouterBridge (/dev/ttyHS1). Do not re-init it here.
   // When RouterBridge is disabled, we can use UI_SERIAL as a plain-text command port.
 #if !USE_ROUTER_BRIDGE && !USE_MSGPACK_RPC
     UI_SERIAL.begin(RPC_BAUD);

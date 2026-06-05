@@ -3,8 +3,11 @@ from __future__ import annotations
 
 import argparse
 import http.server
+import json
+import os
 import socket
 import socketserver
+import subprocess
 import sys
 import time
 import urllib.error
@@ -22,6 +25,8 @@ HOP_BY_HOP = {
     "transfer-encoding",
     "upgrade",
 }
+
+DIRECT_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
 def build_target(base: str, path: str) -> str:
@@ -72,7 +77,7 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
 
         start = time.monotonic()
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:
+            with DIRECT_OPENER.open(req, timeout=timeout) as resp:
                 data = resp.read()
                 self.send_response(resp.status)
                 for k, v in resp.headers.items():
@@ -125,6 +130,39 @@ def get_local_ips() -> list[str]:
     return sorted(ips)
 
 
+def get_windows_adapter_ips() -> list[tuple[str, str]]:
+    ps = (
+        "Get-NetIPAddress -AddressFamily IPv4 | "
+        "Where-Object { $_.IPAddress -notlike '127.*' -and $_.AddressState -eq 'Preferred' } | "
+        "Select-Object IPAddress,InterfaceAlias | "
+        "ConvertTo-Json -Compress"
+    )
+    try:
+        out = subprocess.check_output(
+            ["powershell", "-NoProfile", "-Command", ps],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return []
+    if not out:
+        return []
+    try:
+        data = json.loads(out)
+    except Exception:
+        return []
+    rows = data if isinstance(data, list) else [data]
+    found: list[tuple[str, str]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        ip = str(row.get("IPAddress", "")).strip()
+        alias = str(row.get("InterfaceAlias", "")).strip()
+        if ip and not ip.startswith("127."):
+            found.append((ip, alias or "unknown"))
+    return sorted(found)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Simple HTTP bridge to expose UI API to LAN.")
     ap.add_argument("--listen-host", default="0.0.0.0")
@@ -139,11 +177,15 @@ def main() -> int:
     if not parsed.scheme or not parsed.netloc:
         print(f"ERROR: bad --target {args.target}", flush=True)
         return 2
+    no_proxy = "127.0.0.1,localhost,::1"
+    os.environ["NO_PROXY"] = no_proxy
+    os.environ["no_proxy"] = no_proxy
 
     server = ThreadingHTTPServer((args.listen_host, args.listen_port), ProxyHandler)
     server.target_base = args.target  # type: ignore[attr-defined]
     server.timeout_s = args.timeout  # type: ignore[attr-defined]
     server.quiet = args.quiet  # type: ignore[attr-defined]
+    server.timeout = 0.2
 
     ips = get_local_ips()
     print(
@@ -153,6 +195,12 @@ def main() -> int:
     if ips:
         for ip in ips:
             print(f"LAN URL: http://{ip}:{args.listen_port}", flush=True)
+    adapters = get_windows_adapter_ips()
+    if adapters:
+        print("Windows adapter URLs (choose the Ethernet/LAN interface connected to the Wi-Fi AP):", flush=True)
+        for ip, alias in adapters:
+            print(f"  {alias}: http://{ip}:{args.listen_port}", flush=True)
+    print("VPN/proxy guard: target requests use a direct no-proxy opener.", flush=True)
 
     if args.duration > 0:
         deadline = time.monotonic() + args.duration

@@ -34,11 +34,18 @@ MODE_VECTOR = 4
 MODE_FOC = 5
 
 MAX_FREQ_HZ = 50.0
-BP_VBUS_FULL_SCALE_V = 396.1
+BP_VBUS_ZERO_RAW = 1763
+BP_VBUS_CAL_RAW = 3256
+BP_VBUS_CAL_V = 315.0
 BP_TEMP_VREF = 3.3
+BP_TEMP_SENSOR_NTC = 0
+BP_TEMP_SENSOR_TSO = 1
+BP_TEMP_SENSOR_MODE = BP_TEMP_SENSOR_TSO
 BP_TEMP_PULLUP_OHM = 12000.0
 BP_TEMP_NTC_R25_OHM = 85000.0
 BP_TEMP_NTC_BETA_K = 4092.0
+BP_TEMP_TSO_V25 = 1.16
+BP_TEMP_TSO_MV_PER_C = 18.0
 BP_TEMP_FLAG_VALID = 0x01
 BP_TEMP_FLAG_FAULT = 0x02
 BP_PHASE_VREF = 3.3
@@ -78,15 +85,27 @@ def temp_voltage(raw: int) -> float:
     return float(max(0, min(4095, raw))) * BP_TEMP_VREF / 4095.0
 
 
+def vbus_voltage(raw: int) -> float:
+    raw = max(0, min(4095, raw))
+    if raw <= BP_VBUS_ZERO_RAW:
+        return 0.0
+    denom = float(BP_VBUS_CAL_RAW - BP_VBUS_ZERO_RAW)
+    if denom <= 1.0:
+        return 0.0
+    return float(raw - BP_VBUS_ZERO_RAW) * (BP_VBUS_CAL_V / denom)
+
+
 def phase_voltage(raw: int) -> float:
     return float(max(0, min(4095, raw))) * BP_PHASE_VREF / 4095.0
 
 
-def temp_ntc_c(raw: int) -> float:
+def temp_c(raw: int) -> float:
     raw = max(0, min(4095, raw))
     v = temp_voltage(raw)
     if raw <= 0 or raw >= 4095 or v <= 0.001 or v >= (BP_TEMP_VREF - 0.001):
         return 0.0
+    if BP_TEMP_SENSOR_MODE == BP_TEMP_SENSOR_TSO:
+        return 25.0 + ((v - BP_TEMP_TSO_V25) * 1000.0) / BP_TEMP_TSO_MV_PER_C
     r_ntc = BP_TEMP_PULLUP_OHM * v / (BP_TEMP_VREF - v)
     if not math.isfinite(r_ntc) or r_ntc <= 0:
         return 0.0
@@ -395,11 +414,11 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         fault = rsp[9]
         last_mode = rsp[10]
         vbus_raw = min(4095, rsp[17] | (rsp[18] << 8))
-        bp_vdc = float(vbus_raw) * BP_VBUS_FULL_SCALE_V / 4095.0
+        bp_vdc = vbus_voltage(vbus_raw)
         temp_raw = min(4095, rsp[19] | (rsp[20] << 8))
         temp_flags = rsp[21]
         bp_temp_v = temp_voltage(temp_raw)
-        bp_temp_c = temp_ntc_c(temp_raw) if (temp_flags & BP_TEMP_FLAG_VALID) else 0.0
+        bp_temp_c = temp_c(temp_raw) if (temp_flags & BP_TEMP_FLAG_VALID) else 0.0
         phase_a_raw = min(4095, rsp[23] | (rsp[24] << 8))
         phase_b_raw = min(4095, rsp[25] | (rsp[26] << 8))
         phase_c_raw = min(4095, rsp[27] | (rsp[28] << 8))

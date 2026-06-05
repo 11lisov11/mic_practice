@@ -114,13 +114,14 @@ adb forward tcp:18080 tcp:8080
 ### Что должно быть в `/api/status`
 - `bp_age_ms` меняется и остается маленьким
 - `bp_fault = 0`
-- `bp_bad = 0`
+- safety-critical: `bp_bad_cnt = 0`
+- diagnostic: `bp_bad` should not grow rapidly; isolated increments can happen during long HMI/HTTP runs, but repeated growth must be investigated.
 - `state = SAFE`
 
 ### Переход дальше
 Идти дальше можно только если:
 - Blue Pill виден по статусу
-- нет роста `bp_bad`
+- нет роста `bp_bad_cnt`
 - `bp_fault = 0`
 
 ## Этап 3. Подключить AS5600
@@ -302,7 +303,7 @@ py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --capture-every-hz
 ### Переход дальше
 Думать о следующем этапе можно только если:
 - suite проходит без падений
-- `bp_bad = 0`
+- `bp_bad_cnt = 0`
 - `bp_fault = 0` вне ожидаемых `ESTOP` кейсов
 - после теста система возвращается в `SAFE`
 
@@ -321,7 +322,7 @@ py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --capture-every-hz
 - `STOP` всегда приводит в `SAFE`
 - `ESTOP` всегда снимает PWM
 - `ESTOP CLEAR` корректно восстанавливает возможность старта
-- `bp_bad` не растет
+- `bp_bad_cnt` не растет
 
 ## Этап 10. Стоп-Точка Перед HV
 Если не пройдены все этапы выше, HV включать нельзя.
@@ -350,7 +351,7 @@ py -3 -u .\tools\adb_router_sequence.py --cmd STOP --cmd ESTOP
 - команды проходят через один socket-сеанс;
 - финальный `/api/status` показывает `SAFE`;
 - `pwm = 0`;
-- `bp_bad` не растет.
+- `bp_bad_cnt` не растет.
 
 ### Защита от случайного старта под HV
 Если в последовательности есть `START`, а `VBUS` выше `--max-vdc`, инструмент обязан отказаться без явного `--allow-hv`:
@@ -376,8 +377,9 @@ py -3 -u .\tools\adb_router_sequence.py --allow-hv --duty-rotate --mag 0.20 --dw
 10. Ручные HV шаги выполняются только через bounded runner.
 # CURRENT CRITICAL UPDATE: HEATSINK TEMPERATURE BEFORE HV
 - Before any HV/PWM run, wire STEVAL/IPM15 `J2-26 heat sink temperature` to Blue Pill `PB0 (ADC1_IN8)`.
-- Set UM2014 `SW3` to `NTC` (`2-3`).
+- Current firmware is built for UM2014 `SW3=TSO` (`1-2`), not `NTC`.
+- If you physically move `SW3` to `NTC` (`2-3`), change `HEATSINK_TEMP_SENSOR_MODE`/`BP_TEMP_SENSOR_MODE` to `NTC`, rebuild and reflash both sides before testing.
 - Do not connect `J2-34 measure phase C` to `PB0`; current firmware uses `PB0` for heatsink temperature.
 - Connect `J2-31 measure phase A -> PA6` and `J2-33 measure phase B -> PA7`; `measure phase C` is virtual in firmware.
 - Required `/api/status` before run: `bp_temp_valid=1`, `bp_temp_fault=0`, `bp_fault=0`.
-- If `bp_fault=6`, this is `OVERTEMP` or open NTC line: keep 220/315V off and fix temperature wiring first.
+- If `bp_fault=6`, this is `OVERTEMP` or invalid/rail-like temperature telemetry: keep 220/315V off and fix temperature wiring/config first.

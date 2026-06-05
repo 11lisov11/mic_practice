@@ -38,15 +38,24 @@
 #define ADC_CALIB_SAMPLES 256
 #define ADC_I_SCALE (1.0f / 2048.0f)
 // STEVAL J2-14 HV bus telemetry is sampled on PA5 in UART mode.
-// Calibrated from HV bus measurement: raw=3256 was 315 V on the meter.
-#define ADC_VBUS_FULL_SCALE_V 396.1f
-#define ADC_VBUS_SCALE (ADC_VBUS_FULL_SCALE_V / 4095.0f)
+// UM2014 bus-voltage output is offset near mid-scale when the DC bus is off.
+// Live calibration: bus-off median raw ~=1763; raw=3256 was 315 V on meter.
+#define ADC_VBUS_ZERO_RAW 1763U
+#define ADC_VBUS_CAL_RAW 3256U
+#define ADC_VBUS_CAL_V 315.0f
+#define ADC_VBUS_SCALE (ADC_VBUS_CAL_V / ((float)ADC_VBUS_CAL_RAW - (float)ADC_VBUS_ZERO_RAW))
 
 // STEVAL-IPM15B J2-26 "heat sink temperature".
-// UM2014 SW3 must be set to NTC (jumper 2-3) for the default protection path.
-// This uses PB0/ADC1_IN8, so do not wire J2-34 "measure phase C" to PB0 at
-// the same time.
+// UM2014 SW3 selects the source:
+//   TSO: jumper 1-2, low-side driver temperature sensor output.
+//   NTC: jumper 2-3, 85 kOhm IPM thermistor through the board 12 kOhm pull-up.
+// The live bench is wired as TSO, so keep firmware in TSO mode unless SW3 is
+// physically moved to NTC. PB0/ADC1_IN8 is reserved for this signal, so do not
+// wire J2-34 "measure phase C" to PB0 at the same time.
 #define USE_HEATSINK_TEMP 1
+#define HEATSINK_TEMP_SENSOR_NTC 0
+#define HEATSINK_TEMP_SENSOR_TSO 1
+#define HEATSINK_TEMP_SENSOR_MODE HEATSINK_TEMP_SENSOR_TSO
 #define HEATSINK_TEMP_PORT GPIOB
 #define HEATSINK_TEMP_PIN GPIO_PIN_0
 #define HEATSINK_TEMP_ADC_CHANNEL ADC_CHANNEL_8
@@ -57,7 +66,13 @@
 #define HEATSINK_TEMP_NTC_R25_OHM 85000.0f
 #define HEATSINK_TEMP_NTC_BETA_K 4092.0f
 #define HEATSINK_TEMP_TRIP_C 90.0f
-// Treat an almost full-scale ADC as a disconnected NTC line.
+// TSO is roughly linear; VTSO at 25 C is 0.974..1.345 V per STGIB15CH60TS-L.
+// Use typ. 1.16 V and an 18 mV/C slope for diagnostics and a conservative
+// overtemperature trip. Exact thermal shutdown still remains inside the IPM.
+#define HEATSINK_TEMP_TSO_V25 1.16f
+#define HEATSINK_TEMP_TSO_MV_PER_C 18.0f
+// Treat rail-like ADC values as wiring faults.
+#define HEATSINK_TEMP_SHORT_RAW 16U
 #define HEATSINK_TEMP_OPEN_RAW 4080U
 
 // IPM15 (UM2014) optional I/O

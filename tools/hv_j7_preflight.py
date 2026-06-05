@@ -15,7 +15,7 @@ from saleae.automation import Manager
 sys.path.insert(0, os.path.dirname(__file__))
 from ui_pwm_case import (  # noqa: E402
     analyze,
-    bp_bad_ok,
+    bp_cmd_bad_ok,
     bp_link_live,
     configure_adb_router_fallback,
     configure_bp_bad_baseline,
@@ -68,7 +68,7 @@ def require_run_status(st: dict | None, freq: float, vdc_min: float | None, vdc_
         vf_steady_matches(st, freq)
         and bp_link_live(st)
         and int(st_num(st, "bp_fault", 255.0)) == 0
-        and bp_bad_ok(st)
+        and bp_cmd_bad_ok(st)
         and vdc_in_range(st, vdc_min, vdc_max)
     )
 
@@ -81,7 +81,7 @@ def require_estop_status(st: dict | None, vdc_min: float | None, vdc_max: float 
         and int(st_num(st, "pwm", 1.0)) == 0
         and int(st_num(st, "estop", -1.0)) == 1
         and bp_link_live(st)
-        and bp_bad_ok(st)
+        and bp_cmd_bad_ok(st)
         and vdc_in_range(st, vdc_min, vdc_max)
     )
 
@@ -157,6 +157,7 @@ def main() -> int:
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     args = ap.parse_args()
 
+    os.environ["UNOQ_ALLOW_HV"] = "1"
     configure_adb_router_fallback(args.adb_router_fallback or bool(args.adb_device), args.adb_device or None)
 
     base = args.url.rstrip("/")

@@ -16,6 +16,19 @@ Open from your phone:
 http://<board-ip>:8080
 ```
 
+## Phone via PC LAN bridge with VPN enabled
+If the phone/tablet is on a Wi-Fi AP connected to the PC by LAN, and UNO Q is reached from the PC through USB/ADB, run on the PC:
+```
+py -3 -u tools\ui_access.py --bridge --bridge-port 8080
+```
+
+Open the URL printed for the PC Ethernet/LAN adapter, not the VPN adapter. If the VPN blocks `0.0.0.0`, bind the bridge to the LAN IP explicitly:
+```
+py -3 -u tools\ui_access.py --bridge --bridge-host <PC_LAN_IP> --bridge-port 8080
+```
+
+The PC bridge bypasses system proxy/VPN proxy for `127.0.0.1:18080`, so the control path is: Wi-Fi client -> AP -> PC LAN IP -> bridge -> ADB forward -> UNO Q HMI -> MCU RPC.
+
 ## Notes
 - Commands are sent via RPC `cmd` (START/STOP/MODE/SET FREQ).
 - Status is polled via RPC `get` once per second.

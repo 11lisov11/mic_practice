@@ -119,7 +119,7 @@ def status_is_safe(st: dict | None) -> bool:
         and st.get("state") == "SAFE"
         and bp_link_live(st)
         and int(status_num(st, "bp_fault", 255.0)) == 0
-        and int(status_num(st, "bp_bad", 999999.0)) == 0
+        and int(status_num(st, "bp_bad_cnt", 999999.0)) == 0
     )
 
 

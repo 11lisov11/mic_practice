@@ -137,7 +137,7 @@
 | `J2-15` | `current phase A` | `PA0 (ADC1_IN0)` | ток фазы A |
 | `J2-17` | `current phase B` | `PA1 (ADC1_IN1)` | ток фазы B |
 | `J2-19` | `current phase C` | `PA4 (ADC1_IN4)` | ток фазы C |
-| `J2-26` | `heat sink temperature` | `PB0 (ADC1_IN8)` | IPM heatsink NTC, SW3=NTC 2-3 |
+| `J2-26` | `heat sink temperature` | `PB0 (ADC1_IN8)` | IPM heatsink TSO, SW3=TSO 1-2 |
 | `J2-31` | `measure phase A` | `PA6 (ADC1_IN6)` | phase measurement A |
 | `J2-33` | `measure phase B` | `PA7 (ADC1_IN7)` | phase measurement B |
 | `J2-34` | `measure phase C` | not connected | firmware computes virtual C from A/B |
@@ -252,9 +252,10 @@
 - Для текущей рабочей схемы обязательны: `UART`, `EM_STOP`, 6 линий `TIM1 PWM`, питание `+5V/+3.3V`, общий `GND`, и хотя бы один валидный датчик угла/положения (`AS5600` или Hall).
 # CURRENT CRITICAL UPDATE: IPM HEATSINK TEMPERATURE
 - Wire STEVAL/IPM15 `J2-26 heat sink temperature` to Blue Pill `PB0 (ADC1_IN8)`.
-- Set UM2014 `SW3` to `NTC` (`2-3`).
+- Current firmware is built for UM2014 `SW3=TSO` (`1-2`), not `NTC`.
+- If you physically move `SW3` to `NTC` (`2-3`), change `HEATSINK_TEMP_SENSOR_MODE`/`BP_TEMP_SENSOR_MODE` to `NTC`, rebuild and reflash both sides before testing.
 - Do not wire `J2-34 measure phase C` to `PB0` in the current firmware; `PB0` is reserved for heatsink temperature.
 - Wire `J2-31 measure phase A -> PA6` and `J2-33 measure phase B -> PA7`; firmware reports virtual `measure phase C` from A/B.
 - Blue Pill reports `/api/status`: `bp_temp_raw`, `bp_temp_v`, `bp_temp_c`, `bp_temp_valid`, `bp_temp_fault`.
 - Phase telemetry in `/api/status`: `bp_phase_a_v`, `bp_phase_b_v`, `bp_phase_c_v`, `bp_phase_valid`, `bp_phase_c_virtual`.
-- Blue Pill latches `bp_fault=6` (`OVERTEMP`) on overtemperature/open NTC and disables PWM/EM_STOP.
+- Blue Pill latches `bp_fault=6` (`OVERTEMP`) on overtemperature or rail-like/wrong temperature telemetry and disables PWM/EM_STOP.

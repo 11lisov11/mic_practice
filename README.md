@@ -80,6 +80,17 @@ arduino-cli compile --fqbn arduino:zephyr:unoq .\UNOQ_MOTOR
    `python -u tools/ui_http_bridge.py --listen-port 8080 --target http://127.0.0.1:18080`
 3. На телефоне открыть `http://<IP_ПК>:8080`.
 
+### Телефон/планшет -> Wi‑Fi точка -> LAN ПК -> UNO Q при включенном VPN
+Основной безопасный запуск на ПК:
+`py -3 -u tools\ui_access.py --bridge --bridge-port 8080`
+
+Скрипт поднимает `adb forward tcp:18080 tcp:8080`, проверяет `http://127.0.0.1:18080/api/status`, затем запускает LAN-мост. Мост печатает список Windows adapter URLs. Для точки доступа, подключенной к ПК по LAN, открывать надо адрес интерфейса `Ethernet`/`LAN`, не VPN-интерфейс.
+
+Если VPN блокирует входящие на `0.0.0.0`, привяжи мост явно к LAN IP ПК:
+`py -3 -u tools\ui_access.py --bridge --bridge-host <IP_ПК_В_LAN_ТОЧКИ> --bridge-port 8080`
+
+Мост принудительно ходит к ADB-forward target `127.0.0.1:18080` без системного proxy/VPN proxy (`NO_PROXY` + direct opener), поэтому команды идут: клиент Wi‑Fi -> точка -> LAN IP ПК -> `ui_http_bridge.py` -> `127.0.0.1:18080` -> ADB -> UNO Q `web_hmi` -> MCU RPC.
+
 ## Деплой GUI на UNO Q (ADB)
 ```
 python tools/adb_deploy_web_hmi.py --device <ADB_ID> --restart
@@ -110,7 +121,7 @@ py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
 - гоняет `foc_mic_preflight.py`;
 - гоняет полный `ui_pwm_suite.py`;
 - при явном `--with-hv` гоняет отдельный `hv_j7_preflight.py`;
-- отдельно запускает `mic_ai_compare.py`, но честно помечает его как `diagnostic_only`, если MIC корректно загейтился из-за отсутствия реального вращения.
+- отдельно запускает `mic_ai_compare.py`; `diagnostic_only` допустим только когда `AS5600` читается (`enc_ok=1`), но вал не вращается и MIC корректно загейтился по measured speed. Если `enc_ok=0`, это blocker/fail, а не diagnostic-only.
 
 Артефакт верхнего уровня: `tools/_preflight_exports/full_system_preflight_<timestamp>/summary.json`
 
@@ -201,7 +212,7 @@ J2 (Table 6):
 - J2‑21 `NTC bypass relay` → `PB1` (GPIO output, active‑high)
 - J2‑23 `dissipative brake PWM` → `PB9` (TIM4_CH4, по умолчанию OFF)
 - J2‑25 `+V power` → питание (не подключать к GPIO)
-- J2‑26 `heat sink temperature` → `PB0` (ADC1_IN8, IPM thermal telemetry/protection, SW3=NTC 2-3)
+- J2‑26 `heat sink temperature` → `PB0` (ADC1_IN8, IPM thermal telemetry/protection, current firmware: SW3=TSO 1-2)
 - J2‑27 `PFC sync.` → `PB5` (GPIO output)
 - J2‑28 `VDD_m` → опорное/питание (не подключать к GPIO)
 - J2‑29 `PWM VREF` → `3.3V`
@@ -220,7 +231,7 @@ DC bus telemetry in `/api/status` is sourced from Blue Pill `PA5/J2-14` (`bp_vbu
 
 Critical wiring note: in the current UART configuration, Blue Pill `PA5` is only the DC bus ADC input. Do not leave any old SPI wire `UNO Q D13/SCK -> Blue Pill PA5`; it conflicts with `J2-14` and can make `/api/status` report near-zero `bp_vdc` while the DC bus is actually energized.
 
-Heat sink temperature protection: set UM2014 `SW3` to `NTC` (`2-3`) and wire `J2-26 -> Blue Pill PB0`. `/api/status` exposes `bp_temp_raw`, `bp_temp_v`, `bp_temp_c`, `bp_temp_valid`, `bp_temp_fault`. Blue Pill latches `bp_fault=6` (`OVERTEMP`) if the NTC line indicates overtemperature or an open sensor line.
+Heat sink temperature protection: current firmware expects UM2014 `SW3=TSO` (`1-2`) and `J2-26 -> Blue Pill PB0`. `/api/status` exposes `bp_temp_raw`, `bp_temp_v`, `bp_temp_c`, `bp_temp_valid`, `bp_temp_fault`. Blue Pill latches `bp_fault=6` (`OVERTEMP`) if temperature is over limit or telemetry is rail-like/invalid. If SW3 is moved to `NTC` (`2-3`), rebuild/reflash both Blue Pill and UNO Q with the temperature sensor mode changed to NTC.
 
 Phase measurement note: `J2-31 -> PA6` and `J2-33 -> PA7` are sampled as real phase-measure channels. `J2-34 measure phase C` is not wired because `PB0` is used for heatsink temperature; firmware reports virtual C as `C = center - ((A - center) + (B - center))`. `/api/status` exposes `bp_phase_a_v`, `bp_phase_b_v`, `bp_phase_c_v`, `bp_phase_valid`, `bp_phase_c_virtual`.
 

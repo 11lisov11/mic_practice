@@ -20,6 +20,7 @@ from ui_pwm_case import (  # noqa: E402
     wait_capture_with_timeout,
     export_capture,
     analyze,
+    bp_cmd_bad_ok,
     DEFAULT_MAX_OVERLAP_RATIO,
     status_fault_free,
     status_mode_matches,
@@ -130,7 +131,7 @@ def wait_status(
 ):
     def predicate(st):
         pwm_ok = int(st_num(st, "pwm", 0.0)) == (1 if expect_pwm else 0)
-        if expect_estop and int(st_num(st, "bp_bad", 999999.0)) != 0:
+        if expect_estop and not bp_cmd_bad_ok(st):
             return False
         if not expect_estop and not status_fault_free(st):
             return False
@@ -196,6 +197,8 @@ def main() -> int:
     parser.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_la_exports"))
     parser.add_argument("--poll", type=float, default=0.03)
     parser.add_argument("--status-timeout", type=float, default=0.6)
+    parser.add_argument("--freq-ramp-hz-per-s", type=float, default=3.0)
+    parser.add_argument("--settle-margin-s", type=float, default=1.5)
     parser.add_argument("--saleae-host", default="127.0.0.1")
     parser.add_argument("--saleae-port", type=int, default=10430)
     # IPM15 EM_STOP shutdown input is typically active-low.
@@ -249,6 +252,12 @@ def main() -> int:
     summary_file, writer = summary_writer(summary_path)
     pass_count = 0
     fail_count = 0
+
+    def vf_status_timeout(freq_hz: float, expect_pwm: bool = True) -> float:
+        if not expect_pwm:
+            return args.status_timeout
+        ramp = max(0.1, float(args.freq_ramp_hz_per_s))
+        return max(float(args.status_timeout), (abs(float(freq_hz)) / ramp) + float(args.settle_margin_s))
 
     def record(
         tag,
@@ -563,7 +572,7 @@ def main() -> int:
                             base,
                             expect_pwm,
                             False,
-                            args.status_timeout,
+                            vf_status_timeout(f, expect_pwm),
                             args.poll,
                             retries=1,
                             expect_freq_cmd=f,
@@ -616,7 +625,7 @@ def main() -> int:
                         base,
                         expect_pwm,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(f, expect_pwm),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=f,
@@ -644,7 +653,7 @@ def main() -> int:
                         base,
                         True,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(freq),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=freq,
@@ -689,7 +698,7 @@ def main() -> int:
                         base,
                         True,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(freq),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=freq,
@@ -733,7 +742,7 @@ def main() -> int:
                         base,
                         True,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(freq),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=freq,
@@ -785,7 +794,7 @@ def main() -> int:
                         base,
                         True,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(freq),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=freq,
@@ -859,7 +868,7 @@ def main() -> int:
                         base,
                         True,
                         False,
-                        args.status_timeout,
+                        vf_status_timeout(freq),
                         args.poll,
                         retries=1,
                         expect_freq_cmd=freq,

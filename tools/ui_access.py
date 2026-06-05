@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -13,9 +14,20 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
-def run(cmd: list[str]) -> None:
+def run(cmd: list[str], env: dict[str, str] | None = None) -> None:
     log("RUN " + " ".join(cmd))
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd, check=True, env=env)
+
+
+def vpn_safe_env() -> dict[str, str]:
+    env = os.environ.copy()
+    no_proxy = "127.0.0.1,localhost,::1"
+    existing = env.get("NO_PROXY") or env.get("no_proxy")
+    if existing:
+        no_proxy = existing + "," + no_proxy
+    env["NO_PROXY"] = no_proxy
+    env["no_proxy"] = no_proxy
+    return env
 
 
 def probe_url(url: str, timeout_s: float = 2.0, attempts: int = 10, delay_s: float = 0.25) -> bool:
@@ -114,7 +126,9 @@ def main() -> int:
     ap.add_argument("--forward-port", type=int, default=18080)
     ap.add_argument("--remote-port", type=int, default=8080)
     ap.add_argument("--bridge", action="store_true", help="Expose UI to LAN via HTTP bridge")
+    ap.add_argument("--bridge-host", default="0.0.0.0", help="Bridge bind address; use the PC LAN IP if VPN blocks LAN")
     ap.add_argument("--bridge-port", type=int, default=8080)
+    ap.add_argument("--bridge-timeout", type=float, default=2.0)
     ap.add_argument("--probe-timeout", type=float, default=2.0)
     ap.add_argument("--probe-attempts", type=int, default=10)
     args = ap.parse_args()
@@ -141,17 +155,22 @@ def main() -> int:
     if not args.bridge:
         return 0
 
-    log(f"LAN bridge: http://<IP_PC>:{args.bridge_port} -> {target}")
+    log(f"LAN bridge: http://{args.bridge_host}:{args.bridge_port} -> {target}")
+    log("VPN/proxy guard: NO_PROXY includes 127.0.0.1/localhost for the ADB-forward target")
     cmd = [
         sys.executable,
         "-u",
         "tools/ui_http_bridge.py",
+        "--listen-host",
+        str(args.bridge_host),
         "--listen-port",
         str(args.bridge_port),
         "--target",
         target,
+        "--timeout",
+        str(args.bridge_timeout),
     ]
-    run(cmd)
+    run(cmd, env=vpn_safe_env())
     return 0
 
 

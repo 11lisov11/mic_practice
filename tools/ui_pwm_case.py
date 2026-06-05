@@ -111,7 +111,68 @@ def post_cmd_adb_router(cmd: str) -> bool:
     return False
 
 
+def truthy_env(name: str) -> bool:
+    val = os.environ.get(name, "")
+    return val.strip().lower() in ("1", "true", "yes", "on")
+
+
+def command_requests_start(cmd: str) -> bool:
+    return cmd.strip().upper() == "START"
+
+
+def max_start_vdc() -> float:
+    raw = os.environ.get("UNOQ_MAX_START_VDC", "60.0").strip()
+    try:
+        val = float(raw)
+        if math.isfinite(val) and val >= 0.0:
+            return val
+    except Exception:
+        pass
+    return 60.0
+
+
+def start_vdc_samples() -> int:
+    raw = os.environ.get("UNOQ_START_VDC_SAMPLES", "5").strip()
+    try:
+        return max(1, min(20, int(float(raw))))
+    except Exception:
+        return 5
+
+
+def status_vdc(st: dict | None) -> float:
+    if st is None:
+        return float("nan")
+    return max(st_num(st, "bp_vdc", -1.0), st_num(st, "vdc", -1.0))
+
+
+def start_allowed_by_vdc(base: str) -> bool:
+    if truthy_env("UNOQ_ALLOW_HV"):
+        return True
+    limit = max_start_vdc()
+    samples: list[float] = []
+    for idx in range(start_vdc_samples()):
+        st = get_status(base)
+        vdc = status_vdc(st)
+        if math.isfinite(vdc) and vdc >= 0.0:
+            samples.append(vdc)
+        if idx + 1 < start_vdc_samples():
+            time.sleep(0.05)
+    if not samples:
+        log("ERROR: START blocked: status/vdc is not readable. Set UNOQ_ALLOW_HV=1 only for an intentional HV run.")
+        return False
+    vdc = max(samples)
+    if vdc > limit:
+        log(
+            f"ERROR: START blocked: max sampled vdc={vdc:.2f} V exceeds UNOQ_MAX_START_VDC={limit:.2f} V. "
+            "Remove/discharge HV or set UNOQ_ALLOW_HV=1 for an intentional HV run."
+        )
+        return False
+    return True
+
+
 def post_cmd(base: str, cmd: str) -> bool:
+    if command_requests_start(cmd) and not start_allowed_by_vdc(base):
+        return False
     resp = http_json(base + "/api/cmd", {"cmd": cmd})
     if resp and resp.get("ok"):
         return True
@@ -165,8 +226,22 @@ def bp_bad_value(st: dict | None) -> int:
     return int(st_num(st, "bp_bad", 999999.0))
 
 
+def bp_cmd_bad_value(st: dict | None) -> int:
+    if st is None:
+        return 999999
+    return int(st_num(st, "bp_bad_cnt", 999999.0))
+
+
 def bp_bad_limit() -> int:
     raw = os.environ.get("UNOQ_BP_BAD_BASELINE", "0").strip()
+    try:
+        return max(0, int(float(raw)))
+    except Exception:
+        return 0
+
+
+def bp_cmd_bad_limit() -> int:
+    raw = os.environ.get("UNOQ_BP_CMD_BAD_BASELINE", "0").strip()
     try:
         return max(0, int(float(raw)))
     except Exception:
@@ -177,10 +252,17 @@ def bp_bad_ok(st: dict | None) -> bool:
     return bp_bad_value(st) <= bp_bad_limit()
 
 
+def bp_cmd_bad_ok(st: dict | None) -> bool:
+    return bp_cmd_bad_value(st) <= bp_cmd_bad_limit()
+
+
 def configure_bp_bad_baseline(st: dict | None) -> int:
     baseline = bp_bad_value(st)
     if baseline < 999999:
         os.environ["UNOQ_BP_BAD_BASELINE"] = str(max(0, baseline))
+    cmd_baseline = bp_cmd_bad_value(st)
+    if cmd_baseline < 999999:
+        os.environ["UNOQ_BP_CMD_BAD_BASELINE"] = str(max(0, cmd_baseline))
     return baseline
 
 
@@ -193,7 +275,7 @@ def status_is_safe(st: dict | None, allow_estop: bool = False) -> bool:
         st.get("state") == "SAFE"
         and int(st_num(st, "pwm", 1.0)) == 0
         and bp_link_live(st)
-        and bp_bad_ok(st)
+        and bp_cmd_bad_ok(st)
         and (allow_estop or estop == 0)
         and (allow_estop or bp_fault_free)
     )
@@ -205,7 +287,7 @@ def status_fault_free(st: dict | None) -> bool:
     return (
         bp_link_live(st)
         and int(st_num(st, "bp_fault", 255.0)) == 0
-        and bp_bad_ok(st)
+        and bp_cmd_bad_ok(st)
     )
 
 
@@ -906,7 +988,7 @@ def run_case(args) -> int:
 
         def status_predicate(st):
             pwm_ok = int(st_num(st, "pwm", -1.0)) == (1 if args.expect_pwm else 0)
-            if args.expect_estop and (not bp_link_live(st) or int(st_num(st, "bp_bad", 999999.0)) != 0):
+            if args.expect_estop and (not bp_link_live(st) or not bp_cmd_bad_ok(st)):
                 return False
             if not args.expect_estop and not status_fault_free(st):
                 return False

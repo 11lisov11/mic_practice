@@ -100,6 +100,10 @@
 #define PFC_SYNC_PIN GPIO_PIN_5       // J2-27 PFC sync
 #define PFC_SYNC_ACTIVE_STATE 1
 
+#define PRECHARGE_RELAY_PORT GPIOB
+#define PRECHARGE_RELAY_PIN GPIO_PIN_4  // MIC_AI RELAY1 driver input via R2/Q1
+#define PRECHARGE_RELAY_ACTIVE_STATE 1
+
 #define USE_BRAKE_PWM 1
 #define BRAKE_PWM_PORT GPIOB
 #define BRAKE_PWM_PIN GPIO_PIN_9      // J2-23 dissipative brake PWM (TIM4_CH4)

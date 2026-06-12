@@ -637,6 +637,18 @@ class RpcBridge:
                 data["bp_phase_valid"] = 0
                 data["bp_phase_c_virtual"] = 0
                 data["bp_phase_age_ms"] = 999999
+            if len(result) >= 63:
+                data["bp_ext"] = int(result[62])
+            else:
+                data["bp_ext"] = 0
+            if len(result) >= 64:
+                data["iotest"] = int(result[63])
+            else:
+                data["iotest"] = 0
+            if len(result) >= 65:
+                data["precharge"] = int(result[64])
+            else:
+                data["precharge"] = 0
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -686,8 +698,10 @@ class RpcBridge:
                 "mic_saving_pct": float(kv.get("save", "0")),
                 "freq_cmd": float(kv.get("freqcmd", kv.get("freq", "0"))),
                 "estop": int(float(kv.get("estop", "0"))),
+                "iotest": int(float(kv.get("iotest", "0"))),
                 "ntc": int(float(kv.get("ntc", "0"))),
                 "pfc": int(float(kv.get("pfc", "0"))),
+                "precharge": int(float(kv.get("precharge", "0"))),
                 "brake": int(float(kv.get("brake", "0"))),
                 "brake_duty": float(kv.get("brake_duty", "0")),
                 "enc_raw": int(float(kv.get("enc_raw", "0"))),

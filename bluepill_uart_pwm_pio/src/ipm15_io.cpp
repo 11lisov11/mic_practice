@@ -27,18 +27,22 @@ static void gpio_out_init(GPIO_TypeDef *port, uint16_t pin) {
 }
 
 void ipm15_io_init(void) {
-  if (NTC_RELAY_PORT == GPIOA || PFC_SYNC_PORT == GPIOA || BRAKE_PWM_PORT == GPIOA) {
+  if (NTC_RELAY_PORT == GPIOA || PFC_SYNC_PORT == GPIOA || PRECHARGE_RELAY_PORT == GPIOA ||
+      BRAKE_PWM_PORT == GPIOA) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
   }
-  if (NTC_RELAY_PORT == GPIOB || PFC_SYNC_PORT == GPIOB || BRAKE_PWM_PORT == GPIOB) {
+  if (NTC_RELAY_PORT == GPIOB || PFC_SYNC_PORT == GPIOB || PRECHARGE_RELAY_PORT == GPIOB ||
+      BRAKE_PWM_PORT == GPIOB) {
     __HAL_RCC_GPIOB_CLK_ENABLE();
   }
 
   gpio_out_init(NTC_RELAY_PORT, NTC_RELAY_PIN);
   gpio_out_init(PFC_SYNC_PORT, PFC_SYNC_PIN);
+  gpio_out_init(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
 
   ipm15_set_ntc(false);
   ipm15_set_pfc_sync(false);
+  ipm15_set_precharge_relay(false);
 
 #if USE_BRAKE_PWM
   __HAL_RCC_TIM4_CLK_ENABLE();
@@ -86,6 +90,12 @@ void ipm15_set_pfc_sync(bool on) {
   bool active = on ? true : false;
   GPIO_PinState st = (active == (PFC_SYNC_ACTIVE_STATE != 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET;
   HAL_GPIO_WritePin(PFC_SYNC_PORT, PFC_SYNC_PIN, st);
+}
+
+void ipm15_set_precharge_relay(bool on) {
+  bool active = on ? true : false;
+  GPIO_PinState st = (active == (PRECHARGE_RELAY_ACTIVE_STATE != 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET;
+  HAL_GPIO_WritePin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN, st);
 }
 
 void ipm15_set_brake_pwm(float duty) {

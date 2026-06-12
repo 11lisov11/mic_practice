@@ -80,6 +80,7 @@ static const uint8_t BP_MODE_FOC = 5;
 static const uint8_t BP_EXT_NTC = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
+static const uint8_t BP_EXT_PRECHARGE_RELAY = 0x08;
 // STEVAL J2-14 has a bus-off offset. Live calibration:
 // bus-off median raw ~=1763; raw=3256 was 315 V on the meter.
 static const uint16_t BP_VBUS_ZERO_RAW = 1763U;
@@ -207,6 +208,7 @@ static void matrix_draw_digit(int x0, int y0, int digit);
 static void hard_stop(bool clear_cmd);
 static void request_normal_stop();
 static void ext_brake_set(float duty);
+static void io_test_set(bool on);
 static void nucleo_uart_init();
 static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool force = false);
 static void nucleo_send_stop(bool force = false);
@@ -360,6 +362,7 @@ static bool g_last_mic_active = false;
 static bool g_brake_on = false;
 static uint8_t g_ext_flags = 0;
 static uint16_t g_brake_q15 = 0;
+static bool g_io_test_mode = false;
 static bool g_clear_fault_req = false;
 static uint8_t g_nucleo_seq = 0;
 static uint32_t g_nucleo_last_send_ms = 0;
@@ -861,7 +864,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(62);
+  mp_tx_array(65);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -943,6 +946,9 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)g_bp_phase_flags);
   uint32_t bp_phase_age = (g_bp_phase_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_phase_ms);
   mp_tx_int((int32_t)bp_phase_age);
+  mp_tx_int((int32_t)g_bp_ext_flags);
+  mp_tx_int(g_io_test_mode ? 1 : 0);
+  mp_tx_int((g_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1262,6 +1268,16 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
+    } else if (starts_ci(cmd, "IOTEST")) {
+      const char *p = cmd + 6;
+      while (*p == ' ' || *p == '\t') p++;
+      if (icmp(p, "ON") || icmp(p, "1")) {
+        io_test_set(true);
+      } else if (icmp(p, "OFF") || icmp(p, "0")) {
+        io_test_set(false);
+      } else {
+        handled = false;
+      }
     } else if (starts_ci(cmd, "NTC")) {
       const char *p = cmd + 3;
       while (*p == ' ' || *p == '\t') p++;
@@ -1279,6 +1295,16 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         ext_flag_set(BP_EXT_PFC, true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         ext_flag_set(BP_EXT_PFC, false);
+      } else {
+        handled = false;
+      }
+    } else if (starts_ci(cmd, "PRECHARGE") || starts_ci(cmd, "RELAY")) {
+      const char *p = starts_ci(cmd, "PRECHARGE") ? (cmd + 9) : (cmd + 5);
+      while (*p == ' ' || *p == '\t') p++;
+      if (icmp(p, "ON") || icmp(p, "1")) {
+        ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+      } else if (icmp(p, "OFF") || icmp(p, "0")) {
+        ext_flag_set(BP_EXT_PRECHARGE_RELAY, false);
       } else {
         handled = false;
       }
@@ -1551,6 +1577,7 @@ static void scope_set(bool enabled) {
   g_freq_cmd = 0.0f;
   g_freq_ref = 0.0f;
   g_pwm_enabled = false;
+  g_io_test_mode = false;
   g_state = STATE_SAFE;
   g_scope_u = false;
   g_scope_v = false;
@@ -1602,6 +1629,7 @@ static void pwm_test_set(bool enabled) {
   g_freq_cmd = 0.0f;
   g_freq_ref = 0.0f;
   g_state = STATE_SAFE;
+  g_io_test_mode = false;
   g_pwm_enabled = enabled;
   bridge_notify_line(enabled ? String("LOG PWMTEST ON") : String("LOG PWMTEST OFF"));
   if (!enabled) {
@@ -1727,6 +1755,16 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     } else {
       handled = false;
     }
+  } else if (starts_ci(cmd, "PRECHARGE") || starts_ci(cmd, "RELAY")) {
+    const char *p = starts_ci(cmd, "PRECHARGE") ? (cmd + 9) : (cmd + 5);
+    while (*p == ' ' || *p == '	') p++;
+    if (icmp(p, "ON") || icmp(p, "1")) {
+      ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+    } else if (icmp(p, "OFF") || icmp(p, "0")) {
+      ext_flag_set(BP_EXT_PRECHARGE_RELAY, false);
+    } else {
+      handled = false;
+    }
   } else if (starts_ci(cmd, "SCOPE")) {
     const char *p = cmd + 5;
     while (*p == ' ' || *p == '	') p++;
@@ -1744,6 +1782,16 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
         pwm_test_set(true);
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         pwm_test_set(false);
+      } else {
+        handled = false;
+      }
+    } else if (starts_ci(cmd, "IOTEST")) {
+      const char *p = cmd + 6;
+      while (*p == ' ' || *p == '	') p++;
+      if (icmp(p, "ON") || icmp(p, "1")) {
+        io_test_set(true);
+      } else if (icmp(p, "OFF") || icmp(p, "0")) {
+        io_test_set(false);
       } else {
         handled = false;
       }
@@ -1808,8 +1856,10 @@ static String rpc_get() {
   s += " save="; s += format_fixed(g_mic_saving_pct, 2);
   s += " freqcmd="; s += format_fixed(g_freq_cmd, 2);
   s += " estop="; s += String(g_estop_latched ? 1 : 0);
+  s += " iotest="; s += String(g_io_test_mode ? 1 : 0);
   s += " ntc="; s += String((g_ext_flags & BP_EXT_NTC) ? 1 : 0);
   s += " pfc="; s += String((g_ext_flags & BP_EXT_PFC) ? 1 : 0);
+  s += " precharge="; s += String((g_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
   float brake = (g_ext_flags & BP_EXT_BRAKE_PWM) ? ((float)g_brake_q15 / 32767.0f) : 0.0f;
   s += " brake="; s += String((g_ext_flags & BP_EXT_BRAKE_PWM) ? 1 : 0);
   s += " brake_duty="; s += format_fixed(brake, 2);
@@ -2069,6 +2119,9 @@ static void ext_flag_set(uint8_t flag, bool on) {
   } else {
     g_ext_flags &= (uint8_t)(~flag);
   }
+  if (g_io_test_mode && !g_pwm_enabled) {
+    nucleo_send_pwm(0.0f, 0.0f, 0.0f, true, true);
+  }
 }
 static void ext_brake_set(float duty) {
   if (duty <= 0.0001f) {
@@ -2078,6 +2131,28 @@ static void ext_brake_set(float duty) {
   }
   g_brake_q15 = q15_unit(duty);
   g_ext_flags |= BP_EXT_BRAKE_PWM;
+}
+static void io_test_set(bool on) {
+  g_io_test_mode = on;
+  g_pwm_enabled = false;
+  g_state = STATE_SAFE;
+  g_stop_requested = false;
+  g_start_req = false;
+  g_stop_req = false;
+  g_run_limit_ms = 0;
+  g_run_deadline_ms = 0;
+  g_mode_switch_pending = false;
+  g_restart_after_mode_switch = false;
+  g_diag_pwm = false;
+  g_duty_mode = false;
+  if (!on) {
+    g_ext_flags &= (uint8_t)(~(BP_EXT_NTC | BP_EXT_PFC | BP_EXT_BRAKE_PWM | BP_EXT_PRECHARGE_RELAY));
+    g_brake_q15 = 0;
+    nucleo_send_stop(true);
+    return;
+  }
+  // Service I/O test: allow Blue Pill to apply ext_flags while keeping PWM off.
+  nucleo_send_pwm(0.0f, 0.0f, 0.0f, true, true);
 }
 static uint8_t nucleo_crc8(const uint8_t *buf, size_t len) {
   uint8_t c = 0;
@@ -2389,6 +2464,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   bool estop_eff = g_estop_latched;
   bool diag_eff = g_diag_pwm;
   bool clear_eff = g_clear_fault_req;
+  bool io_test_eff = enable && g_io_test_mode && !g_pwm_enabled;
   uint8_t mode = BP_MODE_OFF;
   uint8_t ext_flags = g_ext_flags;
   uint16_t brake_q15 = g_brake_q15;
@@ -2404,6 +2480,15 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     diag_eff = false;
     mode = BP_MODE_OFF;
     ext_flags = 0;
+    brake_q15 = 0;
+    du_eff = 0.0f;
+    dv_eff = 0.0f;
+    dw_eff = 0.0f;
+  } else if (io_test_eff && !estop_eff) {
+    enable_eff = true;
+    diag_eff = false;
+    mode = BP_MODE_DIAG;
+    ext_flags &= (uint8_t)(~BP_EXT_BRAKE_PWM);
     brake_q15 = 0;
     du_eff = 0.0f;
     dv_eff = 0.0f;
@@ -2533,7 +2618,7 @@ static void pwm_write(float d_u, float d_v, float d_w) {
     }
     // Keep SPI heartbeat even when outputs are disabled.
     if (USE_EXTERNAL_PWM) {
-      nucleo_send_pwm(0.0f, 0.0f, 0.0f, false);
+      nucleo_send_pwm(0.0f, 0.0f, 0.0f, g_io_test_mode);
     }
     return;
   }
@@ -2557,6 +2642,7 @@ static void pwm_write(float d_u, float d_v, float d_w) {
   pwm_write_phase(PWM_WH_PIN, PWM_WL_PIN, d_w);
 }
 static void hard_stop(bool clear_cmd) {
+  g_io_test_mode = false;
   g_pwm_enabled = false;
   g_state = STATE_SAFE;
   g_stop_requested = false;
@@ -2783,6 +2869,7 @@ static void control_step() {
       g_stop_requested = false;
       g_freq_ref = 0.0f;
       g_theta = 0.0f;
+      g_io_test_mode = false;
       g_pwm_enabled = true;
       g_run_deadline_ms = (g_run_limit_ms > 0U) ? (millis() + g_run_limit_ms) : 0U;
       if (g_mode == MODE_VF) {
@@ -3286,6 +3373,7 @@ void loop() {
       g_estop_latched = false;
       g_mode = MODE_VF;
       g_freq_cmd = 10.0f;
+      g_io_test_mode = false;
       g_pwm_enabled = true;
       g_state = STATE_VF_RUN;
       g_selftest_ms = now;
@@ -3324,6 +3412,7 @@ void loop() {
     digitalWrite(LED_PIN, LOW);
   }
   if (g_pwm_test) {
+    g_io_test_mode = false;
     g_pwm_enabled = true;
     pwm_write(g_pwm_test_duty, g_pwm_test_duty, g_pwm_test_duty);
   } else if (!g_scope_test) {
@@ -3343,7 +3432,7 @@ void loop() {
       if (!g_pwm_enabled && (uint32_t)(now - g_nucleo_keepalive_ms) >= 100) {
         g_nucleo_keepalive_ms = now;
         // Keepalive only when PWM disabled (do not spam disable while running).
-        nucleo_send_pwm(0.0f, 0.0f, 0.0f, false);
+        nucleo_send_pwm(0.0f, 0.0f, 0.0f, g_io_test_mode);
       }
       if (!USE_NUCLEO_SPI && USE_NUCLEO_UART_FALLBACK) {
         nucleo_uart_poll();

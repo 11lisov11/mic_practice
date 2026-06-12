@@ -303,6 +303,10 @@ static void MX_SPI1_Init(void) {
 #endif
 
 static void MX_GPIO_Init(void) {
+  __HAL_RCC_AFIO_CLK_ENABLE();
+  // Free PB3/PB4 from JTAG while keeping SWD active for flashing/debug.
+  __HAL_AFIO_REMAP_SWJ_NOJTAG();
+
   auto enable_port_clk = [](GPIO_TypeDef *port) {
     if (port == GPIOA) __HAL_RCC_GPIOA_CLK_ENABLE();
     if (port == GPIOB) __HAL_RCC_GPIOB_CLK_ENABLE();

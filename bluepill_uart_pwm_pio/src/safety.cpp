@@ -35,6 +35,7 @@ static void force_safe_outputs(void) {
   s_state.brake_q15 = 0;
   ipm15_set_ntc(false);
   ipm15_set_pfc_sync(false);
+  ipm15_set_precharge_relay(false);
   ipm15_set_brake_pwm(0.0f);
   s_state.enabled = false;
   s_state.pwm_active = false;
@@ -57,6 +58,7 @@ void safety_init(void) {
   brake_set(true);
   ipm15_set_ntc(false);
   ipm15_set_pfc_sync(false);
+  ipm15_set_precharge_relay(false);
   ipm15_set_brake_pwm(0.0f);
   pwm_outputs_enable(false);
   pwm_all_off();
@@ -106,6 +108,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
     s_state.brake_q15 = 0;
     ipm15_set_ntc(false);
     ipm15_set_pfc_sync(false);
+    ipm15_set_precharge_relay(false);
     ipm15_set_brake_pwm(0.0f);
     s_state.enabled = false;
     s_state.pwm_active = false;
@@ -120,6 +123,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
     s_state.brake_q15 = 0;
     ipm15_set_ntc(false);
     ipm15_set_pfc_sync(false);
+    ipm15_set_precharge_relay(false);
     ipm15_set_brake_pwm(0.0f);
     s_state.enabled = false;
     s_state.pwm_active = false;
@@ -132,6 +136,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   s_state.brake_q15 = brake_q15;
   ipm15_set_ntc((ext_flags & EXT_NTC_RELAY) != 0);
   ipm15_set_pfc_sync((ext_flags & EXT_PFC_SYNC) != 0);
+  ipm15_set_precharge_relay((ext_flags & EXT_PRECHARGE_RELAY) != 0);
   if (ext_flags & EXT_BRAKE_PWM) {
     ipm15_set_brake_pwm((float)brake_q15 / 32767.0f);
   } else {
@@ -169,6 +174,7 @@ void safety_on_bad_frame(uint8_t fault_code) {
   s_state.brake_q15 = 0;
   ipm15_set_ntc(false);
   ipm15_set_pfc_sync(false);
+  ipm15_set_precharge_relay(false);
   ipm15_set_brake_pwm(0.0f);
   s_state.enabled = false;
   s_state.pwm_active = false;
@@ -206,6 +212,7 @@ void safety_tick(void) {
     s_state.brake_q15 = 0;
     ipm15_set_ntc(false);
     ipm15_set_pfc_sync(false);
+    ipm15_set_precharge_relay(false);
     ipm15_set_brake_pwm(0.0f);
     s_state.enabled = false;
     s_state.pwm_active = false;

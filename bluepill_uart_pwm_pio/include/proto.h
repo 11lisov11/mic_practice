@@ -56,6 +56,7 @@
 #define EXT_NTC_RELAY   0x01
 #define EXT_PFC_SYNC    0x02
 #define EXT_BRAKE_PWM   0x04
+#define EXT_PRECHARGE_RELAY 0x08
 
 #define RSP_OFF_HDR0 0
 #define RSP_OFF_HDR1 1

@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess
 import sys
+from pathlib import Path
 
 
 def log(msg: str) -> None:
@@ -14,6 +15,11 @@ def log(msg: str) -> None:
 def run(cmd: list[str], check: bool = True) -> None:
     log("RUN " + " ".join(cmd))
     subprocess.run(cmd, check=check)
+
+
+def ok(cmd: list[str]) -> bool:
+    log("RUN " + " ".join(cmd))
+    return subprocess.run(cmd, check=False).returncode == 0
 
 
 def adb_device_ids() -> list[str]:
@@ -35,6 +41,63 @@ def detect_device() -> str | None:
             continue
         return device
     return None
+
+
+def shell_quote(value: str) -> str:
+    return "'" + value.replace("'", "'\"'\"'") + "'"
+
+
+def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
+    check_cmd = f"cd {shell_quote(remote)} && ./.venv/bin/python -c 'import msgpack'"
+    if ok(adb + ["shell", check_cmd]):
+        return
+
+    pip_cmd = f"cd {shell_quote(remote)} && ./.venv/bin/python -m pip install -r requirements.txt"
+    if ok(adb + ["shell", pip_cmd]) and ok(adb + ["shell", check_cmd]):
+        return
+
+    cache_dir = Path(local_root).parent / ".cache" / "wheels"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    wheels = sorted(cache_dir.glob("msgpack-*-cp313-*-aarch64*.whl"))
+    if not wheels:
+        run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "download",
+                "--dest",
+                str(cache_dir),
+                "--only-binary=:all:",
+                "--platform",
+                "manylinux_2_17_aarch64",
+                "--implementation",
+                "cp",
+                "--python-version",
+                "313",
+                "--abi",
+                "cp313",
+                "msgpack",
+            ]
+        )
+        wheels = sorted(cache_dir.glob("msgpack-*-cp313-*-aarch64*.whl"))
+    if not wheels:
+        raise RuntimeError("msgpack wheel was not downloaded")
+
+    run(adb + ["push", str(wheels[-1]), "/tmp/msgpack.whl"])
+    install_cmd = (
+        f"cd {shell_quote(remote)} && ./.venv/bin/python - <<'PY'\n"
+        "import pathlib\n"
+        "import zipfile\n"
+        "site = pathlib.Path('./.venv/lib/python3.13/site-packages')\n"
+        "site.mkdir(parents=True, exist_ok=True)\n"
+        "with zipfile.ZipFile('/tmp/msgpack.whl') as wheel:\n"
+        "    wheel.extractall(site)\n"
+        "import msgpack\n"
+        "print('msgpack', msgpack.__version__)\n"
+        "PY"
+    )
+    run(adb + ["shell", install_cmd])
 
 
 def main() -> int:
@@ -65,6 +128,8 @@ def main() -> int:
     static_dir = os.path.join(local_root, "static")
     for name in ("index.html", "app.js", "style.css"):
         run(adb + ["push", os.path.join(static_dir, name), f"{args.remote}/static/{name}"])
+
+    ensure_msgpack(adb, args.remote, local_root)
 
     if args.restart:
         log("Restarting server...")

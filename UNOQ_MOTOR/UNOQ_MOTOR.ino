@@ -2,10 +2,10 @@
 // Target: arduino:zephyr:unoq (STM32U585)
 //
 // IMPORTANT (UNOQ): /dev/ttyHS1 on the Linux side is the control link to the MCU.
-// The safest way is to use our msgpack RPC implementation on Serial1 and let
-// arduino-router expose it to the HTTP UI.
-#define USE_ROUTER_BRIDGE 0
-#define USE_MSGPACK_RPC 1
+// In RouterBridge mode the core maps that internal link to the router serial and
+// exposes debug/control logs through Monitor. D0/D1 remain Serial1 for Blue Pill.
+#define USE_ROUTER_BRIDGE 1
+#define USE_MSGPACK_RPC 0
 #include <Arduino.h>
 #include <Arduino_LED_Matrix.h>
 #include <SPI.h>
@@ -30,9 +30,14 @@
 #else
 #define LOG_SERIAL Serial
 #endif
-// Serial1 is reserved for the Linux control link (/dev/ttyHS1).
-// Use Serial (D0/D1) for the Blue Pill link.
+// RouterBridge aliases Serial to Monitor on UNO Q. Use Serial1 (D0/D1) for the
+// Blue Pill link when RouterBridge is enabled; without RouterBridge, Serial is
+// the plain hardware/default stream used by the existing fallback path.
+#if USE_ROUTER_BRIDGE
+#define NUCLEO_SERIAL Serial1
+#else
 #define NUCLEO_SERIAL Serial
+#endif
 #define UI_SERIAL Serial1
 #define RPC_BAUD 115200
 #define UART_ECHO_TEST 0
@@ -382,6 +387,7 @@ static bool g_bridge_ready = false;
 static bool g_bridge_cmd_ready = false;
 static bool g_bridge_get_ready = false;
 static bool g_monitor_ready = false;
+static bool g_bridge_announced = false;
 static uint32_t g_bridge_last_ms = 0;
 #endif
 // ----------------------- MsgPack RPC -----------------------
@@ -1909,10 +1915,12 @@ static void bridge_tick() {
     g_bridge_cmd_ready = false;
     g_bridge_get_ready = false;
     g_monitor_ready = false;
+    g_bridge_announced = false;
     return;
   }
+  g_bridge_ready = true;
   if (!g_monitor_ready) {
-    g_monitor_ready = Monitor.begin();
+    g_monitor_ready = Monitor.begin(RPC_BAUD);
   }
   if (!g_bridge_cmd_ready) {
     g_bridge_cmd_ready = Bridge.provide("cmd", rpc_cmd);
@@ -1920,10 +1928,9 @@ static void bridge_tick() {
   if (!g_bridge_get_ready) {
     g_bridge_get_ready = Bridge.provide("get", rpc_get);
   }
-  if (!g_bridge_ready && g_bridge_cmd_ready && g_bridge_get_ready && g_monitor_ready) {
-    g_bridge_ready = true;
+  if (!g_bridge_announced && g_bridge_cmd_ready && g_bridge_get_ready && g_monitor_ready) {
+    g_bridge_announced = true;
     Monitor.println("LOG BRIDGE READY");
-    LOG_SERIAL.println("LOG BRIDGE READY");
   }
 }
 #endif
@@ -3219,7 +3226,7 @@ void setup() {
     rpc_send_mon_write("LOG BOOT");
 #endif
 #endif
-  // Serial1 is owned by RouterBridge (/dev/ttyHS1). Do not re-init it here.
+  // The internal router serial is owned by RouterBridge. Do not re-init it here.
   // When RouterBridge is disabled, we can use UI_SERIAL as a plain-text command port.
 #if !USE_ROUTER_BRIDGE && !USE_MSGPACK_RPC
     UI_SERIAL.begin(RPC_BAUD);
@@ -3247,6 +3254,9 @@ void setup() {
   pi_init(&g_pi_id, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   pi_init(&g_pi_iq, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   g_last_control_us = micros();
+#if USE_ROUTER_BRIDGE
+  bridge_tick();
+#endif
 }
 void loop() {
   handle_button();

@@ -47,7 +47,7 @@ Copy-Item .\unoq_spi_master\arduino_secrets.h.example .\unoq_spi_master\arduino_
 Основной sketch UNO Q собирается из папки `UNOQ_MOTOR`:
 
 ```powershell
-arduino-cli compile --fqbn arduino:zephyr:unoq .\UNOQ_MOTOR
+arduino-cli compile --fqbn arduino:zephyr:unoq:link_mode=static .\UNOQ_MOTOR
 ```
 
 ## Доступ к UI (ПК по USB/ADB + телефон по Wi‑Fi)

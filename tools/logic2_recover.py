@@ -168,30 +168,22 @@ def main() -> int:
         if not os.path.exists(args.shortcut):
             log(f"ERROR: Logic2 path not found: {args.shortcut}")
             return 2
-        if args.shortcut.lower().endswith(".lnk"):
-            try:
-                start_logic_shortcut(args.shortcut)
-            except Exception as exc:
-                log(f"ERROR: failed to shell-launch Logic2 shortcut: {exc}")
-                return 2
-            time.sleep(2.0)
-        else:
-            try:
-                target, cwd = resolve_logic_launch(args.shortcut)
-            except Exception as exc:
-                log(f"ERROR: failed to resolve Logic2 launch target: {exc}")
-                return 2
-            if not os.path.exists(target):
-                log(f"ERROR: Logic2 executable not found: {target}")
-                return 2
-            pid = start_logic(target, cwd, args.port)
-            time.sleep(1.0)
-            if not logic_process_alive(pid):
-                log(
-                    f"ERROR: Logic2 exited immediately after launch pid={pid} "
-                    f"target={target} port={args.port}"
-                )
-                return 5
+        try:
+            target, cwd = resolve_logic_launch(args.shortcut)
+        except Exception as exc:
+            log(f"ERROR: failed to resolve Logic2 launch target: {exc}")
+            return 2
+        if not os.path.exists(target):
+            log(f"ERROR: Logic2 executable not found: {target}")
+            return 2
+        pid = start_logic(target, cwd, args.port)
+        time.sleep(1.0)
+        if not logic_process_alive(pid):
+            log(
+                f"ERROR: Logic2 exited immediately after launch pid={pid} "
+                f"target={target} port={args.port}"
+            )
+            return 5
 
     deadline = time.monotonic() + max(1.0, args.wait_app)
     app_seen = False

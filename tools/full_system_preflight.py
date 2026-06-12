@@ -315,7 +315,7 @@ def main() -> int:
             )
             step(
                 "unoq_build",
-                ["arduino-cli", "compile", "--fqbn", "arduino:zephyr:unoq", ".\\UNOQ_MOTOR"],
+                ["arduino-cli", "compile", "--fqbn", "arduino:zephyr:unoq:link_mode=static", ".\\UNOQ_MOTOR"],
                 repo_root,
                 args.timeout_build,
             )

@@ -21,6 +21,7 @@ env/
 
 # PlatformIO / embedded build artifacts
 .pio/
+build_unoq_motor_wifi*/
 *.o
 *.a
 *.elf
@@ -34,13 +35,19 @@ env/
 tools/_la_exports/
 tools/_mic_ai_exports/
 tools/_preflight_exports/
+tools/_calibration_exports/
+tools/_readiness_exports/
+tools/_research_exports/
 PLAN.md
 
 # Local secrets (keep template in repo)
 unoq_spi_master/arduino_secrets.h
+.unoq_firmware_update_token
 
 # Generic logs / temp
 *.log
+tmp/
+.docx_render_check/
 tmp_pdf_check/
 _pdf_check/
 MIC_AI_latest.txt

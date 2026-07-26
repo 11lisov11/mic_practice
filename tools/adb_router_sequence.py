@@ -12,6 +12,8 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Any
 
+from active_pwm_guard import start_allowed_by_bench_gate
+
 
 DEFAULT_DEVICE = "79204341"
 DEFAULT_STATUS_URL = "http://127.0.0.1:18080"
@@ -193,6 +195,63 @@ def status_int(st: dict[str, Any] | None, key: str, default: int = 0) -> int:
         return int(fnum(st, key, float(default)))
     except Exception:
         return default
+
+
+def status_bad_count(st: dict[str, Any] | None) -> int:
+    if st is None:
+        return 999999
+    values = [status_int(st, key, 999999) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    if not values:
+        return 999999
+    return max(values)
+
+
+def status_vdc(st: dict[str, Any] | None) -> float:
+    if st is None:
+        return float("nan")
+    values: list[float] = []
+    for key in ("bp_vdc", "vdc"):
+        if key not in st:
+            continue
+        value = fnum(st, key, float("nan"))
+        if math.isfinite(value) and value >= 0.0:
+            values.append(value)
+    return max(values) if values else float("nan")
+
+
+def enabling_status_precheck(
+    st: dict[str, Any] | None,
+    *,
+    max_vdc: float,
+    allow_hv: bool,
+    hv_vdc_min: float,
+    skip_hv_vdc_min_check: bool,
+) -> tuple[bool, str]:
+    if st is None:
+        return False, "status precheck is unavailable"
+    if not bool(st.get("link", True)):
+        return False, "Blue Pill link is down"
+    if fnum(st, "bp_age_ms", 999999.0) > 1000.0 and fnum(st, "bp_rsp_age_ms", 999999.0) > 1000.0:
+        return False, "Blue Pill telemetry is stale"
+    if str(st.get("state", "")).upper() != "SAFE":
+        return False, f"state is not SAFE: state={st.get('state')}"
+    if status_int(st, "pwm", 1) != 0:
+        return False, "PWM is already active"
+    if status_int(st, "estop", 1) != 0:
+        return False, f"estop={status_int(st, 'estop', 1)}"
+    if status_int(st, "bp_fault", 255) != 0:
+        return False, f"bp_fault={status_int(st, 'bp_fault', 255)}"
+    bad = status_bad_count(st)
+    if bad != 0:
+        return False, f"bp_bad={bad}"
+    vdc = status_vdc(st)
+    if not math.isfinite(vdc):
+        return False, "Vbus telemetry is not readable"
+    if vdc > max_vdc and not allow_hv:
+        return False, f"VBUS={vdc:.1f} V without --allow-hv"
+    if allow_hv and not skip_hv_vdc_min_check and vdc < hv_vdc_min:
+        return False, f"telemetry VBUS={vdc:.1f} V is below --hv-vdc-min={hv_vdc_min:.1f} V"
+    return True, "ok"
 
 
 def parse_step(raw: str) -> Step:
@@ -391,44 +450,33 @@ def main() -> int:
             run_limit_s = sequence_duration_s(steps, args.command_delay_s) + len(cleanup) * args.cleanup_delay_s + 2.0
         steps = insert_run_limit_before_start(steps, max(0.1, float(run_limit_s)))
     pre = http_status(args.status_url)
-    pre_bp_bad = status_int(pre, "bp_bad", 999999)
+    pre_bp_bad = status_bad_count(pre)
     print(f"PRE: {status_line(pre)}", flush=True)
 
-    if pre is None and can_enable:
-        print("ERROR: refusing enabling sequence because status precheck is unavailable", file=sys.stderr)
-        return 3
-    if pre is not None and can_enable:
-        if not bool(pre.get("link", True)):
-            print("ERROR: refusing enabling sequence because Blue Pill link is down", file=sys.stderr)
+    if can_enable:
+        pre_ok, pre_reason = enabling_status_precheck(
+            pre,
+            max_vdc=float(args.max_vdc),
+            allow_hv=bool(args.allow_hv),
+            hv_vdc_min=float(args.hv_vdc_min),
+            skip_hv_vdc_min_check=bool(args.skip_hv_vdc_min_check),
+        )
+        if not pre_ok:
+            print(f"ERROR: refusing enabling sequence because {pre_reason}", file=sys.stderr)
+            if args.allow_hv and "below --hv-vdc-min" in pre_reason:
+                print(
+                    "ERROR: if the DC bus is physically energized, do not bypass this check. "
+                    "Verify STEVAL J2-14 HV bus voltage -> Blue Pill PA5/ADC1_IN5, common GND, "
+                    "and remove any old UNO Q SPI SCK/D13 -> PA5 wire.",
+                    file=sys.stderr,
+                )
+            elif "Vbus telemetry is not readable" in pre_reason:
+                print(
+                    "ERROR: Fix Vbus telemetry before any enabling sequence. "
+                    "Do not treat missing bp_vdc/vdc as a safe 0 V bus.",
+                    file=sys.stderr,
+                )
             return 3
-        if fnum(pre, "bp_age_ms", 999999.0) > 1000.0 and fnum(pre, "bp_rsp_age_ms", 999999.0) > 1000.0:
-            print("ERROR: refusing enabling sequence because Blue Pill telemetry is stale", file=sys.stderr)
-            return 3
-    if pre is not None and int(fnum(pre, "pwm", 0.0)) != 0 and can_enable:
-        print("ERROR: refusing enabling sequence because PWM is already active", file=sys.stderr)
-        return 3
-    if pre is not None and can_enable:
-        vdc = max(fnum(pre, "bp_vdc", 0.0), fnum(pre, "vdc", 0.0))
-        if vdc > args.max_vdc and not args.allow_hv:
-            print(
-                f"ERROR: refusing enabling sequence at VBUS={vdc:.1f} V without --allow-hv",
-                file=sys.stderr,
-            )
-            return 3
-        if args.allow_hv and not args.skip_hv_vdc_min_check and vdc < args.hv_vdc_min:
-            print(
-                f"ERROR: refusing HV enabling sequence because telemetry VBUS={vdc:.1f} V is below "
-                f"--hv-vdc-min={args.hv_vdc_min:.1f} V",
-                file=sys.stderr,
-            )
-            print(
-                "ERROR: if the DC bus is physically energized, do not bypass this check. "
-                "Verify STEVAL J2-14 HV bus voltage -> Blue Pill PA5/ADC1_IN5, common GND, "
-                "and remove any old UNO Q SPI SCK/D13 -> PA5 wire.",
-                file=sys.stderr,
-            )
-            return 3
-
     payload = {
         "steps": [step.to_json() for step in steps],
         "cleanup": cleanup,
@@ -439,6 +487,8 @@ def main() -> int:
     print(json.dumps({"steps": payload["steps"], "cleanup": cleanup}, indent=2), flush=True)
     if args.dry_run:
         return 0
+    if can_enable and not start_allowed_by_bench_gate(lambda msg: print(msg, file=sys.stderr), url=args.status_url):
+        return 3
 
     encoded = base64.b64encode(json.dumps(payload).encode("utf-8")).decode("ascii")
     auto_timeout = sequence_duration_s(steps, args.command_delay_s) + len(cleanup) * args.cleanup_delay_s + 20.0
@@ -465,7 +515,7 @@ def main() -> int:
 
     time.sleep(0.25)
     post = http_status(args.status_url)
-    post_bp_bad = status_int(post, "bp_bad", 999999)
+    post_bp_bad = status_bad_count(post)
     bp_bad_delta = max(0, post_bp_bad - pre_bp_bad) if pre_bp_bad < 999999 and post_bp_bad < 999999 else 999999
     print(f"POST: {status_line(post)} elapsed_s={elapsed:.2f}", flush=True)
     if post is None and rc != 0:
@@ -477,7 +527,7 @@ def main() -> int:
             http_cleanup(args.status_url, cleanup, args.cleanup_delay_s)
             time.sleep(0.25)
             post = http_status(args.status_url)
-            post_bp_bad = status_int(post, "bp_bad", post_bp_bad)
+            post_bp_bad = status_bad_count(post)
             print(f"POST_CLEANUP: {status_line(post)}", flush=True)
         if post is None or int(fnum(post, "pwm", 0.0)) != 0:
             print("ERROR: final status still reports PWM active", file=sys.stderr)
@@ -487,7 +537,7 @@ def main() -> int:
         http_cleanup(args.status_url, cleanup, args.cleanup_delay_s)
         time.sleep(0.25)
         post = http_status(args.status_url)
-        post_bp_bad = status_int(post, "bp_bad", post_bp_bad)
+        post_bp_bad = status_bad_count(post)
         print(f"POST_CLEANUP: {status_line(post)}", flush=True)
         if post is None:
             print("ERROR: final status unavailable after HTTP cleanup fallback", file=sys.stderr)
@@ -508,7 +558,7 @@ def main() -> int:
             print(f"SETTLE {settle_idx}: status=unavailable", flush=True)
             continue
         settle_idx += 1
-        sample_bp_bad = status_int(sample, "bp_bad", 999999)
+        sample_bp_bad = status_bad_count(sample)
         if sample_bp_bad > post_bp_bad:
             post_bp_bad = sample_bp_bad
         if int(fnum(sample, "pwm", 0.0)) != 0:

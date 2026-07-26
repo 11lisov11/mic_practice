@@ -1,0 +1,2381 @@
+(edif MIC_AI_REV2
+  (edifVersion 2 0 0)
+  (edifLevel 0)
+  (keywordMap (keywordLevel 0))
+  (status (written
+    (timestamp 2026 7 17 0 0 0)
+    (program "Codex MIC_AI generator" (version "2.1"))))
+  (library MICAI_LIB
+    (edifLevel 0)
+    (technology (numberDefinition))
+    (cell CELL_J_AC_IN
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port L (direction inout))
+          (port N (direction inout))
+          (port PE (direction inout))
+        )
+      )
+    )
+    (cell CELL_F1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_MOV1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_BR1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port AC1 (direction inout))
+          (port AC2 (direction inout))
+          (port PLUS (direction inout))
+          (port MINUS (direction inout))
+        )
+      )
+    )
+    (cell CELL_RPRE1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_RPRE2
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_K1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port COM (direction inout))
+          (port NO (direction inout))
+          (port COIL_PLUS (direction inout))
+          (port COIL_LOW (direction inout))
+        )
+      )
+    )
+    (cell CELL_Q1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port G (direction inout))
+          (port D (direction inout))
+          (port S (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_Q1_GATE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_Q1_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_D_K1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port A (direction inout))
+          (port K (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_HV
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PLUS (direction inout))
+          (port MINUS (direction inout))
+        )
+      )
+    )
+    (cell CELL_RB1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_RB2
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_RB3
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_RB4
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_J7
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PLUS (direction inout))
+          (port MINUS (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_PE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PE (direction inout))
+        )
+      )
+    )
+    (cell CELL_PS1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port AC1 (direction inout))
+          (port AC2 (direction inout))
+          (port VOUT (direction inout))
+          (port GND_OUT (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_HOT15_EXT
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PLUS (direction inout))
+          (port RETURN (direction inout))
+        )
+      )
+    )
+    (cell CELL_JP_HOT15_SRC
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port COMMON (direction inout))
+          (port ONBOARD (direction inout))
+          (port EXTERNAL (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_BUCK12
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port IN (direction inout))
+          (port GND (direction inout))
+          (port OUT (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_BUCK5
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port IN (direction inout))
+          (port GND (direction inout))
+          (port OUT (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_BUCK3V3
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port IN (direction inout))
+          (port GND (direction inout))
+          (port OUT (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_STEVAL_J4
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PLUS (direction inout))
+          (port RETURN (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_BP
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_3V3 (direction inout))
+          (port N_5V (direction inout))
+          (port GND (direction inout))
+          (port PA0 (direction inout))
+          (port PA1 (direction inout))
+          (port PA2 (direction inout))
+          (port PA3 (direction inout))
+          (port PA4 (direction inout))
+          (port PA5 (direction inout))
+          (port PA6 (direction inout))
+          (port PA7 (direction inout))
+          (port PA8 (direction inout))
+          (port PA9 (direction inout))
+          (port PA10 (direction inout))
+          (port PA11 (direction inout))
+          (port PA13 (direction inout))
+          (port PA14 (direction inout))
+          (port PB0 (direction inout))
+          (port PB1 (direction inout))
+          (port PB3 (direction inout))
+          (port PB4 (direction inout))
+          (port PB5 (direction inout))
+          (port PB9 (direction inout))
+          (port PB10 (direction inout))
+          (port PB11 (direction inout))
+          (port PB12 (direction inout))
+          (port PB13 (direction inout))
+          (port PB14 (direction inout))
+          (port PB15 (direction inout))
+          (port NRST (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_STEVAL_J2
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port P1 (direction inout))
+          (port P2 (direction inout))
+          (port P3 (direction inout))
+          (port P4 (direction inout))
+          (port P5 (direction inout))
+          (port P6 (direction inout))
+          (port P7 (direction inout))
+          (port P8 (direction inout))
+          (port P9 (direction inout))
+          (port P10 (direction inout))
+          (port P11 (direction inout))
+          (port P12 (direction inout))
+          (port P13 (direction inout))
+          (port P14 (direction inout))
+          (port P15 (direction inout))
+          (port P16 (direction inout))
+          (port P17 (direction inout))
+          (port P18 (direction inout))
+          (port P19 (direction inout))
+          (port P20 (direction inout))
+          (port P21 (direction inout))
+          (port P22 (direction inout))
+          (port P23 (direction inout))
+          (port P24 (direction inout))
+          (port P25 (direction inout))
+          (port P26 (direction inout))
+          (port P27 (direction inout))
+          (port P28 (direction inout))
+          (port P29 (direction inout))
+          (port P30 (direction inout))
+          (port P31 (direction inout))
+          (port P32 (direction inout))
+          (port P33 (direction inout))
+          (port P34 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_UH
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_UH_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_UL
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_UL_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_VH
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_VH_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_VL
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_VL_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_WH
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_WH_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_WL
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PWM_WL_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_VBUS
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_IA
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_IB
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_IC
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_TEMP
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_PHASE_A
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ADC_PHASE_B
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PFC
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PFC_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_BRAKE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_BRAKE_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_UNOQ
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VIN (direction inout))
+          (port GND (direction inout))
+          (port OUT_3V3 (direction inout))
+          (port N_5V_USB (direction inout))
+          (port TX_D1 (direction inout))
+          (port RX_D0 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_SAFE_DC_IN
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VIN (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_PC_UART
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port TX (direction inout))
+          (port RX (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_JP_UART_TX
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port COMMON (direction inout))
+          (port UNO (direction inout))
+          (port PC (direction inout))
+        )
+      )
+    )
+    (cell CELL_JP_UART_RX
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port COMMON (direction inout))
+          (port UNO (direction inout))
+          (port PC (direction inout))
+        )
+      )
+    )
+    (cell CELL_JP_SAFE_3V3
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port COMMON (direction inout))
+          (port UNO (direction inout))
+          (port EXT (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_SAFE_3V3
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port V3V3 (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_SAFE_5V
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port V5 (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_UART_ISO
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VCC_SAFE (direction inout))
+          (port GND_SAFE (direction inout))
+          (port TX_SAFE_IN (direction inout))
+          (port RX_SAFE_OUT (direction inout))
+          (port VCC_HOT (direction inout))
+          (port GND_HOT (direction inout))
+          (port RX_HOT_OUT (direction inout))
+          (port TX_HOT_IN (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_UART_SAFE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_UART_HOT
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_UART_TX_PU
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_LA1
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VCC_HOT (direction inout))
+          (port GND_HOT (direction inout))
+          (port HI1 (direction inout))
+          (port HI2 (direction inout))
+          (port HI3 (direction inout))
+          (port HI4 (direction inout))
+          (port VCC_SAFE (direction inout))
+          (port GND_SAFE (direction inout))
+          (port EN_SAFE (direction inout))
+          (port SO1 (direction inout))
+          (port SO2 (direction inout))
+          (port SO3 (direction inout))
+          (port SO4 (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_LA2
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VCC_HOT (direction inout))
+          (port GND_HOT (direction inout))
+          (port HI1 (direction inout))
+          (port HI2 (direction inout))
+          (port HI3 (direction inout))
+          (port HI4 (direction inout))
+          (port VCC_SAFE (direction inout))
+          (port GND_SAFE (direction inout))
+          (port EN_SAFE (direction inout))
+          (port SO1 (direction inout))
+          (port SO2 (direction inout))
+          (port SO3 (direction inout))
+          (port SO4 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_SALEAE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port CH0 (direction inout))
+          (port CH1 (direction inout))
+          (port CH2 (direction inout))
+          (port CH3 (direction inout))
+          (port CH4 (direction inout))
+          (port CH5 (direction inout))
+          (port CH6 (direction inout))
+          (port CH7 (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_LA1_SAFE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_LA1_HOT
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_LA2_SAFE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_LA2_HOT
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_ESTOP
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port OUT (direction inout))
+          (port RETURN (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ESTOP_LED
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_ESTOP_OPTO
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port LED_A (direction inout))
+          (port LED_K (direction inout))
+          (port C (direction inout))
+          (port E (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ESTOP_PULL
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_ESTOP_INV
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VCC (direction inout))
+          (port GND (direction inout))
+          (port A (direction inout))
+          (port Y (direction inout))
+        )
+      )
+    )
+    (cell CELL_U_ESTOP_AND
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VCC (direction inout))
+          (port GND (direction inout))
+          (port A (direction inout))
+          (port B (direction inout))
+          (port Y (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ESTOP_OUT
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_ESTOP_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_PB12_PD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_ESTOP_INV
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_ESTOP_AND
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_Q_FAN_N
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port B (direction inout))
+          (port C (direction inout))
+          (port E (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_FAN_BASE
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_FAN_BPD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_TACH_SER
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_TACH_PU
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_FAN_BULK
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port PLUS (direction inout))
+          (port MINUS (direction inout))
+        )
+      )
+    )
+    (cell CELL_C_FAN_HF
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_FAN
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port GND (direction inout))
+          (port V12 (direction inout))
+          (port TACH (direction inout))
+          (port PWM (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_AS5600
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port SCL (direction inout))
+          (port SDA (direction inout))
+          (port VCC (direction inout))
+          (port GND (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_SCL_PU
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_R_SDA_PU
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port N_1 (direction inout))
+          (port N_2 (direction inout))
+        )
+      )
+    )
+    (cell CELL_J_SWD
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port VREF (direction inout))
+          (port SWDIO (direction inout))
+          (port SWCLK (direction inout))
+          (port GND (direction inout))
+          (port NRST (direction inout))
+        )
+      )
+    )
+    (cell TOP
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface)
+        (contents
+          (instance J_AC_IN
+            (viewRef schematic (cellRef CELL_J_AC_IN (libraryRef MICAI_LIB)))
+            (property VALUE (string "230VAC INPUT"))
+            (property FOOTPRINT (string "TerminalBlock_1x03_P7.62mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance F1
+            (viewRef schematic (cellRef CELL_F1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "F1_VALUE_BY_LOAD slow-blow 250VAC"))
+            (property FOOTPRINT (string "Fuse_5x20mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance MOV1
+            (viewRef schematic (cellRef CELL_MOV1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "S14K300"))
+            (property FOOTPRINT (string "MOV_D14mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance BR1
+            (viewRef schematic (cellRef CELL_BR1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "KBPC5010"))
+            (property FOOTPRINT (string "KBPC"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance RPRE1
+            (viewRef schematic (cellRef CELL_RPRE1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "20R 25W pulse-rated"))
+            (property FOOTPRINT (string "Chassis_Resistor_25W"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance RPRE2
+            (viewRef schematic (cellRef CELL_RPRE2 (libraryRef MICAI_LIB)))
+            (property VALUE (string "20R 25W pulse-rated"))
+            (property FOOTPRINT (string "Chassis_Resistor_25W"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance K1
+            (viewRef schematic (cellRef CELL_K1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "TE Mini K HV 2-1904058-5, 12V coil, 400VDC/20A"))
+            (property FOOTPRINT (string "TE_2-1904058-5"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance Q1
+            (viewRef schematic (cellRef CELL_Q1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "AO3400A (AOS)"))
+            (property FOOTPRINT (string "SOT-23"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_Q1_GATE
+            (viewRef schematic (cellRef CELL_R_Q1_GATE (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_Q1_PD
+            (viewRef schematic (cellRef CELL_R_Q1_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "100K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance D_K1
+            (viewRef schematic (cellRef CELL_D_K1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "SS14"))
+            (property FOOTPRINT (string "SMA"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_HV
+            (viewRef schematic (cellRef CELL_C_HV (libraryRef MICAI_LIB)))
+            (property VALUE (string "220uF 450V, optional if STEVAL C1 fitted"))
+            (property FOOTPRINT (string "Electrolytic_SnapIn"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "VERIFY"))
+          )
+          (instance RB1
+            (viewRef schematic (cellRef CELL_RB1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "100K 0.5W HV-rated"))
+            (property FOOTPRINT (string "R_Axial_10mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance RB2
+            (viewRef schematic (cellRef CELL_RB2 (libraryRef MICAI_LIB)))
+            (property VALUE (string "100K 0.5W HV-rated"))
+            (property FOOTPRINT (string "R_Axial_10mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance RB3
+            (viewRef schematic (cellRef CELL_RB3 (libraryRef MICAI_LIB)))
+            (property VALUE (string "100K 0.5W HV-rated"))
+            (property FOOTPRINT (string "R_Axial_10mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance RB4
+            (viewRef schematic (cellRef CELL_RB4 (libraryRef MICAI_LIB)))
+            (property VALUE (string "100K 0.5W HV-rated"))
+            (property FOOTPRINT (string "R_Axial_10mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_J7
+            (viewRef schematic (cellRef CELL_J_J7 (libraryRef MICAI_LIB)))
+            (property VALUE (string "TO STEVAL J7"))
+            (property FOOTPRINT (string "TerminalBlock_1x02_P10.16mm"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_PE
+            (viewRef schematic (cellRef CELL_J_PE (libraryRef MICAI_LIB)))
+            (property VALUE (string "PE / CHASSIS / MOTOR FRAME"))
+            (property FOOTPRINT (string "Ring_Lug_M4"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
+          (instance PS1
+            (viewRef schematic (cellRef CELL_PS1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "HLK-20M15"))
+            (property FOOTPRINT (string "HLK-20M15"))
+            (property DOMAIN (string "BARRIER"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_HOT15_EXT
+            (viewRef schematic (cellRef CELL_J_HOT15_EXT (libraryRef MICAI_LIB)))
+            (property VALUE (string "ISOLATED 15V BENCH INPUT - HV OFF"))
+            (property FOOTPRINT (string "TerminalBlock_1x02_P5.08mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance JP_HOT15_SRC
+            (viewRef schematic (cellRef CELL_JP_HOT15_SRC (libraryRef MICAI_LIB)))
+            (property VALUE (string "ONBOARD/EXTERNAL 15V SELECT"))
+            (property FOOTPRINT (string "Jumper_1x03_P2.54mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_BUCK12
+            (viewRef schematic (cellRef CELL_U_BUCK12 (libraryRef MICAI_LIB)))
+            (property VALUE (string "15V to 12V, >=2A"))
+            (property FOOTPRINT (string "Buck_Module"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_BUCK5
+            (viewRef schematic (cellRef CELL_U_BUCK5 (libraryRef MICAI_LIB)))
+            (property VALUE (string "15V to 5V, >=1A"))
+            (property FOOTPRINT (string "Buck_Module"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_BUCK3V3
+            (viewRef schematic (cellRef CELL_U_BUCK3V3 (libraryRef MICAI_LIB)))
+            (property VALUE (string "15V to 3.3V, >=1A"))
+            (property FOOTPRINT (string "Buck_Module"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_STEVAL_J4
+            (viewRef schematic (cellRef CELL_J_STEVAL_J4 (libraryRef MICAI_LIB)))
+            (property VALUE (string "STEVAL J4 AUX"))
+            (property FOOTPRINT (string "TerminalBlock_1x02_P5.08mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_BP
+            (viewRef schematic (cellRef CELL_U_BP (libraryRef MICAI_LIB)))
+            (property VALUE (string "Blue Pill STM32F103C8T6"))
+            (property FOOTPRINT (string "BluePill_2x20"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_STEVAL_J2
+            (viewRef schematic (cellRef CELL_J_STEVAL_J2 (libraryRef MICAI_LIB)))
+            (property VALUE (string "STEVAL-IPM15B J2"))
+            (property FOOTPRINT (string "IDC_2x17_P2.54mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_UH
+            (viewRef schematic (cellRef CELL_R_PWM_UH (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_UH_PD
+            (viewRef schematic (cellRef CELL_R_PWM_UH_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_UL
+            (viewRef schematic (cellRef CELL_R_PWM_UL (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_UL_PD
+            (viewRef schematic (cellRef CELL_R_PWM_UL_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_VH
+            (viewRef schematic (cellRef CELL_R_PWM_VH (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_VH_PD
+            (viewRef schematic (cellRef CELL_R_PWM_VH_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_VL
+            (viewRef schematic (cellRef CELL_R_PWM_VL (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_VL_PD
+            (viewRef schematic (cellRef CELL_R_PWM_VL_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_WH
+            (viewRef schematic (cellRef CELL_R_PWM_WH (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_WH_PD
+            (viewRef schematic (cellRef CELL_R_PWM_WH_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_WL
+            (viewRef schematic (cellRef CELL_R_PWM_WL (libraryRef MICAI_LIB)))
+            (property VALUE (string "33R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PWM_WL_PD
+            (viewRef schematic (cellRef CELL_R_PWM_WL_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_VBUS
+            (viewRef schematic (cellRef CELL_R_ADC_VBUS (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_IA
+            (viewRef schematic (cellRef CELL_R_ADC_IA (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_IB
+            (viewRef schematic (cellRef CELL_R_ADC_IB (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_IC
+            (viewRef schematic (cellRef CELL_R_ADC_IC (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_TEMP
+            (viewRef schematic (cellRef CELL_R_ADC_TEMP (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_PHASE_A
+            (viewRef schematic (cellRef CELL_R_ADC_PHASE_A (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ADC_PHASE_B
+            (viewRef schematic (cellRef CELL_R_ADC_PHASE_B (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PFC
+            (viewRef schematic (cellRef CELL_R_PFC (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PFC_PD
+            (viewRef schematic (cellRef CELL_R_PFC_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_BRAKE
+            (viewRef schematic (cellRef CELL_R_BRAKE (libraryRef MICAI_LIB)))
+            (property VALUE (string "100R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_BRAKE_PD
+            (viewRef schematic (cellRef CELL_R_BRAKE_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_UNOQ
+            (viewRef schematic (cellRef CELL_U_UNOQ (libraryRef MICAI_LIB)))
+            (property VALUE (string "Arduino UNO Q"))
+            (property FOOTPRINT (string "UNO_Q_HEADERS"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_SAFE_DC_IN
+            (viewRef schematic (cellRef CELL_J_SAFE_DC_IN (libraryRef MICAI_LIB)))
+            (property VALUE (string "UNO Q SAFE 7-24V"))
+            (property FOOTPRINT (string "TerminalBlock_1x02_P5.08mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_PC_UART
+            (viewRef schematic (cellRef CELL_J_PC_UART (libraryRef MICAI_LIB)))
+            (property VALUE (string "USB-UART SAFE SIDE, 3.3V LOGIC"))
+            (property FOOTPRINT (string "Header_1x03_P2.54mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance JP_UART_TX
+            (viewRef schematic (cellRef CELL_JP_UART_TX (libraryRef MICAI_LIB)))
+            (property VALUE (string "UNOQ/PC TX SELECT"))
+            (property FOOTPRINT (string "Jumper_1x03"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance JP_UART_RX
+            (viewRef schematic (cellRef CELL_JP_UART_RX (libraryRef MICAI_LIB)))
+            (property VALUE (string "UNOQ/PC RX SELECT"))
+            (property FOOTPRINT (string "Jumper_1x03"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance JP_SAFE_3V3
+            (viewRef schematic (cellRef CELL_JP_SAFE_3V3 (libraryRef MICAI_LIB)))
+            (property VALUE (string "UNOQ/EXT 3V3 SELECT"))
+            (property FOOTPRINT (string "Jumper_1x03"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_SAFE_3V3
+            (viewRef schematic (cellRef CELL_J_SAFE_3V3 (libraryRef MICAI_LIB)))
+            (property VALUE (string "SAFE 3.3V INPUT"))
+            (property FOOTPRINT (string "Header_1x02_P2.54mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_SAFE_5V
+            (viewRef schematic (cellRef CELL_J_SAFE_5V (libraryRef MICAI_LIB)))
+            (property VALUE (string "SAFE 5V FOR E-STOP LOOP"))
+            (property FOOTPRINT (string "Header_1x02_P2.54mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_UART_ISO
+            (viewRef schematic (cellRef CELL_U_UART_ISO (libraryRef MICAI_LIB)))
+            (property VALUE (string "ISO7721DWR reinforced 1/1 UART isolator"))
+            (property FOOTPRINT (string "SOIC-16W"))
+            (property DOMAIN (string "BARRIER"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_UART_SAFE
+            (viewRef schematic (cellRef CELL_C_UART_SAFE (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_UART_HOT
+            (viewRef schematic (cellRef CELL_C_UART_HOT (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_UART_TX_PU
+            (viewRef schematic (cellRef CELL_R_UART_TX_PU (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_LA1
+            (viewRef schematic (cellRef CELL_U_LA1 (libraryRef MICAI_LIB)))
+            (property VALUE (string "ISO7740FDWR reinforced 4/0 monitor"))
+            (property FOOTPRINT (string "SOIC-16W"))
+            (property DOMAIN (string "BARRIER"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_LA2
+            (viewRef schematic (cellRef CELL_U_LA2 (libraryRef MICAI_LIB)))
+            (property VALUE (string "ISO7740FDWR reinforced 4/0 monitor"))
+            (property FOOTPRINT (string "SOIC-16W"))
+            (property DOMAIN (string "BARRIER"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_SALEAE
+            (viewRef schematic (cellRef CELL_J_SALEAE (libraryRef MICAI_LIB)))
+            (property VALUE (string "SAFE ISOLATED SALEAE"))
+            (property FOOTPRINT (string "Header_1x09_P2.54mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_LA1_SAFE
+            (viewRef schematic (cellRef CELL_C_LA1_SAFE (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_LA1_HOT
+            (viewRef schematic (cellRef CELL_C_LA1_HOT (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_LA2_SAFE
+            (viewRef schematic (cellRef CELL_C_LA2_SAFE (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_LA2_HOT
+            (viewRef schematic (cellRef CELL_C_LA2_HOT (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_ESTOP
+            (viewRef schematic (cellRef CELL_J_ESTOP (libraryRef MICAI_LIB)))
+            (property VALUE (string "NC PWM-INHIBIT LOOP / E-STOP AUX CONTACT"))
+            (property FOOTPRINT (string "TerminalBlock_1x02_P5.08mm"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ESTOP_LED
+            (viewRef schematic (cellRef CELL_R_ESTOP_LED (libraryRef MICAI_LIB)))
+            (property VALUE (string "680R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "SAFE"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_ESTOP_OPTO
+            (viewRef schematic (cellRef CELL_U_ESTOP_OPTO (libraryRef MICAI_LIB)))
+            (property VALUE (string "LTV-817"))
+            (property FOOTPRINT (string "DIP-4_W7.62mm"))
+            (property DOMAIN (string "BARRIER"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ESTOP_PULL
+            (viewRef schematic (cellRef CELL_R_ESTOP_PULL (libraryRef MICAI_LIB)))
+            (property VALUE (string "10K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_ESTOP_INV
+            (viewRef schematic (cellRef CELL_U_ESTOP_INV (libraryRef MICAI_LIB)))
+            (property VALUE (string "SN74LVC1G14DBVR"))
+            (property FOOTPRINT (string "SOT-23-5_DBV"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance U_ESTOP_AND
+            (viewRef schematic (cellRef CELL_U_ESTOP_AND (libraryRef MICAI_LIB)))
+            (property VALUE (string "SN74LVC1G08DBVR"))
+            (property FOOTPRINT (string "SOT-23-5_DBV"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ESTOP_OUT
+            (viewRef schematic (cellRef CELL_R_ESTOP_OUT (libraryRef MICAI_LIB)))
+            (property VALUE (string "220R"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_ESTOP_PD
+            (viewRef schematic (cellRef CELL_R_ESTOP_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_PB12_PD
+            (viewRef schematic (cellRef CELL_R_PB12_PD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_ESTOP_INV
+            (viewRef schematic (cellRef CELL_C_ESTOP_INV (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_ESTOP_AND
+            (viewRef schematic (cellRef CELL_C_ESTOP_AND (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF"))
+            (property FOOTPRINT (string "C_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance Q_FAN_N
+            (viewRef schematic (cellRef CELL_Q_FAN_N (libraryRef MICAI_LIB)))
+            (property VALUE (string "MMBT2222A-7-F (Diodes Inc.)"))
+            (property FOOTPRINT (string "SOT-23"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_FAN_BASE
+            (viewRef schematic (cellRef CELL_R_FAN_BASE (libraryRef MICAI_LIB)))
+            (property VALUE (string "1K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_FAN_BPD
+            (viewRef schematic (cellRef CELL_R_FAN_BPD (libraryRef MICAI_LIB)))
+            (property VALUE (string "47K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_TACH_SER
+            (viewRef schematic (cellRef CELL_R_TACH_SER (libraryRef MICAI_LIB)))
+            (property VALUE (string "1K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_TACH_PU
+            (viewRef schematic (cellRef CELL_R_TACH_PU (libraryRef MICAI_LIB)))
+            (property VALUE (string "10K"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_FAN_BULK
+            (viewRef schematic (cellRef CELL_C_FAN_BULK (libraryRef MICAI_LIB)))
+            (property VALUE (string "100uF 25V"))
+            (property FOOTPRINT (string "Electrolytic_Radial"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance C_FAN_HF
+            (viewRef schematic (cellRef CELL_C_FAN_HF (libraryRef MICAI_LIB)))
+            (property VALUE (string "100nF 25V"))
+            (property FOOTPRINT (string "C_1206"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_FAN
+            (viewRef schematic (cellRef CELL_J_FAN (libraryRef MICAI_LIB)))
+            (property VALUE (string "4-PIN PWM FAN; 3-PIN = FULL SPEED"))
+            (property FOOTPRINT (string "Fan_Header_1x04_P2.54mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance J_AS5600
+            (viewRef schematic (cellRef CELL_J_AS5600 (libraryRef MICAI_LIB)))
+            (property VALUE (string "AS5600 I2C"))
+            (property FOOTPRINT (string "Header_1x04_P2.54mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (instance R_SCL_PU
+            (viewRef schematic (cellRef CELL_R_SCL_PU (libraryRef MICAI_LIB)))
+            (property VALUE (string "4.7K DNP if module fitted"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "DNP"))
+          )
+          (instance R_SDA_PU
+            (viewRef schematic (cellRef CELL_R_SDA_PU (libraryRef MICAI_LIB)))
+            (property VALUE (string "4.7K DNP if module fitted"))
+            (property FOOTPRINT (string "R_0603"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "DNP"))
+          )
+          (instance J_SWD
+            (viewRef schematic (cellRef CELL_J_SWD (libraryRef MICAI_LIB)))
+            (property VALUE (string "HOT SWD - HV OFF ONLY"))
+            (property FOOTPRINT (string "Header_1x05_P2.54mm"))
+            (property DOMAIN (string "HOT"))
+            (property POPULATE (string "YES"))
+          )
+          (net AC_L
+            (joined
+              (portRef L (instanceRef J_AC_IN))
+              (portRef N_1 (instanceRef F1))
+            )
+          )
+          (net AC_L_FUSED
+            (joined
+              (portRef N_2 (instanceRef F1))
+              (portRef N_1 (instanceRef MOV1))
+              (portRef AC1 (instanceRef BR1))
+              (portRef AC1 (instanceRef PS1))
+            )
+          )
+          (net AC_N
+            (joined
+              (portRef N (instanceRef J_AC_IN))
+              (portRef N_2 (instanceRef MOV1))
+              (portRef AC2 (instanceRef BR1))
+              (portRef AC2 (instanceRef PS1))
+            )
+          )
+          (net PE_CHASSIS
+            (joined
+              (portRef PE (instanceRef J_AC_IN))
+              (portRef PE (instanceRef J_PE))
+            )
+          )
+          (net RECT_DC_PLUS
+            (joined
+              (portRef PLUS (instanceRef BR1))
+              (portRef N_1 (instanceRef RPRE1))
+              (portRef COM (instanceRef K1))
+            )
+          )
+          (net PRECHARGE_MID
+            (joined
+              (portRef N_2 (instanceRef RPRE1))
+              (portRef N_1 (instanceRef RPRE2))
+            )
+          )
+          (net HV_DC_PLUS
+            (joined
+              (portRef N_2 (instanceRef RPRE2))
+              (portRef NO (instanceRef K1))
+              (portRef PLUS (instanceRef C_HV))
+              (portRef N_1 (instanceRef RB1))
+              (portRef PLUS (instanceRef J_J7))
+            )
+          )
+          (net BLEEDER_1
+            (joined
+              (portRef N_2 (instanceRef RB1))
+              (portRef N_1 (instanceRef RB2))
+            )
+          )
+          (net BLEEDER_2
+            (joined
+              (portRef N_2 (instanceRef RB2))
+              (portRef N_1 (instanceRef RB3))
+            )
+          )
+          (net BLEEDER_3
+            (joined
+              (portRef N_2 (instanceRef RB3))
+              (portRef N_1 (instanceRef RB4))
+            )
+          )
+          (net HV_DC_MINUS_HOT_GND
+            (joined
+              (portRef MINUS (instanceRef BR1))
+              (portRef MINUS (instanceRef C_HV))
+              (portRef N_2 (instanceRef RB4))
+              (portRef MINUS (instanceRef J_J7))
+              (portRef GND_OUT (instanceRef PS1))
+              (portRef RETURN (instanceRef J_HOT15_EXT))
+              (portRef GND (instanceRef U_BUCK12))
+              (portRef GND (instanceRef U_BUCK5))
+              (portRef GND (instanceRef U_BUCK3V3))
+              (portRef RETURN (instanceRef J_STEVAL_J4))
+              (portRef GND (instanceRef U_BP))
+              (portRef S (instanceRef Q1))
+              (portRef N_2 (instanceRef R_Q1_PD))
+              (portRef GND_HOT (instanceRef U_UART_ISO))
+              (portRef N_2 (instanceRef C_UART_HOT))
+              (portRef GND_HOT (instanceRef U_LA1))
+              (portRef GND_HOT (instanceRef U_LA2))
+              (portRef N_2 (instanceRef C_LA1_HOT))
+              (portRef N_2 (instanceRef C_LA2_HOT))
+              (portRef E (instanceRef U_ESTOP_OPTO))
+              (portRef GND (instanceRef U_ESTOP_INV))
+              (portRef GND (instanceRef U_ESTOP_AND))
+              (portRef N_2 (instanceRef R_ESTOP_PD))
+              (portRef N_2 (instanceRef R_PB12_PD))
+              (portRef N_2 (instanceRef C_ESTOP_INV))
+              (portRef N_2 (instanceRef C_ESTOP_AND))
+              (portRef E (instanceRef Q_FAN_N))
+              (portRef N_2 (instanceRef R_FAN_BPD))
+              (portRef GND (instanceRef J_FAN))
+              (portRef MINUS (instanceRef C_FAN_BULK))
+              (portRef N_2 (instanceRef C_FAN_HF))
+              (portRef GND (instanceRef J_AS5600))
+              (portRef GND (instanceRef J_SWD))
+              (portRef P2 (instanceRef J_STEVAL_J2))
+              (portRef P4 (instanceRef J_STEVAL_J2))
+              (portRef P6 (instanceRef J_STEVAL_J2))
+              (portRef P8 (instanceRef J_STEVAL_J2))
+              (portRef P10 (instanceRef J_STEVAL_J2))
+              (portRef P12 (instanceRef J_STEVAL_J2))
+              (portRef P16 (instanceRef J_STEVAL_J2))
+              (portRef P18 (instanceRef J_STEVAL_J2))
+              (portRef P20 (instanceRef J_STEVAL_J2))
+              (portRef P22 (instanceRef J_STEVAL_J2))
+              (portRef P24 (instanceRef J_STEVAL_J2))
+              (portRef P30 (instanceRef J_STEVAL_J2))
+              (portRef P32 (instanceRef J_STEVAL_J2))
+              (portRef N_2 (instanceRef R_PWM_UH_PD))
+              (portRef N_2 (instanceRef R_PWM_UL_PD))
+              (portRef N_2 (instanceRef R_PWM_VH_PD))
+              (portRef N_2 (instanceRef R_PWM_VL_PD))
+              (portRef N_2 (instanceRef R_PWM_WH_PD))
+              (portRef N_2 (instanceRef R_PWM_WL_PD))
+              (portRef N_2 (instanceRef R_PFC_PD))
+              (portRef N_2 (instanceRef R_BRAKE_PD))
+            )
+          )
+          (net ONBOARD_HOT_15V
+            (joined
+              (portRef VOUT (instanceRef PS1))
+              (portRef ONBOARD (instanceRef JP_HOT15_SRC))
+            )
+          )
+          (net EXTERNAL_HOT_15V
+            (joined
+              (portRef PLUS (instanceRef J_HOT15_EXT))
+              (portRef EXTERNAL (instanceRef JP_HOT15_SRC))
+            )
+          )
+          (net HOT_15V
+            (joined
+              (portRef COMMON (instanceRef JP_HOT15_SRC))
+              (portRef IN (instanceRef U_BUCK12))
+              (portRef IN (instanceRef U_BUCK5))
+              (portRef IN (instanceRef U_BUCK3V3))
+              (portRef PLUS (instanceRef J_STEVAL_J4))
+            )
+          )
+          (net HOT_12V
+            (joined
+              (portRef OUT (instanceRef U_BUCK12))
+              (portRef COIL_PLUS (instanceRef K1))
+              (portRef K (instanceRef D_K1))
+              (portRef V12 (instanceRef J_FAN))
+              (portRef PLUS (instanceRef C_FAN_BULK))
+              (portRef N_1 (instanceRef C_FAN_HF))
+            )
+          )
+          (net HOT_5V
+            (joined
+              (portRef OUT (instanceRef U_BUCK5))
+              (portRef P25 (instanceRef J_STEVAL_J2))
+            )
+          )
+          (net HOT_3V3
+            (joined
+              (portRef OUT (instanceRef U_BUCK3V3))
+              (portRef N_3V3 (instanceRef U_BP))
+              (portRef P28 (instanceRef J_STEVAL_J2))
+              (portRef P29 (instanceRef J_STEVAL_J2))
+              (portRef VCC_HOT (instanceRef U_UART_ISO))
+              (portRef N_1 (instanceRef C_UART_HOT))
+              (portRef VCC_HOT (instanceRef U_LA1))
+              (portRef VCC_HOT (instanceRef U_LA2))
+              (portRef N_1 (instanceRef C_LA1_HOT))
+              (portRef N_1 (instanceRef C_LA2_HOT))
+              (portRef N_1 (instanceRef R_ESTOP_PULL))
+              (portRef VCC (instanceRef U_ESTOP_INV))
+              (portRef VCC (instanceRef U_ESTOP_AND))
+              (portRef N_1 (instanceRef C_ESTOP_INV))
+              (portRef N_1 (instanceRef C_ESTOP_AND))
+              (portRef N_1 (instanceRef R_TACH_PU))
+              (portRef VCC (instanceRef J_AS5600))
+              (portRef N_1 (instanceRef R_SCL_PU))
+              (portRef N_1 (instanceRef R_SDA_PU))
+              (portRef VREF (instanceRef J_SWD))
+            )
+          )
+          (net PB4_PRECHARGE
+            (joined
+              (portRef PB4 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_Q1_GATE))
+              (portRef HI4 (instanceRef U_LA2))
+            )
+          )
+          (net Q1_GATE
+            (joined
+              (portRef N_2 (instanceRef R_Q1_GATE))
+              (portRef G (instanceRef Q1))
+              (portRef N_1 (instanceRef R_Q1_PD))
+            )
+          )
+          (net K1_COIL_LOW
+            (joined
+              (portRef COIL_LOW (instanceRef K1))
+              (portRef D (instanceRef Q1))
+              (portRef A (instanceRef D_K1))
+            )
+          )
+          (net BP_PA8_RAW
+            (joined
+              (portRef PA8 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_UH))
+            )
+          )
+          (net PWM_UH
+            (joined
+              (portRef N_2 (instanceRef R_PWM_UH))
+              (portRef P3 (instanceRef J_STEVAL_J2))
+              (portRef HI1 (instanceRef U_LA1))
+              (portRef N_1 (instanceRef R_PWM_UH_PD))
+            )
+          )
+          (net BP_PB13_RAW
+            (joined
+              (portRef PB13 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_UL))
+            )
+          )
+          (net PWM_UL
+            (joined
+              (portRef N_2 (instanceRef R_PWM_UL))
+              (portRef P5 (instanceRef J_STEVAL_J2))
+              (portRef HI2 (instanceRef U_LA1))
+              (portRef N_1 (instanceRef R_PWM_UL_PD))
+            )
+          )
+          (net BP_PA9_RAW
+            (joined
+              (portRef PA9 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_VH))
+            )
+          )
+          (net PWM_VH
+            (joined
+              (portRef N_2 (instanceRef R_PWM_VH))
+              (portRef P7 (instanceRef J_STEVAL_J2))
+              (portRef HI3 (instanceRef U_LA1))
+              (portRef N_1 (instanceRef R_PWM_VH_PD))
+            )
+          )
+          (net BP_PB14_RAW
+            (joined
+              (portRef PB14 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_VL))
+            )
+          )
+          (net PWM_VL
+            (joined
+              (portRef N_2 (instanceRef R_PWM_VL))
+              (portRef P9 (instanceRef J_STEVAL_J2))
+              (portRef HI4 (instanceRef U_LA1))
+              (portRef N_1 (instanceRef R_PWM_VL_PD))
+            )
+          )
+          (net BP_PA10_RAW
+            (joined
+              (portRef PA10 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_WH))
+            )
+          )
+          (net PWM_WH
+            (joined
+              (portRef N_2 (instanceRef R_PWM_WH))
+              (portRef P11 (instanceRef J_STEVAL_J2))
+              (portRef HI1 (instanceRef U_LA2))
+              (portRef N_1 (instanceRef R_PWM_WH_PD))
+            )
+          )
+          (net BP_PB15_RAW
+            (joined
+              (portRef PB15 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PWM_WL))
+            )
+          )
+          (net PWM_WL
+            (joined
+              (portRef N_2 (instanceRef R_PWM_WL))
+              (portRef P13 (instanceRef J_STEVAL_J2))
+              (portRef HI2 (instanceRef U_LA2))
+              (portRef N_1 (instanceRef R_PWM_WL_PD))
+            )
+          )
+          (net STEVAL_ADC_VBUS
+            (joined
+              (portRef P14 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_VBUS))
+            )
+          )
+          (net ADC_VBUS
+            (joined
+              (portRef N_2 (instanceRef R_ADC_VBUS))
+              (portRef PA5 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_IA
+            (joined
+              (portRef P15 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_IA))
+            )
+          )
+          (net ADC_IA
+            (joined
+              (portRef N_2 (instanceRef R_ADC_IA))
+              (portRef PA0 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_IB
+            (joined
+              (portRef P17 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_IB))
+            )
+          )
+          (net ADC_IB
+            (joined
+              (portRef N_2 (instanceRef R_ADC_IB))
+              (portRef PA1 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_IC
+            (joined
+              (portRef P19 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_IC))
+            )
+          )
+          (net ADC_IC
+            (joined
+              (portRef N_2 (instanceRef R_ADC_IC))
+              (portRef PA4 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_TEMP
+            (joined
+              (portRef P26 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_TEMP))
+            )
+          )
+          (net ADC_TEMP
+            (joined
+              (portRef N_2 (instanceRef R_ADC_TEMP))
+              (portRef PB0 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_PHASE_A
+            (joined
+              (portRef P31 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_PHASE_A))
+            )
+          )
+          (net ADC_PHASE_A
+            (joined
+              (portRef N_2 (instanceRef R_ADC_PHASE_A))
+              (portRef PA6 (instanceRef U_BP))
+            )
+          )
+          (net STEVAL_ADC_PHASE_B
+            (joined
+              (portRef P33 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_ADC_PHASE_B))
+            )
+          )
+          (net ADC_PHASE_B
+            (joined
+              (portRef N_2 (instanceRef R_ADC_PHASE_B))
+              (portRef PA7 (instanceRef U_BP))
+            )
+          )
+          (net PB5_PFC_SYNC
+            (joined
+              (portRef PB5 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_PFC))
+            )
+          )
+          (net PFC_TO_STEVAL
+            (joined
+              (portRef N_2 (instanceRef R_PFC))
+              (portRef P27 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_PFC_PD))
+            )
+          )
+          (net PB9_BRAKE_PWM
+            (joined
+              (portRef PB9 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_BRAKE))
+            )
+          )
+          (net BRAKE_TO_STEVAL
+            (joined
+              (portRef N_2 (instanceRef R_BRAKE))
+              (portRef P23 (instanceRef J_STEVAL_J2))
+              (portRef N_1 (instanceRef R_BRAKE_PD))
+            )
+          )
+          (net SAFE_GND
+            (joined
+              (portRef GND (instanceRef U_UNOQ))
+              (portRef GND (instanceRef J_SAFE_DC_IN))
+              (portRef GND (instanceRef J_PC_UART))
+              (portRef GND (instanceRef J_SAFE_3V3))
+              (portRef GND (instanceRef J_SAFE_5V))
+              (portRef GND_SAFE (instanceRef U_UART_ISO))
+              (portRef N_2 (instanceRef C_UART_SAFE))
+              (portRef GND_SAFE (instanceRef U_LA1))
+              (portRef GND_SAFE (instanceRef U_LA2))
+              (portRef N_2 (instanceRef C_LA1_SAFE))
+              (portRef N_2 (instanceRef C_LA2_SAFE))
+              (portRef GND (instanceRef J_SALEAE))
+              (portRef LED_K (instanceRef U_ESTOP_OPTO))
+            )
+          )
+          (net SAFE_VIN_7_24V
+            (joined
+              (portRef VIN (instanceRef J_SAFE_DC_IN))
+              (portRef VIN (instanceRef U_UNOQ))
+            )
+          )
+          (net UNOQ_3V3_OUT
+            (joined
+              (portRef OUT_3V3 (instanceRef U_UNOQ))
+              (portRef UNO (instanceRef JP_SAFE_3V3))
+            )
+          )
+          (net EXT_SAFE_3V3
+            (joined
+              (portRef V3V3 (instanceRef J_SAFE_3V3))
+              (portRef EXT (instanceRef JP_SAFE_3V3))
+            )
+          )
+          (net SAFE_3V3
+            (joined
+              (portRef COMMON (instanceRef JP_SAFE_3V3))
+              (portRef VCC_SAFE (instanceRef U_UART_ISO))
+              (portRef N_1 (instanceRef C_UART_SAFE))
+              (portRef VCC_SAFE (instanceRef U_LA1))
+              (portRef VCC_SAFE (instanceRef U_LA2))
+              (portRef N_1 (instanceRef C_LA1_SAFE))
+              (portRef N_1 (instanceRef C_LA2_SAFE))
+              (portRef EN_SAFE (instanceRef U_LA1))
+              (portRef EN_SAFE (instanceRef U_LA2))
+              (portRef N_1 (instanceRef R_UART_TX_PU))
+            )
+          )
+          (net UNOQ_TX
+            (joined
+              (portRef TX_D1 (instanceRef U_UNOQ))
+              (portRef UNO (instanceRef JP_UART_TX))
+            )
+          )
+          (net PC_TX
+            (joined
+              (portRef TX (instanceRef J_PC_UART))
+              (portRef PC (instanceRef JP_UART_TX))
+            )
+          )
+          (net SAFE_UART_TX
+            (joined
+              (portRef COMMON (instanceRef JP_UART_TX))
+              (portRef TX_SAFE_IN (instanceRef U_UART_ISO))
+              (portRef N_2 (instanceRef R_UART_TX_PU))
+            )
+          )
+          (net UNOQ_RX
+            (joined
+              (portRef RX_D0 (instanceRef U_UNOQ))
+              (portRef UNO (instanceRef JP_UART_RX))
+            )
+          )
+          (net PC_RX
+            (joined
+              (portRef RX (instanceRef J_PC_UART))
+              (portRef PC (instanceRef JP_UART_RX))
+            )
+          )
+          (net SAFE_UART_RX
+            (joined
+              (portRef COMMON (instanceRef JP_UART_RX))
+              (portRef RX_SAFE_OUT (instanceRef U_UART_ISO))
+            )
+          )
+          (net BP_RX_PA3
+            (joined
+              (portRef RX_HOT_OUT (instanceRef U_UART_ISO))
+              (portRef PA3 (instanceRef U_BP))
+            )
+          )
+          (net BP_TX_PA2
+            (joined
+              (portRef PA2 (instanceRef U_BP))
+              (portRef TX_HOT_IN (instanceRef U_UART_ISO))
+            )
+          )
+          (net SAFE_LA_CH0
+            (joined
+              (portRef SO1 (instanceRef U_LA1))
+              (portRef CH0 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH1
+            (joined
+              (portRef SO2 (instanceRef U_LA1))
+              (portRef CH1 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH2
+            (joined
+              (portRef SO3 (instanceRef U_LA1))
+              (portRef CH2 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH3
+            (joined
+              (portRef SO4 (instanceRef U_LA1))
+              (portRef CH3 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH4
+            (joined
+              (portRef SO1 (instanceRef U_LA2))
+              (portRef CH4 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH5
+            (joined
+              (portRef SO2 (instanceRef U_LA2))
+              (portRef CH5 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH6
+            (joined
+              (portRef SO3 (instanceRef U_LA2))
+              (portRef CH6 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_LA_CH7
+            (joined
+              (portRef SO4 (instanceRef U_LA2))
+              (portRef CH7 (instanceRef J_SALEAE))
+            )
+          )
+          (net SAFE_5V
+            (joined
+              (portRef V5 (instanceRef J_SAFE_5V))
+              (portRef OUT (instanceRef J_ESTOP))
+            )
+          )
+          (net ESTOP_LOOP_RETURN
+            (joined
+              (portRef RETURN (instanceRef J_ESTOP))
+              (portRef N_1 (instanceRef R_ESTOP_LED))
+            )
+          )
+          (net ESTOP_LED_A
+            (joined
+              (portRef N_2 (instanceRef R_ESTOP_LED))
+              (portRef LED_A (instanceRef U_ESTOP_OPTO))
+            )
+          )
+          (net ESTOP_N
+            (joined
+              (portRef N_2 (instanceRef R_ESTOP_PULL))
+              (portRef C (instanceRef U_ESTOP_OPTO))
+              (portRef A (instanceRef U_ESTOP_INV))
+            )
+          )
+          (net ESTOP_OK
+            (joined
+              (portRef Y (instanceRef U_ESTOP_INV))
+              (portRef B (instanceRef U_ESTOP_AND))
+            )
+          )
+          (net PB12_RUN
+            (joined
+              (portRef PB12 (instanceRef U_BP))
+              (portRef A (instanceRef U_ESTOP_AND))
+              (portRef HI3 (instanceRef U_LA2))
+              (portRef N_1 (instanceRef R_PB12_PD))
+            )
+          )
+          (net ESTOP_GATE_OUT
+            (joined
+              (portRef Y (instanceRef U_ESTOP_AND))
+              (portRef N_1 (instanceRef R_ESTOP_OUT))
+            )
+          )
+          (net EM_STOP_TO_STEVAL
+            (joined
+              (portRef N_2 (instanceRef R_ESTOP_OUT))
+              (portRef N_1 (instanceRef R_ESTOP_PD))
+              (portRef P1 (instanceRef J_STEVAL_J2))
+            )
+          )
+          (net PB3_FAN_PWM
+            (joined
+              (portRef PB3 (instanceRef U_BP))
+              (portRef N_1 (instanceRef R_FAN_BASE))
+            )
+          )
+          (net FAN_NPN_BASE
+            (joined
+              (portRef N_2 (instanceRef R_FAN_BASE))
+              (portRef B (instanceRef Q_FAN_N))
+              (portRef N_1 (instanceRef R_FAN_BPD))
+            )
+          )
+          (net FAN_PWM_OC
+            (joined
+              (portRef C (instanceRef Q_FAN_N))
+              (portRef PWM (instanceRef J_FAN))
+            )
+          )
+          (net FAN_TACH_RAW
+            (joined
+              (portRef TACH (instanceRef J_FAN))
+              (portRef N_1 (instanceRef R_TACH_SER))
+              (portRef N_2 (instanceRef R_TACH_PU))
+            )
+          )
+          (net PA11_FAN_TACH
+            (joined
+              (portRef N_2 (instanceRef R_TACH_SER))
+              (portRef PA11 (instanceRef U_BP))
+            )
+          )
+          (net PB10_AS5600_SCL
+            (joined
+              (portRef PB10 (instanceRef U_BP))
+              (portRef SCL (instanceRef J_AS5600))
+              (portRef N_2 (instanceRef R_SCL_PU))
+            )
+          )
+          (net PB11_AS5600_SDA
+            (joined
+              (portRef PB11 (instanceRef U_BP))
+              (portRef SDA (instanceRef J_AS5600))
+              (portRef N_2 (instanceRef R_SDA_PU))
+            )
+          )
+          (net PA13_SWDIO
+            (joined
+              (portRef PA13 (instanceRef U_BP))
+              (portRef SWDIO (instanceRef J_SWD))
+            )
+          )
+          (net PA14_SWCLK
+            (joined
+              (portRef PA14 (instanceRef U_BP))
+              (portRef SWCLK (instanceRef J_SWD))
+            )
+          )
+          (net NRST
+            (joined
+              (portRef NRST (instanceRef U_BP))
+              (portRef NRST (instanceRef J_SWD))
+            )
+          )
+        )
+      )
+    )
+  )
+  (design MIC_AI_REV2_DESIGN
+    (cellRef TOP (libraryRef MICAI_LIB))
+  )
+)

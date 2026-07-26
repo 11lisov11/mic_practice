@@ -6,6 +6,7 @@
 #include "foc_controller.h"
 #include "hall_sensor.h"
 #include "encoder_as5600.h"
+#include "fan_control.h"
 #include "pwm_tim1.h"
 #include "ipm15_io.h"
 #include "proto.h"
@@ -113,6 +114,19 @@ static void status_led_tick(void) {
   }
 }
 
+static void make_safe_reply_cmd(uint8_t *cmd, uint8_t seq) {
+  for (uint8_t i = 0; i < FRAME_LEN; ++i) {
+    cmd[i] = 0;
+  }
+  cmd[CMD_OFF_HDR0] = CMD_HDR0;
+  cmd[CMD_OFF_HDR1] = CMD_HDR1;
+  cmd[CMD_OFF_VER] = 0x02;
+  cmd[CMD_OFF_FLAGS] = 0;
+  cmd[CMD_OFF_MODE] = MODE_OFF;
+  cmd[CMD_OFF_SEQ] = seq;
+  cmd[CMD_OFF_CRC] = proto_crc_xor(cmd);
+}
+
 static void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
@@ -122,8 +136,10 @@ static void MX_SPI1_Init(void);
 
 int main(void) {
   HAL_Init();
+  pwm_force_safe_gpio_hard();
   SystemClock_Config();
   MX_GPIO_Init();
+  pwm_force_safe_gpio_hard();
 #if !LINK_USE_SPI
   MX_USART2_UART_Init();
 #endif
@@ -131,6 +147,7 @@ int main(void) {
   MX_SPI1_Init();
 #endif
   ipm15_io_init();
+  fan_control_init();
 
   pwm_tim1_init();
   adc_currents_init();
@@ -144,6 +161,7 @@ int main(void) {
   uart_link_init(&huart2);
 #endif
   control_init();
+  pwm_force_safe_gpio_hard();
 
   const uint8_t boot_ping[8] = {0x5A, 0xA5, 0x5A, 0xA5, 0x5A, 0xA5, 0x5A, 0xA5};
 #if LINK_USE_SPI
@@ -158,8 +176,10 @@ int main(void) {
 
   uint8_t cmd[FRAME_LEN];
   uint8_t rsp[FRAME_LEN];
+  make_safe_reply_cmd(cmd, 0);
 
   uint32_t last_ping_ms = HAL_GetTick();
+  uint32_t last_prelink_force_ms = 0;
   while (1) {
     encoder_as5600_poll();
     uint8_t fault_code = FAULT_OK;
@@ -184,8 +204,10 @@ int main(void) {
       // fail-safe shutdown if valid frames stop arriving. Still return a valid
       // status frame so the upstream controller does not mistake a rejected
       // command for a dead Blue Pill link.
+      const uint8_t seq = cmd[CMD_OFF_SEQ];
       (void)fault_code;
       safety_note_bad_frame();
+      make_safe_reply_cmd(cmd, seq);
       safety_build_reply(rsp, cmd);
 #if LINK_USE_SPI
       spi_link_send(rsp, FRAME_LEN);
@@ -198,6 +220,13 @@ int main(void) {
 
     uint32_t now = HAL_GetTick();
     if (safety_state()->good_cnt == 0) {
+      // Before the first valid controller frame, keep the IPM inputs pinned low
+      // continuously. This makes the static SAFE state independent of TIM1/HAL
+      // side effects and gives Saleae a hard proof before active PWM is allowed.
+      if (last_prelink_force_ms == 0 || (now - last_prelink_force_ms) >= 5U) {
+        pwm_force_safe_gpio_hard();
+        last_prelink_force_ms = now;
+      }
       if ((now - last_ping_ms) > 250U) {
 #if LINK_USE_SPI
         spi_link_send(boot_rsp, FRAME_LEN);

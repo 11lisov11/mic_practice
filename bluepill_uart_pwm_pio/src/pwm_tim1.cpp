@@ -5,6 +5,19 @@
 
 TIM_HandleTypeDef htim1;
 static uint32_t s_pwm_arr = 0;
+static bool s_pwm_pins_forced_low = false;
+static bool s_pwm_outputs_started = false;
+
+static constexpr uint32_t PWM_CCER_ENABLE_MASK =
+    TIM_CCER_CC1E | TIM_CCER_CC1NE | TIM_CCER_CC2E | TIM_CCER_CC2NE | TIM_CCER_CC3E | TIM_CCER_CC3NE;
+
+static void pwm_tim1_force_peripheral_off(void) {
+  __HAL_RCC_TIM1_CLK_ENABLE();
+  TIM1->BDTR &= ~TIM_BDTR_MOE;
+  TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
+  TIM1->CR1 &= ~TIM_CR1_CEN;
+  s_pwm_outputs_started = false;
+}
 
 static uint32_t timer_clock_hz(void) {
   uint32_t pclk = HAL_RCC_GetPCLK2Freq();
@@ -21,9 +34,9 @@ static uint32_t clamp_percent(uint32_t pct) {
 }
 
 static uint32_t q15_to_ccr(uint16_t q15) {
-  if (q15 == 0U) {
-    return 0U;
-  }
+  // Active complementary PWM must not encode 0% as CCR=0: with MOE set, PWM1
+  // mode drives the N output active for the whole period. True all-off uses
+  // pwm_all_off() only after MOE/CCER have been disabled.
   uint32_t pct = (uint32_t)q15 * 100U / 32767U;
   pct = clamp_percent(pct);
   return (s_pwm_arr + 1U) * pct / 100U;
@@ -56,11 +69,17 @@ static uint8_t encode_deadtime_ticks(uint32_t ticks) {
   return (uint8_t)(0xE0U | (scaled - 32U));
 }
 
-void pwm_tim1_init(void) {
-  __HAL_RCC_TIM1_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+static void pwm_prepare_tim1_gpio_pins(void) {
+  // TIM1 default outputs PA8/PA9/PA10/PB13/PB14/PB15 do not conflict with
+  // STM32F103 JTAG. JTAG release is handled in MX_GPIO_Init/fan_control for
+  // PB3/PB4; this helper only keeps the AFIO clock available before GPIO setup.
   __HAL_RCC_AFIO_CLK_ENABLE();
+}
+
+static void pwm_gpio_config_af(void) {
+  pwm_prepare_tim1_gpio_pins();
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
 
   GPIO_InitTypeDef gpio = {0};
   gpio.Mode = GPIO_MODE_AF_PP;
@@ -71,6 +90,84 @@ void pwm_tim1_init(void) {
 
   gpio.Pin = GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
   HAL_GPIO_Init(GPIOB, &gpio);
+  s_pwm_pins_forced_low = false;
+}
+
+static void pwm_gpio_force_low(bool hard_reconfigure = false) {
+  pwm_tim1_force_peripheral_off();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  pwm_prepare_tim1_gpio_pins();
+
+  const uint16_t gpioa_pwm = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10;
+  const uint16_t gpiob_pwm = GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+
+  HAL_GPIO_WritePin(GPIOA, gpioa_pwm, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, gpiob_pwm, GPIO_PIN_RESET);
+
+  if (s_pwm_pins_forced_low && !hard_reconfigure) {
+    return;
+  }
+
+  GPIO_InitTypeDef gpio = {0};
+  gpio.Mode = GPIO_MODE_OUTPUT_PP;
+  gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+
+  gpio.Pin = gpioa_pwm;
+  HAL_GPIO_Init(GPIOA, &gpio);
+
+  gpio.Pin = gpiob_pwm;
+  HAL_GPIO_Init(GPIOB, &gpio);
+
+  HAL_GPIO_WritePin(GPIOA, gpioa_pwm, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, gpiob_pwm, GPIO_PIN_RESET);
+  s_pwm_pins_forced_low = true;
+}
+
+void pwm_force_safe_gpio(void) {
+  pwm_gpio_force_low();
+}
+
+void pwm_force_safe_gpio_hard(void) {
+  pwm_gpio_force_low(true);
+}
+
+void pwm_safe_idle(void) {
+  // For complementary PWM, CCR=0 can drive the N outputs high while MOE is set.
+  // Drop TIM1 outputs and force GPIO-low before changing compare registers.
+  pwm_outputs_enable(false);
+  pwm_all_off();
+  pwm_gpio_force_low();
+}
+
+static void pwm_start_outputs(void) {
+  if (s_pwm_outputs_started) {
+    return;
+  }
+  // HAL_TIM*_Start() enables MOE internally on advanced timers. Keep MOE low
+  // while all six channel enables and preloaded CCR values are staged, then
+  // let pwm_outputs_enable(true) raise MOE once.
+  __HAL_TIM_MOE_DISABLE(&htim1);
+  TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
+  TIM1->EGR = TIM_EVENTSOURCE_UPDATE;
+  __HAL_TIM_ENABLE(&htim1);
+  TIM1->CCER |= PWM_CCER_ENABLE_MASK;
+  s_pwm_outputs_started = true;
+}
+
+static void pwm_stop_outputs(void) {
+  pwm_tim1_force_peripheral_off();
+}
+
+void pwm_tim1_init(void) {
+  __HAL_RCC_TIM1_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_AFIO_CLK_ENABLE();
+
+  // Keep the IPM inputs hard-low during TIM1 setup. The pins switch to AF only
+  // inside pwm_outputs_enable(true), after compare registers are prepared.
+  pwm_gpio_force_low();
 
   uint32_t tim_clk = timer_clock_hz();
   uint32_t period = (tim_clk / PWM_FREQ_HZ);
@@ -130,23 +227,20 @@ void pwm_tim1_init(void) {
   bd.DeadTime = encode_deadtime_ticks(dt_ticks);
   HAL_TIMEx_ConfigBreakDeadTime(&htim1, &bd);
 
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
-  HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3);
-
   s_pwm_arr = period;
-  pwm_all_off();
-  pwm_outputs_enable(false);
+  pwm_safe_idle();
 }
 
 void pwm_outputs_enable(bool enable) {
   if (enable) {
+    if (s_pwm_pins_forced_low) {
+      pwm_gpio_config_af();
+    }
+    pwm_start_outputs();
     __HAL_TIM_MOE_ENABLE(&htim1);
   } else {
-    __HAL_TIM_MOE_DISABLE(&htim1);
+    pwm_stop_outputs();
+    pwm_gpio_force_low();
   }
 }
 

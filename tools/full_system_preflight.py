@@ -14,13 +14,82 @@ from datetime import datetime
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 
+from run_metadata import collect_run_metadata, collect_source_fingerprint
+
+
+BUILD_ONLY_STEP_NAMES = (
+    "py_compile",
+    "firmware_config_safety_check",
+    "platformio_env_safety_check",
+    "protocol_contract_check",
+    "protocol_safety_selftest",
+    "pc_direct_hmi_selftest",
+    "pc_direct_hmi_service_selftest",
+    "web_hmi_command_guard_selftest",
+    "ui_pwm_case_selftest",
+    "dense_overlap_sweep_selftest",
+    "bluepill_uart_diagnose_selftest",
+    "uart_loopback_preflight_selftest",
+    "adb_router_sequence_selftest",
+    "active_pwm_guard_selftest",
+    "fan_preflight_selftest",
+    "bpfoc_backend_preflight_selftest",
+    "mic_ai_compare_selftest",
+    "hv_j7_preflight_selftest",
+    "bluepill_runtime_static_preflight_selftest",
+    "bluepill_static_low_preflight_selftest",
+    "bluepill_pwm_selftest_preflight_selftest",
+    "bench_gate_report_selftest",
+    "current_bench_status_selftest",
+    "refresh_bench_status_selftest",
+    "research_readiness_check_selftest",
+    "start_guard_static_check",
+    "start_guard_static_check_selftest",
+    "saleae_highlevel_probe_selftest",
+    "saleae_pwm_analyze_selftest",
+    "runtime_python_selftest",
+    "run_metadata_selftest",
+    "full_system_preflight_selftest",
+    "unoq_build",
+    "bluepill_build",
+)
+
+
+def select_required_steps(steps: list[dict], required_names: tuple[str, ...] = BUILD_ONLY_STEP_NAMES) -> list[dict]:
+    required = set(required_names)
+    return [step for step in steps if step.get("name") in required]
+
+
+def audit_required_steps(steps: list[dict], required_names: tuple[str, ...] = BUILD_ONLY_STEP_NAMES) -> dict:
+    required = tuple(required_names)
+    required_set = set(required)
+    counts = {name: 0 for name in required}
+    failed: set[str] = set()
+    for step in steps:
+        name = str(step.get("name", ""))
+        if name not in required_set:
+            continue
+        counts[name] = counts.get(name, 0) + 1
+        if not step.get("ok"):
+            failed.add(name)
+    missing = [name for name in required if counts.get(name, 0) == 0]
+    duplicates = [name for name in required if counts.get(name, 0) > 1]
+    return {
+        "pass": not missing and not failed and not duplicates,
+        "required_count": len(required),
+        "present_count": sum(1 for name in required if counts.get(name, 0) > 0),
+        "missing": missing,
+        "failed": sorted(failed),
+        "duplicates": duplicates,
+    }
+
 
 def log(msg: str) -> None:
     print(msg, flush=True)
 
 
 def ts_tag() -> str:
-    return datetime.now().strftime("%Y%m%d_%H%M%S")
+    return datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
 
 def run_step(
@@ -113,13 +182,15 @@ def bp_link_live(st: dict | None, max_age_ms: float = 1000.0) -> bool:
 def status_is_safe(st: dict | None) -> bool:
     if st is None:
         return False
+    bp_bad_values = [int(status_num(st, key, 999999.0)) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    bp_bad = max(bp_bad_values) if bp_bad_values else 999999
     return (
         int(status_num(st, "pwm", 1.0)) == 0
         and int(status_num(st, "estop", 1.0)) == 0
         and st.get("state") == "SAFE"
         and bp_link_live(st)
         and int(status_num(st, "bp_fault", 255.0)) == 0
-        and int(status_num(st, "bp_bad_cnt", 999999.0)) == 0
+        and bp_bad == 0
     )
 
 
@@ -175,6 +246,14 @@ def read_json(path: Path | None) -> dict | None:
     if path is None or not path.exists():
         return None
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_result_summary(result: dict, out_path: Path) -> None:
+    summary = result.get("summary")
+    if isinstance(summary, dict):
+        for key, value in summary.items():
+            result[key] = value
+    out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def recover_ui(
@@ -253,9 +332,25 @@ def main() -> int:
     ap.add_argument("--forward-port", type=int, default=18080)
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     ap.add_argument("--skip-build", action="store_true")
+    ap.add_argument("--build-only", action="store_true", help="Run only compile/build/offline protocol checks; do not touch HMI, UART, Saleae, or PWM.")
     ap.add_argument("--skip-hil", action="store_true")
     ap.add_argument("--skip-full-suite", action="store_true")
     ap.add_argument("--skip-mic-compare", action="store_true")
+    ap.add_argument("--with-fan", action="store_true", help="Run optional low-voltage fan PWM/tach preflight.")
+    ap.add_argument("--fan-duties", default="0,0.3,0.6,1.0,0")
+    ap.add_argument("--fan-require-tach", action="store_true", help="Require fan tach pulses during fan preflight.")
+    ap.add_argument("--fan-max-vdc", type=float, default=60.0)
+    ap.add_argument("--fan-allow-hv", action="store_true", help="Allow fan preflight when Vbus is above --fan-max-vdc.")
+    ap.add_argument("--with-bpfoc", action="store_true", help="Run optional low-voltage Blue Pill measured-angle FOC backend preflight.")
+    ap.add_argument("--bpfoc-freq", type=float, default=1.0)
+    ap.add_argument("--bpfoc-max-vdc", type=float, default=60.0)
+    ap.add_argument("--bpfoc-allow-hv", action="store_true", help="Allow BPFOC preflight when Vbus is above --bpfoc-max-vdc.")
+    ap.add_argument("--bpfoc-allow-no-encoder", action="store_true", help="Do not require enc_ok=1 for BPFOC preflight.")
+    ap.add_argument("--with-bluepill-pwm-selftest", action="store_true", help="Run ST-Link Blue Pill PWM self-test + Saleae capture before HMI tests.")
+    ap.add_argument("--confirm-hv-off", action="store_true", help="Required for firmware-swapping self-test stages: HV bus is disconnected and discharged.")
+    ap.add_argument("--bp-pwm-selftest-rate", type=int, default=6_000_000)
+    ap.add_argument("--bp-pwm-selftest-duration", type=float, default=4.0)
+    ap.add_argument("--bp-pwm-selftest-no-auto-rate", action="store_true")
     ap.add_argument("--with-hv", action="store_true", help="Run optional HV/J7 preflight after low-voltage HIL has passed.")
     ap.add_argument("--hv-vf-freqs", default="0.5,1,2,5")
     ap.add_argument("--hv-estop-freqs", default="1,5")
@@ -273,6 +368,9 @@ def main() -> int:
     foc_dir = run_dir / "foc_mic"
     la_dir = run_dir / "full_suite"
     mic_dir = run_dir / "mic_compare"
+    fan_dir = run_dir / "fan"
+    bpfoc_dir = run_dir / "bpfoc"
+    bp_pwm_selftest_dir = run_dir / "bluepill_pwm_selftest"
     hv_dir = run_dir / "hv_j7"
     logs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -280,6 +378,8 @@ def main() -> int:
         "ts": run_dir.name.rsplit("_", 1)[-1],
         "base_url": args.url.rstrip("/"),
         "run_dir": str(run_dir),
+        "run_metadata": collect_run_metadata(repo_root),
+        "source_fingerprint": collect_source_fingerprint(repo_root),
         "steps": [],
     }
 
@@ -290,28 +390,203 @@ def main() -> int:
 
     try:
         if not args.skip_build:
+            py_compile_targets = sorted(
+                str(path.relative_to(repo_root))
+                for path in (repo_root / "tools").glob("*.py")
+                if path.is_file()
+            )
+            py_compile_targets.append("web_hmi\\server.py")
             step(
                 "py_compile",
-                [
-                    sys.executable,
-                    "-m",
-                    "py_compile",
-                    "tools\\adb_deploy_web_hmi.py",
-                    "tools\\encoder_test.py",
-                    "tools\\logic2_recover.py",
-                    "tools\\ui_access.py",
-                    "tools\\ui_pwm_case.py",
-                    "tools\\ui_pwm_suite.py",
-                    "tools\\scalar_vf_preflight.py",
-                    "tools\\foc_mic_preflight.py",
-                    "tools\\hv_j7_preflight.py",
-                    "tools\\mic_ai_compare.py",
-                    "tools\\full_system_preflight.py",
-                    "tools\\unoq_web_server.py",
-                    "web_hmi\\server.py",
-                ],
+                [sys.executable, "-m", "py_compile", *py_compile_targets],
                 repo_root,
                 args.timeout_build,
+            )
+            step(
+                "firmware_config_safety_check",
+                [sys.executable, "-u", "tools\\firmware_config_safety_check.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "platformio_env_safety_check",
+                [sys.executable, "-u", "tools\\platformio_env_safety_check.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "protocol_contract_check",
+                [sys.executable, "-u", "tools\\protocol_contract_check.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "protocol_safety_selftest",
+                [sys.executable, "-u", "tools\\protocol_safety_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "pc_direct_hmi_selftest",
+                [sys.executable, "-u", "tools\\pc_direct_hmi_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "pc_direct_hmi_service_selftest",
+                [sys.executable, "-u", "tools\\pc_direct_hmi_service_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "web_hmi_command_guard_selftest",
+                [sys.executable, "-u", "tools\\web_hmi_command_guard_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "ui_pwm_case_selftest",
+                [sys.executable, "-u", "tools\\ui_pwm_case_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "dense_overlap_sweep_selftest",
+                [sys.executable, "-u", "tools\\dense_overlap_sweep_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bluepill_uart_diagnose_selftest",
+                [sys.executable, "-u", "tools\\bluepill_uart_diagnose_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "uart_loopback_preflight_selftest",
+                [sys.executable, "-u", "tools\\uart_loopback_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "adb_router_sequence_selftest",
+                [sys.executable, "-u", "tools\\adb_router_sequence_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "active_pwm_guard_selftest",
+                [sys.executable, "-u", "tools\\active_pwm_guard_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "fan_preflight_selftest",
+                [sys.executable, "-u", "tools\\fan_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bpfoc_backend_preflight_selftest",
+                [sys.executable, "-u", "tools\\bpfoc_backend_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "mic_ai_compare_selftest",
+                [sys.executable, "-u", "tools\\mic_ai_compare_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "hv_j7_preflight_selftest",
+                [sys.executable, "-u", "tools\\hv_j7_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bluepill_runtime_static_preflight_selftest",
+                [sys.executable, "-u", "tools\\bluepill_runtime_static_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bluepill_static_low_preflight_selftest",
+                [sys.executable, "-u", "tools\\bluepill_static_low_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bluepill_pwm_selftest_preflight_selftest",
+                [sys.executable, "-u", "tools\\bluepill_pwm_selftest_preflight_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "bench_gate_report_selftest",
+                [sys.executable, "-u", "tools\\bench_gate_report_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "current_bench_status_selftest",
+                [sys.executable, "-u", "tools\\current_bench_status_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "refresh_bench_status_selftest",
+                [sys.executable, "-u", "tools\\refresh_bench_status_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "research_readiness_check_selftest",
+                [sys.executable, "-u", "tools\\research_readiness_check_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "start_guard_static_check",
+                [sys.executable, "-u", "tools\\start_guard_static_check.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "start_guard_static_check_selftest",
+                [sys.executable, "-u", "tools\\start_guard_static_check_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "saleae_highlevel_probe_selftest",
+                [sys.executable, "-u", "tools\\saleae_highlevel_probe_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "saleae_pwm_analyze_selftest",
+                [sys.executable, "-u", "tools\\saleae_pwm_analyze_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "runtime_python_selftest",
+                [sys.executable, "-u", "tools\\runtime_python_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "run_metadata_selftest",
+                [sys.executable, "-u", "tools\\run_metadata_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "full_system_preflight_selftest",
+                [sys.executable, "-u", "tools\\full_system_preflight_selftest.py"],
+                repo_root,
+                60.0,
             )
             step(
                 "unoq_build",
@@ -325,6 +600,53 @@ def main() -> int:
                 repo_root / "bluepill_uart_pwm_pio",
                 args.timeout_build,
             )
+
+        if args.build_only:
+            build_steps = select_required_steps(result["steps"])
+            build_audit = audit_required_steps(result["steps"])
+            build_only_pass = bool(build_steps) and bool(build_audit["pass"])
+            result["summary"] = {
+                "build_only": True,
+                "build_only_pass": build_only_pass,
+                "build_pass": build_only_pass,
+                "build_step_audit": build_audit,
+                "required_hil_pass": False,
+                "full_suite_pass": False,
+                "fan_stage_enabled": False,
+                "fan_pass": None,
+                "bpfoc_stage_enabled": False,
+                "bpfoc_pass": None,
+                "bluepill_pwm_selftest_stage_enabled": False,
+                "bluepill_pwm_selftest_pass": None,
+                "hv_stage_enabled": False,
+                "hv_pass": None,
+                "mic_compare_status": "not_run_build_only",
+                "final_safe": None,
+                "overall_pass": False,
+            }
+            out_path = run_dir / "summary.json"
+            write_result_summary(result, out_path)
+            log(f"SUMMARY: {out_path}")
+            log(f"BUILD_ONLY_PASS={build_only_pass}")
+            return 0 if build_only_pass else 4
+
+        if args.with_bluepill_pwm_selftest and not args.skip_hil:
+            bp_selftest_cmd = [
+                sys.executable,
+                "-u",
+                "tools\\bluepill_pwm_selftest_preflight.py",
+                "--rate",
+                str(int(args.bp_pwm_selftest_rate)),
+                "--duration",
+                f"{float(args.bp_pwm_selftest_duration):.3f}",
+                "--out-root",
+                str(bp_pwm_selftest_dir),
+            ]
+            if args.confirm_hv_off:
+                bp_selftest_cmd.append("--confirm-hv-off")
+            if args.bp_pwm_selftest_no_auto_rate:
+                bp_selftest_cmd.append("--no-auto-rate")
+            step("bluepill_pwm_selftest_preflight", bp_selftest_cmd, repo_root, args.timeout_step)
 
         access = step(
             "ui_access",
@@ -369,6 +691,66 @@ def main() -> int:
                 repo_root,
                 120.0,
             )
+            if args.with_fan:
+                stabilize_ui_phase(
+                    repo_root,
+                    args.url,
+                    args.forward_port,
+                    logs_dir,
+                    result["steps"],
+                    phase_tag="pre_fan",
+                    require_safe=True,
+                    settle_s=0.5,
+                )
+                fan_cmd = [
+                    sys.executable,
+                    "-u",
+                    "tools\\fan_preflight.py",
+                    "--url",
+                    args.url,
+                    "--duties",
+                    args.fan_duties,
+                    "--max-vdc",
+                    f"{float(args.fan_max_vdc):.2f}",
+                    "--out-root",
+                    str(fan_dir),
+                ]
+                if args.fan_require_tach:
+                    fan_cmd.append("--require-tach")
+                if args.fan_allow_hv:
+                    fan_cmd.append("--allow-hv")
+                step("fan_preflight", fan_cmd, repo_root, 180.0)
+
+            if args.with_bpfoc:
+                stabilize_ui_phase(
+                    repo_root,
+                    args.url,
+                    args.forward_port,
+                    logs_dir,
+                    result["steps"],
+                    phase_tag="pre_bpfoc",
+                    require_safe=True,
+                    settle_s=0.5,
+                )
+                bpfoc_cmd = [
+                    sys.executable,
+                    "-u",
+                    "tools\\bpfoc_backend_preflight.py",
+                    "--url",
+                    args.url,
+                    "--freq",
+                    f"{float(args.bpfoc_freq):.2f}",
+                    "--max-vdc",
+                    f"{float(args.bpfoc_max_vdc):.2f}",
+                    "--out-root",
+                    str(bpfoc_dir),
+                ]
+                if args.bpfoc_allow_hv:
+                    bpfoc_cmd.append("--allow-hv")
+                if args.bpfoc_allow_no_encoder:
+                    bpfoc_cmd.append("--allow-no-encoder")
+                step("bpfoc_backend_preflight", bpfoc_cmd, repo_root, 180.0)
+
             if logic_ready:
                 step(
                     "scalar_vf_preflight",
@@ -557,6 +939,9 @@ def main() -> int:
 
         result["scalar_summary"] = read_json(latest_json(scalar_dir))
         result["foc_mic_summary"] = read_json(latest_json(foc_dir))
+        result["fan_summary"] = read_json(latest_json(fan_dir))
+        result["bpfoc_summary"] = read_json(latest_json(bpfoc_dir))
+        result["bluepill_pwm_selftest_summary"] = read_json(latest_json(bp_pwm_selftest_dir))
         result["hv_summary"] = read_json(latest_json(hv_dir))
         result["mic_compare_summary"] = read_json(latest_json(mic_dir))
 
@@ -600,12 +985,19 @@ def main() -> int:
             status_after = get_status(args.url, timeout_s=1.5)
         result["status_after"] = status_after
 
-        build_steps = [s for s in result["steps"] if s["name"] in ("py_compile", "unoq_build", "bluepill_build")]
+        build_steps = select_required_steps(result["steps"])
+        build_audit = audit_required_steps(result["steps"])
         required_hil = [
             s
             for s in result["steps"]
             if s["name"] in ("ui_access", "encoder_test", "scalar_vf_preflight", "foc_mic_preflight")
         ]
+        if args.with_fan:
+            required_hil += [s for s in result["steps"] if s["name"] == "fan_preflight"]
+        if args.with_bpfoc:
+            required_hil += [s for s in result["steps"] if s["name"] == "bpfoc_backend_preflight"]
+        if args.with_bluepill_pwm_selftest and not args.skip_hil:
+            required_hil += [s for s in result["steps"] if s["name"] == "bluepill_pwm_selftest_preflight"]
         if args.with_hv:
             required_hil += [s for s in result["steps"] if s["name"] == "hv_j7_preflight"]
         logic_steps = [s for s in result["steps"] if s["name"] in ("logic2_recover", "logic2_recover_restart")]
@@ -623,12 +1015,26 @@ def main() -> int:
                 and result.get("full_suite_fail_count", 0) == 0
             )
 
+        fan_stage_pass = True if not args.with_fan else bool((result["fan_summary"] or {}).get("pass") is True)
+        bpfoc_stage_pass = True if not args.with_bpfoc else bool((result["bpfoc_summary"] or {}).get("pass") is True)
+        bp_pwm_selftest_stage_pass = True
+        if args.with_bluepill_pwm_selftest and not args.skip_hil:
+            bp_pwm_selftest_stage_pass = bool((result["bluepill_pwm_selftest_summary"] or {}).get("pass") is True)
+        hv_stage_pass = True if not args.with_hv else bool((result["hv_summary"] or {}).get("pass") is True)
+
         result["summary"] = {
-            "build_pass": all(s["ok"] for s in build_steps) if build_steps else True,
+            "build_pass": bool(build_steps) and bool(build_audit["pass"]),
+            "build_step_audit": build_audit,
             "required_hil_pass": (all(s["ok"] for s in required_hil) if required_hil else True) and logic_ok,
             "full_suite_pass": full_suite_pass,
+            "fan_stage_enabled": bool(args.with_fan),
+            "fan_pass": fan_stage_pass if args.with_fan else None,
+            "bpfoc_stage_enabled": bool(args.with_bpfoc),
+            "bpfoc_pass": bpfoc_stage_pass if args.with_bpfoc else None,
+            "bluepill_pwm_selftest_stage_enabled": bool(args.with_bluepill_pwm_selftest and not args.skip_hil),
+            "bluepill_pwm_selftest_pass": bp_pwm_selftest_stage_pass if args.with_bluepill_pwm_selftest and not args.skip_hil else None,
             "hv_stage_enabled": bool(args.with_hv),
-            "hv_pass": (result["hv_summary"] or {}).get("pass") if args.with_hv else None,
+            "hv_pass": hv_stage_pass if args.with_hv else None,
             "mic_compare_status": result["mic_compare_classification"]["status"] if not args.skip_mic_compare else "skipped",
             "final_safe": status_is_safe(status_after),
         }
@@ -636,11 +1042,15 @@ def main() -> int:
             result["summary"]["build_pass"]
             and result["summary"]["required_hil_pass"]
             and result["summary"]["full_suite_pass"]
+            and fan_stage_pass
+            and bpfoc_stage_pass
+            and bp_pwm_selftest_stage_pass
+            and hv_stage_pass
             and result["summary"]["final_safe"]
         )
 
         out_path = run_dir / "summary.json"
-        out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        write_result_summary(result, out_path)
         log(f"SUMMARY: {out_path}")
         log(f"PASS={result['summary']['overall_pass']}")
         return 0 if result["summary"]["overall_pass"] else 4
@@ -649,8 +1059,26 @@ def main() -> int:
             "cmd": exc.cmd,
             "timeout_s": exc.timeout,
         }
+        result["summary"] = {
+            "build_only": bool(args.build_only),
+            "build_only_pass": False if args.build_only else None,
+            "build_pass": False,
+            "required_hil_pass": False,
+            "full_suite_pass": False,
+            "fan_stage_enabled": bool(args.with_fan),
+            "fan_pass": None,
+            "bpfoc_stage_enabled": bool(args.with_bpfoc),
+            "bpfoc_pass": None,
+            "bluepill_pwm_selftest_stage_enabled": bool(args.with_bluepill_pwm_selftest and not args.skip_hil),
+            "bluepill_pwm_selftest_pass": None,
+            "hv_stage_enabled": bool(args.with_hv),
+            "hv_pass": None,
+            "mic_compare_status": "timeout",
+            "final_safe": False,
+            "overall_pass": False,
+        }
         out_path = run_dir / "summary.json"
-        out_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+        write_result_summary(result, out_path)
         log(f"TIMEOUT: {exc.cmd}")
         log(f"SUMMARY: {out_path}")
         return 5

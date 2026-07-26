@@ -13,6 +13,8 @@ from typing import Any
 
 import serial
 
+from active_pwm_guard import start_allowed_by_bench_gate
+
 FRAME_LEN = 32
 CRC_OFF = FRAME_LEN - 1
 CMD_HDR0 = 0xAA
@@ -25,6 +27,11 @@ FLAG_ESTOP = 0x02
 FLAG_DIAG_PWM = 0x04
 FLAG_CLEAR_FAULT = 0x08
 FLAG_VECTOR_ROTATE = 0x10
+
+EXT_RESERVED_0 = 0x01
+EXT_PFC_SYNC = 0x02
+EXT_BRAKE_PWM = 0x04
+EXT_PRECHARGE_RELAY = 0x08
 
 MODE_OFF = 0
 MODE_DIAG = 1
@@ -58,6 +65,8 @@ STATUS_ESTOP = 0x04
 STATUS_FAULT = 0x08
 STATUS_TIMEOUT = 0x10
 STATUS_PWM_ACTIVE = 0x20
+START_LINK_MAX_AGE_S = 0.5
+DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 
 FAULT_MAP = {
     0: "OK",
@@ -72,6 +81,10 @@ FAULT_MAP = {
 
 def log(msg: str) -> None:
     print(msg, flush=True)
+
+
+def truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
 
 
 def crc_xor(buf: bytes) -> int:
@@ -189,6 +202,15 @@ def parse_bounded_float(raw: str, lo: float, hi: float) -> float:
     return clamp_range(float(raw), lo, hi)
 
 
+def parse_on_off(raw: str) -> bool:
+    val = raw.strip().upper()
+    if val in ("1", "ON", "TRUE", "YES"):
+        return True
+    if val in ("0", "OFF", "FALSE", "NO"):
+        return False
+    raise ValueError(raw)
+
+
 def clamp_freq_hz(x: float) -> float:
     return clamp_range(x, 0.0, MAX_FREQ_HZ)
 
@@ -208,9 +230,17 @@ class SharedState:
         self.beta = 0.0
         self.id_ref = 0.0
         self.iq_ref = 0.3
+        self.bp_foc_backend = False
         self.duty_u = 0.2
         self.duty_v = 0.2
         self.duty_w = 0.2
+        self.ntc = False
+        self.pfc = False
+        self.precharge = False
+        self.brake_pwm = False
+        self.brake_duty = 0.0
+        self.fan_duty = 0.0
+        self.iotest = False
         self.clear_pending = False
 
         self.link_ok = False
@@ -219,6 +249,17 @@ class SharedState:
         self.last_rtt_ms = None  # type: float | None
         self.last_rx_time = 0.0
         self.miss_count = 0
+        self.uart_port = ""
+        self.uart_baud = 0
+        self.uart_open = False
+        self.uart_last_error = ""
+        self.uart_error_count = 0
+        self.uart_last_error_time = 0.0
+        self.cmd_guard_max_vdc = DEFAULT_CMD_GUARD_MAX_VDC
+        self.cmd_guard_allow_hv = False
+        self.cmd_guard_disabled = False
+        self.bench_gate_url = ""
+        self.bench_gate_runner = None
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
@@ -235,10 +276,36 @@ class SharedState:
                 "beta": self.beta,
                 "id_ref": self.id_ref,
                 "iq_ref": self.iq_ref,
+                "bp_foc_backend": self.bp_foc_backend,
                 "duty_u": self.duty_u,
                 "duty_v": self.duty_v,
                 "duty_w": self.duty_w,
+                "ntc": self.ntc,
+                "pfc": self.pfc,
+                "precharge": self.precharge,
+                "brake_pwm": self.brake_pwm,
+                "brake_duty": self.brake_duty,
+                "fan_duty": self.fan_duty,
+                "iotest": self.iotest,
             }
+
+
+def force_local_safe_outputs_locked(state: SharedState) -> None:
+    # Called with state.lock held. Drop every output request that could be
+    # replayed when a broken UART link recovers.
+    state.enable = False
+    state.mode = MODE_OFF
+    state.diag = False
+    state.vector_rotate = False
+    state.bp_foc_backend = False
+    state.ntc = False
+    state.pfc = False
+    state.precharge = False
+    state.brake_pwm = False
+    state.brake_duty = 0.0
+    state.fan_duty = 0.0
+    state.iotest = False
+    state.clear_pending = False
 
 
 def build_frame(state: SharedState, seq: int) -> bytes:
@@ -263,6 +330,12 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         duty_u = state.duty_u
         duty_v = state.duty_v
         duty_w = state.duty_w
+        ntc = state.ntc
+        pfc = state.pfc
+        precharge = state.precharge
+        brake_pwm = state.brake_pwm
+        brake_duty = state.brake_duty
+        fan_duty = state.fan_duty
         clear_pending = state.clear_pending
         if clear_pending:
             state.clear_pending = False
@@ -274,6 +347,12 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         estop = False
         mode = MODE_OFF
         diag = False
+        ntc = False
+        pfc = False
+        precharge = False
+        brake_pwm = False
+        brake_duty = 0.0
+        fan_duty = 0.0
     if enable:
         flags |= FLAG_ENABLE
     if estop:
@@ -287,7 +366,11 @@ def build_frame(state: SharedState, seq: int) -> bytes:
     frame[4] = mode & 0xFF
     frame[5] = seq & 0xFF
 
-    if mode == MODE_DUTY:
+    if mode == MODE_OFF:
+        pass
+    elif mode == MODE_DIAG:
+        pass
+    elif mode == MODE_DUTY:
         du = q15_from_unit(duty_u)
         dv = q15_from_unit(duty_v)
         dw = q15_from_unit(duty_w)
@@ -326,6 +409,21 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         frame[10] = mag_q15 & 0xFF
         frame[11] = (mag_q15 >> 8) & 0xFF
 
+    ext_flags = 0
+    if pfc:
+        ext_flags |= EXT_PFC_SYNC
+    if brake_pwm and brake_duty > 0.0:
+        ext_flags |= EXT_BRAKE_PWM
+    if precharge:
+        ext_flags |= EXT_PRECHARGE_RELAY
+    frame[14] = ext_flags & 0xFF
+    brake_q15 = q15_from_unit(brake_duty if brake_pwm else 0.0)
+    frame[15] = brake_q15 & 0xFF
+    frame[16] = (brake_q15 >> 8) & 0xFF
+    fan_q15 = q15_from_unit(fan_duty)
+    frame[17] = fan_q15 & 0xFF
+    frame[18] = (fan_q15 >> 8) & 0xFF
+
     frame[CRC_OFF] = crc_xor(frame)
     return bytes(frame)
 
@@ -348,6 +446,55 @@ def parse_rsp(state: SharedState, rsp: bytes, rtt_ms: float) -> None:
         state.miss_count = 0
 
 
+def output_permitted_locked(state: SharedState, what: str) -> tuple[bool, str]:
+    if state.estop:
+        return False, "estop latched"
+    if not state.link_ok or state.last_rsp is None:
+        return False, "bluepill link not ready"
+    if state.last_rx_time <= 0.0 or (time.monotonic() - state.last_rx_time) > START_LINK_MAX_AGE_S:
+        return False, "bluepill link stale"
+    rsp = state.last_rsp
+    status = int(rsp[3])
+    bad = int(rsp[7] | (rsp[8] << 8))
+    fault = int(rsp[9])
+    vbus_raw = min(4095, int(rsp[17] | (rsp[18] << 8)))
+    vdc = vbus_voltage(vbus_raw)
+    if (status & STATUS_ESTOP) != 0:
+        return False, "bluepill estop active"
+    if (status & STATUS_TIMEOUT) != 0:
+        return False, "bluepill timeout active"
+    if (status & STATUS_FAULT) != 0 or fault != 0:
+        return False, f"bluepill fault active: {FAULT_MAP.get(fault, fault)}"
+    if (status & STATUS_PWM_ACTIVE) != 0:
+        return False, f"bluepill PWM active before {what}"
+    if bad != 0:
+        return False, f"bluepill bad counter non-zero: {bad}"
+    if not (state.cmd_guard_allow_hv or state.cmd_guard_disabled) and vdc > state.cmd_guard_max_vdc:
+        return False, f"DC bus too high for {what}: {vdc:.1f} V"
+    return True, "ok"
+
+
+def start_permitted_locked(state: SharedState) -> tuple[bool, str]:
+    if state.mode == MODE_OFF:
+        return False, "mode off"
+    if state.mode == MODE_FOC and not state.bp_foc_backend:
+        return False, "bpfoc backend off"
+    return output_permitted_locked(state, "START")
+
+
+def start_bench_gate_permitted(state: SharedState) -> tuple[bool, str]:
+    logs: list[str] = []
+    runner = state.bench_gate_runner
+    if runner is not None:
+        ok = bool(runner(logs.append, state.bench_gate_url or None))
+    else:
+        ok = bool(start_allowed_by_bench_gate(logs.append, url=state.bench_gate_url or None))
+    if ok:
+        return True, "ok"
+    detail = "; ".join(logs) if logs else "bench gate refused START"
+    return False, f"bench gate blocked START: {detail}"
+
+
 def status_payload(state: SharedState) -> dict[str, Any]:
     with state.lock:
         rsp = state.last_rsp
@@ -355,11 +502,25 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         last_rtt = state.last_rtt_ms
         last_rx = state.last_rx_time
         miss_count = state.miss_count
+        uart_port = state.uart_port
+        uart_baud = state.uart_baud
+        uart_open = state.uart_open
+        uart_last_error = state.uart_last_error
+        uart_error_count = state.uart_error_count
+        uart_last_error_time = state.uart_last_error_time
         mode = state.mode
         enable = state.enable
         estop = state.estop
         freq_hz = state.freq_hz
         foc_freq_hz = state.foc_freq_hz
+        bp_foc_backend_cmd = state.bp_foc_backend
+        ntc_cmd = state.ntc
+        pfc_cmd = state.pfc
+        precharge_cmd = state.precharge
+        brake_pwm_cmd = state.brake_pwm
+        brake_duty_cmd = state.brake_duty
+        fan_duty_cmd = state.fan_duty
+        iotest_cmd = state.iotest
     data: dict[str, Any] = {
         "link": bool(link_ok),
         "enable": bool(enable),
@@ -367,10 +528,33 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "freq_cmd": float(freq_hz),
         "foc_freq_cmd": float(foc_freq_hz),
         "mode_cmd": mode,
+        "bp_foc_backend": int(1 if bp_foc_backend_cmd else 0),
+        "ntc_cmd": bool(ntc_cmd),
+        "pfc_cmd": bool(pfc_cmd),
+        "precharge_cmd": bool(precharge_cmd),
+        "brake_pwm_cmd": bool(brake_pwm_cmd),
+        "brake_duty_cmd": float(brake_duty_cmd),
+        "fan_duty_cmd": float(fan_duty_cmd),
+        "iotest": int(1 if iotest_cmd else 0),
+        "ntc": int(1 if ntc_cmd else 0),
+        "pfc": int(1 if pfc_cmd else 0),
+        "precharge": int(1 if precharge_cmd else 0),
+        "brake": int(1 if brake_pwm_cmd else 0),
+        "brake_pwm": int(1 if brake_pwm_cmd else 0),
+        "brake_duty": float(brake_duty_cmd),
+        "fan_duty": float(fan_duty_cmd),
         "last_rtt_ms": last_rtt,
         "last_rx_age_s": (time.monotonic() - last_rx) if last_rx > 0 else None,
         "miss_count": int(miss_count),
+        "uart_port": uart_port,
+        "uart_baud": int(uart_baud),
+        "uart_open": bool(uart_open),
+        "uart_last_error": uart_last_error,
+        "uart_error_count": int(uart_error_count),
+        "uart_last_error_age_s": (time.monotonic() - uart_last_error_time) if uart_last_error_time > 0 else None,
+        "state": "NO_LINK",
         "status_flags": 0,
+        "bp_status": 0,
         "pwm": 0,
         "timeout": 1,
         "fault": 255,
@@ -380,6 +564,7 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "bad": 999999,
         "bp_good": 0,
         "bp_bad": 999999,
+        "bp_bad_cnt": 999999,
         "bp_age_ms": 999999,
         "bp_rsp_age_ms": 999999,
         "bp_vbus_raw": 0,
@@ -392,6 +577,15 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "bp_temp_valid": 0,
         "bp_temp_fault": 0,
         "bp_temp_age_ms": 999999,
+        "bp_ext_flags": 0,
+        "bp_ext": 0,
+        "bp_ntc": 0,
+        "bp_pfc": 0,
+        "bp_precharge": 0,
+        "bp_brake_pwm": 0,
+        "bp_brake_duty": 0.0,
+        "bp_fan_duty": 0.0,
+        "bp_fan_rpm": 0,
         "bp_phase_a_raw": 0,
         "bp_phase_b_raw": 0,
         "bp_phase_c_raw": 0,
@@ -405,6 +599,7 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         "vdc": 0.0,
         "last_mode": MODE_OFF,
         "bp_mode": MODE_OFF,
+        "bp_cmd_mode": MODE_OFF,
     }
     if rsp:
         rx_age_ms = int((time.monotonic() - last_rx) * 1000.0) if last_rx > 0 else 999999
@@ -417,15 +612,22 @@ def status_payload(state: SharedState) -> dict[str, Any]:
         bp_vdc = vbus_voltage(vbus_raw)
         temp_raw = min(4095, rsp[19] | (rsp[20] << 8))
         temp_flags = rsp[21]
+        ext_flags = rsp[14]
+        brake_q15 = rsp[15] | (rsp[16] << 8)
+        fan_duty_q8 = rsp[22]
+        fan_tach_x30 = rsp[30]
         bp_temp_v = temp_voltage(temp_raw)
         bp_temp_c = temp_c(temp_raw) if (temp_flags & BP_TEMP_FLAG_VALID) else 0.0
         phase_a_raw = min(4095, rsp[23] | (rsp[24] << 8))
         phase_b_raw = min(4095, rsp[25] | (rsp[26] << 8))
         phase_c_raw = min(4095, rsp[27] | (rsp[28] << 8))
         phase_flags = rsp[29]
+        state_text = "FAULT" if (status & STATUS_FAULT) else ("RUN" if (status & STATUS_PWM_ACTIVE) else "SAFE")
         data.update(
             {
+                "state": state_text,
                 "status_flags": status,
+                "bp_status": status,
                 "pwm": int(1 if (status & STATUS_PWM_ACTIVE) else 0),
                 "timeout": int(1 if (status & STATUS_TIMEOUT) else 0),
                 "estop": int(1 if (status & STATUS_ESTOP) else 0),
@@ -436,6 +638,7 @@ def status_payload(state: SharedState) -> dict[str, Any]:
                 "bad": int(bad),
                 "bp_good": int(good),
                 "bp_bad": int(bad),
+                "bp_bad_cnt": int(bad),
                 "bp_age_ms": rx_age_ms,
                 "bp_rsp_age_ms": rx_age_ms,
                 "bp_vbus_raw": int(vbus_raw),
@@ -448,6 +651,15 @@ def status_payload(state: SharedState) -> dict[str, Any]:
                 "bp_temp_valid": int(1 if (temp_flags & BP_TEMP_FLAG_VALID) else 0),
                 "bp_temp_fault": int(1 if (temp_flags & BP_TEMP_FLAG_FAULT) else 0),
                 "bp_temp_age_ms": rx_age_ms,
+                "bp_ext_flags": int(ext_flags),
+                "bp_ext": int(ext_flags),
+                "bp_ntc": 0,
+                "bp_pfc": int(1 if (ext_flags & EXT_PFC_SYNC) else 0),
+                "bp_precharge": int(1 if (ext_flags & EXT_PRECHARGE_RELAY) else 0),
+                "bp_brake_pwm": int(1 if (ext_flags & EXT_BRAKE_PWM) else 0),
+                "bp_brake_duty": float(min(brake_q15, 32767) / 32767.0),
+                "bp_fan_duty": float(fan_duty_q8 / 255.0),
+                "bp_fan_rpm": int(fan_tach_x30 * 30),
                 "bp_phase_a_raw": int(phase_a_raw),
                 "bp_phase_b_raw": int(phase_b_raw),
                 "bp_phase_c_raw": int(phase_c_raw),
@@ -461,6 +673,8 @@ def status_payload(state: SharedState) -> dict[str, Any]:
                 "vdc": bp_vdc,
                 "last_mode": int(last_mode),
                 "bp_mode": int(last_mode),
+                "bp_cmd_mode": int(mode),
+                "bp_foc_backend": int(1 if bp_foc_backend_cmd else 0),
             }
         )
     return data
@@ -473,14 +687,24 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
     parts = cmd.split()
     head = parts[0].upper()
 
-    with state.lock:
-        if head == "START":
-            if len(parts) != 1:
-                return False, "bad start args"
-            if state.estop:
-                return False, "estop latched"
+    if head == "START":
+        if len(parts) != 1:
+            return False, "bad start args"
+        with state.lock:
+            ok, msg = start_permitted_locked(state)
+        if not ok:
+            return False, msg
+        ok, msg = start_bench_gate_permitted(state)
+        if not ok:
+            return False, msg
+        with state.lock:
+            ok, msg = start_permitted_locked(state)
+            if not ok:
+                return False, msg
             state.enable = True
             return True, "ok"
+
+    with state.lock:
         if head == "STOP":
             if len(parts) != 1:
                 return False, "bad stop args"
@@ -490,12 +714,28 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
             if len(parts) == 2 and parts[1].upper() == "CLEAR":
                 state.estop = False
                 state.enable = False
+                state.ntc = False
+                state.pfc = False
+                state.precharge = False
+                state.brake_pwm = False
+                state.brake_duty = 0.0
+                state.fan_duty = 0.0
+                state.bp_foc_backend = False
+                state.iotest = False
                 state.clear_pending = True
                 return True, "ok"
             if len(parts) != 1:
                 return False, "bad estop args"
             state.estop = True
             state.enable = False
+            state.ntc = False
+            state.pfc = False
+            state.precharge = False
+            state.brake_pwm = False
+            state.brake_duty = 0.0
+            state.fan_duty = 0.0
+            state.bp_foc_backend = False
+            state.iotest = False
             state.clear_pending = False
             return True, "ok"
         if head == "CLEAR":
@@ -503,7 +743,63 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
                 return False, "bad clear args"
             state.enable = False
             state.estop = False
+            state.ntc = False
+            state.pfc = False
+            state.precharge = False
+            state.brake_pwm = False
+            state.brake_duty = 0.0
+            state.fan_duty = 0.0
+            state.bp_foc_backend = False
+            state.iotest = False
             state.clear_pending = True
+            return True, "ok"
+        if head == "IOTEST":
+            if len(parts) != 2:
+                return False, "bad iotest args"
+            try:
+                next_iotest = parse_on_off(parts[1])
+            except ValueError:
+                return False, "bad iotest"
+            if next_iotest:
+                ok, msg = output_permitted_locked(state, "IOTEST")
+                if not ok:
+                    return False, msg
+            state.iotest = next_iotest
+            if not next_iotest:
+                state.ntc = False
+                state.pfc = False
+                state.precharge = False
+                state.brake_pwm = False
+                state.brake_duty = 0.0
+                state.fan_duty = 0.0
+            state.enable = False
+            state.mode = MODE_OFF
+            state.bp_foc_backend = False
+            state.diag = False
+            return True, "ok"
+        if head == "BPFOC":
+            if len(parts) != 2:
+                return False, "bad bpfoc args"
+            try:
+                next_bpfoc = parse_on_off(parts[1])
+            except ValueError:
+                return False, "bad bpfoc"
+            if next_bpfoc:
+                ok, msg = output_permitted_locked(state, "BPFOC")
+                if not ok:
+                    return False, msg
+                state.enable = False
+                state.mode = MODE_FOC
+                state.diag = False
+                state.vector_rotate = False
+                state.bp_foc_backend = True
+                return True, "ok"
+            state.enable = False
+            state.bp_foc_backend = False
+            if state.mode == MODE_FOC:
+                state.mode = MODE_OFF
+            state.diag = False
+            state.vector_rotate = False
             return True, "ok"
         if head == "MODE":
             if len(parts) != 2:
@@ -531,8 +827,24 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
             if state.enable and next_mode != state.mode:
                 state.enable = False
             state.mode = next_mode
+            if next_mode != MODE_FOC:
+                state.bp_foc_backend = False
             state.vector_rotate = next_vector_rotate
             state.diag = next_diag
+            return True, "ok"
+        if head == "DIAG":
+            if len(parts) != 2:
+                return False, "bad diag args"
+            try:
+                diag_on = parse_on_off(parts[1])
+            except ValueError:
+                return False, "bad diag"
+            if state.enable and ((diag_on and state.mode != MODE_DIAG) or (not diag_on and state.mode == MODE_DIAG)):
+                state.enable = False
+            state.diag = diag_on
+            state.mode = MODE_DIAG if diag_on else MODE_OFF
+            state.bp_foc_backend = False
+            state.vector_rotate = False
             return True, "ok"
         if head == "FREQ":
             if len(parts) != 2:
@@ -615,15 +927,107 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
                 state.enable = False
             state.mode = MODE_DUTY
             return True, "ok"
+        if head == "FAN":
+            if len(parts) == 2:
+                val = parts[1].upper()
+                if val == "ON":
+                    ok, msg = output_permitted_locked(state, "FAN")
+                    if not ok:
+                        return False, msg
+                    state.fan_duty = 1.0
+                    return True, "ok"
+                if val == "OFF":
+                    state.fan_duty = 0.0
+                    return True, "ok"
+                try:
+                    next_fan_duty = parse_bounded_float(parts[1], 0.0, 1.0)
+                except ValueError:
+                    return False, "bad fan"
+                if next_fan_duty > 0.0:
+                    ok, msg = output_permitted_locked(state, "FAN")
+                    if not ok:
+                        return False, msg
+                state.fan_duty = next_fan_duty
+                return True, "ok"
+            if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+                try:
+                    next_fan_duty = parse_bounded_float(parts[2], 0.0, 1.0)
+                except ValueError:
+                    return False, "bad fan duty"
+                if next_fan_duty > 0.0:
+                    ok, msg = output_permitted_locked(state, "FAN")
+                    if not ok:
+                        return False, msg
+                state.fan_duty = next_fan_duty
+                return True, "ok"
+            return False, "bad fan args"
+        if head == "PRECHARGE":
+            if len(parts) != 2:
+                return False, "bad precharge args"
+            try:
+                next_precharge = parse_on_off(parts[1])
+            except ValueError:
+                return False, "bad precharge"
+            if next_precharge:
+                ok, msg = output_permitted_locked(state, "PRECHARGE")
+                if not ok:
+                    return False, msg
+            state.precharge = next_precharge
+            return True, "ok"
+        if head == "NTC":
+            state.ntc = False
+            return False, "unsupported: STEVAL J2-21 is not connected"
+        if head == "PFC":
+            if len(parts) != 2:
+                return False, "bad pfc args"
+            try:
+                next_pfc = parse_on_off(parts[1])
+            except ValueError:
+                return False, "bad pfc"
+            if next_pfc:
+                ok, msg = output_permitted_locked(state, "PFC")
+                if not ok:
+                    return False, msg
+            state.pfc = next_pfc
+            return True, "ok"
+        if head == "BRAKE":
+            if len(parts) == 2:
+                val = parts[1].upper()
+                if val == "OFF":
+                    state.brake_pwm = False
+                    state.brake_duty = 0.0
+                    return True, "ok"
+                try:
+                    next_brake_duty = parse_bounded_float(parts[1], 0.0, 1.0)
+                except ValueError:
+                    return False, "bad brake"
+                if next_brake_duty > 0.0:
+                    ok, msg = output_permitted_locked(state, "BRAKE")
+                    if not ok:
+                        return False, msg
+                state.brake_duty = next_brake_duty
+                state.brake_pwm = state.brake_duty > 0.0
+                return True, "ok"
+            if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+                try:
+                    next_brake_duty = parse_bounded_float(parts[2], 0.0, 1.0)
+                except ValueError:
+                    return False, "bad brake duty"
+                if next_brake_duty > 0.0:
+                    ok, msg = output_permitted_locked(state, "BRAKE")
+                    if not ok:
+                        return False, msg
+                state.brake_duty = next_brake_duty
+                state.brake_pwm = state.brake_duty > 0.0
+                return True, "ok"
+            return False, "bad brake args"
         if head == "VROT":
             if len(parts) != 2:
                 return False, "bad vrot args"
             val = parts[1].upper()
-            if val in ("1", "ON", "TRUE", "YES"):
-                next_vector_rotate = True
-            elif val in ("0", "OFF", "FALSE", "NO"):
-                next_vector_rotate = False
-            else:
+            try:
+                next_vector_rotate = parse_on_off(val)
+            except ValueError:
                 return False, "bad vrot"
             if state.enable and state.mode == MODE_VECTOR and next_vector_rotate != state.vector_rotate:
                 state.enable = False
@@ -703,7 +1107,7 @@ HTML_UI = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>UNO Q Control</title>
+  <title>Blue Pill Direct Control</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; background: #0f1115; color: #e6e9ef; }
     .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
@@ -723,7 +1127,7 @@ HTML_UI = """<!doctype html>
 </head>
 <body>
   <div class="wrap">
-    <h2>UNO Q PWM Control</h2>
+    <h2>Blue Pill Direct PWM Control</h2>
     <div class="card">
       <div class="row">
         <button class="btn" onclick="sendCmd('START')">START</button>
@@ -778,12 +1182,42 @@ HTML_UI = """<!doctype html>
     </div>
 
     <div class="card">
+      <h3>Service IO (no motor START required)</h3>
+      <div class="row">
+        <button class="btn ghost" onclick="sendCmd('PRECHARGE ON')">PRECHARGE ON</button>
+        <button class="btn ghost" onclick="sendCmd('PRECHARGE OFF')">PRECHARGE OFF</button>
+        <button class="btn ghost" onclick="sendCmd('PFC ON')">PFC ON</button>
+        <button class="btn ghost" onclick="sendCmd('PFC OFF')">PFC OFF</button>
+        <button class="btn ghost" onclick="sendCmd('BPFOC ON')">BPFOC ON</button>
+        <button class="btn ghost" onclick="sendCmd('BPFOC OFF')">BPFOC OFF</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <div>
+          <label>Fan duty (0..1)</label>
+          <input id="fan" type="number" step="0.05" min="0" max="1" value="0.00" oninput="onFan()">
+        </div>
+        <div>
+          <label>Brake PWM duty (0..1)</label>
+          <input id="brake" type="number" step="0.05" min="0" max="1" value="0.00" oninput="onBrake()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div class="row">
         <div><span class="k">Link:</span> <span id="link" class="v">-</span></div>
+        <div><span class="k">UART:</span> <span id="uart" class="v">-</span></div>
+        <div><span class="k">UART err:</span> <span id="uart_err" class="v">-</span></div>
         <div><span class="k">PWM:</span> <span id="pwm" class="v">-</span></div>
         <div><span class="k">Fault:</span> <span id="fault" class="v">-</span></div>
         <div><span class="k">Timeout:</span> <span id="timeout" class="v">-</span></div>
         <div><span class="k">RTT ms:</span> <span id="rtt" class="v">-</span></div>
+        <div><span class="k">PRE:</span> <span id="precharge" class="v">-</span></div>
+        <div><span class="k">PFC:</span> <span id="pfc" class="v">-</span></div>
+        <div><span class="k">Fan:</span> <span id="fan_state" class="v">-</span></div>
+        <div><span class="k">Tach rpm:</span> <span id="tach" class="v">-</span></div>
+        <div><span class="k">Brake:</span> <span id="brake_state" class="v">-</span></div>
+        <div><span class="k">BPFOC:</span> <span id="bpfoc_state" class="v">-</span></div>
       </div>
     </div>
   </div>
@@ -802,6 +1236,8 @@ HTML_UI = """<!doctype html>
     function onBeta(){ sendCmd('BETA ' + document.getElementById('beta').value); }
     function onId(){ sendCmd('ID ' + document.getElementById('id').value); }
     function onIq(){ sendCmd('IQ ' + document.getElementById('iq').value); }
+    function onFan(){ sendCmd('FAN PWM ' + document.getElementById('fan').value); }
+    function onBrake(){ sendCmd('BRAKE PWM ' + document.getElementById('brake').value); }
     function onDuty(){
       const u = document.getElementById('du').value;
       const v = document.getElementById('dv').value;
@@ -815,10 +1251,18 @@ HTML_UI = """<!doctype html>
         if (j.ok) {
           const d = j.data;
           document.getElementById('link').textContent = d.link ? 'OK' : 'NO';
+          document.getElementById('uart').textContent = (d.uart_port || '-') + (d.uart_open ? ' open' : ' closed');
+          document.getElementById('uart_err').textContent = d.uart_last_error || '-';
           document.getElementById('pwm').textContent = d.pwm ? 'ON' : 'OFF';
           document.getElementById('fault').textContent = d.fault_text || d.fault || '-';
           document.getElementById('timeout').textContent = d.timeout ? 'YES' : 'NO';
           document.getElementById('rtt').textContent = d.last_rtt_ms ? d.last_rtt_ms.toFixed(1) : '-';
+          document.getElementById('precharge').textContent = d.bp_precharge ? 'ON' : 'OFF';
+          document.getElementById('pfc').textContent = d.bp_pfc ? 'ON' : 'OFF';
+          document.getElementById('fan_state').textContent = (d.bp_fan_duty || 0).toFixed(2);
+          document.getElementById('tach').textContent = d.bp_fan_rpm || 0;
+          document.getElementById('brake_state').textContent = (d.bp_brake_duty || 0).toFixed(2);
+          document.getElementById('bpfoc_state').textContent = d.bp_foc_backend ? 'ON' : 'OFF';
         }
       } catch (e) {}
       setTimeout(poll, 250);
@@ -835,41 +1279,60 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
     seq = 1
     while True:
         try:
-            ser = serial.Serial(port, baud, timeout=0.01)
+            ser = serial.Serial(port, baud, timeout=0.01, write_timeout=max(0.05, rx_timeout))
         except Exception as exc:
-            log(f"UART open failed {port}: {exc}")
+            msg = f"open failed {port}: {exc}"
+            log(f"UART {msg}")
+            with state.lock:
+                state.uart_open = False
+                state.link_ok = False
+                state.uart_last_error = msg
+                state.uart_error_count += 1
+                state.uart_last_error_time = time.monotonic()
+                force_local_safe_outputs_locked(state)
             time.sleep(1.0)
             continue
 
         ser.dtr = False
         ser.rts = False
         log(f"UART ready on {port} @ {baud}")
+        with state.lock:
+            state.uart_open = True
         try:
             next_t = time.monotonic()
             while True:
                 frame = build_frame(state, seq)
                 t0 = time.monotonic()
-                ser.write(frame)
+                written = ser.write(frame)
+                if written != len(frame):
+                    raise serial.SerialTimeoutException(f"short UART write: {written}/{len(frame)}")
                 rsp = read_frame(ser, rx_timeout)
                 if rsp and rsp[CRC_OFF] == crc_xor(rsp):
                     rtt = (time.monotonic() - t0) * 1000.0
                     parse_rsp(state, rsp, rtt)
+                    with state.lock:
+                        state.uart_last_error = ""
                 else:
                     with state.lock:
                         state.link_ok = False
                         state.miss_count += 1
-                        if state.enable and state.miss_count >= 3:
-                            state.enable = False
+                        if state.miss_count >= 3:
+                            force_local_safe_outputs_locked(state)
                 seq = (seq + 1) & 0xFF
                 next_t += period
                 sleep = next_t - time.monotonic()
                 if sleep > 0:
                     time.sleep(sleep)
         except Exception as exc:
+            msg = f"{type(exc).__name__}: {exc}"
             log(f"UART error: {exc}")
             with state.lock:
+                state.uart_open = False
                 state.link_ok = False
-                state.enable = False
+                state.uart_last_error = msg
+                state.uart_error_count += 1
+                state.uart_last_error_time = time.monotonic()
+                force_local_safe_outputs_locked(state)
                 state.miss_count += 1
             try:
                 ser.close()
@@ -879,16 +1342,35 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description="PC-direct HMI for Blue Pill UART PWM firmware.")
     ap.add_argument("--serial", required=True, help="Serial port to Blue Pill, e.g. /dev/ttyUSB0")
-    ap.add_argument("--baud", type=int, default=115200)
+    ap.add_argument("--baud", type=int, default=460800)
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8080)
     ap.add_argument("--rate", type=float, default=50.0, help="UART command rate (Hz)")
     ap.add_argument("--rx-timeout", type=float, default=0.08)
+    ap.add_argument("--cmd-guard-max-vdc", type=float, default=float(os.environ.get("UNOQ_CMD_GUARD_MAX_VDC", DEFAULT_CMD_GUARD_MAX_VDC)))
+    ap.add_argument("--cmd-guard-allow-hv", action="store_true", default=truthy_env("UNOQ_CMD_GUARD_ALLOW_HV"))
+    ap.add_argument(
+        "--cmd-guard-disable",
+        action="store_true",
+        default=truthy_env("UNOQ_CMD_GUARD_DISABLE"),
+        help="Bypass only the DC bus voltage command guard; link, ESTOP, fault, PWM-active and bad-counter interlocks stay enforced.",
+    )
+    ap.add_argument(
+        "--bench-gate-url",
+        default=os.environ.get("UNOQ_BENCH_GATE_URL", ""),
+        help="Live HMI URL used by bench_gate_report.py before accepting START. Defaults to this server on 127.0.0.1.",
+    )
     args = ap.parse_args()
 
     state = SharedState()
+    state.cmd_guard_max_vdc = float(args.cmd_guard_max_vdc)
+    state.cmd_guard_allow_hv = bool(args.cmd_guard_allow_hv)
+    state.cmd_guard_disabled = bool(args.cmd_guard_disable)
+    state.bench_gate_url = args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}"
+    state.uart_port = str(args.serial)
+    state.uart_baud = int(args.baud)
     th = threading.Thread(
         target=uart_worker,
         args=(state, args.serial, args.baud, args.rate, args.rx_timeout),

@@ -1,4 +1,8 @@
 import time
+
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["saleae"], "MIC_PRACTICE_LA_PROBE_REEXEC")
 import saleae.automation as sa
 
 def main() -> int:

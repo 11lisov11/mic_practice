@@ -41,6 +41,19 @@ static float q15_to_float(int16_t v) {
   return (float)v / 32767.0f;
 }
 
+static uint16_t u16le(const uint8_t *buf, uint8_t off) {
+  return (uint16_t)buf[off] | ((uint16_t)buf[off + 1U] << 8);
+}
+
+static int16_t i16le(const uint8_t *buf, uint8_t off) {
+  return (int16_t)u16le(buf, off);
+}
+
+static uint32_t u32le(const uint8_t *buf, uint8_t off) {
+  return (uint32_t)buf[off] | ((uint32_t)buf[off + 1U] << 8) | ((uint32_t)buf[off + 2U] << 16) |
+         ((uint32_t)buf[off + 3U] << 24);
+}
+
 static void limit_vector(float *alpha, float *beta) {
   const float max_mag = 0.95f;
   float a = *alpha;
@@ -109,26 +122,20 @@ void control_update_from_cmd(const uint8_t *cmd) {
   }
   s_sp.mode = new_mode;
   s_sp.flags = cmd[CMD_OFF_FLAGS];
-  s_sp.du_q15 = (uint16_t)cmd[CMD_OFF_DU] | ((uint16_t)cmd[CMD_OFF_DU + 1] << 8);
-  s_sp.dv_q15 = (uint16_t)cmd[CMD_OFF_DV] | ((uint16_t)cmd[CMD_OFF_DV + 1] << 8);
-  s_sp.dw_q15 = (uint16_t)cmd[CMD_OFF_DW] | ((uint16_t)cmd[CMD_OFF_DW + 1] << 8);
+  s_sp.du_q15 = u16le(cmd, CMD_OFF_DU);
+  s_sp.dv_q15 = u16le(cmd, CMD_OFF_DV);
+  s_sp.dw_q15 = u16le(cmd, CMD_OFF_DW);
 
-  s_sp.freq_millihz = (uint32_t)cmd[6] |
-                      ((uint32_t)cmd[7] << 8) |
-                      ((uint32_t)cmd[8] << 16) |
-                      ((uint32_t)cmd[9] << 24);
-  s_sp.foc_freq_millihz = (uint32_t)cmd[10] |
-                          ((uint32_t)cmd[11] << 8) |
-                          ((uint32_t)cmd[12] << 16) |
-                          ((uint32_t)cmd[13] << 24);
-  s_sp.vmag_q15 = (uint16_t)cmd[10] | ((uint16_t)cmd[11] << 8);
+  s_sp.freq_millihz = u32le(cmd, CMD_OFF_DU);
+  s_sp.foc_freq_millihz = u32le(cmd, CMD_OFF_DW);
+  s_sp.vmag_q15 = u16le(cmd, CMD_OFF_DW);
   if (s_sp.vmag_q15 > 32767U) {
     s_sp.vmag_q15 = 32767U;
   }
-  s_sp.valpha_q15 = (int16_t)((uint16_t)cmd[6] | ((uint16_t)cmd[7] << 8));
-  s_sp.vbeta_q15 = (int16_t)((uint16_t)cmd[8] | ((uint16_t)cmd[9] << 8));
-  s_sp.id_q15 = (int16_t)((uint16_t)cmd[6] | ((uint16_t)cmd[7] << 8));
-  s_sp.iq_q15 = (int16_t)((uint16_t)cmd[8] | ((uint16_t)cmd[9] << 8));
+  s_sp.valpha_q15 = i16le(cmd, CMD_OFF_DU);
+  s_sp.vbeta_q15 = i16le(cmd, CMD_OFF_DV);
+  s_sp.id_q15 = i16le(cmd, CMD_OFF_DU);
+  s_sp.iq_q15 = i16le(cmd, CMD_OFF_DV);
 
   if (new_mode == MODE_FOC && old_mode != MODE_FOC) {
     foc_reset();
@@ -141,8 +148,7 @@ void control_tick(void) {
   const safety_state_t *st = safety_state();
 
   if (!st->enabled || st->fault_latched || st->timeout_active) {
-    pwm_outputs_enable(false);
-    pwm_all_off();
+    pwm_safe_idle();
     safety_set_pwm_active(false);
     return;
   }
@@ -160,8 +166,7 @@ void control_tick(void) {
       pwm_outputs_enable(true);
       safety_set_pwm_active(true);
     } else {
-      pwm_outputs_enable(false);
-      pwm_all_off();
+      pwm_safe_idle();
       safety_set_pwm_active(false);
     }
     return;
@@ -207,8 +212,7 @@ void control_tick(void) {
     bool hall_ok = hall_get_theta(&hall_theta, &omega);
     bool sensor_ok = enc_ok || hall_ok;
     if (!sensor_ok && FOC_REQUIRE_HALL) {
-      pwm_outputs_enable(false);
-      pwm_all_off();
+      pwm_safe_idle();
       safety_set_pwm_active(false);
       return;
     }
@@ -233,8 +237,7 @@ void control_tick(void) {
     float iq_ref = q15_to_float(s_sp.iq_q15);
     foc_run(id_ref, iq_ref, theta, ia, ib, ic, vbus, &v_alpha, &v_beta);
   } else {
-    pwm_outputs_enable(false);
-    pwm_all_off();
+    pwm_safe_idle();
     safety_set_pwm_active(false);
     return;
   }

@@ -2,15 +2,20 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import os
 import select
+import secrets
 import socket
+import subprocess
+import sys
 import threading
 import time
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from typing import Deque, List, Optional, Tuple
+from typing import Callable, Deque, List, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 
 try:
@@ -41,6 +46,23 @@ STATE_CODES = {v: k for k, v in STATE_NAMES.items()}
 MODE_CODES = {v: k for k, v in MODE_NAMES.items()}
 BP_MODE_DIAG = 1
 BP_MODE_DUTY = 2
+DEFAULT_REMOTEOCD = "/home/arduino/.arduino15/packages/arduino/tools/remoteocd/0.0.4-rc.4/remoteocd"
+DEFAULT_REMOTEOCD_CFG = (
+    "/home/arduino/.arduino15/packages/arduino/hardware/zephyr/0.51.0/"
+    "variants/arduino_uno_q_stm32u585xx/flash_sketch.cfg"
+)
+DEFAULT_CMD_GUARD_MAX_VDC = 60.0
+CMD_GUARD_MAX_AGE_MS = 1000.0
+DEFAULT_START_RUNLIMIT_SEC = 15.0
+
+TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
+if TOOLS_DIR not in sys.path:
+    sys.path.insert(0, TOOLS_DIR)
+
+try:
+    from active_pwm_guard import start_allowed_by_bench_gate
+except Exception:  # pragma: no cover - fail closed if tooling import is broken
+    start_allowed_by_bench_gate = None  # type: ignore[assignment]
 
 
 def effective_mode(
@@ -68,6 +90,15 @@ def _now_ts() -> float:
 
 def _fmt_ts(ts: float) -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+
+
+def termios_baud_constant(baud: int) -> int:
+    if termios is None:
+        raise RuntimeError("termios not available on this platform")
+    name = f"B{int(baud)}"
+    if not hasattr(termios, name):
+        raise RuntimeError(f"termios baud {baud} is not supported by this platform")
+    return int(getattr(termios, name))
 
 
 class LogStore:
@@ -153,6 +184,224 @@ class LogStore:
                 pass
         with self._lock:
             return [entry for ts, entry in self._items if ts >= since_ts]
+
+
+def _tail_text(text: str, max_chars: int = 4000) -> str:
+    if len(text) <= max_chars:
+        return text
+    return text[-max_chars:]
+
+
+def _as_float(data: dict, key: str, default: float = 0.0) -> float:
+    try:
+        return float(data.get(key, default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_int(data: dict, key: str, default: int = 0) -> int:
+    try:
+        return int(float(data.get(key, default)))
+    except (TypeError, ValueError):
+        return default
+
+
+def _truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _cmd_tokens(cmd: str) -> list[str]:
+    return cmd.strip().split()
+
+
+def _cmd_head(cmd: str) -> str:
+    parts = _cmd_tokens(cmd)
+    return parts[0].upper() if parts else ""
+
+
+def _on_off_arg(parts: list[str], index: int = 1) -> Optional[bool]:
+    if len(parts) <= index:
+        return None
+    val = parts[index].strip().upper()
+    if val in ("1", "ON", "TRUE", "YES"):
+        return True
+    if val in ("0", "OFF", "FALSE", "NO"):
+        return False
+    return None
+
+
+def _positive_arg(parts: list[str], index: int) -> bool:
+    if len(parts) <= index:
+        return False
+    try:
+        return float(parts[index]) > 0.0001
+    except (TypeError, ValueError):
+        return False
+
+
+def command_requests_start(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    return len(parts) == 1 and parts[0].upper() == "START"
+
+
+def command_requests_service_output(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    if not parts:
+        return False
+    head = parts[0].upper()
+    if head == "IOTEST":
+        return _on_off_arg(parts) is True
+    if head == "BPFOC":
+        return _on_off_arg(parts) is True
+    if head in ("PFC", "PRECHARGE"):
+        return _on_off_arg(parts) is True
+    if head == "FAN":
+        if len(parts) == 2:
+            arg = parts[1].upper()
+            if arg == "ON":
+                return True
+            if arg == "OFF":
+                return False
+            return _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return _positive_arg(parts, 2)
+        return False
+    if head == "BRAKE":
+        if len(parts) == 2:
+            if parts[1].upper() == "OFF":
+                return False
+            return _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return _positive_arg(parts, 2)
+        return False
+    return False
+
+
+class CommandGuardConfig:
+    def __init__(
+        self,
+        max_vdc: float,
+        allow_hv: bool = False,
+        disabled: bool = False,
+        bench_gate_url: str = "",
+        bench_gate_runner: Optional[Callable[[Callable[[str], None], Optional[str]], bool]] = None,
+    ) -> None:
+        self.max_vdc = max_vdc
+        self.allow_hv = allow_hv
+        self.disabled = disabled
+        self.bench_gate_url = bench_gate_url
+        self.bench_gate_runner = bench_gate_runner
+
+
+def start_bench_gate_check(cfg: CommandGuardConfig) -> tuple[bool, str]:
+    logs: list[str] = []
+    if cfg.bench_gate_runner is not None:
+        ok = bool(cfg.bench_gate_runner(logs.append, cfg.bench_gate_url or None))
+    elif start_allowed_by_bench_gate is not None:
+        ok = bool(start_allowed_by_bench_gate(logs.append, url=cfg.bench_gate_url or None))
+    else:
+        ok = False
+        logs.append("active_pwm_guard import failed")
+    if ok:
+        return True, "ok"
+    detail = "; ".join(logs) if logs else "bench gate refused START"
+    return False, f"bench gate blocked START: {detail}"
+
+
+def _status_bp_bad(data: dict) -> int:
+    values = [_as_int(data, key, 999999) for key in ("bp_bad_cnt", "bp_bad") if key in data]
+    if not values:
+        return 999999
+    return max(values)
+
+
+def _status_vdc(data: dict) -> float:
+    values: list[float] = []
+    for key in ("vdc", "bp_vdc"):
+        if key not in data:
+            continue
+        value = _as_float(data, key, float("nan"))
+        if math.isfinite(value) and value >= 0.0:
+            values.append(value)
+    return max(values) if values else float("nan")
+
+
+def _status_link_live(data: dict) -> bool:
+    if data.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+        if key in data:
+            ages.append(_as_float(data, key, 999999.0))
+    if data.get("last_rx_age_s") is not None:
+        ages.append(_as_float(data, "last_rx_age_s", 999999.0) * 1000.0)
+    return bool(ages) and min(ages) <= CMD_GUARD_MAX_AGE_MS
+
+
+def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig) -> tuple[bool, str]:
+    if not (command_requests_start(cmd) or command_requests_service_output(cmd)):
+        return True, "not guarded"
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, f"PWM is not off: pwm={_as_int(data, 'pwm', 1)}"
+    if _as_int(data, "estop", 1) != 0:
+        return False, f"ESTOP is active: estop={_as_int(data, 'estop', 1)}"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_bp_bad(data)
+    if bad != 0:
+        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if not (cfg.allow_hv or cfg.disabled) and vdc > cfg.max_vdc:
+        return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+    if command_requests_start(cmd):
+        return start_bench_gate_check(cfg)
+    return True, "ok"
+
+
+class FirmwareUpdateConfig:
+    def __init__(
+        self,
+        token_file: Optional[str],
+        upload_dir: str,
+        remoteocd_bin: str,
+        remoteocd_cfg: str,
+        max_bytes: int,
+        timeout_sec: float,
+        max_vdc: float,
+    ) -> None:
+        self.token_file = token_file
+        self.upload_dir = upload_dir
+        self.remoteocd_bin = remoteocd_bin
+        self.remoteocd_cfg = remoteocd_cfg
+        self.max_bytes = max_bytes
+        self.timeout_sec = timeout_sec
+        self.max_vdc = max_vdc
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.token_file)
+
+    def read_token(self) -> Optional[str]:
+        if not self.token_file:
+            return None
+        try:
+            with open(os.path.expanduser(self.token_file), "r", encoding="utf-8") as f:
+                token = f.read().strip()
+        except OSError:
+            return None
+        if len(token) < 16:
+            return None
+        return token
 
 
 class RouterClient:
@@ -268,8 +517,9 @@ class SerialClient:
         attrs[1] = 0  # oflag
         attrs[3] = 0  # lflag
         attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
-        attrs[4] = termios.B115200
-        attrs[5] = termios.B115200
+        baud_const = termios_baud_constant(self._baud)
+        attrs[4] = baud_const
+        attrs[5] = baud_const
         attrs[6][termios.VMIN] = 0
         attrs[6][termios.VTIME] = 0
         termios.tcsetattr(fd, termios.TCSANOW, attrs)
@@ -334,8 +584,9 @@ class TextSerialClient:
         attrs[1] = 0
         attrs[3] = 0
         attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
-        attrs[4] = termios.B115200
-        attrs[5] = termios.B115200
+        baud_const = termios_baud_constant(self._baud)
+        attrs[4] = baud_const
+        attrs[5] = baud_const
         attrs[6][termios.VMIN] = 0
         attrs[6][termios.VTIME] = 0
         termios.tcsetattr(fd, termios.TCSANOW, attrs)
@@ -409,20 +660,20 @@ class TextSerialClient:
 
 
 class RpcBridge:
-    def __init__(self, endpoint: str) -> None:
+    def __init__(self, endpoint: str, serial_baud: int = 115200) -> None:
         self._router: Optional[RouterClient] = None
         self._serial: Optional[SerialClient] = None
         self._serial_text: Optional[TextSerialClient] = None
         if endpoint.startswith("serial:"):
-            self._serial_text = TextSerialClient(endpoint.replace("serial:", "", 1))
+            self._serial_text = TextSerialClient(endpoint.replace("serial:", "", 1), baud=serial_baud)
         elif endpoint.startswith("/dev/"):
-            self._serial_text = TextSerialClient(endpoint)
+            self._serial_text = TextSerialClient(endpoint, baud=serial_baud)
         else:
             try:
                 self._router = RouterClient(endpoint)
             except RuntimeError:
                 self._router = None
-            self._serial_text = TextSerialClient("/dev/ttyHS1")
+            self._serial_text = TextSerialClient("/dev/ttyHS1", baud=serial_baud)
 
     def _call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
         if self._router is not None:
@@ -649,6 +900,20 @@ class RpcBridge:
                 data["precharge"] = int(result[64])
             else:
                 data["precharge"] = 0
+            if len(result) >= 68:
+                data["fan_duty"] = float(result[65])
+                data["bp_fan_duty"] = float(result[66])
+                data["bp_fan_rpm"] = float(result[67])
+            else:
+                data["fan_duty"] = 0.0
+                data["bp_fan_duty"] = 0.0
+                data["bp_fan_rpm"] = 0.0
+            if len(result) >= 70:
+                data["bp_foc_backend"] = int(result[68])
+                data["bp_cmd_mode"] = int(result[69])
+            else:
+                data["bp_foc_backend"] = 0
+                data["bp_cmd_mode"] = data.get("bp_mode", 0)
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -704,6 +969,9 @@ class RpcBridge:
                 "precharge": int(float(kv.get("precharge", "0"))),
                 "brake": int(float(kv.get("brake", "0"))),
                 "brake_duty": float(kv.get("brake_duty", "0")),
+                "fan_duty": float(kv.get("fan_duty", "0")),
+                "bp_fan_duty": float(kv.get("bp_fan_duty", "0")),
+                "bp_fan_rpm": float(kv.get("bp_fan_rpm", "0")),
                 "enc_raw": int(float(kv.get("enc_raw", "0"))),
                 "enc_ok": int(float(kv.get("enc_ok", "0"))),
                 "enc_deg": float(kv.get("enc_deg", "0")),
@@ -726,6 +994,8 @@ class RpcBridge:
                 "bp_status": int(float(kv.get("bp_status", "0"))),
                 "bp_fault": int(float(kv.get("bp_fault", "255"))),
                 "bp_mode": int(float(kv.get("bp_mode", "0"))),
+                "bp_cmd_mode": int(float(kv.get("bp_cmd_mode", kv.get("bp_mode", "0")))),
+                "bp_foc_backend": int(float(kv.get("bp_foc_backend", "0"))),
                 "bp_seq": int(float(kv.get("bp_seq", "0"))),
                 "bp_good_cnt": int(float(kv.get("bp_good_cnt", kv.get("bp_good", "0")))),
                 "bp_bad_cnt": int(float(kv.get("bp_bad_cnt", kv.get("bp_bad", "999999")))),
@@ -761,9 +1031,20 @@ class RpcBridge:
 
 
 class AppState:
-    def __init__(self, rpc: RpcBridge, logs: LogStore, status_log_interval: float) -> None:
+    def __init__(
+        self,
+        rpc: RpcBridge,
+        logs: LogStore,
+        status_log_interval: float,
+        firmware_update: Optional[FirmwareUpdateConfig] = None,
+        command_guard: Optional[CommandGuardConfig] = None,
+        start_runlimit_sec: float = DEFAULT_START_RUNLIMIT_SEC,
+    ) -> None:
         self.rpc = rpc
         self.logs = logs
+        self.firmware_update = firmware_update
+        self.command_guard = command_guard or CommandGuardConfig(DEFAULT_CMD_GUARD_MAX_VDC)
+        self.start_runlimit_sec = max(0.1, float(start_runlimit_sec))
         self._status_log_interval = status_log_interval
         self._last_status_log = 0.0
         self._lock = threading.Lock()
@@ -778,7 +1059,9 @@ class AppState:
             f"STAT state={data.get('state')} mode={data.get('mode')} pwm={data.get('pwm')} "
             f"freq={data.get('freq'):.2f} speed={data.get('speed'):.1f} vdc={data.get('vdc'):.2f} "
             f"bp_temp_c={data.get('bp_temp_c', 0.0):.1f} bp_temp_fault={data.get('bp_temp_fault', 0)} "
-            f"bp_phase_c_v={data.get('bp_phase_c_v', 0.0):.3f} bp_phase_c_virtual={data.get('bp_phase_c_virtual', 0)}"
+            f"bp_phase_c_v={data.get('bp_phase_c_v', 0.0):.3f} bp_phase_c_virtual={data.get('bp_phase_c_virtual', 0)} "
+            f"fan_duty={data.get('fan_duty', 0.0):.2f} bp_fan_rpm={data.get('bp_fan_rpm', 0.0):.0f} "
+            f"bp_cmd_mode={data.get('bp_cmd_mode', 0)} bp_foc_backend={data.get('bp_foc_backend', 0)}"
         )
         self.logs.add(line)
 
@@ -854,6 +1137,9 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path == "/api/cmd":
             self._handle_cmd()
             return
+        if parsed.path == "/api/firmware/update":
+            self._handle_firmware_update(parsed)
+            return
         self.send_error(404)
 
     def _read_json(self) -> dict:
@@ -872,6 +1158,26 @@ class Handler(BaseHTTPRequestHandler):
         if not cmd:
             self._send_json({"ok": False, "error": "missing cmd"}, 400)
             return
+        if _cmd_head(cmd) == "NTC":
+            self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
+            return
+        guard_cfg = self.server.app.command_guard  # type: ignore[attr-defined]
+        if command_requests_start(cmd) or command_requests_service_output(cmd):
+            st_ok, st_data, st_err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+            allowed, guard_err = command_guard_check(cmd, st_data if st_ok else None, guard_cfg)
+            if not allowed:
+                err = guard_err if st_ok else f"{guard_err}: {st_err or 'no status'}"
+                self.server.app.logs.add(f"CMD_REJECT {cmd} {err}")  # type: ignore[attr-defined]
+                self._send_json({"ok": False, "error": err, "status": st_data}, 409)
+                return
+        if command_requests_start(cmd):
+            runlimit_cmd = f"SET RUNLIMIT {self.server.app.start_runlimit_sec:.3f}"  # type: ignore[attr-defined]
+            limit_ok, limit_err = self.server.app.rpc.cmd(runlimit_cmd)  # type: ignore[attr-defined]
+            if not limit_ok:
+                self.server.app.logs.add(f"CMD_FAIL {runlimit_cmd} {limit_err}")  # type: ignore[attr-defined]
+                self._send_json({"ok": False, "error": f"run limit rejected: {limit_err}"}, 500)
+                return
+            self.server.app.logs.add(f"CMD {runlimit_cmd}")  # type: ignore[attr-defined]
         ok, err = self.server.app.rpc.cmd(cmd)  # type: ignore[attr-defined]
         if ok:
             self.server.app.logs.add(f"CMD {cmd}")  # type: ignore[attr-defined]
@@ -903,6 +1209,146 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self._send_text(text)
 
+    def _firmware_update_authorized(self, cfg: FirmwareUpdateConfig) -> tuple[bool, str]:
+        expected = cfg.read_token()
+        if not expected:
+            return False, "firmware update token file is missing or too short"
+        provided = self.headers.get("X-UNOQ-Update-Token", "")
+        if not provided or not secrets.compare_digest(provided, expected):
+            return False, "bad firmware update token"
+        return True, ""
+
+    def _ensure_firmware_update_safe(self, cfg: FirmwareUpdateConfig) -> tuple[bool, Optional[dict], str]:
+        ok, err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
+        if not ok:
+            return False, None, f"STOP failed: {err}"
+        time.sleep(0.2)
+
+        last_err = "no status"
+        for _ in range(10):
+            ok, data, err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+            if ok and data is not None:
+                state = str(data.get("state", "")).upper()
+                state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+                pwm = _as_int(data, "pwm", 1)
+                estop = _as_int(data, "estop", 0)
+                bp_fault = _as_int(data, "bp_fault", 0)
+                vdc = _status_vdc(data)
+                if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+                    return False, data, f"not SAFE: state={data.get('state')}"
+                if pwm != 0:
+                    return False, data, f"PWM is not off: pwm={pwm}"
+                if estop != 0:
+                    return False, data, f"ESTOP is active: estop={estop}"
+                if bp_fault != 0:
+                    return False, data, f"Blue Pill fault is active: bp_fault={bp_fault}"
+                bad = _status_bp_bad(data)
+                if bad != 0:
+                    return False, data, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+                if not _status_link_live(data):
+                    return False, data, "Blue Pill link is stale or down"
+                if not math.isfinite(vdc):
+                    return False, data, "DC bus telemetry is not readable for firmware update"
+                if vdc > cfg.max_vdc:
+                    return False, data, f"DC bus too high for firmware update: vdc={vdc:.1f} V"
+                return True, data, ""
+            last_err = err or "no response"
+            time.sleep(0.1)
+        return False, None, f"status failed: {last_err}"
+
+    def _handle_firmware_update(self, parsed) -> None:
+        cfg = self.server.app.firmware_update  # type: ignore[attr-defined]
+        if cfg is None or not cfg.enabled:
+            self._send_json({"ok": False, "error": "firmware update disabled"}, 403)
+            return
+
+        ok, err = self._firmware_update_authorized(cfg)
+        if not ok:
+            self._send_json({"ok": False, "error": err}, 403)
+            return
+
+        query = parse_qs(parsed.query)
+        dry_run = query.get("dry_run", ["0"])[0].lower() in ("1", "true", "yes")
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            length = 0
+        if length <= 0:
+            self._send_json({"ok": False, "error": "empty firmware body"}, 400)
+            return
+        if length > cfg.max_bytes:
+            self._send_json({"ok": False, "error": f"firmware too large: {length} > {cfg.max_bytes}"}, 413)
+            return
+
+        safe, status, safe_err = self._ensure_firmware_update_safe(cfg)
+        if not safe:
+            self.server.app.logs.add(f"FW_UPDATE_REJECT {safe_err}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": safe_err, "status": status}, 409)
+            return
+
+        os.makedirs(cfg.upload_dir, exist_ok=True)
+        filename = f"unoq_firmware_{int(time.time())}_{threading.get_ident()}.bin"
+        path = os.path.join(cfg.upload_dir, filename)
+        sha256 = hashlib.sha256()
+        remaining = length
+        try:
+            with open(path, "wb") as f:
+                while remaining > 0:
+                    chunk = self.rfile.read(min(65536, remaining))
+                    if not chunk:
+                        raise RuntimeError("short firmware body")
+                    f.write(chunk)
+                    sha256.update(chunk)
+                    remaining -= len(chunk)
+        except Exception as exc:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+            self._send_json({"ok": False, "error": f"failed to save firmware: {exc}"}, 400)
+            return
+
+        digest = sha256.hexdigest()
+        self.server.app.logs.add(  # type: ignore[attr-defined]
+            f"FW_UPDATE_UPLOAD bytes={length} sha256={digest} dry_run={int(dry_run)}"
+        )
+        if dry_run:
+            self._send_json({"ok": True, "dry_run": True, "bytes": length, "sha256": digest, "path": path})
+            return
+
+        if not os.path.exists(cfg.remoteocd_bin):
+            self._send_json({"ok": False, "error": f"remoteocd not found: {cfg.remoteocd_bin}"}, 500)
+            return
+        if not os.path.exists(cfg.remoteocd_cfg):
+            self._send_json({"ok": False, "error": f"remoteocd cfg not found: {cfg.remoteocd_cfg}"}, 500)
+            return
+
+        cmd = [cfg.remoteocd_bin, "upload", "--verbose", "-f", cfg.remoteocd_cfg, path]
+        try:
+            result = subprocess.run(
+                cmd,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=cfg.timeout_sec,
+            )
+        except subprocess.TimeoutExpired as exc:
+            out = _tail_text(exc.stdout or "")
+            self.server.app.logs.add(f"FW_UPDATE_TIMEOUT sha256={digest}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": "remoteocd timeout", "output": out}, 504)
+            return
+        output = _tail_text(result.stdout or "")
+        if result.returncode != 0:
+            self.server.app.logs.add(f"FW_UPDATE_FAIL rc={result.returncode} sha256={digest}")  # type: ignore[attr-defined]
+            self._send_json(
+                {"ok": False, "error": f"remoteocd failed: rc={result.returncode}", "output": output},
+                500,
+            )
+            return
+        self.server.app.logs.add(f"FW_UPDATE_OK sha256={digest}")  # type: ignore[attr-defined]
+        self._send_json({"ok": True, "dry_run": False, "bytes": length, "sha256": digest, "output": output})
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="UNOQ WiFi HMI server")
@@ -913,6 +1359,12 @@ def main() -> None:
         default="/run/arduino-router.sock",
         help="Router endpoint (unix:/path or host:port)",
     )
+    parser.add_argument(
+        "--serial-baud",
+        type=int,
+        default=115200,
+        help="Baud rate for serial fallback endpoints such as serial:/dev/ttyX",
+    )
     parser.add_argument("--log-bytes", type=int, default=2 * 1024 * 1024, help="Max in-memory log bytes")
     parser.add_argument(
         "--log-file",
@@ -921,17 +1373,76 @@ def main() -> None:
     )
     parser.add_argument("--log-file-bytes", type=int, default=4 * 1024 * 1024, help="Max log file bytes")
     parser.add_argument("--status-log-sec", type=float, default=5.0, help="Status log interval")
+    parser.add_argument(
+        "--firmware-update-token-file",
+        default=os.environ.get("UNOQ_FIRMWARE_UPDATE_TOKEN_FILE", ""),
+        help="Enable firmware update API with a token stored in this file",
+    )
+    parser.add_argument(
+        "--firmware-upload-dir",
+        default="/tmp/unoq_firmware_updates",
+        help="Directory for received firmware images",
+    )
+    parser.add_argument("--firmware-update-max-bytes", type=int, default=2 * 1024 * 1024)
+    parser.add_argument("--firmware-update-timeout-sec", type=float, default=90.0)
+    parser.add_argument("--firmware-update-max-vdc", type=float, default=10.0)
+    parser.add_argument("--cmd-guard-max-vdc", type=float, default=float(os.environ.get("UNOQ_CMD_GUARD_MAX_VDC", DEFAULT_CMD_GUARD_MAX_VDC)))
+    parser.add_argument("--cmd-guard-allow-hv", action="store_true", default=_truthy_env("UNOQ_CMD_GUARD_ALLOW_HV"))
+    parser.add_argument(
+        "--start-runlimit-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_START_RUNLIMIT_SEC", DEFAULT_START_RUNLIMIT_SEC)),
+        help="Bound every accepted START command with this automatic run limit.",
+    )
+    parser.add_argument(
+        "--cmd-guard-disable",
+        action="store_true",
+        default=_truthy_env("UNOQ_CMD_GUARD_DISABLE"),
+        help="Bypass only the DC bus voltage command guard; status, link, ESTOP, fault, PWM-active and bad-counter checks stay enforced.",
+    )
+    parser.add_argument(
+        "--bench-gate-url",
+        default=os.environ.get("UNOQ_BENCH_GATE_URL", ""),
+        help="Live HMI URL used by bench_gate_report.py before accepting START. Defaults to this server on 127.0.0.1.",
+    )
+    parser.add_argument("--remoteocd-bin", default=DEFAULT_REMOTEOCD)
+    parser.add_argument("--remoteocd-cfg", default=DEFAULT_REMOTEOCD_CFG)
     args = parser.parse_args()
     if args.router == "/run/arduino-router.sock" and not os.path.exists(args.router):
         if os.path.exists("/var/run/arduino-router.sock"):
             args.router = "/var/run/arduino-router.sock"
 
-    rpc = RpcBridge(args.router)
+    rpc = RpcBridge(args.router, serial_baud=int(args.serial_baud))
     log_path = args.log_file.strip() if isinstance(args.log_file, str) else args.log_file
     if log_path == "":
         log_path = None
     logs = LogStore(max_bytes=args.log_bytes, log_path=log_path, file_max_bytes=args.log_file_bytes)
-    app = AppState(rpc, logs, args.status_log_sec)
+    firmware_update = None
+    token_file = args.firmware_update_token_file.strip()
+    if token_file:
+        firmware_update = FirmwareUpdateConfig(
+            token_file=token_file,
+            upload_dir=args.firmware_upload_dir,
+            remoteocd_bin=args.remoteocd_bin,
+            remoteocd_cfg=args.remoteocd_cfg,
+            max_bytes=args.firmware_update_max_bytes,
+            timeout_sec=args.firmware_update_timeout_sec,
+            max_vdc=args.firmware_update_max_vdc,
+        )
+    command_guard = CommandGuardConfig(
+        max_vdc=float(args.cmd_guard_max_vdc),
+        allow_hv=bool(args.cmd_guard_allow_hv),
+        disabled=bool(args.cmd_guard_disable),
+        bench_gate_url=args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}",
+    )
+    app = AppState(
+        rpc,
+        logs,
+        args.status_log_sec,
+        firmware_update=firmware_update,
+        command_guard=command_guard,
+        start_runlimit_sec=float(args.start_runlimit_sec),
+    )
 
     server = ThreadingHTTPServer((args.bind, args.port), Handler)
     server.app = app  # type: ignore[attr-defined]

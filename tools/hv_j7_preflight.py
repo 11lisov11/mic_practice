@@ -4,15 +4,20 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import sys
 import time
 from datetime import datetime
 
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_HV_J7_PREFLIGHT_REEXEC")
 import grpc
 from saleae.automation import Manager
 
 sys.path.insert(0, os.path.dirname(__file__))
+from run_metadata import collect_run_metadata  # noqa: E402
 from ui_pwm_case import (  # noqa: E402
     analyze,
     bp_cmd_bad_ok,
@@ -28,6 +33,7 @@ from ui_pwm_case import (  # noqa: E402
     send_cmds_retry,
     start_capture,
     status_is_safe,
+    status_vdc,
     st_num,
     vf_steady_matches,
     wait_capture_with_timeout,
@@ -53,12 +59,23 @@ def parse_freqs(spec: str) -> list[float]:
 def vdc_in_range(st: dict | None, vdc_min: float | None, vdc_max: float | None) -> bool:
     if st is None:
         return False
-    vdc = st_num(st, "vdc", 0.0)
+    vdc = status_vdc(st)
+    if not math.isfinite(vdc) or vdc < 0.0:
+        return False
     if vdc_min is not None and vdc < vdc_min:
         return False
     if vdc_max is not None and vdc > vdc_max:
         return False
     return True
+
+
+def format_status_vdc(st: dict | None) -> str:
+    if st is None:
+        return ""
+    vdc = status_vdc(st)
+    if not math.isfinite(vdc) or vdc < 0.0:
+        return ""
+    return f"{vdc:.6f}"
 
 
 def require_run_status(st: dict | None, freq: float, vdc_min: float | None, vdc_max: float | None) -> bool:
@@ -208,7 +225,7 @@ def main() -> int:
             "estop": "" if status is None else int(st_num(status, "estop", 0.0)),
             "bp_fault": "" if status is None else int(st_num(status, "bp_fault", 255.0)),
             "bp_bad": "" if status is None else int(st_num(status, "bp_bad", 999999.0)),
-            "vdc": "" if status is None else f"{st_num(status, 'vdc', 0.0):.6f}",
+            "vdc": format_status_vdc(status),
             "attempts": attempts,
             "retry_reason": retry_reason,
             "csv": csv_path,
@@ -383,7 +400,7 @@ def main() -> int:
             log(f"ERROR: bench not SAFE before HV/J7 preflight st={st0}")
             return 3
         if not vdc_in_range(st0, args.vdc_min, args.vdc_max):
-            log(f"ERROR: initial vdc out of requested window st={st0}")
+            log(f"ERROR: initial Vbus telemetry unreadable or out of requested window st={st0}")
             return 3
 
         mgr = Manager.connect(port=args.saleae_port, connect_timeout_seconds=2)
@@ -486,6 +503,7 @@ def main() -> int:
 
         summary = {
             "run_dir": run_dir,
+            "run_metadata": collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
             "vf_freqs": vf_freqs,
             "estop_freqs": estop_freqs,
             "vdc_window": {"min": args.vdc_min, "max": args.vdc_max},

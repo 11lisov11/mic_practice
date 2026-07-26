@@ -60,7 +60,17 @@
 #define HEATSINK_TEMP_PIN GPIO_PIN_0
 #define HEATSINK_TEMP_ADC_CHANNEL ADC_CHANNEL_8
 #define HEATSINK_TEMP_SAMPLE_MS 100
+#ifndef HEATSINK_TEMP_PROTECTION_ENABLE
 #define HEATSINK_TEMP_PROTECTION_ENABLE 1
+#endif
+
+#ifndef BENCH_NO_HEATSINK_SENSOR
+#define BENCH_NO_HEATSINK_SENSOR 0
+#endif
+
+#if !HEATSINK_TEMP_PROTECTION_ENABLE && !BENCH_NO_HEATSINK_SENSOR
+#error "Temperature protection may only be disabled by the explicit no-HV bench profile."
+#endif
 #define HEATSINK_TEMP_VREF 3.3f
 #define HEATSINK_TEMP_PULLUP_OHM 12000.0f
 #define HEATSINK_TEMP_NTC_R25_OHM 85000.0f
@@ -92,9 +102,10 @@
 #define PHASE_MEAS_CENTER_RAW 2048
 #define PHASE_MEAS_VREF 3.3f
 
-#define NTC_RELAY_PORT GPIOB
-#define NTC_RELAY_PIN GPIO_PIN_1      // J2-21 NTC bypass relay
-#define NTC_RELAY_ACTIVE_STATE 1
+// STEVAL J2-21 is an unused connector stub on STEVAL-IPM15B. Keep PB1
+// high-impedance; it does not control any circuit on the power board.
+#define UNUSED_STEVAL_J2_21_PORT GPIOB
+#define UNUSED_STEVAL_J2_21_PIN GPIO_PIN_1
 
 #define PFC_SYNC_PORT GPIOB
 #define PFC_SYNC_PIN GPIO_PIN_5       // J2-27 PFC sync
@@ -108,6 +119,22 @@
 #define BRAKE_PWM_PORT GPIOB
 #define BRAKE_PWM_PIN GPIO_PIN_9      // J2-23 dissipative brake PWM (TIM4_CH4)
 #define BRAKE_PWM_FREQ_HZ 1000
+
+// Fan control is temporarily disabled until the final power stage is installed.
+// Keep the pin definitions for protocol compatibility and a later re-enable.
+#define USE_FAN_PWM 0
+#define FAN_PWM_PORT GPIOB
+#define FAN_PWM_PIN GPIO_PIN_3        // PB3_FAN_PWM
+#define FAN_PWM_FREQ_HZ 25000
+// PB3 drives an inverting 2N2222A open collector, so timer output is active-low.
+#define FAN_PWM_ACTIVE_HIGH 0
+#define USE_FAN_TACH 0
+#define FAN_TACH_PORT GPIOA
+#define FAN_TACH_PIN GPIO_PIN_11      // PA11_FAN_TACH
+#define FAN_TACH_PULL GPIO_PULLUP
+#define FAN_TACH_PULSES_PER_REV 2
+#define FAN_TACH_SAMPLE_MS 1000
+#define FAN_TACH_RPM_REPLY_STEP 30U
 
 // AS5600 magnetic encoder (I2C)
 #define USE_AS5600 1

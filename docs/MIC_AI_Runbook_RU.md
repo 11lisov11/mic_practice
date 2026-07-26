@@ -8,6 +8,17 @@
 
 При необходимости LUT можно пересобрать/обновить из внешних утилит `C:\\mic_ai\\...`, но для работы проекта это уже не требуется.
 
+Перед любым сравнением `FOC`/`MIC`, матрицей или preflight, который может
+отправить `START`, сначала проверить текущий gate:
+
+```powershell
+py -3 -u .\tools\refresh_bench_status.py --url http://127.0.0.1:18080
+```
+
+Если `CURRENT_BENCH_STATUS_RU.md` показывает `Active PWM разрешен: НЕТ`, научную
+серию не запускать. Сначала закрыть next-actions из `CURRENT_BENCH_STATUS_RU.md`
+и `tools\_preflight_exports\...\NEXT_STEPS_RU.md`.
+
 ## 1) Что считается “MIC” в UNOQ_MOTOR
 - Режим UI: `MODE MIC`
 - Контур тока/FOC остается штатным, меняется только `Id_ref` (магнитизация).
@@ -33,7 +44,7 @@
 
 Проверка (на ПК):
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\encoder_test.py --url http://127.0.0.1:18080 --duration 10 --poll 0.05
+py -3 -u .\tools\encoder_test.py --url http://127.0.0.1:18080 --duration 10 --poll 0.05
 ```
 
 ## 3) Сравнение FOC vs MIC (timeseries)
@@ -47,13 +58,89 @@
 
 Запуск:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\mic_ai_compare.py --url http://127.0.0.1:18080 --freq 10.0 --duration 8 --poll 0.05 --warmup 0.8
+py -3 -u .\tools\mic_ai_compare.py --url http://127.0.0.1:18080 --freq 10.0 --duration 8 --poll 0.05 --warmup 0.8
 ```
+
+`mic_ai_compare.py` использует только HTTP `/api/status` и `/api/cmd`; Saleae/Logic2/grpc для него не требуются.
 
 Выход:
 - `tools/_mic_ai_exports/<tag>_<timestamp>/timeseries_foc.csv`
 - `tools/_mic_ai_exports/<tag>_<timestamp>/timeseries_mic.csv`
 - `tools/_mic_ai_exports/<tag>_<timestamp>/summary.json`
+
+## 3.1) Матрица Для Научного Исследования
+
+Один `mic_ai_compare.py` нужен для отладки точки. Для отчета/научной работы использовать серию с повторами:
+
+```powershell
+py -3 -u .\tools\mic_research_matrix.py --url http://127.0.0.1:18080 `
+  --freqs 2,5,10,20 --repeats 3 --duration 10 --warmup 1.0 --require-encoder `
+  --motor-label "<motor/nameplate>" --load-note "<load condition>" --supply-note "<supply/current-limit>"
+```
+
+Скрипт перед стартом требует безопасный стенд: `SAFE`, `pwm=0`, `estop=0`, `bp_fault=0`, `bp_bad_cnt=0`.
+Серия по умолчанию низковольтная: матрица и каждый raw `mic_ai_compare.py` блокируют `START`, если Vbus не читается или выше `--max-start-vdc` (по умолчанию 60 В). Это защита от случайного запуска на 315 В, когда серия задумана как отладочная.
+Условия стенда сохраняются в `bench_context`: мотор, нагрузка, питание, температура, приборы и свободная заметка. Можно передать JSON через `--bench-config` или отдельные флаги `--motor-label`, `--load-note`, `--supply-note`, `--ambient-c`, `--instrumentation-note`, `--bench-note`.
+Для каждой частоты и повтора он запускает `mic_ai_compare.py`, сохраняет raw summary, затем пишет:
+
+- `tools/_research_exports/<tag>_<timestamp>/aggregate.csv`
+- `tools/_research_exports/<tag>_<timestamp>/summary.json`
+
+Для реальной HV-серии после успешного `full_system_preflight.py --with-hv` и проверки внешнего E-STOP запускать матрицу только с явным `--allow-hv`:
+```powershell
+py -3 -u .\tools\mic_research_matrix.py --url http://127.0.0.1:18080 `
+  --freqs 2,5,10,20 --repeats 3 --duration 10 --warmup 1.0 --require-encoder --allow-hv
+```
+
+Матрица ходит к локальному HMI без системного proxy/VPN proxy. Каждый raw-прогон ограничен таймаутом: по умолчанию он рассчитывается автоматически из `duration/warmup/status-timeout`, но для длинных точек можно задать явно:
+```powershell
+py -3 -u .\tools\mic_research_matrix.py --url http://127.0.0.1:18080 `
+  --freqs 2,5,10,20 --repeats 3 --duration 30 --case-timeout-s 600 --require-encoder
+```
+
+Главный флаг в общем summary: `aggregate.research_ready`. Он становится `true` только если все повторы прошли и `mic_active_ratio` во всех точках не ниже порога.
+
+После матрицы можно собрать Markdown-отчет:
+
+```powershell
+py -3 -u .\tools\mic_research_report.py .\tools\_research_exports\<run>\summary.json `
+  --calibration-summary .\tools\_calibration_exports\<run>\summary.json
+```
+
+Отчет пишет `report.md` рядом с `summary.json`: provenance metadata, общие средние, стандартное отклонение, таблицу по частотам, ссылки на raw summaries и SVG-графики:
+- `mic_active_ratio.svg`
+- `p_proxy_delta_pct.svg`
+- `i_rms_delta_pct.svg`
+- `enc_rpm_delta_pct.svg`
+Если передан `--calibration-summary`, добавляется раздел `Calibration Evidence` с `zero_current_sanity` и нулевыми токовыми метриками.
+
+Важно для методики: перед серией явно зафиксировать backend управления. По умолчанию UNO Q командует Blue Pill `MODE_DUTY` и сам рассчитывает duty/SVPWM. Для строгого measured-angle FOC включить `BPFOC ON` только в `SAFE/pwm=0`, после чего Blue Pill должен отвечать `bp_cmd_mode=5` и `bp_foc_backend=1`. Эти поля попадают в `timeseries_*.csv` и summary; без них нельзя честно утверждать, что серия была выполнена именно на measured-angle FOC.
+
+Перед такой серией сначала выполнить низковольтный gate:
+```powershell
+py -3 -u .\tools\bpfoc_backend_preflight.py --url http://127.0.0.1:18080 --freq 1.0
+```
+
+Если нужен единый evidence-прогон перед научной серией, можно включить BPFOC и fan gates прямо в общий runner:
+```powershell
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-fan --with-bpfoc
+```
+
+При подключенном `PA11_FAN_TACH` добавлять `--fan-require-tach`. В верхнем `summary.json` должны быть `fan_pass=true`, `bpfoc_pass=true`, `overall_pass=true`.
+
+Перед матрицей снять calibration snapshot:
+```powershell
+py -3 -u .\tools\telemetry_calibration.py --url http://127.0.0.1:18080 --samples 100
+```
+
+В его `summary.json` должны быть `pass=true` и `zero_current_sanity.pass=true`. Если zero-current sanity падает, сначала исправить offset/датчики токов, иначе сравнение `i_rms` и `p_proxy` будет научно слабым.
+
+Перед научной серией можно запустить общий gate доказательств:
+```powershell
+py -3 -u .\tools\research_readiness_check.py --url http://127.0.0.1:18080 --profile science
+```
+
+Он не включает PWM: только читает live `/api/status` и проверяет, что последние preflight/calibration/matrix artifacts существуют, свежие относительно прошивок/HMI/tooling/config и проходят нужные флаги. Правки документации видны в summary отдельно, но сами по себе не инвалидируют HIL/HV artifacts. Если вывод `ready=false`, сначала закрыть `failed_checks`; поле `next_actions` в `tools/_readiness_exports/.../summary.json` даст порядок действий и готовые команды.
 
 PASS/FAIL:
 - PASS если оба режима успешно отработали и одновременно выполняются пороги:
@@ -85,7 +172,7 @@ PASS/FAIL:
 
 Для полного проекта это уже встроено в верхнеуровневый раннер:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
 ```
 
 Он не маскирует реальный fail, но и не врёт: если `AS5600` читается и `MIC` корректно загейтился по измеренной скорости, итоговый статус `mic_compare` будет `diagnostic_only`, а не псевдо-ошибка прошивки.

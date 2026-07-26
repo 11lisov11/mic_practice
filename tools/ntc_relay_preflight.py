@@ -14,14 +14,6 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 
 RELAY_CONFIGS = {
-    "ntc": {
-        "cmd": "NTC",
-        "field": "ntc",
-        "ext_bit": 0x01,
-        "tool": "ntc_relay_preflight",
-        "tag": "ntc_relay_preflight",
-        "description": "STEVAL J2-21 NTC bypass relay on Blue Pill PB1",
-    },
     "precharge": {
         "cmd": "PRECHARGE",
         "field": "precharge",
@@ -111,22 +103,31 @@ def bp_link_live(st: dict | None, max_age_ms: float = 1000.0) -> bool:
 
 def vdc_max_seen(st: dict | None) -> float:
     if st is None:
-        return 999999.0
-    return max(status_num(st, "vdc", 0.0), status_num(st, "bp_vdc", 0.0))
+        return float("nan")
+    values: list[float] = []
+    for key in ("vdc", "bp_vdc"):
+        if key not in st:
+            continue
+        value = status_num(st, key, float("nan"))
+        if math.isfinite(value) and value >= 0.0:
+            values.append(value)
+    return max(values) if values else float("nan")
 
 
 def bp_bad_count(st: dict | None) -> int:
     if st is None:
         return 999999
-    if "bp_bad_cnt" in st:
-        return status_int(st, "bp_bad_cnt", 999999)
-    return status_int(st, "bp_bad", 999999)
+    values = [status_int(st, key, 999999) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    if not values:
+        return 999999
+    return max(values)
 
 
 def safe_low_voltage(st: dict | None, max_vdc: float, allow_hv: bool) -> bool:
     if st is None:
         return False
-    vdc_ok = allow_hv or vdc_max_seen(st) <= max_vdc
+    vdc = vdc_max_seen(st)
+    vdc_ok = math.isfinite(vdc) and (allow_hv or vdc <= max_vdc)
     return (
         st.get("state") == "SAFE"
         and status_int(st, "pwm", 1) == 0
@@ -152,7 +153,7 @@ def wait_for(base: str, predicate, timeout_s: float, poll_s: float) -> tuple[boo
 
 
 def cleanup(base: str) -> None:
-    for cmd in ("STOP", "IOTEST OFF", "CLEAR", "NTC OFF", "PRECHARGE OFF", "PFC OFF", "BRAKE OFF"):
+    for cmd in ("STOP", "IOTEST OFF", "CLEAR", "PRECHARGE OFF", "PFC OFF", "BRAKE OFF"):
         post_cmd(base, cmd)
         time.sleep(0.05)
 
@@ -281,7 +282,7 @@ def high_ratio(times: list[float], levels: list[int], t_end: float | None) -> fl
     return high / (t_end - t_start)
 
 
-def parse_args(default_relay: str = "ntc") -> argparse.Namespace:
+def parse_args(default_relay: str = "precharge") -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Low-voltage relay preflight.")
     p.add_argument("--relay", choices=sorted(RELAY_CONFIGS), default=default_relay)
     p.add_argument("--url", default="http://127.0.0.1:18080")
@@ -299,7 +300,7 @@ def parse_args(default_relay: str = "ntc") -> argparse.Namespace:
     return p.parse_args()
 
 
-def main(default_relay: str = "ntc") -> int:
+def main(default_relay: str = "precharge") -> int:
     args = parse_args(default_relay)
     cfg = RELAY_CONFIGS[args.relay]
     if args.cycles < 1:

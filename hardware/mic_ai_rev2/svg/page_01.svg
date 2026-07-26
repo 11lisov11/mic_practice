@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1191" height="842" viewBox="0 0 1191 842">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="36.00" y="38.00" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#163c32">MIC_AI REV 2.1</text>
+<text x="235.00" y="37.00" font-family="Arial, sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#172126">Архитектура и домены земли</text>
+<text x="36.00" y="58.00" font-family="Arial, sans-serif" font-size="9" font-weight="400" text-anchor="start" fill="#4b5f59">Каноническая схема: SAFE_GND никогда напрямую не соединяется с HV_DC-/HOT_GND</text>
+<line x1="36.00" y1="68.00" x2="1154.55" y2="68.00" stroke="#286f5d" stroke-width="2"/>
+<text x="1154.55" y="821.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="end" fill="#5b6965">Лист 1/6   2026-07-17</text>
+<rect x="30.00" y="111.89" width="325.00" height="650.00" rx="10" fill="#eef8f4" stroke="#276e5c" stroke-width="2"/>
+<rect x="383.00" y="111.89" width="220.00" height="650.00" rx="10" fill="#fff7e8" stroke="#d78823" stroke-width="2"/>
+<rect x="632.00" y="111.89" width="525.00" height="650.00" rx="10" fill="#fff0ef" stroke="#a32b28" stroke-width="2"/>
+<text x="48.00" y="136.89" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#195747">SAFE DOMAIN</text>
+<text x="401.00" y="136.89" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="start" fill="#9a5a0d">ISOLATION BARRIER</text>
+<text x="650.00" y="136.89" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="start" fill="#8d211f">HOT / HV DOMAIN</text>
+<rect x="58.00" y="171.89" width="265.00" height="100.00" rx="6" fill="#ffffff" stroke="#35524a" stroke-width="1.8"/>
+<text x="68.00" y="189.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">UNO Q / ПК</text>
+<text x="68.00" y="207.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Питание UNO Q: VIN 7-24V или USB-C</text>
+<text x="68.00" y="219.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">3.3V и 5V на UNO Q не подпитывать</text>
+<text x="68.00" y="230.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">UART source: UNO Q либо PC USB-UART</text>
+<rect x="58.00" y="321.89" width="265.00" height="100.00" rx="6" fill="#ffffff" stroke="#35524a" stroke-width="1.8"/>
+<text x="68.00" y="339.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Saleae Logic</text>
+<text x="68.00" y="357.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Только SAFE_GND</text>
+<text x="68.00" y="369.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">CH0..CH7 после ISO7740F</text>
+<text x="68.00" y="380.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Изоляционная задержка не более десятков нс</text>
+<rect x="58.00" y="471.89" width="265.00" height="100.00" rx="6" fill="#ffffff" stroke="#35524a" stroke-width="1.8"/>
+<text x="68.00" y="489.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Аппаратный PWM inhibit</text>
+<text x="68.00" y="507.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Нормально-замкнутый изолированный контур</text>
+<text x="68.00" y="519.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Обрыв питания/провода = PWM STOP</text>
+<text x="68.00" y="530.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Настоящий E-STOP также отключает сетевой контактор</text>
+<rect x="58.00" y="621.89" width="265.00" height="100.00" rx="6" fill="#ffffff" stroke="#35524a" stroke-width="1.8"/>
+<text x="68.00" y="639.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">SAFE питание</text>
+<text x="68.00" y="657.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">SAFE_GND отдельно от PE и HOT_GND</text>
+<text x="68.00" y="669.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">SAFE_3V3: UNO Q OUT либо внешний источник</text>
+<text x="68.00" y="680.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">SAFE_5V питает только E-STOP loop</text>
+<rect x="413.00" y="176.89" width="160.00" height="110.00" rx="6" fill="#fffdf8" stroke="#be761b" stroke-width="1.8"/>
+<text x="423.00" y="194.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">U_UART_ISO</text>
+<text x="423.00" y="212.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">ISO7721DWR</text>
+<text x="423.00" y="224.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">UART 1 канал туда</text>
+<text x="423.00" y="235.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">1 канал обратно</text>
+<text x="423.00" y="247.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">8 mm creepage package</text>
+<rect x="413.00" y="331.89" width="160.00" height="120.00" rx="6" fill="#fffdf8" stroke="#be761b" stroke-width="1.8"/>
+<text x="423.00" y="349.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">U_LA1 + U_LA2</text>
+<text x="423.00" y="367.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">2 x ISO7740FDWR</text>
+<text x="423.00" y="379.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">8 hot-to-safe channels</text>
+<text x="423.00" y="390.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PWM/EM_STOP/PB4</text>
+<text x="423.00" y="402.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">default LOW</text>
+<rect x="413.00" y="501.89" width="160.00" height="95.00" rx="6" fill="#fffdf8" stroke="#be761b" stroke-width="1.8"/>
+<text x="423.00" y="519.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">U_ESTOP_OPTO</text>
+<text x="423.00" y="537.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">LTV-817</text>
+<text x="423.00" y="549.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Безопасный loop</text>
+<text x="423.00" y="560.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">74LVC1G14 + AND</text>
+<line x1="603.00" y1="741.89" x2="603.00" y2="121.89" stroke="#d78823" stroke-width="3" stroke-dasharray="8,6"/>
+<text x="603.00" y="751.89" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="#9a5a0d">НЕТ медного соединения земель</text>
+<rect x="665.00" y="171.89" width="215.00" height="105.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
+<text x="675.00" y="189.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Blue Pill</text>
+<text x="675.00" y="207.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Питание только HOT_3V3</text>
+<text x="675.00" y="219.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">USART2 PA2/PA3</text>
+<text x="675.00" y="230.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">TIM1 PWM + safety</text>
+<text x="675.00" y="242.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HOT_GND = HV_DC-</text>
+<rect x="920.00" y="171.89" width="205.00" height="105.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
+<text x="930.00" y="189.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">STEVAL-IPM15B</text>
+<text x="930.00" y="207.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">J2 signals + J4 15V</text>
+<text x="930.00" y="219.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">J7: 125..400VDC</text>
+<text x="930.00" y="230.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">J2 GND = J7 DC-</text>
+<text x="930.00" y="242.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Внутри закрытого корпуса</text>
+<rect x="665.00" y="326.89" width="215.00" height="105.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
+<text x="675.00" y="344.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">AS5600</text>
+<text x="675.00" y="362.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PB10 SCL / PB11 SDA</text>
+<text x="675.00" y="374.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HOT_3V3 / HOT_GND</text>
+<text x="675.00" y="385.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Кабель и модуль недоступны</text>
+<text x="675.00" y="397.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">при включенной HV</text>
+<rect x="920.00" y="326.89" width="205.00" height="105.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
+<text x="930.00" y="344.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">4-pin PWM fan</text>
+<text x="930.00" y="362.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HOT_12V постоянно</text>
+<text x="930.00" y="374.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PB3 -&gt; NPN open collector</text>
+<text x="930.00" y="385.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PA11 TACH</text>
+<text x="930.00" y="397.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">3-pin: только полная скорость</text>
+<rect x="665.00" y="486.89" width="460.00" height="110.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
+<text x="675.00" y="504.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Силовое питание</text>
+<text x="675.00" y="522.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">230VAC -&gt; F1 -&gt; MOV -&gt; KBPC5010 -&gt; precharge -&gt; HV_DC+</text>
+<text x="675.00" y="534.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HV_DC- = HOT_GND только внутри опасного домена</text>
+<text x="675.00" y="545.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PE идет только на корпус/раму/двигатель, не на HV_DC-</text>
+<text x="675.00" y="557.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HLK-20M15 питает горячие 15V/12V/5V/3.3V</text>
+<rect x="665.00" y="646.89" width="460.00" height="80.00" rx="6" fill="#ffe1df" stroke="#a32b28" stroke-width="1.8"/>
+<text x="675.00" y="664.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Запрещено при поданной HV</text>
+<text x="675.00" y="682.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">USB Blue Pill, обычный ST-Link, прямой Saleae, заземленный осциллограф</text>
+<text x="675.00" y="694.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">Любая пайка и перестановка проводов - только после разряда DC-шины</text>
+<line x1="323.00" y1="221.89" x2="413.00" y2="231.89" stroke="#1f6252" stroke-width="2"/>
+<line x1="413.00" y1="231.89" x2="406.13" y2="226.08" stroke="#1f6252" stroke-width="2"/>
+<line x1="413.00" y1="231.89" x2="405.02" y2="236.05" stroke="#1f6252" stroke-width="2"/>
+<line x1="573.00" y1="231.89" x2="665.00" y2="221.89" stroke="#1f6252" stroke-width="2"/>
+<line x1="665.00" y1="221.89" x2="657.03" y2="217.71" stroke="#1f6252" stroke-width="2"/>
+<line x1="665.00" y1="221.89" x2="658.12" y2="227.69" stroke="#1f6252" stroke-width="2"/>
+<line x1="665.00" y1="246.89" x2="573.00" y2="401.89" stroke="#7b5620" stroke-width="2"/>
+<line x1="573.00" y1="401.89" x2="581.13" y2="398.03" stroke="#7b5620" stroke-width="2"/>
+<line x1="573.00" y1="401.89" x2="572.50" y2="392.90" stroke="#7b5620" stroke-width="2"/>
+<line x1="413.00" y1="401.89" x2="323.00" y2="371.89" stroke="#7b5620" stroke-width="2"/>
+<line x1="323.00" y1="371.89" x2="328.50" y2="379.01" stroke="#7b5620" stroke-width="2"/>
+<line x1="323.00" y1="371.89" x2="331.67" y2="369.49" stroke="#7b5620" stroke-width="2"/>
+<line x1="323.00" y1="521.89" x2="413.00" y2="551.89" stroke="#1f6252" stroke-width="2"/>
+<line x1="413.00" y1="551.89" x2="407.50" y2="544.77" stroke="#1f6252" stroke-width="2"/>
+<line x1="413.00" y1="551.89" x2="404.33" y2="554.29" stroke="#1f6252" stroke-width="2"/>
+<line x1="573.00" y1="551.89" x2="665.00" y2="241.89" stroke="#1f6252" stroke-width="2"/>
+<line x1="665.00" y1="241.89" x2="658.06" y2="247.62" stroke="#1f6252" stroke-width="2"/>
+<line x1="665.00" y1="241.89" x2="667.69" y2="250.48" stroke="#1f6252" stroke-width="2"/>
+<line x1="880.00" y1="226.89" x2="920.00" y2="226.89" stroke="#9a2522" stroke-width="2"/>
+<line x1="920.00" y1="226.89" x2="912.53" y2="221.87" stroke="#9a2522" stroke-width="2"/>
+<line x1="920.00" y1="226.89" x2="912.53" y2="231.91" stroke="#9a2522" stroke-width="2"/>
+<line x1="770.00" y1="276.89" x2="770.00" y2="326.89" stroke="#9a2522" stroke-width="2"/>
+<line x1="770.00" y1="326.89" x2="775.02" y2="319.42" stroke="#9a2522" stroke-width="2"/>
+<line x1="770.00" y1="326.89" x2="764.98" y2="319.42" stroke="#9a2522" stroke-width="2"/>
+<line x1="1022.00" y1="276.89" x2="1022.00" y2="326.89" stroke="#9a2522" stroke-width="2"/>
+<line x1="1022.00" y1="326.89" x2="1027.02" y2="319.42" stroke="#9a2522" stroke-width="2"/>
+<line x1="1022.00" y1="326.89" x2="1016.98" y2="319.42" stroke="#9a2522" stroke-width="2"/>
+</svg>

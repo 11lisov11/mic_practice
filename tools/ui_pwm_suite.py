@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 import argparse
 import csv
+import json
 import os
 import sys
 import time
 
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_UI_PWM_SUITE_REEXEC")
 # Reuse helpers from ui_pwm_case
 sys.path.insert(0, os.path.dirname(__file__))
+from run_metadata import collect_run_metadata  # noqa: E402
 from ui_pwm_case import (  # noqa: E402
     log,
     post_cmd,
@@ -32,6 +37,7 @@ from saleae.grpc import saleae_pb2
 import grpc
 
 MAX_OVERLAP_RATIO = DEFAULT_MAX_OVERLAP_RATIO
+DEFAULT_RUN_LIMIT_S = float(os.environ.get("UNOQ_TEST_RUNLIMIT_S", "3.0"))
 
 
 def summary_writer(path: str):
@@ -161,9 +167,40 @@ def wait_status(
     return False, st, dt
 
 
+def command_requests_start(cmd: str) -> bool:
+    return cmd.strip().upper() == "START"
+
+
+def command_sets_runlimit(cmd: str) -> bool:
+    return cmd.strip().upper().startswith("SET RUNLIMIT")
+
+
+def command_clears_runlimit(cmd: str) -> bool:
+    upper = cmd.strip().upper()
+    return upper in ("CLEAR", "RESET", "STOP", "ESTOP", "ESTOP CLEAR")
+
+
+def commands_with_runlimit(cmds):
+    out = []
+    runlimit_ready = False
+    for cmd in cmds:
+        if command_clears_runlimit(cmd):
+            runlimit_ready = False
+        if command_sets_runlimit(cmd):
+            runlimit_ready = True
+        if command_requests_start(cmd) and not runlimit_ready:
+            out.append(f"SET RUNLIMIT {max(0.1, min(600.0, DEFAULT_RUN_LIMIT_S)):.3f}")
+            runlimit_ready = True
+        out.append(cmd)
+        if command_requests_start(cmd):
+            runlimit_ready = False
+    return out
+
+
 def send_cmds_retry(base: str, cmds, retries: int = 1):
+    guarded_cmds = commands_with_runlimit(cmds)
     for attempt in range(retries + 1):
-        ok = send_cmds(base, cmds)
+        ok = send_cmds(base, guarded_cmds)
         if ok:
             return True
         if attempt < retries:
@@ -249,6 +286,14 @@ def main() -> int:
 
     os.makedirs(args.outdir, exist_ok=True)
     summary_path = os.path.join(args.outdir, "summary.csv")
+    metadata_path = os.path.join(args.outdir, "run_metadata.json")
+    with open(metadata_path, "w", encoding="utf-8") as f:
+        json.dump(
+            collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
+            f,
+            ensure_ascii=False,
+            indent=2,
+        )
     summary_file, writer = summary_writer(summary_path)
     pass_count = 0
     fail_count = 0
@@ -479,19 +524,18 @@ def main() -> int:
                 retry_reason=res["retry_reason"],
             )
 
-        # IO (NTC/PFC/BRAKE PWM)
-        log("TEST: IO NTC/PFC/BRAKE")
+        # IO (PFC/BRAKE PWM). STEVAL J2-21 is an unconnected connector stub.
+        log("TEST: IO PFC/BRAKE")
         def io_runner():
             cmd_ok = send_cmds_retry(
                 base,
-                ["CLEAR", "MODE VF", "SET FREQ 5.0", "START", "NTC ON", "PFC ON", "BRAKE PWM 0.25"],
+                ["CLEAR", "MODE VF", "SET FREQ 5.0", "START", "PFC ON", "BRAKE PWM 0.25"],
                 retries=1,
             )
             time.sleep(0.2)
             ok, st, dt = wait_for(
                 base,
                 lambda s: int(st_num(s, "pwm", 0.0)) == 1
-                and int(st_num(s, "ntc", 0.0)) == 1
                 and int(st_num(s, "pfc", 0.0)) == 1
                 and int(st_num(s, "brake", 0.0)) == 1
                 and abs(st_num(s, "brake_duty", 0.0) - 0.25) <= 0.05,
@@ -500,9 +544,9 @@ def main() -> int:
             )
             log(f"IO status ok={ok} dt={dt*1000:.1f}ms st={st}")
             csv_path, metrics = capture_and_analyze(
-                mgr, channels, args.la_rate, args.la_duration, args.outdir, "io_ntc_pfc_brake", brake_active_high, True, False, args.min_handoff_gap_ns
+                mgr, channels, args.la_rate, args.la_duration, args.outdir, "io_pfc_brake", brake_active_high, True, False, args.min_handoff_gap_ns
             )
-            io_ok, io_detail = check_io(st, expect_ntc=1, expect_pfc=1, expect_brake=1, expect_brake_duty=0.25)
+            io_ok, io_detail = check_io(st, expect_ntc=0, expect_pfc=1, expect_brake=1, expect_brake_duty=0.25)
             return {
                 "cmd_ok": cmd_ok,
                 "status_ok": ok,
@@ -514,9 +558,9 @@ def main() -> int:
                 "io_detail": io_detail,
             }
 
-        res = run_with_control_retry("io_ntc_pfc_brake", io_runner)
+        res = run_with_control_retry("io_pfc_brake", io_runner)
         record(
-            "io_ntc_pfc_brake",
+            "io_pfc_brake",
             "VF",
             5.0,
             True,
@@ -531,7 +575,7 @@ def main() -> int:
             res["attempts"],
             res["retry_reason"],
         )
-        send_cmds(base, ["BRAKE OFF", "NTC OFF", "PFC OFF"])
+        send_cmds(base, ["BRAKE OFF", "PFC OFF"])
 
         # Sweep
         if not args.skip_sweep:

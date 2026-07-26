@@ -7,30 +7,68 @@ import json
 import os
 import sys
 import time
+import math
 from datetime import datetime
 from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(__file__))
-from saleae.automation import Manager  # noqa: E402
-from ui_pwm_case import (  # noqa: E402
-    bp_bad_ok,
-    bp_link_live,
-    configure_bp_bad_baseline,
-    export_capture,
-    filter_short_pulses,
-    get_status,
-    handoff_gap_stats,
-    high_ratio,
-    load_transitions,
-    overlap_ratio,
-    pwm_metrics,
-    recover_logic2,
-    send_cmds_retry,
-    st_num,
-    start_capture,
-    wait_capture_with_timeout,
-    wait_http_ready,
-)
+from active_pwm_guard import start_allowed_by_bench_gate
+
+BP_MAX_AGE_MS = 1000.0
+
+
+def st_num(st: dict, key: str, default: float = 0.0) -> float:
+    try:
+        val = st.get(key, default)
+        if isinstance(val, str):
+            val = val.strip()
+        num = float(val)
+        if not math.isfinite(num):
+            return float(default)
+        return num
+    except Exception:
+        return float(default)
+
+
+def bp_link_live(st: dict | None, max_age_ms: float = BP_MAX_AGE_MS) -> bool:
+    if st is None:
+        return False
+    if st.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+        if key in st:
+            ages.append(st_num(st, key, 999999.0))
+    if st.get("last_rx_age_s") is not None:
+        ages.append(st_num(st, "last_rx_age_s", 999999.0) * 1000.0)
+    return bool(ages) and min(ages) <= max_age_ms
+
+
+def bp_bad_value(st: dict | None) -> int:
+    if st is None:
+        return 999999
+    values = [int(st_num(st, key, 999999.0)) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    if not values:
+        return 999999
+    return max(values)
+
+
+def bp_bad_limit() -> int:
+    raw = os.environ.get("UNOQ_BP_BAD_BASELINE", "0").strip()
+    try:
+        return max(0, int(float(raw)))
+    except Exception:
+        return 0
+
+
+def bp_bad_ok(st: dict | None) -> bool:
+    return bp_bad_value(st) <= bp_bad_limit()
+
+
+def configure_bp_bad_baseline(st: dict | None) -> int:
+    baseline = bp_bad_value(st)
+    if baseline < 999999:
+        os.environ["UNOQ_BP_BAD_BASELINE"] = str(max(0, baseline))
+    return baseline
 
 
 def log(msg: str) -> None:
@@ -89,6 +127,43 @@ def wait_freq_state(
                 return True, st, time.monotonic() - start
         time.sleep(poll_s)
     return False, last, time.monotonic() - start
+
+
+def status_vdc(st: dict | None) -> float:
+    if st is None:
+        return float("nan")
+    return max(st_num(st, "bp_vdc", -1.0), st_num(st, "vdc", -1.0))
+
+
+def low_voltage_start_precheck(st: dict | None, max_vdc: float, allow_hv: bool) -> tuple[bool, str]:
+    if st is None:
+        return False, "status unavailable"
+    if not bp_link_live(st):
+        return False, "Blue Pill link is not live"
+    if int(st_num(st, "pwm", 1.0)) != 0:
+        return False, "PWM is already active"
+    if int(st_num(st, "estop", 1.0)) != 0:
+        return False, "ESTOP is active"
+    if int(st_num(st, "bp_fault", 255.0)) != 0:
+        return False, f"bp_fault={int(st_num(st, 'bp_fault', 255.0))}"
+    if not bp_bad_ok(st):
+        return False, f"bp_bad={bp_bad_value(st)} exceeds baseline"
+    vdc = status_vdc(st)
+    if not (vdc == vdc) or vdc < 0.0:
+        return False, "Vbus telemetry is not readable"
+    if not allow_hv:
+        if vdc > max_vdc:
+            return False, f"Vbus {vdc:.2f} V exceeds low-voltage limit {max_vdc:.2f} V"
+    return True, "ok"
+
+
+def bench_gate_start_precheck(base_url: str, guard_fn=start_allowed_by_bench_gate) -> tuple[bool, str]:
+    messages: list[str] = []
+    ok = bool(guard_fn(messages.append, url=base_url))
+    if ok:
+        return True, "ok"
+    detail = "; ".join(messages) if messages else "bench gate refused START"
+    return False, detail
 
 
 def get_pair_metric(metrics: dict, section: str, pair: str, key: str | None = None):
@@ -229,11 +304,35 @@ def main() -> int:
     parser.add_argument("--max-overlap-ratio", type=float, default=5e-4)
     parser.add_argument("--status-timeout", type=float, default=1.5)
     parser.add_argument("--poll", type=float, default=0.03)
+    parser.add_argument("--max-start-vdc", type=float, default=60.0)
+    parser.add_argument("--allow-hv", action="store_true", help="Allow START when Vbus exceeds --max-start-vdc.")
     parser.add_argument("--capture-retries", type=int, default=2)
     parser.add_argument("--capture-retry-delay", type=float, default=0.5)
     parser.add_argument("--saleae-port", type=int, default=10430)
     parser.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     args = parser.parse_args()
+
+    # Keep module import light for build-only selftests; real capture dependencies
+    # are loaded only for an actual dense sweep.
+    global export_capture, filter_short_pulses, get_status, handoff_gap_stats, high_ratio
+    global load_transitions, overlap_ratio, pwm_metrics, recover_logic2
+    global send_cmds_retry, start_capture, wait_capture_with_timeout, wait_http_ready
+    sys.path.insert(0, os.path.dirname(__file__))
+    from ui_pwm_case import (  # noqa: E402
+        export_capture,
+        filter_short_pulses,
+        get_status,
+        handoff_gap_stats,
+        high_ratio,
+        load_transitions,
+        overlap_ratio,
+        pwm_metrics,
+        recover_logic2,
+        send_cmds_retry,
+        start_capture,
+        wait_capture_with_timeout,
+        wait_http_ready,
+    )
 
     base = args.url.rstrip("/")
     channels = [int(x) for x in args.la_channels.split(",") if x.strip()]
@@ -259,6 +358,8 @@ def main() -> int:
         ui_ok, ui_st, ui_dt = wait_http_ready(base, timeout_s=3.0, poll_s=max(0.05, args.poll))
         if not ui_ok:
             raise RuntimeError(f"UI not reachable after {ui_dt*1000:.1f}ms last_status={ui_st}")
+
+        from saleae.automation import Manager
 
         mgr = Manager.connect(port=args.saleae_port, connect_timeout_seconds=2)
         mgr._codex_port = args.saleae_port
@@ -326,8 +427,21 @@ def main() -> int:
         writer.writeheader()
         csv_file.flush()
 
-        send_cmds_retry(base, ["ESTOP CLEAR", "CLEAR", "MODE VF"], retries=2, retry_delay_s=0.2)
+        send_cmds_retry(base, ["STOP", "ESTOP CLEAR", "CLEAR", "MODE VF"], retries=2, retry_delay_s=0.2)
         time.sleep(0.2)
+        pre_start_status = get_status(base)
+        pre_start_ok, pre_start_reason = low_voltage_start_precheck(
+            pre_start_status,
+            max_vdc=float(args.max_start_vdc),
+            allow_hv=bool(args.allow_hv),
+        )
+        needs_start = any(abs(freq) > 1e-9 for freq in freqs)
+        if needs_start and not pre_start_ok:
+            raise RuntimeError(f"Refusing dense sweep START: {pre_start_reason}; status={pre_start_status}")
+        if needs_start:
+            bench_gate_ok, bench_gate_reason = bench_gate_start_precheck(base)
+            if not bench_gate_ok:
+                raise RuntimeError(f"Refusing dense sweep START: bench gate blocked START: {bench_gate_reason}")
 
         for idx, freq in enumerate(freqs, 1):
             expect_pwm = abs(freq) > 1e-9

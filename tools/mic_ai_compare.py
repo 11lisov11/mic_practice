@@ -4,24 +4,284 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
+import urllib.error
+import urllib.request
 
-# Reuse UI helpers (HTTP + timeouts + safe_stop)
-sys.path.insert(0, os.path.dirname(__file__))
-from ui_pwm_case import (  # noqa: E402
-    get_status,
-    log,
-    safe_stop,
-    send_cmds_retry,
-    status_mode_matches,
-    st_num,
-    wait_for,
-    wait_http_ready,
-)
+from active_pwm_guard import start_allowed_by_bench_gate
+from run_metadata import collect_run_metadata  # noqa: E402
+
+
+BP_MAX_AGE_MS = 1000.0
+START_ALLOW_HV = False
+START_MAX_VDC = 60.0
+START_VDC_SAMPLES = 3
+DEFAULT_RUN_LIMIT_S = float(os.environ.get("UNOQ_TEST_RUNLIMIT_S", "3.0"))
+
+
+def log(msg: str) -> None:
+    print(msg, flush=True)
+
+
+def truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def http_json(url: str, body: dict | None = None, timeout: float = 6.5) -> dict | None:
+    data = None
+    headers = {}
+    if body is not None:
+        data = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=headers)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            with opener.open(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            transient = exc.code in (500, 502, 503, 504)
+        except Exception as exc:
+            last_exc = exc
+            transient = True
+        if transient and attempt < 2:
+            time.sleep(0.15 * (attempt + 1))
+            continue
+        break
+    log(f"HTTP error: {last_exc}")
+    return None
+
+
+def get_status(base: str) -> dict | None:
+    resp = http_json(base.rstrip("/") + "/api/status")
+    if not resp or not resp.get("ok"):
+        return None
+    return resp.get("data")
+
+
+def st_num(st: dict, key: str, default: float = 0.0) -> float:
+    try:
+        val = st.get(key, default)
+        if isinstance(val, str):
+            val = val.strip()
+        num = float(val)
+        if not math.isfinite(num):
+            return float(default)
+        return num
+    except Exception:
+        return float(default)
+
+
+def bp_link_live(st: dict | None, max_age_ms: float = BP_MAX_AGE_MS) -> bool:
+    if st is None:
+        return False
+    if st.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+        if key in st:
+            ages.append(st_num(st, key, 999999.0))
+    if st.get("last_rx_age_s") is not None:
+        ages.append(st_num(st, "last_rx_age_s", 999999.0) * 1000.0)
+    return bool(ages) and min(ages) <= max_age_ms
+
+
+def bp_cmd_bad_ok(st: dict | None) -> bool:
+    if st is None:
+        return False
+    values = [int(st_num(st, key, 999999.0)) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    if not values:
+        return False
+    return max(values) == 0
+
+
+def status_is_safe(st: dict | None, allow_estop: bool = False) -> bool:
+    if st is None:
+        return False
+    estop = int(st_num(st, "estop", 1.0))
+    bp_fault_free = int(st_num(st, "bp_fault", 255.0)) == 0
+    return (
+        st.get("state") == "SAFE"
+        and int(st_num(st, "pwm", 1.0)) == 0
+        and bp_link_live(st)
+        and bp_cmd_bad_ok(st)
+        and (allow_estop or estop == 0)
+        and (allow_estop or bp_fault_free)
+    )
+
+
+def status_mode_matches(st: dict | None, expected_mode: str) -> bool:
+    if st is None:
+        return False
+    mode_name = str(st.get("mode", ""))
+    diag_mode = int(st_num(st, "diag_mode", -1.0))
+    duty_mode = int(st_num(st, "duty_mode", -1.0))
+    if expected_mode == "VF":
+        if diag_mode >= 0 and duty_mode >= 0:
+            return mode_name == "VF" and diag_mode == 0 and duty_mode == 0
+        return mode_name == "VF"
+    return mode_name == expected_mode
+
+
+def wait_for(base: str, predicate, timeout_s: float, poll_s: float) -> tuple[bool, dict | None, float]:
+    start = time.monotonic()
+    last = None
+    while (time.monotonic() - start) < timeout_s:
+        st = get_status(base)
+        if st is not None:
+            last = st
+            if predicate(st):
+                return True, st, (time.monotonic() - start)
+        time.sleep(poll_s)
+    return False, last, (time.monotonic() - start)
+
+
+def wait_http_ready(base: str, timeout_s: float, poll_s: float) -> tuple[bool, dict | None, float]:
+    return wait_for(base, lambda _st: True, timeout_s=timeout_s, poll_s=poll_s)
+
+
+def status_vdc(st: dict | None) -> float:
+    if st is None:
+        return float("nan")
+    values: list[float] = []
+    for key in ("vdc", "bp_vdc"):
+        if key not in st:
+            continue
+        value = st_num(st, key, float("nan"))
+        if math.isfinite(value) and value >= 0.0:
+            values.append(value)
+    return max(values) if values else float("nan")
+
+
+def max_start_vdc() -> float:
+    return float(START_MAX_VDC)
+
+
+def start_vdc_samples() -> int:
+    return max(1, int(START_VDC_SAMPLES))
+
+
+def command_requests_start(cmd: str) -> bool:
+    return cmd.strip().upper() == "START"
+
+
+def command_sets_runlimit(cmd: str) -> bool:
+    return cmd.strip().upper().startswith("SET RUNLIMIT")
+
+
+def command_clears_runlimit(cmd: str) -> bool:
+    upper = cmd.strip().upper()
+    return upper in ("CLEAR", "RESET", "STOP", "ESTOP", "ESTOP CLEAR")
+
+
+def commands_with_runlimit(cmds: list[str], default_s: float | None = None) -> list[str]:
+    run_limit_s = DEFAULT_RUN_LIMIT_S if default_s is None else float(default_s)
+    run_limit_s = max(0.1, min(600.0, run_limit_s))
+    out: list[str] = []
+    runlimit_ready = False
+    for cmd in cmds:
+        if command_clears_runlimit(cmd):
+            runlimit_ready = False
+        if command_sets_runlimit(cmd):
+            runlimit_ready = True
+        if command_requests_start(cmd) and not runlimit_ready:
+            out.append(f"SET RUNLIMIT {run_limit_s:.3f}")
+            runlimit_ready = True
+        out.append(cmd)
+        if command_requests_start(cmd):
+            runlimit_ready = False
+    return out
+
+
+def start_allowed_by_vdc(base: str) -> bool:
+    limit = max_start_vdc()
+    samples: list[float] = []
+    for idx in range(start_vdc_samples()):
+        vdc = status_vdc(get_status(base))
+        if math.isfinite(vdc) and vdc >= 0.0:
+            samples.append(vdc)
+        if idx + 1 < start_vdc_samples():
+            time.sleep(0.05)
+    if not samples:
+        log("ERROR: START blocked: status/vdc is not readable. Fix Vbus telemetry before any START.")
+        return False
+    vdc = max(samples)
+    if vdc > limit and not START_ALLOW_HV:
+        log(
+            f"ERROR: START blocked: max sampled vdc={vdc:.2f} V exceeds --max-start-vdc={limit:.2f} V. "
+            "Remove/discharge HV or pass --allow-hv for an intentional HV run."
+        )
+        return False
+    return True
+
+
+def post_cmd(base: str, cmd: str) -> bool:
+    if command_requests_start(cmd):
+        if not start_allowed_by_vdc(base):
+            return False
+        if not start_allowed_by_bench_gate(log, url=base):
+            return False
+    resp = http_json(base.rstrip("/") + "/api/cmd", {"cmd": cmd})
+    return bool(resp and resp.get("ok"))
+
+
+def send_cmds(base: str, cmds: list[str]) -> bool:
+    ok = True
+    for cmd in cmds:
+        if not post_cmd(base, cmd):
+            log(f"ERROR: UI cmd failed: {cmd}")
+            ok = False
+    return ok
+
+
+def send_cmds_retry(base: str, cmds: list[str], retries: int = 1, retry_delay_s: float = 0.15) -> bool:
+    guarded_cmds = commands_with_runlimit(cmds)
+    for attempt in range(retries + 1):
+        ok = send_cmds(base, guarded_cmds)
+        if ok:
+            return True
+        if attempt < retries:
+            log(f"WARN: cmd send failed, retry {attempt + 1}/{retries}")
+            time.sleep(retry_delay_s)
+    return False
+
+
+def safe_stop(base: str) -> None:
+    try:
+        wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+        send_cmds_retry(base, ["STOP"], retries=2, retry_delay_s=0.2)
+        ok, st, dt = wait_for(base, lambda s: status_is_safe(s, allow_estop=True), timeout_s=1.5, poll_s=0.05)
+        if not ok:
+            log(f"WARN: STOP not confirmed after {dt*1000:.1f}ms st={st}")
+            wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+            send_cmds_retry(base, ["ESTOP"], retries=2, retry_delay_s=0.2)
+            estop_ok, estop_st, estop_dt = wait_for(
+                base,
+                lambda s: status_is_safe(s, allow_estop=True),
+                timeout_s=1.5,
+                poll_s=0.05,
+            )
+            if not estop_ok:
+                log(f"WARN: ESTOP cleanup not confirmed after {estop_dt*1000:.1f}ms st={estop_st}")
+        wait_http_ready(base, timeout_s=2.0, poll_s=0.1)
+        send_cmds_retry(base, ["CLEAR"], retries=2, retry_delay_s=0.2)
+        clear_ok, clear_st, clear_dt = wait_for(
+            base,
+            lambda s: status_is_safe(s, allow_estop=False),
+            timeout_s=2.0,
+            poll_s=0.05,
+        )
+        if not clear_ok:
+            log(f"WARN: CLEAR not confirmed after {clear_dt*1000:.1f}ms st={clear_st}")
+    except Exception as exc:
+        log(f"WARN: safe_stop failed: {exc}")
 
 
 @dataclass
@@ -118,6 +378,9 @@ def _write_timeseries_csv(path: str, samples: list[Sample], extra_cols: dict[str
         "mic_speed_tol_hz",
         "mic_link_flags",
         "mic_status_flags",
+        "bp_mode",
+        "bp_cmd_mode",
+        "bp_foc_backend",
     ]
     cols = ["t_s"] + keys + list(extra_cols.keys())
     with open(path, "w", newline="", encoding="utf-8") as f:
@@ -184,6 +447,9 @@ def _summarize(samples: list[Sample], enc_rpm: list[float | None]) -> dict:
         "mic_link_flags_values": sorted({int(st_num(s.st, "mic_link_flags", 0.0)) for s in samples}),
         "mic_status_flags_values": sorted({int(st_num(s.st, "mic_status_flags", 0.0)) for s in samples}),
         "mic_enc_used_values": sorted({int(st_num(s.st, "mic_enc_used", 0.0)) for s in samples}),
+        "bp_mode_values": sorted({int(st_num(s.st, "bp_mode", 0.0)) for s in samples}),
+        "bp_cmd_mode_values": sorted({int(st_num(s.st, "bp_cmd_mode", st_num(s.st, "bp_mode", 0.0))) for s in samples}),
+        "bp_foc_backend_values": sorted({int(st_num(s.st, "bp_foc_backend", 0.0)) for s in samples}),
     }
     if out["mean_speed_cmd_rpm"] is not None and out["mean_enc_rpm"] is not None:
         out["mean_speed_err_rpm"] = float(out["mean_speed_cmd_rpm"] - out["mean_enc_rpm"])
@@ -299,11 +565,31 @@ def main() -> int:
     ap.add_argument("--min-enc-rpm-for-speed-check", type=float, default=50.0)
     ap.add_argument("--min-mic-saving-pct", type=float, default=0.0)
     ap.add_argument("--require-encoder", action="store_true")
+    ap.add_argument("--allow-hv", action="store_true", help="Allow START when measured Vbus is above --max-start-vdc.")
+    ap.add_argument("--max-start-vdc", type=float, default=None, help="Low-voltage START guard threshold; default 60 V or UNOQ_MAX_START_VDC.")
+    ap.add_argument("--start-vdc-samples", type=int, default=None, help="Vbus samples before each START; default 3 or UNOQ_START_VDC_SAMPLES.")
     ap.add_argument("--mode-retries", type=int, default=1)
     ap.add_argument("--cmd-retries", type=int, default=2)
     ap.add_argument("--cmd-retry-delay", type=float, default=0.2)
     ap.add_argument("--settle", type=float, default=0.4, help="Seconds to settle between compare phases/retries")
     args = ap.parse_args()
+
+    global START_ALLOW_HV, START_MAX_VDC, START_VDC_SAMPLES
+    START_ALLOW_HV = bool(args.allow_hv) or truthy_env("UNOQ_ALLOW_HV")
+    if args.max_start_vdc is not None:
+        START_MAX_VDC = float(args.max_start_vdc)
+    else:
+        try:
+            START_MAX_VDC = float(os.environ.get("UNOQ_MAX_START_VDC", "60.0"))
+        except Exception:
+            START_MAX_VDC = 60.0
+    if args.start_vdc_samples is not None:
+        START_VDC_SAMPLES = max(1, int(args.start_vdc_samples))
+    else:
+        try:
+            START_VDC_SAMPLES = max(1, int(os.environ.get("UNOQ_START_VDC_SAMPLES", "3")))
+        except Exception:
+            START_VDC_SAMPLES = 3
 
     base = args.url.rstrip("/")
     freq = float(args.freq)
@@ -433,6 +719,7 @@ def main() -> int:
 
         summary = {
             "tag": tag,
+            "run_metadata": collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
             "freq_cmd_hz": freq,
             "duration_s": duration_s,
             "poll_s": poll_s,
@@ -445,6 +732,9 @@ def main() -> int:
                 "min_enc_rpm_for_speed_check": float(args.min_enc_rpm_for_speed_check),
                 "min_mic_saving_pct": float(args.min_mic_saving_pct),
                 "require_encoder": bool(args.require_encoder),
+                "allow_hv": bool(START_ALLOW_HV),
+                "max_start_vdc": float(START_MAX_VDC),
+                "start_vdc_samples": int(START_VDC_SAMPLES),
             },
             "foc": foc_sum,
             "mic": mic_sum,

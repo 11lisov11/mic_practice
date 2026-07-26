@@ -77,16 +77,27 @@ static const uint8_t BP_FLAG_ESTOP = 0x02;
 static const uint8_t BP_FLAG_DIAG_PWM = 0x04;
 static const uint8_t BP_FLAG_CLEAR_FAULT = 0x08;
 static const uint8_t BP_FLAG_VECTOR_ROTATE = 0x10;
+static const uint8_t BP_STATUS_LINK_OK = 0x01;
+static const uint8_t BP_STATUS_ENABLED = 0x02;
+static const uint8_t BP_STATUS_ESTOP = 0x04;
+static const uint8_t BP_STATUS_FAULT = 0x08;
+static const uint8_t BP_STATUS_TIMEOUT = 0x10;
+static const uint8_t BP_STATUS_PWM_ACTIVE = 0x20;
 static const uint8_t BP_MODE_OFF = 0;
 static const uint8_t BP_MODE_DIAG = 1;
 static const uint8_t BP_MODE_DUTY = 2;
 static const uint8_t BP_MODE_SCALAR = 3;
 static const uint8_t BP_MODE_VECTOR = 4;
 static const uint8_t BP_MODE_FOC = 5;
-static const uint8_t BP_EXT_NTC = 0x01;
+static const uint8_t BP_EXT_RESERVED_0 = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
 static const uint8_t BP_EXT_PRECHARGE_RELAY = 0x08;
+static const uint8_t BP_CMD_FAN_DUTY_LO = 17;
+static const uint8_t BP_CMD_FAN_DUTY_HI = 18;
+static const uint8_t BP_RSP_FAN_DUTY_Q8 = 22;
+static const uint8_t BP_RSP_FAN_TACH_X30 = 30;
+static const float BP_FAN_TACH_RPM_STEP = 30.0f;
 // STEVAL J2-14 has a bus-off offset. Live calibration:
 // bus-off median raw ~=1763; raw=3256 was 315 V on the meter.
 static const uint16_t BP_VBUS_ZERO_RAW = 1763U;
@@ -173,7 +184,15 @@ static const uint32_t MODE_SWITCH_DEADTIME_MS = 500;
 // ESTOP must stay latched until an explicit CLEAR/ESTOP CLEAR command.
 static const uint32_t ESTOP_AUTO_CLEAR_MS = 0;
 static const uint32_t BP_REPLY_TIMEOUT_MS = 500;
+// Every START must be a bounded test/run. This prevents raw serial/RPC commands
+// from bypassing the PC/HMI bench gate and leaving the inverter enabled.
+static const bool START_REQUIRE_RUN_LIMIT = true;
 static const float CURRENT_LIMIT_A = 6.0f;
+// Experimental opt-in backend: UNO Q sends id/iq setpoints and Blue Pill closes
+// measured-angle FOC from AS5600/Hall/current ADC. Disabled by default so the
+// already-validated duty backend remains the safe preflight baseline.
+static const bool BP_FOC_BACKEND_DEFAULT = false;
+static const float BP_FOC_CURRENT_A_PER_PU = CURRENT_LIMIT_A;
 static const float VF_BASE_FREQ_HZ = 50.0f;
 static const float VF_VOLT_PER_HZ_RATIO = 0.5f;
 // Low-frequency scalar boost: enough startup voltage to overcome stiction
@@ -214,7 +233,9 @@ static void matrix_draw_digit(int x0, int y0, int digit);
 static void hard_stop(bool clear_cmd);
 static void request_normal_stop();
 static void ext_brake_set(float duty);
+static void fan_set(float duty);
 static void io_test_set(bool on);
+static const char *start_precheck(uint32_t now_ms);
 static void nucleo_uart_init();
 static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool force = false);
 static void nucleo_send_stop(bool force = false);
@@ -324,6 +345,8 @@ static bool g_pwm_test = false;
 static float g_pwm_test_duty = 0.5f;
 static bool g_diag_pwm = false;
 static bool g_duty_mode = false;
+static bool g_bp_foc_backend = BP_FOC_BACKEND_DEFAULT;
+static uint8_t g_bp_cmd_mode = BP_MODE_OFF;
 static float g_duty_u = 0.2f;
 static float g_duty_v = 0.4f;
 static float g_duty_w = 0.6f;
@@ -368,6 +391,11 @@ static bool g_last_mic_active = false;
 static bool g_brake_on = false;
 static uint8_t g_ext_flags = 0;
 static uint16_t g_brake_q15 = 0;
+static uint16_t g_fan_q15 = 0;
+static uint8_t g_bp_fan_duty_q8 = 0;
+static uint8_t g_bp_fan_tach_x30 = 0;
+static float g_bp_fan_duty = 0.0f;
+static float g_bp_fan_rpm = 0.0f;
 static bool g_io_test_mode = false;
 static bool g_clear_fault_req = false;
 static uint8_t g_nucleo_seq = 0;
@@ -871,7 +899,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(65);
+  mp_tx_array(70);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -889,7 +917,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_float(g_mic_saving_pct);
   mp_tx_float(g_freq_cmd);
   mp_tx_int(g_estop_latched ? 1 : 0);
-  mp_tx_int((g_ext_flags & BP_EXT_NTC) ? 1 : 0);
+  mp_tx_int(0);  // Legacy NTC field; J2-21 is unused on STEVAL-IPM15B.
   mp_tx_int((g_ext_flags & BP_EXT_PFC) ? 1 : 0);
   mp_tx_int((g_ext_flags & BP_EXT_BRAKE_PWM) ? 1 : 0);
   float brake = (g_ext_flags & BP_EXT_BRAKE_PWM) ? ((float)g_brake_q15 / 32767.0f) : 0.0f;
@@ -956,6 +984,11 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)g_bp_ext_flags);
   mp_tx_int(g_io_test_mode ? 1 : 0);
   mp_tx_int((g_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
+  mp_tx_float((float)g_fan_q15 / 32767.0f);
+  mp_tx_float(g_bp_fan_duty);
+  mp_tx_float(g_bp_fan_rpm);
+  mp_tx_int(g_bp_foc_backend ? 1 : 0);
+  mp_tx_int((int32_t)g_bp_cmd_mode);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1075,6 +1108,8 @@ static int parse_duty_triple(const char *p, float *a, float *b, float *c) {
 static void clear_estop_latch() {
   g_estop_latched = false;
   g_fault = 0;
+  g_nucleo_rx_bad = 0;
+  g_bp_bad_cnt = 0;
   g_clear_fault_req = true;
   g_estop_auto_clear_deadline_ms = 0;
   hard_stop(false);
@@ -1100,6 +1135,47 @@ static void handle_estop_command(const char *arg) {
     request_estop_stop();
   }
 }
+static bool handle_fan_command(const char *arg) {
+  while (*arg == ' ' || *arg == '\t') arg++;
+  if (icmp(arg, "ON") || icmp(arg, "1")) {
+    fan_set(1.0f);
+    return true;
+  }
+  if (icmp(arg, "OFF") || icmp(arg, "0")) {
+    fan_set(0.0f);
+    return true;
+  }
+  if (starts_ci(arg, "PWM")) {
+    arg += 3;
+  }
+  float duty = 0.0f;
+  if (!parse_single_float_arg(arg, &duty)) {
+    return false;
+  }
+  fan_set(clampf(duty, 0.0f, 1.0f));
+  return true;
+}
+static bool handle_bpfoc_command(const char *arg) {
+  while (*arg == ' ' || *arg == '\t') arg++;
+  if (icmp(arg, "OFF") || icmp(arg, "0")) {
+    g_bp_foc_backend = false;
+    if (g_pwm_enabled || g_state != STATE_SAFE) {
+      request_normal_stop();
+    } else {
+      nucleo_send_stop(true);
+    }
+    return true;
+  }
+  if (icmp(arg, "ON") || icmp(arg, "1")) {
+    if (g_pwm_enabled || g_state != STATE_SAFE || g_estop_latched || g_fault != 0) {
+      return false;
+    }
+    g_bp_foc_backend = true;
+    nucleo_send_stop(true);
+    return true;
+  }
+  return false;
+}
 static void estop_auto_clear_tick() {
   if (!g_estop_latched) {
     return;
@@ -1118,8 +1194,8 @@ static void estop_auto_clear_tick() {
 }
 static bool bp_fault_or_timeout(uint32_t now_ms) {
   bool bp_fault = (g_bp_fault_code != 0) ||
-                  ((g_bp_status & 0x08u) != 0u) ||
-                  ((g_bp_status & 0x10u) != 0u);
+                  ((g_bp_status & BP_STATUS_FAULT) != 0u) ||
+                  ((g_bp_status & BP_STATUS_TIMEOUT) != 0u);
   bool bp_stale = false;
   if (g_pwm_enabled) {
     if (g_bp_last_rsp_ms == 0) {
@@ -1131,6 +1207,42 @@ static bool bp_fault_or_timeout(uint32_t now_ms) {
     }
   }
   return bp_fault || bp_stale;
+}
+static const char *start_precheck(uint32_t now_ms) {
+  if (g_estop_latched) {
+    return "estop latched";
+  }
+  if (g_state != STATE_SAFE) {
+    return "not safe";
+  }
+  if (g_pwm_enabled) {
+    return "pwm already enabled";
+  }
+  if (START_REQUIRE_RUN_LIMIT && g_run_limit_ms == 0U) {
+    return "runlimit required";
+  }
+  if (USE_EXTERNAL_PWM) {
+    if (g_nucleo_last_rx_ms == 0 ||
+        (uint32_t)(now_ms - g_nucleo_last_rx_ms) > BP_REPLY_TIMEOUT_MS ||
+        g_bp_last_rsp_ms == 0 ||
+        (uint32_t)(now_ms - g_bp_last_rsp_ms) > BP_REPLY_TIMEOUT_MS) {
+      return "bluepill link stale";
+    }
+    if ((g_bp_status & BP_STATUS_LINK_OK) == 0U) {
+      return "bluepill link not ready";
+    }
+    if (g_bp_fault_code != 0 ||
+        (g_bp_status & (BP_STATUS_ESTOP | BP_STATUS_FAULT | BP_STATUS_TIMEOUT)) != 0U) {
+      return "bluepill unsafe";
+    }
+    if ((g_bp_status & BP_STATUS_PWM_ACTIVE) != 0U) {
+      return "bluepill pwm active";
+    }
+    if (g_nucleo_rx_bad != 0U || g_bp_bad_cnt != 0U) {
+      return "bluepill bad counter";
+    }
+  }
+  return nullptr;
 }
 class NullStream : public Stream {
  public:
@@ -1168,8 +1280,9 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
     while (*cmd == ' ' || *cmd == '\t') cmd++;
     bool handled = true;
     if (icmp(cmd, "START")) {
-      if (g_estop_latched) {
-        rpc_send_response_error(msgid, "estop latched");
+      const char *start_err = start_precheck(millis());
+      if (start_err != nullptr) {
+        rpc_send_response_error(msgid, start_err);
         return;
       }
       if (g_mode == MODE_MIC && g_freq_cmd < 0.1f) {
@@ -1285,16 +1398,6 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
-    } else if (starts_ci(cmd, "NTC")) {
-      const char *p = cmd + 3;
-      while (*p == ' ' || *p == '\t') p++;
-      if (icmp(p, "ON") || icmp(p, "1")) {
-        ext_flag_set(BP_EXT_NTC, true);
-      } else if (icmp(p, "OFF") || icmp(p, "0")) {
-        ext_flag_set(BP_EXT_NTC, false);
-      } else {
-        handled = false;
-      }
     } else if (starts_ci(cmd, "PFC")) {
       const char *p = cmd + 3;
       while (*p == ' ' || *p == '\t') p++;
@@ -1315,6 +1418,10 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
+    } else if (starts_ci(cmd, "FAN")) {
+      handled = handle_fan_command(cmd + 3);
+    } else if (starts_ci(cmd, "BPFOC")) {
+      handled = handle_bpfoc_command(cmd + 5);
     } else if (starts_ci(cmd, "BRAKE")) {
       const char *p = cmd + 5;
       while (*p == ' ' || *p == '\t') p++;
@@ -1655,8 +1762,10 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
   bridge_notify_line(line);
   bool handled = true;
   if (icmp(cmd, "START")) {
-    if (g_estop_latched) {
-      out.println("ERR estop latched");
+    const char *start_err = start_precheck(millis());
+    if (start_err != nullptr) {
+      out.print("ERR ");
+      out.println(start_err);
       return false;
     }
     if (g_mode == MODE_MIC && g_freq_cmd < 0.1f) {
@@ -1742,16 +1851,6 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
   } else if (starts_ci(cmd, "ESTOP")) {
     const char *p = cmd + 5;
     handle_estop_command(p);
-  } else if (starts_ci(cmd, "NTC")) {
-    const char *p = cmd + 3;
-    while (*p == ' ' || *p == '	') p++;
-    if (icmp(p, "ON") || icmp(p, "1")) {
-      ext_flag_set(BP_EXT_NTC, true);
-    } else if (icmp(p, "OFF") || icmp(p, "0")) {
-      ext_flag_set(BP_EXT_NTC, false);
-    } else {
-      handled = false;
-    }
   } else if (starts_ci(cmd, "PFC")) {
     const char *p = cmd + 3;
     while (*p == ' ' || *p == '	') p++;
@@ -1772,6 +1871,10 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     } else {
       handled = false;
     }
+  } else if (starts_ci(cmd, "FAN")) {
+    handled = handle_fan_command(cmd + 3);
+  } else if (starts_ci(cmd, "BPFOC")) {
+    handled = handle_bpfoc_command(cmd + 5);
   } else if (starts_ci(cmd, "SCOPE")) {
     const char *p = cmd + 5;
     while (*p == ' ' || *p == '	') p++;
@@ -1864,12 +1967,15 @@ static String rpc_get() {
   s += " freqcmd="; s += format_fixed(g_freq_cmd, 2);
   s += " estop="; s += String(g_estop_latched ? 1 : 0);
   s += " iotest="; s += String(g_io_test_mode ? 1 : 0);
-  s += " ntc="; s += String((g_ext_flags & BP_EXT_NTC) ? 1 : 0);
+  s += " ntc=0";
   s += " pfc="; s += String((g_ext_flags & BP_EXT_PFC) ? 1 : 0);
   s += " precharge="; s += String((g_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
   float brake = (g_ext_flags & BP_EXT_BRAKE_PWM) ? ((float)g_brake_q15 / 32767.0f) : 0.0f;
   s += " brake="; s += String((g_ext_flags & BP_EXT_BRAKE_PWM) ? 1 : 0);
   s += " brake_duty="; s += format_fixed(brake, 2);
+  s += " fan_duty="; s += format_fixed((float)g_fan_q15 / 32767.0f, 2);
+  s += " bp_fan_duty="; s += format_fixed(g_bp_fan_duty, 2);
+  s += " bp_fan_rpm="; s += format_fixed(g_bp_fan_rpm, 0);
   s += " diag="; s += String(g_diag_pwm ? 1 : 0);
   s += " duty="; s += String(g_duty_mode ? 1 : 0);
   bool enc_recent = (uint32_t)(millis() - g_bp_enc_ms) < 500U;
@@ -1896,6 +2002,8 @@ static String rpc_get() {
   s += " bp_status="; s += String((int)g_bp_status);
   s += " bp_fault="; s += String((int)g_bp_fault_code);
   s += " bp_mode="; s += String((int)g_bp_last_mode);
+  s += " bp_cmd_mode="; s += String((int)g_bp_cmd_mode);
+  s += " bp_foc_backend="; s += String(g_bp_foc_backend ? 1 : 0);
   s += " bp_seq="; s += String((int)g_bp_last_seq);
   s += " bp_good_cnt="; s += String((int)g_bp_good_cnt);
   s += " bp_bad_cnt="; s += String((int)g_bp_bad_cnt);
@@ -2121,6 +2229,22 @@ static uint16_t q15_unit(float duty) {
   duty = clampf(duty, 0.0f, 1.0f);
   return (uint16_t)(duty * 32767.0f);
 }
+static int16_t q15_signed(float value) {
+  value = clampf(value, -1.0f, 1.0f);
+  return (int16_t)(value * 32767.0f);
+}
+static int16_t bp_foc_current_q15(float current_a) {
+  float scale = BP_FOC_CURRENT_A_PER_PU;
+  if (scale < 0.001f) {
+    scale = 1.0f;
+  }
+  return q15_signed(current_a / scale);
+}
+static uint32_t bp_freq_millihz(float freq_hz) {
+  freq_hz = clampf(freq_hz, -500.0f, 500.0f);
+  int32_t value = (int32_t)(freq_hz * 1000.0f);
+  return (uint32_t)value;
+}
 static void ext_flag_set(uint8_t flag, bool on) {
   if (on) {
     g_ext_flags |= flag;
@@ -2140,6 +2264,12 @@ static void ext_brake_set(float duty) {
   g_brake_q15 = q15_unit(duty);
   g_ext_flags |= BP_EXT_BRAKE_PWM;
 }
+static void fan_set(float duty) {
+  g_fan_q15 = q15_unit(duty);
+  if (USE_EXTERNAL_PWM && !g_pwm_enabled) {
+    nucleo_send_stop(true);
+  }
+}
 static void io_test_set(bool on) {
   g_io_test_mode = on;
   g_pwm_enabled = false;
@@ -2154,7 +2284,7 @@ static void io_test_set(bool on) {
   g_diag_pwm = false;
   g_duty_mode = false;
   if (!on) {
-    g_ext_flags &= (uint8_t)(~(BP_EXT_NTC | BP_EXT_PFC | BP_EXT_BRAKE_PWM | BP_EXT_PRECHARGE_RELAY));
+    g_ext_flags &= (uint8_t)(~(BP_EXT_RESERVED_0 | BP_EXT_PFC | BP_EXT_BRAKE_PWM | BP_EXT_PRECHARGE_RELAY));
     g_brake_q15 = 0;
     nucleo_send_stop(true);
     return;
@@ -2299,6 +2429,10 @@ static bool nucleo_check_reply(const uint8_t *rx) {
     g_bp_temp_c = 0.0f;
   }
   g_bp_temp_ms = now_ms;
+  g_bp_fan_duty_q8 = rx[BP_RSP_FAN_DUTY_Q8];
+  g_bp_fan_tach_x30 = rx[BP_RSP_FAN_TACH_X30];
+  g_bp_fan_duty = (float)g_bp_fan_duty_q8 / 255.0f;
+  g_bp_fan_rpm = (float)g_bp_fan_tach_x30 * BP_FAN_TACH_RPM_STEP;
   g_bp_phase_a_raw = (uint16_t)rx[23] | ((uint16_t)rx[24] << 8);
   g_bp_phase_b_raw = (uint16_t)rx[25] | ((uint16_t)rx[26] << 8);
   g_bp_phase_c_raw = (uint16_t)rx[27] | ((uint16_t)rx[28] << 8);
@@ -2476,6 +2610,10 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   uint8_t mode = BP_MODE_OFF;
   uint8_t ext_flags = g_ext_flags;
   uint16_t brake_q15 = g_brake_q15;
+  uint16_t fan_q15 = g_fan_q15;
+  int16_t bp_id_q15 = 0;
+  int16_t bp_iq_q15 = 0;
+  uint32_t bp_foc_freq_millihz = 0;
   float du_eff = d_u;
   float dv_eff = d_v;
   float dw_eff = d_w;
@@ -2502,7 +2640,20 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     dv_eff = 0.0f;
     dw_eff = 0.0f;
   } else if (enable_eff && !estop_eff) {
-    mode = diag_eff ? BP_MODE_DIAG : BP_MODE_DUTY;
+    const bool foc_backend_allowed =
+        g_bp_foc_backend &&
+        !diag_eff &&
+        !g_duty_mode &&
+        (g_mode == MODE_FOC || g_mode == MODE_MIC) &&
+        (g_state == STATE_FOC_ALIGN || g_state == STATE_FOC_RUN);
+    if (foc_backend_allowed) {
+      mode = BP_MODE_FOC;
+      bp_id_q15 = bp_foc_current_q15(g_id_ref);
+      bp_iq_q15 = bp_foc_current_q15(g_iq_ref);
+      bp_foc_freq_millihz = bp_freq_millihz(g_freq_ref);
+    } else {
+      mode = diag_eff ? BP_MODE_DIAG : BP_MODE_DUTY;
+    }
   }
 
   uint8_t flags = 0;
@@ -2521,20 +2672,32 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   pkt[3] = flags;
   pkt[4] = mode;
   pkt[5] = seq;
-  pkt[6] = (uint8_t)(du_q15 & 0xFF);
-  pkt[7] = (uint8_t)((du_q15 >> 8) & 0xFF);
-  pkt[8] = (uint8_t)(dv_q15 & 0xFF);
-  pkt[9] = (uint8_t)((dv_q15 >> 8) & 0xFF);
-  pkt[10] = (uint8_t)(dw_q15 & 0xFF);
-  pkt[11] = (uint8_t)((dw_q15 >> 8) & 0xFF);
-  pkt[12] = 0;
-  pkt[13] = 0;
+  if (mode == BP_MODE_FOC) {
+    pkt[6] = (uint8_t)((uint16_t)bp_id_q15 & 0xFF);
+    pkt[7] = (uint8_t)(((uint16_t)bp_id_q15 >> 8) & 0xFF);
+    pkt[8] = (uint8_t)((uint16_t)bp_iq_q15 & 0xFF);
+    pkt[9] = (uint8_t)(((uint16_t)bp_iq_q15 >> 8) & 0xFF);
+    pkt[10] = (uint8_t)(bp_foc_freq_millihz & 0xFF);
+    pkt[11] = (uint8_t)((bp_foc_freq_millihz >> 8) & 0xFF);
+    pkt[12] = (uint8_t)((bp_foc_freq_millihz >> 16) & 0xFF);
+    pkt[13] = (uint8_t)((bp_foc_freq_millihz >> 24) & 0xFF);
+  } else {
+    pkt[6] = (uint8_t)(du_q15 & 0xFF);
+    pkt[7] = (uint8_t)((du_q15 >> 8) & 0xFF);
+    pkt[8] = (uint8_t)(dv_q15 & 0xFF);
+    pkt[9] = (uint8_t)((dv_q15 >> 8) & 0xFF);
+    pkt[10] = (uint8_t)(dw_q15 & 0xFF);
+    pkt[11] = (uint8_t)((dw_q15 >> 8) & 0xFF);
+    pkt[12] = 0;
+    pkt[13] = 0;
+  }
   pkt[14] = ext_flags;
   pkt[15] = (uint8_t)(brake_q15 & 0xFF);
   pkt[16] = (uint8_t)((brake_q15 >> 8) & 0xFF);
-  pkt[17] = 0;
-  pkt[18] = 0;
+  pkt[BP_CMD_FAN_DUTY_LO] = (uint8_t)(fan_q15 & 0xFF);
+  pkt[BP_CMD_FAN_DUTY_HI] = (uint8_t)((fan_q15 >> 8) & 0xFF);
   pkt[BP_CRC_OFF] = nucleo_crc8(pkt, BP_CRC_OFF);
+  g_bp_cmd_mode = mode;
   if (USE_NUCLEO_SPI) {
     uint8_t rx[BP_FRAME_LEN] = {0};
     nucleo_spi_transfer(pkt, rx, sizeof(pkt));
@@ -2859,8 +3022,16 @@ static void control_step() {
   }
   if (g_toggle_req) {
     g_toggle_req = false;
-    if (g_state == STATE_SAFE) g_start_req = true;
-    else g_stop_req = true;
+    if (g_state == STATE_SAFE) {
+      const char *start_err = start_precheck(now_ms);
+      if (start_err == nullptr) {
+        g_start_req = true;
+      } else {
+        bridge_notify_line(String("ERR START ") + start_err);
+      }
+    } else {
+      g_stop_req = true;
+    }
   }
   if (g_stop_req) {
     request_normal_stop();
@@ -2872,7 +3043,8 @@ static void control_step() {
   }
   if (g_start_req) {
     g_start_req = false;
-    if (g_state == STATE_SAFE) {
+    const char *start_err = start_precheck(now_ms);
+    if (start_err == nullptr) {
       brake_set(true);
       g_stop_requested = false;
       g_freq_ref = 0.0f;
@@ -2890,6 +3062,8 @@ static void control_step() {
         g_id_ref = 0.0f;
         g_iq_ref = 0.0f;
       }
+    } else {
+      bridge_notify_line(String("ERR START ") + start_err);
     }
   }
   apply_mode_if_safe();
@@ -2911,7 +3085,12 @@ static void control_step() {
           if (g_freq_cmd < 0.1f && g_last_nonzero_freq > 0.1f) {
             g_freq_cmd = g_last_nonzero_freq;
           }
-          g_start_req = true;
+          const char *start_err = start_precheck(now_ms);
+          if (start_err == nullptr) {
+            g_start_req = true;
+          } else {
+            bridge_notify_line(String("ERR START ") + start_err);
+          }
         }
         g_restart_after_mode_switch = false;
       }

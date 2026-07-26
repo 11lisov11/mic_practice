@@ -205,6 +205,13 @@ p {
   color: #041715;
 }
 
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+  transform: none;
+}
+
 .btn.full {
   width: 100%;
 }
@@ -227,12 +234,14 @@ p {
   gap: 10px;
 }
 
-.brake-row {
+.brake-row,
+.fan-row {
   display: grid;
   gap: 8px;
 }
 
-.brake-readout {
+.brake-readout,
+.fan-readout {
   font-size: 12px;
   font-weight: 700;
   color: rgba(231, 234, 238, 0.78);

@@ -42,12 +42,16 @@
         <div class="io-block">
           <div class="label">IPM15 I/O</div>
           <div class="io-row">
-            <button class="btn ghost" id="ntcBtn">NTC: OFF</button>
             <button class="btn ghost" id="pfcBtn">PFC: OFF</button>
+            <button class="btn ghost" id="bpFocBtn">BP FOC: OFF</button>
           </div>
           <div class="brake-row">
             <input id="brakeSlider" type="range" min="0" max="1" step="0.05" value="0" />
             <div class="brake-readout" id="brakeReadout">BRK 0%</div>
+          </div>
+          <div class="fan-row">
+            <input id="fanSlider" type="range" min="0" max="1" step="0.05" value="0" />
+            <div class="fan-readout" id="fanReadout">FAN 0%</div>
           </div>
         </div>
 
@@ -70,6 +74,10 @@
           <div class="card">
             <div class="card-label">Режим</div>
             <div class="card-value" id="modeVal">FOC</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Контур Blue Pill</div>
+            <div class="card-value" id="backendVal">DUTY</div>
           </div>
           <div class="card">
             <div class="card-label">ШИМ</div>
@@ -104,8 +112,12 @@
             <div class="card-value" id="micSaveVal">--</div>
           </div>
           <div class="card">
-            <div class="card-label">NTC/PFC/BRK</div>
+            <div class="card-label">PFC/BRK</div>
             <div class="card-value" id="ioVal">--</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Вентилятор</div>
+            <div class="card-value" id="fanVal">--</div>
           </div>
           <div class="card">
             <div class="card-label">Энкодер</div>

@@ -11,13 +11,20 @@ import time
 from datetime import datetime
 import urllib.error
 
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_UI_PWM_CASE_REEXEC")
 import grpc
 from saleae.automation import Manager
 from saleae.automation.capture import Capture
 from saleae.grpc import saleae_pb2
 import urllib.request
 
+from active_pwm_guard import start_allowed_by_bench_gate
+from run_metadata import collect_run_metadata
+
 BP_MAX_AGE_MS = 1000.0
+DEFAULT_RUN_LIMIT_S = float(os.environ.get("UNOQ_TEST_RUNLIMIT_S", "3.0"))
 
 ADB_ROUTER_CMD_SNIPPET = r"""
 import base64, socket, sys, time
@@ -77,6 +84,34 @@ def http_json(url: str, body: dict | None = None, timeout: float = 6.5) -> dict 
         break
     log(f"HTTP error: {last_exc}")
     return None
+
+
+def post_cmd_http(base: str, cmd: str) -> tuple[bool, bool]:
+    data = json.dumps({"cmd": cmd}).encode("utf-8")
+    req = urllib.request.Request(
+        base + "/api/cmd",
+        data=data,
+        headers={"Content-Type": "application/json"},
+    )
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    try:
+        with opener.open(req, timeout=6.5) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+            payload = json.loads(raw)
+            if payload.get("ok"):
+                return True, False
+            log(f"HTTP command rejected: {cmd!r} payload={payload}")
+            return False, False
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        if 400 <= exc.code < 500:
+            log(f"HTTP command rejected: {cmd!r} status={exc.code} body={body}")
+            return False, False
+        log(f"HTTP command transport/server error: {cmd!r} status={exc.code} body={body}")
+        return False, True
+    except Exception as exc:
+        log(f"HTTP command transport error: {cmd!r} {exc}")
+        return False, True
 
 
 def adb_router_fallback_enabled() -> bool:
@@ -139,6 +174,25 @@ def start_vdc_samples() -> int:
         return 5
 
 
+def start_status_precheck(st: dict | None) -> tuple[bool, str]:
+    if st is None:
+        return False, "status unavailable"
+    if st.get("state") != "SAFE":
+        return False, f"state={st.get('state')}"
+    if int(st_num(st, "pwm", 1.0)) != 0:
+        return False, f"pwm={int(st_num(st, 'pwm', 1.0))}"
+    if int(st_num(st, "estop", 1.0)) != 0:
+        return False, f"estop={int(st_num(st, 'estop', 1.0))}"
+    if int(st_num(st, "bp_fault", 255.0)) != 0:
+        return False, f"bp_fault={int(st_num(st, 'bp_fault', 255.0))}"
+    bad = bp_bad_value(st)
+    if bad != 0:
+        return False, f"bp_bad={bad}"
+    if not bp_link_live(st):
+        return False, "Blue Pill link stale/down"
+    return True, "ok"
+
+
 def status_vdc(st: dict | None) -> float:
     if st is None:
         return float("nan")
@@ -146,22 +200,25 @@ def status_vdc(st: dict | None) -> float:
 
 
 def start_allowed_by_vdc(base: str) -> bool:
-    if truthy_env("UNOQ_ALLOW_HV"):
-        return True
+    allow_hv = truthy_env("UNOQ_ALLOW_HV")
     limit = max_start_vdc()
     samples: list[float] = []
     for idx in range(start_vdc_samples()):
         st = get_status(base)
+        status_ok, status_reason = start_status_precheck(st)
+        if not status_ok:
+            log(f"ERROR: START blocked: unsafe status before START: {status_reason}.")
+            return False
         vdc = status_vdc(st)
         if math.isfinite(vdc) and vdc >= 0.0:
             samples.append(vdc)
         if idx + 1 < start_vdc_samples():
             time.sleep(0.05)
     if not samples:
-        log("ERROR: START blocked: status/vdc is not readable. Set UNOQ_ALLOW_HV=1 only for an intentional HV run.")
+        log("ERROR: START blocked: status/vdc is not readable. Fix Vbus telemetry before any START.")
         return False
     vdc = max(samples)
-    if vdc > limit:
+    if vdc > limit and not allow_hv:
         log(
             f"ERROR: START blocked: max sampled vdc={vdc:.2f} V exceeds UNOQ_MAX_START_VDC={limit:.2f} V. "
             "Remove/discharge HV or set UNOQ_ALLOW_HV=1 for an intentional HV run."
@@ -171,11 +228,16 @@ def start_allowed_by_vdc(base: str) -> bool:
 
 
 def post_cmd(base: str, cmd: str) -> bool:
-    if command_requests_start(cmd) and not start_allowed_by_vdc(base):
-        return False
-    resp = http_json(base + "/api/cmd", {"cmd": cmd})
-    if resp and resp.get("ok"):
+    if command_requests_start(cmd):
+        if not start_allowed_by_vdc(base):
+            return False
+        if not start_allowed_by_bench_gate(log, url=base):
+            return False
+    ok, fallback_allowed = post_cmd_http(base, cmd)
+    if ok:
         return True
+    if not fallback_allowed:
+        return False
     return post_cmd_adb_router(cmd)
 
 
@@ -223,13 +285,14 @@ def bp_link_live(st: dict | None, max_age_ms: float = BP_MAX_AGE_MS) -> bool:
 def bp_bad_value(st: dict | None) -> int:
     if st is None:
         return 999999
-    return int(st_num(st, "bp_bad", 999999.0))
+    values = [int(st_num(st, key, 999999.0)) for key in ("bp_bad_cnt", "bp_bad") if key in st]
+    if not values:
+        return 999999
+    return max(values)
 
 
 def bp_cmd_bad_value(st: dict | None) -> int:
-    if st is None:
-        return 999999
-    return int(st_num(st, "bp_bad_cnt", 999999.0))
+    return bp_bad_value(st)
 
 
 def bp_bad_limit() -> int:
@@ -861,6 +924,34 @@ def analyze(
     return metrics
 
 
+def command_sets_runlimit(cmd: str) -> bool:
+    return cmd.strip().upper().startswith("SET RUNLIMIT")
+
+
+def command_clears_runlimit(cmd: str) -> bool:
+    upper = cmd.strip().upper()
+    return upper in ("CLEAR", "RESET", "STOP", "ESTOP", "ESTOP CLEAR")
+
+
+def commands_with_runlimit(cmds: list[str], default_s: float | None = None) -> list[str]:
+    run_limit_s = DEFAULT_RUN_LIMIT_S if default_s is None else float(default_s)
+    run_limit_s = max(0.1, min(600.0, run_limit_s))
+    out: list[str] = []
+    runlimit_ready = False
+    for cmd in cmds:
+        if command_clears_runlimit(cmd):
+            runlimit_ready = False
+        if command_sets_runlimit(cmd):
+            runlimit_ready = True
+        if command_requests_start(cmd) and not runlimit_ready:
+            out.append(f"SET RUNLIMIT {run_limit_s:.3f}")
+            runlimit_ready = True
+        out.append(cmd)
+        if command_requests_start(cmd):
+            runlimit_ready = False
+    return out
+
+
 def send_cmds(base: str, cmds: list[str]) -> bool:
     ok = True
     for cmd in cmds:
@@ -871,8 +962,9 @@ def send_cmds(base: str, cmds: list[str]) -> bool:
 
 
 def send_cmds_retry(base: str, cmds: list[str], retries: int = 1, retry_delay_s: float = 0.15) -> bool:
+    guarded_cmds = commands_with_runlimit(cmds)
     for attempt in range(retries + 1):
-        ok = send_cmds(base, cmds)
+        ok = send_cmds(base, guarded_cmds)
         if ok:
             return True
         if attempt < retries:
@@ -984,7 +1076,8 @@ def run_case(args) -> int:
             if args.duty:
                 duty_str = args.duty.replace(",", " ").strip()
                 cmds += [f"DUTY {duty_str}"]
-        cmds += ["START"]
+        run_limit_s = max(0.5, min(600.0, float(args.la_duration) + float(args.status_timeout) + 2.0))
+        cmds += [f"SET RUNLIMIT {run_limit_s:.3f}", "START"]
 
         def status_predicate(st):
             pwm_ok = int(st_num(st, "pwm", -1.0)) == (1 if args.expect_pwm else 0)
@@ -1077,6 +1170,7 @@ def run_case(args) -> int:
 
         summary = {
             "tag": args.tag,
+            "run_metadata": collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
             "mode": args.mode,
             "freq": args.freq,
             "duty": args.duty,

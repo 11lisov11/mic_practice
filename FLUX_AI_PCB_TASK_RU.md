@@ -271,7 +271,7 @@ Flux должен выбрать один основной вариант и о�
 | `J2-15` | `current phase A` | `PA0 ADC1_IN0` | current ADC |
 | `J2-17` | `current phase B` | `PA1 ADC1_IN1` | current ADC |
 | `J2-19` | `current phase C` | `PA4 ADC1_IN4` | current ADC |
-| `J2-21` | `NTC bypass relay` | `PB1` | STEVAL NTC relay, not RELAY1 |
+| `J2-21` | `NTC bypass relay` | `NC` | сеть на STEVAL-IPM15B не используется; `PB1` также NC |
 | `J2-23` | `dissipative brake PWM` | `PB9 / TIM4_CH4` | brake PWM |
 | `J2-25` | `+V power` | `+5V` | logic/interface power |
 | `J2-26` | `heat sink temperature` | `PB0 ADC1_IN8` | IPM TSO/temp |
@@ -286,7 +286,7 @@ Flux должен выбрать один основной вариант и о�
 Добавить series resistors или 0R jumpers на PWM/GPIO линиях:
 
 ```text
-PA8, PB13, PA9, PB14, PA10, PB15, PB12, PB1, PB5, PB9
+PA8, PB13, PA9, PB14, PA10, PB15, PB12, PB5, PB9
 ```
 
 Рекомендация: footprints `0603/0805` под `0R..100R` для отладки/демпфирования.
@@ -490,7 +490,6 @@ LOGIC_GND
 IPM_COM
 USB_GND
 PB4_PRECHARGE
-PB1_NTC_RELAY
 PB12_EM_STOP
 PA8_PWM_1H
 PB13_PWM_1L
@@ -516,7 +515,7 @@ UART_BP_RX_PA3
 Критически важно:
 
 - `PB4` = внешнее физическое `RELAY1` предзаряда / bypass `R4+R5`;
-- `PB1` = STEVAL `J2-21 NTC bypass relay`;
+- `PB1` = `NC`; STEVAL `J2-21` также оставить `NC`;
 - `PB12` = `EM_STOP`, не переносить на `TIM1_BKIN`, пока прошивка не изменена;
 - `PB0` = heatsink temperature, не использовать для `measure phase C`;
 - `measure phase C` сейчас не подключен, firmware вычисляет virtual C из A/B;
@@ -632,7 +631,7 @@ Do not redesign the IPM power stage; STEVAL-IPM15B remains external and connects
 
 Critical corrections:
 - PB4 controls the external RELAY1 precharge bypass relay through R2/Q1.
-- PB1 is only STEVAL J2-21 NTC bypass relay.
+- PB1 and STEVAL J2-21 are both NC; that named net is unused on STEVAL-IPM15B.
 - PB12 is EM_STOP.
 - PB10/PB11 are AS5600 I2C2.
 - PB0 is heatsink temperature.

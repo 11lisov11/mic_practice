@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import argparse
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_FOC_MIC_PREFLIGHT_REEXEC")
 import grpc
 import json
 import os
@@ -10,6 +13,7 @@ import time
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
+from run_metadata import collect_run_metadata  # noqa: E402
 from ui_pwm_case import (  # noqa: E402
     analyze,
     bp_bad_ok,
@@ -271,6 +275,7 @@ def main() -> int:
     result: dict = {
         "ts": ts,
         "base": base,
+        "run_metadata": collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
         "la_rate": args.la_rate,
         "la_duration": args.la_duration,
         "min_handoff_gap_ns": args.min_handoff_gap_ns,

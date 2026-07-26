@@ -2,8 +2,33 @@
 
 Документ для bring-up и безопасного запуска связки `UNO Q (UI)` + `Blue Pill (PWM)` + `STEVAL-IPM15B`.
 
+Важно для текущего стенда: основной runtime-путь управления сейчас PC-direct,
+без UNO Q в цепочке команд:
+
+```text
+ПК / HMI / AI -> USB-изолятор -> USB-UART 3.3 В -> Blue Pill -> STEVAL/IPM
+```
+
+UNO Q остается поддерживаемым UI/экраном и заготовкой для переноса, но перед
+активным PWM ориентироваться надо на `PC_DIRECT_STM32_RU.md` и
+`tools/bench_gate_report.py`.
+
+Перед любой командой ниже, которая может привести к `START`, PWM-свитчингу или
+HV/J7-прогону, сначала обновить статус:
+
+```powershell
+py -3 -u .\tools\refresh_bench_status.py --url http://127.0.0.1:18080
+```
+
+Если `CURRENT_BENCH_STATUS_RU.md` показывает `Active PWM разрешен: НЕТ` или
+`ready_for_active_pwm=false`, эти активные команды не запускать. Исключение
+только для явно описанных offline/read-only проверок и для ST-Link static
+preflight после физического подтверждения, что HV/J7 отключен и DC-шина
+разряжена.
+
 ## 0. Состав системы (что за модуль и зачем)
-* `UNO Q` (прошивка `UNOQ_MOTOR/UNOQ_MOTOR.ino`): UI по HTTP (`/api/cmd`, `/api/status`), логика режимов, отображение частоты на матрице, обмен с Blue Pill по UART.
+* `ПК / PC-direct HMI`: текущий основной источник команд к Blue Pill через изолированный USB-UART 3.3 В.
+* `UNO Q` (прошивка `UNOQ_MOTOR/UNOQ_MOTOR.ino`): поддерживаемый UI/экран и будущий перенос верхнего уровня; не обязателен для текущего PC-direct runtime.
 * `Blue Pill (STM32F103C8)` (PlatformIO `bluepill_uart_pwm_pio`): генерация комплементарного ШИМ (TIM1 + deadtime), аппаратная "безопасность" (EM_STOP/BRAKE), таймаут связи, чтение энкодера AS5600 (I2C2).
 * `STEVAL-IPM15B` (UM2014): силовой модуль (IPM STGIB15CH60TS-L) и интерфейсные сигналы на разъеме J2 (ШИМ, EM_STOP, токи/шина/температура и т.п.).
 * `ST-LINK` (прошивка Blue Pill): `upload_protocol = stlink`.
@@ -26,7 +51,16 @@ UM2014 прямо пишет: **плата требует +5 V и +3.3 V чер�
 
 ## 2. Коммутация (проводка)
 
-### 2.1. UNO Q ↔ Blue Pill (UART, 460800)
+### 2.1. Runtime UART ↔ Blue Pill (460800)
+Текущий PC-direct вариант:
+
+* USB-UART `TX` -> Blue Pill `PA3 (USART2_RX)`
+* USB-UART `RX` <- Blue Pill `PA2 (USART2_TX)`
+* Изолированная сторона `GND` -> Blue Pill `GND`
+* UART уровни только 3.3 В.
+
+Исторический UNO Q вариант, если верхний уровень снова переносится на UNO Q:
+
 * UNO Q `D1 (TX)` -> Blue Pill `PA3 (USART2_RX)`
 * UNO Q `D0 (RX)` <- Blue Pill `PA2 (USART2_TX)`
 * `GND` -> `GND`
@@ -51,7 +85,7 @@ EM_STOP / BRAKE:
 * J2-26 `heat sink temperature` -> `PB0 (ADC1_IN8)`, current firmware: UM2014 `SW3=TSO 1-2`
 
 Опциональные I/O:
-* J2-21 `NTC bypass relay` -> `PB1` (GPIO out)
+* J2-21 `NTC bypass relay` -> `NC`; сеть на STEVAL-IPM15B не используется, `PB1` также оставить `NC`
 * J2-27 `PFC sync.` -> `PB5` (GPIO out)
 * J2-23 `dissipative brake PWM` -> `PB9` (TIM4_CH4, опционально)
 
@@ -92,7 +126,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Практически удобнее запускать:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\ui_access.py --bridge
+py -3 -u .\tools\ui_access.py --bridge
 ```
 
 Скрипт сам делает `adb start-server`, поднимает `forward`, проверяет `/api/status` и, если ADB не поднялся, печатает состояние USB-инстансов UNO Q. Если он пишет `phantom`, плата физически не присутствует в Windows и тесты бессмысленно гонять до восстановления USB.
@@ -100,7 +134,7 @@ Blue Pill делает "силовую" безопасность на своей
 ## 5. Быстрая проверка энкодера (положение магнита)
 Команда (на ПК):
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\encoder_test.py --url http://127.0.0.1:18080 --duration 10 --poll 0.05
+py -3 -u .\tools\encoder_test.py --url http://127.0.0.1:18080 --duration 10 --poll 0.05
 ```
 Ожидаем:
 * `enc_ok` = 1
@@ -109,7 +143,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Если Logic2 открыт, но automation/анализатор не поднимается:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\logic2_recover.py --restart
+py -3 -u .\tools\logic2_recover.py --restart
 ```
 
 Скрипт отличает два сценария:
@@ -119,7 +153,7 @@ Blue Pill делает "силовую" безопасность на своей
 ## 6. Тесты ШИМ (UI -> Blue Pill -> PWM -> LA -> метрики)
 Если нужен не набор ручных команд, а один полный regression-run, использовать:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080
 ```
 
 Этот раннер последовательно делает build, `ui_access`, encoder sanity, scalar preflight, FOC/MIC preflight, полный LA-suite и диагностический `mic_ai_compare`.
@@ -130,19 +164,19 @@ Blue Pill делает "силовую" безопасность на своей
 
 Один кейс:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 ^
+py -3 -u .\tools\ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 2000000 --la-duration 0.7
 ```
 
 Полный suite (sweep 0..50 шаг 0.1, захваты в ключевых точках):
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 2000000 --la-duration 0.7
 ```
 
 Рекомендуемый safety-прогон для проверки ключей инвертора:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\scalar_vf_preflight.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\scalar_vf_preflight.py --url http://127.0.0.1:18080 ^
   --freqs 0.1,0.5,1,2,5,10,20,30,40,50 --estop-freqs 0.5,10,50 ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 ^
   --min-handoff-gap-ns 600
@@ -150,7 +184,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Рекомендуемый FOC/MIC preflight:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\foc_mic_preflight.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\foc_mic_preflight.py --url http://127.0.0.1:18080 ^
   --foc-freqs 0.5,5,10,20,50 --foc-estop-freqs 10,50 --mic-freqs 5,10,20 ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.003 ^
   --min-handoff-gap-ns 600
@@ -158,7 +192,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Рекомендуемый HV/J7 preflight:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
   --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 ^
   --min-handoff-gap-ns 600
@@ -166,7 +200,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Если `vdc` на твоём стенде уже откалиброван и его масштаб понятен:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\hv_j7_preflight.py --url http://127.0.0.1:18080 ^
   --vf-freqs 0.5,1,2,5 --estop-freqs 1,5 ^
   --vdc-min <MIN> --vdc-max <MAX> ^
   --la-channels 0,1,2,3,4,5,6 --la-rate 24000000 --la-duration 0.02 ^
@@ -175,7 +209,7 @@ Blue Pill делает "силовую" безопасность на своей
 
 Полный HIL-suite с deadtime-check:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 ^
+py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 ^
   --capture-every-hz 1.0 --la-channels 0,1,2,3,4,5,6 ^
   --la-rate 24000000 --la-duration 0.06 --case-retries 2 --retry-delay 0.2 ^
   --min-handoff-gap-ns 600
@@ -190,8 +224,8 @@ Blue Pill делает "силовую" безопасность на своей
 
 Для единичных ложных `FAIL` из-за краткого сбоя transport/control plane доступны точечные повторы без маскировки реальной PWM-проблемы:
 ```powershell
-.\.venv\Scripts\python.exe -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --case-retries 1 --retry-delay 0.2
-.\.venv\Scripts\python.exe -u .\tools\ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 --case-retries 1
+py -3 -u .\tools\ui_pwm_suite.py --url http://127.0.0.1:18080 --case-retries 1 --retry-delay 0.2
+py -3 -u .\tools\ui_pwm_case.py --url http://127.0.0.1:18080 --mode VF --freq 5.0 --tag vf_5 --case-retries 1
 ```
 
 Оба скрипта в конце всегда делают `STOP` + `CLEAR` (best-effort).

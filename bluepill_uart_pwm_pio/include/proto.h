@@ -39,6 +39,12 @@
 #define CMD_OFF_EXT_RSV13 30
 #define CMD_OFF_CRC 31
 
+// Optional service PWM extension. These bytes were reserved in protocol v0x02;
+// older receivers ignore them, newer Blue Pill firmware uses them for the
+// 3-pin cooling fan driver on PB3.
+#define CMD_OFF_FAN_DUTY_LO CMD_OFF_EXT_RSV0
+#define CMD_OFF_FAN_DUTY_HI CMD_OFF_EXT_RSV1
+
 #define FLAG_ENABLE      0x01
 #define FLAG_ESTOP       0x02
 #define FLAG_DIAG_PWM    0x04
@@ -53,7 +59,8 @@
 #define MODE_FOC    5
 
 // Extended flags (bytes 14..18)
-#define EXT_NTC_RELAY   0x01
+// Reserved for protocol v0x02 compatibility. It has no GPIO assignment.
+#define EXT_RESERVED_0  0x01
 #define EXT_PFC_SYNC    0x02
 #define EXT_BRAKE_PWM   0x04
 #define EXT_PRECHARGE_RELAY 0x08
@@ -88,6 +95,12 @@
 #define RSP_OFF_PHASE_FLAGS 29
 #define RSP_OFF_EXT_RSV1 30
 #define RSP_OFF_CRC 31
+
+// Compact fan telemetry in previously reserved reply bytes.
+// duty_q8: 0..255 mirrors the applied PB3 PWM duty.
+// tach_x30: fan rpm / 30, saturated to 255 (0 means no tach pulses seen).
+#define RSP_OFF_FAN_DUTY_Q8 RSP_OFF_EXT_RSV0
+#define RSP_OFF_FAN_TACH_X30 RSP_OFF_EXT_RSV1
 
 #define TEMP_FLAG_VALID 0x01
 #define TEMP_FLAG_FAULT 0x02

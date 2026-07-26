@@ -1,0 +1,112 @@
+{
+  "project": "MIC_AI",
+  "revision": "2.1",
+  "date": "2026-07-17",
+  "audit": {
+    "pass": true,
+    "errors": [],
+    "warnings": [],
+    "invariants": {
+      "bridge_ac1_is_fused_line": true,
+      "bridge_ac2_is_neutral": true,
+      "bridge_minus_is_hot_ground": true,
+      "bridge_plus_is_rectified_plus": true,
+      "precharge_is_pb4": true,
+      "steval_j2_21_is_nc": true,
+      "unoq_power_uses_vin": true,
+      "unoq_5v_not_backfed": true,
+      "unoq_3v3_is_output_only": true,
+      "bluepill_5v_not_driven": true,
+      "bluepill_3v3_driven": true,
+      "hot_15v_sources_are_selected": true,
+      "fan_uses_standard_4wire_power": true,
+      "safe_ground_isolated": true,
+      "saleae_outputs_explicitly_enabled": true
+    },
+    "component_count": 92,
+    "net_count": 89,
+    "connected_endpoint_count": 308,
+    "intentional_nc": [
+      "J_STEVAL_J2.P21",
+      "J_STEVAL_J2.P34",
+      "U_BP.5V",
+      "U_BP.PB1",
+      "U_UNOQ.5V_USB"
+    ]
+  },
+  "pinmap": {
+    "row_count": 71,
+    "critical_component_count": 12,
+    "requires_official_footprint": [
+      "K1"
+    ]
+  },
+  "canonical_pdf": "C:\\mic_practice\\output\\pdf\\MIC_AI_REV2_SCHEMATIC.pdf",
+  "artifacts": [
+    {
+      "path": "C:\\mic_practice\\output\\pdf\\MIC_AI_REV2_SCHEMATIC.pdf",
+      "bytes": 112687,
+      "sha256": "4d7c72d6de713260170de786d11e00547e22e4bc9c846483c6352194a4066e9d"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_NETLIST.edif",
+      "bytes": 80013,
+      "sha256": "867b05e91774ccc2dee18a224b9a3c5c47b539e21f1bac1d9390e01f26eec8e4"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_BOM.csv",
+      "bytes": 4809,
+      "sha256": "e0707c5c548d4466497e87ec97f5b618b35111dc9cb67a27de7bdc9bc10726b4"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_CONNECTIONS.csv",
+      "bytes": 14813,
+      "sha256": "6b552dd97a6a0b15e0aef780923031bd5f67d0850c1f1970e156e33cc301ba82"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_PINMAP.csv",
+      "bytes": 8846,
+      "sha256": "7bfd30d32d383d01d1e42dbefb31a8321733ddcd29095cd306c147e6e4c83980"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\ASSEMBLY_RU.md",
+      "bytes": 4624,
+      "sha256": "86e04f3bc7f16871ef398ec73ab14e1f434b7d319e5a579b0ad2ef48a1365199"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_01.svg",
+      "bytes": 16050,
+      "sha256": "2b366780ce42bfeb61db894883d26314e8d8242c9eb477d0e7f17ac7863cd7f2"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_02.svg",
+      "bytes": 17404,
+      "sha256": "8c1dc674e6a8fa0139b46c831e783d2cf7da8868f4b2f044a46ee98a6e72a7b7"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_03.svg",
+      "bytes": 28642,
+      "sha256": "0f0f51179f2e92088eec1352e6d3c461bd4b0e97ee24b24363fe00d66a7a7248"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_04.svg",
+      "bytes": 12589,
+      "sha256": "4a7dc9d9a9eeb6c496c6a4535cd91b20009453162869b25817d4510a4d57c0f4"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_05.svg",
+      "bytes": 10124,
+      "sha256": "f5d9d9d7d2358dbba6a106e2499bc6e567ac18ed17c928462e12dd2d3265d56d"
+    },
+    {
+      "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_06.svg",
+      "bytes": 10617,
+      "sha256": "dbfb34270db9e7a77a93f2f2ac80142af343656975ec2a14d47377e60fc7b5c3"
+    }
+  ],
+  "unresolved": [
+    "F1 value requires motor nameplate current, intended maximum power, conductor size, and protection coordination.",
+    "PCB layout still requires creepage/clearance, thermal, and mechanical safety review.",
+    "The required safety category and external mains contactor must be selected for the final machine/application."
+  ]
+}

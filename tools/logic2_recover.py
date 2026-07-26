@@ -9,7 +9,33 @@ import sys
 import time
 from pathlib import Path
 
-from saleae.automation import Manager
+try:
+    from saleae.automation import Manager
+except ModuleNotFoundError as exc:
+    repo_root = Path(__file__).resolve().parents[1]
+    venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
+    reexec_flag = "MIC_PRACTICE_LOGIC2_RECOVER_REEXEC"
+    if exc.name == "saleae" and venv_python.exists() and os.environ.get(reexec_flag) != "1":
+        env = dict(os.environ)
+        env[reexec_flag] = "1"
+        proc = subprocess.run(
+            [str(venv_python), "-u", str(Path(__file__).resolve()), *sys.argv[1:]],
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if proc.stdout:
+            sys.stdout.write(proc.stdout)
+        if proc.stderr:
+            sys.stderr.write(proc.stderr)
+        raise SystemExit(proc.returncode)
+    print(
+        "ERROR: Python package 'logic2-automation' is not available. "
+        "Install requirements.txt or run with .venv\\Scripts\\python.exe.",
+        file=sys.stderr,
+    )
+    raise
 
 
 DEFAULT_SHORTCUT = r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Logic\Saleae Logic 2.4.44.lnk"

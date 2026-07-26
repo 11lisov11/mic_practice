@@ -26,21 +26,27 @@ static void gpio_out_init(GPIO_TypeDef *port, uint16_t pin) {
   HAL_GPIO_Init(port, &gpio);
 }
 
+static void gpio_analog_init(GPIO_TypeDef *port, uint16_t pin) {
+  GPIO_InitTypeDef gpio = {0};
+  gpio.Pin = pin;
+  gpio.Mode = GPIO_MODE_ANALOG;
+  HAL_GPIO_Init(port, &gpio);
+}
+
 void ipm15_io_init(void) {
-  if (NTC_RELAY_PORT == GPIOA || PFC_SYNC_PORT == GPIOA || PRECHARGE_RELAY_PORT == GPIOA ||
+  if (UNUSED_STEVAL_J2_21_PORT == GPIOA || PFC_SYNC_PORT == GPIOA || PRECHARGE_RELAY_PORT == GPIOA ||
       BRAKE_PWM_PORT == GPIOA) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
   }
-  if (NTC_RELAY_PORT == GPIOB || PFC_SYNC_PORT == GPIOB || PRECHARGE_RELAY_PORT == GPIOB ||
+  if (UNUSED_STEVAL_J2_21_PORT == GPIOB || PFC_SYNC_PORT == GPIOB || PRECHARGE_RELAY_PORT == GPIOB ||
       BRAKE_PWM_PORT == GPIOB) {
     __HAL_RCC_GPIOB_CLK_ENABLE();
   }
 
-  gpio_out_init(NTC_RELAY_PORT, NTC_RELAY_PIN);
+  gpio_analog_init(UNUSED_STEVAL_J2_21_PORT, UNUSED_STEVAL_J2_21_PIN);
   gpio_out_init(PFC_SYNC_PORT, PFC_SYNC_PIN);
   gpio_out_init(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
 
-  ipm15_set_ntc(false);
   ipm15_set_pfc_sync(false);
   ipm15_set_precharge_relay(false);
 
@@ -78,12 +84,6 @@ void ipm15_io_init(void) {
   gpio_out_init(BRAKE_PWM_PORT, BRAKE_PWM_PIN);
   HAL_GPIO_WritePin(BRAKE_PWM_PORT, BRAKE_PWM_PIN, GPIO_PIN_RESET);
 #endif
-}
-
-void ipm15_set_ntc(bool on) {
-  bool active = on ? true : false;
-  GPIO_PinState st = (active == (NTC_RELAY_ACTIVE_STATE != 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET;
-  HAL_GPIO_WritePin(NTC_RELAY_PORT, NTC_RELAY_PIN, st);
 }
 
 void ipm15_set_pfc_sync(bool on) {

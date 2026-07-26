@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import argparse
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_SCALAR_VF_PREFLIGHT_REEXEC")
 import grpc
 import json
 import os
@@ -10,6 +13,7 @@ import time
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(__file__))
+from run_metadata import collect_run_metadata  # noqa: E402
 from ui_pwm_case import (  # noqa: E402
     analyze,
     bp_bad_ok,
@@ -221,6 +225,12 @@ def main() -> int:
     ap.add_argument("--freq-tol-rel", type=float, default=0.03)
     ap.add_argument("--min-handoff-gap-ns", type=float, default=600.0)
     ap.add_argument("--soak-duration", type=float, default=0.3)
+    ap.add_argument(
+        "--run-limit-sec",
+        type=float,
+        default=60.0,
+        help="Bound every START at the UNO Q firmware layer.",
+    )
     ap.add_argument("--case-retries", type=int, default=2)
     ap.add_argument("--capture-retries", type=int, default=4)
     ap.add_argument("--retry-delay", type=float, default=0.2)
@@ -228,6 +238,8 @@ def main() -> int:
     ap.add_argument("--adb-device", default=os.environ.get("UNOQ_ADB_DEVICE", ""), help="ADB serial for --adb-router-fallback.")
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
     args = ap.parse_args()
+    if not 0.1 <= args.run_limit_sec <= 600.0:
+        ap.error("--run-limit-sec must be between 0.1 and 600 seconds")
 
     configure_adb_router_fallback(args.adb_router_fallback or bool(args.adb_device), args.adb_device or None)
 
@@ -263,11 +275,13 @@ def main() -> int:
     result: dict = {
         "ts": ts,
         "base": base,
+        "run_metadata": collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
         "la_rate": args.la_rate,
         "la_duration": args.la_duration,
         "min_handoff_gap_ns": args.min_handoff_gap_ns,
         "freq_ramp_hz_per_s": args.freq_ramp_hz_per_s,
         "settle_margin_s": args.settle_margin_s,
+        "run_limit_sec": args.run_limit_sec,
         "freqs": [],
         "estop": [],
     }
@@ -285,7 +299,13 @@ def main() -> int:
                     log(f"WARN: scalar freq retry {attempt}/{args.case_retries} freq={freq:.1f}")
                     safe_stop(base)
                     time.sleep(args.retry_delay)
-                cmds = ["CLEAR", "MODE VF", f"SET FREQ {freq:.1f}", "START"]
+                cmds = [
+                    "CLEAR",
+                    "MODE VF",
+                    f"SET FREQ {freq:.1f}",
+                    f"SET RUNLIMIT {args.run_limit_sec:.3f}",
+                    "START",
+                ]
                 settle_timeout_s = settle_timeout_for(args, freq)
                 cmds_ok = send_cmds_retry(base, cmds, retries=1, retry_delay_s=0.2)
                 steady_ok, st, dt = wait_scalar_steady(
@@ -357,7 +377,18 @@ def main() -> int:
             estop_tag = f"scalar_estop_{freq:.1f}".replace(".", "p")
             rec_tag = f"scalar_recover_{freq:.1f}".replace(".", "p")
 
-            run_cmds_ok = send_cmds_retry(base, ["CLEAR", "MODE VF", f"SET FREQ {freq:.1f}", "START"], retries=1, retry_delay_s=0.2)
+            run_cmds_ok = send_cmds_retry(
+                base,
+                [
+                    "CLEAR",
+                    "MODE VF",
+                    f"SET FREQ {freq:.1f}",
+                    f"SET RUNLIMIT {args.run_limit_sec:.3f}",
+                    "START",
+                ],
+                retries=1,
+                retry_delay_s=0.2,
+            )
             settle_timeout_s = settle_timeout_for(args, freq)
             run_ok, run_st, run_dt = wait_scalar_steady(
                 base,
@@ -409,7 +440,12 @@ def main() -> int:
                 retry_delay_s=args.retry_delay,
             )
 
-            rec_cmd_ok = send_cmds_retry(base, ["ESTOP CLEAR", "START"], retries=1, retry_delay_s=0.2)
+            rec_cmd_ok = send_cmds_retry(
+                base,
+                ["ESTOP CLEAR", f"SET RUNLIMIT {args.run_limit_sec:.3f}", "START"],
+                retries=1,
+                retry_delay_s=0.2,
+            )
             rec_ok, rec_st, rec_dt = wait_scalar_steady(
                 base,
                 freq_cmd=freq,

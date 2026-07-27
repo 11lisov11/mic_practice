@@ -44,6 +44,21 @@ def probe_url(url: str, timeout_s: float = 2.0, attempts: int = 10, delay_s: flo
     return False
 
 
+def probe_status_api(url: str, timeout_s: float = 2.0, attempts: int = 3, delay_s: float = 0.25) -> bool:
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    for attempt in range(attempts):
+        try:
+            with opener.open(url, timeout=timeout_s) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+            if isinstance(payload, dict) and payload.get("ok") is True and isinstance(payload.get("data"), dict):
+                return True
+        except Exception:
+            pass
+        if attempt + 1 < attempts:
+            time.sleep(delay_s)
+    return False
+
+
 def start_adb_server() -> None:
     try:
         run(["adb", "start-server"])
@@ -133,6 +148,28 @@ def main() -> int:
     ap.add_argument("--probe-attempts", type=int, default=10)
     args = ap.parse_args()
 
+    target = f"http://127.0.0.1:{args.forward_port}"
+    if probe_status_api(target + "/api/status", timeout_s=args.probe_timeout):
+        log(f"PC URL already active: {target}")
+        if not args.bridge:
+            return 0
+        log(f"LAN bridge: http://{args.bridge_host}:{args.bridge_port} -> {target}")
+        cmd = [
+            sys.executable,
+            "-u",
+            "tools/ui_http_bridge.py",
+            "--listen-host",
+            str(args.bridge_host),
+            "--listen-port",
+            str(args.bridge_port),
+            "--target",
+            target,
+            "--timeout",
+            str(args.bridge_timeout),
+        ]
+        run(cmd, env=vpn_safe_env())
+        return 0
+
     start_adb_server()
     device = args.device or detect_device()
     if not device:
@@ -146,8 +183,7 @@ def main() -> int:
         return 2
 
     run(["adb", "-s", device, "forward", f"tcp:{args.forward_port}", f"tcp:{args.remote_port}"])
-    target = f"http://127.0.0.1:{args.forward_port}"
-    if not probe_url(target + "/api/status", timeout_s=args.probe_timeout, attempts=args.probe_attempts):
+    if not probe_status_api(target + "/api/status", timeout_s=args.probe_timeout, attempts=args.probe_attempts):
         log(f"ERROR: forward is up but {target}/api/status is not responding")
         return 3
     log(f"PC URL: {target}")

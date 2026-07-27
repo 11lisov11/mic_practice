@@ -51,6 +51,7 @@ install_import_stubs()
 
 import ui_pwm_case as case
 import active_pwm_guard as active_guard
+import ui_pwm_suite as suite
 
 
 @dataclass
@@ -184,6 +185,18 @@ def main() -> int:
             "commands_with_runlimit_preserves_existing",
             preserved == ["CLEAR", "SET RUNLIMIT 2.500", "START"],
             evidence={"commands": preserved},
+        )
+
+        sweep_zero = suite.sweep_step_commands(0.0, restart=True)
+        sweep_start = suite.sweep_step_commands(0.1, restart=True, run_limit_s=15.0)
+        sweep_continue = suite.sweep_step_commands(0.2, restart=False, run_limit_s=15.0)
+        add_case(
+            results,
+            "continuous_sweep_starts_only_at_capture_points",
+            sweep_zero == (["SET FREQ 0.0", "STOP"], False)
+            and sweep_start == (["SET RUNLIMIT 15.000", "SET FREQ 0.1", "START"], True)
+            and sweep_continue == (["SET RUNLIMIT 15.000", "SET FREQ 0.2"], True),
+            evidence={"zero": sweep_zero, "start": sweep_start, "continue": sweep_continue},
         )
 
         state.vdc = 0.0

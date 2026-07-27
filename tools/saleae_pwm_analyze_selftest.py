@@ -82,6 +82,28 @@ def no_pwm_rows() -> list[tuple[float, list[int]]]:
     ]
 
 
+def gated_pwm_rows() -> list[tuple[float, list[int]]]:
+    return replicate_pair_rows(
+        [
+            (0.0000, 0, 0),
+            (0.0001, 1, 0),
+            (0.0004, 0, 0),
+            (0.0005, 0, 1),
+            (0.0009, 0, 0),
+            (0.0011, 1, 0),
+            (0.0014, 0, 0),
+            (0.0015, 0, 1),
+            (0.0019, 0, 0),
+            (0.0111, 1, 0),
+            (0.0114, 0, 0),
+            (0.0115, 0, 1),
+            (0.0119, 0, 0),
+            (0.0121, 1, 0),
+            (0.0124, 0, 0),
+        ]
+    )
+
+
 def run_analyzer(
     repo: Path,
     csv_path: Path,
@@ -158,6 +180,9 @@ def run_case(
             assert_true(any(pair.get("both_high_seen") for pair in data["pairs"].values()), "overlap not detected in any pair")
         if name == "no_overlap_pwm":
             assert_true(all(pair.get("no_overlap") for pair in data["pairs"].values()), "no-overlap case reported overlap")
+        if name == "gated_pwm_frequency":
+            freq = float(data["channels"]["0"]["freq_hz_from_rising"])
+            assert_true(abs(freq - 1000.0) < 0.1, f"gated carrier expected 1000 Hz, got {freq}")
         return CaseResult(name=name, ok=True, analyzer_returncode=rc, analysis=data)
     except Exception as exc:
         return CaseResult(name=name, ok=False, detail=f"{type(exc).__name__}: {exc}", analyzer_returncode=rc, analysis=data)
@@ -200,6 +225,21 @@ def main() -> int:
                     "pwm_activity_pass": True,
                 },
                 use_csv_option=True,
+            ),
+            run_case(
+                repo,
+                root,
+                "gated_pwm_frequency",
+                gated_pwm_rows(),
+                True,
+                0,
+                {
+                    "pass": True,
+                    "expect_pwm": True,
+                    "overlap_analysis_pass": True,
+                    "no_overlap_pass": True,
+                    "pwm_activity_pass": True,
+                },
             ),
             run_case(
                 repo,

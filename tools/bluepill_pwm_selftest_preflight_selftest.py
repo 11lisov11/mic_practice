@@ -119,6 +119,7 @@ def run_dry_run_plans_restore_case() -> CaseResult:
         "restore_attempted": False,
         "has_upload_selftest": True,
         "has_upload_restore": True,
+        "capture_skips_inline_analysis": True,
         "upload_selftest_uses_python_module_platformio": True,
         "restore_uses_python_module_platformio": True,
         "upload_selftest_uses_bare_pio": False,
@@ -129,6 +130,7 @@ def run_dry_run_plans_restore_case() -> CaseResult:
             planned = summary.get("planned_commands", {}) if isinstance(summary.get("planned_commands"), dict) else {}
             upload_cmd = " ".join(str(x) for x in planned.get("upload_selftest", []))
             restore_cmd = " ".join(str(x) for x in planned.get("upload_restore", []))
+            capture_parts = [str(x) for x in planned.get("capture", [])]
             upload_parts = [str(x) for x in planned.get("upload_selftest", [])]
             restore_parts = [str(x) for x in planned.get("upload_restore", [])]
             actual = {
@@ -141,6 +143,7 @@ def run_dry_run_plans_restore_case() -> CaseResult:
                 "restore_attempted": summary.get("restore_attempted"),
                 "has_upload_selftest": "-e bluepill_pwm_selftest -t upload" in upload_cmd,
                 "has_upload_restore": "-e bluepill_uart_pwm -t upload" in restore_cmd,
+                "capture_skips_inline_analysis": "--no-analyze-pwm" in capture_parts,
                 "upload_selftest_uses_python_module_platformio": upload_parts[:3] == [sys.executable, "-m", "platformio"],
                 "restore_uses_python_module_platformio": restore_parts[:3] == [sys.executable, "-m", "platformio"],
                 "upload_selftest_uses_bare_pio": bool(upload_parts and upload_parts[0] == "pio"),

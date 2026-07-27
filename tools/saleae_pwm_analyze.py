@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+from bisect import bisect_left
 from pathlib import Path
+from statistics import median
 from typing import Any
 
 
@@ -95,15 +97,18 @@ def channel_summary(times: list[float], vals: list[int]) -> dict[str, Any]:
     if len(rising) >= 2:
         periods = [rising[i] - rising[i - 1] for i in range(1, len(rising)) if rising[i] > rising[i - 1]]
         if periods:
-            freq = 1.0 / (sum(periods) / len(periods))
+            # Diagnostic captures intentionally gate PWM on and off. The median
+            # rejects those long idle gaps while preserving the carrier period.
+            freq = 1.0 / median(periods)
+    total_high_time = high_time(times, vals)
     return {
         "initial": vals[0],
         "final": vals[-1],
         "edges": len(tr),
         "rising_edges": len(rising),
         "falling_edges": len(falling),
-        "high_time_s": high_time(times, vals),
-        "duty_ratio": (high_time(times, vals) / duration) if duration > 0.0 else 0.0,
+        "high_time_s": total_high_time,
+        "duty_ratio": (total_high_time / duration) if duration > 0.0 else 0.0,
         "freq_hz_from_rising": freq,
     }
 
@@ -130,13 +135,13 @@ def pair_summary(times: list[float], high_vals: list[int], low_vals: list[int]) 
 
     gaps: list[float] = []
     for t in high_fall:
-        after = [x for x in low_rise if x >= t]
-        if after:
-            gaps.append(after[0] - t)
+        idx = bisect_left(low_rise, t)
+        if idx < len(low_rise):
+            gaps.append(low_rise[idx] - t)
     for t in low_fall:
-        after = [x for x in high_rise if x >= t]
-        if after:
-            gaps.append(after[0] - t)
+        idx = bisect_left(high_rise, t)
+        if idx < len(high_rise):
+            gaps.append(high_rise[idx] - t)
 
     return {
         "overlap_high_s": overlap,

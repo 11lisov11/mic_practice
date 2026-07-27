@@ -15,6 +15,13 @@ static uint8_t s_parser_state = 0;
 static uint8_t s_parser_idx = 0;
 static uint8_t s_frame_buf[FRAME_LEN];
 static volatile bool s_rx_resync_req = false;
+static volatile uint16_t s_rx_error_count = 0;
+
+static void note_rx_error(void) {
+  if (s_rx_error_count != UINT16_MAX) {
+    ++s_rx_error_count;
+  }
+}
 
 static inline uint16_t rb_next(uint16_t v) {
   return (uint16_t)((v + 1U) % UART_RX_BUF_SIZE);
@@ -34,6 +41,7 @@ static void rb_push(uint8_t b) {
     // Flush and wait for a clean AA55 header instead.
     s_rx_tail = s_rx_head;
     s_rx_resync_req = true;
+    note_rx_error();
     return;
   }
   s_rx_buf[s_rx_head] = b;
@@ -59,6 +67,7 @@ void uart_link_init(UART_HandleTypeDef *huart) {
   s_rx_head = 0;
   s_rx_tail = 0;
   s_rx_resync_req = false;
+  s_rx_error_count = 0;
   parser_reset();
 
   __HAL_UART_ENABLE(s_uart);
@@ -92,6 +101,7 @@ void uart_link_isr(void) {
     // means the current frame boundary is untrusted; resync on the next header.
     s_rx_tail = s_rx_head;
     s_rx_resync_req = true;
+    note_rx_error();
     return;
   }
 
@@ -163,13 +173,32 @@ int uart_link_poll_frame(uint8_t *frame, uint8_t *fault_code) {
   return 0;
 }
 
-void uart_link_send(const uint8_t *frame, uint16_t len) {
-  if (!s_uart) return;
-  for (uint16_t i = 0; i < len; ++i) {
-    while (!(s_uart->Instance->SR & UART_FLAG_TXE)) {
+uint16_t uart_link_take_rx_error_count(void) {
+  const uint32_t primask = __get_PRIMASK();
+  __disable_irq();
+  const uint16_t count = s_rx_error_count;
+  s_rx_error_count = 0;
+  if (primask == 0U) {
+    __enable_irq();
+  }
+  return count;
+}
+
+static bool wait_for_uart_flag(uint32_t flag) {
+  const uint32_t started_ms = HAL_GetTick();
+  while ((s_uart->Instance->SR & flag) == 0U) {
+    if ((uint32_t)(HAL_GetTick() - started_ms) >= UART_TX_TIMEOUT_MS) {
+      return false;
     }
+  }
+  return true;
+}
+
+bool uart_link_send(const uint8_t *frame, uint16_t len) {
+  if (!s_uart || !frame) return false;
+  for (uint16_t i = 0; i < len; ++i) {
+    if (!wait_for_uart_flag(UART_FLAG_TXE)) return false;
     s_uart->Instance->DR = frame[i];
   }
-  while (!(s_uart->Instance->SR & UART_FLAG_TC)) {
-  }
+  return wait_for_uart_flag(UART_FLAG_TC);
 }

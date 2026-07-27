@@ -145,6 +145,7 @@ def main() -> int:
         str(args.saleae_port),
         "--outdir",
         str(run_dir),
+        "--no-analyze-pwm",
     ]
     if not args.no_auto_rate:
         capture_cmd.append("--auto-rate")

@@ -45,6 +45,14 @@ def log(msg: str) -> None:
     print(msg, flush=True)
 
 
+def find_logic_shortcut(requested: str) -> str:
+    if os.path.exists(requested):
+        return requested
+    folder = Path(requested).parent
+    candidates = sorted(folder.glob("Saleae Logic *.lnk"), key=lambda path: path.stat().st_mtime, reverse=True)
+    return str(candidates[0]) if candidates else requested
+
+
 def device_snapshot(port: int) -> dict:
     try:
         mgr = Manager.connect(port=port, connect_timeout_seconds=2)
@@ -191,11 +199,12 @@ def main() -> int:
         log("Restarting Logic2")
         stop_logic_processes()
         time.sleep(1.0)
-        if not os.path.exists(args.shortcut):
-            log(f"ERROR: Logic2 path not found: {args.shortcut}")
+        shortcut = find_logic_shortcut(args.shortcut)
+        if not os.path.exists(shortcut):
+            log(f"ERROR: Logic2 path not found: {shortcut}")
             return 2
         try:
-            target, cwd = resolve_logic_launch(args.shortcut)
+            target, cwd = resolve_logic_launch(shortcut)
         except Exception as exc:
             log(f"ERROR: failed to resolve Logic2 launch target: {exc}")
             return 2

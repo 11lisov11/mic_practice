@@ -171,7 +171,9 @@ int main(void) {
   boot_rsp[RSP_OFF_CRC] = proto_crc_xor(boot_rsp);
   spi_link_send(boot_rsp, FRAME_LEN);
 #else
-  uart_link_send(boot_ping, sizeof(boot_ping));
+  if (!uart_link_send(boot_ping, sizeof(boot_ping))) {
+    safety_on_bad_frame(FAULT_INTERNAL);
+  }
 #endif
 
   uint8_t cmd[FRAME_LEN];
@@ -188,6 +190,10 @@ int main(void) {
     res = spi_link_poll_frame(cmd, &fault_code);
 #else
     res = uart_link_poll_frame(cmd, &fault_code);
+    const uint16_t uart_rx_errors = uart_link_take_rx_error_count();
+    if (uart_rx_errors != 0U) {
+      safety_note_bad_frames(uart_rx_errors);
+    }
 #endif
     if (res == 1) {
       safety_on_valid_cmd(cmd);
@@ -196,7 +202,9 @@ int main(void) {
 #if LINK_USE_SPI
       spi_link_send(rsp, FRAME_LEN);
 #else
-      uart_link_send(rsp, FRAME_LEN);
+      if (!uart_link_send(rsp, FRAME_LEN)) {
+        safety_on_bad_frame(FAULT_INTERNAL);
+      }
 #endif
     } else if (res == -2) {
       // A single corrupted frame under inverter EMI must not immediately trip
@@ -212,7 +220,9 @@ int main(void) {
 #if LINK_USE_SPI
       spi_link_send(rsp, FRAME_LEN);
 #else
-      uart_link_send(rsp, FRAME_LEN);
+      if (!uart_link_send(rsp, FRAME_LEN)) {
+        safety_on_bad_frame(FAULT_INTERNAL);
+      }
 #endif
     } else if (res < 0) {
       // Ignore stray header mismatches to avoid spurious shutdowns on line noise.
@@ -231,7 +241,9 @@ int main(void) {
 #if LINK_USE_SPI
         spi_link_send(boot_rsp, FRAME_LEN);
 #else
-        uart_link_send(boot_ping, sizeof(boot_ping));
+        if (!uart_link_send(boot_ping, sizeof(boot_ping))) {
+          safety_on_bad_frame(FAULT_INTERNAL);
+        }
 #endif
         last_ping_ms = now;
       }

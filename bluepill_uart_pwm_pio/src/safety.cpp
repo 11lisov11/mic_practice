@@ -14,6 +14,11 @@ static safety_state_t s_state;
 static constexpr uint8_t SUPPORTED_EXT_FLAGS =
     EXT_PFC_SYNC | EXT_BRAKE_PWM | EXT_PRECHARGE_RELAY;
 
+static uint16_t saturating_add_u16(uint16_t value, uint16_t increment) {
+  const uint32_t sum = (uint32_t)value + (uint32_t)increment;
+  return (sum > UINT16_MAX) ? UINT16_MAX : (uint16_t)sum;
+}
+
 static void brake_set(bool active) {
   if (active) {
     if (BRAKE_ACTIVE_STATE) {
@@ -76,6 +81,23 @@ static void latch_fault(uint8_t fault_code) {
   force_safe_outputs();
 }
 
+static void update_heatsink_temperature(void) {
+#if USE_HEATSINK_TEMP
+  const bool sample_ok = adc_heatsink_sample_software(nullptr);
+  s_state.heatsink_temp_valid = sample_ok;
+#if HEATSINK_TEMP_PROTECTION_ENABLE
+  // A missing ADC sample is indistinguishable from a broken protection path.
+  s_state.heatsink_temp_fault = !sample_ok || adc_heatsink_fault_active();
+#else
+  s_state.heatsink_temp_fault = false;
+#endif
+  if (s_state.heatsink_temp_fault && !s_state.fault_latched) {
+    latch_fault(FAULT_OVERTEMP);
+    fan_control_set_pwm_q15(32767U);
+  }
+#endif
+}
+
 void safety_init(void) {
   memset(&s_state, 0, sizeof(s_state));
   s_state.fault_code = FAULT_OK;
@@ -90,9 +112,11 @@ void safety_init(void) {
   ipm15_set_brake_pwm(0.0f);
   fan_control_set_pwm_q15(0);
   pwm_safe_idle();
+  update_heatsink_temperature();
 }
 
 static bool can_clear_fault(const uint8_t *cmd) {
+  if (s_state.heatsink_temp_fault) return false;
   if (cmd[CMD_OFF_MODE] != MODE_OFF) return false;
   if (cmd[CMD_OFF_FLAGS] & FLAG_ENABLE) return false;
   if (cmd[CMD_OFF_FLAGS] & FLAG_ESTOP) return false;
@@ -106,7 +130,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   s_state.last_valid_ms = HAL_GetTick();
   s_state.link_ok = true;
   s_state.timeout_active = false;
-  s_state.good_cnt++;
+  s_state.good_cnt = saturating_add_u16(s_state.good_cnt, 1U);
 
   const bool estop_cmd = (cmd[CMD_OFF_FLAGS] & FLAG_ESTOP) != 0;
   const bool enable_cmd = (cmd[CMD_OFF_FLAGS] & FLAG_ENABLE) != 0;
@@ -134,6 +158,11 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
     ext_flags = 0;
     brake_q15 = 0;
     fan_q15 = 0;
+  }
+
+  if (s_state.heatsink_temp_fault) {
+    latch_fault(FAULT_OVERTEMP);
+    fan_control_set_pwm_q15(32767U);
   }
 
   s_state.last_mode = mode;
@@ -171,11 +200,15 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
 }
 
 void safety_note_bad_frame(void) {
-  s_state.bad_cnt++;
+  safety_note_bad_frames(1U);
+}
+
+void safety_note_bad_frames(uint16_t count) {
+  s_state.bad_cnt = saturating_add_u16(s_state.bad_cnt, count);
 }
 
 void safety_on_bad_frame(uint8_t fault_code) {
-  s_state.bad_cnt++;
+  safety_note_bad_frame();
   s_state.link_ok = false;
   s_state.fault_latched = true;
   s_state.fault_code = fault_code;
@@ -189,12 +222,7 @@ void safety_tick(void) {
   if (s_state.heatsink_temp_last_sample_ms == 0 ||
       (now - s_state.heatsink_temp_last_sample_ms) >= HEATSINK_TEMP_SAMPLE_MS) {
     s_state.heatsink_temp_last_sample_ms = now;
-    s_state.heatsink_temp_valid = adc_heatsink_sample_software(nullptr);
-    s_state.heatsink_temp_fault = s_state.heatsink_temp_valid && adc_heatsink_fault_active();
-    if (s_state.heatsink_temp_fault && !s_state.fault_latched) {
-      latch_fault(FAULT_OVERTEMP);
-      fan_control_set_pwm_q15(32767U);
-    }
+    update_heatsink_temperature();
   }
 #endif
 #if USE_PHASE_MEAS

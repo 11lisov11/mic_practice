@@ -4,6 +4,7 @@
 
 #define UART_BAUD 460800
 #define UART_RX_BUF_SIZE 1024
+#define UART_TX_TIMEOUT_MS 5U
 
 // Link selection (UNO Q -> Blue Pill)
 // 0 = UART (PA2/PA3), 1 = SPI1 slave (PA4/PA5/PA6/PA7)

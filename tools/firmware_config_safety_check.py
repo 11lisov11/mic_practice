@@ -354,6 +354,32 @@ def run_checks(repo: Path) -> list[CaseResult]:
 
     unoq_path = repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino"
     unoq_text = unoq_path.read_text(encoding="utf-8", errors="replace")
+    io_test_branch = unoq_text.split("} else if (io_test_eff && !estop_eff) {", 1)
+    if len(io_test_branch) == 2:
+        io_test_branch = io_test_branch[1].split("} else if", 1)[0]
+    else:
+        io_test_branch = ""
+    io_test_service_frame_safe = all(
+        token in io_test_branch
+        for token in (
+            "enable_eff = false;",
+            "diag_eff = false;",
+            "mode = BP_MODE_OFF;",
+            "du_eff = 0.0f;",
+            "dv_eff = 0.0f;",
+            "dw_eff = 0.0f;",
+        )
+    )
+    if io_test_service_frame_safe:
+        cases.append(ok_case("unoq_iotest_uses_disabled_service_frame", {"mode": "OFF", "enable": False, "pwm": "zero"}))
+    else:
+        cases.append(
+            fail_case(
+                "unoq_iotest_uses_disabled_service_frame",
+                "UNO Q IOTEST must carry relay flags in MODE_OFF with ENABLE=0 and zero PWM duties",
+            )
+        )
+
     bpfoc_body = function_body(unoq_text, "static bool handle_bpfoc_command")
     bpfoc_on_requires_safe_state = all(
         token in bpfoc_body
@@ -881,6 +907,44 @@ def run_checks(repo: Path) -> list[CaseResult]:
         cases.append(ok_case("fault_timeout_paths_share_force_safe_outputs", {"force_safe_outputs_calls": safety_text.count("force_safe_outputs();")}))
     else:
         cases.append(fail_case("fault_timeout_paths_share_force_safe_outputs", "fault, bad-frame and timeout paths must share force_safe_outputs()"))
+
+    uart_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "uart_link.cpp"
+    uart_text = uart_cpp.read_text(encoding="utf-8", errors="replace")
+    adc_text = adc_cpp.read_text(encoding="utf-8", errors="replace")
+    uart_tx_timeout_ok = (
+        "UART_TX_TIMEOUT_MS" in defs
+        and "static bool wait_for_uart_flag" in uart_text
+        and "HAL_GetTick() - started_ms" in uart_text
+        and "bool uart_link_send" in uart_text
+        and main_text.count("if (!uart_link_send") >= 4
+        and "safety_on_bad_frame(FAULT_INTERNAL);" in main_text
+    )
+    if uart_tx_timeout_ok:
+        cases.append(ok_case("uart_tx_timeout_forces_safe_fault", {"timeout_ms": int(macro_num(defs, "UART_TX_TIMEOUT_MS"))}))
+    else:
+        cases.append(fail_case("uart_tx_timeout_forces_safe_fault", "UART transmit must be bounded and force FAULT_INTERNAL instead of freezing active PWM"))
+
+    uart_rx_errors_reported = (
+        "s_rx_error_count" in uart_text
+        and "uart_link_take_rx_error_count" in uart_text
+        and "safety_note_bad_frames(uart_rx_errors);" in main_text
+        and "saturating_add_u16" in safety_text
+    )
+    if uart_rx_errors_reported:
+        cases.append(ok_case("uart_hardware_errors_are_saturated_and_reported", {"counter": "bad_cnt"}))
+    else:
+        cases.append(fail_case("uart_hardware_errors_are_saturated_and_reported", "UART framing/overrun and ring overflow errors must reach the saturated protocol bad counter"))
+
+    temp_fail_closed = (
+        "s_state.heatsink_temp_fault = !sample_ok || adc_heatsink_fault_active();" in safety_text
+        and "if (s_state.heatsink_temp_fault) return false;" in safety_text
+        and "update_heatsink_temperature();" in safety_text
+        and "if (!adc_heatsink_get(nullptr, &temp_c))" in adc_text
+    )
+    if temp_fail_closed:
+        cases.append(ok_case("heatsink_sensor_failure_is_fail_closed", {"fault": "FAULT_OVERTEMP"}))
+    else:
+        cases.append(fail_case("heatsink_sensor_failure_is_fail_closed", "Temperature ADC failure must latch a fault and block CLEAR while the failure remains live"))
 
     bp_poles = float(macro_num(defs, "AS5600_POLE_PAIRS"))
     uq_poles = unoq_pole_pairs(repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino")

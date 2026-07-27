@@ -335,6 +335,12 @@ def main() -> int:
     ap.add_argument("--build-only", action="store_true", help="Run only compile/build/offline protocol checks; do not touch HMI, UART, Saleae, or PWM.")
     ap.add_argument("--skip-hil", action="store_true")
     ap.add_argument("--skip-full-suite", action="store_true")
+    ap.add_argument(
+        "--full-suite-capture-every-hz",
+        type=float,
+        default=1.0,
+        help="Additional Saleae capture interval; use 0 for key frequencies only.",
+    )
     ap.add_argument("--skip-mic-compare", action="store_true")
     ap.add_argument("--with-fan", action="store_true", help="Run optional low-voltage fan PWM/tach preflight.")
     ap.add_argument("--fan-duties", default="0,0.3,0.6,1.0,0")
@@ -827,7 +833,7 @@ def main() -> int:
                             "--url",
                             args.url,
                             "--capture-every-hz",
-                            "1.0",
+                            str(max(0.0, args.full_suite_capture_every_hz)),
                             "--la-channels",
                             "0,1,2,3,4,5,6",
                             "--la-rate",

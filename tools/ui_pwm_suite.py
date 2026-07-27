@@ -40,6 +40,21 @@ MAX_OVERLAP_RATIO = DEFAULT_MAX_OVERLAP_RATIO
 DEFAULT_RUN_LIMIT_S = float(os.environ.get("UNOQ_TEST_RUNLIMIT_S", "3.0"))
 
 
+def sweep_step_commands(
+    freq_hz: float,
+    restart: bool,
+    run_limit_s: float = DEFAULT_RUN_LIMIT_S,
+) -> tuple[list[str], bool]:
+    set_freq = f"SET FREQ {freq_hz:.1f}"
+    if abs(freq_hz) <= 1e-9:
+        return [set_freq, "STOP"], False
+    # Refresh the watchdog at every sweep point without restarting PWM.
+    commands = [f"SET RUNLIMIT {max(0.1, run_limit_s):.3f}", set_freq]
+    if restart:
+        commands.append("START")
+    return commands, True
+
+
 def summary_writer(path: str):
     f = open(path, "w", newline="", encoding="utf-8")
     writer = csv.writer(f)
@@ -236,6 +251,12 @@ def main() -> int:
     parser.add_argument("--status-timeout", type=float, default=0.6)
     parser.add_argument("--freq-ramp-hz-per-s", type=float, default=3.0)
     parser.add_argument("--settle-margin-s", type=float, default=1.5)
+    parser.add_argument(
+        "--sweep-run-limit-s",
+        type=float,
+        default=15.0,
+        help="Sliding watchdog refreshed at every 0.1 Hz sweep point.",
+    )
     parser.add_argument("--saleae-host", default="127.0.0.1")
     parser.add_argument("--saleae-port", type=int, default=10430)
     # IPM15 EM_STOP shutdown input is typically active-low.
@@ -596,18 +617,18 @@ def main() -> int:
             capture_every = float(args.capture_every_hz)
             next_cap = f if capture_every > 0 else None
             while f <= f_max + 1e-6:
-                # 0.0 Hz is treated as STOP (PWM off) for safety.
-                if abs(f) <= 1e-9:
-                    step_cmds = [f"SET FREQ {f:.1f}", "STOP"]
-                    expect_pwm = False
-                else:
-                    step_cmds = [f"SET FREQ {f:.1f}", "START"]
-                    expect_pwm = True
                 do_cap = False
                 if is_key_freq(f):
                     do_cap = True
                 if next_cap is not None and f + 1e-6 >= next_cap:
                     do_cap = True
+                # Keep the sweep continuous and refresh its short watchdog.
+                # Capture points include START so a retry after safe_stop recovers.
+                step_cmds, expect_pwm = sweep_step_commands(
+                    f,
+                    restart=do_cap,
+                    run_limit_s=args.sweep_run_limit_s,
+                )
                 if do_cap:
                     tag = f"vf_{f:.1f}Hz".replace(".", "p")
                     def sweep_runner():

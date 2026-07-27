@@ -2631,9 +2631,11 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     dv_eff = 0.0f;
     dw_eff = 0.0f;
   } else if (io_test_eff && !estop_eff) {
-    enable_eff = true;
+    // Blue Pill applies service outputs in its MODE_OFF/ENABLE=0 path.
+    // Keeping this frame disabled prevents any PWM mode from being entered.
+    enable_eff = false;
     diag_eff = false;
-    mode = BP_MODE_DIAG;
+    mode = BP_MODE_OFF;
     ext_flags &= (uint8_t)(~BP_EXT_BRAKE_PWM);
     brake_q15 = 0;
     du_eff = 0.0f;

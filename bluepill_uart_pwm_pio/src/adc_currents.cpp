@@ -301,7 +301,7 @@ bool adc_heatsink_fault_active(void) {
   }
   float temp_c = 0.0f;
   if (!adc_heatsink_get(nullptr, &temp_c)) {
-    return false;
+    return true;
   }
   return temp_c >= HEATSINK_TEMP_TRIP_C;
 #else

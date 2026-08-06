@@ -262,7 +262,7 @@ def pc_direct_hmi_snapshot(port: int = 18080, timeout_s: float = 5.0) -> dict[st
         "hmi_processes": hmi_processes,
         "listeners": listeners if listener_ok else [],
         "stop_command": f"py -3 -u .\\tools\\pc_direct_hmi_service.py stop --port {int(port)}",
-        "start_command": f"py -3 -u .\\tools\\pc_direct_hmi_service.py start --serial COM3 --baud 460800 --port {int(port)}",
+        "start_command": f"py -3 -u .\\tools\\pc_direct_hmi_service.py start --serial COM3 --baud 115200 --port {int(port)}",
     }
 
 
@@ -323,7 +323,7 @@ def loopback_bauds(result: dict[str, Any]) -> list[int]:
     # A write-timeout at the runtime baud is below the STM32 protocol layer.
     # When only the nominal runtime baud is known, sweep the usual fallback
     # rates so the adapter/isolator is proven broadly before reconnecting STM32.
-    if bauds == [460800]:
+    if bauds in ([460800], [115200]):
         return list(DEFAULT_BAUD_SWEEP)
     return bauds
 

@@ -2,6 +2,7 @@
 import argparse
 import base64
 import csv
+import ipaddress
 import json
 import math
 import os
@@ -19,12 +20,14 @@ from saleae.automation import Manager
 from saleae.automation.capture import Capture
 from saleae.grpc import saleae_pb2
 import urllib.request
+from urllib.parse import urlparse
 
 from active_pwm_guard import start_allowed_by_bench_gate
 from run_metadata import collect_run_metadata
 
 BP_MAX_AGE_MS = 1000.0
 DEFAULT_RUN_LIMIT_S = float(os.environ.get("UNOQ_TEST_RUNLIMIT_S", "3.0"))
+_CONFIRM_HV_OFF_BENCH = False
 
 ADB_ROUTER_CMD_SNIPPET = r"""
 import base64, socket, sys, time
@@ -155,6 +158,11 @@ def command_requests_start(cmd: str) -> bool:
     return cmd.strip().upper() == "START"
 
 
+def configure_confirm_hv_off_bench(enabled: bool) -> None:
+    global _CONFIRM_HV_OFF_BENCH
+    _CONFIRM_HV_OFF_BENCH = bool(enabled)
+
+
 def max_start_vdc() -> float:
     raw = os.environ.get("UNOQ_MAX_START_VDC", "60.0").strip()
     try:
@@ -209,11 +217,22 @@ def start_allowed_by_vdc(base: str) -> bool:
         if not status_ok:
             log(f"ERROR: START blocked: unsafe status before START: {status_reason}.")
             return False
+        if _CONFIRM_HV_OFF_BENCH:
+            if int(st_num(st, "hmi_hv_enabled", 1.0)) != 0:
+                log("ERROR: START blocked: confirmed-HV-off bench mode requires hmi_hv_enabled=0.")
+                return False
+            if int(st_num(st, "hmi_hv_armed", 1.0)) != 0:
+                log("ERROR: START blocked: confirmed-HV-off bench mode requires hmi_hv_armed=0.")
+                return False
         vdc = status_vdc(st)
         if math.isfinite(vdc) and vdc >= 0.0:
             samples.append(vdc)
         if idx + 1 < start_vdc_samples():
             time.sleep(0.05)
+    if _CONFIRM_HV_OFF_BENCH:
+        sampled = f"max sampled vdc={max(samples):.2f} V" if samples else "vdc unavailable"
+        log(f"WARN: confirmed HV-off bench mode: ignoring {sampled}; all non-VDC START guards remain active.")
+        return True
     if not samples:
         log("ERROR: START blocked: status/vdc is not readable. Fix Vbus telemetry before any START.")
         return False
@@ -438,6 +457,29 @@ _START_CAPTURE_RETRIES = 2
 _DEVICE_REAPPEAR_TIMEOUT_S = 12.0
 DEFAULT_MAX_OVERLAP_RATIO = 5e-4
 DEFAULT_MIN_PULSE_WIDTH_NS = 100.0
+
+
+def wifi_target_check(url: str) -> tuple[bool, dict]:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").strip().lower()
+    info = {
+        "url": url.rstrip("/"),
+        "scheme": parsed.scheme.lower(),
+        "host": host,
+        "port": parsed.port,
+        "control_transport": "wifi_http",
+    }
+    if info["scheme"] not in ("http", "https") or not host:
+        return False, {**info, "error": "Wi-Fi target must be an absolute HTTP URL"}
+    if host == "localhost":
+        return False, {**info, "error": "loopback/ADB-forward target is not Wi-Fi"}
+    try:
+        address = ipaddress.ip_address(host)
+    except ValueError:
+        address = None
+    if address is not None and (address.is_loopback or address.is_unspecified):
+        return False, {**info, "error": "loopback/ADB-forward target is not Wi-Fi"}
+    return True, info
 
 
 def refresh_manager_connection(mgr: Manager, port: int) -> bool:
@@ -1029,6 +1071,12 @@ def safe_stop(base: str) -> None:
 
 def run_case(args) -> int:
     base = args.url.rstrip("/")
+    wifi_ok, control_info = wifi_target_check(base)
+    if args.require_wifi and not wifi_ok:
+        log(f"ERROR: {control_info.get('error', 'invalid Wi-Fi target')}")
+        return 2
+    previous_hv_off_bench = _CONFIRM_HV_OFF_BENCH
+    configure_confirm_hv_off_bench(bool(getattr(args, "confirm_hv_off_bench", False)))
     channels = [int(x) for x in args.la_channels.split(",") if x.strip() != ""]
 
     log(f"START case tag={args.tag} mode={args.mode} freq={args.freq} duty={args.duty}")
@@ -1182,6 +1230,7 @@ def run_case(args) -> int:
             "status": st,
             "metrics": metrics,
             "csv": csv_path,
+            "control": control_info if args.require_wifi else {"url": base, "control_transport": "http"},
         }
         summary_path = os.path.join(os.path.dirname(csv_path), "summary.json")
         with open(summary_path, "w", encoding="utf-8") as f:
@@ -1190,6 +1239,7 @@ def run_case(args) -> int:
         log(f"PASS={passed}")
         return 0 if passed else 4
     finally:
+        configure_confirm_hv_off_bench(previous_hv_off_bench)
         if mgr is not None:
             try:
                 mgr.close()
@@ -1201,6 +1251,12 @@ def run_case(args) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Single UI->PWM case with Saleae capture")
     parser.add_argument("--url", required=True)
+    parser.add_argument("--require-wifi", action="store_true", help="Reject localhost/ADB-forward URLs and record direct Wi-Fi HTTP evidence.")
+    parser.add_argument(
+        "--confirm-hv-off-bench",
+        action="store_true",
+        help="Ignore only VDC telemetry after physically disconnecting HV; all other START guards remain mandatory.",
+    )
     parser.add_argument("--mode", choices=["VF", "FOC", "DIAG", "DUTY"], required=True)
     parser.add_argument("--freq", type=float, default=0.0)
     parser.add_argument("--duty", default="")

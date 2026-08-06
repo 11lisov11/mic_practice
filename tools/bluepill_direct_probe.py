@@ -198,7 +198,7 @@ def available_ports() -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Probe direct PC -> Blue Pill UART protocol safely.")
     parser.add_argument("--port", default="auto", help="COM port, or auto")
-    parser.add_argument("--baud", type=int, default=460800)
+    parser.add_argument("--baud", type=int, default=115200)
     parser.add_argument("--all-baud", action="store_true", help="Probe common baud rates")
     parser.add_argument("--attempts", type=int, default=8)
     parser.add_argument("--timeout", type=float, default=0.2)

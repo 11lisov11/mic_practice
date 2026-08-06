@@ -48,6 +48,70 @@ def shell_quote(value: str) -> str:
     return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
+def server_args(firmware_update_token_file: str | None, standalone_hv: bool) -> str:
+    args = ""
+    if firmware_update_token_file:
+        args += " --firmware-update-token-file " + shell_quote(firmware_update_token_file)
+    if standalone_hv:
+        args += " --standalone-hv"
+    return args
+
+
+def autostart_script(remote: str, firmware_update_token_file: str | None, standalone_hv: bool) -> str:
+    extra_args = server_args(firmware_update_token_file, standalone_hv)
+    return (
+        "#!/bin/sh\n"
+        f"cd {shell_quote(remote)} || exit 1\n"
+        "mkdir -p logs\n"
+        "if command -v flock >/dev/null 2>&1; then\n"
+        "  exec 9>/tmp/unoq-hmi.lock\n"
+        "  flock -n 9 || exit 0\n"
+        "fi\n"
+        "if ss -ltn 2>/dev/null | grep -q ':8080'; then\n"
+        "  exit 0\n"
+        "fi\n"
+        "while [ ! -S /var/run/arduino-router.sock ]; do\n"
+        "  sleep 1\n"
+        "done\n"
+        "exec ./.venv/bin/python server.py --bind 0.0.0.0 --port 8080 "
+        "--router /var/run/arduino-router.sock"
+        f"{extra_args} >> logs/server.log 2>&1\n"
+    )
+
+
+def systemd_service() -> str:
+    return (
+        "[Unit]\n"
+        "Description=UNO Q motor control Wi-Fi HMI\n"
+        "After=network-online.target\n"
+        "Wants=network-online.target\n\n"
+        "[Service]\n"
+        "Type=simple\n"
+        "User=arduino\n"
+        "ExecStart=/home/arduino/bin/start_unoq_hmi.sh\n"
+        "Restart=always\n"
+        "RestartSec=2\n"
+        "StartLimitIntervalSec=0\n\n"
+        "[Install]\n"
+        "WantedBy=multi-user.target\n"
+    )
+
+
+def privileged_command(command: str) -> str:
+    root_cmd = shell_quote(command)
+    return (
+        "sh -lc "
+        + shell_quote(
+            "if [ \"$(id -u)\" = 0 ]; then sh -lc "
+            + root_cmd
+            + "; elif command -v sudo >/dev/null 2>&1 && sudo -n true >/dev/null 2>&1; "
+            "then sudo -n sh -lc "
+            + root_cmd
+            + "; else exit 77; fi"
+        )
+    )
+
+
 def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
     check_cmd = f"cd {shell_quote(remote)} && ./.venv/bin/python -c 'import msgpack'"
     if ok(adb + ["shell", check_cmd]):
@@ -101,24 +165,13 @@ def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
     run(adb + ["shell", install_cmd])
 
 
-def install_autostart(adb: list[str], remote: str, firmware_update_token_file: str | None) -> None:
-    firmware_update_args = ""
-    if firmware_update_token_file:
-        firmware_update_args = (
-            " --firmware-update-token-file "
-            + shell_quote(firmware_update_token_file)
-        )
-    script = (
-        "#!/bin/sh\n"
-        f"cd {remote} || exit 1\n"
-        "mkdir -p logs\n"
-        "if ss -ltn 2>/dev/null | grep -q ':8080'; then\n"
-        "  exit 0\n"
-        "fi\n"
-        "exec ./.venv/bin/python server.py --bind 0.0.0.0 --port 8080 "
-        "--router /var/run/arduino-router.sock"
-        f"{firmware_update_args} >> logs/server.log 2>&1\n"
-    )
+def install_autostart(
+    adb: list[str],
+    remote: str,
+    firmware_update_token_file: str | None,
+    standalone_hv: bool,
+) -> bool:
+    script = autostart_script(remote, firmware_update_token_file, standalone_hv)
     remote_script = "/home/arduino/bin/start_unoq_hmi.sh"
     run(adb + ["shell", "mkdir -p /home/arduino/bin"])
     run(adb + ["shell", "cat > /tmp/start_unoq_hmi.sh <<'SH'\n" + script + "SH\n"])
@@ -132,6 +185,25 @@ def install_autostart(adb: list[str], remote: str, firmware_update_token_file: s
         )
     )
     run(adb + ["shell", cron_cmd])
+    service = systemd_service()
+    run(adb + ["shell", "cat > /tmp/unoq-hmi.service <<'UNIT'\n" + service + "UNIT\n"])
+    install_service = privileged_command(
+        "install -m 0644 /tmp/unoq-hmi.service /etc/systemd/system/unoq-hmi.service && "
+        "systemctl daemon-reload && systemctl enable unoq-hmi.service"
+    )
+    installed = ok(adb + ["shell", install_service])
+    if installed:
+        remove_cron = (
+            "sh -lc "
+            + shell_quote(
+                "crontab -l 2>/dev/null | grep -v '/home/arduino/bin/start_unoq_hmi.sh' | crontab -"
+            )
+        )
+        run(adb + ["shell", remove_cron])
+        log("Autostart: systemd service installed; duplicate cron watchdog removed.")
+    else:
+        log("WARN: systemd install unavailable; using cron fallback only.")
+    return installed
 
 
 def main() -> int:
@@ -163,6 +235,11 @@ def main() -> int:
         "--no-autostart",
         action="store_true",
         help="Do not install/update the user crontab HMI watchdog",
+    )
+    ap.add_argument(
+        "--standalone-hv",
+        action="store_true",
+        help="Install the fail-closed phone HV arm workflow; it remains unarmed after every restart.",
     )
     args = ap.parse_args()
 
@@ -219,22 +296,33 @@ def main() -> int:
                 except OSError:
                     pass
 
+    systemd_installed = False
     if not args.no_autostart:
-        install_autostart(
+        systemd_installed = install_autostart(
             adb,
             args.remote,
             args.firmware_update_token_file if firmware_update_enabled else None,
+            bool(args.standalone_hv),
         )
 
     if args.restart:
         log("Restarting server...")
         run(adb + ["shell", "mkdir -p " + args.remote + "/logs"])
-        firmware_update_args = ""
-        if firmware_update_enabled:
-            firmware_update_args = (
-                " --firmware-update-token-file "
-                + shell_quote(args.firmware_update_token_file)
+        if systemd_installed:
+            restart_service = privileged_command("systemctl restart unoq-hmi.service")
+            run(adb + ["shell", restart_service])
+            wait_for_port = (
+                "sh -lc 'for i in $(seq 1 50); do "
+                "ss -ltn 2>/dev/null | grep -q \":8080\" && exit 0; sleep 0.2; "
+                "done; exit 1'"
             )
+            run(adb + ["shell", wait_for_port])
+            log("DONE")
+            return 0
+        extra_args = server_args(
+            args.firmware_update_token_file if firmware_update_enabled else None,
+            bool(args.standalone_hv),
+        )
         # Kill by port 8080 first (robust and avoids pkill matching the current shell argv).
         kill_and_start = (
             "sh -lc '"
@@ -243,7 +331,7 @@ def main() -> int:
             # Wait for the port to be released.
             "for i in 1 2 3 4 5 6 7 8 9 10; do ss -ltnp 2>/dev/null | grep -q \":8080\" || break; sleep 0.2; done; "
             f"cd {args.remote} && nohup ./.venv/bin/python server.py --bind 0.0.0.0 --port 8080 --router /var/run/arduino-router.sock "
-            f"{firmware_update_args} "
+            f"{extra_args} "
             "> logs/server.log 2>&1 & "
             # Wait for the new server to bind.
             "for i in 1 2 3 4 5 6 7 8 9 10; do ss -ltnp 2>/dev/null | grep -q \":8080\" && exit 0; sleep 0.2; done; exit 1'"

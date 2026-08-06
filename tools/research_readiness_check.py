@@ -826,7 +826,7 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
                         "restore_hmi_safe_status",
                         "Active PWM requires /api/status to be reachable and to report SAFE, pwm=0, enable=false, estop=0, bp_fault=0, bp_bad/bp_bad_cnt=0.",
                     ),
-                    bench_action_commands.get("restore_hmi_safe_status", "py -3 -u .\\tools\\unoq_web_server.py --serial COM3 --baud 460800 --port 18080"),
+                    bench_action_commands.get("restore_hmi_safe_status", "py -3 -u .\\tools\\unoq_web_server.py --serial COM3 --baud 115200 --port 18080"),
                 )
 
     if "live_status_available" in names:

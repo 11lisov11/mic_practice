@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define UART_BAUD 460800
+#define UART_BAUD 115200
 #define UART_RX_BUF_SIZE 1024
 #define UART_TX_TIMEOUT_MS 5U
 
@@ -11,7 +11,7 @@
 #define LINK_USE_SPI 0
 
 #define PWM_FREQ_HZ 10000
-#define PWM_DEADTIME_NS 800
+#define PWM_DEADTIME_NS 2000
 #define PWM_MIN_PERCENT 5
 #define PWM_MAX_PERCENT 95
 

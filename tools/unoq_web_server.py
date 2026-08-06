@@ -1344,7 +1344,7 @@ def uart_worker(state: SharedState, port: str, baud: int, rate_hz: float, rx_tim
 def main() -> int:
     ap = argparse.ArgumentParser(description="PC-direct HMI for Blue Pill UART PWM firmware.")
     ap.add_argument("--serial", required=True, help="Serial port to Blue Pill, e.g. /dev/ttyUSB0")
-    ap.add_argument("--baud", type=int, default=460800)
+    ap.add_argument("--baud", type=int, default=115200)
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8080)
     ap.add_argument("--rate", type=float, default=50.0, help="UART command rate (Hz)")

@@ -166,6 +166,7 @@ def main() -> int:
     ap.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     ap.add_argument("--pio-dir", type=Path, default=Path("bluepill_uart_pwm_pio"))
     ap.add_argument("--env", default="bluepill_uart_pwm")
+    ap.add_argument("--upload-port", default="", help="Optional PlatformIO upload port, for example COM6 for the serial bootloader.")
     ap.add_argument("--channels", default="0,1,2,3,4,5,6")
     ap.add_argument("--pairs", default="0:1,2:3,4:5")
     ap.add_argument("--rate", type=int, default=24_000_000)
@@ -199,6 +200,7 @@ def main() -> int:
         "dry_run": bool(args.dry_run),
         "safe_only": True,
         "runtime_env": args.env,
+        "upload_port": args.upload_port,
         "pio_dir": str(pio_dir),
         "channels": [int(x) for x in args.channels.split(",") if x.strip()],
         "pairs": args.pairs,
@@ -217,7 +219,10 @@ def main() -> int:
 
     py = sys.executable
     build_cmd = platformio_run_cmd(pio_dir, args.env)
-    upload_cmd = platformio_run_cmd(pio_dir, args.env, "-t", "upload")
+    upload_args = ["-t", "upload"]
+    if args.upload_port:
+        upload_args.extend(["--upload-port", args.upload_port])
+    upload_cmd = platformio_run_cmd(pio_dir, args.env, *upload_args)
     capture_cmd = [
         py,
         "-u",

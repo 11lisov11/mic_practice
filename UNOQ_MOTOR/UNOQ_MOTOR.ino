@@ -41,8 +41,15 @@
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
+#ifndef UART_ECHO_TEST
 #define UART_ECHO_TEST 0
+#endif
+#ifndef PIN_TOGGLE_TEST
 #define PIN_TOGGLE_TEST 0
+#endif
+#ifndef UART_TEST_SERIAL1
+#define UART_TEST_SERIAL1 0
+#endif
 // ----------------------- Pins -----------------------
 // PWM pins for IPM (6 signals)
 // J2: 3=PWM-1H, 5=PWM-1L, 7=PWM-2H, 9=PWM-2L, 11=PWM-3H, 13=PWM-3L
@@ -60,10 +67,10 @@ static const bool USE_EXTERNAL_PWM = true;
 static const bool USE_NUCLEO_SPI = false;
 static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
-static const uint32_t NUCLEO_UART_BAUD = 460800;
+static const uint32_t NUCLEO_UART_BAUD = 115200;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // Keep the UNO Q Zephyr Serial TX path comfortably below line rate.
-// 32 bytes at 460800 baud takes ~0.70 ms on the wire. In practice RouterBridge,
+// 32 bytes at 115200 baud takes ~2.78 ms on the wire. In practice RouterBridge,
 // HTTP polling and Saleae captures can starve Serial polling briefly; 10 ms gives
 // a 100 Hz command stream while leaving much more RX headroom.
 static const uint32_t NUCLEO_RUN_MIN_SEND_US = 10000;
@@ -3399,7 +3406,7 @@ void setup() {
   Serial.begin(RPC_BAUD);
 #endif
 #if UART_TEST_SERIAL1
-  LOG_SERIAL.begin(RPC_BAUD);
+  NUCLEO_SERIAL.begin(NUCLEO_UART_BAUD);
 #endif
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
@@ -3429,7 +3436,7 @@ void loop() {
 #if UART_TEST_SERIAL1
   if ((uint32_t)(now - last_uart1) >= 1000U) {
     last_uart1 = now;
-    LOG_SERIAL.println("S1");
+    NUCLEO_SERIAL.println("S1");
   }
 #endif
 #if !PIN_TOGGLE_TEST

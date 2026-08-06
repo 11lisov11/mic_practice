@@ -51,7 +51,7 @@ UM2014 прямо пишет: **плата требует +5 V и +3.3 V чер�
 
 ## 2. Коммутация (проводка)
 
-### 2.1. Runtime UART ↔ Blue Pill (460800)
+### 2.1. Runtime UART ↔ Blue Pill (115200)
 Текущий PC-direct вариант:
 
 * USB-UART `TX` -> Blue Pill `PA3 (USART2_RX)`

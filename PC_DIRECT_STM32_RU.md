@@ -160,9 +160,9 @@ loopback больше не считается доказательством: п
 
 ```powershell
 py -3 -u .\tools\pc_direct_hmi_service.py status --port 18080
-py -3 -u .\tools\pc_direct_hmi_service.py start --serial COM3 --baud 460800 --port 18080
+py -3 -u .\tools\pc_direct_hmi_service.py start --serial COM3 --baud 115200 --port 18080
 py -3 -u .\tools\pc_direct_hmi_service.py stop --port 18080
-py -3 -u .\tools\pc_direct_hmi_service.py restart --serial COM3 --baud 460800 --port 18080
+py -3 -u .\tools\pc_direct_hmi_service.py restart --serial COM3 --baud 115200 --port 18080
 ```
 
 `stop` завершает только процессы `unoq_web_server.py` с указанным `--port`,
@@ -172,14 +172,14 @@ py -3 -u .\tools\pc_direct_hmi_service.py restart --serial COM3 --baud 460800 --
 Прямой запуск оставлен только как ручной fallback:
 
 ```powershell
-py -3 -u .\tools\unoq_web_server.py --serial COM3 --baud 460800 --port 18080
+py -3 -u .\tools\unoq_web_server.py --serial COM3 --baud 115200 --port 18080
 ```
 
 Если используется `web_hmi/server.py` напрямую с serial-endpoint на Linux/UNO Q,
 baud задавать явно, иначе старые установки могли остаться на 115200:
 
 ```powershell
-py -3 -u .\web_hmi\server.py --router serial:/dev/ttyUSB0 --serial-baud 460800 --port 8080
+py -3 -u .\web_hmi\server.py --router serial:/dev/ttyUSB0 --serial-baud 115200 --port 8080
 ```
 
 Открыть:

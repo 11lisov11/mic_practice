@@ -30,6 +30,7 @@ from ui_pwm_case import (  # noqa: E402
     status_fault_free,
     status_mode_matches,
     vf_steady_matches,
+    wifi_target_check,
 )
 from saleae.automation import Manager
 from saleae.automation.capture import Capture
@@ -243,6 +244,7 @@ def main() -> int:
     global MAX_OVERLAP_RATIO
     parser = argparse.ArgumentParser(description="Full UI->PWM test suite with Saleae captures")
     parser.add_argument("--url", required=True)
+    parser.add_argument("--require-wifi", action="store_true", help="Reject localhost/ADB-forward URLs and record direct Wi-Fi HTTP evidence.")
     parser.add_argument("--la-channels", default="0,1,2,3,4,5,6")
     parser.add_argument("--la-rate", type=int, default=2000000)
     parser.add_argument("--la-duration", type=float, default=0.7)
@@ -281,6 +283,10 @@ def main() -> int:
     MAX_OVERLAP_RATIO = max(0.0, float(args.max_overlap_ratio))
 
     base = args.url.rstrip("/")
+    wifi_ok, control_info = wifi_target_check(base)
+    if args.require_wifi and not wifi_ok:
+        log(f"ERROR: {control_info.get('error', 'invalid Wi-Fi target')}")
+        return 2
     channels = [int(x) for x in args.la_channels.split(",") if x.strip() != ""]
     brake_active_high = args.brake_active_high == 1
 
@@ -309,8 +315,10 @@ def main() -> int:
     summary_path = os.path.join(args.outdir, "summary.csv")
     metadata_path = os.path.join(args.outdir, "run_metadata.json")
     with open(metadata_path, "w", encoding="utf-8") as f:
+        metadata = collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+        metadata["control"] = control_info if args.require_wifi else {"url": base, "control_transport": "http"}
         json.dump(
-            collect_run_metadata(os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))),
+            metadata,
             f,
             ensure_ascii=False,
             indent=2,

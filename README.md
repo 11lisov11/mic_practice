@@ -112,6 +112,26 @@ arduino-cli compile --fqbn arduino:zephyr:unoq:link_mode=static .\UNOQ_MOTOR
 python tools/adb_deploy_web_hmi.py --device <ADB_ID> --restart
 ```
 
+ADB здесь используется только для установки. Deployer ставит `unoq-hmi.service` с автоматическим рестартом, ожиданием `/var/run/arduino-router.sock` и резервным cron-watchdog. После установки рабочий канал управления не требует USB: открыть `http://<UNOQ_IP>:8080` напрямую по LAN/Wi-Fi.
+
+Доказательство, что PWM-команда идёт не через ADB-forward/localhost:
+
+```powershell
+py -3 -u tools\ui_pwm_case.py --url http://<UNOQ_IP>:8080 --require-wifi --mode DIAG --tag wifi_diag --la-channels 0,1,2,3,4,5,6 --la-rate 2000000 --la-duration 0.7
+```
+
+`--require-wifi` отклоняет `localhost` и `127.0.0.1`; в `summary.json` записываются адрес UNO Q и `control_transport=wifi_http`. Полный suite поддерживает тот же флаг.
+
+Для автономного управления с телефона без подключённого ПК установить fail-closed HV-режим:
+
+```powershell
+py -3 -u tools\adb_deploy_web_hmi.py --device <ADB_ID> --restart --standalone-hv
+```
+
+После каждого запуска UNO Q силовой пуск заблокирован. В HMI требуется вручную ввести `ARM 310V`; разрешение выдаётся на 30 секунд только при живой связи с Blue Pill, состоянии `SAFE`, `pwm=0`, отсутствии `ESTOP`, `bp_fault` и ошибок UART, свежей телеметрии шины `100..400 В` и правдоподобной температуре радиатора. Любая команда, создающая выходной сигнал, повторно проверяет эти условия. Тайм-аут или потеря контроля снимает разрешение и отправляет `STOP`, затем `ESTOP`. Это программное ограждение не заменяет внешний E-STOP, аппаратный shutdown IPM, предохранитель, предзаряд и закрытый корпус.
+
+Если канал `J2-14 -> PA5` не показывает реальное напряжение шины или канал температуры `J2-26 -> PB0` недостоверен, автономный HV-пуск должен оставаться заблокированным. Не обходить эти проверки подстановкой тестовых значений.
+
 ### Wi-Fi прошивка логики UNO Q
 Сначала один раз включить endpoint через USB/ADB. Локальный token-file не коммитится:
 
@@ -170,6 +190,14 @@ runtime-прошивка. Скрипт не включает PWM и не отп�
 py -3 -u .\tools\bluepill_runtime_static_preflight.py --confirm-hv-off
 ```
 
+Если ST-Link недоступен, подготовлено окружение штатного ROM-загрузчика через USB-UART 3,3 В. Сначала физически отключить UNO Q от `PA2/PA3`, выбрать источник UART `PC`, установить `BOOT0=1` и перезапустить Blue Pill. Затем выполнить безопасную прошивку с обязательной проверкой Saleae:
+
+```powershell
+py -3 -u .\tools\bluepill_runtime_static_preflight.py --confirm-hv-off --env bluepill_uart_pwm_serial --upload-port COM6
+```
+
+После записи установить `BOOT0=0`, перезапустить Blue Pill, полностью отключить TX USB-UART от `PA3`, выбрать источник UART `UNO` и только затем прошить UNO Q с той же скоростью. Одновременно подключать к `PA3` выходы TX от UNO Q и USB-UART запрещено.
+
 Проверка без прошивки и без захвата:
 
 ```powershell
@@ -224,11 +252,9 @@ py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080 `
   --with-bluepill-pwm-selftest --confirm-hv-off --with-fan --with-bpfoc
 ```
 
-Важно: текущий подключенный Saleae/Logic2 может ограничивать частоту до
-`500 kS/s`. Этого достаточно для грубой проверки наличия PWM и отсутствия
-явного overlap, но недостаточно для точного подтверждения `PWM_DEADTIME_NS=800`
-нс. Для строгого deadtime-теста нужен захват с существенно большей частотой
-дискретизации.
+Текущий подключенный Saleae/Logic2 работает до `2 MS/s` (`500 нс/отсчёт`).
+Поэтому runtime использует консервативный `PWM_DEADTIME_NS=2000`: четыре отсчёта
+на dead-time позволяют проверять все три комплементарные пары этим анализатором.
 
 ## Рекомендуемый HIL safety-прогон
 Если нужен один воспроизводимый полный прогон проекта:

@@ -106,9 +106,45 @@ def run_runlimit_case() -> CaseResult:
     )
 
 
+def run_remote_helper_case() -> CaseResult:
+    actual = {
+        "embedded_msgpack": "import base64, json, msgpack" in seq.ANDROID_SNIPPET,
+        "no_external_router_rpc": "from router_rpc" not in seq.ANDROID_SNIPPET,
+        "venv_python": seq.DEFAULT_REMOTE_PYTHON.endswith("/.venv/bin/python"),
+        "snippet_compiles": True,
+    }
+    try:
+        compile(seq.ANDROID_SNIPPET, "<adb-router-sequence>", "exec")
+    except SyntaxError:
+        actual["snippet_compiles"] = False
+    expected = {key: True for key in actual}
+    return CaseResult(
+        name="standalone_remote_rpc_helper",
+        ok=actual == expected,
+        expected=expected,
+        actual=actual,
+        detail="" if actual == expected else "remote helper still depends on undeployed modules",
+    )
+
+
+def run_adb_device_parse_case() -> CaseResult:
+    sample = "List of devices attached\nabc123 device product:uno_q\noffline offline\n"
+    actual = seq.parse_adb_devices(sample)
+    expected = ["abc123"]
+    return CaseResult(
+        name="adb_device_autodetect_parser",
+        ok=actual == expected,
+        expected=expected,
+        actual=actual,
+        detail="" if actual == expected else "ADB device parser mismatch",
+    )
+
+
 def cases() -> list[CaseResult]:
     return [
         run_runlimit_case(),
+        run_remote_helper_case(),
+        run_adb_device_parse_case(),
         run_vdc_case("status_vdc_prefers_max_readable", base_status(vdc=11.0, bp_vdc=14.0), 14.0),
         run_vdc_case("status_vdc_missing_is_nan", without_vbus(), "nan"),
         run_bad_case("bad_count_ok", base_status(), 0),

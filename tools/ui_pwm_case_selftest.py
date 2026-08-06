@@ -68,6 +68,8 @@ class TestState:
         self.include_vbus = True
         self.bp_bad = 0
         self.bp_bad_cnt = 0
+        self.hmi_hv_enabled = 0
+        self.hmi_hv_armed = 0
         self.cmd_status = 200
         self.cmd_payload: dict[str, Any] = {"ok": True}
         self.commands: list[str] = []
@@ -94,6 +96,8 @@ class Handler(BaseHTTPRequestHandler):
                 "bp_bad_cnt": int(st.bp_bad_cnt),
                 "link": True,
                 "bp_rsp_age_ms": 1,
+                "hmi_hv_enabled": int(st.hmi_hv_enabled),
+                "hmi_hv_armed": int(st.hmi_hv_armed),
             }
             if st.include_vbus:
                 data["vdc"] = float(st.vdc)
@@ -163,6 +167,12 @@ def main() -> int:
         return bool(bench_gate_allowed["value"])
 
     results: list[CaseResult] = []
+    wifi_ok, wifi_info = case.wifi_target_check("http://192.168.1.138:8080")
+    add_case(results, "wifi_target_accepts_lan_ip", wifi_ok and wifi_info.get("control_transport") == "wifi_http", evidence=wifi_info)
+    loopback_ok, loopback_info = case.wifi_target_check("http://127.0.0.1:18080")
+    add_case(results, "wifi_target_rejects_adb_forward", (not loopback_ok) and "not Wi-Fi" in loopback_info.get("error", ""), evidence=loopback_info)
+    localhost_ok, localhost_info = case.wifi_target_check("http://localhost:8080")
+    add_case(results, "wifi_target_rejects_localhost", (not localhost_ok) and "not Wi-Fi" in localhost_info.get("error", ""), evidence=localhost_info)
     try:
         case.post_cmd_adb_router = fake_fallback
         case.start_allowed_by_bench_gate = fake_start_allowed
@@ -267,6 +277,33 @@ def main() -> int:
         state.include_vbus = True
         os.environ.pop("UNOQ_ALLOW_HV", None)
 
+        state.vdc = 315.0
+        state.commands.clear()
+        fallback_calls.clear()
+        case.configure_confirm_hv_off_bench(True)
+        ok = case.post_cmd(base, "START")
+        add_case(
+            results,
+            "confirmed_hv_off_bench_ignores_only_vdc_guard",
+            ok and fallback_calls == [] and state.commands == ["START"],
+            evidence={"ok": ok, "fallback_calls": list(fallback_calls), "commands": list(state.commands)},
+        )
+        case.configure_confirm_hv_off_bench(False)
+
+        state.hmi_hv_enabled = 1
+        state.commands.clear()
+        fallback_calls.clear()
+        case.configure_confirm_hv_off_bench(True)
+        ok = case.post_cmd(base, "START")
+        add_case(
+            results,
+            "confirmed_hv_off_bench_rejects_enabled_hv_mode",
+            (not ok) and fallback_calls == [] and state.commands == [],
+            evidence={"ok": ok, "fallback_calls": list(fallback_calls), "commands": list(state.commands)},
+        )
+        case.configure_confirm_hv_off_bench(False)
+        state.hmi_hv_enabled = 0
+
         state.vdc = 0.0
         state.bp_bad = 1
         state.bp_bad_cnt = 0
@@ -299,6 +336,7 @@ def main() -> int:
             evidence={"ok": ok, "fallback_calls": list(fallback_calls), "commands": list(state.commands)},
         )
     finally:
+        case.configure_confirm_hv_off_bench(False)
         case.post_cmd_adb_router = original_fallback
         case.start_allowed_by_bench_gate = original_start_allowed
         for name, value in old_env.items():

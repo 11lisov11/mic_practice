@@ -15,15 +15,34 @@ from typing import Any
 from active_pwm_guard import start_allowed_by_bench_gate
 
 
-DEFAULT_DEVICE = "79204341"
+DEFAULT_DEVICE = ""
 DEFAULT_STATUS_URL = "http://127.0.0.1:18080"
 DEFAULT_CLEANUP = ["STOP", "ESTOP", "STOP"]
+DEFAULT_REMOTE_PYTHON = "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/.venv/bin/python"
 
 
 ANDROID_SNIPPET = r"""
-import base64, json, socket, sys, time, traceback
-sys.path.insert(0, '/data/local/tmp')
-from router_rpc import rpc_call
+import base64, json, msgpack, socket, sys, time, traceback
+
+
+_unpacker = msgpack.Unpacker(raw=False)
+
+
+def rpc_call(sock, msgid, method, params, timeout_s=1.5):
+    sock.sendall(msgpack.packb([0, msgid, method, params], use_bin_type=False))
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        try:
+            data = sock.recv(4096)
+        except socket.timeout:
+            continue
+        if not data:
+            raise RuntimeError('router closed')
+        _unpacker.feed(data)
+        for obj in _unpacker:
+            if isinstance(obj, list) and len(obj) >= 4 and obj[0] == 1 and obj[1] == msgid:
+                return obj
+    raise TimeoutError('router timeout')
 
 
 def emit(obj):
@@ -390,11 +409,38 @@ def build_steps(args: argparse.Namespace) -> list[Step]:
     return steps
 
 
+def parse_adb_devices(output: str) -> list[str]:
+    devices: list[str] = []
+    for raw in output.splitlines():
+        fields = raw.strip().split()
+        if len(fields) >= 2 and fields[1] == "device":
+            devices.append(fields[0])
+    return devices
+
+
+def resolve_adb_device(requested: str) -> str:
+    if requested.strip():
+        return requested.strip()
+    proc = subprocess.run(
+        ["adb", "devices"],
+        text=True,
+        capture_output=True,
+        timeout=5,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"adb devices failed: {proc.stderr.strip()}")
+    devices = parse_adb_devices(proc.stdout)
+    if len(devices) != 1:
+        raise RuntimeError(f"expected exactly one ADB device, found {devices}")
+    return devices[0]
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Run a bounded command sequence through one persistent UNO Q ADB router socket."
     )
     ap.add_argument("--device", default=DEFAULT_DEVICE)
+    ap.add_argument("--remote-python", default=DEFAULT_REMOTE_PYTHON)
     ap.add_argument("--status-url", default=DEFAULT_STATUS_URL)
     ap.add_argument("--cmd", action="append", help="Command step. Can be repeated.")
     ap.add_argument("--step", action="append", help="Ordered step: 'cmd:START' or 'sleep:0.2'. Can be repeated.")
@@ -435,6 +481,12 @@ def main() -> int:
     ap.add_argument("--timeout-s", type=float, default=0.0, help="ADB subprocess timeout. 0 = auto.")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
+
+    try:
+        args.device = resolve_adb_device(args.device)
+    except Exception as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
 
     try:
         steps = build_steps(args)
@@ -496,7 +548,7 @@ def main() -> int:
     started = time.monotonic()
     try:
         proc = subprocess.run(
-            ["adb", "-s", args.device, "shell", "python3", "-", encoded],
+            ["adb", "-s", args.device, "shell", args.remote_python, "-", encoded],
             input=ANDROID_SNIPPET,
             text=True,
             stdout=sys.stdout,

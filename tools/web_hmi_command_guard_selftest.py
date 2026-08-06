@@ -4,6 +4,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -41,6 +43,11 @@ def safe_status(**overrides: Any) -> dict[str, Any]:
         "bp_fault": 0,
         "bp_bad_cnt": 0,
         "bp_rsp_age_ms": 25,
+        "bp_vbus_age_ms": 25,
+        "bp_temp_valid": 1,
+        "bp_temp_fault": 0,
+        "bp_temp_age_ms": 25,
+        "bp_temp_c": 25.0,
         "bp_vdc": 0.0,
         "vdc": 0.0,
     }
@@ -73,6 +80,45 @@ def main() -> int:
     repo = Path(__file__).resolve().parents[1]
     mod = load_server_module(repo)
     cases: list[CaseResult] = []
+
+    now = 1000.0
+    ok, msg = mod.validate_bench_gate_attestation(
+        {"ready_for_active_pwm": True, "issued_at": 998.0, "expires_at": 1003.0},
+        now=now,
+    )
+    add_case(cases, "bench_attestation_accepts_fresh_green", ok, msg)
+    ok, msg = mod.validate_bench_gate_attestation(
+        {"ready_for_active_pwm": False, "issued_at": 998.0, "expires_at": 1003.0},
+        now=now,
+    )
+    add_case(cases, "bench_attestation_rejects_red", (not ok) and "not green" in msg, msg)
+    ok, msg = mod.validate_bench_gate_attestation(
+        {"ready_for_active_pwm": True, "issued_at": 980.0, "expires_at": 1003.0},
+        now=now,
+    )
+    add_case(cases, "bench_attestation_rejects_stale", (not ok) and "stale" in msg, msg)
+    ok, msg = mod.validate_bench_gate_attestation(
+        {"ready_for_active_pwm": True, "issued_at": 998.0, "expires_at": 999.0},
+        now=now,
+    )
+    add_case(cases, "bench_attestation_rejects_expired", (not ok) and "expired" in msg, msg)
+    ok, msg = mod.validate_bench_gate_attestation(
+        {"ready_for_active_pwm": True, "issued_at": 998.0, "expires_at": 1015.0},
+        now=now,
+    )
+    add_case(cases, "bench_attestation_rejects_long_window", (not ok) and "too long" in msg, msg)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        log_path = Path(tmp) / "unoq.log"
+        log_path.write_bytes(b"\x00\x002026-08-05 11:00:00 CMD STOP\n")
+        store = mod.LogStore(max_bytes=4096, log_path=str(log_path), file_max_bytes=4096)
+        lines = store.dump_since(0.0)
+        add_case(
+            cases,
+            "persistent_log_strips_sparse_nul_bytes",
+            lines == ["2026-08-05 11:00:00 CMD STOP"],
+            evidence=lines,
+        )
 
     class FakeTermios:
         B115200 = 115200
@@ -233,6 +279,8 @@ def main() -> int:
     add_case(cases, "guard_allows_start_with_green_bench_gate", ok, msg)
     ok, msg = guard(mod, "START", safe_status(), bench_gate_url="http://127.0.0.1:18080", bench_gate_runner=fake_bench_gate(False))
     add_case(cases, "guard_rejects_start_with_red_bench_gate", (not ok) and "fake bench gate red" in msg, msg)
+    ok, msg = guard(mod, "START", safe_status(), local_bench_gate=True)
+    add_case(cases, "guard_allows_start_with_explicit_local_gate", ok and "standalone" in msg, msg)
     ok, msg = guard(mod, "FAN OFF", safe_status(bp_fault=9, bp_bad_cnt=3, bp_rsp_age_ms=999999, vdc=315.0))
     add_case(cases, "guard_ignores_off_command", ok, msg)
     ok, msg = guard(mod, "BPFOC OFF", safe_status(bp_fault=9, bp_bad_cnt=3, bp_rsp_age_ms=999999, vdc=315.0))
@@ -276,6 +324,44 @@ def main() -> int:
     ok, msg = guard(mod, "START", safe_status(vdc=315.0, bp_vdc=315.0), disabled=True, bench_gate_runner=fake_bench_gate(False))
     add_case(cases, "guard_disabled_does_not_bypass_start_bench_gate", (not ok) and "bench gate" in msg, msg)
 
+    hv_cfg = mod.HvArmConfig(enabled=True, ttl_sec=30.0, min_vdc=100.0, max_vdc=400.0)
+    hv_status = safe_status(vdc=315.0, bp_vdc=315.0)
+    ok, msg = mod.hv_arm_precheck(hv_status, hv_cfg)
+    add_case(cases, "hv_arm_accepts_clean_315v_status", ok, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=60.0, bp_vdc=60.0), hv_cfg)
+    add_case(cases, "hv_arm_rejects_low_bus", (not ok) and "window" in msg, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_c=-38.0), hv_cfg)
+    add_case(cases, "hv_arm_rejects_implausible_temperature", (not ok) and "implausible" in msg, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_fault=1), hv_cfg)
+    add_case(cases, "hv_arm_rejects_temperature_fault", (not ok) and "temperature fault" in msg, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_bad_cnt=1), hv_cfg)
+    add_case(cases, "hv_arm_rejects_bad_uart_counter", (not ok) and "bad counter" in msg, msg)
+    ok, msg = mod.hv_runtime_check(hv_status, hv_cfg)
+    add_case(cases, "hv_runtime_accepts_clean_315v_status", ok, msg)
+    ok, msg = mod.hv_runtime_check(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_age_ms=2000), hv_cfg)
+    add_case(cases, "hv_runtime_rejects_stale_temperature", (not ok) and "stale" in msg, msg)
+
+    original_now = mod._now_ts
+    now_box = [1000.0]
+    try:
+        mod._now_ts = lambda: now_box[0]
+        arm = mod.HvArmState(hv_cfg)
+        ok, msg = arm.arm("WRONG", hv_status)
+        add_case(cases, "hv_arm_rejects_wrong_phrase", (not ok) and "mismatch" in msg, msg)
+        ok, msg = arm.arm(mod.DEFAULT_HV_ARM_CONFIRM, hv_status)
+        snap = arm.snapshot()
+        add_case(cases, "hv_arm_sets_bounded_window", ok and snap["hmi_hv_armed"] == 1 and snap["hmi_hv_remaining_s"] == 30.0, msg, snap)
+        ok, msg = arm.command_allowed(safe_status(vdc=0.0, bp_vdc=0.0))
+        add_case(cases, "hv_arm_rechecks_live_bus_before_output", (not ok) and "window" in msg, msg)
+        ok, msg = arm.command_allowed(hv_status)
+        add_case(cases, "hv_arm_allows_output_with_fresh_live_status", ok, msg)
+        arm.mark_started()
+        now_box[0] = 1031.0
+        add_case(cases, "hv_arm_expiry_requests_safe_stop", arm.take_expired_session_action(), evidence=arm.snapshot())
+        add_case(cases, "hv_arm_expiry_clears_arm", arm.snapshot()["hmi_hv_armed"] == 0, evidence=arm.snapshot())
+    finally:
+        mod._now_ts = original_now
+
     class FakeRpc:
         def __init__(self, statuses: list[dict[str, Any] | None], stop_ok: bool = True) -> None:
             self.statuses = list(statuses)
@@ -293,6 +379,36 @@ def main() -> int:
             if data is None:
                 return False, None, "no status"
             return True, data, ""
+
+    class FakeLogs:
+        def __init__(self) -> None:
+            self.items: list[str] = []
+
+        def add(self, message: str) -> None:
+            self.items.append(message)
+
+    watchdog_arm = mod.HvArmState(hv_cfg)
+    ok, msg = watchdog_arm.arm(mod.DEFAULT_HV_ARM_CONFIRM, hv_status)
+    watchdog_arm.mark_started()
+    watchdog_rpc = FakeRpc([safe_status(vdc=315.0, bp_vdc=315.0, bp_fault=6)])
+    watchdog_logs = FakeLogs()
+    watchdog_app = mod.AppState(watchdog_rpc, watchdog_logs, status_log_interval=60.0, hv_arm=watchdog_arm)
+    watchdog_app.start_safety_watchdog()
+    time.sleep(0.35)
+    watchdog_app.stop_safety_watchdog()
+    add_case(
+        cases,
+        "hv_watchdog_forces_stop_and_estop_on_runtime_fault",
+        ok and watchdog_rpc.commands == ["STOP", "ESTOP"],
+        msg,
+        {"commands": watchdog_rpc.commands, "logs": watchdog_logs.items},
+    )
+    add_case(
+        cases,
+        "hv_watchdog_disarms_on_runtime_fault",
+        watchdog_arm.snapshot()["hmi_hv_armed"] == 0,
+        evidence=watchdog_arm.snapshot(),
+    )
 
     def firmware_update_safe(status: dict[str, Any] | None, max_vdc: float = 10.0) -> tuple[bool, dict[str, Any] | None, str, list[str]]:
         rpc = FakeRpc([status])

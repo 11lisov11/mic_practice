@@ -31,6 +31,7 @@ BUILD_ONLY_STEP_NAMES = (
     "bluepill_uart_diagnose_selftest",
     "uart_loopback_preflight_selftest",
     "adb_router_sequence_selftest",
+    "adb_deploy_web_hmi_selftest",
     "active_pwm_guard_selftest",
     "fan_preflight_selftest",
     "bpfoc_backend_preflight_selftest",
@@ -477,6 +478,12 @@ def main() -> int:
             step(
                 "adb_router_sequence_selftest",
                 [sys.executable, "-u", "tools\\adb_router_sequence_selftest.py"],
+                repo_root,
+                60.0,
+            )
+            step(
+                "adb_deploy_web_hmi_selftest",
+                [sys.executable, "-u", "tools\\adb_deploy_web_hmi_selftest.py"],
                 repo_root,
                 60.0,
             )

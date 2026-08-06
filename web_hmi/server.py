@@ -13,6 +13,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.request
 from collections import deque
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Callable, Deque, List, Optional, Tuple
@@ -54,6 +55,12 @@ DEFAULT_REMOTEOCD_CFG = (
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 CMD_GUARD_MAX_AGE_MS = 1000.0
 DEFAULT_START_RUNLIMIT_SEC = 15.0
+DEFAULT_HV_ARM_TTL_SEC = 30.0
+DEFAULT_HV_ARM_MIN_VDC = 100.0
+DEFAULT_HV_ARM_MAX_VDC = 400.0
+DEFAULT_HV_ARM_CONFIRM = "ARM 310V"
+DEFAULT_HV_ARM_MIN_TEMP_C = -20.0
+DEFAULT_HV_ARM_MAX_TEMP_C = 90.0
 
 TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 if TOOLS_DIR not in sys.path:
@@ -175,7 +182,12 @@ class LogStore:
                 with open(self._log_path, "r", encoding="utf-8", errors="ignore") as f:
                     lines = f.read().splitlines()
                 out: List[str] = []
-                for line in lines:
+                for raw_line in lines:
+                    # Concurrent legacy writers could leave sparse NUL bytes in
+                    # the persistent log. Never expose them through /api/logs.
+                    line = raw_line.replace("\x00", "").strip()
+                    if not line:
+                        continue
                     ts = self._parse_ts(line)
                     if ts is None or ts >= since_ts:
                         out.append(line)
@@ -285,15 +297,19 @@ class CommandGuardConfig:
         disabled: bool = False,
         bench_gate_url: str = "",
         bench_gate_runner: Optional[Callable[[Callable[[str], None], Optional[str]], bool]] = None,
+        local_bench_gate: bool = False,
     ) -> None:
         self.max_vdc = max_vdc
         self.allow_hv = allow_hv
         self.disabled = disabled
         self.bench_gate_url = bench_gate_url
         self.bench_gate_runner = bench_gate_runner
+        self.local_bench_gate = local_bench_gate
 
 
 def start_bench_gate_check(cfg: CommandGuardConfig) -> tuple[bool, str]:
+    if cfg.local_bench_gate:
+        return True, "standalone live safety gate"
     logs: list[str] = []
     if cfg.bench_gate_runner is not None:
         ok = bool(cfg.bench_gate_runner(logs.append, cfg.bench_gate_url or None))
@@ -306,6 +322,48 @@ def start_bench_gate_check(cfg: CommandGuardConfig) -> tuple[bool, str]:
         return True, "ok"
     detail = "; ".join(logs) if logs else "bench gate refused START"
     return False, f"bench gate blocked START: {detail}"
+
+
+def validate_bench_gate_attestation(payload: object, now: Optional[float] = None) -> tuple[bool, str]:
+    if not isinstance(payload, dict):
+        return False, "attestation payload is not an object"
+    if payload.get("ready_for_active_pwm") is not True:
+        return False, "attestation is not green"
+    current = time.time() if now is None else float(now)
+    try:
+        issued_at = float(payload.get("issued_at"))
+        expires_at = float(payload.get("expires_at"))
+    except (TypeError, ValueError):
+        return False, "attestation timestamps are missing"
+    if not (math.isfinite(issued_at) and math.isfinite(expires_at)):
+        return False, "attestation timestamps are invalid"
+    if issued_at > current + 1.0:
+        return False, "attestation was issued in the future"
+    if current - issued_at > 10.0:
+        return False, "attestation is stale"
+    if expires_at < current:
+        return False, "attestation has expired"
+    if expires_at - issued_at > 10.0:
+        return False, "attestation validity window is too long"
+    return True, "ok"
+
+
+def attested_bench_gate_runner(log_fn: Callable[[str], None], url: Optional[str]) -> bool:
+    target = str(url or "").strip()
+    if not target:
+        log_fn("bench-gate attestation URL is missing")
+        return False
+    try:
+        request = urllib.request.Request(target, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(request, timeout=12.0) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        log_fn(f"bench-gate attestation request failed: {type(exc).__name__}: {exc}")
+        return False
+    ok, detail = validate_bench_gate_attestation(payload)
+    if not ok:
+        log_fn(f"bench-gate attestation rejected: {detail}")
+    return ok
 
 
 def _status_bp_bad(data: dict) -> int:
@@ -366,6 +424,165 @@ def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig)
     if command_requests_start(cmd):
         return start_bench_gate_check(cfg)
     return True, "ok"
+
+
+class HvArmConfig:
+    def __init__(
+        self,
+        enabled: bool = False,
+        ttl_sec: float = DEFAULT_HV_ARM_TTL_SEC,
+        min_vdc: float = DEFAULT_HV_ARM_MIN_VDC,
+        max_vdc: float = DEFAULT_HV_ARM_MAX_VDC,
+        confirm: str = DEFAULT_HV_ARM_CONFIRM,
+        min_temp_c: float = DEFAULT_HV_ARM_MIN_TEMP_C,
+        max_temp_c: float = DEFAULT_HV_ARM_MAX_TEMP_C,
+    ) -> None:
+        self.enabled = bool(enabled)
+        self.ttl_sec = max(1.0, float(ttl_sec))
+        self.min_vdc = float(min_vdc)
+        self.max_vdc = float(max_vdc)
+        self.confirm = str(confirm)
+        self.min_temp_c = float(min_temp_c)
+        self.max_temp_c = float(max_temp_c)
+
+
+def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+    if not cfg.enabled:
+        return False, "standalone HV mode is disabled"
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_bp_bad(data)
+    if bad != 0:
+        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+        return False, f"DC bus is outside HV arm window: vdc={vdc:.1f} V"
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "DC bus telemetry is stale"
+
+    if _as_int(data, "bp_temp_valid", 0) != 1:
+        return False, "heatsink temperature is invalid"
+    if _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature fault is active"
+    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "heatsink temperature is stale"
+    temp_c = _as_float(data, "bp_temp_c", float("nan"))
+    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
+        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    return True, "ok"
+
+
+def hv_runtime_check(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+    if data is None:
+        return False, "status unavailable"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_bp_bad(data)
+    if bad != 0:
+        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+        return False, f"DC bus is outside HV runtime window: vdc={vdc:.1f} V"
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "DC bus telemetry is stale"
+
+    if _as_int(data, "bp_temp_valid", 0) != 1:
+        return False, "heatsink temperature is invalid"
+    if _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature fault is active"
+    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "heatsink temperature is stale"
+    temp_c = _as_float(data, "bp_temp_c", float("nan"))
+    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
+        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    return True, "ok"
+
+
+class HvArmState:
+    def __init__(self, cfg: HvArmConfig) -> None:
+        self.cfg = cfg
+        self._lock = threading.Lock()
+        self._expires_at = 0.0
+        self._started = False
+
+    def arm(self, confirm: str, data: Optional[dict]) -> tuple[bool, str]:
+        if not secrets.compare_digest(str(confirm), self.cfg.confirm):
+            return False, "confirmation phrase mismatch"
+        ok, reason = hv_arm_precheck(data, self.cfg)
+        if not ok:
+            return False, reason
+        with self._lock:
+            self._expires_at = _now_ts() + self.cfg.ttl_sec
+            self._started = False
+        return True, "armed"
+
+    def disarm(self) -> None:
+        with self._lock:
+            self._expires_at = 0.0
+            self._started = False
+
+    def command_allowed(self, data: Optional[dict]) -> tuple[bool, str]:
+        with self._lock:
+            remaining = self._expires_at - _now_ts()
+            if remaining <= 0.0:
+                if not self._started:
+                    self._expires_at = 0.0
+                return False, "HV arm is not active"
+        return hv_arm_precheck(data, self.cfg)
+
+    def mark_started(self) -> None:
+        with self._lock:
+            if self._expires_at > _now_ts():
+                self._started = True
+
+    def take_expired_session_action(self) -> bool:
+        with self._lock:
+            if self._expires_at <= 0.0:
+                return False
+            if self._expires_at > _now_ts():
+                return False
+            must_stop = self._started
+            self._expires_at = 0.0
+            self._started = False
+            return must_stop
+
+    def runtime_monitor_required(self) -> bool:
+        with self._lock:
+            return self._started and self._expires_at > _now_ts()
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            remaining = max(0.0, self._expires_at - _now_ts())
+            if remaining <= 0.0 and not self._started:
+                self._expires_at = 0.0
+            return {
+                "hmi_hv_enabled": int(self.cfg.enabled),
+                "hmi_hv_armed": int(remaining > 0.0),
+                "hmi_hv_started": int(self._started and remaining > 0.0),
+                "hmi_hv_remaining_s": round(remaining, 1),
+                "hmi_hv_min_vdc": self.cfg.min_vdc,
+                "hmi_hv_max_vdc": self.cfg.max_vdc,
+            }
 
 
 class FirmwareUpdateConfig:
@@ -1038,16 +1255,53 @@ class AppState:
         status_log_interval: float,
         firmware_update: Optional[FirmwareUpdateConfig] = None,
         command_guard: Optional[CommandGuardConfig] = None,
+        hv_arm: Optional[HvArmState] = None,
         start_runlimit_sec: float = DEFAULT_START_RUNLIMIT_SEC,
     ) -> None:
         self.rpc = rpc
         self.logs = logs
         self.firmware_update = firmware_update
         self.command_guard = command_guard or CommandGuardConfig(DEFAULT_CMD_GUARD_MAX_VDC)
+        self.hv_arm = hv_arm or HvArmState(HvArmConfig())
         self.start_runlimit_sec = max(0.1, float(start_runlimit_sec))
         self._status_log_interval = status_log_interval
         self._last_status_log = 0.0
         self._lock = threading.Lock()
+        self._watchdog_stop = threading.Event()
+        self._watchdog_thread: Optional[threading.Thread] = None
+
+    def start_safety_watchdog(self) -> None:
+        if self._watchdog_thread is not None and self._watchdog_thread.is_alive():
+            return
+        self._watchdog_stop.clear()
+        self._watchdog_thread = threading.Thread(target=self._safety_watchdog_loop, daemon=True)
+        self._watchdog_thread.start()
+
+    def stop_safety_watchdog(self) -> None:
+        self._watchdog_stop.set()
+        if self._watchdog_thread is not None:
+            self._watchdog_thread.join(timeout=1.0)
+
+    def _safety_watchdog_loop(self) -> None:
+        while not self._watchdog_stop.wait(0.2):
+            reason = ""
+            if self.hv_arm.take_expired_session_action():
+                reason = "HV_ARM_EXPIRED"
+            elif self.hv_arm.runtime_monitor_required():
+                status_ok, status, status_err = self.rpc.get()
+                live_ok, live_err = hv_runtime_check(status if status_ok else None, self.hv_arm.cfg)
+                if not live_ok:
+                    reason = f"HV_RUNTIME_REJECT {status_err or live_err}"
+                    self.hv_arm.disarm()
+            if not reason:
+                continue
+            stop_ok, stop_err = self.rpc.cmd("STOP")
+            estop_ok, estop_err = self.rpc.cmd("ESTOP")
+            self.logs.add(
+                f"{reason} "
+                f"stop_ok={int(stop_ok)} stop_err={stop_err or '-'} "
+                f"estop_ok={int(estop_ok)} estop_err={estop_err or '-'}"
+            )
 
     def maybe_log_status(self, data: dict) -> None:
         now = _now_ts()
@@ -1137,6 +1391,9 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path == "/api/cmd":
             self._handle_cmd()
             return
+        if parsed.path == "/api/hv-arm":
+            self._handle_hv_arm()
+            return
         if parsed.path == "/api/firmware/update":
             self._handle_firmware_update(parsed)
             return
@@ -1162,6 +1419,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
             return
         guard_cfg = self.server.app.command_guard  # type: ignore[attr-defined]
+        armed_output_command = False
         if command_requests_start(cmd) or command_requests_service_output(cmd):
             st_ok, st_data, st_err = self.server.app.rpc.get()  # type: ignore[attr-defined]
             allowed, guard_err = command_guard_check(cmd, st_data if st_ok else None, guard_cfg)
@@ -1170,6 +1428,13 @@ class Handler(BaseHTTPRequestHandler):
                 self.server.app.logs.add(f"CMD_REJECT {cmd} {err}")  # type: ignore[attr-defined]
                 self._send_json({"ok": False, "error": err, "status": st_data}, 409)
                 return
+            armed_output_command = bool(self.server.app.hv_arm.cfg.enabled)  # type: ignore[attr-defined]
+            if armed_output_command:
+                arm_ok, arm_err = self.server.app.hv_arm.command_allowed(st_data)  # type: ignore[attr-defined]
+                if not arm_ok:
+                    self.server.app.logs.add(f"CMD_REJECT {cmd} {arm_err}")  # type: ignore[attr-defined]
+                    self._send_json({"ok": False, "error": arm_err, "status": st_data}, 409)
+                    return
         if command_requests_start(cmd):
             runlimit_cmd = f"SET RUNLIMIT {self.server.app.start_runlimit_sec:.3f}"  # type: ignore[attr-defined]
             limit_ok, limit_err = self.server.app.rpc.cmd(runlimit_cmd)  # type: ignore[attr-defined]
@@ -1180,6 +1445,10 @@ class Handler(BaseHTTPRequestHandler):
             self.server.app.logs.add(f"CMD {runlimit_cmd}")  # type: ignore[attr-defined]
         ok, err = self.server.app.rpc.cmd(cmd)  # type: ignore[attr-defined]
         if ok:
+            if armed_output_command:
+                self.server.app.hv_arm.mark_started()  # type: ignore[attr-defined]
+            if _cmd_head(cmd) in ("STOP", "ESTOP"):
+                self.server.app.hv_arm.disarm()  # type: ignore[attr-defined]
             self.server.app.logs.add(f"CMD {cmd}")  # type: ignore[attr-defined]
             self._send_json({"ok": True})
         else:
@@ -1191,8 +1460,43 @@ class Handler(BaseHTTPRequestHandler):
         if not ok or data is None:
             self._send_json({"ok": False, "error": err or "no response"}, 503)
             return
+        data.update(self.server.app.hv_arm.snapshot())  # type: ignore[attr-defined]
         self.server.app.maybe_log_status(data)  # type: ignore[attr-defined]
         self._send_json({"ok": True, "data": data})
+
+    def _handle_hv_arm(self) -> None:
+        request = self._read_json()
+        action = str(request.get("action", "arm")).strip().lower()
+        arm = self.server.app.hv_arm  # type: ignore[attr-defined]
+        if action == "disarm":
+            arm.disarm()
+            stop_ok, stop_err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
+            estop_ok, estop_err = self.server.app.rpc.cmd("ESTOP")  # type: ignore[attr-defined]
+            self.server.app.logs.add("HV_DISARM")  # type: ignore[attr-defined]
+            ok = bool(stop_ok and estop_ok)
+            self._send_json(
+                {
+                    "ok": ok,
+                    "error": "" if ok else f"STOP={stop_err or stop_ok}; ESTOP={estop_err or estop_ok}",
+                    "arm": arm.snapshot(),
+                },
+                200 if ok else 500,
+            )
+            return
+        if action != "arm":
+            self._send_json({"ok": False, "error": "unsupported HV arm action"}, 400)
+            return
+        st_ok, st_data, st_err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+        if not st_ok or st_data is None:
+            self._send_json({"ok": False, "error": st_err or "status unavailable"}, 503)
+            return
+        ok, reason = arm.arm(str(request.get("confirm", "")), st_data)
+        if not ok:
+            self.server.app.logs.add(f"HV_ARM_REJECT {reason}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": reason, "status": st_data, "arm": arm.snapshot()}, 409)
+            return
+        self.server.app.logs.add(f"HV_ARM ttl={arm.cfg.ttl_sec:.1f}s vdc={_status_vdc(st_data):.1f}")  # type: ignore[attr-defined]
+        self._send_json({"ok": True, "arm": arm.snapshot()})
 
     def _handle_logs(self, parsed) -> None:
         query = parse_qs(parsed.query)
@@ -1389,6 +1693,31 @@ def main() -> None:
     parser.add_argument("--cmd-guard-max-vdc", type=float, default=float(os.environ.get("UNOQ_CMD_GUARD_MAX_VDC", DEFAULT_CMD_GUARD_MAX_VDC)))
     parser.add_argument("--cmd-guard-allow-hv", action="store_true", default=_truthy_env("UNOQ_CMD_GUARD_ALLOW_HV"))
     parser.add_argument(
+        "--standalone-hv",
+        action="store_true",
+        default=_truthy_env("UNOQ_STANDALONE_HV"),
+        help="Enable the local live safety gate and expiring phone HV arm flow.",
+    )
+    parser.add_argument(
+        "--hv-arm-ttl-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_TTL_SEC", DEFAULT_HV_ARM_TTL_SEC)),
+    )
+    parser.add_argument(
+        "--hv-arm-min-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_MIN_VDC", DEFAULT_HV_ARM_MIN_VDC)),
+    )
+    parser.add_argument(
+        "--hv-arm-max-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_MAX_VDC", DEFAULT_HV_ARM_MAX_VDC)),
+    )
+    parser.add_argument(
+        "--hv-arm-confirm",
+        default=os.environ.get("UNOQ_HV_ARM_CONFIRM", DEFAULT_HV_ARM_CONFIRM),
+    )
+    parser.add_argument(
         "--start-runlimit-sec",
         type=float,
         default=float(os.environ.get("UNOQ_START_RUNLIMIT_SEC", DEFAULT_START_RUNLIMIT_SEC)),
@@ -1404,6 +1733,11 @@ def main() -> None:
         "--bench-gate-url",
         default=os.environ.get("UNOQ_BENCH_GATE_URL", ""),
         help="Live HMI URL used by bench_gate_report.py before accepting START. Defaults to this server on 127.0.0.1.",
+    )
+    parser.add_argument(
+        "--bench-gate-attestation-url",
+        default=os.environ.get("UNOQ_BENCH_GATE_ATTESTATION_URL", ""),
+        help="Short-lived PC bench-gate attestation URL. START fails closed if it is unavailable, red, stale or expired.",
     )
     parser.add_argument("--remoteocd-bin", default=DEFAULT_REMOTEOCD)
     parser.add_argument("--remoteocd-cfg", default=DEFAULT_REMOTEOCD_CFG)
@@ -1429,11 +1763,23 @@ def main() -> None:
             timeout_sec=args.firmware_update_timeout_sec,
             max_vdc=args.firmware_update_max_vdc,
         )
+    attestation_url = args.bench_gate_attestation_url.strip()
     command_guard = CommandGuardConfig(
         max_vdc=float(args.cmd_guard_max_vdc),
-        allow_hv=bool(args.cmd_guard_allow_hv),
+        allow_hv=bool(args.cmd_guard_allow_hv or args.standalone_hv),
         disabled=bool(args.cmd_guard_disable),
-        bench_gate_url=args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}",
+        bench_gate_url=attestation_url or args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}",
+        bench_gate_runner=attested_bench_gate_runner if attestation_url else None,
+        local_bench_gate=bool(args.standalone_hv),
+    )
+    hv_arm = HvArmState(
+        HvArmConfig(
+            enabled=bool(args.standalone_hv),
+            ttl_sec=float(args.hv_arm_ttl_sec),
+            min_vdc=float(args.hv_arm_min_vdc),
+            max_vdc=float(args.hv_arm_max_vdc),
+            confirm=str(args.hv_arm_confirm),
+        )
     )
     app = AppState(
         rpc,
@@ -1441,6 +1787,7 @@ def main() -> None:
         args.status_log_sec,
         firmware_update=firmware_update,
         command_guard=command_guard,
+        hv_arm=hv_arm,
         start_runlimit_sec=float(args.start_runlimit_sec),
     )
 
@@ -1448,11 +1795,17 @@ def main() -> None:
     server.app = app  # type: ignore[attr-defined]
     server.daemon_threads = True
 
-    print(f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router})")
+    print(
+        f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
+        f"standalone_hv={int(args.standalone_hv)})"
+    )
+    app.start_safety_watchdog()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
+    finally:
+        app.stop_safety_watchdog()
 
 
 if __name__ == "__main__":

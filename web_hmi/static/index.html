@@ -39,6 +39,27 @@
           <button class="btn estop full" id="estopBtn">Аварийный стоп</button>
         </div>
 
+        <div class="hv-arm-block" id="hvArmBlock" hidden>
+          <div class="hv-arm-head">
+            <div>
+              <div class="label">Силовая шина</div>
+              <strong id="hvArmStatus">HV заблокирована</strong>
+            </div>
+            <span class="hv-arm-timer" id="hvArmTimer">0.0 с</span>
+          </div>
+          <input
+            id="hvArmConfirm"
+            class="hv-arm-input"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="characters"
+            placeholder="Введите ARM 310V"
+          />
+          <button class="btn hv-arm full" id="hvArmBtn">Разрешить HV на 30 секунд</button>
+          <p class="hv-arm-note">Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.</p>
+        </div>
+
         <div class="io-block">
           <div class="label">IPM15 I/O</div>
           <div class="io-row">
@@ -78,6 +99,10 @@
           <div class="card">
             <div class="card-label">Контур Blue Pill</div>
             <div class="card-value" id="backendVal">DUTY</div>
+          </div>
+          <div class="card">
+            <div class="card-label">Связь STM32</div>
+            <div class="card-value" id="linkVal">--</div>
           </div>
           <div class="card">
             <div class="card-label">ШИМ</div>

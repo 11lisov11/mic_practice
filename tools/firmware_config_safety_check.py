@@ -354,6 +354,17 @@ def run_checks(repo: Path) -> list[CaseResult]:
 
     unoq_path = repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino"
     unoq_text = unoq_path.read_text(encoding="utf-8", errors="replace")
+    unoq_uart_match = re.search(r"\bNUCLEO_UART_BAUD\s*=\s*([0-9]+)\s*;", unoq_text)
+    bluepill_uart_baud = int(macro_num(defs, "UART_BAUD"))
+    if unoq_uart_match is None:
+        cases.append(fail_case("uart_baud_match", "UNOQ NUCLEO_UART_BAUD not found"))
+    else:
+        unoq_uart_baud = int(unoq_uart_match.group(1))
+        evidence = {"unoq": unoq_uart_baud, "bluepill": bluepill_uart_baud}
+        if unoq_uart_baud == bluepill_uart_baud:
+            cases.append(ok_case("uart_baud_match", evidence))
+        else:
+            cases.append(fail_case("uart_baud_match", "UNO Q and Blue Pill UART baud differ", evidence))
     io_test_branch = unoq_text.split("} else if (io_test_eff && !estop_eff) {", 1)
     if len(io_test_branch) == 2:
         io_test_branch = io_test_branch[1].split("} else if", 1)[0]

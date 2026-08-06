@@ -237,7 +237,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--write-timeout", type=float, default=2.0)
     ap.add_argument("--loopback-timeout", type=float, default=70.0)
     ap.add_argument("--hmi-port", type=int, default=DEFAULT_HMI_PORT)
-    ap.add_argument("--hmi-baud", type=int, default=460800)
+    ap.add_argument("--hmi-baud", type=int, default=115200)
     ap.add_argument("--hmi-timeout", type=float, default=1.0)
     ap.add_argument("--hmi-stop-timeout", type=float, default=10.0)
     ap.add_argument("--hmi-start-timeout", type=float, default=8.0)

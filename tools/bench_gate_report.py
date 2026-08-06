@@ -1300,7 +1300,7 @@ def main() -> int:
         next_actions.append(
             {
                 "id": "restore_hmi_safe_status",
-                "command": "py -3 -u .\\tools\\pc_direct_hmi_service.py start --serial COM3 --baud 460800 --port 18080",
+                "command": "py -3 -u .\\tools\\pc_direct_hmi_service.py start --serial COM3 --baud 115200 --port 18080",
                 "detail": (
                     "Restore live HMI/status before active PWM. /api/status must be reachable and show "
                     "SAFE, pwm=0, enable=false, estop=0, bp_fault=0, bp_bad/bp_bad_cnt=0. "

@@ -54,7 +54,7 @@ py -3 -u .\tools\uart_loopback_preflight.py --confirm-loopback-wired --port COM3
 - После возврата TX/RX можно снова поднять безопасный HMI:
 
 ```powershell
-py -3 -u .\tools\pc_direct_hmi_service.py start --serial COM3 --baud 460800 --port 18080
+py -3 -u .\tools\pc_direct_hmi_service.py start --serial COM3 --baud 115200 --port 18080
 ```
 
 - Запусти протокольную диагностику:

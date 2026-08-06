@@ -29,7 +29,7 @@
 | `Saleae USB` | независимая проверка PWM/deadtime/overlap |
 
 Плюс низковольтная коммутация:
-- `UNO Q D0/D1 <-> Blue Pill PA2/PA3` UART `460800`;
+- `UNO Q D0/D1 <-> Blue Pill PA2/PA3` UART `115200`;
 - `Blue Pill <-> STEVAL J2` PWM/EM_STOP/ADC/I/O;
 - `Blue Pill <-> AS5600` I2C2 `PB10/PB11`;
 - общий `GND` всей логики.
@@ -86,7 +86,7 @@
 | `GND` | `GND` | общая земля |
 
 Параметры:
-- baud `460800`;
+- baud `115200`;
 - runtime frame protocol `UNOQ_MOTOR` -> `bluepill_uart_pwm_pio`;
 - command stream сейчас ограничен примерно `100 Hz`.
 

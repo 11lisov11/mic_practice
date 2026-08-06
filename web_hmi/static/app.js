@@ -5,6 +5,11 @@ const sysText = document.getElementById("sysText");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const estopBtn = document.getElementById("estopBtn");
+const hvArmBlock = document.getElementById("hvArmBlock");
+const hvArmStatus = document.getElementById("hvArmStatus");
+const hvArmTimer = document.getElementById("hvArmTimer");
+const hvArmConfirm = document.getElementById("hvArmConfirm");
+const hvArmBtn = document.getElementById("hvArmBtn");
 const modeToggle = document.getElementById("modeToggle");
 const modeButtons = Array.from(modeToggle.querySelectorAll(".seg"));
 const freqSlider = document.getElementById("freqSlider");
@@ -20,6 +25,7 @@ const logDownload = document.getElementById("logDownload");
 const stateVal = document.getElementById("stateVal");
 const modeVal = document.getElementById("modeVal");
 const backendVal = document.getElementById("backendVal");
+const linkVal = document.getElementById("linkVal");
 const pwmVal = document.getElementById("pwmVal");
 const speedVal = document.getElementById("speedVal");
 const vdcVal = document.getElementById("vdcVal");
@@ -46,6 +52,8 @@ let lastFanDuty = null;
 let pfcOn = false;
 let bpFocOn = false;
 let bpFocCanSwitch = false;
+let hvArmed = false;
+let hvArmLastError = "";
 
 function clamp01(value) {
   return Math.max(0, Math.min(1, Number(value)));
@@ -107,6 +115,18 @@ function bpModeName(mode) {
   return "OFF";
 }
 
+function bpFaultName(code) {
+  const names = {
+    1: "ESTOP",
+    2: "ТАЙМ-АУТ",
+    3: "CRC UART",
+    4: "КАДР UART",
+    5: "ВНУТРЕННЯЯ",
+    6: "ТЕМПЕРАТУРА",
+  };
+  return names[Number(code)] || `КОД ${Number(code)}`;
+}
+
 function setIoButtons() {
   if (pfcBtn) {
     pfcBtn.classList.toggle("active", pfcOn);
@@ -129,7 +149,27 @@ async function apiCmd(cmd) {
     body: JSON.stringify({ cmd }),
   });
   const data = await res.json().catch(() => ({ ok: false }));
+  if (data.ok !== true && hvArmStatus) {
+    hvArmLastError = data.error || "Команда отклонена";
+    hvArmStatus.textContent = hvArmLastError;
+  }
   return data.ok === true;
+}
+
+async function apiHvArm(action, confirm = "") {
+  const res = await fetch("/api/hv-arm", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, confirm }),
+  });
+  const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  if (data.ok !== true && hvArmStatus) {
+    hvArmLastError = data.error || "HV-разрешение отклонено";
+    hvArmStatus.textContent = hvArmLastError;
+  } else if (data.ok === true) {
+    hvArmLastError = "";
+  }
+  return data;
 }
 
 async function apiStatus() {
@@ -157,6 +197,16 @@ function setSystemStatus(data) {
     sysChip.classList.add("estop");
     return;
   }
+  const bpFault = Number(data.bp_fault || 0);
+  const bpBad = Number(data.bp_bad_cnt || data.bp_bad || 0);
+  if (bpFault !== 0 || bpBad !== 0) {
+    sysText.textContent = bpFault !== 0
+      ? `БЛОКИРОВКА: ${bpFaultName(bpFault)}`
+      : `ОШИБКА UART: ${bpBad}`;
+    sysChip.classList.remove("run", "stop");
+    sysChip.classList.add("estop");
+    return;
+  }
   if (Number(data.pwm || 0) === 0) {
     sysText.textContent = "СТОП";
     sysChip.classList.remove("run", "estop");
@@ -167,6 +217,27 @@ function setSystemStatus(data) {
   sysText.textContent = `РАЗГОН ДО ${target.toFixed(1)} Гц`;
   sysChip.classList.remove("stop", "estop");
   sysChip.classList.add("run");
+}
+
+function setHvArmUI(data) {
+  if (!hvArmBlock || !hvArmStatus || !hvArmTimer || !hvArmBtn) return;
+  const enabled = Number(data?.hmi_hv_enabled || 0) === 1;
+  hvArmBlock.hidden = !enabled;
+  if (!enabled) {
+    hvArmed = false;
+    return;
+  }
+  hvArmed = Number(data.hmi_hv_armed || 0) === 1;
+  const started = Number(data.hmi_hv_started || 0) === 1;
+  const remaining = Number(data.hmi_hv_remaining_s || 0);
+  hvArmBlock.classList.toggle("armed", hvArmed);
+  hvArmStatus.textContent = hvArmed
+    ? (started ? "HV-сеанс активен" : "HV разрешена, ожидается пуск")
+    : (hvArmLastError || "HV заблокирована");
+  hvArmTimer.textContent = `${remaining.toFixed(1)} с`;
+  hvArmBtn.textContent = hvArmed ? "Снять HV-разрешение" : "Разрешить HV на 30 секунд";
+  hvArmBtn.classList.toggle("disarm", hvArmed);
+  if (hvArmConfirm) hvArmConfirm.disabled = hvArmed;
 }
 
 function scheduleFreqSend(value) {
@@ -202,6 +273,22 @@ function scheduleFanSend(value) {
 startBtn.addEventListener("click", async () => {
   await apiCmd("START");
 });
+
+if (hvArmBtn) {
+  hvArmBtn.addEventListener("click", async () => {
+    const action = hvArmed ? "disarm" : "arm";
+    const confirm = hvArmConfirm ? hvArmConfirm.value.trim().toUpperCase() : "";
+    const result = await apiHvArm(action, confirm);
+    if (result.ok && hvArmConfirm) hvArmConfirm.value = "";
+    await refreshStatus();
+  });
+}
+
+if (hvArmConfirm) {
+  hvArmConfirm.addEventListener("input", () => {
+    hvArmLastError = "";
+  });
+}
 
 stopBtn.addEventListener("click", async () => {
   await apiCmd("STOP");
@@ -308,10 +395,18 @@ async function refreshStatus() {
     setModeUI(data.mode);
     setFreqUI(data.freq, true);
     setSystemStatus(data);
+    setHvArmUI(data);
     stateVal.textContent = data.state;
     if (backendVal) {
       const bpFoc = Number(data.bp_foc_backend || 0) === 1;
       backendVal.textContent = `${bpModeName(data.bp_cmd_mode)}${bpFoc ? " / opt-in" : ""}`;
+    }
+    if (linkVal) {
+      const bpFault = Number(data.bp_fault || 0);
+      const bpBad = Number(data.bp_bad_cnt || data.bp_bad || 0);
+      const bpAge = Number(data.bp_rsp_age_ms ?? data.bp_age_ms ?? -1);
+      const linkState = bpFault !== 0 ? bpFaultName(bpFault) : (bpBad !== 0 ? "ОШИБКА UART" : "OK");
+      linkVal.textContent = `${linkState} / bad=${bpBad} / ${bpAge.toFixed(0)} мс`;
     }
     pwmVal.textContent = data.pwm;
     speedVal.textContent = `${data.speed.toFixed(0)} об/мин`;
@@ -324,7 +419,7 @@ async function refreshStatus() {
       const tempValid = Number(data.bp_temp_valid || 0) === 1;
       const tempFault = Number(data.bp_temp_fault || 0) === 1 || Number(data.bp_fault || 0) === 6;
       tempVal.textContent = tempValid
-        ? `${tempC.toFixed(1)} C / ${tempV.toFixed(3)} V (${tempRaw})${tempFault ? " HOT" : ""}`
+        ? `${tempC.toFixed(1)} C / ${tempV.toFixed(3)} V (${tempRaw})${tempFault ? " ОШИБКА" : ""}`
         : `-- / ${tempV.toFixed(3)} V (${tempRaw})`;
     }
 
@@ -358,6 +453,15 @@ async function refreshStatus() {
       String(data.state || "") === "SAFE" &&
       Number(data.pwm || 0) === 0 &&
       Number(data.estop || 0) === 0;
+    const basicStartReady =
+      String(data.state || "") === "SAFE" &&
+      Number(data.pwm || 0) === 0 &&
+      Number(data.estop || 0) === 0 &&
+      Number(data.bp_fault || 0) === 0 &&
+      Number(data.bp_bad || 0) === 0 &&
+      Number(data.bp_bad_cnt || 0) === 0;
+    const standaloneHv = Number(data.hmi_hv_enabled || 0) === 1;
+    startBtn.disabled = !basicStartReady || (standaloneHv && !hvArmed);
 
     let brakeDuty = typeof data.brake_duty === "number" ? data.brake_duty : 0;
     if (!brakeDragging && brakeSlider) {
@@ -398,6 +502,7 @@ async function refreshStatus() {
   } catch (err) {
     setConnection(false);
     setSystemStatus(null);
+    startBtn.disabled = true;
     bpFocCanSwitch = false;
     setIoButtons();
     lastUpdate.textContent = "Нет связи";
@@ -408,6 +513,7 @@ setModeUI("FOC");
 setFreqUI(10.0);
 setConnection(false);
 setEstopButton(false);
+startBtn.disabled = true;
 setIoButtons();
 if (brakeSlider) updateBrakeReadout(brakeSlider.value);
 if (fanSlider) updateFanReadout(fanSlider.value);

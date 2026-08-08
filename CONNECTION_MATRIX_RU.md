@@ -1,5 +1,7 @@
 # Карта Коммутации MIC_AI REV 2.0
 
+> **Статус:** этот документ описывает проверенную legacy-коммутацию с Blue Pill. Новая целевая сборка на `NUCLEO-G431RB + X-NUCLEO-IHM09M2` описана в [NUCLEO_G431_MIGRATION_RU.md](NUCLEO_G431_MIGRATION_RU.md). Не смешивать распиновки двух архитектур.
+
 Каноническая принципиальная схема: [output/pdf/MIC_AI_REV2_SCHEMATIC.pdf](output/pdf/MIC_AI_REV2_SCHEMATIC.pdf).
 Полный список сетей и выводов: [hardware/mic_ai_rev2/MIC_AI_REV2_CONNECTIONS.csv](hardware/mic_ai_rev2/MIC_AI_REV2_CONNECTIONS.csv).
 

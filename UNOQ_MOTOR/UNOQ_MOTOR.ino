@@ -35,12 +35,12 @@
 // UART used for the Blue Pill link; do not also poll it as a text UI stream.
 #if USE_ROUTER_BRIDGE
 #define NUCLEO_SERIAL Serial1
-#define UI_SERIAL Serial2
 #else
 #define NUCLEO_SERIAL Serial
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
+static const uint32_t FW_BUILD_ID = 2026080704U;
 #ifndef UART_ECHO_TEST
 #define UART_ECHO_TEST 0
 #endif
@@ -74,6 +74,9 @@ static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // HTTP polling and Saleae captures can starve Serial polling briefly; 10 ms gives
 // a 100 Hz command stream while leaving much more RX headroom.
 static const uint32_t NUCLEO_RUN_MIN_SEND_US = 10000;
+// Scalar/VF is generated locally by the Blue Pill. A 20 Hz setpoint heartbeat
+// is enough for the frequency ramp and cuts UART activity near switching nodes.
+static const uint32_t NUCLEO_SCALAR_MIN_SEND_US = 50000;
 static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 8000;
 // Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
 static const size_t BP_FRAME_LEN = 32;
@@ -106,7 +109,8 @@ static const uint8_t BP_RSP_FAN_DUTY_Q8 = 22;
 static const uint8_t BP_RSP_FAN_TACH_X30 = 30;
 static const float BP_FAN_TACH_RPM_STEP = 30.0f;
 // STEVAL J2-14 has a bus-off offset. Live calibration:
-// bus-off median raw ~=1763; raw=3256 was 315 V on the meter.
+// Historical two-point calibration retained until a new known-HV capture is made.
+// Current bus-off input is 0.09 V at PA5 and raw ~=123 after the ADC acquisition fix.
 static const uint16_t BP_VBUS_ZERO_RAW = 1763U;
 static const uint16_t BP_VBUS_CAL_RAW = 3256U;
 static const float BP_VBUS_CAL_V = 315.0f;
@@ -230,14 +234,14 @@ typedef struct {
   float out_min;
   float out_max;
 } PIController;
-static void pwm_force_off();
+static void pwm_force_off(bool force_link = false);
 static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switch);
 static void request_mode(ControlMode next_mode, bool duty_mode, bool diag_pwm);
 static void matrix_init();
 static void matrix_update();
 static void matrix_set_pixel(int x, int y);
 static void matrix_draw_digit(int x0, int y0, int digit);
-static void hard_stop(bool clear_cmd);
+static void hard_stop(bool clear_cmd, bool force_link = false);
 static void request_normal_stop();
 static void ext_brake_set(float duty);
 static void fan_set(float duty);
@@ -416,6 +420,7 @@ static uint32_t g_uart_bridge_ms = 0;
 static Arduino_LED_Matrix g_matrix;
 static bool g_matrix_ready = false;
 static uint32_t g_matrix_last_ms = 0;
+static uint32_t g_matrix_test_until_ms = 0;
 static uint8_t g_matrix_pixels[104];
 static uint32_t g_matrix_frame[4];
 static const uint8_t MATRIX_W = 13;
@@ -906,7 +911,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(70);
+  mp_tx_array(72);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -996,6 +1001,8 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_float(g_bp_fan_rpm);
   mp_tx_int(g_bp_foc_backend ? 1 : 0);
   mp_tx_int((int32_t)g_bp_cmd_mode);
+  mp_tx_int((int32_t)FW_BUILD_ID);
+  mp_tx_int((int32_t)(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0));
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1119,7 +1126,7 @@ static void clear_estop_latch() {
   g_bp_bad_cnt = 0;
   g_clear_fault_req = true;
   g_estop_auto_clear_deadline_ms = 0;
-  hard_stop(false);
+  hard_stop(false, true);
   brake_set(false);
   ext_brake_set(0.0f);
 }
@@ -1129,7 +1136,7 @@ static void request_estop_stop() {
   // Emergency stop wins over any pending Blue Pill CLEAR handshake.
   g_clear_fault_req = false;
   g_estop_auto_clear_deadline_ms = (ESTOP_AUTO_CLEAR_MS > 0) ? (millis() + ESTOP_AUTO_CLEAR_MS) : 0;
-  hard_stop(false);
+  hard_stop(false, true);
   brake_set(false);
   ext_brake_set(0.0f);
   pwm_write(0, 0, 0);
@@ -1372,6 +1379,8 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       } else {
         handled = false;
       }
+    } else if (icmp(cmd, "DISPLAY TEST")) {
+      g_matrix_test_until_ms = millis() + 15000U;
     } else if (starts_ci(cmd, "ESTOP")) {
       const char *p = cmd + 5;
       handle_estop_command(p);
@@ -1855,6 +1864,8 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     } else {
       handled = false;
     }
+  } else if (icmp(cmd, "DISPLAY TEST")) {
+    g_matrix_test_until_ms = millis() + 15000U;
   } else if (starts_ci(cmd, "ESTOP")) {
     const char *p = cmd + 5;
     handle_estop_command(p);
@@ -2045,6 +2056,9 @@ static String rpc_get() {
   uint32_t ping_age = (g_bp_ping_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_ping_ms);
   s += " bp_ping_pairs="; s += String((unsigned long)g_bp_ping_pairs);
   s += " bp_ping_age_ms="; s += String((int)ping_age);
+  s += " fw_build="; s += String((unsigned long)FW_BUILD_ID);
+  s += " matrix_test=";
+  s += String(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0);
   return s;
 }
 
@@ -2065,6 +2079,7 @@ static void serial_poll() {
     }
   }
 #endif
+#if !USE_ROUTER_BRIDGE
   while (UI_SERIAL.available() > 0) {
     char c = (char)UI_SERIAL.read();
     if (c == '\n' || c == '\r') {
@@ -2079,6 +2094,7 @@ static void serial_poll() {
       }
     }
   }
+#endif
 }
 #if USE_ROUTER_BRIDGE
 static void bridge_tick() {
@@ -2252,14 +2268,30 @@ static uint32_t bp_freq_millihz(float freq_hz) {
   int32_t value = (int32_t)(freq_hz * 1000.0f);
   return (uint32_t)value;
 }
+static uint16_t bp_scalar_vmag_q15() {
+  float freq_abs = fabsf(g_freq_ref);
+  float boost_v = 0.0f;
+  if (freq_abs >= VF_START_BOOST_MIN_FREQ_HZ) {
+    float boost_taper = 1.0f - clampf(freq_abs / VF_START_BOOST_TAPER_HZ, 0.0f, 1.0f);
+    boost_v = g_vf_start_boost_v * boost_taper;
+  }
+  float v_mag = (g_vf_v_per_hz * g_freq_ref) + boost_v;
+  v_mag = clampf(v_mag, 0.0f, g_v_limit);
+  // Blue Pill MODE_SCALAR uses alpha/beta magnitude in per-unit and then
+  // maps it to duty with 0.5 + 0.5*v. Match the UNO Q voltage-domain SVM.
+  float mag_pu = (g_vdc > 0.1f) ? ((2.0f * v_mag) / g_vdc) : 0.0f;
+  return q15_unit(clampf(mag_pu, 0.0f, 0.95f));
+}
 static void ext_flag_set(uint8_t flag, bool on) {
   if (on) {
     g_ext_flags |= flag;
   } else {
     g_ext_flags &= (uint8_t)(~flag);
   }
-  if (g_io_test_mode && !g_pwm_enabled) {
-    nucleo_send_pwm(0.0f, 0.0f, 0.0f, true, true);
+  if (USE_EXTERNAL_PWM && !g_pwm_enabled) {
+    // Service outputs must reach Blue Pill immediately in normal Wi-Fi mode;
+    // waiting for the SAFE heartbeat made relay operation nondeterministic.
+    nucleo_send_stop(true);
   }
 }
 static void ext_brake_set(float duty) {
@@ -2589,6 +2621,9 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   }
   uint32_t now = millis();
   uint32_t now_us = micros();
+  const bool local_scalar =
+      enable && !g_estop_latched && !g_diag_pwm && !g_duty_mode &&
+      g_mode == MODE_VF && g_state == STATE_VF_RUN;
   // When outputs are off we throttle updates to a heartbeat rate,
   // but if a CLEAR is pending we keep sending until it is acknowledged.
   if (!force && !enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
@@ -2603,8 +2638,9 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
       g_nucleo_waiting_rsp = false;
     }
   }
+  const uint32_t min_send_us = local_scalar ? NUCLEO_SCALAR_MIN_SEND_US : NUCLEO_RUN_MIN_SEND_US;
   if (!force && enable && !g_clear_fault_req &&
-      (uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_MIN_SEND_US) {
+      (uint32_t)(now_us - g_nucleo_last_send_us) < min_send_us) {
     return;
   }
   uint8_t pkt[BP_FRAME_LEN] = {0};
@@ -2660,6 +2696,8 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
       bp_id_q15 = bp_foc_current_q15(g_id_ref);
       bp_iq_q15 = bp_foc_current_q15(g_iq_ref);
       bp_foc_freq_millihz = bp_freq_millihz(g_freq_ref);
+    } else if (local_scalar) {
+      mode = BP_MODE_SCALAR;
     } else {
       mode = diag_eff ? BP_MODE_DIAG : BP_MODE_DUTY;
     }
@@ -2690,6 +2728,17 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     pkt[11] = (uint8_t)((bp_foc_freq_millihz >> 8) & 0xFF);
     pkt[12] = (uint8_t)((bp_foc_freq_millihz >> 16) & 0xFF);
     pkt[13] = (uint8_t)((bp_foc_freq_millihz >> 24) & 0xFF);
+  } else if (mode == BP_MODE_SCALAR) {
+    uint32_t scalar_freq_millihz = bp_freq_millihz(g_freq_ref);
+    uint16_t scalar_vmag_q15 = bp_scalar_vmag_q15();
+    pkt[6] = (uint8_t)(scalar_freq_millihz & 0xFF);
+    pkt[7] = (uint8_t)((scalar_freq_millihz >> 8) & 0xFF);
+    pkt[8] = (uint8_t)((scalar_freq_millihz >> 16) & 0xFF);
+    pkt[9] = (uint8_t)((scalar_freq_millihz >> 24) & 0xFF);
+    pkt[10] = (uint8_t)(scalar_vmag_q15 & 0xFF);
+    pkt[11] = (uint8_t)((scalar_vmag_q15 >> 8) & 0xFF);
+    pkt[12] = 0;
+    pkt[13] = 0;
   } else {
     pkt[6] = (uint8_t)(du_q15 & 0xFF);
     pkt[7] = (uint8_t)((du_q15 >> 8) & 0xFF);
@@ -2735,9 +2784,11 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
 static void nucleo_send_stop(bool force) {
   nucleo_send_pwm(0.0f, 0.0f, 0.0f, false, force);
 }
-static void pwm_force_off() {
+static void pwm_force_off(bool force_link) {
   if (USE_EXTERNAL_PWM) {
-    nucleo_send_stop(true);
+    // The first shutdown frame is forced by hard_stop(). Repeated SAFE/ESTOP
+    // control ticks use the normal heartbeat limiter to avoid UART flooding.
+    nucleo_send_stop(force_link);
     g_pwm_outputs_active = false;
     g_pwm_forced_gpio = false;
     return;
@@ -2821,7 +2872,8 @@ static void pwm_write(float d_u, float d_v, float d_w) {
   pwm_write_phase(PWM_VH_PIN, PWM_VL_PIN, d_v);
   pwm_write_phase(PWM_WH_PIN, PWM_WL_PIN, d_w);
 }
-static void hard_stop(bool clear_cmd) {
+static void hard_stop(bool clear_cmd, bool force_link) {
+  const bool outputs_were_active = g_pwm_enabled || g_pwm_outputs_active || g_state != STATE_SAFE;
   g_io_test_mode = false;
   g_pwm_enabled = false;
   g_state = STATE_SAFE;
@@ -2846,7 +2898,11 @@ static void hard_stop(bool clear_cmd) {
   if (clear_cmd) {
     g_freq_cmd = 0.0f;
   }
-  pwm_force_off();
+  // Every stop path must release service outputs. This also covers run-limit,
+  // link-loss and ESTOP shutdowns when no HMI request can follow.
+  g_ext_flags &= (uint8_t)(~(BP_EXT_RESERVED_0 | BP_EXT_PFC | BP_EXT_BRAKE_PWM | BP_EXT_PRECHARGE_RELAY));
+  g_brake_q15 = 0;
+  pwm_force_off(force_link || outputs_were_active);
 }
 static void request_normal_stop() {
   ext_brake_set(0.0f);
@@ -3081,7 +3137,7 @@ static void control_step() {
       brake_set(true);
     }
     if (g_pwm_outputs_active) {
-      pwm_force_off();
+      pwm_force_off(false);
     }
     if (g_mode_switch_pending) {
       if (g_mode_switch_deadline_ms == 0) {
@@ -3289,7 +3345,7 @@ static void control_step() {
   (void)ic;
 }
 static void update_led() {
-  bool running = g_pwm_enabled && (fabsf(g_freq_ref) > 0.5f) && !g_estop_latched;
+  bool running = g_pwm_enabled && (fabsf(g_freq_ref) >= 0.5f) && !g_estop_latched;
   if (!running) {
     if (g_led_on) {
       g_led_on = false;
@@ -3312,7 +3368,7 @@ static void matrix_init() {
   g_matrix.begin();
   memset(g_matrix_pixels, 0, sizeof(g_matrix_pixels));
   memset(g_matrix_frame, 0, sizeof(g_matrix_frame));
-  matrixWrite(g_matrix_frame);
+  g_matrix.loadFrame(g_matrix_frame);
   g_matrix_ready = true;
 }
 static void matrix_update() {
@@ -3324,44 +3380,73 @@ static void matrix_update() {
     return;
   }
   g_matrix_last_ms = now;
-    float freq = g_freq_ref;
-    if (fabsf(freq) < 0.05f) {
-      freq = 0.0f;
-    }
-    if (freq < 0.0f) {
-      freq = 0.0f;
-    }
-  int freq10 = (int)(freq * 10.0f + 0.5f);
-  if (freq10 < 0) freq10 = 0;
-  if (freq10 > 999) freq10 = 999;
-  int tens = (freq10 / 100) % 10;
-  int ones = (freq10 / 10) % 10;
-  int tenths = freq10 % 10;
+  // Keep the display self-test independent from the custom digit renderer.
+  // Alternating every LED makes a stale/failed matrix update unmistakable.
+  const bool matrix_test = (int32_t)(g_matrix_test_until_ms - now) > 0;
+  if (matrix_test) {
+    static const uint32_t all_on[4] = {
+      0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU
+    };
+    static const uint32_t all_off[4] = {
+      0x00000000U, 0x00000000U, 0x00000000U, 0x00000000U
+    };
+    g_matrix.loadFrame(((now / 500U) & 1U) ? all_on : all_off);
+    return;
+  }
+  // SAFE shows the Wi-Fi frequency command immediately. While running, the
+  // matrix alternates each second between electrical Hz and calculated RPM.
+  float freq = g_pwm_enabled ? g_freq_ref : g_freq_cmd;
+  if (fabsf(freq) < 0.05f) freq = 0.0f;
+  if (freq < 0.0f) freq = 0.0f;
+  bool show_rpm = g_pwm_enabled && !g_estop_latched && (((now / 1000U) & 1U) != 0U);
   memset(g_matrix_pixels, 0, sizeof(g_matrix_pixels));
   int x0 = 1;
   int y0 = 1;
-  if (freq10 >= 100) {
-    matrix_draw_digit(x0, y0, tens);
+  if (show_rpm) {
+    int rpm = (int)((freq * 60.0f) / POLE_PAIRS + 0.5f);
+    if (rpm < 0) rpm = 0;
+    if (rpm > 999) rpm = 999;
+    if (rpm >= 100) matrix_draw_digit(x0, y0, (rpm / 100) % 10);
+    if (rpm >= 10) matrix_draw_digit(x0 + 4, y0, (rpm / 10) % 10);
+    matrix_draw_digit(x0 + 8, y0, rpm % 10);
+    // Bottom marker distinguishes RPM from the alternating frequency value.
+    matrix_set_pixel(MATRIX_W - 3, MATRIX_H - 1);
+    matrix_set_pixel(MATRIX_W - 2, MATRIX_H - 1);
+    matrix_set_pixel(MATRIX_W - 1, MATRIX_H - 1);
+  } else {
+    int freq10 = (int)(freq * 10.0f + 0.5f);
+    if (freq10 < 0) freq10 = 0;
+    if (freq10 > 999) freq10 = 999;
+    int tens = (freq10 / 100) % 10;
+    int ones = (freq10 / 10) % 10;
+    int tenths = freq10 % 10;
+    if (freq10 >= 100) matrix_draw_digit(x0, y0, tens);
+    matrix_draw_digit(x0 + 4, y0, ones);
+    matrix_draw_digit(x0 + 8, y0, tenths);
+    matrix_set_pixel(x0 + 7, y0 + 4);
+    matrix_set_pixel(x0 + 7, y0 + 5);
   }
-  matrix_draw_digit(x0 + 4, y0, ones);
-  matrix_draw_digit(x0 + 8, y0, tenths);
-  // Decimal point between ones and tenths (make it 2 pixels tall for visibility).
-  matrix_set_pixel(x0 + 7, y0 + 4);
-  matrix_set_pixel(x0 + 7, y0 + 5);
+  // Physical bench indicators: left=precharge command, right=PWM enabled.
+  if ((g_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
+    matrix_set_pixel(0, 0);
+    matrix_set_pixel(0, 1);
+  }
+  if (g_pwm_enabled && !g_estop_latched) {
+    matrix_set_pixel(MATRIX_W - 1, 0);
+    matrix_set_pixel(MATRIX_W - 1, 1);
+  }
   Arduino_LED_Matrix::loadPixelsToBuffer(g_matrix_pixels, sizeof(g_matrix_pixels), g_matrix_frame);
-  uint32_t out[4] = {
-    reverse(g_matrix_frame[0]),
-    reverse(g_matrix_frame[1]),
-    reverse(g_matrix_frame[2]),
-    reverse(g_matrix_frame[3])
-  };
-  matrixWrite(out);
+  // Use the core wrapper so the sketch stays ABI-compatible with the Zephyr
+  // image installed on UNO Q. Direct matrixWrite() addresses differ by core.
+  g_matrix.loadFrame(g_matrix_frame);
 }
 static void matrix_set_pixel(int x, int y) {
   if (x < 0 || x >= MATRIX_W || y < 0 || y >= MATRIX_H) {
     return;
   }
-  g_matrix_pixels[y * MATRIX_W + x] = 1;
+  // UNO Q's physical matrix is wired right-to-left relative to the raw pixel
+  // buffer. Mirror X so values such as 5.0 do not appear as 0.5.
+  g_matrix_pixels[y * MATRIX_W + (MATRIX_W - 1 - x)] = 1;
 }
 static void matrix_draw_digit(int x0, int y0, int digit) {
   if (digit < 0 || digit > 9) {
@@ -3549,7 +3634,8 @@ void setup() {
   analogWriteResolution(8);
 #endif
   matrix_init();
-  pwm_force_off();
+  g_matrix_test_until_ms = millis() + 5000U;
+  pwm_force_off(true);
   g_vdc = VDC_NOMINAL;
   g_v_limit = 0.577f * g_vdc;
   g_vf_v_per_hz = (g_vdc * g_vf_volt_per_hz_ratio) / VF_BASE_FREQ_HZ;

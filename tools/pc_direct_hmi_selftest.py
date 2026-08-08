@@ -111,7 +111,7 @@ def make_rsp(mod: Any, *, status: int | None = None, bad: int = 0, fault: int = 
     frame[7] = bad & 0xFF
     frame[8] = (bad >> 8) & 0xFF
     frame[9] = fault & 0xFF
-    raw = mod.BP_VBUS_ZERO_RAW if vbus_raw is None else vbus_raw
+    raw = 123 if vbus_raw is None else vbus_raw
     frame[17] = raw & 0xFF
     frame[18] = (raw >> 8) & 0xFF
     frame[mod.CRC_OFF] = mod.crc_xor(frame)
@@ -174,6 +174,19 @@ def run_direct_guard_cases(repo: Path, cases: list[CaseResult]) -> None:
     prime_state(mod, safe, make_rsp(mod))
     ok, msg = mod.apply_cmd(safe, "FAN PWM 0.25")
     add_case(cases, "direct_guard_allows_safe_fan_pwm", ok and safe.fan_duty > 0.24, msg)
+    high_raw_zero_scaled = mod.SharedState()
+    prime_state(mod, high_raw_zero_scaled, make_rsp(mod, vbus_raw=1500))
+    ok, msg = mod.apply_cmd(high_raw_zero_scaled, "FAN PWM 0.25")
+    add_case(
+        cases,
+        "direct_guard_rejects_high_raw_with_zero_scaled_vbus",
+        (not ok) and "raw DC bus" in msg,
+        msg,
+    )
+    invalid_raw = mod.SharedState()
+    prime_state(mod, invalid_raw, make_rsp(mod, vbus_raw=0))
+    ok, msg = mod.apply_cmd(invalid_raw, "FAN PWM 0.25")
+    add_case(cases, "direct_guard_rejects_invalid_raw_vbus", (not ok) and "invalid" in msg, msg)
     ok, msg = mod.apply_cmd(safe, "BPFOC ON")
     safe_bpfoc_frame = mod.build_frame(safe, 3)
     add_case(

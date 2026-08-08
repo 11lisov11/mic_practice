@@ -10,6 +10,8 @@ static volatile uint16_t s_raw_ia = 0;
 static volatile uint16_t s_raw_ib = 0;
 static volatile uint16_t s_raw_ic = 0;
 static volatile uint16_t s_raw_vbus = 0;
+static volatile int32_t s_vbus_iir_accum = 0;
+static volatile bool s_vbus_iir_initialized = false;
 static volatile uint16_t s_raw_heatsink = 0;
 static volatile bool s_heatsink_valid = false;
 static volatile uint16_t s_raw_phase_a = 0;
@@ -40,6 +42,25 @@ static float adc_vbus_volts_from_raw(uint16_t raw) {
     return 0.0f;
   }
   return ((float)raw - (float)ADC_VBUS_ZERO_RAW) * ADC_VBUS_SCALE;
+}
+
+static void adc_vbus_filter_reset(uint16_t raw) {
+  s_vbus_iir_accum = (int32_t)raw << ADC_VBUS_IIR_SHIFT;
+  s_raw_vbus = raw;
+  s_vbus_iir_initialized = true;
+}
+
+static uint16_t adc_vbus_filter_update(uint16_t raw) {
+  if (!s_vbus_iir_initialized) {
+    adc_vbus_filter_reset(raw);
+    return raw;
+  }
+  const int32_t current = s_vbus_iir_accum >> ADC_VBUS_IIR_SHIFT;
+  s_vbus_iir_accum += (int32_t)raw - current;
+  const int32_t rounding = 1L << (ADC_VBUS_IIR_SHIFT - 1U);
+  const uint16_t filtered = clamp_adc_raw_i32((s_vbus_iir_accum + rounding) >> ADC_VBUS_IIR_SHIFT);
+  s_raw_vbus = filtered;
+  return filtered;
 }
 
 static bool adc_sample_regular(uint32_t channel, uint32_t sample_time, uint16_t *raw) {
@@ -170,7 +191,7 @@ extern "C" void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc) {
   s_raw_ia = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
   s_raw_ib = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_2);
   s_raw_ic = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_3);
-  s_raw_vbus = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_4);
+  adc_vbus_filter_update(HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_4));
 }
 
 void adc_currents_get(float *ia, float *ib, float *ic, float *vbus) {
@@ -195,11 +216,20 @@ uint16_t adc_vbus_raw(void) {
 }
 
 bool adc_vbus_sample_software(uint16_t *raw) {
-  uint16_t value = 0;
-  if (!adc_sample_regular(adc_vbus_channel(), ADC_SAMPLETIME_28CYCLES_5, &value)) {
-    return false;
+  uint32_t sum = 0;
+  for (uint16_t i = 0; i <= ADC_VBUS_IDLE_OVERSAMPLES; ++i) {
+    uint16_t sample = 0;
+    if (!adc_sample_regular(adc_vbus_channel(), ADC_SAMPLETIME_239CYCLES_5, &sample)) {
+      return false;
+    }
+    // The first conversion after switching regular ADC channels can retain
+    // charge from the previous source, especially on a high-impedance input.
+    if (i != 0U) {
+      sum += sample;
+    }
   }
-  s_raw_vbus = value;
+  const uint16_t value = (uint16_t)((sum + (ADC_VBUS_IDLE_OVERSAMPLES / 2U)) / ADC_VBUS_IDLE_OVERSAMPLES);
+  adc_vbus_filter_reset(value);
   if (raw) {
     *raw = value;
   }

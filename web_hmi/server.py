@@ -48,12 +48,16 @@ MODE_CODES = {v: k for k, v in MODE_NAMES.items()}
 BP_MODE_DIAG = 1
 BP_MODE_DUTY = 2
 DEFAULT_REMOTEOCD = "/home/arduino/.arduino15/packages/arduino/tools/remoteocd/0.0.4-rc.4/remoteocd"
-DEFAULT_REMOTEOCD_CFG = (
-    "/home/arduino/.arduino15/packages/arduino/hardware/zephyr/0.51.0/"
-    "variants/arduino_uno_q_stm32u585xx/flash_sketch.cfg"
-)
+DEFAULT_REMOTEOCD_CFG = os.path.join(os.path.dirname(__file__), "flash_unoq_sketch_090.cfg")
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 CMD_GUARD_MAX_AGE_MS = 1000.0
+# Independent ADC sanity limits. These intentionally do not use the scaled Vbus
+# calibration, so a stale calibration cannot make an energized bus look safe.
+VBUS_RAW_MIN_VALID = 1
+VBUS_RAW_ZERO_MAX = 400
+VBUS_RAW_LOW_MAX = 1000
+VBUS_RAW_HV_MIN = 1000
+VBUS_RAW_MAX_VALID = 4094
 DEFAULT_START_RUNLIMIT_SEC = 15.0
 DEFAULT_HV_ARM_TTL_SEC = 30.0
 DEFAULT_HV_ARM_MIN_VDC = 100.0
@@ -61,6 +65,18 @@ DEFAULT_HV_ARM_MAX_VDC = 400.0
 DEFAULT_HV_ARM_CONFIRM = "ARM 310V"
 DEFAULT_HV_ARM_MIN_TEMP_C = -20.0
 DEFAULT_HV_ARM_MAX_TEMP_C = 90.0
+DEFAULT_LV_ARM_TTL_SEC = 30.0
+DEFAULT_LV_ARM_MIN_VDC = 0.0
+DEFAULT_LV_ARM_MAX_VDC = 10.0
+DEFAULT_LV_ARM_CONFIRM = "ARM LV HV OFF"
+DEFAULT_LV_START_RUNLIMIT_SEC = 3.0
+DEFAULT_RELAY_CONFIRM_TIMEOUT_SEC = 1.5
+DEFAULT_RELAY_SETTLE_SEC = 0.35
+DEFAULT_RUN_CONFIRM_TIMEOUT_SEC = 1.0
+ARM_PROFILE_HV = "hv"
+ARM_PROFILE_LV = "lv"
+HV_RUNTIME_BAD_BURST_LIMIT = 3
+HV_RUNTIME_BAD_WINDOW_SEC = 1.0
 
 TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 if TOOLS_DIR not in sys.path:
@@ -70,7 +86,6 @@ try:
     from active_pwm_guard import start_allowed_by_bench_gate
 except Exception:  # pragma: no cover - fail closed if tooling import is broken
     start_allowed_by_bench_gate = None  # type: ignore[assignment]
-
 
 def effective_mode(
     mode_code: int,
@@ -289,6 +304,41 @@ def command_requests_service_output(cmd: str) -> bool:
     return False
 
 
+def command_releases_service_output(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    if not parts:
+        return False
+    head = parts[0].upper()
+    if head in ("IOTEST", "BPFOC", "PFC", "PRECHARGE"):
+        return _on_off_arg(parts) is False
+    if head == "FAN":
+        if len(parts) == 2:
+            return parts[1].upper() == "OFF" or not _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return not _positive_arg(parts, 2)
+    if head == "BRAKE":
+        if len(parts) == 2:
+            return parts[1].upper() == "OFF" or not _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return not _positive_arg(parts, 2)
+    return False
+
+
+def status_has_active_outputs(data: Optional[dict]) -> bool:
+    if data is None:
+        return True
+    return bool(
+        _as_int(data, "pwm", 1) != 0
+        or _as_int(data, "precharge", 1) != 0
+        or (_as_int(data, "bp_ext", 0xFF) & 0x0E) != 0
+        or _as_int(data, "pfc", 1) != 0
+        or _as_int(data, "brake", 1) != 0
+        or _as_float(data, "brake_duty", 1.0) > 0.0001
+        or _as_float(data, "fan_duty", 1.0) > 0.0001
+        or _as_float(data, "bp_fan_duty", 1.0) > 0.0001
+    )
+
+
 class CommandGuardConfig:
     def __init__(
         self,
@@ -384,6 +434,88 @@ def _status_vdc(data: dict) -> float:
     return max(values) if values else float("nan")
 
 
+def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[bool, str]:
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "raw DC bus telemetry is stale"
+    if "bp_vbus_raw" not in data:
+        return False, "raw DC bus telemetry is missing"
+    raw = _as_int(data, "bp_vbus_raw", -1)
+    if raw < VBUS_RAW_MIN_VALID or raw > VBUS_RAW_MAX_VALID:
+        return False, f"raw DC bus telemetry is invalid: raw={raw}"
+
+    if max_vdc <= DEFAULT_LV_ARM_MAX_VDC and raw > VBUS_RAW_ZERO_MAX:
+        return False, f"raw DC bus is not in the zero-bus range: raw={raw}"
+    if max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC and raw > VBUS_RAW_LOW_MAX:
+        return False, f"raw DC bus is too high for low-voltage operation: raw={raw}"
+    if min_vdc >= DEFAULT_HV_ARM_MIN_VDC and raw < VBUS_RAW_HV_MIN:
+        return False, f"raw DC bus does not confirm an energized HV bus: raw={raw}"
+    return True, "ok"
+
+
+def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    if _status_bp_bad(data) != 0:
+        return False, "Blue Pill bad counter is non-zero"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "DC bus telemetry is stale"
+    if "bp_vbus_raw" not in data:
+        return False, "raw DC bus telemetry is missing"
+    raw = _as_int(data, "bp_vbus_raw", -1)
+    if raw < 0 or raw > 4095:
+        return False, f"raw DC bus telemetry is invalid: raw={raw}"
+    if not math.isfinite(_status_vdc(data)):
+        return False, "scaled DC bus telemetry is not readable"
+    if _as_int(data, "bp_temp_valid", 0) != 1 or _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature protection is not healthy"
+    if not math.isfinite(_as_float(data, "bp_temp_c", float("nan"))):
+        return False, "heatsink temperature is not readable"
+    for key in ("precharge", "pfc", "brake", "bp_ext"):
+        if _as_int(data, key, 0) != 0:
+            return False, f"output must be off during Vbus capture: {key}={_as_int(data, key, 0)}"
+    return True, "ok"
+
+
+def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dict:
+    def stats(values: list[float]) -> dict:
+        count = len(values)
+        mean = sum(values) / count
+        variance = sum((value - mean) ** 2 for value in values) / count
+        return {
+            "samples": count,
+            "mean": mean,
+            "std": math.sqrt(variance),
+            "min": min(values),
+            "max": max(values),
+        }
+
+    raw_values = [float(_as_int(sample, "bp_vbus_raw", -1)) for sample in samples]
+    vdc_values = [float(_status_vdc(sample)) for sample in samples]
+    temp_values = [float(_as_float(sample, "bp_temp_c", float("nan"))) for sample in samples]
+    return {
+        "timestamp": _now_ts(),
+        "meter_vdc": meter_vdc,
+        "outputs_commanded": False,
+        "state": "SAFE",
+        "pwm": 0,
+        "bp_vbus_raw": stats(raw_values),
+        "bp_vdc": stats(vdc_values),
+        "bp_temp_c": stats(temp_values),
+    }
+
+
 def _status_link_live(data: dict) -> bool:
     if data.get("link") is False:
         return False
@@ -419,8 +551,12 @@ def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig)
     vdc = _status_vdc(data)
     if not math.isfinite(vdc):
         return False, "DC bus telemetry is not readable"
-    if not (cfg.allow_hv or cfg.disabled) and vdc > cfg.max_vdc:
-        return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+    if not (cfg.allow_hv or cfg.disabled):
+        if vdc > cfg.max_vdc:
+            return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
     if command_requests_start(cmd):
         return start_bench_gate_check(cfg)
     return True, "ok"
@@ -436,6 +572,7 @@ class HvArmConfig:
         confirm: str = DEFAULT_HV_ARM_CONFIRM,
         min_temp_c: float = DEFAULT_HV_ARM_MIN_TEMP_C,
         max_temp_c: float = DEFAULT_HV_ARM_MAX_TEMP_C,
+        profile: str = "hv",
     ) -> None:
         self.enabled = bool(enabled)
         self.ttl_sec = max(1.0, float(ttl_sec))
@@ -444,11 +581,16 @@ class HvArmConfig:
         self.confirm = str(confirm)
         self.min_temp_c = float(min_temp_c)
         self.max_temp_c = float(max_temp_c)
+        self.profile = str(profile).strip().lower() or "hv"
+
+    @property
+    def profile_label(self) -> str:
+        return self.profile.upper()
 
 
 def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
     if not cfg.enabled:
-        return False, "standalone HV mode is disabled"
+        return False, "standalone arm mode is disabled"
     if data is None:
         return False, "status unavailable"
     state = str(data.get("state", "")).upper()
@@ -471,9 +613,10 @@ def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
     if not math.isfinite(vdc):
         return False, "DC bus telemetry is not readable"
     if vdc < cfg.min_vdc or vdc > cfg.max_vdc:
-        return False, f"DC bus is outside HV arm window: vdc={vdc:.1f} V"
-    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
-        return False, "DC bus telemetry is stale"
+        return False, f"DC bus is outside {cfg.profile_label} arm window: vdc={vdc:.1f} V"
+    raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+    if not raw_ok:
+        return False, raw_reason
 
     if _as_int(data, "bp_temp_valid", 0) != 1:
         return False, "heatsink temperature is invalid"
@@ -487,7 +630,82 @@ def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
     return True, "ok"
 
 
-def hv_runtime_check(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+    """Allow profile changes only while every commanded power output is inactive."""
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "precharge", 1) != 0:
+        return False, "precharge relay is active"
+    if _as_int(data, "pfc", 1) != 0:
+        return False, "PFC output is active"
+    if _as_int(data, "brake", 1) != 0 or _as_float(data, "brake_duty", 1.0) > 0.0001:
+        return False, "brake output is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_bp_bad(data)
+    if bad != 0:
+        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+
+    if cfg.profile == ARM_PROFILE_LV:
+        # LV selection itself is fail-closed. Arming repeats the complete check.
+        vdc = _status_vdc(data)
+        if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+            return False, f"DC bus is outside {cfg.profile_label} profile window: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
+    return True, "ok"
+
+
+def hv_runtime_check(
+    data: Optional[dict], cfg: HvArmConfig, allow_nonzero_bad: bool = False
+) -> tuple[bool, str]:
+    if data is None:
+        return False, "status unavailable"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_bp_bad(data)
+    if bad != 0 and not allow_nonzero_bad:
+        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+    if not _status_link_live(data):
+        return False, "Blue Pill link is stale or down"
+
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+        return False, f"DC bus is outside {cfg.profile_label} runtime window: vdc={vdc:.1f} V"
+    raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+    if not raw_ok:
+        return False, raw_reason
+
+    if _as_int(data, "bp_temp_valid", 0) != 1:
+        return False, "heatsink temperature is invalid"
+    if _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature fault is active"
+    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "heatsink temperature is stale"
+    temp_c = _as_float(data, "bp_temp_c", float("nan"))
+    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
+        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    return True, "ok"
+
+
+def output_sequence_health_check(
+    data: Optional[dict], arm_cfg: HvArmConfig, guard_cfg: CommandGuardConfig
+) -> tuple[bool, str]:
+    if arm_cfg.enabled:
+        return hv_runtime_check(data, arm_cfg)
     if data is None:
         return False, "status unavailable"
     if _as_int(data, "estop", 1) != 0:
@@ -499,23 +717,60 @@ def hv_runtime_check(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]
         return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
     if not _status_link_live(data):
         return False, "Blue Pill link is stale or down"
-
     vdc = _status_vdc(data)
-    if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
-        return False, f"DC bus is outside HV runtime window: vdc={vdc:.1f} V"
-    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
-        return False, "DC bus telemetry is stale"
-
-    if _as_int(data, "bp_temp_valid", 0) != 1:
-        return False, "heatsink temperature is invalid"
-    if _as_int(data, "bp_temp_fault", 1) != 0:
-        return False, "heatsink temperature fault is active"
-    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
-        return False, "heatsink temperature is stale"
-    temp_c = _as_float(data, "bp_temp_c", float("nan"))
-    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
-        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if not (guard_cfg.allow_hv or guard_cfg.disabled):
+        if vdc > guard_cfg.max_vdc:
+            return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, guard_cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
     return True, "ok"
+
+
+class HvRuntimeBadFrameMonitor:
+    """Trip on an error burst, not on one CRC-rejected frame under PWM EMI."""
+
+    def __init__(
+        self,
+        burst_limit: int = HV_RUNTIME_BAD_BURST_LIMIT,
+        window_sec: float = HV_RUNTIME_BAD_WINDOW_SEC,
+    ) -> None:
+        self.burst_limit = max(1, int(burst_limit))
+        self.window_sec = max(0.1, float(window_sec))
+        self._previous: dict[str, int] = {}
+        self._events: Deque[tuple[float, int]] = deque()
+
+    def reset(self) -> None:
+        self._previous.clear()
+        self._events.clear()
+
+    def observe(self, data: dict, now: Optional[float] = None) -> tuple[bool, str]:
+        timestamp = _now_ts() if now is None else float(now)
+        delta = 0
+        current: dict[str, int] = {}
+        for key in ("bp_bad_cnt", "bp_bad"):
+            if key not in data:
+                continue
+            value = max(0, _as_int(data, key, 999999))
+            current[key] = value
+            previous = self._previous.get(key, 0)
+            if value >= previous:
+                delta += value - previous
+        self._previous = current
+
+        if delta > 0:
+            self._events.append((timestamp, delta))
+        cutoff = timestamp - self.window_sec
+        while self._events and self._events[0][0] < cutoff:
+            self._events.popleft()
+        burst = sum(count for _, count in self._events)
+        if burst >= self.burst_limit:
+            return False, f"Blue Pill UART error burst: {burst} errors/{self.window_sec:.1f}s"
+        if delta > 0:
+            return True, f"isolated Blue Pill UART errors: delta={delta}, window={burst}"
+        return True, "ok"
 
 
 class HvArmState:
@@ -541,19 +796,29 @@ class HvArmState:
             self._expires_at = 0.0
             self._started = False
 
+    def set_config(self, cfg: HvArmConfig) -> None:
+        with self._lock:
+            self.cfg = cfg
+            self._expires_at = 0.0
+            self._started = False
+
     def command_allowed(self, data: Optional[dict]) -> tuple[bool, str]:
         with self._lock:
             remaining = self._expires_at - _now_ts()
             if remaining <= 0.0:
                 if not self._started:
                     self._expires_at = 0.0
-                return False, "HV arm is not active"
+                return False, f"{self.cfg.profile_label} arm is not active"
         return hv_arm_precheck(data, self.cfg)
 
     def mark_started(self) -> None:
         with self._lock:
             if self._expires_at > _now_ts():
                 self._started = True
+
+    def mark_stopped(self) -> None:
+        with self._lock:
+            self._started = False
 
     def take_expired_session_action(self) -> bool:
         with self._lock:
@@ -582,6 +847,8 @@ class HvArmState:
                 "hmi_hv_remaining_s": round(remaining, 1),
                 "hmi_hv_min_vdc": self.cfg.min_vdc,
                 "hmi_hv_max_vdc": self.cfg.max_vdc,
+                "hmi_arm_profile": self.cfg.profile if self.cfg.enabled else "none",
+                "hmi_arm_confirm": self.cfg.confirm if self.cfg.enabled else "",
             }
 
 
@@ -1131,6 +1398,8 @@ class RpcBridge:
             else:
                 data["bp_foc_backend"] = 0
                 data["bp_cmd_mode"] = data.get("bp_mode", 0)
+            data["fw_build"] = int(result[70]) if len(result) >= 71 else 0
+            data["matrix_test"] = int(result[71]) if len(result) >= 72 else 0
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -1213,6 +1482,8 @@ class RpcBridge:
                 "bp_mode": int(float(kv.get("bp_mode", "0"))),
                 "bp_cmd_mode": int(float(kv.get("bp_cmd_mode", kv.get("bp_mode", "0")))),
                 "bp_foc_backend": int(float(kv.get("bp_foc_backend", "0"))),
+                "fw_build": int(float(kv.get("fw_build", "0"))),
+                "matrix_test": int(float(kv.get("matrix_test", "0"))),
                 "bp_seq": int(float(kv.get("bp_seq", "0"))),
                 "bp_good_cnt": int(float(kv.get("bp_good_cnt", kv.get("bp_good", "0")))),
                 "bp_bad_cnt": int(float(kv.get("bp_bad_cnt", kv.get("bp_bad", "999999")))),
@@ -1257,6 +1528,9 @@ class AppState:
         command_guard: Optional[CommandGuardConfig] = None,
         hv_arm: Optional[HvArmState] = None,
         start_runlimit_sec: float = DEFAULT_START_RUNLIMIT_SEC,
+        arm_profiles: Optional[dict[str, HvArmConfig]] = None,
+        profile_runlimits: Optional[dict[str, float]] = None,
+        guard_max_vdc: float = DEFAULT_CMD_GUARD_MAX_VDC,
     ) -> None:
         self.rpc = rpc
         self.logs = logs
@@ -1264,11 +1538,212 @@ class AppState:
         self.command_guard = command_guard or CommandGuardConfig(DEFAULT_CMD_GUARD_MAX_VDC)
         self.hv_arm = hv_arm or HvArmState(HvArmConfig())
         self.start_runlimit_sec = max(0.1, float(start_runlimit_sec))
+        self.arm_profiles = dict(arm_profiles or {})
+        self.profile_runlimits = {
+            str(name).lower(): max(0.1, float(limit))
+            for name, limit in (profile_runlimits or {}).items()
+        }
+        self.guard_max_vdc = float(guard_max_vdc)
+        self.control_lock = threading.Lock()
         self._status_log_interval = status_log_interval
         self._last_status_log = 0.0
         self._lock = threading.Lock()
         self._watchdog_stop = threading.Event()
         self._watchdog_thread: Optional[threading.Thread] = None
+        self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
+
+    def stop_sequence(
+        self,
+        emergency: bool = False,
+        confirm_timeout_sec: float = 0.75,
+        poll_sec: float = 0.05,
+    ) -> tuple[bool, str, Optional[dict]]:
+        """Stop PWM and always release the precharge/bypass relay."""
+        primary_cmd = "ESTOP" if emergency else "STOP"
+        primary_ok, primary_err = self.rpc.cmd(primary_cmd)
+        relay_ok, relay_err = self.rpc.cmd("PRECHARGE OFF")
+        self.hv_arm.disarm()
+        self._runtime_bad_monitor.reset()
+
+        deadline = time.monotonic() + max(0.0, float(confirm_timeout_sec))
+        status_ok = False
+        status: Optional[dict] = None
+        status_err = "status unavailable"
+        off_confirmed = False
+        while True:
+            status_ok, candidate, status_err = self.rpc.get()
+            if status_ok and candidate is not None:
+                status = candidate
+                off_confirmed = bool(
+                    _as_int(candidate, "pwm", 1) == 0
+                    and _as_int(candidate, "precharge", 1) == 0
+                    and (_as_int(candidate, "bp_ext", 0x08) & 0x08) == 0
+                )
+                if off_confirmed:
+                    break
+            if time.monotonic() >= deadline:
+                break
+            time.sleep(max(0.0, float(poll_sec)))
+        ok = bool(primary_ok and relay_ok and off_confirmed)
+        detail = (
+            f"{primary_cmd}={primary_err or primary_ok}; "
+            f"PRECHARGE_OFF={relay_err or relay_ok}; "
+            f"outputs_off={int(off_confirmed)}"
+        )
+        if not status_ok:
+            detail += f"; status={status_err or 'unavailable'}"
+        self.logs.add(f"WIFI_STOP_SEQUENCE emergency={int(emergency)} ok={int(ok)} {detail}")
+        return ok, detail, status
+
+    def start_sequence(
+        self,
+        relay_timeout_sec: float = DEFAULT_RELAY_CONFIRM_TIMEOUT_SEC,
+        relay_settle_sec: float = DEFAULT_RELAY_SETTLE_SEC,
+        run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
+        poll_sec: float = 0.05,
+    ) -> tuple[bool, str, Optional[dict]]:
+        """Confirm safety and PB4 command state, then start PWM."""
+        st_ok, status, st_err = self.rpc.get()
+        allowed, guard_err = command_guard_check(
+            "START", status if st_ok else None, self.command_guard
+        )
+        if not allowed:
+            detail = guard_err if st_ok else f"{guard_err}: {st_err or 'no status'}"
+            self.logs.add(f"WIFI_START_REJECT guard {detail}")
+            return False, detail, status
+
+        if self.hv_arm.cfg.enabled:
+            arm_ok, arm_err = self.hv_arm.command_allowed(status)
+            if not arm_ok:
+                self.logs.add(f"WIFI_START_REJECT arm {arm_err}")
+                return False, arm_err, status
+
+        if status is None:
+            return False, "status unavailable", None
+        if _as_int(status, "precharge", 0) != 0 or (_as_int(status, "bp_ext", 0) & 0x08) != 0:
+            self.stop_sequence(emergency=False)
+            return False, "precharge relay was already active; outputs were forced off, retry START", status
+
+        relay_ok, relay_err = self.rpc.cmd("PRECHARGE ON")
+        if not relay_ok:
+            self.stop_sequence(emergency=False)
+            detail = f"precharge relay command failed: {relay_err or 'no acknowledgement'}"
+            self.logs.add(f"WIFI_START_FAIL relay_cmd {detail}")
+            return False, detail, status
+        self.logs.add("WIFI_START_STEP PRECHARGE_ON")
+
+        relay_deadline = time.monotonic() + max(0.0, float(relay_timeout_sec))
+        relay_status: Optional[dict] = None
+        last_relay_error = "PB4 command pin was not asserted"
+        while True:
+            read_ok, candidate, read_err = self.rpc.get()
+            if read_ok and candidate is not None:
+                relay_status = candidate
+                healthy, health_err = output_sequence_health_check(
+                    candidate, self.hv_arm.cfg, self.command_guard
+                )
+                relay_feedback = (
+                    _as_int(candidate, "precharge", 0) == 1
+                    and (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
+                    and _as_int(candidate, "pwm", 1) == 0
+                )
+                if healthy and relay_feedback:
+                    break
+                last_relay_error = health_err if not healthy else "PB4 command pin was not asserted"
+            else:
+                last_relay_error = read_err or "status unavailable"
+            if time.monotonic() >= relay_deadline:
+                self.stop_sequence(emergency=False)
+                detail = f"precharge PB4 command confirmation failed: {last_relay_error}"
+                self.logs.add(f"WIFI_START_FAIL relay_feedback {detail}")
+                return False, detail, relay_status
+            time.sleep(max(0.0, float(poll_sec)))
+
+        time.sleep(max(0.0, float(relay_settle_sec)))
+        arm_ok, arm_err = self.hv_arm.command_allowed(relay_status)
+        if self.hv_arm.cfg.enabled and not arm_ok:
+            self.stop_sequence(emergency=False)
+            self.logs.add(f"WIFI_START_FAIL arm_recheck {arm_err}")
+            return False, arm_err, relay_status
+
+        runlimit_cmd = f"SET RUNLIMIT {self.start_runlimit_sec:.3f}"
+        limit_ok, limit_err = self.rpc.cmd(runlimit_cmd)
+        if not limit_ok:
+            self.stop_sequence(emergency=False)
+            detail = f"run limit rejected: {limit_err or 'no acknowledgement'}"
+            self.logs.add(f"WIFI_START_FAIL runlimit {detail}")
+            return False, detail, relay_status
+
+        start_ok, start_err = self.rpc.cmd("START")
+        if not start_ok:
+            self.stop_sequence(emergency=True)
+            detail = f"START rejected: {start_err or 'no acknowledgement'}"
+            self.logs.add(f"WIFI_START_FAIL start_cmd {detail}")
+            return False, detail, relay_status
+
+        run_deadline = time.monotonic() + max(0.0, float(run_timeout_sec))
+        run_status: Optional[dict] = None
+        last_run_error = "PWM did not start"
+        while True:
+            read_ok, candidate, read_err = self.rpc.get()
+            if read_ok and candidate is not None:
+                run_status = candidate
+                run_ok, run_err = output_sequence_health_check(
+                    candidate, self.hv_arm.cfg, self.command_guard
+                )
+                running = (
+                    _as_int(candidate, "pwm", 0) == 1
+                    and str(candidate.get("state", "")).upper() in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
+                    and _as_int(candidate, "precharge", 0) == 1
+                    and (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
+                )
+                if run_ok and running:
+                    self.hv_arm.mark_started()
+                    self.logs.add(
+                        f"WIFI_START_OK state={candidate.get('state')} "
+                        f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
+                        f"speed={_as_float(candidate, 'speed', 0.0):.1f}"
+                    )
+                    return True, "PB4 command confirmed and PWM started", candidate
+                last_run_error = run_err if not run_ok else "PWM did not enter a running state"
+            else:
+                last_run_error = read_err or "status unavailable"
+            if time.monotonic() >= run_deadline:
+                self.stop_sequence(emergency=True)
+                detail = f"START confirmation failed: {last_run_error}"
+                self.logs.add(f"WIFI_START_FAIL run_feedback {detail}")
+                return False, detail, run_status
+            time.sleep(max(0.0, float(poll_sec)))
+
+    def arm_snapshot(self, status: Optional[dict] = None) -> dict:
+        snapshot = self.hv_arm.snapshot()
+        available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
+        snapshot["hmi_arm_profiles"] = available
+        snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
+        current_cfg = self.hv_arm.cfg
+        switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
+        snapshot["hmi_arm_profile_switch_ready"] = int(switch_ok and not snapshot["hmi_hv_armed"])
+        return snapshot
+
+    def switch_arm_profile(self, profile: str, status: Optional[dict]) -> tuple[bool, str]:
+        target = str(profile).strip().lower()
+        cfg = self.arm_profiles.get(target)
+        if cfg is None:
+            return False, f"unsupported arm profile: {profile}"
+        ok, reason = arm_profile_switch_precheck(status, cfg)
+        if not ok:
+            return False, reason
+
+        self.hv_arm.set_config(cfg)
+        if target == ARM_PROFILE_LV:
+            self.command_guard.max_vdc = min(self.guard_max_vdc, cfg.max_vdc)
+            self.command_guard.allow_hv = False
+        else:
+            self.command_guard.max_vdc = self.guard_max_vdc
+            self.command_guard.allow_hv = True
+        self.start_runlimit_sec = self.profile_runlimits.get(target, DEFAULT_START_RUNLIMIT_SEC)
+        self._runtime_bad_monitor.reset()
+        return True, "profile selected"
 
     def start_safety_watchdog(self) -> None:
         if self._watchdog_thread is not None and self._watchdog_thread.is_alive():
@@ -1289,18 +1764,32 @@ class AppState:
                 reason = "HV_ARM_EXPIRED"
             elif self.hv_arm.runtime_monitor_required():
                 status_ok, status, status_err = self.rpc.get()
-                live_ok, live_err = hv_runtime_check(status if status_ok else None, self.hv_arm.cfg)
+                live_ok, live_err = hv_runtime_check(
+                    status if status_ok else None,
+                    self.hv_arm.cfg,
+                    allow_nonzero_bad=True,
+                )
+                if live_ok and status is not None:
+                    live_ok, bad_err = self._runtime_bad_monitor.observe(status)
+                    if live_ok and bad_err != "ok":
+                        self.logs.add(f"HV_RUNTIME_UART_WARN {bad_err}")
+                    elif not live_ok:
+                        live_err = bad_err
                 if not live_ok:
                     reason = f"HV_RUNTIME_REJECT {status_err or live_err}"
                     self.hv_arm.disarm()
+            else:
+                self._runtime_bad_monitor.reset()
             if not reason:
                 continue
             stop_ok, stop_err = self.rpc.cmd("STOP")
             estop_ok, estop_err = self.rpc.cmd("ESTOP")
+            relay_ok, relay_err = self.rpc.cmd("PRECHARGE OFF")
             self.logs.add(
                 f"{reason} "
                 f"stop_ok={int(stop_ok)} stop_err={stop_err or '-'} "
-                f"estop_ok={int(estop_ok)} estop_err={estop_err or '-'}"
+                f"estop_ok={int(estop_ok)} estop_err={estop_err or '-'} "
+                f"relay_ok={int(relay_ok)} relay_err={relay_err or '-'}"
             )
 
     def maybe_log_status(self, data: dict) -> None:
@@ -1391,8 +1880,20 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path == "/api/cmd":
             self._handle_cmd()
             return
+        if parsed.path == "/api/start-sequence":
+            self._handle_start_sequence()
+            return
+        if parsed.path == "/api/stop-sequence":
+            self._handle_stop_sequence()
+            return
         if parsed.path == "/api/hv-arm":
             self._handle_hv_arm()
+            return
+        if parsed.path == "/api/arm-profile":
+            self._handle_arm_profile()
+            return
+        if parsed.path == "/api/calibration/vbus":
+            self._handle_vbus_capture()
             return
         if parsed.path == "/api/firmware/update":
             self._handle_firmware_update(parsed)
@@ -1417,6 +1918,46 @@ class Handler(BaseHTTPRequestHandler):
             return
         if _cmd_head(cmd) == "NTC":
             self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
+            return
+        with self.server.app.control_lock:  # type: ignore[attr-defined]
+            self._handle_cmd_locked(cmd)
+
+    def _handle_start_sequence(self) -> None:
+        app = self.server.app  # type: ignore[attr-defined]
+        with app.control_lock:
+            ok, detail, status = app.start_sequence()
+        self._send_json(
+            {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+            200 if ok else 409,
+        )
+
+    def _handle_stop_sequence(self) -> None:
+        request = self._read_json()
+        emergency = bool(request.get("emergency", False))
+        app = self.server.app  # type: ignore[attr-defined]
+        with app.control_lock:
+            ok, detail, status = app.stop_sequence(emergency=emergency)
+        self._send_json(
+            {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+            200 if ok else 500,
+        )
+
+    def _handle_cmd_locked(self, cmd: str) -> None:
+        app = self.server.app  # type: ignore[attr-defined]
+        if command_requests_start(cmd):
+            ok, detail, status = app.start_sequence()
+            self._send_json(
+                {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+                200 if ok else 409,
+            )
+            return
+        normalized = " ".join(_cmd_tokens(cmd)).upper()
+        if normalized in ("STOP", "ESTOP"):
+            ok, detail, status = app.stop_sequence(emergency=normalized == "ESTOP")
+            self._send_json(
+                {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+                200 if ok else 500,
+            )
             return
         guard_cfg = self.server.app.command_guard  # type: ignore[attr-defined]
         armed_output_command = False
@@ -1447,6 +1988,10 @@ class Handler(BaseHTTPRequestHandler):
         if ok:
             if armed_output_command:
                 self.server.app.hv_arm.mark_started()  # type: ignore[attr-defined]
+            elif command_releases_service_output(cmd):
+                status_ok, status, _ = self.server.app.rpc.get()  # type: ignore[attr-defined]
+                if status_ok and not status_has_active_outputs(status):
+                    self.server.app.hv_arm.mark_stopped()  # type: ignore[attr-defined]
             if _cmd_head(cmd) in ("STOP", "ESTOP"):
                 self.server.app.hv_arm.disarm()  # type: ignore[attr-defined]
             self.server.app.logs.add(f"CMD {cmd}")  # type: ignore[attr-defined]
@@ -1460,24 +2005,32 @@ class Handler(BaseHTTPRequestHandler):
         if not ok or data is None:
             self._send_json({"ok": False, "error": err or "no response"}, 503)
             return
-        data.update(self.server.app.hv_arm.snapshot())  # type: ignore[attr-defined]
+        data.update(self.server.app.arm_snapshot(data))  # type: ignore[attr-defined]
         self.server.app.maybe_log_status(data)  # type: ignore[attr-defined]
         self._send_json({"ok": True, "data": data})
 
     def _handle_hv_arm(self) -> None:
         request = self._read_json()
+        with self.server.app.control_lock:  # type: ignore[attr-defined]
+            self._handle_hv_arm_locked(request)
+
+    def _handle_hv_arm_locked(self, request: dict) -> None:
         action = str(request.get("action", "arm")).strip().lower()
         arm = self.server.app.hv_arm  # type: ignore[attr-defined]
         if action == "disarm":
             arm.disarm()
             stop_ok, stop_err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
             estop_ok, estop_err = self.server.app.rpc.cmd("ESTOP")  # type: ignore[attr-defined]
+            relay_ok, relay_err = self.server.app.rpc.cmd("PRECHARGE OFF")  # type: ignore[attr-defined]
             self.server.app.logs.add("HV_DISARM")  # type: ignore[attr-defined]
-            ok = bool(stop_ok and estop_ok)
+            ok = bool(stop_ok and estop_ok and relay_ok)
             self._send_json(
                 {
                     "ok": ok,
-                    "error": "" if ok else f"STOP={stop_err or stop_ok}; ESTOP={estop_err or estop_ok}",
+                    "error": "" if ok else (
+                        f"STOP={stop_err or stop_ok}; ESTOP={estop_err or estop_ok}; "
+                        f"PRECHARGE={relay_err or relay_ok}"
+                    ),
                     "arm": arm.snapshot(),
                 },
                 200 if ok else 500,
@@ -1495,8 +2048,77 @@ class Handler(BaseHTTPRequestHandler):
             self.server.app.logs.add(f"HV_ARM_REJECT {reason}")  # type: ignore[attr-defined]
             self._send_json({"ok": False, "error": reason, "status": st_data, "arm": arm.snapshot()}, 409)
             return
-        self.server.app.logs.add(f"HV_ARM ttl={arm.cfg.ttl_sec:.1f}s vdc={_status_vdc(st_data):.1f}")  # type: ignore[attr-defined]
-        self._send_json({"ok": True, "arm": arm.snapshot()})
+        self.server.app.logs.add(  # type: ignore[attr-defined]
+            f"ARM profile={arm.cfg.profile} ttl={arm.cfg.ttl_sec:.1f}s vdc={_status_vdc(st_data):.1f}"
+        )
+        self._send_json({"ok": True, "arm": self.server.app.arm_snapshot(st_data)})  # type: ignore[attr-defined]
+
+    def _handle_arm_profile(self) -> None:
+        request = self._read_json()
+        profile = str(request.get("profile", "")).strip().lower()
+        app = self.server.app  # type: ignore[attr-defined]
+        with app.control_lock:
+            stop_ok, stop_err = app.rpc.cmd("STOP")
+            relay_ok, relay_err = app.rpc.cmd("PRECHARGE OFF")
+            app.hv_arm.disarm()
+            if not stop_ok or not relay_ok:
+                error = f"safe shutdown failed: STOP={stop_err or stop_ok}; PRECHARGE={relay_err or relay_ok}"
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {error}")
+                self._send_json({"ok": False, "error": error}, 500)
+                return
+            time.sleep(0.05)
+            st_ok, st_data, st_err = app.rpc.get()
+            if not st_ok or st_data is None:
+                error = st_err or "status unavailable"
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {error}")
+                self._send_json({"ok": False, "error": error}, 503)
+                return
+            ok, reason = app.switch_arm_profile(profile, st_data)
+            if not ok:
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {reason}")
+                self._send_json(
+                    {"ok": False, "error": reason, "status": st_data, "arm": app.arm_snapshot(st_data)},
+                    409,
+                )
+                return
+            app.logs.add(f"ARM_PROFILE {profile} runlimit={app.start_runlimit_sec:.1f}s")
+            self._send_json({"ok": True, "arm": app.arm_snapshot(st_data)})
+
+    def _handle_vbus_capture(self) -> None:
+        request = self._read_json()
+        try:
+            meter_vdc = float(request["meter_vdc"]) if request.get("meter_vdc") not in (None, "") else None
+        except (TypeError, ValueError):
+            self._send_json({"ok": False, "error": "meter_vdc must be a number"}, 400)
+            return
+        if meter_vdc is not None and (not math.isfinite(meter_vdc) or meter_vdc < 0.0 or meter_vdc > 450.0):
+            self._send_json({"ok": False, "error": "meter_vdc must be within 0..450 V"}, 400)
+            return
+
+        samples: list[dict] = []
+        for _ in range(20):
+            ok, data, err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+            if not ok or data is None:
+                self._send_json({"ok": False, "error": err or "status unavailable"}, 503)
+                return
+            safe, reason = vbus_capture_precheck(data)
+            if not safe:
+                self.server.app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")  # type: ignore[attr-defined]
+                self._send_json({"ok": False, "error": reason, "status": data}, 409)
+                return
+            samples.append(data)
+            time.sleep(0.02)
+
+        capture = vbus_capture_summary(samples, meter_vdc)
+        raw = capture["bp_vbus_raw"]
+        scaled = capture["bp_vdc"]
+        meter_text = "none" if meter_vdc is None else f"{meter_vdc:.3f}"
+        self.server.app.logs.add(  # type: ignore[attr-defined]
+            "VBUS_CAPTURE "
+            f"meter_vdc={meter_text} raw_mean={raw['mean']:.3f} raw_std={raw['std']:.3f} "
+            f"raw_min={raw['min']:.0f} raw_max={raw['max']:.0f} vdc_mean={scaled['mean']:.3f}"
+        )
+        self._send_json({"ok": True, "capture": capture})
 
     def _handle_logs(self, parsed) -> None:
         query = parse_qs(parsed.query)
@@ -1526,6 +2148,9 @@ class Handler(BaseHTTPRequestHandler):
         ok, err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
         if not ok:
             return False, None, f"STOP failed: {err}"
+        relay_ok, relay_err = self.server.app.rpc.cmd("PRECHARGE OFF")  # type: ignore[attr-defined]
+        if not relay_ok:
+            return False, None, f"PRECHARGE OFF failed: {relay_err}"
         time.sleep(0.2)
 
         last_err = "no status"
@@ -1555,6 +2180,9 @@ class Handler(BaseHTTPRequestHandler):
                     return False, data, "DC bus telemetry is not readable for firmware update"
                 if vdc > cfg.max_vdc:
                     return False, data, f"DC bus too high for firmware update: vdc={vdc:.1f} V"
+                raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, cfg.max_vdc)
+                if not raw_ok:
+                    return False, data, f"firmware update blocked: {raw_reason}"
                 return True, data, ""
             last_err = err or "no response"
             time.sleep(0.1)
@@ -1650,8 +2278,17 @@ class Handler(BaseHTTPRequestHandler):
                 500,
             )
             return
-        self.server.app.logs.add(f"FW_UPDATE_OK sha256={digest}")  # type: ignore[attr-defined]
-        self._send_json({"ok": True, "dry_run": False, "bytes": length, "sha256": digest, "output": output})
+        self.server.app.logs.add(f"FW_UPDATE_WRITE_OK sha256={digest}")  # type: ignore[attr-defined]
+        self._send_json(
+            {
+                "ok": True,
+                "dry_run": False,
+                "write_only": True,
+                "bytes": length,
+                "sha256": digest,
+                "output": output,
+            }
+        )
 
 
 def main() -> None:
@@ -1692,11 +2329,18 @@ def main() -> None:
     parser.add_argument("--firmware-update-max-vdc", type=float, default=10.0)
     parser.add_argument("--cmd-guard-max-vdc", type=float, default=float(os.environ.get("UNOQ_CMD_GUARD_MAX_VDC", DEFAULT_CMD_GUARD_MAX_VDC)))
     parser.add_argument("--cmd-guard-allow-hv", action="store_true", default=_truthy_env("UNOQ_CMD_GUARD_ALLOW_HV"))
-    parser.add_argument(
+    standalone_group = parser.add_mutually_exclusive_group()
+    standalone_group.add_argument(
         "--standalone-hv",
         action="store_true",
         default=_truthy_env("UNOQ_STANDALONE_HV"),
-        help="Enable the local live safety gate and expiring phone HV arm flow.",
+        help="Enable both Wi-Fi arm profiles and start fail-closed in HV mode.",
+    )
+    standalone_group.add_argument(
+        "--standalone-lv",
+        action="store_true",
+        default=_truthy_env("UNOQ_STANDALONE_LV"),
+        help="Enable both Wi-Fi arm profiles and start in HV-disconnected LV test mode.",
     )
     parser.add_argument(
         "--hv-arm-ttl-sec",
@@ -1716,6 +2360,20 @@ def main() -> None:
     parser.add_argument(
         "--hv-arm-confirm",
         default=os.environ.get("UNOQ_HV_ARM_CONFIRM", DEFAULT_HV_ARM_CONFIRM),
+    )
+    parser.add_argument(
+        "--lv-arm-ttl-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_LV_ARM_TTL_SEC", DEFAULT_LV_ARM_TTL_SEC)),
+    )
+    parser.add_argument(
+        "--lv-arm-max-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_LV_ARM_MAX_VDC", DEFAULT_LV_ARM_MAX_VDC)),
+    )
+    parser.add_argument(
+        "--lv-arm-confirm",
+        default=os.environ.get("UNOQ_LV_ARM_CONFIRM", DEFAULT_LV_ARM_CONFIRM),
     )
     parser.add_argument(
         "--start-runlimit-sec",
@@ -1764,23 +2422,52 @@ def main() -> None:
             max_vdc=args.firmware_update_max_vdc,
         )
     attestation_url = args.bench_gate_attestation_url.strip()
+    standalone_enabled = bool(args.standalone_hv or args.standalone_lv)
+    initial_profile = ARM_PROFILE_LV if args.standalone_lv else ARM_PROFILE_HV
+    hv_cfg = HvArmConfig(
+        enabled=standalone_enabled,
+        ttl_sec=float(args.hv_arm_ttl_sec),
+        min_vdc=float(args.hv_arm_min_vdc),
+        max_vdc=float(args.hv_arm_max_vdc),
+        confirm=str(args.hv_arm_confirm),
+        profile=ARM_PROFILE_HV,
+    )
+    lv_cfg = HvArmConfig(
+        enabled=standalone_enabled,
+        ttl_sec=float(args.lv_arm_ttl_sec),
+        min_vdc=DEFAULT_LV_ARM_MIN_VDC,
+        max_vdc=float(args.lv_arm_max_vdc),
+        confirm=str(args.lv_arm_confirm),
+        profile=ARM_PROFILE_LV,
+    )
+    arm_profiles = (
+        {ARM_PROFILE_HV: hv_cfg, ARM_PROFILE_LV: lv_cfg}
+        if standalone_enabled
+        else {}
+    )
+    hv_runlimit_sec = float(args.start_runlimit_sec)
+    lv_runlimit_sec = min(hv_runlimit_sec, DEFAULT_LV_START_RUNLIMIT_SEC)
+    profile_runlimits = {
+        ARM_PROFILE_HV: hv_runlimit_sec,
+        ARM_PROFILE_LV: lv_runlimit_sec,
+    }
+    selected_cfg = arm_profiles.get(initial_profile, hv_cfg)
+    guard_max_vdc = (
+        min(float(args.cmd_guard_max_vdc), selected_cfg.max_vdc)
+        if initial_profile == ARM_PROFILE_LV
+        else float(args.cmd_guard_max_vdc)
+    )
+    start_runlimit_sec = profile_runlimits[initial_profile]
+
     command_guard = CommandGuardConfig(
-        max_vdc=float(args.cmd_guard_max_vdc),
+        max_vdc=guard_max_vdc,
         allow_hv=bool(args.cmd_guard_allow_hv or args.standalone_hv),
         disabled=bool(args.cmd_guard_disable),
         bench_gate_url=attestation_url or args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}",
         bench_gate_runner=attested_bench_gate_runner if attestation_url else None,
-        local_bench_gate=bool(args.standalone_hv),
+        local_bench_gate=standalone_enabled,
     )
-    hv_arm = HvArmState(
-        HvArmConfig(
-            enabled=bool(args.standalone_hv),
-            ttl_sec=float(args.hv_arm_ttl_sec),
-            min_vdc=float(args.hv_arm_min_vdc),
-            max_vdc=float(args.hv_arm_max_vdc),
-            confirm=str(args.hv_arm_confirm),
-        )
-    )
+    hv_arm = HvArmState(selected_cfg)
     app = AppState(
         rpc,
         logs,
@@ -1788,7 +2475,10 @@ def main() -> None:
         firmware_update=firmware_update,
         command_guard=command_guard,
         hv_arm=hv_arm,
-        start_runlimit_sec=float(args.start_runlimit_sec),
+        start_runlimit_sec=start_runlimit_sec,
+        arm_profiles=arm_profiles,
+        profile_runlimits=profile_runlimits,
+        guard_max_vdc=float(args.cmd_guard_max_vdc),
     )
 
     server = ThreadingHTTPServer((args.bind, args.port), Handler)
@@ -1797,7 +2487,8 @@ def main() -> None:
 
     print(
         f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
-        f"standalone_hv={int(args.standalone_hv)})"
+        f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
+        f"runlimit={start_runlimit_sec:.1f}s)"
     )
     app.start_safety_watchdog()
     try:

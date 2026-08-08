@@ -44,12 +44,20 @@ def safe_status(**overrides: Any) -> dict[str, Any]:
         "bp_bad_cnt": 0,
         "bp_rsp_age_ms": 25,
         "bp_vbus_age_ms": 25,
+        "bp_vbus_raw": 120,
         "bp_temp_valid": 1,
         "bp_temp_fault": 0,
         "bp_temp_age_ms": 25,
         "bp_temp_c": 25.0,
         "bp_vdc": 0.0,
         "vdc": 0.0,
+        "precharge": 0,
+        "pfc": 0,
+        "brake": 0,
+        "brake_duty": 0.0,
+        "fan_duty": 0.0,
+        "bp_fan_duty": 0.0,
+        "bp_ext": 0,
     }
     data.update(overrides)
     return data
@@ -107,6 +115,93 @@ def main() -> int:
         now=now,
     )
     add_case(cases, "bench_attestation_rejects_long_window", (not ok) and "too long" in msg, msg)
+
+    ok, msg = mod.vbus_capture_precheck(safe_status())
+    add_case(cases, "vbus_capture_accepts_safe_outputs_off", ok, msg)
+    ok, msg = mod.vbus_capture_precheck(safe_status(pwm=1))
+    add_case(cases, "vbus_capture_rejects_pwm", (not ok) and "PWM" in msg, msg)
+    ok, msg = mod.vbus_capture_precheck(safe_status(bp_vbus_age_ms=1500))
+    add_case(cases, "vbus_capture_rejects_stale_vbus", (not ok) and "stale" in msg, msg)
+    ok, msg = mod.vbus_capture_precheck(safe_status(precharge=1))
+    add_case(cases, "vbus_capture_rejects_active_relay", (not ok) and "precharge=1" in msg, msg)
+    capture = mod.vbus_capture_summary(
+        [safe_status(bp_vbus_raw=100, bp_vdc=0.0), safe_status(bp_vbus_raw=104, bp_vdc=0.8)],
+        0.0,
+    )
+    add_case(
+        cases,
+        "vbus_capture_summary_records_raw_scaled_and_meter",
+        capture["outputs_commanded"] is False
+        and capture["meter_vdc"] == 0.0
+        and capture["bp_vbus_raw"]["mean"] == 102.0
+        and capture["bp_vdc"]["mean"] == 0.4,
+        evidence=capture,
+    )
+
+    lv_cfg = mod.HvArmConfig(
+        enabled=True,
+        ttl_sec=30.0,
+        min_vdc=0.0,
+        max_vdc=10.0,
+        confirm="ARM LV HV OFF",
+        profile="lv",
+    )
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=0.0, bp_vdc=0.0), lv_cfg)
+    add_case(cases, "lv_arm_accepts_clean_zero_bus", ok, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=0.0, bp_vdc=0.0, bp_vbus_raw=3256), lv_cfg)
+    add_case(cases, "lv_arm_rejects_high_raw_bus_with_zero_scaled", (not ok) and "raw DC bus" in msg, msg)
+    ok, msg = mod.hv_arm_precheck(safe_status(vdc=12.0, bp_vdc=12.0), lv_cfg)
+    add_case(cases, "lv_arm_rejects_bus_above_10v", (not ok) and "LV arm window" in msg, msg)
+    ok, msg = mod.hv_runtime_check(safe_status(vdc=0.0, bp_vdc=0.0), lv_cfg)
+    add_case(cases, "lv_runtime_accepts_clean_zero_bus", ok, msg)
+    ok, msg = mod.hv_runtime_check(safe_status(vdc=315.0, bp_vdc=315.0), lv_cfg)
+    add_case(cases, "lv_runtime_rejects_hv_bus", (not ok) and "LV runtime window" in msg, msg)
+    lv_arm = mod.HvArmState(lv_cfg)
+    ok, msg = lv_arm.arm("ARM 310V", safe_status())
+    add_case(cases, "lv_arm_rejects_hv_confirmation_phrase", (not ok) and "mismatch" in msg, msg)
+    ok, msg = lv_arm.arm("ARM LV HV OFF", safe_status())
+    lv_snapshot = lv_arm.snapshot()
+    add_case(
+        cases,
+        "lv_arm_snapshot_exposes_profile_and_phrase",
+        ok
+        and lv_snapshot["hmi_arm_profile"] == "lv"
+        and lv_snapshot["hmi_arm_confirm"] == "ARM LV HV OFF",
+        msg,
+        lv_snapshot,
+    )
+    lv_arm.mark_started()
+    lv_arm.mark_stopped()
+    with lv_arm._lock:
+        lv_arm._expires_at = mod._now_ts() - 1.0
+    add_case(
+        cases,
+        "manual_service_off_prevents_false_expiry_estop",
+        not lv_arm.take_expired_session_action(),
+    )
+    ok, msg = mod.arm_profile_switch_precheck(safe_status(), lv_cfg)
+    add_case(cases, "arm_profile_switch_accepts_safe_lv_selection", ok, msg)
+    ok, msg = mod.arm_profile_switch_precheck(safe_status(precharge=1), lv_cfg)
+    add_case(cases, "arm_profile_switch_rejects_active_relay", (not ok) and "relay" in msg, msg)
+    ok, msg = mod.arm_profile_switch_precheck(safe_status(vdc=315.0, bp_vdc=315.0), lv_cfg)
+    add_case(cases, "arm_profile_switch_rejects_lv_with_hv_bus", (not ok) and "profile window" in msg, msg)
+    hv_for_switch = mod.HvArmConfig(
+        enabled=True,
+        ttl_sec=30.0,
+        min_vdc=100.0,
+        max_vdc=400.0,
+        confirm="ARM 310V",
+        profile="hv",
+    )
+    switch_state = mod.HvArmState(hv_for_switch)
+    switch_state.set_config(lv_cfg)
+    switch_snapshot = switch_state.snapshot()
+    add_case(
+        cases,
+        "arm_profile_config_switch_disarms_and_selects_lv",
+        switch_snapshot["hmi_arm_profile"] == "lv" and switch_snapshot["hmi_hv_armed"] == 0,
+        evidence=switch_snapshot,
+    )
 
     with tempfile.TemporaryDirectory() as tmp:
         log_path = Path(tmp) / "unoq.log"
@@ -268,6 +363,11 @@ def main() -> int:
     )
     for cmd in service_off:
         add_case(cases, f"service_not_detected_{cmd.replace(' ', '_').lower()}", not mod.command_requests_service_output(cmd), cmd)
+        add_case(cases, f"service_release_detected_{cmd.replace(' ', '_').lower()}", mod.command_releases_service_output(cmd), cmd)
+
+    add_case(cases, "safe_status_has_no_active_outputs", not mod.status_has_active_outputs(safe_status()))
+    add_case(cases, "precharge_status_has_active_output", mod.status_has_active_outputs(safe_status(precharge=1, bp_ext=8)))
+    add_case(cases, "pwm_status_has_active_output", mod.status_has_active_outputs(safe_status(pwm=1)))
 
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status())
     add_case(cases, "guard_allows_safe_service", ok, msg)
@@ -307,6 +407,16 @@ def main() -> int:
     add_case(cases, "guard_rejects_legacy_bad_counter", (not ok) and "bad" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status_without_vbus())
     add_case(cases, "guard_rejects_missing_vbus", (not ok) and "telemetry" in msg, msg)
+    ok, msg = guard(mod, "FAN PWM 0.25", safe_status(vdc=0.0, bp_vdc=0.0, bp_vbus_raw=3256))
+    add_case(cases, "guard_rejects_high_raw_vbus_with_zero_scaled", (not ok) and "raw DC bus" in msg, msg)
+    missing_raw = safe_status()
+    missing_raw.pop("bp_vbus_raw", None)
+    ok, msg = guard(mod, "FAN PWM 0.25", missing_raw)
+    add_case(cases, "guard_rejects_missing_raw_vbus", (not ok) and "missing" in msg, msg)
+    ok, msg = guard(mod, "FAN PWM 0.25", safe_status(bp_vbus_raw=0))
+    add_case(cases, "guard_rejects_invalid_raw_vbus", (not ok) and "invalid" in msg, msg)
+    ok, msg = guard(mod, "FAN PWM 0.25", safe_status(bp_vbus_age_ms=5000))
+    add_case(cases, "guard_rejects_stale_raw_vbus", (not ok) and "stale" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status(vdc=315.0, bp_vdc=315.0))
     add_case(cases, "guard_rejects_high_vdc", (not ok) and "too high" in msg, msg)
     ok, msg = guard(mod, "BPFOC ON", safe_status(vdc=315.0, bp_vdc=315.0))
@@ -325,21 +435,49 @@ def main() -> int:
     add_case(cases, "guard_disabled_does_not_bypass_start_bench_gate", (not ok) and "bench gate" in msg, msg)
 
     hv_cfg = mod.HvArmConfig(enabled=True, ttl_sec=30.0, min_vdc=100.0, max_vdc=400.0)
-    hv_status = safe_status(vdc=315.0, bp_vdc=315.0)
+    hv_status = safe_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256)
     ok, msg = mod.hv_arm_precheck(hv_status, hv_cfg)
     add_case(cases, "hv_arm_accepts_clean_315v_status", ok, msg)
     ok, msg = mod.hv_arm_precheck(safe_status(vdc=60.0, bp_vdc=60.0), hv_cfg)
     add_case(cases, "hv_arm_rejects_low_bus", (not ok) and "window" in msg, msg)
-    ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_c=-38.0), hv_cfg)
+    ok, msg = mod.hv_arm_precheck(
+        safe_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256, bp_temp_c=-38.0), hv_cfg
+    )
     add_case(cases, "hv_arm_rejects_implausible_temperature", (not ok) and "implausible" in msg, msg)
-    ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_fault=1), hv_cfg)
+    ok, msg = mod.hv_arm_precheck(
+        safe_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256, bp_temp_fault=1), hv_cfg
+    )
     add_case(cases, "hv_arm_rejects_temperature_fault", (not ok) and "temperature fault" in msg, msg)
     ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_bad_cnt=1), hv_cfg)
     add_case(cases, "hv_arm_rejects_bad_uart_counter", (not ok) and "bad counter" in msg, msg)
     ok, msg = mod.hv_runtime_check(hv_status, hv_cfg)
     add_case(cases, "hv_runtime_accepts_clean_315v_status", ok, msg)
-    ok, msg = mod.hv_runtime_check(safe_status(vdc=315.0, bp_vdc=315.0, bp_temp_age_ms=2000), hv_cfg)
+    ok, msg = mod.hv_runtime_check(
+        safe_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256, bp_bad_cnt=1),
+        hv_cfg,
+        allow_nonzero_bad=True,
+    )
+    add_case(cases, "hv_runtime_can_delegate_bad_counter_to_burst_monitor", ok, msg)
+    ok, msg = mod.hv_runtime_check(
+        safe_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256, bp_temp_age_ms=2000), hv_cfg
+    )
     add_case(cases, "hv_runtime_rejects_stale_temperature", (not ok) and "stale" in msg, msg)
+
+    bad_monitor = mod.HvRuntimeBadFrameMonitor(burst_limit=3, window_sec=1.0)
+    ok1, msg1 = bad_monitor.observe(safe_status(bp_bad_cnt=1, bp_bad=0), now=10.0)
+    ok2, msg2 = bad_monitor.observe(safe_status(bp_bad_cnt=2, bp_bad=0), now=10.2)
+    ok3, msg3 = bad_monitor.observe(safe_status(bp_bad_cnt=3, bp_bad=0), now=10.4)
+    add_case(
+        cases,
+        "hv_runtime_bad_monitor_allows_isolated_errors_but_trips_burst",
+        ok1 and ok2 and (not ok3) and "error burst" in msg3,
+        msg3,
+        {"first": msg1, "second": msg2, "third": msg3},
+    )
+    ok4, msg4 = bad_monitor.observe(safe_status(bp_bad_cnt=4, bp_bad=0), now=11.6)
+    add_case(cases, "hv_runtime_bad_monitor_window_expires", ok4, msg4)
+    ok5, msg5 = bad_monitor.observe(safe_status(bp_bad_cnt=0, bp_bad=0), now=11.8)
+    add_case(cases, "hv_runtime_bad_monitor_handles_counter_clear", ok5, msg5)
 
     original_now = mod._now_ts
     now_box = [1000.0]
@@ -363,13 +501,21 @@ def main() -> int:
         mod._now_ts = original_now
 
     class FakeRpc:
-        def __init__(self, statuses: list[dict[str, Any] | None], stop_ok: bool = True) -> None:
+        def __init__(
+            self,
+            statuses: list[dict[str, Any] | None],
+            stop_ok: bool = True,
+            command_results: dict[str, tuple[bool, str]] | None = None,
+        ) -> None:
             self.statuses = list(statuses)
             self.stop_ok = stop_ok
+            self.command_results = dict(command_results or {})
             self.commands: list[str] = []
 
         def cmd(self, cmd: str) -> tuple[bool, str]:
             self.commands.append(cmd)
+            if cmd in self.command_results:
+                return self.command_results[cmd]
             return (self.stop_ok, "" if self.stop_ok else "stop failed")
 
         def get(self) -> tuple[bool, dict[str, Any] | None, str]:
@@ -387,6 +533,185 @@ def main() -> int:
         def add(self, message: str) -> None:
             self.items.append(message)
 
+    dual_guard = mod.CommandGuardConfig(max_vdc=60.0, allow_hv=True, local_bench_gate=True)
+    dual_app = mod.AppState(
+        FakeRpc([safe_status()]),
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=dual_guard,
+        hv_arm=mod.HvArmState(hv_cfg),
+        start_runlimit_sec=15.0,
+        arm_profiles={"hv": hv_cfg, "lv": lv_cfg},
+        profile_runlimits={"hv": 15.0, "lv": 3.0},
+        guard_max_vdc=60.0,
+    )
+    ok, msg = dual_app.switch_arm_profile("lv", safe_status())
+    dual_lv_snapshot = dual_app.arm_snapshot(safe_status())
+    add_case(
+        cases,
+        "dual_profile_switch_applies_lv_guard_and_runlimit",
+        ok
+        and dual_lv_snapshot["hmi_arm_profile"] == "lv"
+        and dual_lv_snapshot["hmi_arm_profiles"] == ["hv", "lv"]
+        and dual_app.start_runlimit_sec == 3.0
+        and dual_guard.max_vdc == 10.0
+        and not dual_guard.allow_hv,
+        msg,
+        dual_lv_snapshot,
+    )
+    ok, msg = dual_app.switch_arm_profile("hv", safe_status())
+    add_case(
+        cases,
+        "dual_profile_switch_restores_hv_guard_and_runlimit",
+        ok
+        and dual_app.hv_arm.snapshot()["hmi_arm_profile"] == "hv"
+        and dual_app.start_runlimit_sec == 15.0
+        and dual_guard.max_vdc == 60.0
+        and dual_guard.allow_hv,
+        msg,
+    )
+    ok, msg = dual_app.switch_arm_profile("invalid", safe_status())
+    add_case(cases, "dual_profile_switch_rejects_unknown_profile", (not ok) and "unsupported" in msg, msg)
+
+    start_arm = mod.HvArmState(lv_cfg)
+    ok, msg = start_arm.arm("ARM LV HV OFF", safe_status())
+    start_rpc = FakeRpc(
+        [
+            safe_status(),
+            safe_status(precharge=1, bp_ext=0x08),
+            safe_status(
+                state="VF_RUN",
+                state_code=1,
+                pwm=1,
+                precharge=1,
+                bp_ext=0x08,
+                freq=0.5,
+                speed=15.0,
+            ),
+        ]
+    )
+    start_app = mod.AppState(
+        start_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
+        hv_arm=start_arm,
+        start_runlimit_sec=3.0,
+    )
+    seq_ok, seq_msg, seq_status = start_app.start_sequence(
+        relay_timeout_sec=0.0,
+        relay_settle_sec=0.0,
+        run_timeout_sec=0.0,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_start_sequence_confirms_relay_then_pwm",
+        ok
+        and seq_ok
+        and start_rpc.commands == ["PRECHARGE ON", "SET RUNLIMIT 3.000", "START"]
+        and seq_status is not None
+        and seq_status.get("pwm") == 1,
+        seq_msg,
+        {"commands": start_rpc.commands, "status": seq_status},
+    )
+
+    bench_rpc = FakeRpc(
+        [
+            safe_status(),
+            safe_status(precharge=1, bp_ext=0x08),
+            safe_status(state="VF_RUN", state_code=1, pwm=1, precharge=1, bp_ext=0x08),
+        ]
+    )
+    bench_app = mod.AppState(
+        bench_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=60.0, local_bench_gate=True),
+        hv_arm=mod.HvArmState(mod.HvArmConfig(enabled=False)),
+    )
+    seq_ok, seq_msg, _ = bench_app.start_sequence(
+        relay_timeout_sec=0.0,
+        relay_settle_sec=0.0,
+        run_timeout_sec=0.0,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_start_sequence_preserves_nonstandalone_bench_mode",
+        seq_ok and bench_rpc.commands == ["PRECHARGE ON", "SET RUNLIMIT 15.000", "START"],
+        seq_msg,
+        bench_rpc.commands,
+    )
+
+    no_relay_arm = mod.HvArmState(lv_cfg)
+    no_relay_arm.arm("ARM LV HV OFF", safe_status())
+    no_relay_rpc = FakeRpc([safe_status(), safe_status(), safe_status()])
+    no_relay_app = mod.AppState(
+        no_relay_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
+        hv_arm=no_relay_arm,
+    )
+    seq_ok, seq_msg, _ = no_relay_app.start_sequence(
+        relay_timeout_sec=0.0,
+        relay_settle_sec=0.0,
+        run_timeout_sec=0.0,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_start_sequence_aborts_when_pb4_not_confirmed",
+        (not seq_ok)
+        and "confirmation failed" in seq_msg
+        and no_relay_rpc.commands == ["PRECHARGE ON", "STOP", "PRECHARGE OFF"],
+        seq_msg,
+        no_relay_rpc.commands,
+    )
+
+    reject_arm = mod.HvArmState(lv_cfg)
+    reject_arm.arm("ARM LV HV OFF", safe_status())
+    reject_rpc = FakeRpc(
+        [safe_status(), safe_status(precharge=1, bp_ext=0x08), safe_status()],
+        command_results={"START": (False, "rejected")},
+    )
+    reject_app = mod.AppState(
+        reject_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
+        hv_arm=reject_arm,
+        start_runlimit_sec=3.0,
+    )
+    seq_ok, seq_msg, _ = reject_app.start_sequence(
+        relay_timeout_sec=0.0,
+        relay_settle_sec=0.0,
+        run_timeout_sec=0.0,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_start_sequence_estops_and_opens_relay_when_start_rejected",
+        (not seq_ok)
+        and "START rejected" in seq_msg
+        and reject_rpc.commands
+        == ["PRECHARGE ON", "SET RUNLIMIT 3.000", "START", "ESTOP", "PRECHARGE OFF"],
+        seq_msg,
+        reject_rpc.commands,
+    )
+
+    stop_rpc = FakeRpc([safe_status()])
+    stop_app = mod.AppState(stop_rpc, FakeLogs(), status_log_interval=60.0)
+    stop_ok, stop_msg, _ = stop_app.stop_sequence(emergency=True, confirm_timeout_sec=0.0, poll_sec=0.0)
+    add_case(
+        cases,
+        "wifi_emergency_stop_always_opens_relay",
+        stop_ok and stop_rpc.commands == ["ESTOP", "PRECHARGE OFF"],
+        stop_msg,
+        stop_rpc.commands,
+    )
+
     watchdog_arm = mod.HvArmState(hv_cfg)
     ok, msg = watchdog_arm.arm(mod.DEFAULT_HV_ARM_CONFIRM, hv_status)
     watchdog_arm.mark_started()
@@ -399,7 +724,7 @@ def main() -> int:
     add_case(
         cases,
         "hv_watchdog_forces_stop_and_estop_on_runtime_fault",
-        ok and watchdog_rpc.commands == ["STOP", "ESTOP"],
+        ok and watchdog_rpc.commands == ["STOP", "ESTOP", "PRECHARGE OFF"],
         msg,
         {"commands": watchdog_rpc.commands, "logs": watchdog_logs.items},
     )
@@ -435,7 +760,7 @@ def main() -> int:
     data = safe_status()
     data.pop("vdc", None)
     ok, _data, msg, commands = firmware_update_safe(data)
-    add_case(cases, "firmware_update_allows_bp_vdc_without_legacy_vdc", ok and commands == ["STOP"], msg)
+    add_case(cases, "firmware_update_allows_bp_vdc_without_legacy_vdc", ok and commands == ["STOP", "PRECHARGE OFF"], msg)
 
     ok, _data, msg, _commands = firmware_update_safe(safe_status_without_vbus())
     add_case(cases, "firmware_update_rejects_missing_vbus", (not ok) and "telemetry" in msg, msg)
@@ -445,6 +770,17 @@ def main() -> int:
 
     ok, _data, msg, _commands = firmware_update_safe(safe_status(vdc=0.0, bp_vdc=315.0))
     add_case(cases, "firmware_update_rejects_high_bp_vdc", (not ok) and "too high" in msg, msg)
+
+    ok, _data, msg, _commands = firmware_update_safe(safe_status(vdc=0.0, bp_vdc=0.0, bp_vbus_raw=3256))
+    add_case(cases, "firmware_update_rejects_high_raw_vbus", (not ok) and "raw DC bus" in msg, msg)
+
+    update_missing_raw = safe_status()
+    update_missing_raw.pop("bp_vbus_raw", None)
+    ok, _data, msg, _commands = firmware_update_safe(update_missing_raw)
+    add_case(cases, "firmware_update_rejects_missing_raw_vbus", (not ok) and "missing" in msg, msg)
+
+    ok, _data, msg, _commands = firmware_update_safe(safe_status(bp_vbus_age_ms=5000))
+    add_case(cases, "firmware_update_rejects_stale_raw_vbus", (not ok) and "stale" in msg, msg)
 
     ok, _data, msg, _commands = firmware_update_safe(safe_status(bp_bad_cnt=1))
     add_case(cases, "firmware_update_rejects_bad_counter", (not ok) and "bad" in msg, msg)

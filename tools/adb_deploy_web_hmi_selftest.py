@@ -27,6 +27,7 @@ def main() -> int:
 
     low = mod.autostart_script("/home/arduino/app", None, False)
     hv = mod.autostart_script("/home/arduino/app", "/home/arduino/token", True)
+    lv = mod.autostart_script("/home/arduino/app", None, False, True)
     service = mod.systemd_service()
     privileged = mod.privileged_command("systemctl restart unoq-hmi.service")
 
@@ -35,6 +36,9 @@ def main() -> int:
     check("autostart_binds_wifi_hmi", "--bind 0.0.0.0 --port 8080" in low)
     check("low_voltage_mode_does_not_enable_standalone_hv", "--standalone-hv" not in low)
     check("standalone_hv_mode_is_explicit", "--standalone-hv" in hv)
+    check("standalone_lv_mode_is_explicit", "--standalone-lv" in lv and "--standalone-hv" not in lv)
+    check("standalone_lv_runlimit_is_three_seconds", "--start-runlimit-sec 3.0" in lv)
+    check("autostart_does_not_exit_when_port_is_owned_by_stale_process", "grep -q ':8080'" not in low)
     check("firmware_token_is_explicit", "--firmware-update-token-file" in hv and "/home/arduino/token" in hv)
     check("systemd_runs_as_arduino", "User=arduino" in service)
     check("systemd_restarts_hmi", "Restart=always" in service and "RestartSec=2" in service)
@@ -47,6 +51,21 @@ def main() -> int:
     )
     check("privileged_install_supports_root", '"$(id -u)" = 0' in privileged)
     check("privileged_install_supports_passwordless_sudo", "sudo -n" in privileged)
+    user_sshd = (repo / "tools" / "unoq_user_sshd_config").read_text(encoding="utf-8")
+    user_sshd_start = (repo / "tools" / "start_unoq_user_sshd.sh").read_text(encoding="utf-8")
+    check("user_sshd_uses_unprivileged_port", "Port 2222" in user_sshd)
+    check(
+        "user_sshd_is_key_only",
+        "PasswordAuthentication no" in user_sshd
+        and "KbdInteractiveAuthentication no" in user_sshd
+        and "AuthorizedKeysFile /home/arduino/.ssh/authorized_keys" in user_sshd,
+    )
+    check("user_sshd_start_is_idempotent", "grep -q ':2222 '" in user_sshd_start)
+    check(
+        "adb_bootstrap_falls_back_to_user_sshd",
+        "User SSH enabled on port 2222" in source
+        and "start_unoq_user_sshd.sh') | crontab -" in source,
+    )
 
     failed = [case for case in cases if not case["ok"]]
     summary = {

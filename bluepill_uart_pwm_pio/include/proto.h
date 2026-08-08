@@ -114,6 +114,7 @@
 #define STATUS_FAULT       0x08
 #define STATUS_TIMEOUT     0x10
 #define STATUS_PWM_ACTIVE  0x20
+#define STATUS_SHUTDOWN_RELEASED 0x40
 
 #define FAULT_OK        0
 #define FAULT_ESTOP     1

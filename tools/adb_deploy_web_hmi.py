@@ -48,17 +48,28 @@ def shell_quote(value: str) -> str:
     return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
-def server_args(firmware_update_token_file: str | None, standalone_hv: bool) -> str:
+def server_args(
+    firmware_update_token_file: str | None,
+    standalone_hv: bool,
+    standalone_lv: bool = False,
+) -> str:
     args = ""
     if firmware_update_token_file:
         args += " --firmware-update-token-file " + shell_quote(firmware_update_token_file)
     if standalone_hv:
         args += " --standalone-hv"
+    if standalone_lv:
+        args += " --standalone-lv --start-runlimit-sec 3.0"
     return args
 
 
-def autostart_script(remote: str, firmware_update_token_file: str | None, standalone_hv: bool) -> str:
-    extra_args = server_args(firmware_update_token_file, standalone_hv)
+def autostart_script(
+    remote: str,
+    firmware_update_token_file: str | None,
+    standalone_hv: bool,
+    standalone_lv: bool = False,
+) -> str:
+    extra_args = server_args(firmware_update_token_file, standalone_hv, standalone_lv)
     return (
         "#!/bin/sh\n"
         f"cd {shell_quote(remote)} || exit 1\n"
@@ -66,9 +77,6 @@ def autostart_script(remote: str, firmware_update_token_file: str | None, standa
         "if command -v flock >/dev/null 2>&1; then\n"
         "  exec 9>/tmp/unoq-hmi.lock\n"
         "  flock -n 9 || exit 0\n"
-        "fi\n"
-        "if ss -ltn 2>/dev/null | grep -q ':8080'; then\n"
-        "  exit 0\n"
         "fi\n"
         "while [ ! -S /var/run/arduino-router.sock ]; do\n"
         "  sleep 1\n"
@@ -165,13 +173,89 @@ def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
     run(adb + ["shell", install_cmd])
 
 
+def ensure_local_ssh_key(key_path: Path) -> str:
+    public_path = Path(str(key_path) + ".pub")
+    if not key_path.exists() or not public_path.exists():
+        key_path.parent.mkdir(parents=True, exist_ok=True)
+        run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key_path)])
+    public_key = public_path.read_text(encoding="utf-8").strip()
+    if not public_key.startswith("ssh-ed25519 "):
+        raise RuntimeError(f"unexpected SSH public key format: {public_path}")
+    return public_key
+
+
+def enable_network_ssh(adb: list[str], key_path: Path) -> None:
+    public_key = ensure_local_ssh_key(key_path)
+    tmp_name = ""
+    try:
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as f:
+            f.write(public_key + "\n")
+            tmp_name = f.name
+        run(adb + ["push", tmp_name, "/tmp/unoq_codex_key.pub"])
+        install_key = (
+            "sh -lc "
+            + shell_quote(
+                "mkdir -p /home/arduino/.ssh && chmod 700 /home/arduino/.ssh && "
+                "touch /home/arduino/.ssh/authorized_keys && chmod 600 /home/arduino/.ssh/authorized_keys && "
+                "key=\"$(cat /tmp/unoq_codex_key.pub)\"; "
+                "grep -qxF \"$key\" /home/arduino/.ssh/authorized_keys || echo \"$key\" >> /home/arduino/.ssh/authorized_keys; "
+                "rm -f /tmp/unoq_codex_key.pub"
+            )
+        )
+        run(adb + ["shell", install_key])
+    finally:
+        if tmp_name:
+            try:
+                os.remove(tmp_name)
+            except OSError:
+                pass
+
+    enable_ssh = privileged_command(
+        "chown -R arduino:arduino /home/arduino/.ssh; "
+        "if systemctl list-unit-files ssh.service >/dev/null 2>&1; then "
+        "systemctl enable --now ssh.service; "
+        "elif systemctl list-unit-files sshd.service >/dev/null 2>&1; then "
+        "systemctl enable --now sshd.service; "
+        "else exit 78; fi"
+    )
+    if ok(adb + ["shell", enable_ssh]):
+        log(f"Network SSH enabled on port 22 with key authentication: {key_path}")
+        return
+
+    tools_dir = Path(__file__).resolve().parent
+    sshd_config = tools_dir / "unoq_user_sshd_config"
+    start_script = tools_dir / "start_unoq_user_sshd.sh"
+    run(adb + ["push", str(sshd_config), "/home/arduino/.ssh/sshd_config"])
+    run(adb + ["push", str(start_script), "/home/arduino/bin/start_unoq_user_sshd.sh"])
+    setup_user_sshd = (
+        "chmod 700 /home/arduino/bin/start_unoq_user_sshd.sh; "
+        "chmod 600 /home/arduino/.ssh/sshd_config /home/arduino/.ssh/authorized_keys; "
+        "test -f /home/arduino/.ssh/ssh_host_ed25519_key || "
+        "ssh-keygen -q -t ed25519 -N '' -f /home/arduino/.ssh/ssh_host_ed25519_key; "
+        "/usr/sbin/sshd -t -f /home/arduino/.ssh/sshd_config; "
+        "nohup /home/arduino/bin/start_unoq_user_sshd.sh >/home/arduino/.ssh/sshd-start.log 2>&1 &"
+    )
+    run(adb + ["shell", setup_user_sshd])
+    cron_cmd = (
+        "sh -lc "
+        + shell_quote(
+            "(crontab -l 2>/dev/null | grep -v '/home/arduino/bin/start_unoq_user_sshd.sh'; "
+            "echo '@reboot /home/arduino/bin/start_unoq_user_sshd.sh'; "
+            "echo '* * * * * /home/arduino/bin/start_unoq_user_sshd.sh') | crontab -"
+        )
+    )
+    run(adb + ["shell", cron_cmd])
+    log(f"User SSH enabled on port 2222 with key authentication: {key_path}")
+
+
 def install_autostart(
     adb: list[str],
     remote: str,
     firmware_update_token_file: str | None,
     standalone_hv: bool,
+    standalone_lv: bool = False,
 ) -> bool:
-    script = autostart_script(remote, firmware_update_token_file, standalone_hv)
+    script = autostart_script(remote, firmware_update_token_file, standalone_hv, standalone_lv)
     remote_script = "/home/arduino/bin/start_unoq_hmi.sh"
     run(adb + ["shell", "mkdir -p /home/arduino/bin"])
     run(adb + ["shell", "cat > /tmp/start_unoq_hmi.sh <<'SH'\n" + script + "SH\n"])
@@ -237,9 +321,25 @@ def main() -> int:
         help="Do not install/update the user crontab HMI watchdog",
     )
     ap.add_argument(
+        "--enable-network-ssh",
+        action="store_true",
+        help="One-time bootstrap of key-authenticated SSH for future Wi-Fi-only deploys",
+    )
+    ap.add_argument(
+        "--ssh-key",
+        default=".unoq_ssh/id_ed25519",
+        help="Local private key path used by the Wi-Fi deploy tool",
+    )
+    standalone_group = ap.add_mutually_exclusive_group()
+    standalone_group.add_argument(
         "--standalone-hv",
         action="store_true",
-        help="Install the fail-closed phone HV arm workflow; it remains unarmed after every restart.",
+        help="Install both Wi-Fi profiles and start fail-closed in HV mode after every restart.",
+    )
+    standalone_group.add_argument(
+        "--standalone-lv",
+        action="store_true",
+        help="Install both Wi-Fi profiles and start in the HV-disconnected LV test mode.",
     )
     args = ap.parse_args()
 
@@ -266,7 +366,6 @@ def main() -> int:
         run(adb + ["push", os.path.join(static_dir, name), f"{args.remote}/static/{name}"])
 
     ensure_msgpack(adb, args.remote, local_root)
-
     firmware_update_token = args.firmware_update_token.strip()
     if args.firmware_update_token_local_file:
         firmware_update_token = Path(args.firmware_update_token_local_file).read_text(encoding="utf-8").strip()
@@ -303,13 +402,21 @@ def main() -> int:
             args.remote,
             args.firmware_update_token_file if firmware_update_enabled else None,
             bool(args.standalone_hv),
+            bool(args.standalone_lv),
         )
 
     if args.restart:
         log("Restarting server...")
         run(adb + ["shell", "mkdir -p " + args.remote + "/logs"])
         if systemd_installed:
-            restart_service = privileged_command("systemctl restart unoq-hmi.service")
+            restart_service = privileged_command(
+                "systemctl stop unoq-hmi.service || true; "
+                "pid=\"$(ss -ltnp 2>/dev/null | sed -n 's/.*:8080 .*pid=\\([0-9]\\+\\).*/\\1/p' | head -n 1)\"; "
+                "if [ -n \"$pid\" ]; then kill \"$pid\" || true; fi; "
+                "for i in 1 2 3 4 5 6 7 8 9 10; do "
+                "ss -ltn 2>/dev/null | grep -q ':8080' || break; sleep 0.2; done; "
+                "systemctl start unoq-hmi.service"
+            )
             run(adb + ["shell", restart_service])
             wait_for_port = (
                 "sh -lc 'for i in $(seq 1 50); do "
@@ -317,11 +424,14 @@ def main() -> int:
                 "done; exit 1'"
             )
             run(adb + ["shell", wait_for_port])
+            if args.enable_network_ssh:
+                enable_network_ssh(adb, Path(args.ssh_key))
             log("DONE")
             return 0
         extra_args = server_args(
             args.firmware_update_token_file if firmware_update_enabled else None,
             bool(args.standalone_hv),
+            bool(args.standalone_lv),
         )
         # Kill by port 8080 first (robust and avoids pkill matching the current shell argv).
         kill_and_start = (
@@ -337,6 +447,8 @@ def main() -> int:
             "for i in 1 2 3 4 5 6 7 8 9 10; do ss -ltnp 2>/dev/null | grep -q \":8080\" && exit 0; sleep 0.2; done; exit 1'"
         )
         run(adb + ["shell", kill_and_start])
+    if args.enable_network_ssh:
+        enable_network_ssh(adb, Path(args.ssh_key))
     log("DONE")
     return 0
 

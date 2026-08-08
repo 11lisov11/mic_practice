@@ -254,6 +254,9 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   if (s_state.fault_latched) status |= STATUS_FAULT;
   if (s_state.timeout_active) status |= STATUS_TIMEOUT;
   if (s_state.pwm_active) status |= STATUS_PWM_ACTIVE;
+  if (HAL_GPIO_ReadPin(EM_STOP_GPIO_PORT, EM_STOP_GPIO_PIN) == GPIO_PIN_SET) {
+    status |= STATUS_SHUTDOWN_RELEASED;
+  }
   rsp[RSP_OFF_STATUS] = status;
 
   rsp[RSP_OFF_SEQ] = cmd[CMD_OFF_SEQ];
@@ -273,7 +276,15 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   rsp[13] = enc_ok ? 1 : 0;
 #endif
 
-  rsp[RSP_OFF_EXT_FLAGS] = s_state.ext_flags;
+  // PRECHARGE reply reflects the actual PB4 input level, not only the command
+  // bit. This still is not a relay-contact or coil-current feedback signal.
+  uint8_t ext_reply = s_state.ext_flags;
+  if (ipm15_precharge_relay_pin_active()) {
+    ext_reply |= EXT_PRECHARGE_RELAY;
+  } else {
+    ext_reply &= (uint8_t)(~EXT_PRECHARGE_RELAY);
+  }
+  rsp[RSP_OFF_EXT_FLAGS] = ext_reply;
   rsp[RSP_OFF_EXT_DUTY_LO] = (uint8_t)(s_state.brake_q15 & 0xFF);
   rsp[RSP_OFF_EXT_DUTY_HI] = (uint8_t)((s_state.brake_q15 >> 8) & 0xFF);
   if (!s_state.pwm_active) {

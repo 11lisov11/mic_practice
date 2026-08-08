@@ -90,6 +90,16 @@ static void status_led_tick(void) {
     return;
   }
 
+  // A steady LED in SAFE indicates that the PB4 precharge output is active.
+  // It confirms the MCU pin state, not relay coil current or contact closure.
+  if (ipm15_precharge_relay_pin_active()) {
+    if (!led_on) {
+      led_on = true;
+      status_led_set(true);
+    }
+    return;
+  }
+
   if ((now - spi_seen_ms) < 500U) {
     if ((now - led_last_ms) >= 100U) {
       led_last_ms = now;
@@ -262,7 +272,9 @@ extern "C" void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
     __HAL_AFIO_REMAP_USART2_DISABLE();
 
     GPIO_InitTypeDef gpio = {0};
-    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+    // USART2 only runs at 115200 baud. Slower GPIO edges reduce ringing and
+    // crosstalk into the RX wire when the nearby PWM/gate signals switch.
+    gpio.Speed = GPIO_SPEED_FREQ_LOW;
 
     gpio.Pin = GPIO_PIN_2;
     gpio.Mode = GPIO_MODE_AF_PP;
@@ -270,7 +282,8 @@ extern "C" void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
     gpio.Pin = GPIO_PIN_3;
     gpio.Mode = GPIO_MODE_INPUT;
-    gpio.Pull = GPIO_NOPULL;
+    // Keep UART idle HIGH even during brief source/high-impedance transitions.
+    gpio.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOA, &gpio);
   }
 }

@@ -13,6 +13,10 @@ from datetime import datetime
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 
+from runtime_python import ensure_modules_or_reexec
+
+ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_RELAY_PREFLIGHT_REEXEC")
+
 RELAY_CONFIGS = {
     "precharge": {
         "cmd": "PRECHARGE",
@@ -70,6 +74,18 @@ def post_cmd(base: str, cmd: str, timeout_s: float = 2.0) -> bool:
     return ok
 
 
+def arm_hmi(base: str, confirm: str, timeout_s: float = 2.0) -> bool:
+    resp = http_post_json(
+        base.rstrip("/") + "/api/hv-arm",
+        {"action": "arm", "confirm": confirm},
+        timeout_s,
+    )
+    arm = resp.get("arm") if isinstance(resp, dict) else None
+    ok = bool(resp and resp.get("ok") and isinstance(arm, dict) and status_int(arm, "hmi_hv_armed", 0) == 1)
+    log(f"HMI ARM: {'OK' if ok else 'FAIL'}")
+    return ok
+
+
 def status_num(st: dict | None, key: str, default: float = 0.0) -> float:
     if st is None:
         return float(default)
@@ -123,11 +139,21 @@ def bp_bad_count(st: dict | None) -> int:
     return max(values)
 
 
-def safe_low_voltage(st: dict | None, max_vdc: float, allow_hv: bool) -> bool:
+def safe_low_voltage(
+    st: dict | None,
+    max_vdc: float,
+    allow_hv: bool,
+    confirmed_hv_off_bench: bool = False,
+) -> bool:
     if st is None:
         return False
     vdc = vdc_max_seen(st)
-    vdc_ok = math.isfinite(vdc) and (allow_hv or vdc <= max_vdc)
+    hv_off_mode_ok = (
+        confirmed_hv_off_bench
+        and status_int(st, "hmi_hv_enabled", 1) == 0
+        and status_int(st, "hmi_hv_armed", 1) == 0
+    )
+    vdc_ok = hv_off_mode_ok or (math.isfinite(vdc) and (allow_hv or vdc <= max_vdc))
     return (
         st.get("state") == "SAFE"
         and status_int(st, "pwm", 1) == 0
@@ -292,10 +318,20 @@ def parse_args(default_relay: str = "precharge") -> argparse.Namespace:
     p.add_argument("--status-timeout", type=float, default=1.5)
     p.add_argument("--max-vdc", type=float, default=60.0)
     p.add_argument("--allow-hv", action="store_true")
+    p.add_argument(
+        "--confirm-hv-off-bench",
+        action="store_true",
+        help="Ignore only VDC telemetry after physically disconnecting and discharging HV; all other safety gates remain active.",
+    )
     p.add_argument("--la-channel", type=int, default=-1, help="Optional Saleae channel connected to relay control pin.")
     p.add_argument("--la-port", type=int, default=10430)
     p.add_argument("--la-rate", type=int, default=100000)
     p.add_argument("--la-duration", type=float, default=0.0)
+    p.add_argument(
+        "--arm-confirm",
+        default="",
+        help="Acquire the expiring HMI output arm after the safe precheck (for example ARM LOWV).",
+    )
     p.add_argument("--outdir", default=str(Path(__file__).resolve().parent / "_preflight_exports"))
     return p.parse_args()
 
@@ -305,7 +341,7 @@ def main(default_relay: str = "precharge") -> int:
     cfg = RELAY_CONFIGS[args.relay]
     if args.cycles < 1:
         raise SystemExit("--cycles must be >= 1")
-    root = Path(args.outdir) / f"{cfg['tag']}_{ts_tag()}"
+    root = Path(args.outdir).resolve() / f"{cfg['tag']}_{ts_tag()}"
     root.mkdir(parents=True, exist_ok=True)
 
     summary: dict = {
@@ -317,6 +353,8 @@ def main(default_relay: str = "precharge") -> int:
         "dwell_s": args.dwell,
         "max_vdc": args.max_vdc,
         "allow_hv": bool(args.allow_hv),
+        "confirmed_hv_off_bench": bool(args.confirm_hv_off_bench),
+        "hmi_arm_requested": bool(args.arm_confirm.strip()),
         "saleae_channel": args.la_channel,
         "steps": [],
     }
@@ -330,7 +368,7 @@ def main(default_relay: str = "precharge") -> int:
         cleanup(args.url)
         st0 = get_status(args.url)
         summary["initial_status"] = st0
-        pre_ok = safe_low_voltage(st0, args.max_vdc, args.allow_hv)
+        pre_ok = safe_low_voltage(st0, args.max_vdc, args.allow_hv, args.confirm_hv_off_bench)
         summary["pre_safe_low_voltage"] = pre_ok
         if not pre_ok:
             log("FAIL: precheck is not safe low-voltage state")
@@ -338,9 +376,26 @@ def main(default_relay: str = "precharge") -> int:
             summary["pass"] = False
             return return_code
 
+        if args.arm_confirm.strip():
+            arm_ok = arm_hmi(args.url, args.arm_confirm.strip(), args.status_timeout)
+            armed, arm_status, arm_dt = wait_for(
+                args.url,
+                lambda s: status_int(s, "hmi_hv_armed", 0) == 1,
+                args.status_timeout,
+                args.poll,
+            )
+            summary["hmi_arm"] = {"ok": bool(arm_ok and armed), "dt_s": arm_dt, "status": arm_status}
+            if not arm_ok or not armed:
+                summary["pass"] = False
+                return 6
+
         la_enabled = args.la_channel >= 0
         if la_enabled:
-            duration = args.la_duration if args.la_duration > 0.0 else max(2.0, 0.7 + args.cycles * args.dwell * 2.0)
+            duration = (
+                args.la_duration
+                if args.la_duration > 0.0
+                else max(3.0, 1.5 + args.cycles * (args.dwell * 2.0 + 1.0))
+            )
             log(f"Saleae capture CH{args.la_channel} duration={duration:.2f}s rate={args.la_rate}")
             mgr, capture, saleae_pb2, grpc_mod = start_saleae_capture(
                 args.la_port, args.la_channel, args.la_rate, duration
@@ -418,7 +473,7 @@ def main(default_relay: str = "precharge") -> int:
         cleanup(args.url)
         ok_final, st_final, dt_final = wait_for(
             args.url,
-            lambda s: safe_low_voltage(s, args.max_vdc, args.allow_hv)
+            lambda s: safe_low_voltage(s, args.max_vdc, args.allow_hv, args.confirm_hv_off_bench)
             and status_int(s, "ntc", 1) == 0
             and status_int(s, "precharge", 1) == 0
             and status_int(s, "pfc", 1) == 0

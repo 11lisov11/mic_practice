@@ -29,6 +29,8 @@ def base_status(**overrides: Any) -> dict[str, Any]:
         "bp_bad_cnt": 0,
         "bp_age_ms": 10,
         "bp_rsp_age_ms": 10,
+        "bp_vbus_age_ms": 10,
+        "bp_vbus_raw": 250,
         "bp_vdc": 12.0,
         "vdc": 12.0,
     }
@@ -160,8 +162,12 @@ def cases() -> list[CaseResult]:
         run_precheck_case("fault_blocks", base_status(bp_fault=6), False, "bp_fault=6"),
         run_precheck_case("legacy_bad_counter_blocks", base_status(bp_bad_cnt=0, bp_bad=1), False, "bp_bad=1"),
         run_precheck_case("missing_vbus_blocks", without_vbus(), False, "Vbus telemetry"),
-        run_precheck_case("high_vbus_blocks_without_hv", base_status(vdc=315.0, bp_vdc=315.0), False, "without --allow-hv"),
-        run_precheck_case("high_vbus_allows_with_hv", base_status(vdc=315.0, bp_vdc=315.0), True, "ok", allow_hv=True),
+        run_precheck_case("high_raw_vbus_blocks_with_zero_scaled", base_status(vdc=0.0, bp_vdc=0.0, bp_vbus_raw=3256), False, "raw Vbus"),
+        run_precheck_case("missing_raw_vbus_blocks", {k: v for k, v in base_status().items() if k != "bp_vbus_raw"}, False, "missing"),
+        run_precheck_case("stale_raw_vbus_blocks", base_status(bp_vbus_age_ms=5000), False, "stale"),
+        run_precheck_case("invalid_raw_vbus_blocks", base_status(bp_vbus_raw=0), False, "invalid"),
+        run_precheck_case("high_vbus_blocks_without_hv", base_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256), False, "without --allow-hv"),
+        run_precheck_case("high_vbus_allows_with_hv", base_status(vdc=315.0, bp_vdc=315.0, bp_vbus_raw=3256), True, "ok", allow_hv=True),
         run_precheck_case("allow_hv_still_requires_vbus", without_vbus(), False, "Vbus telemetry", allow_hv=True),
         run_precheck_case("allow_hv_requires_min_vbus", base_status(vdc=12.0, bp_vdc=12.0), False, "below --hv-vdc-min", allow_hv=True),
         run_precheck_case(

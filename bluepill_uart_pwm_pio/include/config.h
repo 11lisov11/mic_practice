@@ -40,11 +40,14 @@
 #define ADC_I_SCALE (1.0f / 2048.0f)
 // STEVAL J2-14 HV bus telemetry is sampled on PA5 in UART mode.
 // UM2014 bus-voltage output is offset near mid-scale when the DC bus is off.
-// Live calibration: bus-off median raw ~=1763; raw=3256 was 315 V on meter.
+// Historical two-point calibration retained until a new known-HV capture is made.
+// Current bus-off input is 0.09 V at PA5 and raw ~=123 after the ADC acquisition fix.
 #define ADC_VBUS_ZERO_RAW 1763U
 #define ADC_VBUS_CAL_RAW 3256U
 #define ADC_VBUS_CAL_V 315.0f
 #define ADC_VBUS_SCALE (ADC_VBUS_CAL_V / ((float)ADC_VBUS_CAL_RAW - (float)ADC_VBUS_ZERO_RAW))
+#define ADC_VBUS_IDLE_OVERSAMPLES 64U
+#define ADC_VBUS_IIR_SHIFT 3U
 
 // STEVAL-IPM15B J2-26 "heat sink temperature".
 // UM2014 SW3 selects the source:

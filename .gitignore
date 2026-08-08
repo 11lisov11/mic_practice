@@ -21,7 +21,7 @@ env/
 
 # PlatformIO / embedded build artifacts
 .pio/
-build_unoq_motor_wifi*/
+build_unoq*/
 *.o
 *.a
 *.elf
@@ -43,6 +43,7 @@ PLAN.md
 # Local secrets (keep template in repo)
 unoq_spi_master/arduino_secrets.h
 .unoq_firmware_update_token
+.unoq_ssh/
 
 # Generic logs / temp
 *.log

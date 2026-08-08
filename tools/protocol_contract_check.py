@@ -88,8 +88,10 @@ def mark_bluepill_ready(state: hmi.SharedState) -> None:
     rsp[5] = 1
     rsp[9] = 0
     rsp[10] = hmi.MODE_OFF
-    rsp[17] = hmi.BP_VBUS_ZERO_RAW & 0xFF
-    rsp[18] = (hmi.BP_VBUS_ZERO_RAW >> 8) & 0xFF
+    # Use the measured post-acquisition-fix bus-off sample, not the historical
+    # scaling offset which is intentionally retained only for calibration.
+    rsp[17] = 123 & 0xFF
+    rsp[18] = (123 >> 8) & 0xFF
     rsp[hmi.CRC_OFF] = hmi.crc_xor(rsp)
     hmi.parse_rsp(state, bytes(rsp), 1.0)
 
@@ -200,6 +202,21 @@ def case_safety_selftest_offsets(proto: dict[str, int]) -> dict[str, int]:
         assert_eq(actual, expected, f"safety_selftest.{py_name}")
         evidence[py_name] = actual
     return evidence
+
+
+def case_nucleo_proto_matches(proto: dict[str, int]) -> dict[str, Any]:
+    repo = Path(__file__).resolve().parents[1]
+    nucleo_path = repo / "nucleo_g431_uart_bridge_pio" / "include" / "proto.h"
+    nucleo = parse_proto_h(nucleo_path)
+    missing = sorted(set(proto) - set(nucleo))
+    assert_true(not missing, f"Nucleo proto missing defines: {missing}")
+    mismatches = {
+        name: {"bluepill": proto[name], "nucleo": nucleo[name]}
+        for name in sorted(proto)
+        if nucleo[name] != proto[name]
+    }
+    assert_true(not mismatches, f"Nucleo protocol mismatch: {mismatches}")
+    return {"nucleo_proto_h": str(nucleo_path), "matching_defines": len(proto)}
 
 
 def case_hmi_command_frame_layout(proto: dict[str, int]) -> dict[str, Any]:
@@ -329,6 +346,7 @@ def case_hmi_response_layout(proto: dict[str, int]) -> dict[str, Any]:
 
 
 CASES = [
+    ("nucleo_proto_matches", case_nucleo_proto_matches),
     ("hmi_constants", case_hmi_constants),
     ("direct_probe_constants", case_direct_probe_constants),
     ("safety_selftest_offsets", case_safety_selftest_offsets),

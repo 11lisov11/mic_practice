@@ -54,7 +54,9 @@ def mark_bluepill_ready(state: hmi.SharedState, *, status: int | None = None, fa
     rsp[5] = 1
     rsp[9] = int(fault) & 0xFF
     rsp[10] = hmi.MODE_OFF
-    raw = hmi.BP_VBUS_ZERO_RAW if vbus_raw is None else int(vbus_raw)
+    # Confirmed post-acquisition-fix bus-off value is about 123 counts. The
+    # historical calibration zero (1763) must not be used as a safety fixture.
+    raw = 123 if vbus_raw is None else int(vbus_raw)
     rsp[17] = raw & 0xFF
     rsp[18] = (raw >> 8) & 0xFF
     rsp[hmi.CRC_OFF] = hmi.crc_xor(rsp)

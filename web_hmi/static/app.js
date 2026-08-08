@@ -10,6 +10,15 @@ const hvArmStatus = document.getElementById("hvArmStatus");
 const hvArmTimer = document.getElementById("hvArmTimer");
 const hvArmConfirm = document.getElementById("hvArmConfirm");
 const hvArmBtn = document.getElementById("hvArmBtn");
+const armProfileToggle = document.getElementById("armProfileToggle");
+const armProfileButtons = armProfileToggle
+  ? Array.from(armProfileToggle.querySelectorAll("[data-arm-profile]"))
+  : [];
+const armProfileLabel = document.getElementById("armProfileLabel");
+const armProfileNote = document.getElementById("armProfileNote");
+const vbusMeterInput = document.getElementById("vbusMeterInput");
+const vbusCaptureBtn = document.getElementById("vbusCaptureBtn");
+const vbusCaptureResult = document.getElementById("vbusCaptureResult");
 const modeToggle = document.getElementById("modeToggle");
 const modeButtons = Array.from(modeToggle.querySelectorAll(".seg"));
 const freqSlider = document.getElementById("freqSlider");
@@ -54,6 +63,8 @@ let bpFocOn = false;
 let bpFocCanSwitch = false;
 let hvArmed = false;
 let hvArmLastError = "";
+let armProfileSwitchReady = false;
+let vbusCaptureBusy = false;
 
 function clamp01(value) {
   return Math.max(0, Math.min(1, Number(value)));
@@ -156,6 +167,23 @@ async function apiCmd(cmd) {
   return data.ok === true;
 }
 
+async function apiSequence(path, body = {}) {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  if (data.ok) {
+    hvArmLastError = "";
+    if (hvArmStatus) hvArmStatus.textContent = data.message || "Команда выполнена";
+  } else {
+    hvArmLastError = data.error || "Последовательность отклонена";
+    if (hvArmStatus) hvArmStatus.textContent = hvArmLastError;
+  }
+  return data;
+}
+
 async function apiHvArm(action, confirm = "") {
   const res = await fetch("/api/hv-arm", {
     method: "POST",
@@ -170,6 +198,35 @@ async function apiHvArm(action, confirm = "") {
     hvArmLastError = "";
   }
   return data;
+}
+
+async function apiArmProfile(profile) {
+  const res = await fetch("/api/arm-profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ profile }),
+  });
+  const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  if (!data.ok) {
+    hvArmLastError = data.error || "Переключение профиля отклонено";
+    if (hvArmStatus) hvArmStatus.textContent = hvArmLastError;
+  } else {
+    hvArmLastError = "";
+  }
+  return data;
+}
+
+async function apiVbusCapture(meterVdc) {
+  const body = {};
+  if (Number.isFinite(meterVdc)) body.meter_vdc = meterVdc;
+  const res = await fetch("/api/calibration/vbus", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  if (!data.ok) throw new Error(data.error || "Измерение Vbus отклонено");
+  return data.capture;
 }
 
 async function apiStatus() {
@@ -230,14 +287,37 @@ function setHvArmUI(data) {
   hvArmed = Number(data.hmi_hv_armed || 0) === 1;
   const started = Number(data.hmi_hv_started || 0) === 1;
   const remaining = Number(data.hmi_hv_remaining_s || 0);
+  const profile = String(data.hmi_arm_profile || "hv").toLowerCase();
+  const isLv = profile === "lv";
+  const profileName = isLv ? "LV-тест" : "HV";
+  const confirmPhrase = String(data.hmi_arm_confirm || (isLv ? "ARM LV HV OFF" : "ARM 310V"));
+  const availableProfiles = Array.isArray(data.hmi_arm_profiles) ? data.hmi_arm_profiles : [profile];
+  armProfileSwitchReady = Number(data.hmi_arm_profile_switch_ready || 0) === 1;
+  armProfileButtons.forEach((btn) => {
+    const target = String(btn.dataset.armProfile || "").toLowerCase();
+    btn.classList.toggle("active", target === profile);
+    btn.hidden = !availableProfiles.includes(target);
+    btn.disabled = hvArmed || !armProfileSwitchReady || target === profile;
+  });
   hvArmBlock.classList.toggle("armed", hvArmed);
   hvArmStatus.textContent = hvArmed
-    ? (started ? "HV-сеанс активен" : "HV разрешена, ожидается пуск")
-    : (hvArmLastError || "HV заблокирована");
+    ? (started ? `${profileName}-сеанс активен` : `${profileName} разрешён, ожидается пуск`)
+    : (hvArmLastError || `${profileName} заблокирован`);
   hvArmTimer.textContent = `${remaining.toFixed(1)} с`;
-  hvArmBtn.textContent = hvArmed ? "Снять HV-разрешение" : "Разрешить HV на 30 секунд";
+  hvArmBtn.textContent = hvArmed ? `Снять ${profileName}-разрешение` : `Разрешить ${profileName} на 30 секунд`;
   hvArmBtn.classList.toggle("disarm", hvArmed);
-  if (hvArmConfirm) hvArmConfirm.disabled = hvArmed;
+  if (hvArmConfirm) {
+    hvArmConfirm.disabled = hvArmed;
+    hvArmConfirm.placeholder = `Введите ${confirmPhrase}`;
+  }
+  if (armProfileLabel) armProfileLabel.textContent = isLv ? "Низковольтный тест, HV отключена" : "Силовая шина";
+  if (armProfileNote) {
+    armProfileNote.textContent = isLv
+      ? `Только при физически отключённой HV-шине. Каждый пуск ограничен ${Number(data.hmi_start_runlimit_s || 3).toFixed(0)} с; STOP или потеря контроля немедленно отключают выходы.`
+      : "Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.";
+  }
+  if (vbusCaptureBtn) vbusCaptureBtn.disabled = hvArmed || vbusCaptureBusy;
+  if (vbusMeterInput) vbusMeterInput.disabled = hvArmed || vbusCaptureBusy;
 }
 
 function scheduleFreqSend(value) {
@@ -271,7 +351,9 @@ function scheduleFanSend(value) {
 }
 
 startBtn.addEventListener("click", async () => {
-  await apiCmd("START");
+  startBtn.disabled = true;
+  await apiSequence("/api/start-sequence");
+  await refreshStatus();
 });
 
 if (hvArmBtn) {
@@ -290,12 +372,58 @@ if (hvArmConfirm) {
   });
 }
 
+armProfileButtons.forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    if (!armProfileSwitchReady || hvArmed) return;
+    const profile = String(btn.dataset.armProfile || "").toLowerCase();
+    const result = await apiArmProfile(profile);
+    if (result.ok && hvArmConfirm) hvArmConfirm.value = "";
+    await refreshStatus();
+  });
+});
+
+if (vbusCaptureBtn) {
+  vbusCaptureBtn.addEventListener("click", async () => {
+    const meterText = vbusMeterInput ? vbusMeterInput.value.trim() : "";
+    const meterVdc = meterText === "" ? Number.NaN : Number(meterText.replace(",", "."));
+    if (meterText !== "" && !Number.isFinite(meterVdc)) {
+      vbusCaptureResult.textContent = "Введите корректное напряжение мультиметра.";
+      return;
+    }
+    vbusCaptureBusy = true;
+    vbusCaptureBtn.disabled = true;
+    if (vbusMeterInput) vbusMeterInput.disabled = true;
+    vbusCaptureResult.textContent = "Собираю 20 безопасных отсчётов...";
+    try {
+      const capture = await apiVbusCapture(meterVdc);
+      const raw = capture.bp_vbus_raw;
+      const scaled = capture.bp_vdc;
+      const meter = capture.meter_vdc == null ? "не введено" : `${Number(capture.meter_vdc).toFixed(1)} В`;
+      vbusCaptureResult.textContent =
+        `Записано: raw ${raw.mean.toFixed(1)} (${raw.min.toFixed(0)}...${raw.max.toFixed(0)}), ` +
+        `Vbus ${scaled.mean.toFixed(2)} В, мультиметр ${meter}.`;
+    } catch (err) {
+      vbusCaptureResult.textContent = err.message || "Измерение Vbus не выполнено.";
+    } finally {
+      vbusCaptureBusy = false;
+      vbusCaptureBtn.disabled = hvArmed;
+      if (vbusMeterInput) vbusMeterInput.disabled = hvArmed;
+    }
+  });
+}
+
 stopBtn.addEventListener("click", async () => {
-  await apiCmd("STOP");
+  await apiSequence("/api/stop-sequence");
+  await refreshStatus();
 });
 
 estopBtn.addEventListener("click", async () => {
-  await apiCmd(lastEstop ? "ESTOP CLEAR" : "ESTOP");
+  if (lastEstop) {
+    await apiCmd("ESTOP CLEAR");
+  } else {
+    await apiSequence("/api/stop-sequence", { emergency: true });
+  }
+  await refreshStatus();
 });
 
 if (pfcBtn) {

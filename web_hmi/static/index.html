@@ -40,9 +40,13 @@
         </div>
 
         <div class="hv-arm-block" id="hvArmBlock" hidden>
+          <div class="arm-profile-toggle" id="armProfileToggle" aria-label="Профиль запуска">
+            <button class="arm-profile-btn" type="button" data-arm-profile="hv">HV 310 В</button>
+            <button class="arm-profile-btn" type="button" data-arm-profile="lv">LV TEST</button>
+          </div>
           <div class="hv-arm-head">
             <div>
-              <div class="label">Силовая шина</div>
+              <div class="label" id="armProfileLabel">Силовая шина</div>
               <strong id="hvArmStatus">HV заблокирована</strong>
             </div>
             <span class="hv-arm-timer" id="hvArmTimer">0.0 с</span>
@@ -57,7 +61,21 @@
             placeholder="Введите ARM 310V"
           />
           <button class="btn hv-arm full" id="hvArmBtn">Разрешить HV на 30 секунд</button>
-          <p class="hv-arm-note">Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.</p>
+          <p class="hv-arm-note" id="armProfileNote">Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.</p>
+          <div class="vbus-capture-block">
+            <input
+              id="vbusMeterInput"
+              class="hv-arm-input"
+              type="number"
+              inputmode="decimal"
+              min="0"
+              max="450"
+              step="0.1"
+              placeholder="Напряжение мультиметра, В"
+            />
+            <button class="btn ghost full" id="vbusCaptureBtn">Записать показание Vbus</button>
+            <div class="hv-arm-note" id="vbusCaptureResult">Только измерение: реле и ШИМ не включаются.</div>
+          </div>
         </div>
 
         <div class="io-block">

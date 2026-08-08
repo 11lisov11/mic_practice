@@ -28,6 +28,8 @@ def base_status(**overrides: Any) -> dict[str, Any]:
         "link": True,
         "bp_rsp_age_ms": 10,
         "bp_age_ms": 10,
+        "hmi_hv_enabled": 0,
+        "hmi_hv_armed": 0,
         "vdc": 12.0,
         "bp_vdc": 12.0,
         "ntc": 0,
@@ -47,9 +49,21 @@ def without_vbus(**overrides: Any) -> dict[str, Any]:
     return st
 
 
-def run_safe_case(name: str, st: dict[str, Any] | None, expected_ok: bool, *, allow_hv: bool = False) -> CaseResult:
+def run_safe_case(
+    name: str,
+    st: dict[str, Any] | None,
+    expected_ok: bool,
+    *,
+    allow_hv: bool = False,
+    confirmed_hv_off_bench: bool = False,
+) -> CaseResult:
     try:
-        actual = relay.safe_low_voltage(st, max_vdc=60.0, allow_hv=allow_hv)
+        actual = relay.safe_low_voltage(
+            st,
+            max_vdc=60.0,
+            allow_hv=allow_hv,
+            confirmed_hv_off_bench=confirmed_hv_off_bench,
+        )
         ok = actual == expected_ok
         return CaseResult(
             name=name,
@@ -112,6 +126,30 @@ def run_default_relay_parse_case(name: str, default_relay: str, expected_relay: 
         sys.argv = old_argv
 
 
+def run_arm_case() -> CaseResult:
+    old_post = relay.http_post_json
+    seen: dict[str, Any] = {}
+    try:
+        def fake_post(url: str, payload: dict, timeout_s: float) -> dict:
+            seen.update({"url": url, "payload": payload, "timeout_s": timeout_s})
+            return {"ok": True, "arm": {"hmi_hv_armed": 1}}
+
+        relay.http_post_json = fake_post
+        actual = relay.arm_hmi("http://bench:18080/", "ARM LOWV", 1.25)
+        expected = {
+            "ok": True,
+            "url": "http://bench:18080/api/hv-arm",
+            "payload": {"action": "arm", "confirm": "ARM LOWV"},
+            "timeout_s": 1.25,
+        }
+        observed = {"ok": actual, **seen}
+        return CaseResult("hmi_arm_posts_confirmation", observed == expected, expected, observed)
+    except Exception as exc:
+        return CaseResult("hmi_arm_posts_confirmation", False, True, None, f"{type(exc).__name__}: {exc}")
+    finally:
+        relay.http_post_json = old_post
+
+
 def cases() -> list[CaseResult]:
     return [
         run_relay_config_case(
@@ -132,6 +170,7 @@ def cases() -> list[CaseResult]:
             },
         ),
         run_default_relay_parse_case("precharge_wrapper_default_selects_precharge", "precharge", "precharge"),
+        run_arm_case(),
         run_safe_case("safe_low_voltage_ok", base_status(), True),
         run_safe_case("missing_status_blocks", None, False),
         run_safe_case("active_pwm_blocks", base_status(pwm=1), False),
@@ -145,6 +184,24 @@ def cases() -> list[CaseResult]:
         run_safe_case("negative_vbus_blocks", base_status(vdc=-1.0, bp_vdc=-1.0), False),
         run_safe_case("high_vbus_blocks_without_hv", base_status(vdc=315.0, bp_vdc=315.0), False),
         run_safe_case("high_vbus_allows_with_hv", base_status(vdc=315.0, bp_vdc=315.0), True, allow_hv=True),
+        run_safe_case(
+            "confirmed_hv_off_bench_ignores_disconnected_vbus",
+            without_vbus(),
+            True,
+            confirmed_hv_off_bench=True,
+        ),
+        run_safe_case(
+            "confirmed_hv_off_bench_rejects_hv_mode",
+            without_vbus(hmi_hv_enabled=1),
+            False,
+            confirmed_hv_off_bench=True,
+        ),
+        run_safe_case(
+            "confirmed_hv_off_bench_rejects_hv_arm",
+            without_vbus(hmi_hv_armed=1),
+            False,
+            confirmed_hv_off_bench=True,
+        ),
         run_relay_status_case("precharge_off_status_ok", base_status(precharge=0, bp_ext=0x00), False, "precharge", 0x08, True),
         run_relay_status_case("precharge_on_status_ok", base_status(precharge=1, bp_ext=0x08), True, "precharge", 0x08, True),
         run_relay_status_case("precharge_on_ext_mismatch_blocks", base_status(precharge=1, bp_ext=0x00), True, "precharge", 0x08, False),

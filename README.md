@@ -1,10 +1,16 @@
 ﻿# mic_practice — UNO Q ↔ Blue Pill (UART + PWM + UI + LA)
 
+Новая целевая архитектура: `UNO Q -> изолированный UART -> NUCLEO-G431RB -> X-NUCLEO-IHM09M2 -> STEVAL-IPM15B`. Комплектация, питание и порядок переноса на `X-CUBE-MCSDK 6.4.2`: [NUCLEO_G431_MIGRATION_RU.md](NUCLEO_G431_MIGRATION_RU.md).
+
+Текущая прошивка Blue Pill и HIL-инструменты сохраняются как проверенная legacy-база до появления Nucleo и генерации проекта MCSDK; регистровый код F103 механически на G431 не переносится.
+
 Запуск с инвертором (UM2014 / IPM15): `docs/IPM15_Runbook_RU.md`
 Исследование MIC AI (FOC vs MIC): `docs/MIC_AI_Runbook_RU.md`
 
 ## Состав репозитория
 - `bluepill_uart_pwm_pio` — прошивка Blue Pill (PWM, UART протокол).
+- `nucleo_g431_uart_bridge_pio` — безопасный UART-каркас G431 и отдельная низковольтная `nucleo_g431_pwm_bench` сборка для проверки шести TIM1-каналов при снятом J7; база для последующей интеграции в сгенерированный MCSDK-проект.
+- `BLUEPILL_THERMAL_DIAGNOSTIC_RU.md` — двухэтапная диагностика платы Blue Pill, у которой нагревается STM32.
 - `UNOQ_MOTOR/` — основной sketch-dir UNO Q: `UNOQ_MOTOR.ino`, UI/RPC, режимы `VF/FOC/MIC`, дисплей 7x13, обмен с Blue Pill.
 - `unoq_spi_master` — отдельный/вспомогательный скетч UNO Q для SPI master экспериментов.
 - `web_hmi` — web‑GUI для UNO Q (без пароля, порт 8080).
@@ -22,6 +28,7 @@
 - `tools/research_readiness_check.py` — финальный gate: live `/api/status` + bench-gate + свежесть/наличие preflight, calibration и MIC research artifacts.
 - `tools/bench_gate_report.py` — безопасный сводный отчёт текущего стенда: последний build-only, UART diagnosis, Saleae static/no-overlap и live `/api/status`.
 - `tools/bluepill_runtime_static_preflight.py` — безопасная прошивка рабочей Blue Pill firmware через ST-Link + статический Saleae-захват `CH0..CH6` без активного PWM.
+- `tools/nucleo_bridge_selftest.py` — host-тест переходов SAFE/fault/clear/timeout/E-STOP, расчёта center-aligned периода, dead-time и запрета недиагностических команд G431.
 - `tools/bluepill_static_low_preflight.py` — изоляционный ST-Link тест для `low_side_static_high`: диагностическая firmware без TIM1/команд держит PWM GPIO в LOW, снимает Saleae и восстанавливает runtime.
 - `tools/full_system_preflight.py` — единый regression-runner: build, доступ к UNO Q, encoder sanity, scalar, FOC/MIC, полный LA-suite и MIC-диагностика.
 - `tools/logic2_recover.py` — recovery Logic2/Saleae: рестарт приложения, проверка automation-port и видимости реального анализатора.
@@ -128,21 +135,38 @@ py -3 -u tools\ui_pwm_case.py --url http://<UNOQ_IP>:8080 --require-wifi --mode 
 py -3 -u tools\adb_deploy_web_hmi.py --device <ADB_ID> --restart --standalone-hv
 ```
 
-После каждого запуска UNO Q силовой пуск заблокирован. В HMI требуется вручную ввести `ARM 310V`; разрешение выдаётся на 30 секунд только при живой связи с Blue Pill, состоянии `SAFE`, `pwm=0`, отсутствии `ESTOP`, `bp_fault` и ошибок UART, свежей телеметрии шины `100..400 В` и правдоподобной температуре радиатора. Любая команда, создающая выходной сигнал, повторно проверяет эти условия. Тайм-аут или потеря контроля снимает разрешение и отправляет `STOP`, затем `ESTOP`. Это программное ограждение не заменяет внешний E-STOP, аппаратный shutdown IPM, предохранитель, предзаряд и закрытый корпус.
+Один сервер предоставляет два переключаемых по Wi-Fi профиля: `HV 310 В` и `LV TEST`. USB после установки для переключения не нужен. Смена профиля доступна только в `SAFE`; сервер сначала отправляет `STOP` и `PRECHARGE OFF`, снимает текущее разрешение и проверяет свежий статус STM32. После перезапуска UNO Q всегда выбирается исходный fail-closed профиль `HV 310 В`.
+
+В `LV TEST` необходимо ввести `ARM LV HV OFF`. Профиль допускается только при физически отключённой силовой шине и телеметрии `0..10 В`; каждый `START` автоматически ограничивается 3 секундами. В `HV 310 В` требуется `ARM 310V`, а телеметрия шины должна находиться в диапазоне `100..400 В`. Помимо калиброванного напряжения используется независимый предел свежего `bp_vbus_raw`: ошибочная калибровка не может разрешить низковольтный запуск или удалённое обновление при заряженной шине. В обоих профилях разрешение выдаётся на 30 секунд только при живой связи с Blue Pill, состоянии `SAFE`, `pwm=0`, отключённом реле, отсутствии `ESTOP`, `bp_fault` и ошибок UART, свежей телеметрии и правдоподобной температуре радиатора. Кнопка `Пуск` выполняет одну подтверждаемую последовательность: проверка условий -> `PRECHARGE ON` -> подтверждение уровня командного вывода `PB4` по статусу STM32 -> выдержка 350 мс -> установка временного ограничения -> `START` -> подтверждение `pwm=1`. Любой незавершённый шаг вызывает останов и `PRECHARGE OFF`. Уровень `PB4` не подтверждает ток катушки или замыкание силового контакта. Кнопки `Стоп`, `ESTOP`, watchdog и аварийная остановка прошивки также всегда снимают `PB4`. Это программное ограждение не заменяет внешний E-STOP, аппаратный shutdown IPM, предохранитель, предзаряд и закрытый корпус.
+
+Матрица UNO Q показывает заданную частоту ещё до запуска. При работе она чередует частоту и расчётные обороты; нижние три пикселя обозначают экран оборотов. Два пикселя слева показывают команду реле `PB4`, два справа — активный PWM. На веб-странице частота и обороты отображаются одновременно.
 
 Если канал `J2-14 -> PA5` не показывает реальное напряжение шины или канал температуры `J2-26 -> PB0` недостоверен, автономный HV-пуск должен оставаться заблокированным. Не обходить эти проверки подстановкой тестовых значений.
 
+В автономном интерфейсе есть безопасная кнопка `Записать показание Vbus`. Она принимает показание мультиметра, собирает 20 выборок `bp_vbus_raw/bp_vdc` только при `SAFE/pwm=0` и выключенных выходах, затем сохраняет результат в журнале `VBUS_CAPTURE`. Кнопка не включает реле или PWM. Полная процедура отключения ПК и двухточечной калибровки описана в `AUTONOMOUS_HV_CALIBRATION_RU.md`.
+
 ### Wi-Fi прошивка логики UNO Q
-Сначала один раз включить endpoint через USB/ADB. Локальный token-file не коммитится:
+Сначала один раз при физически отключённой и разряженной HV-шине включить endpoint и SSH по USB/ADB. Это bootstrap, а не рабочий канал управления. Локальные token/key не коммитятся:
 
 ```powershell
 py -3 -c "import pathlib,secrets; pathlib.Path('.unoq_firmware_update_token').write_text(secrets.token_urlsafe(32)+'\n', encoding='utf-8')"
-py -3 -u tools\adb_deploy_web_hmi.py --device <ADB_ID> --restart --firmware-update-token-local-file .unoq_firmware_update_token
+py -3 -u tools\adb_deploy_web_hmi.py --device <ADB_ID> --restart --standalone-hv `
+  --firmware-update-token-local-file .unoq_firmware_update_token --enable-network-ssh
 ```
+
+После bootstrap сам HMI обновляется только по Wi-Fi:
+
+```powershell
+py -3 -u tools\unoq_wifi_hmi_deploy.py --url http://<UNOQ_IP>:8080 --dry-run
+py -3 -u tools\unoq_wifi_hmi_deploy.py --url http://<UNOQ_IP>:8080
+```
+
+Перед копированием HMI deployer требует `SAFE`, `pwm=0`, выключенные реле/PFC/тормоз, отсутствие ошибок STM32 и `vdc<=10 В`. SSH принимает отдельный ключ из `.unoq_ssh`, пароль в команды не передаётся. По умолчанию deployer использует непривилегированный key-only SSH на порту `2222`; если системный SSH уже доступен на `22`, порт можно переопределить параметром `--ssh-port 22`.
 
 Проверка без записи флеша:
 
 ```powershell
+arduino-cli core install arduino:zephyr@0.90.0
 py -3 -u tools\unoq_wifi_firmware_update.py --url http://<UNOQ_IP>:8080 --source-ip <LAN_IP_ПК> --token-file .unoq_firmware_update_token
 ```
 
@@ -153,6 +177,7 @@ py -3 -u tools\unoq_wifi_firmware_update.py --url http://<UNOQ_IP>:8080 --source
 ```
 
 Сервер перед приемом firmware делает `STOP` и требует `SAFE`, `pwm=0`, `estop=0`, `bp_fault=0`, `vdc<=10 В`. Если PowerShell блокируется антивирусом, запускать ту же команду из `cmd.exe`.
+Сборщик требует ядро `arduino:zephyr@0.90.0`, соответствующее базовой прошивке MCU на стендовой UNO Q. Активный статический слот этой версии начинается с `0x08100000`; установленное на Linux-части платы старое ядро `0.51.0` использовать для сборки или выбора адреса нельзя. Сборка другим ядром запрещена: меняются адреса системных функций, включая LED-матрицу. После записи утилита обязательно проверяет `fw_build` через HMI и возвращает ошибку, если новая сборка не активировалась.
 
 ## LA (Saleae) канал‑маппинг
 - CH0=PA8
@@ -513,6 +538,10 @@ AS5600 (абсолютный магнитный энкодер по I2C):
 - `BRAKE PWM 0.00..1.00` или `BRAKE OFF`
 - `FAN PWM 0.00..1.00`, `FAN ON`, `FAN OFF`
 - `BPFOC ON|OFF` — экспериментальный выбор backend: `OFF` = проверенный UNO Q duty/SVPWM тракт, `ON` = Blue Pill `MODE_FOC` с measured-angle FOC по AS5600/Hall. Переключать только в `SAFE`, при `pwm=0`.
+
+`precharge=1` означает принятую команду UNO Q. После актуальной прошивки `bp_ext & 0x08` отражает прочитанный логический уровень STM32 PB4, но не подтверждает ток катушки или замыкание контактов K1. Физический relay gate требует отдельной проверки напряжения PB4, ключа и катушки либо дополнительного изолированного контакта обратной связи.
+
+Матрица UNO Q показывает заданную частоту ещё до `START`. Верхняя левая точка означает команду реле предзаряда, верхняя правая — активный PWM; после `STOP` обе точки должны погаснуть.
 
 В HMI есть кнопка `BP FOC`; она автоматически блокируется, если стенд не в `SAFE` или `pwm != 0`. Это только удобный frontend-guard: прошивка UNO Q также отклоняет `BPFOC ON/OFF` при включенном PWM.
 

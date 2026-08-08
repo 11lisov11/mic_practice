@@ -67,6 +67,9 @@ STATUS_TIMEOUT = 0x10
 STATUS_PWM_ACTIVE = 0x20
 START_LINK_MAX_AGE_S = 0.5
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
+VBUS_RAW_MIN_VALID = 1
+VBUS_RAW_LOW_MAX = 1000
+VBUS_RAW_MAX_VALID = 4094
 
 FAULT_MAP = {
     0: "OK",
@@ -469,8 +472,13 @@ def output_permitted_locked(state: SharedState, what: str) -> tuple[bool, str]:
         return False, f"bluepill PWM active before {what}"
     if bad != 0:
         return False, f"bluepill bad counter non-zero: {bad}"
-    if not (state.cmd_guard_allow_hv or state.cmd_guard_disabled) and vdc > state.cmd_guard_max_vdc:
-        return False, f"DC bus too high for {what}: {vdc:.1f} V"
+    if not (state.cmd_guard_allow_hv or state.cmd_guard_disabled):
+        if vdc > state.cmd_guard_max_vdc:
+            return False, f"DC bus too high for {what}: {vdc:.1f} V"
+        if vbus_raw < VBUS_RAW_MIN_VALID or vbus_raw > VBUS_RAW_MAX_VALID:
+            return False, f"raw DC bus telemetry invalid before {what}: raw={vbus_raw}"
+        if state.cmd_guard_max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC and vbus_raw > VBUS_RAW_LOW_MAX:
+            return False, f"raw DC bus too high for low-voltage {what}: raw={vbus_raw}"
     return True, "ok"
 
 

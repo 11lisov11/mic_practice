@@ -98,6 +98,11 @@ void ipm15_set_precharge_relay(bool on) {
   HAL_GPIO_WritePin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN, st);
 }
 
+bool ipm15_precharge_relay_pin_active(void) {
+  const GPIO_PinState state = HAL_GPIO_ReadPin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
+  return (state == GPIO_PIN_SET) == (PRECHARGE_RELAY_ACTIVE_STATE != 0);
+}
+
 void ipm15_set_brake_pwm(float duty) {
 #if USE_BRAKE_PWM
   if (duty < 0.0f) duty = 0.0f;

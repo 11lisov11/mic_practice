@@ -270,6 +270,17 @@ def enabling_status_precheck(
         return False, f"VBUS={vdc:.1f} V without --allow-hv"
     if allow_hv and not skip_hv_vdc_min_check and vdc < hv_vdc_min:
         return False, f"telemetry VBUS={vdc:.1f} V is below --hv-vdc-min={hv_vdc_min:.1f} V"
+    if "bp_vbus_raw" not in st:
+        return False, "raw Vbus telemetry is missing"
+    raw = status_int(st, "bp_vbus_raw", -1)
+    if fnum(st, "bp_vbus_age_ms", 999999.0) > 1000.0:
+        return False, "raw Vbus telemetry is stale"
+    if raw < 1 or raw > 4094:
+        return False, f"raw Vbus telemetry is invalid: raw={raw}"
+    if not allow_hv and max_vdc <= 60.0 and raw > 1000:
+        return False, f"raw Vbus={raw} exceeds low-voltage limit"
+    if allow_hv and not skip_hv_vdc_min_check and hv_vdc_min >= 100.0 and raw < 1000:
+        return False, f"raw Vbus={raw} does not confirm energized HV"
     return True, "ok"
 
 

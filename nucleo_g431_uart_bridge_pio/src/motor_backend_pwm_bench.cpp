@@ -1,9 +1,11 @@
 #include "motor_backend.h"
 
+#include <math.h>
 #include <string.h>
 
 #include "config.h"
 #include "motor_bench_policy.h"
+#include "motor_control_benchmark.h"
 #include "motor_pwm_math.h"
 #include "proto.h"
 #include "stm32g4xx_hal.h"
@@ -16,6 +18,15 @@ static motor_backend_status_t s_status;
 static uint32_t s_pwm_arr;
 static uint32_t s_last_adc_ms;
 static bool s_adc_ready;
+static motor_control_benchmark_state_t s_control_state;
+static motor_control_benchmark_output_t s_control_output;
+static volatile uint32_t s_control_cycles_last;
+static volatile uint32_t s_control_cycles_max;
+static volatile uint32_t s_control_overruns;
+static volatile bool s_control_fault_pending;
+static volatile float s_control_sink;
+static uint32_t s_control_cycle_budget;
+static float s_control_phase;
 
 static constexpr uint32_t PWM_CCER_ENABLE_MASK =
     TIM_CCER_CC1E | TIM_CCER_CC1NE | TIM_CCER_CC2E |
@@ -23,6 +34,31 @@ static constexpr uint32_t PWM_CCER_ENABLE_MASK =
 
 static void em_stop_assert(void) {
   HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, MOTOR_EM_STOP_SAFE_STATE);
+}
+
+static void marker_set(bool active) {
+  const GPIO_PinState state = active ? MOTOR_BENCH_MARKER_ACTIVE_STATE :
+                                      (MOTOR_BENCH_MARKER_ACTIVE_STATE == GPIO_PIN_SET ?
+                                           GPIO_PIN_RESET : GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MOTOR_BENCH_MARKER_PORT, MOTOR_BENCH_MARKER_PIN, state);
+}
+
+static void marker_init(void) {
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  marker_set(false);
+  GPIO_InitTypeDef marker = {};
+  marker.Pin = MOTOR_BENCH_MARKER_PIN;
+  marker.Mode = GPIO_MODE_OUTPUT_PP;
+  marker.Pull = GPIO_NOPULL;
+  marker.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(MOTOR_BENCH_MARKER_PORT, &marker);
+  marker_set(false);
+}
+
+static void cycle_counter_init(void) {
+  CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+  DWT->CYCCNT = 0U;
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
 
 static void pwm_gpio_force_low(void) {
@@ -60,6 +96,7 @@ static void pwm_gpio_config_af(void) {
 }
 
 static void pwm_peripheral_stop(void) {
+  __HAL_TIM_DISABLE_IT(&s_tim1, TIM_IT_UPDATE);
   __HAL_TIM_MOE_DISABLE(&s_tim1);
   TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
   __HAL_TIM_DISABLE(&s_tim1);
@@ -123,6 +160,8 @@ static bool timer_init(void) {
 
   TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
   __HAL_TIM_MOE_DISABLE(&s_tim1);
+  HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0U, 0U);
+  HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
   return true;
 }
 
@@ -201,6 +240,19 @@ static void adc_sample(void) {
 
 void motor_backend_init(void) {
   memset(&s_status, 0, sizeof(s_status));
+  marker_init();
+  cycle_counter_init();
+  motor_control_benchmark_init(&s_control_state);
+  memset(&s_control_output, 0, sizeof(s_control_output));
+  s_control_cycles_last = 0U;
+  s_control_cycles_max = 0U;
+  s_control_overruns = 0U;
+  s_control_fault_pending = false;
+  s_control_sink = 0.0f;
+  s_control_phase = 0.0f;
+  const uint32_t cycles_per_step = HAL_RCC_GetHCLKFreq() / MOTOR_BENCH_CONTROL_HZ;
+  s_control_cycle_budget =
+      (cycles_per_step * MOTOR_BENCH_CONTROL_BUDGET_PERCENT) / 100U;
   __HAL_RCC_GPIOA_CLK_ENABLE();
   HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, MOTOR_EM_STOP_SAFE_STATE);
   GPIO_InitTypeDef em_stop = {};
@@ -220,6 +272,11 @@ void motor_backend_init(void) {
 
 void motor_backend_tick(void) {
   em_stop_assert();
+  if (s_control_fault_pending) {
+    motor_backend_force_stop();
+    s_status.fault_code = FAULT_INTERNAL;
+    return;
+  }
   const uint32_t now_ms = HAL_GetTick();
   if (s_adc_ready && (uint32_t)(now_ms - s_last_adc_ms) >= MOTOR_BENCH_ADC_SAMPLE_MS) {
     s_last_adc_ms = now_ms;
@@ -231,6 +288,7 @@ void motor_backend_force_stop(void) {
   pwm_peripheral_stop();
   pwm_gpio_force_low();
   em_stop_assert();
+  marker_set(false);
   s_status.enabled = false;
   s_status.pwm_active = false;
   s_status.shutdown_released = false;
@@ -242,6 +300,12 @@ bool motor_backend_clear_fault(void) {
     s_status.fault_code = FAULT_INTERNAL;
     return false;
   }
+  motor_control_benchmark_init(&s_control_state);
+  s_control_cycles_last = 0U;
+  s_control_cycles_max = 0U;
+  s_control_overruns = 0U;
+  s_control_fault_pending = false;
+  s_control_phase = 0.0f;
   s_status.fault_code = FAULT_OK;
   return true;
 }
@@ -260,6 +324,8 @@ bool motor_backend_apply_command(const uint8_t *cmd, uint8_t *fault_code) {
   __HAL_TIM_SET_COMPARE(&s_tim1, TIM_CHANNEL_3, compare);
   TIM1->EGR = TIM_EGR_UG;
   pwm_gpio_config_af();
+  __HAL_TIM_CLEAR_IT(&s_tim1, TIM_IT_UPDATE);
+  __HAL_TIM_ENABLE_IT(&s_tim1, TIM_IT_UPDATE);
   __HAL_TIM_ENABLE(&s_tim1);
   TIM1->CCER |= PWM_CCER_ENABLE_MASK;
   __HAL_TIM_MOE_ENABLE(&s_tim1);
@@ -277,6 +343,51 @@ void motor_backend_get_status(motor_backend_status_t *status) {
   if (status != nullptr) {
     *status = s_status;
   }
+}
+
+void motor_backend_control_irq_handler(void) {
+  if (__HAL_TIM_GET_FLAG(&s_tim1, TIM_FLAG_UPDATE) == RESET ||
+      __HAL_TIM_GET_IT_SOURCE(&s_tim1, TIM_IT_UPDATE) == RESET) {
+    return;
+  }
+  __HAL_TIM_CLEAR_IT(&s_tim1, TIM_IT_UPDATE);
+  marker_set(true);
+  const uint32_t started = DWT->CYCCNT;
+
+  static constexpr float TWO_PI = 6.28318530718f;
+  static constexpr float TWO_PI_OVER_THREE = 2.09439510239f;
+  static constexpr float SYNTHETIC_ELECTRICAL_HZ = 137.0f;
+  const float dt = 1.0f / (float)MOTOR_BENCH_CONTROL_HZ;
+  s_control_phase += TWO_PI * SYNTHETIC_ELECTRICAL_HZ * dt;
+  if (s_control_phase >= TWO_PI) {
+    s_control_phase -= TWO_PI;
+  }
+  motor_control_benchmark_input_t input = {};
+  input.electrical_angle_rad = s_control_phase * 0.97f;
+  input.electrical_speed_rad_s = TWO_PI * SYNTHETIC_ELECTRICAL_HZ;
+  input.ia = 0.7f * sinf(s_control_phase);
+  input.ib = 0.7f * sinf(s_control_phase - TWO_PI_OVER_THREE);
+  input.id_ref = 0.8f;
+  input.iq_ref = 0.4f;
+  input.vbus = 24.0f;
+  input.dt = dt;
+  const bool control_ok =
+      motor_control_benchmark_step(&s_control_state, &input, &s_control_output);
+  s_control_sink = s_control_output.duty_u + s_control_output.duty_v +
+                   s_control_output.duty_w;
+
+  const uint32_t elapsed = DWT->CYCCNT - started;
+  s_control_cycles_last = elapsed;
+  if (elapsed > s_control_cycles_max) {
+    s_control_cycles_max = elapsed;
+  }
+  if (!control_ok || elapsed > s_control_cycle_budget) {
+    if (s_control_overruns != UINT32_MAX) {
+      ++s_control_overruns;
+    }
+    s_control_fault_pending = true;
+  }
+  marker_set(false);
 }
 
 #endif

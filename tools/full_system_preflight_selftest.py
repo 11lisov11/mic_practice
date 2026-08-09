@@ -89,6 +89,24 @@ def case_all_firmware_targets_are_required() -> CaseResult:
     )
 
 
+def case_all_nucleo_profiles_are_built() -> CaseResult:
+    source = Path(preflight.__file__).read_text(encoding="utf-8")
+    expected = {
+        "nucleo_g431_uart_bridge",
+        "nucleo_g431_uart_bridge_vcp",
+        "nucleo_g431_pwm_bench",
+        "nucleo_g431_pwm_bench_vcp",
+    }
+    missing = sorted(profile for profile in expected if f'"{profile}"' not in source)
+    return CaseResult(
+        "all_nucleo_profiles_are_built",
+        not missing,
+        [],
+        missing,
+        "" if not missing else "at least one Nucleo UART/PWM transport profile is absent from the release build",
+    )
+
+
 def case_precharge_relay_stage_is_removed() -> CaseResult:
     source = Path(preflight.__file__).read_text(encoding="utf-8")
     forbidden_tokens = {
@@ -114,6 +132,7 @@ def main() -> int:
         case_full_system_selftest_is_required(),
         case_all_discovered_selftests_are_required(),
         case_all_firmware_targets_are_required(),
+        case_all_nucleo_profiles_are_built(),
         case_precharge_relay_stage_is_removed(),
     ]
     failed = [case for case in cases if not case.ok]

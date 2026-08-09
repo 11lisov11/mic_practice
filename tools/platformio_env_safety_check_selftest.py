@@ -108,6 +108,39 @@ def released_em_stop_is_rejected() -> dict[str, Any]:
         return {"detail": result.detail, "evidence": result.evidence}
 
 
+def excessive_control_budget_is_rejected() -> dict[str, Any]:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        make_fixture(root)
+        config = root / "nucleo_g431_uart_bridge_pio" / "include" / "config.h"
+        text = config.read_text(encoding="utf-8")
+        old = "#define MOTOR_BENCH_CONTROL_BUDGET_PERCENT 50U"
+        if old not in text:
+            raise RuntimeError("control budget fixture not found")
+        config.write_text(text.replace(old, "#define MOTOR_BENCH_CONTROL_BUDGET_PERCENT 80U", 1), encoding="utf-8")
+        result = find_case(check.run_checks(root), "nucleo_bench_config_safety")
+        if result.ok:
+            raise RuntimeError("changed control timing budget was accepted")
+        return {"detail": result.detail, "evidence": result.evidence}
+
+
+def control_output_connected_to_pwm_is_rejected() -> dict[str, Any]:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        make_fixture(root)
+        backend = root / "nucleo_g431_uart_bridge_pio" / "src" / "motor_backend_pwm_bench.cpp"
+        text = backend.read_text(encoding="utf-8")
+        marker = "  marker_set(false);\n}\n\n#endif"
+        if marker not in text:
+            raise RuntimeError("control IRQ fixture not found")
+        unsafe = "  __HAL_TIM_SET_COMPARE(&s_tim1, TIM_CHANNEL_1, 1U);\n"
+        backend.write_text(text.replace(marker, unsafe + marker, 1), encoding="utf-8")
+        result = find_case(check.run_checks(root), "nucleo_control_benchmark_invariants")
+        if result.ok:
+            raise RuntimeError("control output connected to PWM was accepted")
+        return {"detail": result.detail, "evidence": result.evidence}
+
+
 def main() -> int:
     cases = [
         run_case("current_project_passes", current_project_passes),
@@ -118,6 +151,8 @@ def main() -> int:
         ),
         run_case("conflicting_nucleo_backend_is_rejected", conflicting_nucleo_backend_is_rejected),
         run_case("released_em_stop_is_rejected", released_em_stop_is_rejected),
+        run_case("excessive_control_budget_is_rejected", excessive_control_budget_is_rejected),
+        run_case("control_output_connected_to_pwm_is_rejected", control_output_connected_to_pwm_is_rejected),
     ]
     failed = [case for case in cases if not case.ok]
     summary = {

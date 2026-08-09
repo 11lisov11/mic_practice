@@ -16,6 +16,8 @@ void motor_backend_init(void) {
 
 void motor_backend_tick(void) {}
 
+void motor_backend_control_irq_handler(void) {}
+
 void motor_backend_force_stop(void) {
   s_status.enabled = false;
   s_status.pwm_active = false;

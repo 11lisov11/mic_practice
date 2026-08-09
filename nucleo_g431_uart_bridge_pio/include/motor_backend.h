@@ -22,6 +22,7 @@ typedef struct {
 
 void motor_backend_init(void);
 void motor_backend_tick(void);
+void motor_backend_control_irq_handler(void);
 void motor_backend_force_stop(void);
 bool motor_backend_clear_fault(void);
 bool motor_backend_apply_command(const uint8_t *cmd, uint8_t *fault_code);

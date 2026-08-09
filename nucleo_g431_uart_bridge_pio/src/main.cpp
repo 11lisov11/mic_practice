@@ -111,17 +111,32 @@ extern "C" void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
   }
 
   __HAL_RCC_USART1_CLK_ENABLE();
+#if NUCLEO_UART_USE_STLINK_VCP
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+#else
   __HAL_RCC_GPIOB_CLK_ENABLE();
+#endif
 
   GPIO_InitTypeDef gpio = {};
+#if NUCLEO_UART_USE_STLINK_VCP
+  // MB1367 default solder-bridge routing: PC4=USART1_TX, PC5=USART1_RX.
+  gpio.Pin = GPIO_PIN_4 | GPIO_PIN_5;
+#else
   gpio.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+#endif
   gpio.Mode = GPIO_MODE_AF_PP;
   gpio.Pull = GPIO_PULLUP;
   gpio.Speed = GPIO_SPEED_FREQ_LOW;
   gpio.Alternate = GPIO_AF7_USART1;
+#if NUCLEO_UART_USE_STLINK_VCP
+  HAL_GPIO_Init(GPIOC, &gpio);
+#else
   HAL_GPIO_Init(GPIOB, &gpio);
+#endif
 
-  HAL_NVIC_SetPriority(USART1_IRQn, 1U, 0U);
+  // The diagnostic control benchmark owns priority 0. UART remains prompt but
+  // cannot stretch the measured controller execution pulse.
+  HAL_NVIC_SetPriority(USART1_IRQn, 2U, 0U);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
 }
 

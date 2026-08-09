@@ -32,7 +32,9 @@ COMMON_EXPECTED = {
 
 NUCLEO_REQUIRED_ENVS = {
     "env:nucleo_g431_uart_bridge",
+    "env:nucleo_g431_uart_bridge_vcp",
     "env:nucleo_g431_pwm_bench",
+    "env:nucleo_g431_pwm_bench_vcp",
 }
 
 NUCLEO_COMMON_EXPECTED = {
@@ -48,6 +50,7 @@ NUCLEO_STUB_FLAGS = {
     "-DMIC_MOTOR_BACKEND_PWM_BENCH=0",
     "-DNUCLEO_MOTOR_CLOCK_170MHZ=0",
     "-DNUCLEO_BRIDGE_STATUS_LED=1",
+    "-DNUCLEO_UART_USE_STLINK_VCP=0",
 }
 
 NUCLEO_BENCH_FLAGS = {
@@ -55,6 +58,15 @@ NUCLEO_BENCH_FLAGS = {
     "-DMIC_MOTOR_BACKEND_PWM_BENCH=1",
     "-DNUCLEO_MOTOR_CLOCK_170MHZ=1",
     "-DNUCLEO_BRIDGE_STATUS_LED=1",
+    "-DNUCLEO_UART_USE_STLINK_VCP=0",
+}
+
+NUCLEO_STUB_VCP_FLAGS = (NUCLEO_STUB_FLAGS - {"-DNUCLEO_UART_USE_STLINK_VCP=0"}) | {
+    "-DNUCLEO_UART_USE_STLINK_VCP=1"
+}
+
+NUCLEO_BENCH_VCP_FLAGS = (NUCLEO_BENCH_FLAGS - {"-DNUCLEO_UART_USE_STLINK_VCP=0"}) | {
+    "-DNUCLEO_UART_USE_STLINK_VCP=1"
 }
 
 
@@ -212,11 +224,42 @@ def run_nucleo_checks(repo: Path) -> list[CaseResult]:
             )
         )
 
+    for section, expected_flags, profile_name in (
+        ("env:nucleo_g431_uart_bridge_vcp", NUCLEO_STUB_VCP_FLAGS, "stub_vcp"),
+        ("env:nucleo_g431_pwm_bench_vcp", NUCLEO_BENCH_VCP_FLAGS, "bench_vcp"),
+    ):
+        if section not in sections:
+            continue
+        values = section_values(cfg, section)
+        extends = values.get("extends")
+        cases.append(
+            ok_case(f"nucleo_{profile_name}_extends_stub", extends)
+            if extends == base
+            else fail_case(
+                f"nucleo_{profile_name}_extends_stub",
+                "Nucleo VCP profile must inherit the reviewed safe base profile",
+                {"actual": extends, "expected": base},
+            )
+        )
+        flags = set(filter_tokens(values.get("build_flags", "")))
+        cases.append(
+            ok_case(f"nucleo_{profile_name}_build_flags", sorted(flags))
+            if flags == expected_flags
+            else fail_case(
+                f"nucleo_{profile_name}_build_flags",
+                "Nucleo VCP profile has an unreviewed backend, clock, or UART selection",
+                {"actual": sorted(flags), "expected": sorted(expected_flags)},
+            )
+        )
+
     config_path = repo / "nucleo_g431_uart_bridge_pio" / "include" / "config.h"
     expected_macros = {
         "LINK_TIMEOUT_MS": "300U",
         "MOTOR_BENCH_PWM_FREQ_HZ": "10000U",
         "MOTOR_BENCH_DEADTIME_NS": "2000U",
+        "MOTOR_BENCH_CONTROL_BUDGET_PERCENT": "50U",
+        "MOTOR_BENCH_MARKER_PIN": "GPIO_PIN_6",
+        "MOTOR_BENCH_MARKER_ACTIVE_STATE": "GPIO_PIN_RESET",
         "MOTOR_EM_STOP_SAFE_STATE": "GPIO_PIN_RESET",
     }
     actual_macros = (
@@ -231,6 +274,27 @@ def run_nucleo_checks(repo: Path) -> list[CaseResult]:
             "nucleo_bench_config_safety",
             "Nucleo diagnostic timing or active-low EM_STOP safe state changed",
             {"actual": actual_macros, "expected": expected_macros},
+        )
+    )
+
+    backend_path = repo / "nucleo_g431_uart_bridge_pio" / "src" / "motor_backend_pwm_bench.cpp"
+    backend_text = backend_path.read_text(encoding="utf-8", errors="replace") if backend_path.is_file() else ""
+    irq_text = backend_text.split("void motor_backend_control_irq_handler(void)", 1)[-1]
+    benchmark_invariants = {
+        "control_irq_present": "void motor_backend_control_irq_handler(void)" in backend_text,
+        "marker_wraps_irq": "marker_set(true);" in irq_text and "marker_set(false);" in irq_text,
+        "marker_uses_push_pull": "marker.Mode = GPIO_MODE_OUTPUT_PP;" in backend_text,
+        "overrun_latches_fault": "elapsed > s_control_cycle_budget" in irq_text and "s_control_fault_pending = true;" in irq_text,
+        "computed_duty_not_written_in_irq": "__HAL_TIM_SET_COMPARE" not in irq_text,
+        "em_stop_asserted_during_bench": "em_stop_assert();" in backend_text,
+    }
+    cases.append(
+        ok_case("nucleo_control_benchmark_invariants", benchmark_invariants)
+        if all(benchmark_invariants.values())
+        else fail_case(
+            "nucleo_control_benchmark_invariants",
+            "Nucleo benchmark must remain measured, fail-closed, and disconnected from PWM compare registers",
+            benchmark_invariants,
         )
     )
     return cases

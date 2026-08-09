@@ -52,6 +52,25 @@ def main() -> int:
             [str(pwm_executable)], check=True, text=True, capture_output=True
         )
         print(pwm_result.stdout.strip())
+
+        control_executable = Path(temp_dir) / "nucleo_control_benchmark_selftest.exe"
+        control_compile_cmd = [
+            compiler,
+            "-std=c++17",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            f"-I{project / 'include'}",
+            str(project / "src" / "motor_control_benchmark.cpp"),
+            str(project / "test" / "motor_control_benchmark_test.cpp"),
+            "-o",
+            str(control_executable),
+        ]
+        subprocess.run(control_compile_cmd, check=True)
+        control_result = subprocess.run(
+            [str(control_executable)], check=True, text=True, capture_output=True
+        )
+        print(control_result.stdout.strip())
     return 0
 
 

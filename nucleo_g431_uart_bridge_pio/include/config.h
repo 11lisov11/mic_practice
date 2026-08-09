@@ -7,6 +7,12 @@
 #define LINK_TIMEOUT_MS 300U
 #define BOOT_PING_INTERVAL_MS 250U
 
+// Production bridge: USART1 on PB6/PB7 to the isolated UNO Q link.
+// Dedicated _vcp build profiles select PC4/PC5 for the on-board ST-LINK VCP.
+#ifndef NUCLEO_UART_USE_STLINK_VCP
+#define NUCLEO_UART_USE_STLINK_VCP 0
+#endif
+
 #ifndef MIC_MOTOR_BACKEND_STUB
 #define MIC_MOTOR_BACKEND_STUB 0
 #endif
@@ -29,6 +35,18 @@
 #define MOTOR_BENCH_DEADTIME_NS 2000U
 #define MOTOR_BENCH_DUTY_Q15 16384U
 #define MOTOR_BENCH_ADC_SAMPLE_MS 20U
+
+// The benchmark executes at both update points of the center-aligned timer.
+// Its result is never connected to CCR registers: physical PWM remains the
+// fixed diagnostic pattern while Saleae measures ISR duration and jitter.
+#define MOTOR_BENCH_CONTROL_HZ (2U * MOTOR_BENCH_PWM_FREQ_HZ)
+#define MOTOR_BENCH_CONTROL_BUDGET_PERCENT 50U
+#define MOTOR_BENCH_MARKER_PORT GPIOC
+#define MOTOR_BENCH_MARKER_PIN GPIO_PIN_6
+#define MOTOR_BENCH_MARKER_ACTIVE_STATE GPIO_PIN_RESET
+#if MOTOR_BENCH_CONTROL_BUDGET_PERCENT < 10U || MOTOR_BENCH_CONTROL_BUDGET_PERCENT > 80U
+#error "MOTOR_BENCH_CONTROL_BUDGET_PERCENT must be between 10 and 80"
+#endif
 
 // X-NUCLEO-IHM09M2 routing for NUCLEO-G431RB.
 #define MOTOR_PWM_UH_PORT GPIOA

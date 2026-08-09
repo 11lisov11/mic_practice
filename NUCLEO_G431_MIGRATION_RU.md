@@ -152,7 +152,7 @@ AS5600 остаётся на стороне Nucleo и физически нах�
 
 ### Уже подготовлено в репозитории
 
-Каталог `nucleo_g431_uart_bridge_pio` содержит собираемый для `NUCLEO-G431RB` безопасный UART-каркас на `USART1 PB6/PB7`. Он совместим с текущим протоколом UNO Q, реализует CRC, sequence, счётчики ошибок и timeout 300 мс. Силовой backend пока является stub: любая команда `ENABLE` отклоняется с fault, TIM1/PWM/ADC и выводы STEVAL не конфигурируются.
+Каталог `nucleo_g431_uart_bridge_pio` содержит собираемый для `NUCLEO-G431RB` UART-каркас на `USART1 PB6/PB7`. Он совместим с текущим протоколом UNO Q, реализует CRC, sequence, счётчики ошибок и timeout 300 мс. В профиле по умолчанию силовой backend является stub: любая команда `ENABLE` отклоняется с fault, TIM1/PWM/ADC и выводы STEVAL не конфигурируются. Отдельный диагностический профиль описан ниже.
 
 ### Статус TIM1 и ADC
 
@@ -198,7 +198,9 @@ AS5600 остаётся на стороне Nucleo и физически нах�
 py -3 -m platformio run -d C:\mic_practice\nucleo_g431_uart_bridge_pio -e nucleo_g431_uart_bridge
 py -3 -m platformio run -d C:\mic_practice\nucleo_g431_uart_bridge_pio -e nucleo_g431_pwm_bench
 py -3 C:\mic_practice\tools\nucleo_bridge_selftest.py
+py -3 C:\mic_practice\tools\platformio_env_safety_check.py
 py -3 C:\mic_practice\tools\protocol_contract_check.py
+py -3 C:\mic_practice\tools\full_system_preflight.py --build-only
 ```
 
 Прошивать `nucleo_g431_pwm_bench` разрешается только без HV и при снятом кабеле J7 между IHM09M2 и STEVAL-IPM15B. Проверяемые каналы: `PA8/PA7`, `PA9/PB0`, `PA10/PB1`. До физического измерения всех шести сигналов, dead-time и поведения при timeout результат остаётся только compile-time подготовкой.

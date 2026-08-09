@@ -45,7 +45,7 @@ MIC/FOC исследовательские серии в этот проход �
 - Подготовлен precharge-контур: управление `PB4`, отдельный preflight и документация по проверке.
 - Подготовлен экспериментальный BPFOC backend: команда `BPFOC ON` включает режим, где Blue Pill получает FOC-команду и должен работать по измеренному углу.
 - Усилен `tools/bpfoc_backend_preflight.py`: перед каждым `START` он заново проверяет Vbus, SAFE, живую связь Blue Pill, encoder, `bp_mode`, `bp_cmd_mode` и биты `ENABLED/PWM_ACTIVE`.
-- `tools/full_system_preflight.py` теперь может включать fan и BPFOC gates в единый отчет через `--with-fan --with-bpfoc`; если флаг включен, `fan_pass`/`bpfoc_pass` входят в `overall_pass`.
+- `tools/full_system_preflight.py` теперь может включать PB4-реле предзаряда, fan и BPFOC gates в единый отчет. Для научного допуска реле проверяется также по Saleae `CH7`; все включённые этапы входят в `overall_pass`.
 - Новые evidence-файлы пишут `run_metadata`: git branch/commit, dirty status, командную строку и среду запуска. Это закрывает требование привязки измерений к конкретной версии прошивки/tooling.
 - Есть матрица научных прогонов: `tools/mic_research_matrix.py` делает повторы FOC/MIC по частотам и пишет `aggregate.csv`.
 - Матрица научных прогонов теперь имеет собственный low-voltage guard: перед каждым повтором проверяет `SAFE`, `pwm=0`, ошибки Blue Pill, `enc_ok` при `--require-encoder` и Vbus-порог; HV-серия требует явный `--allow-hv`.
@@ -108,7 +108,7 @@ MIC/FOC исследовательские серии в этот проход �
 4. Зафиксировать безопасное состояние: `SAFE`, `pwm=0`, `estop=0`, `bp_fault=0`, `bp_bad_cnt=0`.
 5. Прошить актуальную Blue Pill; UNO Q прошивать только если он используется как UI/панель, а не для PC-direct runtime.
 6. С HV отключенной шиной выполнить расширенный низковольтный regression:
-   `py -3 -u tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-fan --with-bpfoc`
+   `py -3 -u tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-precharge-relay --precharge-relay-arm-confirm "ARM LOWV" --precharge-relay-la-channel 7 --with-fan --with-bpfoc`
 7. Если tach вентилятора подключен к `PA11`, повторить или сразу запускать с:
    `--fan-require-tach`
 8. После успешного низковольтного прогона выполнить HV/J7 regression только если
@@ -139,7 +139,7 @@ MIC/FOC исследовательские серии в этот проход �
 
 Проект можно считать готовым к научным выводам только когда одновременно выполнено:
 
-- Последний расширенный low-voltage regression проходит без fail: `overall_pass=true`, `fan_pass=true`, `bpfoc_pass=true`.
+- Последний расширенный low-voltage regression проходит без fail: `overall_pass=true`, `precharge_relay_pass=true`, `precharge_relay_saleae_pass=true`, `fan_pass=true`, `bpfoc_pass=true`.
 - Последний HV/J7 regression проходит без fail.
 - BPFOC backend подтвержден на железе, а не только сборкой и fake-HMI smoke.
 - MIC имеет реальные активные интервалы на вращающемся двигателе.

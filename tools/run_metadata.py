@@ -16,12 +16,18 @@ SAFETY_CRITICAL_SOURCE_PATTERNS = (
     "PWM_STATIC_BLOCKER_RU.md",
     "UART_LOOPBACK_STEPS_RU.md",
     "RESEARCH_READINESS_RU.md",
+    "NUCLEO_G431_MIGRATION_RU.md",
+    "requirements*.txt",
     "tools/*.py",
+    "motor_identification/*.py",
     "web_hmi/server.py",
     "UNOQ_MOTOR/*.ino",
     "bluepill_uart_pwm_pio/platformio.ini",
     "bluepill_uart_pwm_pio/include/*.h",
     "bluepill_uart_pwm_pio/src/*.cpp",
+    "nucleo_g431_uart_bridge_pio/platformio.ini",
+    "nucleo_g431_uart_bridge_pio/include/*.h",
+    "nucleo_g431_uart_bridge_pio/src/*.cpp",
 )
 
 

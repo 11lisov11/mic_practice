@@ -1,0 +1,187 @@
+{
+  "tag": "20260522_safe_neural_horizon_pwm_host_release",
+  "generated_utc": "2026-05-25T11:35:12.298598+00:00",
+  "status": "HOST_SIMULATION_ONLY",
+  "hardware_claim": false,
+  "input_json": "C:\\mic_theory\\.tmp_pytest\\safe_neural_horizon_pwm_full_host_matrix_mc3.json",
+  "reproduce_commands": [
+    "python tools/run_safe_neural_horizon_pwm_study.py --matrix --mc 3 --steps 60 --out-json .tmp_pytest/safe_neural_horizon_pwm_full_host_matrix_mc3.json",
+    "python tools/run_safe_neural_horizon_pwm_study.py --quick --mc 100 --steps 120 --out-json .tmp_pytest/safe_neural_horizon_pwm_study_mc100.json",
+    "python tools/run_safe_neural_horizon_pwm_study.py --quick --mc 500 --steps 120 --out-json .tmp_pytest/safe_neural_horizon_pwm_study_mc500.json",
+    "python tools/build_safe_neural_horizon_pwm_baseline_stress.py --mc 3 --steps 80 --out-json .tmp_pytest/safe_neural_horizon_pwm_baseline_stress.json",
+    "python tools/build_safe_neural_horizon_pwm_baseline_tuning.py --mc 2 --steps 60 --out-json .tmp_pytest/safe_neural_horizon_pwm_baseline_tuning.json",
+    "python tools/build_safe_neural_horizon_pwm_trace_evidence.py --steps 512 --out-dir .tmp_pytest/safe_neural_horizon_pwm_trace_evidence",
+    "python tools/build_safe_neural_horizon_pwm_twin_evidence.py --out-dir .tmp_pytest/safe_neural_horizon_pwm_twin_evidence",
+    "python tools/package_safe_neural_horizon_pwm_release.py --input-json .tmp_pytest/safe_neural_horizon_pwm_full_host_matrix_mc3.json --out-dir paper/safe_neural_horizon_pwm_2026/20260522_host_release --tag 20260522_safe_neural_horizon_pwm_host_release --trace-dir .tmp_pytest/safe_neural_horizon_pwm_trace_evidence --twin-dir .tmp_pytest/safe_neural_horizon_pwm_twin_evidence --mc500-json .tmp_pytest/safe_neural_horizon_pwm_study_mc500.json --baseline-stress-json .tmp_pytest/safe_neural_horizon_pwm_baseline_stress.json --baseline-tuning-json .tmp_pytest/safe_neural_horizon_pwm_baseline_tuning.json"
+  ],
+  "files": [
+    {
+      "path": "safe_neural_horizon_pwm_results.json",
+      "bytes": 792232,
+      "sha256": "e8a7cac34d7f2b8ce1fff6e6b8ce906753a31abd38957b856b6ad364f8802632"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_mc100_smoke.json",
+      "bytes": 18776,
+      "sha256": "2d0017742d8bbd68bda7e4974f3eff060bd2efa5182812fdb041d4f72d4f0386"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_mc500_publication_smoke.json",
+      "bytes": 18821,
+      "sha256": "35daf533f9011d3e13fcca86f3551521fadfed33d80bc5b403911ca7c769f37e"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_baseline_stress_evidence.json",
+      "bytes": 105906,
+      "sha256": "b29336295d2ce63d608b866be2579aa131979de5048711db1657a0e302f39ece"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_baseline_tuning_evidence.json",
+      "bytes": 388850,
+      "sha256": "34db32ccf5bdbfb9008d08fd664049f767561438ecce703331b335f14c7326f7"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_report.md",
+      "bytes": 39390,
+      "sha256": "626e5106e93a6ce5a628b40a3d2396ea9557d7ae1f47f20db0d2351b2fd3e074"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_article_draft.md",
+      "bytes": 5812,
+      "sha256": "919369dab65bb1d950da6ed00feb6c77943deeb2a3d63873533d0a4941f2d440"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_baseline_strength_audit.json",
+      "bytes": 12551,
+      "sha256": "eef91cdd4ff1433f9764f45dc337b1b5902e575fa3ea58eafed457ef39b91f58"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_algorithm_identity_audit.json",
+      "bytes": 5840,
+      "sha256": "34b4b7a1e0db778c702448cc4c046c137d2c37a7831cb67c00edc491a14834fc"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_novelty_audit.json",
+      "bytes": 1456,
+      "sha256": "ff506bc6c88cbc9ec9ddaa7b80768bed38d97ae5288511ea52e9869897677db4"
+    },
+    {
+      "path": "safe_neural_horizon_pwm_theory_completion_audit.json",
+      "bytes": 5434,
+      "sha256": "971c9d67f6628211c8427946ca490bfbdfd8b3c2d1b13dbfa9a90e30dccf408b"
+    },
+    {
+      "path": "WHAT_IS_NOT_DONE.md",
+      "bytes": 891,
+      "sha256": "50560aab5fb91cdc1c5eff2c5ea8a9cc09e465d961a2303c7afb7f244a87fa23"
+    },
+    {
+      "path": "figures/safe_neural_horizon_pwm_summary.csv",
+      "bytes": 34809,
+      "sha256": "86940d463d947e8fa46fe96666c9f9eb6315dbd51489117344f24376a2121b04"
+    },
+    {
+      "path": "figures/fig_speed_error_vs_current.svg",
+      "bytes": 24945,
+      "sha256": "3dcff9f918eb6bd5b1c9b65c75ba6dc209984bd71e9cab9631db04162f303688"
+    },
+    {
+      "path": "figures/fig_feedback_vs_switching.svg",
+      "bytes": 24921,
+      "sha256": "8e3abfc987c444b3edf0da0d0bf50295c9febe0e380236d790c30ab8b1645faf"
+    },
+    {
+      "path": "figures/fig_h2_scenario_speed_error.svg",
+      "bytes": 9563,
+      "sha256": "d56172eb293ee8a9fa29b860a935ba362df685af589c0d116d595c1ae6c3f92a"
+    },
+    {
+      "path": "trace_evidence/trace_summary.csv",
+      "bytes": 2501,
+      "sha256": "e7f1aeece71d4cce0286ea9a89bce3d9661515f474e1620539f22fdc8ec5695e"
+    },
+    {
+      "path": "trace_evidence/trace_summary.json",
+      "bytes": 8010,
+      "sha256": "28cdd316991ab53de0d7917f353831304803eb8cc2b173acf955d69b73ea83c6"
+    },
+    {
+      "path": "trace_evidence/figures/fig_trace_fft_thd.svg",
+      "bytes": 4456,
+      "sha256": "d44bffcf4fff043347abdde7938e0272f1debc569610e6d7b36173598fbddcc4"
+    },
+    {
+      "path": "trace_evidence/figures/fig_trace_speed.svg",
+      "bytes": 67042,
+      "sha256": "32b9e143b6029149e2568a477ef47d0d430043bcc02bd407f098bcd3860ce431"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_deadbeat_current_baseline.csv",
+      "bytes": 138794,
+      "sha256": "9c4b94fba43ac20becdf0f5d94bbda5066db7ecdcf120ccaab126c2c163b6e53"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_dtc_hysteresis_baseline.csv",
+      "bytes": 141963,
+      "sha256": "a08a0ce110c88652c5a747dcd45f87465486162f5b6074938393b3f593140fff"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_dtc_svm_baseline.csv",
+      "bytes": 132678,
+      "sha256": "ac4b514ddc2accf036783a7edcfb7ac5893e1a60cf32f3650c03ebca73522898"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_fcs_mpc_one_step_baseline.csv",
+      "bytes": 144969,
+      "sha256": "3a692e6cae105cd7e8a44ea7c447c9636048f679a9fc30075c14f085dedea9ce"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_foc_svm_key_baseline.csv",
+      "bytes": 134746,
+      "sha256": "2ef515967f152381bde767167ccc4c5bc95091779aa216b28df0920533a11f50"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_protected_ai_pwm_h1_baseline.csv",
+      "bytes": 146478,
+      "sha256": "dad1a400f859f5c63af6b6cc278b5c8748181fefa38a16a6b49e76e631902c22"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_safe_neural_horizon_pwm_h2.csv",
+      "bytes": 145655,
+      "sha256": "1fc595a0dbc0edf9a4bcaf4614b2bd6ced7ef7edb17b8a9de0c2ddf620f0a4d2"
+    },
+    {
+      "path": "trace_evidence/traces/load_step_sensorless_adaptive_foc_baseline.csv",
+      "bytes": 129043,
+      "sha256": "356904d06bf15b3cab3e1045e92b56eaf6997f3fb54a53d7ced9a41691df981c"
+    },
+    {
+      "path": "twin_evidence/residual_twin_weights.json",
+      "bytes": 28307,
+      "sha256": "1908dd9cf1478e2e53398bc2115689c3a72f77d6f4c0d140910fdd38d0588e49"
+    },
+    {
+      "path": "twin_evidence/twin_training_summary.json",
+      "bytes": 3403,
+      "sha256": "32849f002c2a44043a89301f0530fb52f8101161113a3047a17f5de2018dd94d"
+    }
+  ],
+  "acceptance": {
+    "report_written": true,
+    "article_draft_written": true,
+    "baseline_strength_audit_written": true,
+    "algorithm_identity_audit_written": true,
+    "novelty_audit_written": true,
+    "theory_completion_audit_written": true,
+    "mc100_smoke_written": true,
+    "mc500_publication_smoke_written": true,
+    "baseline_stress_evidence_written": true,
+    "baseline_tuning_evidence_written": true,
+    "open_items_written": true,
+    "trace_evidence_written": true,
+    "twin_evidence_written": true,
+    "acceptance_summary_written": true,
+    "host_release_ready": true,
+    "hardware_ready": false
+  }
+}

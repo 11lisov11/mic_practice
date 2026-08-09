@@ -1,0 +1,38 @@
+{
+  "schema": "mic-ai-model-based-identification-aggregate-v1",
+  "series": 2,
+  "root_seeds": [
+    20260820,
+    20260821
+  ],
+  "profile_seeds": [
+    20260830000,
+    20260831000
+  ],
+  "paired_trials": 24,
+  "c6_wins": 9,
+  "c6_win_rate": 0.375,
+  "c6_win_sign_test_p_value_one_sided": 0.9242051839828491,
+  "median_c6_to_random_max_error_ratio": 1.3609914776224996,
+  "checks": {
+    "schema_matches": true,
+    "root_seeds_unique": true,
+    "profile_seeds_unique": true,
+    "prbs_design_seed_sets_disjoint": true,
+    "fixed_sector_rank_deficient_every_series": true,
+    "c6_full_rank_every_series": true,
+    "c6_d_information_beats_prbs_ensemble_every_series": true,
+    "c6_median_target_error_below_5pct_every_series": true,
+    "truth_restricted_to_post_fit_audit": true,
+    "separate_leakages_rejected_as_unidentifiable": true,
+    "admissible_profiles_no_current_limit_exceedance": true
+  },
+  "confirmatory_replication_pass": true,
+  "claims": {
+    "simulation_evidence": true,
+    "hardware_validated": false,
+    "world_novelty_established": false,
+    "defensible_scientific_novelty_candidate": true,
+    "scope": "Independent synthetic-model evidence for identifiability-gated C6 multiscale excitation; physical accuracy and literature-wide priority remain unproven."
+  }
+}

@@ -27,6 +27,8 @@ static inline float unoq_interp_1d(const float *x, const float *y, uint8_t n, fl
   return y[n - 1];
 }
 
+// Provisional bench LUT. It is not the generated three-motor research policy.
+// Do not use it for efficiency claims until it is calibrated for the connected motor.
 // LUT policy for motor1: returns Id_ref in Q10 (A * 1024).
 // Inputs:
 // - omega_ref: electrical angular speed, rad/s

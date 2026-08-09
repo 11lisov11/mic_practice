@@ -1,0 +1,113 @@
+{
+  "schema": "mic_ai.motor_identification.capture.v1",
+  "motor_id": "motor-001",
+  "created_utc": "2026-08-09T12:00:00+00:00",
+  "source": {
+    "kind": "hardware",
+    "device_id": "nucleo-g431rb-001",
+    "firmware_sha256": "replace-with-real-firmware-sha256",
+    "clock": "TIM1-triggered ADC DMA",
+    "capture_software": "mic-ai-g431-trace-v1",
+    "calibration": {
+      "current": "current-calibration-run-id",
+      "voltage": "voltage-reconstruction-calibration-id",
+      "speed": "encoder-calibration-run-id"
+    }
+  },
+  "noise_std": {
+    "i_alpha_a": 0.01,
+    "i_beta_a": 0.01,
+    "omega_rad_s": 0.05
+  },
+  "limits": {
+    "max_abs_voltage_v": 60.0,
+    "max_abs_current_a": 1.75,
+    "max_abs_speed_rad_s": 200.0
+  },
+  "experiments": [
+    {
+      "id": "fit-standstill-001",
+      "run_id": "fit-run-001",
+      "captured_utc": "2026-08-09T12:00:00+00:00",
+      "load_condition_id": "rotor-lock-fixture-001",
+      "motor_temperature_c": 25.0,
+      "role": "fit",
+      "kind": "standstill",
+      "rotor_locked": true,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 0.0,
+      "voltage_source": "calibrated_pwm_reconstruction",
+      "samples_csv": "fit_standstill_001.csv"
+    },
+    {
+      "id": "fit-free-run-001",
+      "run_id": "fit-run-001",
+      "captured_utc": "2026-08-09T12:01:00+00:00",
+      "load_condition_id": "no-external-load-001",
+      "motor_temperature_c": 25.5,
+      "role": "fit",
+      "kind": "free_run",
+      "rotor_locked": false,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 0.0,
+      "voltage_source": "calibrated_pwm_reconstruction",
+      "samples_csv": "fit_free_run_001.csv"
+    },
+    {
+      "id": "fit-coast-001",
+      "run_id": "fit-run-001",
+      "captured_utc": "2026-08-09T12:02:00+00:00",
+      "load_condition_id": "no-external-load-001",
+      "motor_temperature_c": 26.0,
+      "role": "fit",
+      "kind": "coast",
+      "rotor_locked": false,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 20.0,
+      "voltage_source": "measured_alpha_beta",
+      "samples_csv": "fit_coast_001.csv"
+    },
+    {
+      "id": "validation-standstill-001",
+      "run_id": "validation-run-001",
+      "captured_utc": "2026-08-09T12:10:00+00:00",
+      "load_condition_id": "rotor-lock-fixture-001",
+      "motor_temperature_c": 26.5,
+      "role": "validation",
+      "kind": "standstill",
+      "rotor_locked": true,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 0.0,
+      "voltage_source": "calibrated_pwm_reconstruction",
+      "samples_csv": "validation_standstill_001.csv"
+    },
+    {
+      "id": "validation-free-run-001",
+      "run_id": "validation-run-001",
+      "captured_utc": "2026-08-09T12:11:00+00:00",
+      "load_condition_id": "no-external-load-001",
+      "motor_temperature_c": 27.0,
+      "role": "validation",
+      "kind": "free_run",
+      "rotor_locked": false,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 0.0,
+      "voltage_source": "calibrated_pwm_reconstruction",
+      "samples_csv": "validation_free_run_001.csv"
+    },
+    {
+      "id": "validation-coast-001",
+      "run_id": "validation-run-001",
+      "captured_utc": "2026-08-09T12:12:00+00:00",
+      "load_condition_id": "no-external-load-001",
+      "motor_temperature_c": 27.5,
+      "role": "validation",
+      "kind": "coast",
+      "rotor_locked": false,
+      "initial_state": "deenergized",
+      "initial_omega_rad_s": 20.0,
+      "voltage_source": "measured_alpha_beta",
+      "samples_csv": "validation_coast_001.csv"
+    }
+  ]
+}

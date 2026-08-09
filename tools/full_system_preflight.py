@@ -17,42 +17,18 @@ from urllib.error import HTTPError, URLError
 from run_metadata import collect_run_metadata, collect_source_fingerprint
 
 
+SELFTEST_STEP_NAMES = tuple(sorted(path.stem for path in Path(__file__).resolve().parent.glob("*_selftest.py")))
+
 BUILD_ONLY_STEP_NAMES = (
     "py_compile",
     "firmware_config_safety_check",
     "platformio_env_safety_check",
     "protocol_contract_check",
-    "protocol_safety_selftest",
-    "pc_direct_hmi_selftest",
-    "pc_direct_hmi_service_selftest",
-    "web_hmi_command_guard_selftest",
-    "ui_pwm_case_selftest",
-    "dense_overlap_sweep_selftest",
-    "bluepill_uart_diagnose_selftest",
-    "uart_loopback_preflight_selftest",
-    "adb_router_sequence_selftest",
-    "adb_deploy_web_hmi_selftest",
-    "active_pwm_guard_selftest",
-    "fan_preflight_selftest",
-    "bpfoc_backend_preflight_selftest",
-    "mic_ai_compare_selftest",
-    "hv_j7_preflight_selftest",
-    "bluepill_runtime_static_preflight_selftest",
-    "bluepill_static_low_preflight_selftest",
-    "bluepill_pwm_selftest_preflight_selftest",
-    "bench_gate_report_selftest",
-    "current_bench_status_selftest",
-    "refresh_bench_status_selftest",
-    "research_readiness_check_selftest",
     "start_guard_static_check",
-    "start_guard_static_check_selftest",
-    "saleae_highlevel_probe_selftest",
-    "saleae_pwm_analyze_selftest",
-    "runtime_python_selftest",
-    "run_metadata_selftest",
-    "full_system_preflight_selftest",
+    *SELFTEST_STEP_NAMES,
     "unoq_build",
     "bluepill_build",
+    "nucleo_build",
 )
 
 
@@ -343,6 +319,25 @@ def main() -> int:
         help="Additional Saleae capture interval; use 0 for key frequencies only.",
     )
     ap.add_argument("--skip-mic-compare", action="store_true")
+    ap.add_argument(
+        "--with-precharge-relay",
+        action="store_true",
+        help="Run optional low-voltage PB4 precharge-relay preflight.",
+    )
+    ap.add_argument("--precharge-relay-cycles", type=int, default=5)
+    ap.add_argument("--precharge-relay-dwell", type=float, default=0.40)
+    ap.add_argument("--precharge-relay-max-vdc", type=float, default=60.0)
+    ap.add_argument(
+        "--precharge-relay-la-channel",
+        type=int,
+        default=-1,
+        help="Optional Saleae channel connected to PB4 relay control.",
+    )
+    ap.add_argument(
+        "--precharge-relay-arm-confirm",
+        default="",
+        help="Optional HMI output-arm phrase, for example ARM LOWV.",
+    )
     ap.add_argument("--with-fan", action="store_true", help="Run optional low-voltage fan PWM/tach preflight.")
     ap.add_argument("--fan-duties", default="0,0.3,0.6,1.0,0")
     ap.add_argument("--fan-require-tach", action="store_true", help="Require fan tach pulses during fan preflight.")
@@ -375,6 +370,7 @@ def main() -> int:
     foc_dir = run_dir / "foc_mic"
     la_dir = run_dir / "full_suite"
     mic_dir = run_dir / "mic_compare"
+    precharge_relay_dir = run_dir / "precharge_relay"
     fan_dir = run_dir / "fan"
     bpfoc_dir = run_dir / "bpfoc"
     bp_pwm_selftest_dir = run_dir / "bluepill_pwm_selftest"
@@ -401,6 +397,13 @@ def main() -> int:
                 str(path.relative_to(repo_root))
                 for path in (repo_root / "tools").glob("*.py")
                 if path.is_file()
+            )
+            py_compile_targets.extend(
+                sorted(
+                    str(path.relative_to(repo_root))
+                    for path in (repo_root / "motor_identification").glob("*.py")
+                    if path.is_file()
+                )
             )
             py_compile_targets.append("web_hmi\\server.py")
             step(
@@ -601,6 +604,18 @@ def main() -> int:
                 repo_root,
                 60.0,
             )
+
+            # Keep the release gate complete when a new standalone self-test is added.
+            completed_step_names = {item["name"] for item in result["steps"]}
+            for selftest_name in SELFTEST_STEP_NAMES:
+                if selftest_name in completed_step_names:
+                    continue
+                step(
+                    selftest_name,
+                    [sys.executable, "-u", f"tools\\{selftest_name}.py"],
+                    repo_root,
+                    60.0,
+                )
             step(
                 "unoq_build",
                 ["arduino-cli", "compile", "--fqbn", "arduino:zephyr:unoq:link_mode=static", ".\\UNOQ_MOTOR"],
@@ -611,6 +626,21 @@ def main() -> int:
                 "bluepill_build",
                 [sys.executable, "-m", "platformio", "run"],
                 repo_root / "bluepill_uart_pwm_pio",
+                args.timeout_build,
+            )
+            step(
+                "nucleo_build",
+                [
+                    sys.executable,
+                    "-m",
+                    "platformio",
+                    "run",
+                    "-e",
+                    "nucleo_g431_uart_bridge",
+                    "-e",
+                    "nucleo_g431_pwm_bench",
+                ],
+                repo_root / "nucleo_g431_uart_bridge_pio",
                 args.timeout_build,
             )
 
@@ -625,6 +655,10 @@ def main() -> int:
                 "build_step_audit": build_audit,
                 "required_hil_pass": False,
                 "full_suite_pass": False,
+                "precharge_relay_stage_enabled": False,
+                "precharge_relay_pass": None,
+                "precharge_relay_saleae_enabled": False,
+                "precharge_relay_saleae_pass": None,
                 "fan_stage_enabled": False,
                 "fan_pass": None,
                 "bpfoc_stage_enabled": False,
@@ -704,6 +738,40 @@ def main() -> int:
                 repo_root,
                 120.0,
             )
+            if args.with_precharge_relay:
+                stabilize_ui_phase(
+                    repo_root,
+                    args.url,
+                    args.forward_port,
+                    logs_dir,
+                    result["steps"],
+                    phase_tag="pre_precharge_relay",
+                    require_safe=True,
+                    settle_s=0.5,
+                )
+                relay_cmd = [
+                    sys.executable,
+                    "-u",
+                    "tools\\precharge_relay_preflight.py",
+                    "--url",
+                    args.url,
+                    "--cycles",
+                    str(int(args.precharge_relay_cycles)),
+                    "--dwell",
+                    f"{float(args.precharge_relay_dwell):.3f}",
+                    "--max-vdc",
+                    f"{float(args.precharge_relay_max_vdc):.2f}",
+                    "--outdir",
+                    str(precharge_relay_dir),
+                ]
+                if args.confirm_hv_off:
+                    relay_cmd.append("--confirm-hv-off-bench")
+                if args.precharge_relay_la_channel >= 0:
+                    relay_cmd.extend(["--la-channel", str(int(args.precharge_relay_la_channel))])
+                if args.precharge_relay_arm_confirm.strip():
+                    relay_cmd.extend(["--arm-confirm", args.precharge_relay_arm_confirm.strip()])
+                step("precharge_relay_preflight", relay_cmd, repo_root, 180.0)
+
             if args.with_fan:
                 stabilize_ui_phase(
                     repo_root,
@@ -952,6 +1020,7 @@ def main() -> int:
 
         result["scalar_summary"] = read_json(latest_json(scalar_dir))
         result["foc_mic_summary"] = read_json(latest_json(foc_dir))
+        result["precharge_relay_summary"] = read_json(latest_json(precharge_relay_dir))
         result["fan_summary"] = read_json(latest_json(fan_dir))
         result["bpfoc_summary"] = read_json(latest_json(bpfoc_dir))
         result["bluepill_pwm_selftest_summary"] = read_json(latest_json(bp_pwm_selftest_dir))
@@ -1007,6 +1076,8 @@ def main() -> int:
         ]
         if args.with_fan:
             required_hil += [s for s in result["steps"] if s["name"] == "fan_preflight"]
+        if args.with_precharge_relay:
+            required_hil += [s for s in result["steps"] if s["name"] == "precharge_relay_preflight"]
         if args.with_bpfoc:
             required_hil += [s for s in result["steps"] if s["name"] == "bpfoc_backend_preflight"]
         if args.with_bluepill_pwm_selftest and not args.skip_hil:
@@ -1028,6 +1099,14 @@ def main() -> int:
                 and result.get("full_suite_fail_count", 0) == 0
             )
 
+        precharge_relay_stage_pass = (
+            True
+            if not args.with_precharge_relay
+            else bool((result["precharge_relay_summary"] or {}).get("pass") is True)
+        )
+        precharge_relay_saleae = (result["precharge_relay_summary"] or {}).get("saleae", {})
+        if not isinstance(precharge_relay_saleae, dict):
+            precharge_relay_saleae = {}
         fan_stage_pass = True if not args.with_fan else bool((result["fan_summary"] or {}).get("pass") is True)
         bpfoc_stage_pass = True if not args.with_bpfoc else bool((result["bpfoc_summary"] or {}).get("pass") is True)
         bp_pwm_selftest_stage_pass = True
@@ -1040,6 +1119,14 @@ def main() -> int:
             "build_step_audit": build_audit,
             "required_hil_pass": (all(s["ok"] for s in required_hil) if required_hil else True) and logic_ok,
             "full_suite_pass": full_suite_pass,
+            "precharge_relay_stage_enabled": bool(args.with_precharge_relay),
+            "precharge_relay_pass": precharge_relay_stage_pass if args.with_precharge_relay else None,
+            "precharge_relay_saleae_enabled": bool(precharge_relay_saleae.get("enabled")),
+            "precharge_relay_saleae_pass": (
+                precharge_relay_saleae.get("pass") is True
+                if args.with_precharge_relay and precharge_relay_saleae.get("enabled") is True
+                else None
+            ),
             "fan_stage_enabled": bool(args.with_fan),
             "fan_pass": fan_stage_pass if args.with_fan else None,
             "bpfoc_stage_enabled": bool(args.with_bpfoc),
@@ -1055,6 +1142,7 @@ def main() -> int:
             result["summary"]["build_pass"]
             and result["summary"]["required_hil_pass"]
             and result["summary"]["full_suite_pass"]
+            and precharge_relay_stage_pass
             and fan_stage_pass
             and bpfoc_stage_pass
             and bp_pwm_selftest_stage_pass
@@ -1078,6 +1166,10 @@ def main() -> int:
             "build_pass": False,
             "required_hil_pass": False,
             "full_suite_pass": False,
+            "precharge_relay_stage_enabled": bool(args.with_precharge_relay),
+            "precharge_relay_pass": None,
+            "precharge_relay_saleae_enabled": False,
+            "precharge_relay_saleae_pass": None,
             "fan_stage_enabled": bool(args.with_fan),
             "fan_pass": None,
             "bpfoc_stage_enabled": bool(args.with_bpfoc),

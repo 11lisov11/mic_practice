@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import full_system_preflight as preflight
@@ -64,6 +65,49 @@ def case_full_system_selftest_is_required() -> CaseResult:
     )
 
 
+def case_all_discovered_selftests_are_required() -> CaseResult:
+    expected = tuple(sorted(path.stem for path in Path(preflight.__file__).resolve().parent.glob("*_selftest.py")))
+    actual = preflight.SELFTEST_STEP_NAMES
+    return CaseResult(
+        "all_discovered_selftests_are_required",
+        actual == expected and all(name in preflight.BUILD_ONLY_STEP_NAMES for name in expected),
+        expected,
+        actual,
+        "" if actual == expected else "SELFTEST_STEP_NAMES does not match tools/*_selftest.py",
+    )
+
+
+def case_all_firmware_targets_are_required() -> CaseResult:
+    expected = {"unoq_build", "bluepill_build", "nucleo_build"}
+    actual = set(preflight.BUILD_ONLY_STEP_NAMES) & expected
+    return CaseResult(
+        "all_firmware_targets_are_required",
+        actual == expected,
+        sorted(expected),
+        sorted(actual),
+        "" if actual == expected else "at least one target firmware build is missing from the release gate",
+    )
+
+
+def case_precharge_relay_stage_is_integrated() -> CaseResult:
+    source = Path(preflight.__file__).read_text(encoding="utf-8")
+    required_tokens = {
+        "--with-precharge-relay",
+        "precharge_relay_preflight.py",
+        "precharge_relay_summary",
+        "precharge_relay_stage_enabled",
+        "precharge_relay_stage_pass",
+    }
+    missing = sorted(token for token in required_tokens if token not in source)
+    return CaseResult(
+        "precharge_relay_stage_is_integrated",
+        not missing,
+        [],
+        missing,
+        "" if not missing else "optional relay stage is not wired through execution and final gate",
+    )
+
+
 def main() -> int:
     cases = [
         case_all_required_steps_pass(),
@@ -71,6 +115,9 @@ def main() -> int:
         case_failed_required_step_fails(),
         case_duplicate_required_step_fails(),
         case_full_system_selftest_is_required(),
+        case_all_discovered_selftests_are_required(),
+        case_all_firmware_targets_are_required(),
+        case_precharge_relay_stage_is_integrated(),
     ]
     failed = [case for case in cases if not case.ok]
     summary = {

@@ -41,6 +41,9 @@ def make_repo_fixture(root: Path) -> None:
     write_file(root, "PWM_STATIC_BLOCKER_RU.md", "pwm static safe docs\n")
     write_file(root, "UART_LOOPBACK_STEPS_RU.md", "uart loopback safe docs\n")
     write_file(root, "RESEARCH_READINESS_RU.md", "research safe docs\n")
+    write_file(root, "NUCLEO_G431_MIGRATION_RU.md", "nucleo migration safe docs\n")
+    write_file(root, "requirements.txt", "pyserial>=3.5\n")
+    write_file(root, "requirements-identification.txt", "numpy>=2.0\n")
     write_file(root, "tools/a.py", "print('a')\n")
     write_file(root, "tools/b.py", "print('b')\n")
     write_file(root, "web_hmi/server.py", "SERVER = True\n")
@@ -48,6 +51,9 @@ def make_repo_fixture(root: Path) -> None:
     write_file(root, "bluepill_uart_pwm_pio/platformio.ini", "[env:bluepill]\n")
     write_file(root, "bluepill_uart_pwm_pio/include/config.h", "#define SAFE 1\n")
     write_file(root, "bluepill_uart_pwm_pio/src/main.cpp", "int main() { return 0; }\n")
+    write_file(root, "nucleo_g431_uart_bridge_pio/platformio.ini", "[env:nucleo]\n")
+    write_file(root, "nucleo_g431_uart_bridge_pio/include/config.h", "#define SAFE 1\n")
+    write_file(root, "nucleo_g431_uart_bridge_pio/src/main.cpp", "int main() { return 0; }\n")
     write_file(root, "ignored.txt", "not safety critical\n")
 
 
@@ -60,6 +66,7 @@ def source_fingerprint_is_stable_sorted_and_filtered() -> dict[str, Any]:
         expected_paths = [
             "BRINGUP_STEPS_RU.md",
             "CONNECTION_MATRIX_RU.md",
+            "NUCLEO_G431_MIGRATION_RU.md",
             "PC_DIRECT_STM32_RU.md",
             "PWM_STATIC_BLOCKER_RU.md",
             "README.md",
@@ -69,6 +76,11 @@ def source_fingerprint_is_stable_sorted_and_filtered() -> dict[str, Any]:
             "bluepill_uart_pwm_pio/include/config.h",
             "bluepill_uart_pwm_pio/platformio.ini",
             "bluepill_uart_pwm_pio/src/main.cpp",
+            "nucleo_g431_uart_bridge_pio/include/config.h",
+            "nucleo_g431_uart_bridge_pio/platformio.ini",
+            "nucleo_g431_uart_bridge_pio/src/main.cpp",
+            "requirements-identification.txt",
+            "requirements.txt",
             "tools/a.py",
             "tools/b.py",
             "web_hmi/server.py",
@@ -96,6 +108,10 @@ def source_fingerprint_changes_only_for_included_sources() -> dict[str, Any]:
         doc_change = run_metadata.collect_source_fingerprint(root)
         if baseline["sha256"] == doc_change["sha256"]:
             raise RuntimeError("operator doc change did not change fingerprint")
+        write_file(root, "requirements-identification.txt", "numpy>=2.1\n")
+        requirements_change = run_metadata.collect_source_fingerprint(root)
+        if baseline["sha256"] == requirements_change["sha256"]:
+            raise RuntimeError("identification dependency change did not change fingerprint")
         write_file(root, "bluepill_uart_pwm_pio/src/main.cpp", "int main() { return 1; }\n")
         included_change = run_metadata.collect_source_fingerprint(root)
         if baseline["sha256"] == included_change["sha256"]:
@@ -104,6 +120,7 @@ def source_fingerprint_changes_only_for_included_sources() -> dict[str, Any]:
             "baseline": baseline["sha256"],
             "ignored_change": ignored_change["sha256"],
             "doc_change": doc_change["sha256"],
+            "requirements_change": requirements_change["sha256"],
             "included_change": included_change["sha256"],
         }
 

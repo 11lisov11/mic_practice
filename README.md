@@ -7,6 +7,19 @@
 Запуск с инвертором (UM2014 / IPM15): `docs/IPM15_Runbook_RU.md`
 Исследование MIC AI (FOC vs MIC): `docs/MIC_AI_Runbook_RU.md`
 
+Критический аудит теории, допустимая формулировка научной значимости и
+ограничения результатов: `research/MIC_AI_RESEARCH_AUDIT_RU.md`.
+Проверяемый срез `C:\mic_theory` со статьями, итоговыми таблицами, исходниками и
+SHA-256-манифестом: `research/mic_ai_theory/README_RU.md`. Там же находится
+математически подтверждённый кандидат новизны C6-BCR и модельный C6-ID-контур
+идентификации `Rs/Rr/Lm/J/B` с rank-gate. Экспериментальные SNH-PWM,
+C6-RV-PWM, C6-BCR и C6-ID из этого каталога не подключены к активной прошивке инвертора.
+
+Рабочий офлайн-модуль определения параметров двигателя, контракт аппаратной
+записи, CSV-импорт, rank-gate, независимая validation и команды запуска описаны
+в `docs/MOTOR_PARAMETER_IDENTIFICATION_RU.md`. Модуль анализа не управляет PWM;
+аппаратный высокочастотный recorder STM32 остаётся отдельным этапом.
+
 ## Состав репозитория
 - `bluepill_uart_pwm_pio` — прошивка Blue Pill (PWM, UART протокол).
 - `nucleo_g431_uart_bridge_pio` — безопасный UART-каркас G431 и отдельная низковольтная `nucleo_g431_pwm_bench` сборка для проверки шести TIM1-каналов при снятом J7; база для последующей интеграции в сгенерированный MCSDK-проект.
@@ -26,11 +39,15 @@
 - `tools/mic_research_report.py` — offline Markdown-отчет из `mic_research_matrix.py` summary.
 - `tools/telemetry_calibration.py` — снимки телеметрии и расчет рекомендуемых Vbus/temperature calibration constants.
 - `tools/research_readiness_check.py` — финальный gate: live `/api/status` + bench-gate + свежесть/наличие preflight, calibration и MIC research artifacts.
+- `tools/mic_theory_snapshot_check.py` — проверка целостности перенесённой теории и статей по SHA-256-манифесту.
+- `motor_identification/` — активное ядро идентификации `Rs/Rr/Lsigma/Lm/J/B/Tload`, строгий контракт данных и независимая проверка результата.
+- `tools/motor_parameter_identification.py` — CLI проверки, CSV/JSON-импорта и расчёта параметров без команд на железо.
+- `tools/motor_parameter_api.py` — локальный read-only API анализа; не содержит endpoint включения PWM.
 - `tools/bench_gate_report.py` — безопасный сводный отчёт текущего стенда: последний build-only, UART diagnosis, Saleae static/no-overlap и live `/api/status`.
 - `tools/bluepill_runtime_static_preflight.py` — безопасная прошивка рабочей Blue Pill firmware через ST-Link + статический Saleae-захват `CH0..CH6` без активного PWM.
 - `tools/nucleo_bridge_selftest.py` — host-тест переходов SAFE/fault/clear/timeout/E-STOP, расчёта center-aligned периода, dead-time и запрета недиагностических команд G431.
 - `tools/bluepill_static_low_preflight.py` — изоляционный ST-Link тест для `low_side_static_high`: диагностическая firmware без TIM1/команд держит PWM GPIO в LOW, снимает Saleae и восстанавливает runtime.
-- `tools/full_system_preflight.py` — единый regression-runner: build, доступ к UNO Q, encoder sanity, scalar, FOC/MIC, полный LA-suite и MIC-диагностика.
+- `tools/full_system_preflight.py` — единый regression-runner: автоматически запускает все `tools/*_selftest.py`, собирает UNO Q, все Blue Pill env и оба Nucleo-профиля, затем выполняет HIL/LA/MIC-этапы.
 - `tools/logic2_recover.py` — recovery Logic2/Saleae: рестарт приложения, проверка automation-port и видимости реального анализатора.
 - `tools/la_probe.py` — проверка доступности Saleae Logic2 Automation.
 - `tools/adb_router_sequence.py` — bounded runner для силовых DUTY/VF шагов через один persistent ADB/router socket с обязательным `STOP/ESTOP` cleanup.
@@ -55,6 +72,11 @@ py -3 -m venv .\.venv
 .\.venv\Scripts\python.exe -m pip install -U pip
 .\.venv\Scripts\python.exe -m pip install -r .\requirements.txt
 .\.venv\Scripts\python.exe -m pip install -U platformio
+```
+
+Для офлайн-модуля определения параметров двигателя на ПК дополнительно:
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r .\requirements-identification.txt
 ```
 
 ## Wi-Fi секреты для UNO Q
@@ -563,6 +585,16 @@ py -3 -u .\tools\fan_preflight.py --url http://127.0.0.1:18080
 py -3 -u .\tools\fan_preflight.py --url http://127.0.0.1:18080 --require-tach
 ```
 
+Реле предзаряда `PB4` проверяется отдельным низковольтным этапом. Без Saleae он
+подтверждает прохождение команды и обратный статус STM32; при подключённом `CH7`
+также требует фактические фронты на управляющем выводе:
+```powershell
+py -3 -u .\tools\precharge_relay_preflight.py --url http://127.0.0.1:18080 --cycles 5 --arm-confirm "ARM LOWV" --la-channel 7
+py -3 -u .\tools\full_system_preflight.py --url http://127.0.0.1:18080 --with-precharge-relay --precharge-relay-arm-confirm "ARM LOWV" --precharge-relay-la-channel 7
+```
+Оба варианта требуют начальный и финальный `SAFE`, не запускают PWM и не доказывают
+ток катушки или замыкание силового контакта без отдельного аппаратного контроля.
+
 ## Тесты ШИМ (UI → PWM)
 Офлайн-проверка safety-инвариантов PC-direct протокола, без железа и без PWM:
 ```powershell
@@ -680,8 +712,9 @@ readiness, атомарное обновление `CURRENT_BENCH_STATUS_RU.md` 
 ```powershell
 py -3 -u .\tools\full_system_preflight.py --build-only
 ```
-Этот режим проверяет compile/build/offline protocol guards и возвращает успешный
-код при зелёной сборке, но не помечает `overall_pass=true`, потому что HIL не запускался.
+Этот режим проверяет Python compile, все автоматически обнаруженные offline self-test,
+protocol/config guards и сборку UNO Q, Blue Pill и двух Nucleo-профилей. Он возвращает
+успешный код при зелёной сборке, но не помечает `overall_pass=true`, потому что HIL не запускался.
 
 Перед тестами проверь Saleae (Logic2 Automation):
 ```powershell

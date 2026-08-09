@@ -1,0 +1,269 @@
+{
+  "status": "snh_pwm_long_horizon_revalidation",
+  "host_long_horizon_ready": true,
+  "hardware_ready": false,
+  "universal_superiority_supported": false,
+  "checks": {
+    "hardware_claim_false": true,
+    "all_required_scenarios_present": true,
+    "scenario_count_at_least_31": true,
+    "mc_trials_at_least_30": true,
+    "duration_at_least_0p2s": true,
+    "duration_gate_pass": true,
+    "paired_common_random_numbers": true,
+    "controller_present_in_all_scenarios": true,
+    "no_unexpected_critical_faults": true,
+    "expected_fault_injection_response": true,
+    "trip_threshold_present": true,
+    "plant_current_below_trip": true,
+    "paired_effects_complete": true
+  },
+  "failures": [],
+  "warnings": [
+    "AI confidence fallback occurred in: regeneration, sensor_delay, sensor_dropout, speed_sensor_failure",
+    "speed-error comparison is not universally superior: worse=3 inconclusive=2"
+  ],
+  "scenario_count": 31,
+  "mc_trials": 30,
+  "simulated_duration_s": 0.2,
+  "safety_thresholds": {
+    "i_soft_a": 4.375,
+    "i_trip_a": 6.125
+  },
+  "max_plant_current_a": 5.6526095567986765,
+  "unexpected_fault_scenarios": [],
+  "expected_fault_checks": {
+    "fault_injection_runtime": true
+  },
+  "confidence_fallback_scenarios": [
+    "regeneration",
+    "sensor_delay",
+    "speed_sensor_failure",
+    "sensor_dropout"
+  ],
+  "speed_error_classification": {
+    "better": 26,
+    "worse": 3,
+    "inconclusive": 2,
+    "missing": 0
+  },
+  "performance_rows": [
+    {
+      "scenario": "start_no_load",
+      "delta_speed_error": -23.495972946160123,
+      "ci95_low": -30.063020216164965,
+      "ci95_high": -16.92892567615528,
+      "classification": "better"
+    },
+    {
+      "scenario": "start_with_load",
+      "delta_speed_error": -31.476524800489464,
+      "ci95_low": -47.54226690527219,
+      "ci95_high": -15.410782695706736,
+      "classification": "better"
+    },
+    {
+      "scenario": "ramp_to_rated",
+      "delta_speed_error": -23.724820293473353,
+      "ci95_low": -34.212924587489695,
+      "ci95_high": -13.236715999457008,
+      "classification": "better"
+    },
+    {
+      "scenario": "load_step",
+      "delta_speed_error": -17.257862895107436,
+      "ci95_low": -23.42645772940464,
+      "ci95_high": -11.089268060810234,
+      "classification": "better"
+    },
+    {
+      "scenario": "load_shed",
+      "delta_speed_error": -18.567993847322235,
+      "ci95_low": -25.11119364857684,
+      "ci95_high": -12.02479404606763,
+      "classification": "better"
+    },
+    {
+      "scenario": "reverse",
+      "delta_speed_error": 4.8468416463654345,
+      "ci95_low": 2.664855886173658,
+      "ci95_high": 7.028827406557211,
+      "classification": "worse"
+    },
+    {
+      "scenario": "braking",
+      "delta_speed_error": 11.864607497760582,
+      "ci95_low": 4.402267890711846,
+      "ci95_high": 19.32694710480932,
+      "classification": "worse"
+    },
+    {
+      "scenario": "regeneration",
+      "delta_speed_error": -6.077900050522715,
+      "ci95_low": -11.803008415861479,
+      "ci95_high": -0.3527916851839521,
+      "classification": "better"
+    },
+    {
+      "scenario": "low_speed",
+      "delta_speed_error": -6.883208598241542,
+      "ci95_low": -9.588170020142755,
+      "ci95_high": -4.17824717634033,
+      "classification": "better"
+    },
+    {
+      "scenario": "zero_speed",
+      "delta_speed_error": -0.6033570498863614,
+      "ci95_low": -1.1182786537698282,
+      "ci95_high": -0.08843544600289455,
+      "classification": "better"
+    },
+    {
+      "scenario": "field_weakening",
+      "delta_speed_error": -22.9614786070884,
+      "ci95_low": -31.15895677955683,
+      "ci95_high": -14.764000434619966,
+      "classification": "better"
+    },
+    {
+      "scenario": "overload",
+      "delta_speed_error": -20.828563080803843,
+      "ci95_low": -42.43822538491084,
+      "ci95_high": 0.7810992233031548,
+      "classification": "inconclusive"
+    },
+    {
+      "scenario": "dc_sag",
+      "delta_speed_error": -17.418564008299906,
+      "ci95_low": -24.29334482922775,
+      "ci95_high": -10.543783187372064,
+      "classification": "better"
+    },
+    {
+      "scenario": "motor_heating",
+      "delta_speed_error": -18.94259198521154,
+      "ci95_low": -25.31957414532969,
+      "ci95_high": -12.565609825093391,
+      "classification": "better"
+    },
+    {
+      "scenario": "inverter_heating",
+      "delta_speed_error": -19.954625868642868,
+      "ci95_low": -28.026085079429063,
+      "ci95_high": -11.883166657856673,
+      "classification": "better"
+    },
+    {
+      "scenario": "rs_error",
+      "delta_speed_error": -17.287706282119768,
+      "ci95_low": -25.10389306914283,
+      "ci95_high": -9.471519495096704,
+      "classification": "better"
+    },
+    {
+      "scenario": "rr_error",
+      "delta_speed_error": -3.4425419866334277,
+      "ci95_low": -8.383260784448918,
+      "ci95_high": 1.4981768111820628,
+      "classification": "inconclusive"
+    },
+    {
+      "scenario": "lm_error",
+      "delta_speed_error": -27.227821299430495,
+      "ci95_low": -35.148238124220086,
+      "ci95_high": -19.307404474640904,
+      "classification": "better"
+    },
+    {
+      "scenario": "j_error",
+      "delta_speed_error": -13.084788592150892,
+      "ci95_low": -20.39553046346332,
+      "ci95_high": -5.774046720838464,
+      "classification": "better"
+    },
+    {
+      "scenario": "random_load",
+      "delta_speed_error": -16.497186753751343,
+      "ci95_low": -22.748072256488584,
+      "ci95_high": -10.246301251014101,
+      "classification": "better"
+    },
+    {
+      "scenario": "periodic_load",
+      "delta_speed_error": -18.380608360420286,
+      "ci95_low": -24.249918012384047,
+      "ci95_high": -12.511298708456525,
+      "classification": "better"
+    },
+    {
+      "scenario": "shock_load",
+      "delta_speed_error": -12.291367626652807,
+      "ci95_low": -17.89630686622629,
+      "ci95_high": -6.686428387079324,
+      "classification": "better"
+    },
+    {
+      "scenario": "two_mass_proxy",
+      "delta_speed_error": -16.81319517966562,
+      "ci95_low": -23.24914018382948,
+      "ci95_high": -10.37725017550176,
+      "classification": "better"
+    },
+    {
+      "scenario": "current_sensor_noise",
+      "delta_speed_error": -22.8525170023761,
+      "ci95_low": -31.026562760195592,
+      "ci95_high": -14.678471244556608,
+      "classification": "better"
+    },
+    {
+      "scenario": "speed_sensor_noise",
+      "delta_speed_error": -18.158566266395862,
+      "ci95_low": -26.820495253027755,
+      "ci95_high": -9.49663727976397,
+      "classification": "better"
+    },
+    {
+      "scenario": "sensor_delay",
+      "delta_speed_error": -21.575792745814162,
+      "ci95_low": -25.219365518600497,
+      "ci95_high": -17.932219973027827,
+      "classification": "better"
+    },
+    {
+      "scenario": "speed_sensor_failure",
+      "delta_speed_error": -21.879970966338686,
+      "ci95_low": -27.21096386644807,
+      "ci95_high": -16.548978066229303,
+      "classification": "better"
+    },
+    {
+      "scenario": "current_sensor_failure",
+      "delta_speed_error": -17.119151194108728,
+      "ci95_low": -23.263650994140978,
+      "ci95_high": -10.974651394076478,
+      "classification": "better"
+    },
+    {
+      "scenario": "ood",
+      "delta_speed_error": 3.533705962936215,
+      "ci95_low": 1.2139463360898555,
+      "ci95_high": 5.853465589782575,
+      "classification": "worse"
+    },
+    {
+      "scenario": "fault_injection_runtime",
+      "delta_speed_error": -17.09978081854557,
+      "ci95_low": -24.039652315050326,
+      "ci95_high": -10.15990932204082,
+      "classification": "better"
+    },
+    {
+      "scenario": "sensor_dropout",
+      "delta_speed_error": -23.59736244886967,
+      "ci95_low": -31.117985243083417,
+      "ci95_high": -16.076739654655924,
+      "classification": "better"
+    }
+  ]
+}

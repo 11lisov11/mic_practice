@@ -1,0 +1,1574 @@
+{
+  "status": "c6_conformal_reachability_lab",
+  "hypothesis_locked_before_test": true,
+  "world_novelty_established": false,
+  "hardware_claim": false,
+  "coverage_statement": "finite-sample marginal coverage for an exchangeable held-out trajectory block; not a deterministic, recursive, OOD, or hardware safety guarantee",
+  "configuration": {
+    "repetitions": 8,
+    "training_trajectories": 180,
+    "calibration_trajectories": 240,
+    "test_trajectories": 600,
+    "ood_trajectories": 300,
+    "scored_steps_per_trajectory": 40,
+    "burn_in_steps": 20,
+    "alpha": 0.05,
+    "target_coverage": 0.95,
+    "seed": 20260809,
+    "parameter_spans": {
+      "rs_span": 0.4,
+      "rr_span": 0.4,
+      "lm_span": 0.15,
+      "j_span": 0.5,
+      "b_span": 0.5
+    },
+    "ood_span_multiplier": 1.75,
+    "dimensions": [
+      "psi_s_alpha",
+      "psi_s_beta",
+      "psi_r_alpha",
+      "psi_r_beta",
+      "omega_m"
+    ]
+  },
+  "equivariance_audit": {
+    "status": "c6_equivariance_numeric_audit",
+    "samples": 500,
+    "max_state_residual": 8.326672684688674e-17,
+    "max_torque_residual": 6.661338147750939e-16,
+    "max_current_norm_residual": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "pass": true
+  },
+  "repetitions": [
+    {
+      "repetition": 0,
+      "split_seeds": [
+        524472111849260120,
+        9119256425088976809,
+        9136667173220416757,
+        2224220984803749446
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.6801954833719455,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0006758940090772214,
+                0.0005698526986146479,
+                0.0014967531075292528,
+                0.0013056272310151204,
+                0.003152038904969956
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 584,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9733333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9571240661880865,
+            "wilson95_high": 0.9835201901856102,
+            "undercoverage_p_value": 0.9984151141781665,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.6801954833719455,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.768327912442977
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 185,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.6166666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5605031391673366,
+            "wilson95_high": 0.669880167546936,
+            "undercoverage_p_value": 5.04595641775673e-69,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.6801954833719455,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.768327912442977
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.835010304046028,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0009083293102404855,
+                0.00038007327746057695,
+                0.002060900629363649,
+                0.0006768891493063867,
+                0.003409566531470787
+              ],
+              "1": [
+                0.0005502194422229156,
+                0.0007022240078629061,
+                0.0012892915249404363,
+                0.0014336034987052493,
+                0.0028999380601780478
+              ],
+              "2": [
+                0.000443001480558175,
+                0.0006387827050170491,
+                0.0010064030943249813,
+                0.0014806251429330675,
+                0.0028269977142511005
+              ],
+              "3": [
+                0.00097716097773215,
+                0.00034432641559239974,
+                0.002069589451198117,
+                0.0008639358554179133,
+                0.002521283314708536
+              ],
+              "4": [
+                0.0006033718689444356,
+                0.0007215005321718759,
+                0.0014200352863409163,
+                0.0019847219558622106,
+                0.003591930906892582
+              ],
+              "5": [
+                0.0005076053658001622,
+                0.0006608143317262394,
+                0.0013255593433403878,
+                0.0015970339584675808,
+                0.0035782744194530203
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 581,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9683333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9510727848694855,
+            "wilson95_high": 0.9796350885143483,
+            "undercoverage_p_value": 0.9887229936846507,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.835010304046028,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.766541210851498
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 194,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.6466666666666666,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5910330291100347,
+            "wilson95_high": 0.698591699330765,
+            "undercoverage_p_value": 1.3050138342461388e-59,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.835010304046028,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.766541210851498
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.953248913019495,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0008408566369049452,
+                0.0003259540697849563,
+                0.0019204636425357302,
+                0.0007578927462757075,
+                0.003152038904969956
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 578,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9633333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9451083863696614,
+            "wilson95_high": 0.9756631040243093,
+            "undercoverage_p_value": 0.9498733945845921,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.953248913019495,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.92091548338802
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 174,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.58,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5234831499847111,
+            "wilson95_high": 0.6344939746193615,
+            "undercoverage_p_value": 3.3833778989540825e-81,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.953248913019495,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.92091548338802
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.7037403117473473,
+      "c6_to_sectorwise_volume_ratio": 0.700851048604617
+    },
+    {
+      "repetition": 1,
+      "split_seeds": [
+        6436424431456613291,
+        3553410330239566854,
+        6525398518258047600,
+        2865207510026825457
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.616164490500983,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0006058031008913112,
+                0.0005900131729639213,
+                0.0014741632322942677,
+                0.001448919270693655,
+                0.003065526320440215
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 579,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.965,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9470879685332634,
+            "wilson95_high": 0.9769956495239949,
+            "undercoverage_p_value": 0.968045510956785,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.616164490500983,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.804155629168172
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 179,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5966666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.540271195643406,
+            "wilson95_high": 0.6506178299198485,
+            "undercoverage_p_value": 1.4212877241270026e-75,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.616164490500983,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.804155629168172
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 5.273211434688181,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.000696647008392115,
+                0.0002811336824084555,
+                0.0012449553567354457,
+                0.0004918543714077742,
+                0.0027611549396143187
+              ],
+              "1": [
+                0.0005111516842173647,
+                0.0006183115083123747,
+                0.0012647554826778276,
+                0.0018327515502947478,
+                0.002516951436215137
+              ],
+              "2": [
+                0.0004487145152629046,
+                0.0008216005461910147,
+                0.0012434382660654192,
+                0.0018985849605176255,
+                0.0026906378511216134
+              ],
+              "3": [
+                0.0009113390545618938,
+                0.00033356673700104394,
+                0.0023773836681963423,
+                0.0008799578943154591,
+                0.0035634435467307296
+              ],
+              "4": [
+                0.0005228233015376893,
+                0.0007893183793904746,
+                0.0014601776174717057,
+                0.002246515074522372,
+                0.0032357527748725357
+              ],
+              "5": [
+                0.0005362150931219473,
+                0.0005844516664832988,
+                0.0011415358607075096,
+                0.0013703125099584212,
+                0.003605903908558916
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 574,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9566666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9372639778756027,
+            "wilson95_high": 0.9702590018652173,
+            "undercoverage_p_value": 0.798196349124962,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 5.273211434688181,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.651225517743887
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 192,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.64,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.584229303230313,
+            "wilson95_high": 0.6922306648268142,
+            "undercoverage_p_value": 1.1677822112563913e-61,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 5.273211434688181,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.651225517743887
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.726384092200269,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0008047660360474623,
+                0.000348814613713636,
+                0.002062013095608181,
+                0.0008158062328926553,
+                0.003065526320440215
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 577,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9616666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9431366405466431,
+            "wilson95_high": 0.9743227221840399,
+            "undercoverage_p_value": 0.9247019702317167,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.726384092200269,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.961557163724711
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 178,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5933333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5369084052348393,
+            "wilson95_high": 0.6473982401365789,
+            "undercoverage_p_value": 1.0962922432183798e-76,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.726384092200269,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.961557163724711
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.6959827335423335,
+      "c6_to_sectorwise_volume_ratio": 0.48940494592772876
+    },
+    {
+      "repetition": 2,
+      "split_seeds": [
+        753257883291861476,
+        5150880923792714860,
+        3858080746254301424,
+        1286580494327172994
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.09104458056217,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0005529051926543849,
+                0.000579022866114956,
+                0.0014097767836716707,
+                0.0015043712345362698,
+                0.003741591815012657
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 575,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9583333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9392148370590464,
+            "wilson95_high": 0.9716202703450615,
+            "undercoverage_p_value": 0.8492814243242783,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.09104458056217,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.030770796165674
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 153,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.51,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.45366418945602693,
+            "wilson95_high": 0.5660829511194823,
+            "undercoverage_p_value": 2.0446726323327346e-106,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.09104458056217,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.030770796165674
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.240521225340888,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0007054527620016238,
+                0.00035939406815284347,
+                0.0017764098637971515,
+                0.0009506663348427535,
+                0.004053981802510542
+              ],
+              "1": [
+                0.00036989492538619384,
+                0.0006243574223084303,
+                0.0009017834321603801,
+                0.0015531478459146625,
+                0.0031846588734080195
+              ],
+              "2": [
+                0.0005442563420396396,
+                0.0007128947125073781,
+                0.001143412417482191,
+                0.0015043712345362698,
+                0.003300370927733609
+              ],
+              "3": [
+                0.0007695333064620669,
+                0.00033215685817229723,
+                0.0019932295711883458,
+                0.000927683804894941,
+                0.0036625155749062666
+              ],
+              "4": [
+                0.0005126231162135286,
+                0.0008162607892667068,
+                0.00120248862850824,
+                0.0020498740903731882,
+                0.004052143891720428
+              ],
+              "5": [
+                0.0003964103429430488,
+                0.000562984441722425,
+                0.001236744143028462,
+                0.0018562162427590012,
+                0.004103018013581872
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 579,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.965,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9470879685332634,
+            "wilson95_high": 0.9769956495239949,
+            "undercoverage_p_value": 0.968045510956785,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.240521225340888,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.061518496207622
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 154,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5133333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.4569640167618392,
+            "wilson95_high": 0.5693655040055061,
+            "undercoverage_p_value": 3.711145840333568e-105,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.240521225340888,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.061518496207622
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.228061859649971,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.000761945700990696,
+                0.00032881189635504177,
+                0.0019177409620709173,
+                0.0008637558876951393,
+                0.003741591815012657
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 572,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9533333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9333806100851985,
+            "wilson95_high": 0.9675181143290463,
+            "undercoverage_p_value": 0.6722031475621284,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.228061859649971,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.173034440896748
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 152,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5066666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.45036683073695566,
+            "wilson95_high": 0.5627979296467172,
+            "undercoverage_p_value": 1.1116564746494551e-107,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.228061859649971,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.173034440896748
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.7206698533307828,
+      "c6_to_sectorwise_volume_ratio": 0.7735422784196844
+    },
+    {
+      "repetition": 3,
+      "split_seeds": [
+        3906237411614499480,
+        6030549747137310442,
+        9048867508072717073,
+        6586795141983038195
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 3.7447974203724916,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0006049446871917163,
+                0.0006407880860276327,
+                0.0014363212294198069,
+                0.0014461362085565477,
+                0.003434179961277206
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 539,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.8983333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8715621099533396,
+            "wilson95_high": 0.9200364015724122,
+            "undercoverage_p_value": 1.9098327015219743e-07,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.7447974203724916,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.185994451992098
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 143,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.4766666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.42080166187431245,
+            "wilson95_high": 0.533121676782833,
+            "undercoverage_p_value": 2.538142078165021e-119,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.7447974203724916,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.185994451992098
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 3.8872813082026467,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0007771311574203965,
+                0.00032227421891492525,
+                0.0017776333835608314,
+                0.0008092938862584165,
+                0.003294818416914036
+              ],
+              "1": [
+                0.0005034464159044683,
+                0.0008433611794506635,
+                0.001119349319235144,
+                0.0017938083249518719,
+                0.0034489186573696123
+              ],
+              "2": [
+                0.0005025154703453757,
+                0.0007696288476598534,
+                0.001267643797002685,
+                0.001791518840340553,
+                0.003156264762893879
+              ],
+              "3": [
+                0.0007372630199982688,
+                0.0003413804579537466,
+                0.0016089833032490453,
+                0.000736356218192083,
+                0.0037362454622722474
+              ],
+              "4": [
+                0.0006005335520178623,
+                0.0009166941778133153,
+                0.0013699081724610623,
+                0.0019155502083697262,
+                0.0034556466319287105
+              ],
+              "5": [
+                0.0004426545641294938,
+                0.00071252462627025,
+                0.0012939297269132996,
+                0.0018068197711679501,
+                0.0031610598065170414
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 542,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9033333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8770587644394329,
+            "wilson95_high": 0.924476130076182,
+            "undercoverage_p_value": 1.8703783021864177e-06,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.8872813082026467,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.196878626525942
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 145,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.48333333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.4273544128335898,
+            "wilson95_high": 0.5397336862072283,
+            "undercoverage_p_value": 1.0762239978464375e-116,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.8872813082026467,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.196878626525942
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 3.9620561688663294,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.000851943730278415,
+                0.0003522746484331689,
+                0.0019282675529411555,
+                0.0008303596873274637,
+                0.003434179961277206
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 548,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9133333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8881100641938375,
+            "wilson95_high": 0.9332975963015033,
+            "undercoverage_p_value": 0.00010913244946596488,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.9620561688663294,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.287697979976333
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 144,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.48,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.42407680086272237,
+            "wilson95_high": 0.5364289179862594,
+            "undercoverage_p_value": 5.261355188402024e-118,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 3.9620561688663294,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.287697979976333
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.7912185706568802,
+      "c6_to_sectorwise_volume_ratio": 0.8112984505571237
+    },
+    {
+      "repetition": 4,
+      "split_seeds": [
+        6678916299268661747,
+        3974044182378043877,
+        1327484136625904928,
+        605531838284107287
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.178229272080226,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0006276091052722227,
+                0.0005993696627868278,
+                0.001281163270126423,
+                0.001325295179923136,
+                0.0035686291568794992
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 563,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9383333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9161569372167724,
+            "wilson95_high": 0.9549326382278833,
+            "undercoverage_p_value": 0.11381843135929635,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.178229272080226,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.032086174760595
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 154,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5133333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.4569640167618392,
+            "wilson95_high": 0.5693655040055061,
+            "undercoverage_p_value": 3.711145840333568e-105,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.178229272080226,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.032086174760595
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.75602816376667,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0008427074493352893,
+                0.0003530294381395571,
+                0.001487671705417526,
+                0.0006050900261452795,
+                0.003229357871105565
+              ],
+              "1": [
+                0.0005902019120581081,
+                0.000896413563842402,
+                0.0009577660261184118,
+                0.0014938505151205622,
+                0.0028884601600268622
+              ],
+              "2": [
+                0.0004996802885179064,
+                0.0008076767402231955,
+                0.001196843312452487,
+                0.00192012232422821,
+                0.0029761099831715487
+              ],
+              "3": [
+                0.0008157189365878004,
+                0.0003478075818954436,
+                0.002194390330765128,
+                0.0009200257330534978,
+                0.0036116839149115954
+              ],
+              "4": [
+                0.00043770778843532643,
+                0.0006163866120989514,
+                0.0012358177326718955,
+                0.0016079835652174634,
+                0.004066793535654756
+              ],
+              "5": [
+                0.0004737090515670034,
+                0.000619276386379819,
+                0.0009935237173878484,
+                0.0012488594829427463,
+                0.005027542043833266
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 572,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9533333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9333806100851985,
+            "wilson95_high": 0.9675181143290463,
+            "undercoverage_p_value": 0.6722031475621284,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.75602816376667,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.83624618171377
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 175,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5833333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5268355964602695,
+            "wilson95_high": 0.6377239083356395,
+            "undercoverage_p_value": 4.6333925105112416e-80,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.75602816376667,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.83624618171377
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.719001598425071,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.000842223223497518,
+                0.00034482503244579875,
+                0.00183235693065724,
+                0.0007523728542691002,
+                0.0035686291568794992
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 575,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9583333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9392148370590464,
+            "wilson95_high": 0.9716202703450615,
+            "undercoverage_p_value": 0.8492814243242783,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.719001598425071,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.97062878877374
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 179,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5966666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.540271195643406,
+            "wilson95_high": 0.6506178299198485,
+            "undercoverage_p_value": 1.4212877241270026e-75,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.719001598425071,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.97062878877374
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 1.1520130160077569,
+      "c6_to_sectorwise_volume_ratio": 0.7338670571845687
+    },
+    {
+      "repetition": 5,
+      "split_seeds": [
+        1538810369654816023,
+        48654407189005433,
+        4042171559232513238,
+        1292961025427095675
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.531929103305518,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0005749715988944137,
+                0.0005914044367788529,
+                0.0013994714977814682,
+                0.0014198463998295052,
+                0.0030827495139639227
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 565,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9416666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.919953305327685,
+            "wilson95_high": 0.9577605254435461,
+            "undercoverage_p_value": 0.19722088713571895,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.531929103305518,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.89475985389978
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 174,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.58,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5234831499847111,
+            "wilson95_high": 0.6344939746193615,
+            "undercoverage_p_value": 3.3833778989540825e-81,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.531929103305518,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.89475985389978
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 5.131306414737896,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0006716613514813063,
+                0.00027305963332891793,
+                0.0016753672792115815,
+                0.0007112855471396867,
+                0.0024900762125419917
+              ],
+              "1": [
+                0.0004437370601180213,
+                0.0006419179767587213,
+                0.0009585417971241343,
+                0.0014358818015467179,
+                0.003002510362147548
+              ],
+              "2": [
+                0.000528427525311348,
+                0.0007309594142890508,
+                0.0013773116246294514,
+                0.0019668914829160944,
+                0.003815244234140619
+              ],
+              "3": [
+                0.0007646791690261723,
+                0.00029501946378767893,
+                0.002029801796424202,
+                0.0007640935763131851,
+                0.0029060096003577507
+              ],
+              "4": [
+                0.00043524365824953656,
+                0.0006662524609218068,
+                0.0010807863450934055,
+                0.0015593514172214263,
+                0.0029467576311946186
+              ],
+              "5": [
+                0.0005969777281750882,
+                0.0007802949031492923,
+                0.0013391030542886026,
+                0.0019043148316782998,
+                0.0034944248173875425
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 573,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.955,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9353193407452607,
+            "wilson95_high": 0.9688915113322716,
+            "undercoverage_p_value": 0.7387349761702992,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 5.131306414737896,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.745113656029922
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 189,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.63,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5740445552913591,
+            "wilson95_high": 0.6826682721902588,
+            "undercoverage_p_value": 8.875524018509905e-65,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 5.131306414737896,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.745113656029922
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.920468798610794,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0007748487219064134,
+                0.00032504871670773264,
+                0.0018976527349666822,
+                0.0008222664013970624,
+                0.0030827495139639227
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 576,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.96,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9411722643439472,
+            "wilson95_high": 0.9729749707234482,
+            "undercoverage_p_value": 0.8914088734903906,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.920468798610794,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.951484710141871
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 180,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.6,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5436365963411878,
+            "wilson95_high": 0.653834809413903,
+            "undercoverage_p_value": 1.817408156330775e-74,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.920468798610794,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.951484710141871
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.8775566139640951,
+      "c6_to_sectorwise_volume_ratio": 0.6217688290356721
+    },
+    {
+      "repetition": 6,
+      "split_seeds": [
+        3436965694418427586,
+        4576102412660868320,
+        4624291780853245600,
+        9018920391731601960
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.663128825993569,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0005844290129452118,
+                0.0005971280071744856,
+                0.0013799200242396725,
+                0.0014251169795614083,
+                0.00298846080271456
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 563,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9383333333333334,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9161569372167724,
+            "wilson95_high": 0.9549326382278833,
+            "undercoverage_p_value": 0.11381843135929635,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 4.663128825993569,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.839511749123348
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 162,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.54,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.4834517097991302,
+            "wilson95_high": 0.5955368525029061,
+            "undercoverage_p_value": 2.7076388917937957e-95,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.663128825993569,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.839511749123348
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 5.134655559062985,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0008775471687349212,
+                0.00036371757523528947,
+                0.0017237693048914593,
+                0.0008399639776782153,
+                0.003016246846011733
+              ],
+              "1": [
+                0.00048653402092005416,
+                0.0007280504635334695,
+                0.0012966051507848075,
+                0.0018472929609801535,
+                0.0037616436123002472
+              ],
+              "2": [
+                0.000521946865208664,
+                0.0009092273740625434,
+                0.0013542620434165292,
+                0.0019092903763018587,
+                0.002621037190282005
+              ],
+              "3": [
+                0.0006250627927573346,
+                0.00029377544518582877,
+                0.0015007746586752357,
+                0.000735725762847271,
+                0.0025979260883824407
+              ],
+              "4": [
+                0.00045770031788550103,
+                0.000610731869281067,
+                0.001283965933708664,
+                0.0019690232293156727,
+                0.002470076279281308
+              ],
+              "5": [
+                0.0005157825031819607,
+                0.0007192913126248257,
+                0.0011356306355201906,
+                0.001601401996780577,
+                0.0032603925455665095
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 574,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9566666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9372639778756027,
+            "wilson95_high": 0.9702590018652173,
+            "undercoverage_p_value": 0.798196349124962,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 5.134655559062985,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.69870900347157
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 191,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.6366666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5808316248758691,
+            "wilson95_high": 0.6890459629894217,
+            "undercoverage_p_value": 1.0810685173761496e-62,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 5.134655559062985,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.69870900347157
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 5.26431744049939,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0008106122780003006,
+                0.00032760152582359263,
+                0.0018868837692088219,
+                0.000807238870656641,
+                0.00298846080271456
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 579,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.965,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.9470879685332634,
+            "wilson95_high": 0.9769956495239949,
+            "undercoverage_p_value": 0.968045510956785,
+            "significant_undercoverage_1pct": false,
+            "calibration_quantile": 5.26431744049939,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.80578580186199
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 185,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.6166666666666667,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.5605031391673366,
+            "wilson95_high": 0.669880167546936,
+            "undercoverage_p_value": 5.04595641775673e-69,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 5.26431744049939,
+            "finite_sample_rank": 229,
+            "log10_volume": -9.80578580186199
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 1.080751749568692,
+      "c6_to_sectorwise_volume_ratio": 0.7814895977894535
+    },
+    {
+      "repetition": 7,
+      "split_seeds": [
+        4025475267980786429,
+        1734107683825995240,
+        8260235856705761502,
+        7553536555422470917
+      ],
+      "methods": {
+        "raw_global": {
+          "tube": {
+            "method": "raw_global",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.133938626961228,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0005431703634637963,
+                0.000548515697455787,
+                0.0014440889732344614,
+                0.0013021868463125377,
+                0.0034240166282552553
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 548,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9133333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8881100641938375,
+            "wilson95_high": 0.9332975963015033,
+            "undercoverage_p_value": 0.00010913244946596488,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.133938626961228,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.130101650291113
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 162,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.54,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.4834517097991302,
+            "wilson95_high": 0.5955368525029061,
+            "undercoverage_p_value": 2.7076388917937957e-95,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.133938626961228,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.130101650291113
+          }
+        },
+        "sectorwise": {
+          "tube": {
+            "method": "sectorwise",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.425463223495082,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0007893152417200178,
+                0.0002599020748060843,
+                0.0019823966031869422,
+                0.0007376689932602556,
+                0.003465265415220964
+              ],
+              "1": [
+                0.0004294473225729678,
+                0.0006455262924048855,
+                0.0012569862225073336,
+                0.001954004438500294,
+                0.0028527853012561555
+              ],
+              "2": [
+                0.0004622998949143087,
+                0.00070227007878787,
+                0.001127684622513364,
+                0.0015541292320278843,
+                0.0027283995336149225
+              ],
+              "3": [
+                0.0006842548643950508,
+                0.00030113968375103384,
+                0.0021378567247666794,
+                0.0008345569607913494,
+                0.0034698936810503844
+              ],
+              "4": [
+                0.00039095931174726317,
+                0.0005556027170959543,
+                0.0010329484920165236,
+                0.0014108040774303554,
+                0.0039505419680097575
+              ],
+              "5": [
+                0.0005256711128220626,
+                0.0007420404217629017,
+                0.0011061971742187815,
+                0.0015380832964988211,
+                0.004382955932761057
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 547,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.9116666666666666,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8862624651137733,
+            "wilson95_high": 0.9318330677182797,
+            "undercoverage_p_value": 5.811740428456819e-05,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.425463223495082,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.071262291461878
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 157,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5233333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.466878323217167,
+            "wilson95_high": 0.5791983381256874,
+            "undercoverage_p_value": 2.0489326774361344e-101,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.425463223495082,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.071262291461878
+          }
+        },
+        "c6_canonical": {
+          "tube": {
+            "method": "c6_canonical",
+            "alpha": 0.05,
+            "shape_quantile": 0.8,
+            "calibration_quantile": 4.530156451355812,
+            "finite_sample_rank": 229,
+            "training_trajectories": 180,
+            "calibration_trajectories": 240,
+            "scales_by_key": {
+              "0": [
+                0.0007646178814244009,
+                0.00030645713954485787,
+                0.0018929905379492036,
+                0.0007723143875825162,
+                0.0034240166282552553
+              ]
+            }
+          },
+          "held_out": {
+            "covered_trajectories": 552,
+            "total_trajectories": 600,
+            "empirical_coverage": 0.92,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.8955253260858936,
+            "wilson95_high": 0.9391308450625978,
+            "undercoverage_p_value": 0.00111192580067863,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.530156451355812,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.144991389808117
+          },
+          "ood_span_1p75": {
+            "covered_trajectories": 151,
+            "total_trajectories": 300,
+            "empirical_coverage": 0.5033333333333333,
+            "target_coverage": 0.95,
+            "wilson95_low": 0.44707193979203275,
+            "wilson95_high": 0.5595104403998036,
+            "undercoverage_p_value": 5.964165002377277e-109,
+            "significant_undercoverage_1pct": true,
+            "calibration_quantile": 4.530156451355812,
+            "finite_sample_rank": 229,
+            "log10_volume": -10.144991389808117
+          }
+        }
+      },
+      "c6_to_raw_volume_ratio": 0.9662961751278443,
+      "c6_to_sectorwise_volume_ratio": 0.8438609722543331
+    }
+  ],
+  "summary": {
+    "raw_global": {
+      "median_held_out_coverage": 0.94,
+      "minimum_held_out_coverage": 0.8983333333333333,
+      "maximum_held_out_coverage": 0.9733333333333334,
+      "significant_undercoverage_repetitions_1pct": 2,
+      "median_ood_coverage": 0.54,
+      "median_log10_volume": -9.962765325032727
+    },
+    "sectorwise": {
+      "median_held_out_coverage": 0.9558333333333333,
+      "minimum_held_out_coverage": 0.9033333333333333,
+      "maximum_held_out_coverage": 0.9683333333333334,
+      "significant_undercoverage_repetitions_1pct": 2,
+      "median_ood_coverage": 0.6066666666666667,
+      "median_log10_volume": -9.801393696282634
+    },
+    "c6_canonical": {
+      "median_held_out_coverage": 0.9591666666666667,
+      "minimum_held_out_coverage": 0.9133333333333333,
+      "maximum_held_out_coverage": 0.965,
+      "significant_undercoverage_repetitions_1pct": 2,
+      "median_ood_coverage": 0.5866666666666667,
+      "median_log10_volume": -9.966092976249225
+    }
+  },
+  "sharpness": {
+    "median_c6_to_raw_volume_ratio": 0.8343875923104876,
+    "median_c6_to_sectorwise_volume_ratio": 0.7537046678021265,
+    "c6_smaller_than_raw_repetitions": 6
+  },
+  "candidate_criteria": {
+    "split_seed_sets_are_disjoint": true,
+    "trajectory_level_conformal_calibration": true,
+    "c6_numeric_equivariance": true,
+    "no_significant_c6_undercoverage_at_1pct": false,
+    "c6_median_volume_at_least_10pct_smaller_than_raw": true,
+    "c6_smaller_than_raw_in_at_least_75pct_repetitions": true,
+    "ood_limit_explicitly_tested": true
+  },
+  "defensible_scientific_novelty_candidate": false
+}

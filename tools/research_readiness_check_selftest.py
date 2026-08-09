@@ -513,6 +513,124 @@ class _TempBenchGate:
             pass
 
 
+def run_science_precharge_relay_gate_case() -> CaseResult:
+    expected = [
+        "full_preflight_precharge_relay_gate_enabled",
+        "full_preflight_precharge_relay_pass",
+        "full_preflight_precharge_relay_saleae_enabled",
+        "full_preflight_precharge_relay_saleae_pass",
+        "--with-precharge-relay",
+        "--precharge-relay-la-channel 7",
+    ]
+    source = Path(readiness.__file__).read_text(encoding="utf-8")
+    actual = [token for token in expected if token in source]
+    return CaseResult(
+        name="science_precharge_relay_gate_is_exposed",
+        ok=actual == expected,
+        expected=expected,
+        actual=actual,
+        detail="" if actual == expected else "science readiness does not require relay command and CH7 evidence",
+    )
+
+
+def run_theory_snapshot_integrity_case() -> CaseResult:
+    class ScienceArgs:
+        profile = "science"
+
+    result: dict[str, Any] = {"checks": []}
+    repo = Path(readiness.__file__).resolve().parents[1]
+    readiness.check_theory_snapshot(result, repo, ScienceArgs())
+    check = result["checks"][0]
+    expected = ["mic_theory_snapshot_integrity", "True", "fail"]
+    actual = [str(check.get("name")), str(check.get("ok")), str(check.get("severity"))]
+    return CaseResult(
+        name="science_theory_snapshot_integrity_is_required",
+        ok=actual == expected,
+        expected=expected,
+        actual=actual,
+        detail="" if actual == expected else str(check.get("detail", "")),
+    )
+
+
+def run_motor_identification_hardware_gate_case() -> CaseResult:
+    class ScienceArgs:
+        profile = "science"
+        motor_identification_result = ""
+
+    data: dict[str, Any] = {
+        "schema": readiness.MOTOR_IDENTIFICATION_RESULT_SCHEMA,
+        "accepted": True,
+        "decision": "accepted",
+        "source_kind": "synthetic",
+        "blockers": [],
+        "claims": {"hardware_dataset_accepted": False},
+        "contract": {"pass": True},
+        "acceptance": {"pass": True, "checks": {"rank": True, "validation": True}},
+        "rank_gate_prior": {"identifiable": True, "numerical_rank": 7, "required_rank": 7},
+        "rank_gate_fitted": {"identifiable": True, "numerical_rank": 7, "required_rank": 7},
+        "dataset": {
+            "fit_experiments": ["fit-a"],
+            "validation_experiments": ["validation-a"],
+            "fit_run_ids": ["fit-run-a"],
+            "validation_run_ids": ["validation-run-a"],
+            "validation_samples": 100,
+        },
+        "integration": {"mic_ai_legacy_loader_compatible": True},
+        "estimated_params": {name: 1.0 for name in ("Rs", "Rr", "Ls", "Lr", "Lm", "J", "B")},
+    }
+    expected = ["motor_identification_hardware_source", "capture_motor_identification_dataset", "hardware-pass"]
+    try:
+        with _TempBenchGate(data) as result_path:
+            original_latest = readiness.latest_motor_identification
+            readiness.latest_motor_identification = lambda repo, explicit_path="": (result_path, data)
+            try:
+                result: dict[str, Any] = {"checks": []}
+                readiness.check_motor_identification_artifact(
+                    result,
+                    Path("."),
+                    ScienceArgs(),
+                    {"mtime": 0.0, "path": "", "prefixes": [], "files": []},
+                )
+                failed = [item for item in result["checks"] if not item.get("ok")]
+                synthetic_failure = failed[0]["name"] if len(failed) == 1 else ""
+                action_ids_value = action_ids(readiness.build_next_actions(failed, [], Args()))
+
+                hardware = dict(data)
+                hardware["source_kind"] = "hardware"
+                hardware["claims"] = {"hardware_dataset_accepted": True}
+                readiness.latest_motor_identification = lambda repo, explicit_path="": (result_path, hardware)
+                hardware_result: dict[str, Any] = {"checks": []}
+                readiness.check_motor_identification_artifact(
+                    hardware_result,
+                    Path("."),
+                    ScienceArgs(),
+                    {"mtime": 0.0, "path": "", "prefixes": [], "files": []},
+                )
+                hardware_pass = all(item.get("ok") for item in hardware_result["checks"])
+            finally:
+                readiness.latest_motor_identification = original_latest
+        actual = [
+            synthetic_failure,
+            action_ids_value[0] if action_ids_value else "",
+            "hardware-pass" if hardware_pass else "hardware-fail",
+        ]
+        return CaseResult(
+            name="science_motor_identification_requires_accepted_hardware_data",
+            ok=actual == expected,
+            expected=expected,
+            actual=actual,
+            detail="" if actual == expected else "motor identification hardware gate mismatch",
+        )
+    except Exception as exc:
+        return CaseResult(
+            name="science_motor_identification_requires_accepted_hardware_data",
+            ok=False,
+            expected=expected,
+            actual=[],
+            detail=f"{type(exc).__name__}: {exc}",
+        )
+
+
 def cases() -> list[CaseResult]:
     return [
         run_bench_action_propagation_case(),
@@ -524,6 +642,9 @@ def cases() -> list[CaseResult]:
         run_saleae_static_fresh_named_check_case(),
         run_saleae_static_failure_named_checks_case(),
         run_static_low_named_checks_case(),
+        run_science_precharge_relay_gate_case(),
+        run_theory_snapshot_integrity_case(),
+        run_motor_identification_hardware_gate_case(),
     ]
 
 

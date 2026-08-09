@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib import request
 
+from mic_theory_snapshot_check import verify_manifest
 from run_metadata import collect_run_metadata
 
 
@@ -26,12 +27,14 @@ CODE_SUFFIXES = {".c", ".cpp", ".h", ".hpp", ".ino", ".py", ".js", ".html", ".cs
 FIRMWARE_HMI_PREFIXES = [
     "UNOQ_MOTOR",
     "bluepill_uart_pwm_pio",
+    "nucleo_g431_uart_bridge_pio",
     "web_hmi",
 ]
 
 FULL_PREFLIGHT_PREFIXES = [
     *FIRMWARE_HMI_PREFIXES,
     "tools",
+    "motor_identification",
 ]
 
 FULL_PREFLIGHT_FILES = [
@@ -100,6 +103,14 @@ CALIBRATION_FILES = [
     "tools/unoq_web_server.py",
     "requirements.txt",
 ]
+
+MOTOR_IDENTIFICATION_PREFIXES = ["motor_identification"]
+MOTOR_IDENTIFICATION_FILES = [
+    "tools/motor_parameter_identification.py",
+    "tools/motor_parameter_identification_selftest.py",
+    "requirements-identification.txt",
+]
+MOTOR_IDENTIFICATION_RESULT_SCHEMA = "mic_ai.motor_identification.result.v1"
 
 
 def ts_tag() -> str:
@@ -214,7 +225,8 @@ def latest_file_mtime(repo: Path, suffixes: set[str], *, include_requirements: b
     for path in repo.rglob("*"):
         if not path.is_file() or should_skip_source_path(path):
             continue
-        if path.suffix.lower() not in suffixes and not (include_requirements and path.name == "requirements.txt"):
+        is_requirements = path.name.startswith("requirements") and path.suffix.lower() == ".txt"
+        if path.suffix.lower() not in suffixes and not (include_requirements and is_requirements):
             continue
         try:
             mtime = path.stat().st_mtime
@@ -236,7 +248,8 @@ def latest_scoped_source_mtime(repo: Path, prefixes: list[str], files: list[str]
         rel = rel_posix(repo, path)
         if rel not in wanted_files and not any(in_prefix(rel, prefix) for prefix in prefixes):
             continue
-        if path.suffix.lower() not in CODE_SUFFIXES and path.name != "requirements.txt":
+        is_requirements = path.name.startswith("requirements") and path.suffix.lower() == ".txt"
+        if path.suffix.lower() not in CODE_SUFFIXES and not is_requirements:
             continue
         try:
             mtime = path.stat().st_mtime
@@ -258,6 +271,11 @@ def collect_source_scopes(repo: Path) -> dict:
         "full_preflight": latest_scoped_source_mtime(repo, FULL_PREFLIGHT_PREFIXES, FULL_PREFLIGHT_FILES),
         "research_matrix": latest_scoped_source_mtime(repo, FIRMWARE_HMI_PREFIXES, RESEARCH_MATRIX_FILES),
         "calibration": latest_scoped_source_mtime(repo, FIRMWARE_HMI_PREFIXES, CALIBRATION_FILES),
+        "motor_identification": latest_scoped_source_mtime(
+            repo,
+            MOTOR_IDENTIFICATION_PREFIXES,
+            MOTOR_IDENTIFICATION_FILES,
+        ),
     }
 
 
@@ -342,6 +360,19 @@ def latest_calibration(repo: Path) -> tuple[Path | None, dict | None]:
     return path, read_json(path)
 
 
+def latest_motor_identification(repo: Path, explicit_path: str = "") -> tuple[Path | None, dict | None]:
+    if str(explicit_path).strip():
+        path = Path(explicit_path).expanduser().resolve()
+        return path, read_json(path)
+    candidates: list[Path] = []
+    for path in repo.glob("tools/_research_exports/**/result*.json"):
+        data = read_json(path)
+        if data and data.get("schema") == MOTOR_IDENTIFICATION_RESULT_SCHEMA:
+            candidates.append(path)
+    path = newest(candidates)
+    return path, read_json(path)
+
+
 def latest_bench_gate(repo: Path) -> tuple[Path | None, dict | None]:
     path = newest(list(repo.glob("tools/_preflight_exports/bench_gate_report_*/summary.json")))
     return path, read_json(path)
@@ -419,6 +450,20 @@ def check_live_status(result: dict, args) -> None:
         add_check(checks, "status_phase_valid", as_int(st.get("bp_phase_valid"), 0) == 1, detail=f"bp_phase_valid={st.get('bp_phase_valid')}")
         for key in ("ia", "ib", "ic", "i_rms"):
             add_check(checks, f"status_{key}_readable", as_float(st.get(key)) is not None, detail=f"{key}={st.get(key)}")
+
+
+def check_theory_snapshot(result: dict, repo: Path, args) -> None:
+    root = repo / "research" / "mic_ai_theory"
+    verification = verify_manifest(root)
+    severity = "fail" if args.profile == "science" else "warn"
+    add_check(
+        result["checks"],
+        "mic_theory_snapshot_integrity",
+        verification.get("ok") is True,
+        severity=severity,
+        detail=f"failures={verification.get('failures', [])}",
+        evidence={"root": str(root), **verification},
+    )
 
 
 def check_bench_gate_artifact(result: dict, repo: Path) -> None:
@@ -569,6 +614,30 @@ def check_full_preflight_artifact(
     )
 
     if args.profile == "science":
+        add_check(
+            checks,
+            "full_preflight_precharge_relay_gate_enabled",
+            summary.get("precharge_relay_stage_enabled") is True,
+            detail=f"precharge_relay_stage_enabled={summary.get('precharge_relay_stage_enabled')}",
+        )
+        add_check(
+            checks,
+            "full_preflight_precharge_relay_pass",
+            summary.get("precharge_relay_pass") is True,
+            detail=f"precharge_relay_pass={summary.get('precharge_relay_pass')}",
+        )
+        add_check(
+            checks,
+            "full_preflight_precharge_relay_saleae_enabled",
+            summary.get("precharge_relay_saleae_enabled") is True,
+            detail=f"precharge_relay_saleae_enabled={summary.get('precharge_relay_saleae_enabled')}",
+        )
+        add_check(
+            checks,
+            "full_preflight_precharge_relay_saleae_pass",
+            summary.get("precharge_relay_saleae_pass") is True,
+            detail=f"precharge_relay_saleae_pass={summary.get('precharge_relay_saleae_pass')}",
+        )
         add_check(checks, "full_preflight_fan_gate_enabled", summary.get("fan_stage_enabled") is True, detail=f"fan_stage_enabled={summary.get('fan_stage_enabled')}")
         add_check(checks, "full_preflight_fan_pass", summary.get("fan_pass") is True, detail=f"fan_pass={summary.get('fan_pass')}")
         add_check(checks, "full_preflight_bpfoc_gate_enabled", summary.get("bpfoc_stage_enabled") is True, detail=f"bpfoc_stage_enabled={summary.get('bpfoc_stage_enabled')}")
@@ -683,6 +752,131 @@ def check_calibration_artifact(
         data.get("temp_tso_calibration") is not None,
         severity="warn",
         detail="missing temp_tso_calibration block; raw snapshot may still be useful",
+    )
+
+
+def check_motor_identification_artifact(
+    result: dict,
+    repo: Path,
+    args,
+    source_scope: dict,
+) -> None:
+    checks = result["checks"]
+    if args.profile != "science":
+        add_check(
+            checks,
+            "motor_identification_required",
+            False,
+            severity="warn",
+            detail=f"not required for {args.profile} profile",
+        )
+        return
+
+    path, data = latest_motor_identification(repo, args.motor_identification_result)
+    result["latest_motor_identification_result"] = str(path) if path else None
+    if not data:
+        add_check(
+            checks,
+            "motor_identification_present",
+            False,
+            detail="no motor identification result found",
+        )
+        return
+
+    add_check(checks, "motor_identification_present", True, evidence=str(path))
+    check_artifact_fresh(
+        checks,
+        path,
+        source_scope=source_scope,
+        name="motor_identification_fresh",
+    )
+    add_check(
+        checks,
+        "motor_identification_schema",
+        data.get("schema") == MOTOR_IDENTIFICATION_RESULT_SCHEMA,
+        detail=f"schema={data.get('schema')}",
+    )
+    add_check(
+        checks,
+        "motor_identification_accepted",
+        data.get("accepted") is True and data.get("decision") == "accepted",
+        detail=f"accepted={data.get('accepted')} decision={data.get('decision')}",
+        evidence={"blockers": data.get("blockers", [])},
+    )
+    claims = data.get("claims", {}) if isinstance(data.get("claims"), dict) else {}
+    add_check(
+        checks,
+        "motor_identification_hardware_source",
+        data.get("source_kind") == "hardware" and claims.get("hardware_dataset_accepted") is True,
+        detail=(
+            f"source_kind={data.get('source_kind')} "
+            f"hardware_dataset_accepted={claims.get('hardware_dataset_accepted')}"
+        ),
+    )
+    contract = data.get("contract", {}) if isinstance(data.get("contract"), dict) else {}
+    acceptance = data.get("acceptance", {}) if isinstance(data.get("acceptance"), dict) else {}
+    add_check(
+        checks,
+        "motor_identification_contract",
+        contract.get("pass") is True,
+        detail=f"contract.pass={contract.get('pass')}",
+    )
+    add_check(
+        checks,
+        "motor_identification_acceptance_checks",
+        acceptance.get("pass") is True
+        and isinstance(acceptance.get("checks"), dict)
+        and all(value is True for value in acceptance["checks"].values()),
+        detail=f"acceptance.pass={acceptance.get('pass')}",
+        evidence=acceptance.get("checks"),
+    )
+    for key in ("rank_gate_prior", "rank_gate_fitted"):
+        rank = data.get(key, {}) if isinstance(data.get(key), dict) else {}
+        add_check(
+            checks,
+            f"motor_identification_{key}",
+            rank.get("identifiable") is True
+            and as_int(rank.get("numerical_rank"), 0) == 7
+            and as_int(rank.get("required_rank"), 0) == 7,
+            detail=(
+                f"identifiable={rank.get('identifiable')} "
+                f"rank={rank.get('numerical_rank')}/{rank.get('required_rank')}"
+            ),
+        )
+    dataset = data.get("dataset", {}) if isinstance(data.get("dataset"), dict) else {}
+    fit_experiments = dataset.get("fit_experiments", [])
+    validation_experiments = dataset.get("validation_experiments", [])
+    fit_run_ids = dataset.get("fit_run_ids", [])
+    validation_run_ids = dataset.get("validation_run_ids", [])
+    add_check(
+        checks,
+        "motor_identification_independent_validation",
+        isinstance(fit_experiments, list)
+        and isinstance(validation_experiments, list)
+        and bool(fit_experiments)
+        and bool(validation_experiments)
+        and set(map(str, fit_experiments)).isdisjoint(set(map(str, validation_experiments)))
+        and isinstance(fit_run_ids, list)
+        and isinstance(validation_run_ids, list)
+        and bool(fit_run_ids)
+        and bool(validation_run_ids)
+        and set(map(str, fit_run_ids)).isdisjoint(set(map(str, validation_run_ids)))
+        and as_int(dataset.get("validation_samples"), 0) > 0,
+        detail=(
+            f"fit_experiments={len(fit_experiments) if isinstance(fit_experiments, list) else 0} "
+            f"validation_experiments={len(validation_experiments) if isinstance(validation_experiments, list) else 0} "
+            f"fit_run_ids={fit_run_ids} validation_run_ids={validation_run_ids} "
+            f"validation_samples={dataset.get('validation_samples')}"
+        ),
+    )
+    integration = data.get("integration", {}) if isinstance(data.get("integration"), dict) else {}
+    add_check(
+        checks,
+        "motor_identification_mic_ai_compatible",
+        integration.get("mic_ai_legacy_loader_compatible") is True
+        and isinstance(data.get("estimated_params"), dict)
+        and all(name in data["estimated_params"] for name in ("Rs", "Rr", "Ls", "Lr", "Lm", "J", "B")),
+        detail=f"legacy_loader_compatible={integration.get('mic_ai_legacy_loader_compatible')}",
     )
 
 
@@ -836,7 +1030,7 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
             "restore_hmi_safe_status",
             "Restore safe live HMI/status access.",
             "Readiness cannot prove bench state until /api/status is reachable.",
-            f"py -3 -u .\\tools\\ui_access.py --forward-port 18080",
+            "py -3 -u .\\tools\\ui_access.py --forward-port 18080",
         )
 
     if "live_status_available" in names or "status_bluepill_fresh" in names:
@@ -895,6 +1089,10 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
         "full_preflight_required_hil_pass",
         "full_preflight_pwm_suite_pass",
         "full_preflight_final_safe",
+        "full_preflight_precharge_relay_gate_enabled",
+        "full_preflight_precharge_relay_pass",
+        "full_preflight_precharge_relay_saleae_enabled",
+        "full_preflight_precharge_relay_saleae_pass",
         "full_preflight_fan_gate_enabled",
         "full_preflight_fan_pass",
         "full_preflight_bpfoc_gate_enabled",
@@ -906,8 +1104,8 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
             seen,
             "run_low_voltage_full_preflight",
             "Run a fresh extended low-voltage regression.",
-            "This refreshes build, HMI, encoder, scalar/VF, FOC/MIC, Saleae PWM/deadtime, fan and BPFOC evidence for the current worktree.",
-            f"py -3 -u .\\tools\\full_system_preflight.py --url {url} --with-fan --with-bpfoc",
+            "This refreshes build, HMI, encoder, PB4 precharge relay/CH7, scalar/VF, FOC/MIC, Saleae PWM/deadtime, fan and BPFOC evidence for the current worktree.",
+            f"py -3 -u .\\tools\\full_system_preflight.py --url {url} --with-precharge-relay --precharge-relay-arm-confirm \"ARM LOWV\" --precharge-relay-la-channel 7 --with-fan --with-bpfoc",
         )
 
     if "full_preflight_bluepill_pwm_selftest_pass" in warn_names or "full_preflight_bluepill_pwm_selftest_pass" in names:
@@ -962,6 +1160,7 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
             "This produces aggregate.csv and summary.json with repeated FOC vs MIC evidence. Use --allow-hv only after HV/J7 PASS.",
             f"py -3 -u .\\tools\\mic_research_matrix.py --url {url} --freqs 2,5,10,20 --repeats {int(args.min_repeats)} --duration 10 --warmup 1.0 --require-encoder --motor-label \"<motor/nameplate>\" --load-note \"<load condition>\" --supply-note \"<supply/current-limit>\"",
         )
+
         add_action(
             actions,
             seen,
@@ -969,6 +1168,29 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
             "Generate the Markdown/SVG research report.",
             "Run this after the matrix finishes and point it to the produced summary.json.",
             "py -3 -u .\\tools\\mic_research_report.py .\\tools\\_research_exports\\<run>\\summary.json --calibration-summary .\\tools\\_calibration_exports\\<run>\\summary.json",
+        )
+
+    if "mic_theory_snapshot_integrity" in names or "mic_theory_snapshot_integrity" in warn_names:
+        add_action(
+            actions,
+            seen,
+            "repair_mic_theory_snapshot",
+            "Repair or intentionally refresh the MIC Theory snapshot.",
+            "Scientific conclusions require all transferred theory, article and evidence files to match their SHA-256 manifest.",
+            "py -3 -u .\\tools\\mic_theory_snapshot_check.py",
+        )
+
+    motor_identification_fail = {
+        name for name in names if name.startswith("motor_identification_")
+    }
+    if motor_identification_fail:
+        add_action(
+            actions,
+            seen,
+            "capture_motor_identification_dataset",
+            "Capture and identify motor parameters from independent hardware runs.",
+            "Synthetic results do not satisfy the science gate. Record calibrated standstill, free-run and coast traces for separate fit and validation run_id values, validate the bundle, then run the offline identifier.",
+            "py -3 -u .\\tools\\motor_parameter_identification.py validate --input <capture_bundle>; if ($LASTEXITCODE -eq 0) { py -3 -u .\\tools\\motor_parameter_identification.py identify --input <capture_bundle> --prior <prior.json> --output .\\tools\\_research_exports\\motor_identification_hardware\\result.json }",
         )
 
     if not actions:
@@ -993,6 +1215,11 @@ def main() -> int:
     ap.add_argument("--max-start-vdc", type=float, default=60.0)
     ap.add_argument("--max-bp-age-ms", type=float, default=1000.0)
     ap.add_argument("--min-repeats", type=int, default=3)
+    ap.add_argument(
+        "--motor-identification-result",
+        default="",
+        help="Optional explicit motor-identification result JSON; science profile otherwise uses the latest result under tools/_research_exports.",
+    )
     ap.add_argument("--outdir", default="tools/_readiness_exports")
     ap.add_argument("--tag", default="research_readiness")
     args = ap.parse_args()
@@ -1024,10 +1251,17 @@ def main() -> int:
     }
 
     check_live_status(result, args)
+    check_theory_snapshot(result, repo, args)
     check_bench_gate_artifact(result, repo)
     check_full_preflight_artifact(result, repo, args, source_scopes["full_preflight"])
     check_research_matrix_artifact(result, repo, args, source_scopes["research_matrix"])
     check_calibration_artifact(result, repo, args, source_scopes["calibration"])
+    check_motor_identification_artifact(
+        result,
+        repo,
+        args,
+        source_scopes["motor_identification"],
+    )
 
     failed = [c for c in result["checks"] if c.get("severity") == "fail" and not c.get("ok")]
     warnings = [c for c in result["checks"] if c.get("severity") == "warn" and not c.get("ok")]

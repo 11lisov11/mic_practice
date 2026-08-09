@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -88,10 +87,9 @@ def mark_bluepill_ready(state: hmi.SharedState) -> None:
     rsp[5] = 1
     rsp[9] = 0
     rsp[10] = hmi.MODE_OFF
-    # Use the measured post-acquisition-fix bus-off sample, not the historical
-    # scaling offset which is intentionally retained only for calibration.
-    rsp[17] = 123 & 0xFF
-    rsp[18] = (123 >> 8) & 0xFF
+    raw = hmi.BP_VBUS_ZERO_RAW
+    rsp[17] = raw & 0xFF
+    rsp[18] = (raw >> 8) & 0xFF
     rsp[hmi.CRC_OFF] = hmi.crc_xor(rsp)
     hmi.parse_rsp(state, bytes(rsp), 1.0)
 
@@ -220,10 +218,14 @@ def case_nucleo_proto_matches(proto: dict[str, int]) -> dict[str, Any]:
 
 
 def case_hmi_command_frame_layout(proto: dict[str, int]) -> dict[str, Any]:
-    pre = build_hmi_frame(["PRECHARGE ON"])
-    assert_eq(pre[proto["CMD_OFF_MODE"]], proto["MODE_OFF"], "PRECHARGE mode")
-    assert_eq(pre[proto["CMD_OFF_EXT_FLAGS"]], proto["EXT_PRECHARGE_RELAY"], "PRECHARGE ext")
-    assert_true((pre[proto["CMD_OFF_FLAGS"]] & proto["FLAG_ENABLE"]) == 0, "PRECHARGE enables motor")
+    pre_state = hmi.SharedState()
+    mark_bluepill_ready(pre_state)
+    pre_ok, pre_msg = hmi.apply_cmd(pre_state, "PRECHARGE ON")
+    assert_true(not pre_ok and "not installed" in pre_msg, "removed PRECHARGE output was accepted")
+    pre = hmi.build_frame(pre_state, 0x2A)
+    assert_eq(pre[proto["CMD_OFF_MODE"]], proto["MODE_OFF"], "PRECHARGE-disabled mode")
+    assert_eq(pre[proto["CMD_OFF_EXT_FLAGS"]] & proto["EXT_PRECHARGE_RELAY"], 0, "PRECHARGE-disabled ext")
+    assert_true((pre[proto["CMD_OFF_FLAGS"]] & proto["FLAG_ENABLE"]) == 0, "PRECHARGE-disabled enables motor")
 
     brake = build_hmi_frame(["BRAKE PWM 0.25"])
     assert_eq(brake[proto["CMD_OFF_EXT_FLAGS"]], proto["EXT_BRAKE_PWM"], "BRAKE ext")
@@ -235,7 +237,7 @@ def case_hmi_command_frame_layout(proto: dict[str, int]) -> dict[str, Any]:
     assert_true(u16(fan, proto["CMD_OFF_FAN_DUTY_LO"]) > 0, "FAN duty missing")
     assert_true((fan[proto["CMD_OFF_FLAGS"]] & proto["FLAG_ENABLE"]) == 0, "FAN enables motor")
 
-    clear = build_hmi_frame(["PRECHARGE ON", "BRAKE PWM 0.25", "FAN PWM 0.40", "CLEAR"])
+    clear = build_hmi_frame(["BRAKE PWM 0.25", "FAN PWM 0.40", "CLEAR"])
     assert_eq(clear[proto["CMD_OFF_FLAGS"]], proto["FLAG_CLEAR_FAULT"], "CLEAR flags")
     assert_eq(clear[proto["CMD_OFF_MODE"]], proto["MODE_OFF"], "CLEAR mode")
     for idx in range(proto["CMD_OFF_DU"], proto["CMD_OFF_EXT_FLAGS"]):
@@ -244,7 +246,8 @@ def case_hmi_command_frame_layout(proto: dict[str, int]) -> dict[str, Any]:
     assert_eq(u16(clear, proto["CMD_OFF_EXT_DUTY_LO"]), 0, "CLEAR brake duty")
     assert_eq(u16(clear, proto["CMD_OFF_FAN_DUTY_LO"]), 0, "CLEAR fan duty")
     return {
-        "precharge_hex": pre.hex(" "),
+        "precharge_rejected": pre_msg,
+        "precharge_disabled_hex": pre.hex(" "),
         "brake_hex": brake.hex(" "),
         "fan_hex": fan.hex(" "),
         "clear_hex": clear.hex(" "),

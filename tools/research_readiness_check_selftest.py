@@ -513,23 +513,20 @@ class _TempBenchGate:
             pass
 
 
-def run_science_precharge_relay_gate_case() -> CaseResult:
+def run_science_precharge_relay_disabled_case() -> CaseResult:
     expected = [
-        "full_preflight_precharge_relay_gate_enabled",
-        "full_preflight_precharge_relay_pass",
-        "full_preflight_precharge_relay_saleae_enabled",
-        "full_preflight_precharge_relay_saleae_pass",
-        "--with-precharge-relay",
-        "--precharge-relay-la-channel 7",
+        "full_preflight_precharge_relay_stage_disabled",
+        "full_preflight_precharge_relay_status_off",
+        "disabled PB4 state",
     ]
     source = Path(readiness.__file__).read_text(encoding="utf-8")
     actual = [token for token in expected if token in source]
     return CaseResult(
-        name="science_precharge_relay_gate_is_exposed",
+        name="science_precharge_relay_disabled_state_is_required",
         ok=actual == expected,
         expected=expected,
         actual=actual,
-        detail="" if actual == expected else "science readiness does not require relay command and CH7 evidence",
+        detail="" if actual == expected else "science readiness does not require the disabled PB4/K1 state",
     )
 
 
@@ -642,7 +639,7 @@ def cases() -> list[CaseResult]:
         run_saleae_static_fresh_named_check_case(),
         run_saleae_static_failure_named_checks_case(),
         run_static_low_named_checks_case(),
-        run_science_precharge_relay_gate_case(),
+        run_science_precharge_relay_disabled_case(),
         run_theory_snapshot_integrity_case(),
         run_motor_identification_hardware_gate_case(),
     ]

@@ -89,22 +89,19 @@ def case_all_firmware_targets_are_required() -> CaseResult:
     )
 
 
-def case_precharge_relay_stage_is_integrated() -> CaseResult:
+def case_precharge_relay_stage_is_removed() -> CaseResult:
     source = Path(preflight.__file__).read_text(encoding="utf-8")
-    required_tokens = {
+    forbidden_tokens = {
         "--with-precharge-relay",
         "precharge_relay_preflight.py",
-        "precharge_relay_summary",
-        "precharge_relay_stage_enabled",
-        "precharge_relay_stage_pass",
     }
-    missing = sorted(token for token in required_tokens if token not in source)
+    present = sorted(token for token in forbidden_tokens if token in source)
     return CaseResult(
-        "precharge_relay_stage_is_integrated",
-        not missing,
+        "precharge_relay_stage_is_removed",
+        not present,
         [],
-        missing,
-        "" if not missing else "optional relay stage is not wired through execution and final gate",
+        present,
+        "" if not present else "removed K1/PB4 stage is still executable from the full preflight",
     )
 
 
@@ -117,7 +114,7 @@ def main() -> int:
         case_full_system_selftest_is_required(),
         case_all_discovered_selftests_are_required(),
         case_all_firmware_targets_are_required(),
-        case_precharge_relay_stage_is_integrated(),
+        case_precharge_relay_stage_is_removed(),
     ]
     failed = [case for case in cases if not case.ok]
     summary = {

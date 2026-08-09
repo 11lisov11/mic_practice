@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import sys
 from dataclasses import dataclass
 from typing import Any
 
@@ -54,9 +53,8 @@ def mark_bluepill_ready(state: hmi.SharedState, *, status: int | None = None, fa
     rsp[5] = 1
     rsp[9] = int(fault) & 0xFF
     rsp[10] = hmi.MODE_OFF
-    # Confirmed post-acquisition-fix bus-off value is about 123 counts. The
-    # historical calibration zero (1763) must not be used as a safety fixture.
-    raw = 123 if vbus_raw is None else int(vbus_raw)
+    # Keep the safe fixture tied to the firmware-mirrored physical zero.
+    raw = hmi.BP_VBUS_ZERO_RAW if vbus_raw is None else int(vbus_raw)
     rsp[17] = raw & 0xFF
     rsp[18] = (raw >> 8) & 0xFF
     rsp[hmi.CRC_OFF] = hmi.crc_xor(rsp)
@@ -112,7 +110,6 @@ def expect_motion_payload_zero(frame: bytes, name: str) -> None:
 def case_clear_is_pure() -> bytes:
     _, frame = build_after(
         [
-            "PRECHARGE ON",
             "PFC ON",
             "BRAKE PWM 0.70",
             "FAN PWM 0.80",
@@ -130,7 +127,6 @@ def case_clear_is_pure() -> bytes:
 def case_estop_clears_services() -> bytes:
     _, frame = build_after(
         [
-            "PRECHARGE ON",
             "PFC ON",
             "BRAKE PWM 0.60",
             "FAN PWM 1.00",
@@ -164,7 +160,6 @@ def case_iotest_off_clears_services() -> bytes:
     _, frame = build_after(
         [
             "IOTEST ON",
-            "PRECHARGE ON",
             "PFC ON",
             "BRAKE PWM 0.20",
             "FAN PWM 0.50",
@@ -181,7 +176,6 @@ def case_iotest_off_clears_services() -> bytes:
 
 def case_service_commands_do_not_start_motor() -> bytes:
     service_cases = [
-        (["PRECHARGE ON"], hmi.EXT_PRECHARGE_RELAY, 0, 0),
         (["PFC ON"], hmi.EXT_PFC_SYNC, 0, 0),
         (["BRAKE PWM 0.25"], hmi.EXT_BRAKE_PWM, 1, 0),
         (["FAN PWM 0.40"], 0, 0, 1),
@@ -198,6 +192,18 @@ def case_service_commands_do_not_start_motor() -> bytes:
         assert_true((u16(frame, OFF_EXT_DUTY_LO) > 0) == bool(expect_brake), f"{label}: brake duty presence")
         assert_true((u16(frame, OFF_FAN_DUTY_LO) > 0) == bool(expect_fan), f"{label}: fan duty presence")
     return last_frame
+
+
+def case_removed_precharge_is_rejected() -> bytes:
+    state = hmi.SharedState()
+    arm_green_bench_gate(state)
+    mark_bluepill_ready(state)
+    ok, msg = hmi.apply_cmd(state, "PRECHARGE ON")
+    assert_true(not ok and "not installed" in msg, "removed PRECHARGE output was accepted")
+    frame = hmi.build_frame(state, 0x2A)
+    assert_eq(frame[OFF_EXT_FLAGS] & hmi.EXT_PRECHARGE_RELAY, 0, "removed PRECHARGE bit")
+    expect_no_motor_enable(frame, "removed PRECHARGE")
+    return frame
 
 
 def case_bpfoc_command_is_guarded_and_off_is_safe() -> bytes:
@@ -347,6 +353,7 @@ CASES = [
     ("estop_clear_is_pure", case_estop_clear_is_pure),
     ("iotest_off_clears_services", case_iotest_off_clears_services),
     ("service_commands_do_not_start_motor", case_service_commands_do_not_start_motor),
+    ("removed_precharge_is_rejected", case_removed_precharge_is_rejected),
     ("bpfoc_command_is_guarded_and_off_is_safe", case_bpfoc_command_is_guarded_and_off_is_safe),
     ("start_rejected_during_estop", case_start_rejected_during_estop),
     ("start_rejected_without_link", case_start_rejected_without_link),

@@ -8,7 +8,6 @@ import os
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
 from typing import Any
 
 import serial
@@ -32,6 +31,7 @@ EXT_RESERVED_0 = 0x01
 EXT_PFC_SYNC = 0x02
 EXT_BRAKE_PWM = 0x04
 EXT_PRECHARGE_RELAY = 0x08
+PRECHARGE_RELAY_PRESENT = False
 
 MODE_OFF = 0
 MODE_DIAG = 1
@@ -41,8 +41,8 @@ MODE_VECTOR = 4
 MODE_FOC = 5
 
 MAX_FREQ_HZ = 50.0
-BP_VBUS_ZERO_RAW = 1763
-BP_VBUS_CAL_RAW = 3256
+BP_VBUS_ZERO_RAW = 1966
+BP_VBUS_CAL_RAW = 3459
 BP_VBUS_CAL_V = 315.0
 BP_TEMP_VREF = 3.3
 BP_TEMP_SENSOR_NTC = 0
@@ -68,8 +68,9 @@ STATUS_PWM_ACTIVE = 0x20
 START_LINK_MAX_AGE_S = 0.5
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 VBUS_RAW_MIN_VALID = 1
-VBUS_RAW_LOW_MAX = 1000
 VBUS_RAW_MAX_VALID = 4094
+VBUS_RAW_WINDOW_MARGIN_V = 5.0
+VBUS_RAW_ZERO_LOW_MARGIN = 128
 
 FAULT_MAP = {
     0: "OK",
@@ -109,6 +110,11 @@ def vbus_voltage(raw: int) -> float:
     if denom <= 1.0:
         return 0.0
     return float(raw - BP_VBUS_ZERO_RAW) * (BP_VBUS_CAL_V / denom)
+
+
+def vbus_raw_for_voltage(vdc: float) -> float:
+    span = float(BP_VBUS_CAL_RAW - BP_VBUS_ZERO_RAW)
+    return float(BP_VBUS_ZERO_RAW) + max(0.0, float(vdc)) * span / BP_VBUS_CAL_V
 
 
 def phase_voltage(raw: int) -> float:
@@ -333,7 +339,6 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         duty_u = state.duty_u
         duty_v = state.duty_v
         duty_w = state.duty_w
-        ntc = state.ntc
         pfc = state.pfc
         precharge = state.precharge
         brake_pwm = state.brake_pwm
@@ -350,7 +355,6 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         estop = False
         mode = MODE_OFF
         diag = False
-        ntc = False
         pfc = False
         precharge = False
         brake_pwm = False
@@ -417,7 +421,7 @@ def build_frame(state: SharedState, seq: int) -> bytes:
         ext_flags |= EXT_PFC_SYNC
     if brake_pwm and brake_duty > 0.0:
         ext_flags |= EXT_BRAKE_PWM
-    if precharge:
+    if PRECHARGE_RELAY_PRESENT and precharge:
         ext_flags |= EXT_PRECHARGE_RELAY
     frame[14] = ext_flags & 0xFF
     brake_q15 = q15_from_unit(brake_duty if brake_pwm else 0.0)
@@ -477,8 +481,11 @@ def output_permitted_locked(state: SharedState, what: str) -> tuple[bool, str]:
             return False, f"DC bus too high for {what}: {vdc:.1f} V"
         if vbus_raw < VBUS_RAW_MIN_VALID or vbus_raw > VBUS_RAW_MAX_VALID:
             return False, f"raw DC bus telemetry invalid before {what}: raw={vbus_raw}"
-        if state.cmd_guard_max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC and vbus_raw > VBUS_RAW_LOW_MAX:
-            return False, f"raw DC bus too high for low-voltage {what}: raw={vbus_raw}"
+        if state.cmd_guard_max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC:
+            raw_min = BP_VBUS_ZERO_RAW - VBUS_RAW_ZERO_LOW_MARGIN
+            raw_max = math.ceil(vbus_raw_for_voltage(state.cmd_guard_max_vdc + VBUS_RAW_WINDOW_MARGIN_V))
+            if vbus_raw < raw_min or vbus_raw > raw_max:
+                return False, f"raw DC bus outside calibrated low-voltage window before {what}: raw={vbus_raw} expected={raw_min}..{raw_max}"
     return True, "ok"
 
 
@@ -970,6 +977,9 @@ def apply_cmd(state: SharedState, cmd: str) -> tuple[bool, str]:
                 return True, "ok"
             return False, "bad fan args"
         if head == "PRECHARGE":
+            if not PRECHARGE_RELAY_PRESENT:
+                state.precharge = False
+                return False, "unsupported: precharge relay is not installed"
             if len(parts) != 2:
                 return False, "bad precharge args"
             try:
@@ -1192,8 +1202,7 @@ HTML_UI = """<!doctype html>
     <div class="card">
       <h3>Service IO (no motor START required)</h3>
       <div class="row">
-        <button class="btn ghost" onclick="sendCmd('PRECHARGE ON')">PRECHARGE ON</button>
-        <button class="btn ghost" onclick="sendCmd('PRECHARGE OFF')">PRECHARGE OFF</button>
+        <span>Precharge relay: not installed (PB4 disabled)</span>
         <button class="btn ghost" onclick="sendCmd('PFC ON')">PFC ON</button>
         <button class="btn ghost" onclick="sendCmd('PFC OFF')">PFC OFF</button>
         <button class="btn ghost" onclick="sendCmd('BPFOC ON')">BPFOC ON</button>

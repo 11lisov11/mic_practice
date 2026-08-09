@@ -11,12 +11,24 @@
 #include "stm32f1xx_hal.h"
 
 static safety_state_t s_state;
-static constexpr uint8_t SUPPORTED_EXT_FLAGS =
-    EXT_PFC_SYNC | EXT_BRAKE_PWM | EXT_PRECHARGE_RELAY;
+static uint8_t s_enable_confirm_count = 0;
+static uint8_t s_enable_last_seq = 0;
+static bool s_enable_last_seq_valid = false;
+static constexpr uint8_t SUPPORTED_EXT_FLAGS = EXT_PFC_SYNC | EXT_BRAKE_PWM
+#if USE_PRECHARGE_RELAY
+                                               | EXT_PRECHARGE_RELAY
+#endif
+    ;
 
 static uint16_t saturating_add_u16(uint16_t value, uint16_t increment) {
   const uint32_t sum = (uint32_t)value + (uint32_t)increment;
   return (sum > UINT16_MAX) ? UINT16_MAX : (uint16_t)sum;
+}
+
+static void reset_enable_confirmation(void) {
+  s_enable_confirm_count = 0;
+  s_enable_last_seq = 0;
+  s_enable_last_seq_valid = false;
 }
 
 static void brake_set(bool active) {
@@ -36,6 +48,7 @@ static void brake_set(bool active) {
 }
 
 static void force_safe_outputs(void) {
+  reset_enable_confirmation();
   pwm_safe_idle();
   brake_set(true);
   s_state.ext_flags = 0;
@@ -100,6 +113,7 @@ static void update_heatsink_temperature(void) {
 
 void safety_init(void) {
   memset(&s_state, 0, sizeof(s_state));
+  reset_enable_confirmation();
   s_state.fault_code = FAULT_OK;
   s_state.last_mode = MODE_OFF;
   s_state.last_flags = 0;
@@ -137,6 +151,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   const bool diag_cmd = (cmd[CMD_OFF_FLAGS] & FLAG_DIAG_PWM) != 0;
   const bool clear_cmd = (cmd[CMD_OFF_FLAGS] & FLAG_CLEAR_FAULT) != 0;
   const uint8_t mode = cmd[CMD_OFF_MODE];
+  const uint8_t previous_mode = s_state.last_mode;
   uint8_t ext_flags = cmd[CMD_OFF_EXT_FLAGS] & SUPPORTED_EXT_FLAGS;
   uint16_t brake_q15 = (uint16_t)cmd[CMD_OFF_EXT_DUTY_LO] | ((uint16_t)cmd[CMD_OFF_EXT_DUTY_HI] << 8);
   uint16_t fan_q15 = (uint16_t)cmd[CMD_OFF_FAN_DUTY_LO] | ((uint16_t)cmd[CMD_OFF_FAN_DUTY_HI] << 8);
@@ -176,6 +191,7 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   }
 
   if (!enable_cmd || mode == MODE_OFF) {
+    reset_enable_confirmation();
     fan_control_set_pwm_q15(fan_q15);
     pwm_safe_idle();
     brake_set(true);
@@ -188,6 +204,27 @@ void safety_on_valid_cmd(const uint8_t *cmd) {
   if (!mode_can_drive_pwm(mode, diag_cmd)) {
     force_safe_outputs();
     s_state.last_mode = mode;
+    return;
+  }
+
+  if (mode != previous_mode) {
+    reset_enable_confirmation();
+  }
+  const uint8_t seq = cmd[CMD_OFF_SEQ];
+  if (!s_enable_last_seq_valid || seq != s_enable_last_seq) {
+    s_enable_last_seq = seq;
+    s_enable_last_seq_valid = true;
+    if (s_enable_confirm_count < ENABLE_CONFIRM_FRAMES) {
+      ++s_enable_confirm_count;
+    }
+  }
+  if (s_enable_confirm_count < ENABLE_CONFIRM_FRAMES) {
+    fan_control_set_pwm_q15(fan_q15);
+    pwm_safe_idle();
+    brake_set(true);
+    apply_service_outputs(0, 0);
+    s_state.enabled = false;
+    s_state.pwm_active = false;
     return;
   }
 
@@ -276,8 +313,8 @@ void safety_build_reply(uint8_t *rsp, const uint8_t *cmd) {
   rsp[13] = enc_ok ? 1 : 0;
 #endif
 
-  // PRECHARGE reply reflects the actual PB4 input level, not only the command
-  // bit. This still is not a relay-contact or coil-current feedback signal.
+  // Bit 0x08 is retained in the wire protocol, but is always cleared when the
+  // current hardware has no precharge relay.
   uint8_t ext_reply = s_state.ext_flags;
   if (ipm15_precharge_relay_pin_active()) {
     ext_reply |= EXT_PRECHARGE_RELAY;

@@ -238,11 +238,18 @@ bool adc_vbus_sample_software(uint16_t *raw) {
 
 bool adc_heatsink_sample_software(uint16_t *raw) {
 #if USE_HEATSINK_TEMP
-  uint16_t value = 0;
-  if (!adc_sample_regular(HEATSINK_TEMP_ADC_CHANNEL, ADC_SAMPLETIME_239CYCLES_5, &value)) {
-    s_heatsink_valid = false;
-    return false;
+  uint32_t sum = 0;
+  for (uint16_t i = 0; i <= HEATSINK_TEMP_OVERSAMPLES; ++i) {
+    uint16_t sample = 0;
+    if (!adc_sample_regular(HEATSINK_TEMP_ADC_CHANNEL, ADC_SAMPLETIME_239CYCLES_5, &sample)) {
+      s_heatsink_valid = false;
+      return false;
+    }
+    if (i != 0U) {
+      sum += sample;
+    }
   }
+  const uint16_t value = (uint16_t)((sum + (HEATSINK_TEMP_OVERSAMPLES / 2U)) / HEATSINK_TEMP_OVERSAMPLES);
   s_raw_heatsink = value;
   s_heatsink_valid = true;
   if (raw) {

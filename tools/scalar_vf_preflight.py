@@ -5,18 +5,17 @@ import argparse
 from runtime_python import ensure_modules_or_reexec
 
 ensure_modules_or_reexec(["grpc", "saleae"], "MIC_PRACTICE_SCALAR_VF_PREFLIGHT_REEXEC")
-import grpc
-import json
-import os
-import sys
-import time
-from datetime import datetime
+import grpc  # noqa: E402
+import json  # noqa: E402
+import os  # noqa: E402
+import sys  # noqa: E402
+import time  # noqa: E402
+from datetime import datetime  # noqa: E402
 
 sys.path.insert(0, os.path.dirname(__file__))
 from run_metadata import collect_run_metadata  # noqa: E402
 from ui_pwm_case import (  # noqa: E402
     analyze,
-    bp_bad_ok,
     bp_cmd_bad_ok,
     bp_link_live,
     configure_adb_router_fallback,
@@ -259,11 +258,6 @@ def main() -> int:
         default="",
         help="Acquire the expiring standalone HMI arm before every independent START.",
     )
-    ap.add_argument(
-        "--precharge",
-        action="store_true",
-        help="Cycle PRECHARGE OFF/ON before every independent START and require telemetry confirmation.",
-    )
     ap.add_argument("--adb-router-fallback", action="store_true", help="Fallback failed HTTP commands to direct ADB router RPC.")
     ap.add_argument("--adb-device", default=os.environ.get("UNOQ_ADB_DEVICE", ""), help="ADB serial for --adb-router-fallback.")
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
@@ -313,7 +307,7 @@ def main() -> int:
         "settle_margin_s": args.settle_margin_s,
         "run_limit_sec": args.run_limit_sec,
         "hmi_arm_requested": bool(args.arm_confirm.strip()),
-        "precharge_requested": bool(args.precharge),
+        "precharge_relay_present": False,
         "freqs": [],
         "estop": [],
     }
@@ -334,8 +328,6 @@ def main() -> int:
                 arm_ok = True
                 if args.arm_confirm.strip():
                     safe_stop(base)
-                    if args.precharge:
-                        send_cmds_retry(base, ["PRECHARGE OFF"], retries=1, retry_delay_s=0.1)
                     safe_ok, _safe_st, _safe_dt = wait_safe(base, timeout_s=1.5, poll_s=args.poll)
                     arm_ok = safe_ok and arm_hmi(base, args.arm_confirm.strip())
                 cmds = [
@@ -345,8 +337,6 @@ def main() -> int:
                     f"SET RUNLIMIT {args.run_limit_sec:.3f}",
                     "START",
                 ]
-                if args.precharge:
-                    cmds.insert(0, "PRECHARGE ON")
                 settle_timeout_s = settle_timeout_for(args, freq)
                 cmds_ok = arm_ok and send_cmds_retry(base, cmds, retries=1, retry_delay_s=0.2)
                 steady_ok, st, dt = wait_scalar_steady(
@@ -393,19 +383,16 @@ def main() -> int:
                     "metrics": metrics,
                     "capture_error": capture_error,
                 }
-                precharge_ok = bool(
-                    (not args.precharge)
-                    or (
-                        st is not None
-                        and int(st_num(st, "precharge", 0.0)) == 1
-                        and (int(st_num(st, "bp_ext", 0.0)) & 0x08) != 0
-                    )
+                power_path_ok = bool(
+                    st is not None
+                    and int(st_num(st, "precharge", 1.0)) == 0
+                    and (int(st_num(st, "bp_ext", 0x08)) & 0x08) == 0
                 )
-                item["precharge_ok"] = precharge_ok
+                item["removed_precharge_stays_off"] = power_path_ok
                 item["pass"] = bool(
                     cmds_ok
                     and steady_ok
-                    and precharge_ok
+                    and power_path_ok
                     and metrics.get("pass")
                     and soak.get("bp_link_live_all")
                     and soak.get("bp_bad_delta") == 0
@@ -431,15 +418,13 @@ def main() -> int:
 
             if args.arm_confirm.strip():
                 safe_stop(base)
-                if args.precharge:
-                    send_cmds_retry(base, ["PRECHARGE OFF"], retries=1, retry_delay_s=0.1)
                 run_safe_ok, _run_safe_st, _run_safe_dt = wait_safe(base, timeout_s=1.5, poll_s=args.poll)
                 run_arm_ok = run_safe_ok and arm_hmi(base, args.arm_confirm.strip())
             else:
                 run_arm_ok = True
             run_cmds_ok = run_arm_ok and send_cmds_retry(
                 base,
-                (["PRECHARGE ON"] if args.precharge else []) + [
+                [
                     "CLEAR",
                     "MODE VF",
                     f"SET FREQ {freq:.1f}",
@@ -505,7 +490,7 @@ def main() -> int:
                 clear_ok = send_cmds_retry(base, ["ESTOP CLEAR"], retries=1, retry_delay_s=0.2)
                 clear_safe, _clear_st, _clear_dt = wait_safe(base, timeout_s=1.5, poll_s=args.poll)
                 rec_arm_ok = clear_ok and clear_safe and arm_hmi(base, args.arm_confirm.strip())
-                rec_cmds = (["PRECHARGE ON"] if args.precharge else []) + [f"SET RUNLIMIT {args.run_limit_sec:.3f}", "START"]
+                rec_cmds = [f"SET RUNLIMIT {args.run_limit_sec:.3f}", "START"]
             else:
                 rec_cmds = ["ESTOP CLEAR", f"SET RUNLIMIT {args.run_limit_sec:.3f}", "START"]
             rec_cmd_ok = rec_arm_ok and send_cmds_retry(base, rec_cmds, retries=1, retry_delay_s=0.2)
@@ -577,8 +562,6 @@ def main() -> int:
             )
 
         safe_stop(base)
-        if args.precharge:
-            send_cmds_retry(base, ["PRECHARGE OFF"], retries=1, retry_delay_s=0.1)
         ok, st, dt = wait_safe(base, timeout_s=1.5, poll_s=args.poll)
         result["safe_after"] = {"ok": ok, "status_dt_ms": dt * 1000.0, "status": st}
         result["summary"] = {
@@ -608,8 +591,6 @@ def main() -> int:
         except Exception:
             pass
         safe_stop(base)
-        if args.precharge:
-            send_cmds_retry(base, ["PRECHARGE OFF"], retries=1, retry_delay_s=0.1)
 
 
 if __name__ == "__main__":

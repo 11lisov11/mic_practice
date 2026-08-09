@@ -111,7 +111,7 @@ def make_rsp(mod: Any, *, status: int | None = None, bad: int = 0, fault: int = 
     frame[7] = bad & 0xFF
     frame[8] = (bad >> 8) & 0xFF
     frame[9] = fault & 0xFF
-    raw = 123 if vbus_raw is None else vbus_raw
+    raw = mod.BP_VBUS_ZERO_RAW if vbus_raw is None else vbus_raw
     frame[17] = raw & 0xFF
     frame[18] = (raw >> 8) & 0xFF
     frame[mod.CRC_OFF] = mod.crc_xor(frame)
@@ -204,7 +204,7 @@ def run_direct_guard_cases(repo: Path, cases: list[CaseResult]) -> None:
     high_vdc = mod.SharedState()
     prime_state(mod, high_vdc, make_rsp(mod, vbus_raw=mod.BP_VBUS_CAL_RAW))
     ok, msg = mod.apply_cmd(high_vdc, "PRECHARGE ON")
-    add_case(cases, "direct_guard_rejects_precharge_high_vdc", (not ok) and "DC bus too high" in msg, msg)
+    add_case(cases, "direct_rejects_removed_precharge_output", (not ok) and "not installed" in msg, msg)
     ok, msg = mod.apply_cmd(high_vdc, "BPFOC ON")
     add_case(cases, "direct_guard_rejects_bpfoc_high_vdc", (not ok) and "DC bus too high" in msg, msg)
     ok, msg = mod.apply_cmd(high_vdc, "MODE FOC")
@@ -214,13 +214,13 @@ def run_direct_guard_cases(repo: Path, cases: list[CaseResult]) -> None:
     high_vdc_allow.cmd_guard_allow_hv = True
     prime_state(mod, high_vdc_allow, make_rsp(mod, vbus_raw=mod.BP_VBUS_CAL_RAW))
     ok, msg = mod.apply_cmd(high_vdc_allow, "PRECHARGE ON")
-    add_case(cases, "direct_guard_allow_hv_permits_precharge", ok and high_vdc_allow.precharge, msg)
+    add_case(cases, "direct_allow_hv_does_not_restore_precharge", (not ok) and not high_vdc_allow.precharge, msg)
 
     high_vdc_disabled = mod.SharedState()
     high_vdc_disabled.cmd_guard_disabled = True
     prime_state(mod, high_vdc_disabled, make_rsp(mod, vbus_raw=mod.BP_VBUS_CAL_RAW))
     ok, msg = mod.apply_cmd(high_vdc_disabled, "PRECHARGE ON")
-    add_case(cases, "direct_guard_disabled_only_permits_high_vdc", ok and high_vdc_disabled.precharge, msg)
+    add_case(cases, "direct_disabled_guard_does_not_restore_precharge", (not ok) and not high_vdc_disabled.precharge, msg)
 
     fault_disabled = mod.SharedState()
     fault_disabled.cmd_guard_disabled = True
@@ -383,7 +383,7 @@ def main() -> int:
         code, html = http_text(base + "/", timeout_s=1.0)
         add_case(cases, "html_contains_bpfoc_controls", code == 200 and "BPFOC ON" in html and "BPFOC OFF" in html, evidence={"status": code})
 
-        for cmd_text in ("STOP", "CLEAR", "DIAG ON", "DIAG OFF", "FAN PWM 0", "FAN OFF", "BPFOC OFF", "PRECHARGE OFF", "PFC OFF", "BRAKE OFF", "MODE VF"):
+        for cmd_text in ("STOP", "CLEAR", "DIAG ON", "DIAG OFF", "FAN PWM 0", "FAN OFF", "BPFOC OFF", "PFC OFF", "BRAKE OFF", "MODE VF"):
             code, payload, text = http_json(base + "/api/cmd", {"cmd": cmd_text}, timeout_s=1.0)
             add_case(
                 cases,
@@ -393,12 +393,22 @@ def main() -> int:
                 payload,
             )
 
-        for cmd_text in ("FAN PWM 0.25", "FAN ON", "BPFOC ON", "PRECHARGE ON", "PFC ON", "BRAKE PWM 0.25", "IOTEST ON"):
+        for cmd_text in ("FAN PWM 0.25", "FAN ON", "BPFOC ON", "PFC ON", "BRAKE PWM 0.25", "IOTEST ON"):
             code, payload, text = http_json(base + "/api/cmd", {"cmd": cmd_text}, timeout_s=1.0)
             add_case(
                 cases,
                 f"cmd_{cmd_text.replace(' ', '_').lower()}_rejected_without_link",
                 code == 400 and bool(payload and not payload.get("ok")) and "link" in str(payload.get("error", "")),
+                text,
+                payload,
+            )
+
+        for cmd_text in ("PRECHARGE ON", "PRECHARGE OFF"):
+            code, payload, text = http_json(base + "/api/cmd", {"cmd": cmd_text}, timeout_s=1.0)
+            add_case(
+                cases,
+                f"cmd_{cmd_text.replace(' ', '_').lower()}_rejected_as_removed",
+                code == 400 and bool(payload and not payload.get("ok")) and "not installed" in str(payload.get("error", "")),
                 text,
                 payload,
             )

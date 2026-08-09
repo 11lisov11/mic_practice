@@ -27,6 +27,21 @@ PWM_STATIC_MAP = {
     6: {"stm32": "PB12", "signal": "EM_STOP/shutdown"},
 }
 
+COMMON_DIGITAL_RATES = [
+    24_000_000,
+    12_000_000,
+    6_000_000,
+    3_000_000,
+    2_000_000,
+    1_000_000,
+    500_000,
+    250_000,
+    200_000,
+    100_000,
+    50_000,
+    25_000,
+]
+
 
 def append_log(path: Path, msg: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -116,6 +131,16 @@ def sample_period_ns(rate: int | None) -> float | None:
     return 1_000_000_000.0 / float(rate)
 
 
+def capture_rate_candidates(requested_rate: int, auto_rate: bool) -> list[int]:
+    if not auto_rate:
+        return [requested_rate]
+    rates: list[int] = []
+    for rate in [requested_rate, *COMMON_DIGITAL_RATES]:
+        if rate <= requested_rate and rate not in rates:
+            rates.append(rate)
+    return rates
+
+
 def exit_code_for_summary(summary: dict, command_failures: int, require_static_safe: bool) -> int:
     if command_failures:
         return 4
@@ -134,7 +159,7 @@ def main() -> int:
         dest="auto_rate",
         action="store_true",
         default=True,
-        help="Retry lower common sample rates if requested rate is rejected; enabled by default.",
+        help="Retry lower common sample rates on start/capture errors; enabled by default.",
     )
     ap.add_argument(
         "--no-auto-rate",
@@ -217,77 +242,99 @@ def main() -> int:
                     }
                 )
 
+    selected_rate = None
+    selected_threshold = None
+    csv_path: Path | None = None
+    capture_errors: list[str] = []
+    capture_commands_attempted = False
+
     run_command_phase(args.pre_cmd, "pre")
     try:
-        append_log(log_path, "connect_begin")
-        with automation.Manager.connect(port=args.port) as manager:
-            append_log(log_path, f"connect_ok app={manager.get_app_info()}")
-            devices = manager.get_devices()
-            append_log(log_path, f"devices={devices}")
-
-            capture_configuration = automation.CaptureConfiguration(
-                capture_mode=automation.TimedCaptureMode(duration_seconds=args.duration)
-            )
-
-            common_rates = [24_000_000, 12_000_000, 6_000_000, 3_000_000, 2_000_000, 1_000_000,
-                            500_000, 250_000, 200_000, 100_000, 50_000, 25_000]
-            rates = [args.rate]
-            if args.auto_rate:
-                rates = []
-                for rate in [args.rate, *common_rates]:
-                    if rate <= args.rate and rate not in rates:
-                        rates.append(rate)
-
-            capture = None
-            selected_rate = None
-            selected_threshold = None
-            start_errors: list[str] = []
-            for rate in rates:
-                threshold_candidates = [args.threshold] if args.threshold is not None else [None]
-                if args.threshold is not None:
-                    # Some Saleae devices expose no configurable digital threshold.
-                    # Treat the requested threshold as best-effort and retry defaults.
-                    threshold_candidates.append(None)
-                for threshold in threshold_candidates:
-                    device_kwargs = {
-                        "enabled_digital_channels": channels,
-                        "digital_sample_rate": rate,
-                    }
-                    threshold_label = "default"
-                    if threshold is not None:
-                        device_kwargs["digital_threshold_volts"] = threshold
-                        threshold_label = str(threshold)
-                    device_configuration = automation.LogicDeviceConfiguration(**device_kwargs)
-                    append_log(log_path, f"start_capture_begin rate={rate} threshold={threshold_label}")
-                    try:
+        rates = capture_rate_candidates(args.rate, args.auto_rate)
+        capture_configuration = automation.CaptureConfiguration(
+            capture_mode=automation.TimedCaptureMode(duration_seconds=args.duration)
+        )
+        capture_ok = False
+        attempt_index = 0
+        for rate in rates:
+            threshold_candidates = [args.threshold] if args.threshold is not None else [None]
+            if args.threshold is not None:
+                # Some Saleae devices expose no configurable digital threshold.
+                threshold_candidates.append(None)
+            for threshold in threshold_candidates:
+                attempt_index += 1
+                threshold_label = "default" if threshold is None else str(threshold)
+                attempt_dir = run_dir / f"capture_attempt_{attempt_index:02d}_{rate}Hz"
+                capture = None
+                operation_error: Exception | None = None
+                export_completed = False
+                try:
+                    append_log(log_path, f"connect_begin attempt={attempt_index} rate={rate}")
+                    with automation.Manager.connect(port=args.port) as manager:
+                        append_log(log_path, f"connect_ok app={manager.get_app_info()}")
+                        append_log(log_path, f"devices={manager.get_devices()}")
+                        device_kwargs = {
+                            "enabled_digital_channels": channels,
+                            "digital_sample_rate": rate,
+                        }
+                        if threshold is not None:
+                            device_kwargs["digital_threshold_volts"] = threshold
+                        device_configuration = automation.LogicDeviceConfiguration(**device_kwargs)
+                        append_log(log_path, f"start_capture_begin rate={rate} threshold={threshold_label}")
                         capture = manager.start_capture(
                             device_configuration=device_configuration,
                             capture_configuration=capture_configuration,
                         )
-                        selected_rate = rate
-                        selected_threshold = threshold
                         append_log(log_path, f"start_capture_ok rate={rate} threshold={threshold_label}")
-                        break
-                    except Exception as exc:
-                        msg = f"{rate} threshold={threshold_label}: {type(exc).__name__}: {exc}"
-                        start_errors.append(msg)
-                        append_log(log_path, f"start_capture_err {msg}")
-                        if not args.auto_rate and threshold is None:
-                            raise
-                if capture is not None:
+                        try:
+                            time.sleep(min(0.03, max(0.0, args.duration / 4.0)))
+                            if args.cmd:
+                                capture_commands_attempted = True
+                            run_command_phase(args.cmd, "capture")
+                            append_log(log_path, "wait_begin")
+                            capture.wait()
+                            append_log(log_path, "wait_ok")
+                            append_log(log_path, f"export_begin dir={attempt_dir}")
+                            capture.export_raw_data_csv(directory=str(attempt_dir), digital_channels=channels)
+                            candidate_csv = attempt_dir / "digital.csv"
+                            if not candidate_csv.exists():
+                                raise RuntimeError("Saleae export completed without digital.csv")
+                            export_completed = True
+                            append_log(log_path, "export_ok")
+                        except Exception as exc:
+                            operation_error = exc
+                        finally:
+                            try:
+                                capture.close()
+                            except Exception as exc:
+                                append_log(log_path, f"capture_close_warn {type(exc).__name__}: {exc}")
+                                if operation_error is None and not export_completed:
+                                    operation_error = exc
+                    if operation_error is not None:
+                        raise operation_error
+                    selected_rate = rate
+                    selected_threshold = threshold
+                    csv_path = candidate_csv
+                    capture_ok = True
                     break
-            if capture is None:
-                raise RuntimeError("no Saleae sample rate accepted; " + " | ".join(start_errors))
-
-            with capture:
-                time.sleep(min(0.03, max(0.0, args.duration / 4.0)))
-                run_command_phase(args.cmd, "capture")
-                append_log(log_path, "wait_begin")
-                capture.wait()
-                append_log(log_path, "wait_ok")
-                append_log(log_path, "export_begin")
-                capture.export_raw_data_csv(directory=str(run_dir), digital_channels=channels)
-                append_log(log_path, "export_ok")
+                except Exception as exc:
+                    msg = (
+                        f"attempt={attempt_index} rate={rate} threshold={threshold_label}: "
+                        f"{type(exc).__name__}: {exc}"
+                    )
+                    capture_errors.append(msg)
+                    append_log(log_path, f"capture_attempt_err {msg}")
+                    if capture_commands_attempted:
+                        raise RuntimeError(
+                            "capture failed after capture-phase commands; automatic retry suppressed: " + msg
+                        ) from exc
+                    if not args.auto_rate:
+                        raise
+                    time.sleep(0.25)
+            if capture_ok:
+                break
+        if not capture_ok or csv_path is None:
+            raise RuntimeError("no Saleae capture completed; " + " | ".join(capture_errors))
     except Exception as exc:
         append_log(log_path, f"ERROR {type(exc).__name__}: {exc}")
         print(f"PROBE_LOG={log_path}")
@@ -295,10 +342,9 @@ def main() -> int:
     finally:
         run_command_phase(args.post_cmd, "post")
 
-    csv_path = run_dir / "digital.csv"
     summary = {
         "run_dir": str(run_dir),
-        "csv": str(csv_path),
+        "csv": str(csv_path) if csv_path is not None else None,
         "channels": channels,
         "requested_rate": args.rate,
         "selected_rate": selected_rate,
@@ -308,13 +354,14 @@ def main() -> int:
         "requested_threshold": args.threshold,
         "selected_threshold": selected_threshold,
         "auto_rate": bool(args.auto_rate),
+        "capture_errors": capture_errors,
         "require_static_safe": bool(args.require_static_safe),
         "commands": command_results,
         "command_pass": command_failures == 0,
         "edges": {},
         "levels": {},
     }
-    if csv_path.exists():
+    if csv_path is not None and csv_path.exists():
         prev = {ch: None for ch in channels}
         rows = 0
         with csv_path.open(newline="") as f:

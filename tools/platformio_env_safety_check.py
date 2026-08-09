@@ -11,7 +11,6 @@ from typing import Any
 
 REQUIRED_ENVS = {
     "env:bluepill_uart_pwm",
-    "env:bluepill_relay_test",
     "env:bluepill_pwm_selftest",
     "env:bluepill_static_low_test",
 }
@@ -266,7 +265,6 @@ def run_checks(repo: Path) -> list[CaseResult]:
     main_filter = filter_tokens(config_value(cfg, "env:bluepill_uart_pwm", "build_src_filter"))
     main_required = {
         "+<*>",
-        "-<relay_test.cpp>",
         "-<pwm_selftest.cpp>",
         "-<pwm_static_low_test.cpp>",
         "-<thermal_diag.cpp>",
@@ -282,15 +280,15 @@ def run_checks(repo: Path) -> list[CaseResult]:
         )
     )
 
-    relay_filter = filter_tokens(config_value(cfg, "env:bluepill_relay_test", "build_src_filter"))
-    if "+<relay_test.cpp>" in relay_filter and "+<*>" not in relay_filter:
-        cases.append(ok_case("relay_build_src_filter", relay_filter))
+    relay_source = repo / "bluepill_uart_pwm_pio" / "src" / "relay_test.cpp"
+    if "env:bluepill_relay_test" not in sections and not relay_source.exists():
+        cases.append(ok_case("relay_test_firmware_removed"))
     else:
         cases.append(
             fail_case(
-                "relay_build_src_filter",
-                "relay env must build only relay_test.cpp, not the runtime main",
-                relay_filter,
+                "relay_test_firmware_removed",
+                "the obsolete PB4 toggling firmware must not exist when K1 is absent",
+                {"env_present": "env:bluepill_relay_test" in sections, "source_present": relay_source.exists()},
             )
         )
 

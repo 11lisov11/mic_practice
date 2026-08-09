@@ -77,6 +77,21 @@ def case_required_pair_channels(results: list[CaseResult]) -> None:
         add_case(results, "required_pair_channels_for_default_pwm_pairs", False, f"{type(exc).__name__}: {exc}")
 
 
+def case_capture_rate_candidates(results: list[CaseResult]) -> None:
+    actual = {
+        "auto_24m": probe.capture_rate_candidates(24_000_000, True),
+        "auto_5m": probe.capture_rate_candidates(5_000_000, True),
+        "fixed": probe.capture_rate_candidates(7_000_000, False),
+    }
+    ok = (
+        actual["auto_24m"][:3] == [24_000_000, 12_000_000, 6_000_000]
+        and actual["auto_5m"][:3] == [5_000_000, 3_000_000, 2_000_000]
+        and actual["fixed"] == [7_000_000]
+        and len(actual["auto_24m"]) == len(set(actual["auto_24m"]))
+    )
+    add_case(results, "capture_rate_candidates_descend_without_duplicates", ok, evidence=actual)
+
+
 def case_pwm_static_checks_all_low_safe(results: list[CaseResult]) -> None:
     levels = {str(ch): {"initial": 0, "final": 0} for ch in range(7)}
     edges = {str(ch): 0 for ch in range(7)}
@@ -249,6 +264,7 @@ def main() -> int:
     results: list[CaseResult] = []
     case_command_detection(results)
     case_required_pair_channels(results)
+    case_capture_rate_candidates(results)
     case_pwm_static_checks_all_low_safe(results)
     case_pwm_static_checks_low_side_high_fails(results)
     case_start_blocked_before_http(results)

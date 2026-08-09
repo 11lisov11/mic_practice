@@ -616,27 +616,21 @@ def check_full_preflight_artifact(
     if args.profile == "science":
         add_check(
             checks,
-            "full_preflight_precharge_relay_gate_enabled",
-            summary.get("precharge_relay_stage_enabled") is True,
+            "full_preflight_precharge_relay_stage_disabled",
+            summary.get("precharge_relay_stage_enabled") is False,
             detail=f"precharge_relay_stage_enabled={summary.get('precharge_relay_stage_enabled')}",
         )
         add_check(
             checks,
-            "full_preflight_precharge_relay_pass",
-            summary.get("precharge_relay_pass") is True,
-            detail=f"precharge_relay_pass={summary.get('precharge_relay_pass')}",
-        )
-        add_check(
-            checks,
-            "full_preflight_precharge_relay_saleae_enabled",
-            summary.get("precharge_relay_saleae_enabled") is True,
-            detail=f"precharge_relay_saleae_enabled={summary.get('precharge_relay_saleae_enabled')}",
-        )
-        add_check(
-            checks,
-            "full_preflight_precharge_relay_saleae_pass",
-            summary.get("precharge_relay_saleae_pass") is True,
-            detail=f"precharge_relay_saleae_pass={summary.get('precharge_relay_saleae_pass')}",
+            "full_preflight_precharge_relay_status_off",
+            summary.get("precharge_relay_pass") is None
+            and summary.get("precharge_relay_saleae_enabled") is False
+            and summary.get("precharge_relay_saleae_pass") is None,
+            detail=(
+                f"precharge_relay_pass={summary.get('precharge_relay_pass')} "
+                f"precharge_relay_saleae_enabled={summary.get('precharge_relay_saleae_enabled')} "
+                f"precharge_relay_saleae_pass={summary.get('precharge_relay_saleae_pass')}"
+            ),
         )
         add_check(checks, "full_preflight_fan_gate_enabled", summary.get("fan_stage_enabled") is True, detail=f"fan_stage_enabled={summary.get('fan_stage_enabled')}")
         add_check(checks, "full_preflight_fan_pass", summary.get("fan_pass") is True, detail=f"fan_pass={summary.get('fan_pass')}")
@@ -1089,10 +1083,8 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
         "full_preflight_required_hil_pass",
         "full_preflight_pwm_suite_pass",
         "full_preflight_final_safe",
-        "full_preflight_precharge_relay_gate_enabled",
-        "full_preflight_precharge_relay_pass",
-        "full_preflight_precharge_relay_saleae_enabled",
-        "full_preflight_precharge_relay_saleae_pass",
+        "full_preflight_precharge_relay_stage_disabled",
+        "full_preflight_precharge_relay_status_off",
         "full_preflight_fan_gate_enabled",
         "full_preflight_fan_pass",
         "full_preflight_bpfoc_gate_enabled",
@@ -1104,8 +1096,8 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
             seen,
             "run_low_voltage_full_preflight",
             "Run a fresh extended low-voltage regression.",
-            "This refreshes build, HMI, encoder, PB4 precharge relay/CH7, scalar/VF, FOC/MIC, Saleae PWM/deadtime, fan and BPFOC evidence for the current worktree.",
-            f"py -3 -u .\\tools\\full_system_preflight.py --url {url} --with-precharge-relay --precharge-relay-arm-confirm \"ARM LOWV\" --precharge-relay-la-channel 7 --with-fan --with-bpfoc",
+            "This refreshes build, HMI, encoder, disabled PB4 state, scalar/VF, FOC/MIC, Saleae PWM/deadtime, fan and BPFOC evidence for the current worktree.",
+            f"py -3 -u .\\tools\\full_system_preflight.py --url {url} --with-fan --with-bpfoc",
         )
 
     if "full_preflight_bluepill_pwm_selftest_pass" in warn_names or "full_preflight_bluepill_pwm_selftest_pass" in names:

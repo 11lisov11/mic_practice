@@ -70,7 +70,7 @@ UNO Q и говорит напрямую с Blue Pill.
 | PA10 | PWM-3H |
 | PB15 | PWM-3L |
 | PB12 | EM_STOP / shutdown |
-| PB4 | precharge relay |
+| PB4 | `NC`, analog/high-impedance; K1 отсутствует |
 | PB1 | NC, analog/high-impedance |
 | PB5 | PFC sync |
 | PB9 | dissipative brake PWM |
@@ -196,20 +196,20 @@ API совместим по базовым endpoint:
 Сервисные команды direct-HMI, без скрытого `START` двигателя:
 
 - `FAN PWM 0.00..1.00`, `FAN ON`, `FAN OFF`
-- `PRECHARGE ON|OFF`
+- `PRECHARGE ON|OFF` отклоняется: K1 отсутствует, PB4 high-Z
 - `PFC ON|OFF`
 - `BRAKE PWM 0.00..1.00`, `BRAKE OFF`
 - `IOTEST ON|OFF` - безопасный сервисный режим для старых relay-preflight скриптов; мост не включает.
 
-`START` и включающие service-команды (`FAN >0`, `PRECHARGE/PFC ON`,
+`START` и включающие service-команды (`FAN >0`, `PFC ON`,
 `BRAKE >0`, `IOTEST ON`) проходят только при свежем `SAFE`-статусе STM32:
 `link=true`, `pwm=0`, `estop=0`, `bp_fault=0`, `bp_bad=0` и `Vbus <= 60 V`
-по умолчанию. Команды выключения (`FAN OFF`, `PRECHARGE OFF`,
+по умолчанию. Команды выключения (`FAN OFF`,
 `PFC OFF`, `BRAKE OFF`, `IOTEST OFF`, `STOP`, `CLEAR`) разрешены как аварийное
 снятие выходов.
 
 В `MODE_OFF` прошивка STM32 держит силовой PWM выключенным, но разрешает проверять
-сервисные выходы `PB4/PB5/PB9/PB3`. `PB1` всегда остаётся высокоомным входом.
+сервисные выходы `PB5/PB9/PB3`. `PB4` и `PB1` всегда остаются высокоомными входами.
 `CLEAR`, `ESTOP` и `IOTEST OFF` гасят
 сохраненное состояние сервисных выходов.
 

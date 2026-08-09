@@ -90,8 +90,8 @@ static void status_led_tick(void) {
     return;
   }
 
-  // A steady LED in SAFE indicates that the PB4 precharge output is active.
-  // It confirms the MCU pin state, not relay coil current or contact closure.
+  // Kept as a defensive assertion: PB4 is high-impedance and this branch is
+  // unreachable in the current no-relay hardware configuration.
   if (ipm15_precharge_relay_pin_active()) {
     if (!led_on) {
       led_on = true;

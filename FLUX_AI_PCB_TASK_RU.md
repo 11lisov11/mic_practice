@@ -645,3 +645,10 @@ Apply conservative HV/mains creepage/clearance and keep HV/mains physically sepa
 
 Generate schematic, PCB, BOM, DRC/ERC, Gerbers, connector pinout table, test-point table, and a list of unresolved safety assumptions.
 ```
+# АРХИВНАЯ РЕВИЗИЯ С K1, НЕ ИСПОЛЬЗОВАТЬ ДЛЯ ТЕКУЩЕЙ ПЛАТЫ
+
+Этот документ описывает снятую с эксплуатации силовую ревизию с K1/PB4.
+Текущая конфигурация приведена в `POWER_INPUT_NO_RELAY_RU.md`: K1 отсутствует,
+PB4 остаётся NC/high-impedance, а пусковой ток ограничивает отдельное рассчитанное
+сетевое устройство. Нельзя изготавливать плату по этому файлу без новой схемы,
+ERC/DRC и отдельного ревью силовой части.

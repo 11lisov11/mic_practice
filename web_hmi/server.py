@@ -51,13 +51,17 @@ DEFAULT_REMOTEOCD = "/home/arduino/.arduino15/packages/arduino/tools/remoteocd/0
 DEFAULT_REMOTEOCD_CFG = os.path.join(os.path.dirname(__file__), "flash_unoq_sketch_090.cfg")
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 CMD_GUARD_MAX_AGE_MS = 1000.0
-# Independent ADC sanity limits. These intentionally do not use the scaled Vbus
-# calibration, so a stale calibration cannot make an energized bus look safe.
+# Independent raw-ADC gate mirrored from Blue Pill config.h. The raw check does
+# not trust the scaled Vbus field, but its calibration points must stay in sync
+# with the firmware and are enforced by firmware_config_safety_check.py.
 VBUS_RAW_MIN_VALID = 1
-VBUS_RAW_ZERO_MAX = 400
-VBUS_RAW_LOW_MAX = 1000
-VBUS_RAW_HV_MIN = 1000
 VBUS_RAW_MAX_VALID = 4094
+VBUS_RAW_ZERO_CAL = 1966
+VBUS_RAW_CAL = 3459
+VBUS_RAW_CAL_V = 315.0
+VBUS_HV_CALIBRATION_VALID = False
+VBUS_RAW_WINDOW_MARGIN_V = 5.0
+VBUS_RAW_ZERO_LOW_MARGIN = 128
 DEFAULT_START_RUNLIMIT_SEC = 15.0
 DEFAULT_HV_ARM_TTL_SEC = 30.0
 DEFAULT_HV_ARM_MIN_VDC = 100.0
@@ -434,6 +438,11 @@ def _status_vdc(data: dict) -> float:
     return max(values) if values else float("nan")
 
 
+def _vbus_raw_for_voltage(vdc: float) -> float:
+    span = float(VBUS_RAW_CAL - VBUS_RAW_ZERO_CAL)
+    return float(VBUS_RAW_ZERO_CAL) + max(0.0, float(vdc)) * span / float(VBUS_RAW_CAL_V)
+
+
 def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[bool, str]:
     if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
         return False, "raw DC bus telemetry is stale"
@@ -443,12 +452,16 @@ def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[b
     if raw < VBUS_RAW_MIN_VALID or raw > VBUS_RAW_MAX_VALID:
         return False, f"raw DC bus telemetry is invalid: raw={raw}"
 
-    if max_vdc <= DEFAULT_LV_ARM_MAX_VDC and raw > VBUS_RAW_ZERO_MAX:
-        return False, f"raw DC bus is not in the zero-bus range: raw={raw}"
-    if max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC and raw > VBUS_RAW_LOW_MAX:
-        return False, f"raw DC bus is too high for low-voltage operation: raw={raw}"
-    if min_vdc >= DEFAULT_HV_ARM_MIN_VDC and raw < VBUS_RAW_HV_MIN:
-        return False, f"raw DC bus does not confirm an energized HV bus: raw={raw}"
+    if max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC:
+        raw_min = VBUS_RAW_ZERO_CAL - VBUS_RAW_ZERO_LOW_MARGIN
+        raw_max = math.ceil(_vbus_raw_for_voltage(max_vdc + VBUS_RAW_WINDOW_MARGIN_V))
+        if raw < raw_min or raw > raw_max:
+            label = "zero-bus" if max_vdc <= DEFAULT_LV_ARM_MAX_VDC else "low-voltage"
+            return False, f"raw DC bus is outside the calibrated {label} window: raw={raw} expected={raw_min}..{raw_max}"
+    if min_vdc >= DEFAULT_HV_ARM_MIN_VDC:
+        raw_min = math.floor(_vbus_raw_for_voltage(min_vdc - VBUS_RAW_WINDOW_MARGIN_V))
+        if raw < raw_min:
+            return False, f"raw DC bus does not confirm an energized HV bus: raw={raw} expected>={raw_min}"
     return True, "ok"
 
 
@@ -591,6 +604,8 @@ class HvArmConfig:
 def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
     if not cfg.enabled:
         return False, "standalone arm mode is disabled"
+    if cfg.profile == ARM_PROFILE_HV and not VBUS_HV_CALIBRATION_VALID:
+        return False, "HV Vbus calibration is incomplete; capture a known-voltage point before arming"
     if data is None:
         return False, "status unavailable"
     state = str(data.get("state", "")).upper()
@@ -670,6 +685,8 @@ def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple
 def hv_runtime_check(
     data: Optional[dict], cfg: HvArmConfig, allow_nonzero_bad: bool = False
 ) -> tuple[bool, str]:
+    if cfg.profile == ARM_PROFILE_HV and not VBUS_HV_CALIBRATION_VALID:
+        return False, "HV Vbus calibration is incomplete"
     if data is None:
         return False, "status unavailable"
     if _as_int(data, "estop", 1) != 0:
@@ -1552,16 +1569,19 @@ class AppState:
         self._watchdog_thread: Optional[threading.Thread] = None
         self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
 
+    def _precharge_off(self) -> tuple[bool, str]:
+        return True, "not-installed"
+
     def stop_sequence(
         self,
         emergency: bool = False,
         confirm_timeout_sec: float = 0.75,
         poll_sec: float = 0.05,
     ) -> tuple[bool, str, Optional[dict]]:
-        """Stop PWM and always release the precharge/bypass relay."""
+        """Stop PWM and confirm that every motor-control output is off."""
         primary_cmd = "ESTOP" if emergency else "STOP"
         primary_ok, primary_err = self.rpc.cmd(primary_cmd)
-        relay_ok, relay_err = self.rpc.cmd("PRECHARGE OFF")
+        relay_ok, relay_err = self._precharge_off()
         self.hv_arm.disarm()
         self._runtime_bad_monitor.reset()
 
@@ -1602,7 +1622,7 @@ class AppState:
         run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
         poll_sec: float = 0.05,
     ) -> tuple[bool, str, Optional[dict]]:
-        """Confirm safety and PB4 command state, then start PWM."""
+        """Confirm safety and start PWM without a controllable power relay."""
         st_ok, status, st_err = self.rpc.get()
         allowed, guard_err = command_guard_check(
             "START", status if st_ok else None, self.command_guard
@@ -1624,47 +1644,20 @@ class AppState:
             self.stop_sequence(emergency=False)
             return False, "precharge relay was already active; outputs were forced off, retry START", status
 
-        relay_ok, relay_err = self.rpc.cmd("PRECHARGE ON")
-        if not relay_ok:
-            self.stop_sequence(emergency=False)
-            detail = f"precharge relay command failed: {relay_err or 'no acknowledgement'}"
-            self.logs.add(f"WIFI_START_FAIL relay_cmd {detail}")
-            return False, detail, status
-        self.logs.add("WIFI_START_STEP PRECHARGE_ON")
+        return self._start_without_precharge(status, run_timeout_sec, poll_sec)
 
-        relay_deadline = time.monotonic() + max(0.0, float(relay_timeout_sec))
-        relay_status: Optional[dict] = None
-        last_relay_error = "PB4 command pin was not asserted"
-        while True:
-            read_ok, candidate, read_err = self.rpc.get()
-            if read_ok and candidate is not None:
-                relay_status = candidate
-                healthy, health_err = output_sequence_health_check(
-                    candidate, self.hv_arm.cfg, self.command_guard
-                )
-                relay_feedback = (
-                    _as_int(candidate, "precharge", 0) == 1
-                    and (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
-                    and _as_int(candidate, "pwm", 1) == 0
-                )
-                if healthy and relay_feedback:
-                    break
-                last_relay_error = health_err if not healthy else "PB4 command pin was not asserted"
-            else:
-                last_relay_error = read_err or "status unavailable"
-            if time.monotonic() >= relay_deadline:
-                self.stop_sequence(emergency=False)
-                detail = f"precharge PB4 command confirmation failed: {last_relay_error}"
-                self.logs.add(f"WIFI_START_FAIL relay_feedback {detail}")
-                return False, detail, relay_status
-            time.sleep(max(0.0, float(poll_sec)))
-
-        time.sleep(max(0.0, float(relay_settle_sec)))
-        arm_ok, arm_err = self.hv_arm.command_allowed(relay_status)
+    def _start_without_precharge(
+        self,
+        initial_status: dict,
+        run_timeout_sec: float,
+        poll_sec: float,
+    ) -> tuple[bool, str, Optional[dict]]:
+        self.logs.add("WIFI_START_STEP PRECHARGE_SKIPPED relay_present=0")
+        arm_ok, arm_err = self.hv_arm.command_allowed(initial_status)
         if self.hv_arm.cfg.enabled and not arm_ok:
             self.stop_sequence(emergency=False)
             self.logs.add(f"WIFI_START_FAIL arm_recheck {arm_err}")
-            return False, arm_err, relay_status
+            return False, arm_err, initial_status
 
         runlimit_cmd = f"SET RUNLIMIT {self.start_runlimit_sec:.3f}"
         limit_ok, limit_err = self.rpc.cmd(runlimit_cmd)
@@ -1672,14 +1665,14 @@ class AppState:
             self.stop_sequence(emergency=False)
             detail = f"run limit rejected: {limit_err or 'no acknowledgement'}"
             self.logs.add(f"WIFI_START_FAIL runlimit {detail}")
-            return False, detail, relay_status
+            return False, detail, initial_status
 
         start_ok, start_err = self.rpc.cmd("START")
         if not start_ok:
             self.stop_sequence(emergency=True)
             detail = f"START rejected: {start_err or 'no acknowledgement'}"
             self.logs.add(f"WIFI_START_FAIL start_cmd {detail}")
-            return False, detail, relay_status
+            return False, detail, initial_status
 
         run_deadline = time.monotonic() + max(0.0, float(run_timeout_sec))
         run_status: Optional[dict] = None
@@ -1693,18 +1686,19 @@ class AppState:
                 )
                 running = (
                     _as_int(candidate, "pwm", 0) == 1
-                    and str(candidate.get("state", "")).upper() in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
-                    and _as_int(candidate, "precharge", 0) == 1
-                    and (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
+                    and str(candidate.get("state", "")).upper()
+                    in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
+                    and _as_int(candidate, "precharge", 0) == 0
+                    and (_as_int(candidate, "bp_ext", 0) & 0x08) == 0
                 )
                 if run_ok and running:
                     self.hv_arm.mark_started()
                     self.logs.add(
                         f"WIFI_START_OK state={candidate.get('state')} "
                         f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
-                        f"speed={_as_float(candidate, 'speed', 0.0):.1f}"
+                        f"speed={_as_float(candidate, 'speed', 0.0):.1f} relay_present=0"
                     )
-                    return True, "PB4 command confirmed and PWM started", candidate
+                    return True, "PWM started; precharge relay is not installed", candidate
                 last_run_error = run_err if not run_ok else "PWM did not enter a running state"
             else:
                 last_run_error = read_err or "status unavailable"
@@ -1720,6 +1714,8 @@ class AppState:
         available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
         snapshot["hmi_arm_profiles"] = available
         snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
+        snapshot["hmi_precharge_relay_present"] = 0
+        snapshot["hmi_vbus_hv_calibrated"] = int(VBUS_HV_CALIBRATION_VALID)
         current_cfg = self.hv_arm.cfg
         switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
         snapshot["hmi_arm_profile_switch_ready"] = int(switch_ok and not snapshot["hmi_hv_armed"])
@@ -1784,7 +1780,7 @@ class AppState:
                 continue
             stop_ok, stop_err = self.rpc.cmd("STOP")
             estop_ok, estop_err = self.rpc.cmd("ESTOP")
-            relay_ok, relay_err = self.rpc.cmd("PRECHARGE OFF")
+            relay_ok, relay_err = self._precharge_off()
             self.logs.add(
                 f"{reason} "
                 f"stop_ok={int(stop_ok)} stop_err={stop_err or '-'} "
@@ -1919,6 +1915,9 @@ class Handler(BaseHTTPRequestHandler):
         if _cmd_head(cmd) == "NTC":
             self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
             return
+        if _cmd_head(cmd) in ("PRECHARGE", "RELAY"):
+            self._send_json({"ok": False, "error": "unsupported: precharge relay is not installed"}, 400)
+            return
         with self.server.app.control_lock:  # type: ignore[attr-defined]
             self._handle_cmd_locked(cmd)
 
@@ -2021,7 +2020,7 @@ class Handler(BaseHTTPRequestHandler):
             arm.disarm()
             stop_ok, stop_err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
             estop_ok, estop_err = self.server.app.rpc.cmd("ESTOP")  # type: ignore[attr-defined]
-            relay_ok, relay_err = self.server.app.rpc.cmd("PRECHARGE OFF")  # type: ignore[attr-defined]
+            relay_ok, relay_err = self.server.app._precharge_off()  # type: ignore[attr-defined]
             self.server.app.logs.add("HV_DISARM")  # type: ignore[attr-defined]
             ok = bool(stop_ok and estop_ok and relay_ok)
             self._send_json(
@@ -2059,7 +2058,7 @@ class Handler(BaseHTTPRequestHandler):
         app = self.server.app  # type: ignore[attr-defined]
         with app.control_lock:
             stop_ok, stop_err = app.rpc.cmd("STOP")
-            relay_ok, relay_err = app.rpc.cmd("PRECHARGE OFF")
+            relay_ok, relay_err = app._precharge_off()
             app.hv_arm.disarm()
             if not stop_ok or not relay_ok:
                 error = f"safe shutdown failed: STOP={stop_err or stop_ok}; PRECHARGE={relay_err or relay_ok}"
@@ -2148,7 +2147,7 @@ class Handler(BaseHTTPRequestHandler):
         ok, err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
         if not ok:
             return False, None, f"STOP failed: {err}"
-        relay_ok, relay_err = self.server.app.rpc.cmd("PRECHARGE OFF")  # type: ignore[attr-defined]
+        relay_ok, relay_err = self.server.app._precharge_off()  # type: ignore[attr-defined]
         if not relay_ok:
             return False, None, f"PRECHARGE OFF failed: {relay_err}"
         time.sleep(0.2)
@@ -2488,7 +2487,7 @@ def main() -> None:
     print(
         f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
         f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
-        f"runlimit={start_runlimit_sec:.1f}s)"
+        f"precharge_relay=0, runlimit={start_runlimit_sec:.1f}s)"
     )
     app.start_safety_watchdog()
     try:

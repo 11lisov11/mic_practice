@@ -7,7 +7,7 @@
   `analog/high-impedance`.
 - `STEVAL J2-21` оставить `NC`.
 - Команды `NTC ON` и `NTC OFF` не поддерживаются.
-- Единственное реле, управляемое Blue Pill, - внешнее реле предзаряда `K1`
-  с управляющим выходом `PB4`.
+- Управляемых реле в текущей конфигурации нет. `Blue Pill PB4` также оставить
+  `NC`; прошивка удерживает его в `analog/high-impedance` и маскирует бит `0x08`.
 
-Подключение и проверка `K1`: [PRECHARGE_RELAY_TEST_RU.md](PRECHARGE_RELAY_TEST_RU.md).
+Актуальная схема силового ввода: [POWER_INPUT_NO_RELAY_RU.md](POWER_INPUT_NO_RELAY_RU.md).

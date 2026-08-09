@@ -229,6 +229,30 @@ def run_checks(repo: Path) -> list[CaseResult]:
     cases.append(check_range("pwm_deadtime", float(macro_num(defs, "PWM_DEADTIME_NS")), 600, 2000, " ns"))
     cases.append(check_range("command_timeout", float(macro_num(defs, "TIMEOUT_MS")), 100, 500, " ms"))
 
+    enable_confirm_frames = int(macro_num(defs, "ENABLE_CONFIRM_FRAMES"))
+    safety_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "safety.cpp"
+    enable_confirm_ok = (
+        2 <= enable_confirm_frames <= 8
+        and source_contains(safety_cpp, "s_enable_confirm_count < ENABLE_CONFIRM_FRAMES")
+        and source_contains(safety_cpp, "seq != s_enable_last_seq")
+        and source_contains(safety_cpp, "reset_enable_confirmation();")
+    )
+    if enable_confirm_ok:
+        cases.append(
+            ok_case(
+                "enable_requires_consecutive_fresh_frames",
+                {"frames": enable_confirm_frames, "distinct_sequence_required": True},
+            )
+        )
+    else:
+        cases.append(
+            fail_case(
+                "enable_requires_consecutive_fresh_frames",
+                "PWM enable must reject a single stale frame and require distinct sequence numbers",
+                {"frames": enable_confirm_frames},
+            )
+        )
+
     link_use_spi = int(macro_num(defs, "LINK_USE_SPI"))
     cases.append(ok_case("link_mode", {"LINK_USE_SPI": link_use_spi}) if link_use_spi == 0 else fail_case("link_mode", "PC-direct runtime expects UART LINK_USE_SPI=0", link_use_spi))
 
@@ -254,10 +278,80 @@ def run_checks(repo: Path) -> list[CaseResult]:
     zero = float(macro_num(defs, "ADC_VBUS_ZERO_RAW"))
     cal_raw = float(macro_num(defs, "ADC_VBUS_CAL_RAW"))
     cal_v = float(macro_num(defs, "ADC_VBUS_CAL_V"))
+    hv_cal_valid = int(macro_num(defs, "ADC_VBUS_HV_CALIBRATION_VALID"))
     if 0 <= zero < cal_raw <= 4095 and 250.0 <= cal_v <= 400.0 and math.isfinite(cal_v / (cal_raw - zero)):
         cases.append(ok_case("vbus_calibration", {"zero_raw": zero, "cal_raw": cal_raw, "cal_v": cal_v}))
     else:
         cases.append(fail_case("vbus_calibration", "invalid Vbus calibration constants", {"zero_raw": zero, "cal_raw": cal_raw, "cal_v": cal_v}))
+
+    hmi_source = (repo / "web_hmi" / "server.py").read_text(encoding="utf-8")
+    hmi_values: dict[str, float] = {}
+    for name in ("VBUS_RAW_ZERO_CAL", "VBUS_RAW_CAL", "VBUS_RAW_CAL_V"):
+        match = re.search(rf"^\s*{name}\s*=\s*([0-9]+(?:\.[0-9]+)?)\s*$", hmi_source, re.MULTILINE)
+        if match:
+            hmi_values[name] = float(match.group(1))
+    calibration_mirror_ok = (
+        hmi_values.get("VBUS_RAW_ZERO_CAL") == zero
+        and hmi_values.get("VBUS_RAW_CAL") == cal_raw
+        and hmi_values.get("VBUS_RAW_CAL_V") == cal_v
+    )
+    if calibration_mirror_ok:
+        cases.append(ok_case("vbus_hmi_raw_gate_matches_firmware", hmi_values))
+    else:
+        cases.append(
+            fail_case(
+                "vbus_hmi_raw_gate_matches_firmware",
+                "HMI raw Vbus gate must mirror Blue Pill calibration points",
+                {"firmware": {"zero_raw": zero, "cal_raw": cal_raw, "cal_v": cal_v}, "hmi": hmi_values},
+            )
+        )
+
+    hmi_hv_cal_match = re.search(
+        r"^\s*VBUS_HV_CALIBRATION_VALID\s*=\s*(True|False)\s*$",
+        hmi_source,
+        re.MULTILINE,
+    )
+    hmi_hv_cal_valid = hmi_hv_cal_match is not None and hmi_hv_cal_match.group(1) == "True"
+    if hv_cal_valid in (0, 1) and hmi_hv_cal_valid == bool(hv_cal_valid):
+        cases.append(ok_case("vbus_hv_calibration_gate_matches_firmware", {"valid": hv_cal_valid}))
+    else:
+        cases.append(
+            fail_case(
+                "vbus_hv_calibration_gate_matches_firmware",
+                "HMI and Blue Pill must agree whether the known-HV calibration point is valid",
+                {"firmware": hv_cal_valid, "hmi": hmi_hv_cal_valid},
+            )
+        )
+
+    mirror_files = {
+        "unoq": repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino",
+        "pc_direct": repo / "tools" / "unoq_web_server.py",
+    }
+    mirror_evidence: dict[str, dict[str, float]] = {}
+    mirror_ok = True
+    for label, path in mirror_files.items():
+        source = path.read_text(encoding="utf-8")
+        values: dict[str, float] = {}
+        for name in ("BP_VBUS_ZERO_RAW", "BP_VBUS_CAL_RAW", "BP_VBUS_CAL_V"):
+            match = re.search(rf"\b{name}\s*=\s*([0-9]+(?:\.[0-9]+)?)", source)
+            if match:
+                values[name] = float(match.group(1))
+        mirror_evidence[label] = values
+        mirror_ok = mirror_ok and (
+            values.get("BP_VBUS_ZERO_RAW") == zero
+            and values.get("BP_VBUS_CAL_RAW") == cal_raw
+            and values.get("BP_VBUS_CAL_V") == cal_v
+        )
+    if mirror_ok:
+        cases.append(ok_case("vbus_all_consumers_match_firmware", mirror_evidence))
+    else:
+        cases.append(
+            fail_case(
+                "vbus_all_consumers_match_firmware",
+                "UNO Q and PC-direct Vbus conversion must mirror Blue Pill calibration points",
+                mirror_evidence,
+            )
+        )
 
     vbus_oversamples = int(macro_num(defs, "ADC_VBUS_IDLE_OVERSAMPLES"))
     vbus_iir_shift = int(macro_num(defs, "ADC_VBUS_IIR_SHIFT"))
@@ -269,14 +363,36 @@ def run_checks(repo: Path) -> list[CaseResult]:
     use_temp = int(macro_num(defs, "USE_HEATSINK_TEMP"))
     temp_protect = int(macro_num(defs, "HEATSINK_TEMP_PROTECTION_ENABLE"))
     temp_mode = macro_str(defs, "HEATSINK_TEMP_SENSOR_MODE")
+    temp_oversamples = int(macro_num(defs, "HEATSINK_TEMP_OVERSAMPLES"))
     if use_temp == 1 and temp_protect == 1 and temp_mode == "1":
-        cases.append(ok_case("heatsink_temperature_protection", {"mode": "TSO", "protection": temp_protect}))
+        cases.append(
+            ok_case(
+                "heatsink_temperature_protection",
+                {"mode": "TSO", "protection": temp_protect},
+            )
+        )
     else:
         cases.append(fail_case("heatsink_temperature_protection", "current bench expects TSO temperature protection enabled", {"USE_HEATSINK_TEMP": use_temp, "HEATSINK_TEMP_PROTECTION_ENABLE": temp_protect, "HEATSINK_TEMP_SENSOR_MODE": temp_mode}))
 
+    adc_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "adc_currents.cpp"
+    temp_adc_settling_ok = (
+        4 <= temp_oversamples <= 256
+        and source_contains(adc_cpp, "i <= HEATSINK_TEMP_OVERSAMPLES")
+        and source_contains(adc_cpp, "if (i != 0U)")
+    )
+    if temp_adc_settling_ok:
+        cases.append(ok_case("heatsink_temperature_adc_settling", {"oversamples": temp_oversamples, "discard_first": True}))
+    else:
+        cases.append(
+            fail_case(
+                "heatsink_temperature_adc_settling",
+                "TSO sampling must discard the first post-switch ADC conversion and average a bounded burst",
+                {"oversamples": temp_oversamples},
+            )
+        )
+
     phase_c_conflict = same_pin(defs, "HEATSINK_TEMP_PORT", "HEATSINK_TEMP_PIN", "PHASE_MEAS_C_PORT", "PHASE_MEAS_C_PIN")
     safety_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "safety.cpp"
-    adc_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "adc_currents.cpp"
     virtual_c_ok = source_contains(safety_cpp, "PHASE_FLAG_C_VIRTUAL") and source_contains(adc_cpp, "PHASE_MEAS_CENTER_RAW")
     if phase_c_conflict and virtual_c_ok:
         cases.append(ok_case("phase_c_virtual_due_pb0_temp", {"PB0_conflict": True, "virtual_c": True}))
@@ -297,27 +413,27 @@ def run_checks(repo: Path) -> list[CaseResult]:
         and not source_contains(ipm_io_h, "ipm15_set_ntc")
         and not source_contains(safety_cpp, "EXT_NTC_RELAY")
     )
-    pb4_only_relay_ok = (
-        macro_str(defs, "PRECHARGE_RELAY_PORT") == "GPIOB"
+    pb4_relay_disabled_ok = (
+        int(macro_num(defs, "USE_PRECHARGE_RELAY")) == 0
+        and macro_str(defs, "PRECHARGE_RELAY_PORT") == "GPIOB"
         and macro_str(defs, "PRECHARGE_RELAY_PIN") == "GPIO_PIN_4"
-        and source_contains(safety_cpp, "EXT_PRECHARGE_RELAY")
+        and source_contains(ipm_io_cpp, "gpio_analog_init(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN)")
     )
-    if pb1_unused_ok and pb4_only_relay_ok:
-        cases.append(ok_case("pb4_only_relay_pb1_unused", {"PB4": "precharge relay", "PB1": "analog/high-impedance"}))
+    if pb1_unused_ok and pb4_relay_disabled_ok:
+        cases.append(ok_case("pb4_precharge_disabled_pb1_unused", {"PB4": "analog/high-impedance", "PB1": "analog/high-impedance"}))
     else:
-        cases.append(fail_case("pb4_only_relay_pb1_unused", "PB4 must be the only relay GPIO; PB1/J2-21 must stay high-impedance"))
+        cases.append(fail_case("pb4_precharge_disabled_pb1_unused", "PB4 and PB1/J2-21 must stay high-impedance when K1 is absent"))
 
-    relay_pin_readback_ok = (
+    relay_reply_forced_off_ok = (
         source_contains(ipm_io_h, "ipm15_precharge_relay_pin_active")
-        and source_contains(ipm_io_cpp, "HAL_GPIO_ReadPin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN)")
-        and source_contains(safety_cpp, "ext_reply |= EXT_PRECHARGE_RELAY")
+        and source_contains(ipm_io_cpp, "return false;")
         and source_contains(safety_cpp, "ext_reply &= (uint8_t)(~EXT_PRECHARGE_RELAY)")
-        and source_contains(main_cpp, "if (ipm15_precharge_relay_pin_active())")
+        and source_contains(safety_cpp, "#if USE_PRECHARGE_RELAY")
     )
-    if relay_pin_readback_ok:
-        cases.append(ok_case("pb4_reply_uses_gpio_pin_readback", {"reply": "PB4 GPIO IDR", "contact_feedback": False}))
+    if relay_reply_forced_off_ok:
+        cases.append(ok_case("precharge_reply_forced_off", {"reply_bit_0x08": 0, "relay_present": False}))
     else:
-        cases.append(fail_case("pb4_reply_uses_gpio_pin_readback", "precharge reply must reflect the PB4 pin level instead of echoing only the requested flag"))
+        cases.append(fail_case("precharge_reply_forced_off", "precharge status bit must stay cleared when K1 is absent"))
 
     fan_control_cpp = repo / "bluepill_uart_pwm_pio" / "src" / "fan_control.cpp"
     fan_control_text = fan_control_cpp.read_text(encoding="utf-8", errors="replace")
@@ -379,23 +495,23 @@ def run_checks(repo: Path) -> list[CaseResult]:
             "float freq = g_pwm_enabled ? g_freq_ref : g_freq_cmd;",
             "bool show_rpm = g_pwm_enabled",
             "(freq * 60.0f) / POLE_PAIRS",
-            "g_ext_flags & BP_EXT_PRECHARGE_RELAY",
+            "static const bool BP_PRECHARGE_RELAY_PRESENT = false;",
             "g_pwm_enabled && !g_estop_latched",
         )
     )
     if matrix_feedback_ok:
-        cases.append(ok_case("unoq_matrix_shows_command_relay_and_pwm", {"digits": "frequency/RPM", "left": "relay", "right": "PWM"}))
+        cases.append(ok_case("unoq_matrix_shows_command_and_pwm", {"digits": "frequency/RPM", "left": "reserved/off", "right": "PWM"}))
     else:
-        cases.append(fail_case("unoq_matrix_shows_command_relay_and_pwm", "UNO Q matrix must expose frequency/RPM plus relay/PWM markers"))
+        cases.append(fail_case("unoq_matrix_shows_command_and_pwm", "UNO Q matrix must expose frequency/RPM and PWM while the legacy relay marker stays disabled"))
     hard_stop_body = unoq_text.split("static void hard_stop(bool clear_cmd, bool force_link) {", 1)
     hard_stop_releases_relay = bool(
         len(hard_stop_body) == 2
         and hard_stop_body[1].split("static void request_normal_stop()", 1)[0].find("BP_EXT_PRECHARGE_RELAY") >= 0
     )
     if hard_stop_releases_relay:
-        cases.append(ok_case("unoq_every_hard_stop_releases_precharge_relay"))
+        cases.append(ok_case("unoq_every_hard_stop_clears_legacy_precharge_bit"))
     else:
-        cases.append(fail_case("unoq_every_hard_stop_releases_precharge_relay", "hard_stop must clear PB4 precharge relay output"))
+        cases.append(fail_case("unoq_every_hard_stop_clears_legacy_precharge_bit", "hard_stop must clear the reserved precharge bit"))
     ext_flag_body = unoq_text.split("static void ext_flag_set(uint8_t flag, bool on) {", 1)
     ext_flag_immediate = bool(
         len(ext_flag_body) == 2
@@ -405,7 +521,7 @@ def run_checks(repo: Path) -> list[CaseResult]:
     if ext_flag_immediate:
         cases.append(ok_case("unoq_service_outputs_send_immediate_safe_frame"))
     else:
-        cases.append(fail_case("unoq_service_outputs_send_immediate_safe_frame", "PB4/PFC changes must immediately reach Blue Pill while PWM is off"))
+        cases.append(fail_case("unoq_service_outputs_send_immediate_safe_frame", "PFC/service-output changes must immediately reach Blue Pill while PWM is off"))
     unoq_uart_match = re.search(r"\bNUCLEO_UART_BAUD\s*=\s*([0-9]+)\s*;", unoq_text)
     bluepill_uart_baud = int(macro_num(defs, "UART_BAUD"))
     if unoq_uart_match is None:

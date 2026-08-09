@@ -103,16 +103,18 @@ static const uint8_t BP_EXT_RESERVED_0 = 0x01;
 static const uint8_t BP_EXT_PFC = 0x02;
 static const uint8_t BP_EXT_BRAKE_PWM = 0x04;
 static const uint8_t BP_EXT_PRECHARGE_RELAY = 0x08;
+// Wire-protocol compatibility only. The current hardware does not install K1,
+// so no command may assert the legacy precharge relay bit.
+static const bool BP_PRECHARGE_RELAY_PRESENT = false;
 static const uint8_t BP_CMD_FAN_DUTY_LO = 17;
 static const uint8_t BP_CMD_FAN_DUTY_HI = 18;
 static const uint8_t BP_RSP_FAN_DUTY_Q8 = 22;
 static const uint8_t BP_RSP_FAN_TACH_X30 = 30;
 static const float BP_FAN_TACH_RPM_STEP = 30.0f;
-// STEVAL J2-14 has a bus-off offset. Live calibration:
-// Historical two-point calibration retained until a new known-HV capture is made.
-// Current bus-off input is 0.09 V at PA5 and raw ~=123 after the ADC acquisition fix.
-static const uint16_t BP_VBUS_ZERO_RAW = 1763U;
-static const uint16_t BP_VBUS_CAL_RAW = 3256U;
+// New Blue Pill zero capture; the high point remains provisional and HV arming
+// is blocked by the HMI until a known-voltage capture is recorded.
+static const uint16_t BP_VBUS_ZERO_RAW = 1966U;
+static const uint16_t BP_VBUS_CAL_RAW = 3459U;
 static const float BP_VBUS_CAL_V = 315.0f;
 static const uint32_t BP_VBUS_STALE_MS = 500;
 static const float BP_TEMP_VREF = 3.3f;
@@ -1428,7 +1430,11 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       const char *p = starts_ci(cmd, "PRECHARGE") ? (cmd + 9) : (cmd + 5);
       while (*p == ' ' || *p == '\t') p++;
       if (icmp(p, "ON") || icmp(p, "1")) {
-        ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+        if (BP_PRECHARGE_RELAY_PRESENT) {
+          ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+        } else {
+          handled = false;
+        }
       } else if (icmp(p, "OFF") || icmp(p, "0")) {
         ext_flag_set(BP_EXT_PRECHARGE_RELAY, false);
       } else {
@@ -1883,7 +1889,11 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     const char *p = starts_ci(cmd, "PRECHARGE") ? (cmd + 9) : (cmd + 5);
     while (*p == ' ' || *p == '	') p++;
     if (icmp(p, "ON") || icmp(p, "1")) {
-      ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+      if (BP_PRECHARGE_RELAY_PRESENT) {
+        ext_flag_set(BP_EXT_PRECHARGE_RELAY, true);
+      } else {
+        handled = false;
+      }
     } else if (icmp(p, "OFF") || icmp(p, "0")) {
       ext_flag_set(BP_EXT_PRECHARGE_RELAY, false);
     } else {
@@ -2283,6 +2293,10 @@ static uint16_t bp_scalar_vmag_q15() {
   return q15_unit(clampf(mag_pu, 0.0f, 0.95f));
 }
 static void ext_flag_set(uint8_t flag, bool on) {
+  if (flag == BP_EXT_PRECHARGE_RELAY && !BP_PRECHARGE_RELAY_PRESENT) {
+    g_ext_flags &= (uint8_t)(~BP_EXT_PRECHARGE_RELAY);
+    return;
+  }
   if (on) {
     g_ext_flags |= flag;
   } else {
@@ -2652,6 +2666,9 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   bool io_test_eff = enable && g_io_test_mode && !g_pwm_enabled;
   uint8_t mode = BP_MODE_OFF;
   uint8_t ext_flags = g_ext_flags;
+  if (!BP_PRECHARGE_RELAY_PRESENT) {
+    ext_flags &= (uint8_t)(~BP_EXT_PRECHARGE_RELAY);
+  }
   uint16_t brake_q15 = g_brake_q15;
   uint16_t fan_q15 = g_fan_q15;
   int16_t bp_id_q15 = 0;
@@ -3426,8 +3443,8 @@ static void matrix_update() {
     matrix_set_pixel(x0 + 7, y0 + 4);
     matrix_set_pixel(x0 + 7, y0 + 5);
   }
-  // Physical bench indicators: left=precharge command, right=PWM enabled.
-  if ((g_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
+  // The left marker is reserved for legacy K1 hardware; it stays dark now.
+  if (BP_PRECHARGE_RELAY_PRESENT && (g_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
     matrix_set_pixel(0, 0);
     matrix_set_pixel(0, 1);
   }

@@ -45,7 +45,11 @@ void ipm15_io_init(void) {
 
   gpio_analog_init(UNUSED_STEVAL_J2_21_PORT, UNUSED_STEVAL_J2_21_PIN);
   gpio_out_init(PFC_SYNC_PORT, PFC_SYNC_PIN);
+#if USE_PRECHARGE_RELAY
   gpio_out_init(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
+#else
+  gpio_analog_init(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
+#endif
 
   ipm15_set_pfc_sync(false);
   ipm15_set_precharge_relay(false);
@@ -93,14 +97,22 @@ void ipm15_set_pfc_sync(bool on) {
 }
 
 void ipm15_set_precharge_relay(bool on) {
+#if USE_PRECHARGE_RELAY
   bool active = on ? true : false;
   GPIO_PinState st = (active == (PRECHARGE_RELAY_ACTIVE_STATE != 0)) ? GPIO_PIN_SET : GPIO_PIN_RESET;
   HAL_GPIO_WritePin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN, st);
+#else
+  (void)on;
+#endif
 }
 
 bool ipm15_precharge_relay_pin_active(void) {
+#if USE_PRECHARGE_RELAY
   const GPIO_PinState state = HAL_GPIO_ReadPin(PRECHARGE_RELAY_PORT, PRECHARGE_RELAY_PIN);
   return (state == GPIO_PIN_SET) == (PRECHARGE_RELAY_ACTIVE_STATE != 0);
+#else
+  return false;
+#endif
 }
 
 void ipm15_set_brake_pwm(float duty) {

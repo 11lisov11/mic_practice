@@ -16,6 +16,12 @@
 #define PWM_MAX_PERCENT 95
 
 #define TIMEOUT_MS 300
+// Reject a single stale ENABLE frame after STOP. UNO Q emits a fresh frame
+// every 50 ms, so three distinct sequence numbers add about 100 ms to startup.
+#define ENABLE_CONFIRM_FRAMES 3U
+#if ENABLE_CONFIRM_FRAMES < 2 || ENABLE_CONFIRM_FRAMES > 8
+#error "ENABLE_CONFIRM_FRAMES must be between 2 and 8"
+#endif
 
 // STEVAL-IPM15B: EM_STOP on J2-1 is the shutdown line (active-low on the IPM).
 // EM_STOP is driven as a GPIO output by default.
@@ -40,11 +46,14 @@
 #define ADC_I_SCALE (1.0f / 2048.0f)
 // STEVAL J2-14 HV bus telemetry is sampled on PA5 in UART mode.
 // UM2014 bus-voltage output is offset near mid-scale when the DC bus is off.
-// Historical two-point calibration retained until a new known-HV capture is made.
-// Current bus-off input is 0.09 V at PA5 and raw ~=123 after the ADC acquisition fix.
-#define ADC_VBUS_ZERO_RAW 1763U
-#define ADC_VBUS_CAL_RAW 3256U
+// New Blue Pill zero capture (100 samples, HV disconnected):
+// mean=1966.35, std=5.45, range=1958..1979. The high point below preserves
+// the previous counts-per-volt only as a temporary display scale. HV start
+// stays blocked until a known-voltage capture replaces ADC_VBUS_CAL_RAW.
+#define ADC_VBUS_ZERO_RAW 1966U
+#define ADC_VBUS_CAL_RAW 3459U
 #define ADC_VBUS_CAL_V 315.0f
+#define ADC_VBUS_HV_CALIBRATION_VALID 0
 #define ADC_VBUS_SCALE (ADC_VBUS_CAL_V / ((float)ADC_VBUS_CAL_RAW - (float)ADC_VBUS_ZERO_RAW))
 #define ADC_VBUS_IDLE_OVERSAMPLES 64U
 #define ADC_VBUS_IIR_SHIFT 3U
@@ -64,6 +73,13 @@
 #define HEATSINK_TEMP_PIN GPIO_PIN_0
 #define HEATSINK_TEMP_ADC_CHANNEL ADC_CHANNEL_8
 #define HEATSINK_TEMP_SAMPLE_MS 100
+// PB0/TSO can be high impedance. Discard the first conversion after the ADC
+// channel switch, then average a short burst to prevent previous-channel
+// charge from appearing as a false temperature step.
+#define HEATSINK_TEMP_OVERSAMPLES 16U
+#if HEATSINK_TEMP_OVERSAMPLES < 4 || HEATSINK_TEMP_OVERSAMPLES > 256
+#error "HEATSINK_TEMP_OVERSAMPLES must be between 4 and 256"
+#endif
 #ifndef HEATSINK_TEMP_PROTECTION_ENABLE
 #define HEATSINK_TEMP_PROTECTION_ENABLE 1
 #endif
@@ -115,8 +131,12 @@
 #define PFC_SYNC_PIN GPIO_PIN_5       // J2-27 PFC sync
 #define PFC_SYNC_ACTIVE_STATE 1
 
+// The current hardware revision has no controllable precharge/bypass relay.
+// Keep PB4 electrically quiet so legacy protocol bit 0x08 can never energize
+// an accidentally connected driver.
+#define USE_PRECHARGE_RELAY 0
 #define PRECHARGE_RELAY_PORT GPIOB
-#define PRECHARGE_RELAY_PIN GPIO_PIN_4  // MIC_AI RELAY1 driver input via R2/Q1
+#define PRECHARGE_RELAY_PIN GPIO_PIN_4
 #define PRECHARGE_RELAY_ACTIVE_STATE 1
 
 #define USE_BRAKE_PWM 1

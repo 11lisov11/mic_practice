@@ -1,0 +1,1215 @@
+                                                                               UMxxxx
+                                                                           User manual
+                                STM32 MCSDK – Tools – ST MC Workbench
+
+
+
+
+Introduction
+The STM32 Motor Control Software Development Kit (MC SDK), is part of the STMicroelectronics motor-
+control ecosystem. It includes:
+  • ST MC FOC FW library for Permanent-Magnet Synchronous Motor (PMSM) field-oriented control
+      (FOC)
+  • ST MC 6 Step FW Library
+  • ST Motor Profiler
+  • ST Motor Pilot
+  • ST MC Workbench software tool, a Graphical User Interface (GUI) for the configuration of MC SDK
+      firmware library parameters
+
+This User’s Manual explains How To use the ST MC Workbench software tool included with this MC SDK.
+Contents
+Introduction ......................................................................................................................................................... 1
+List of figures ........................................................................................................................................................ 4
+1.     General information .................................................................................................................................... 7
+2.     Related documents ...................................................................................................................................... 8
+3.     The ST Motor Control Workbench ................................................................................................................. 9
+     3.1        Editing field behavior........................................................................................................................10
+     3.2        Hardware Cards ................................................................................................................................11
+       3.2.1         Cards Information ........................................................................................................................11
+       3.2.2         Cards Actions ................................................................................................................................11
+       3.2.3         Hardware Preferred .....................................................................................................................12
+     3.3        Project Composer Page ....................................................................................................................13
+       3.3.1         Composer Start View ...................................................................................................................13
+       3.3.2         Motor ...........................................................................................................................................13
+       3.3.3         Board ............................................................................................................................................18
+       3.3.4         Composer Flow.............................................................................................................................21
+       3.3.5         Pack ..............................................................................................................................................26
+     3.4        Summary Page ..................................................................................................................................27
+       3.4.1         Summary Header .........................................................................................................................27
+       3.4.2         Project’s Available Features .........................................................................................................28
+       3.4.3         Summary Schema .........................................................................................................................29
+       3.4.4         Summary Footer...........................................................................................................................30
+     3.5        Loading an existing Project...............................................................................................................31
+     3.6        Project view ......................................................................................................................................32
+       3.6.3         Toolbar area .................................................................................................................................33
+       3.6.4         Hardware information area .........................................................................................................35
+       3.6.5         Project steps and hardware configuration details .......................................................................37
+     3.7        Project wizard ...................................................................................................................................38
+       3.7.3         Project Hw & Info .........................................................................................................................38
+       3.7.4         Motor ...........................................................................................................................................40
+       3.7.5         Power Supply................................................................................................................................42
+       3.7.6         PWM Generation .........................................................................................................................42
+3.7.7    Speed Sensing Selection...............................................................................................................45
+3.7.8    Current Sensing ............................................................................................................................46
+3.7.9    Bus Voltage Sensing .....................................................................................................................56
+3.7.10       Temperature Sensing ...............................................................................................................57
+3.7.11       Speed Sensing Config ...............................................................................................................58
+3.7.12       Driver Protection .....................................................................................................................67
+3.7.13       Drive Settings ...........................................................................................................................68
+3.7.14       Stage Configuration .................................................................................................................74
+3.7.15       User Interface ..........................................................................................................................75
+3.7.16       Application Configuration ........................................................................................................76
+3.7.17       Pin usage & Hardware Changes ...............................................................................................77
+List of figures
+Figure 1: ST MC Workbench – Icon ...................................................................................................................... 9
+Figure 2: ST MC Workbench – GUI (Home View)................................................................................................. 9
+Figure 3: ST MC Workbench – Editing field .......................................................................................................10
+Figure 4: ST MC Workbench – Unit and Legend Area........................................................................................10
+Figure 5: ST MC Workbench – Cards (Motor-Control-Power-Inverter-Adapter) ..............................................11
+Figure 6: ST MC Workbench – Cards Actions .....................................................................................................12
+Figure 7: ST MC Workbench – Cards – Delete Custom Hardware Warning ......................................................12
+Figure 8: ST MC Workbench – Composer window ............................................................................................13
+Figure 9: ST MC Workbench – New Project window – Motors ..........................................................................14
+Figure 10: ST MC Workbench – New Project – Motors – Filters ........................................................................14
+Figure 11: ST MC Workbench – New Project Window – Selected Motor .........................................................15
+Figure 12: ST MC Workbench – New Project window – Dual Motor selection .................................................16
+Figure 13: ST MC Workbench – New Project window – Clone/Save as Motor .................................................17
+Figure 14: ST MC Workbench – New Project window – Save as Motor Error ...................................................17
+Figure 15: ST MC Workbench – New Project Window – Board Selection .........................................................18
+Figure 16: ST MC Workbench – New Project Window – Board Selection Power Filters ...................................19
+Figure 17: ST MC Workbench – New Project Window – Board Selection Control Filters .................................20
+Figure 18: ST MC Workbench – New Project Window – Board Selection Inverter Filters ................................20
+Figure 19: ST MC Workbench – New Project Window – Board Selection Cases ...............................................22
+Figure 20: ST MC Workbench – New Project Window – Board Selection Need Adapter .................................23
+Figure 21: ST MC Workbench – New Project Window – Pop-up for Adapter required ....................................23
+Figure 22: ST MC Workbench – New Project Window – Adapter Selection dialog ...........................................24
+Figure 23: ST MC Workbench – New Project Window – Board Connections ....................................................25
+Figure 24: ST MC Workbench – New Project Window – Pack Selection Dialog ................................................26
+Figure 25: ST MC Workbench – New Project Window – Summary Board Selection and Connections.............27
+Figure 26: ST MC Workbench – New Project Window – Summary Header ......................................................27
+Figure 27: ST MC Workbench – New Project Window – Summary Algorithm not available ............................28
+Figure 28: ST MC Workbench – New Project Window – Summary Available features .....................................28
+Figure 29: ST MC Workbench – New Project Window – Summary Warning Report ........................................29
+Figure 30: ST MC Workbench – New Project Window – Summary Stage motor ..............................................29
+Figure 31: ST MC Workbench – New Project Window – Summary Schema .....................................................29
+Figure 32: ST MC Workbench – Project view (global view) ...............................................................................32
+Figure 33: ST MC Workbench – Close Project confirmation window ................................................................33
+Figure 34: ST MC Workbench – Save menu .......................................................................................................33
+Figure 35: ST MC Workbench – Project Save As window ..................................................................................34
+Figure 36: ST MC Workbench – Save & Generate .............................................................................................34
+Figure 37: ST MC Workbench – Generate – Hardware Changes .......................................................................34
+Figure 38: ST MC Workbench – Project generation ..........................................................................................35
+Figure 39: ST MC Workbench – About ...............................................................................................................35
+Figure 40: ST MC Workbench – MCU.................................................................................................................36
+Figure 41: ST MC Workbench – Control Board ..................................................................................................36
+Figure 42: ST MC Workbench – Power Board ....................................................................................................37
+Figure 43: ST MC Workbench – Project Hw & Info ............................................................................................39
+Figure 44: ST MC Workbench – Project Hw & Info - Change motor ..................................................................40
+Figure 45: ST MC Workbench – Motor ..............................................................................................................41
+Figure 46: ST MC Workbench – Motor – Hall Effect – Quadrature Encoder .....................................................42
+Figure 47: ST MC Workbench – Power Supply ..................................................................................................42
+Figure 48: ST MC Workbench - PWM Generation - High and Low Side ............................................................43
+Figure 49: ST MC Workbench - PWM Generation – High Side and One Enable ................................................44
+Figure 50: ST MC Workbench – PWM Generation – High Side and Three Enables ...........................................45
+Figure 51: ST MC Workbench – Speed Sensing Selection..................................................................................46
+Figure 52: ST MC Workbench – Speed Sensing Selection Modes .....................................................................46
+Figure 53: ST MC Workbench – Current Sensing – FOC 3Sh External amplification .........................................47
+Figure 54: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – Internal Gain ........................48
+Figure 55: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – External Gain .......................49
+Figure 56: ST MC Workbench – Current Sensing – Two Insulated Current Sensor ...........................................50
+Figure 57: ST MC Workbench – Current Sensing – FOC 3 Shunt External Amp – HSO ......................................51
+Figure 58: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – HSO ......................................52
+Figure 59: ST MC Workbench – 6 Step – Current Mode ....................................................................................53
+Figure 60: ST MC Workbench – 6 Step – Current Mode disabled .....................................................................53
+Figure 61: ST MC Workbench – 6 Step – Current Reading ................................................................................54
+Figure 62: ST MC Workbench – 6 Step – Current Reading not available...........................................................55
+Figure 63: ST MC Workbench – Current Sensing – Over Current Protection External Comparators ................56
+Figure 64: ST MC Workbench – Current Sensing – Over Current Protection Internal Comparators ................56
+Figure 65: ST MC Workbench – Bus Voltage Sensing ........................................................................................57
+Figure 66: ST MC Workbench – Temperature Sensing ......................................................................................58
+Figure 67: ST MC Workbench – Speed Sensing – Observer PLL ........................................................................59
+Figure 68: ST MC Workbench – Speed Sensing – Observer Cordic ...................................................................59
+Figure 69: ST MC Workbench – Speed Sensing – High Sensitivity Observer (Sensorless).................................60
+Figure 70: ST MC Workbench – Speed Sensing – Quadrature Encoder ............................................................61
+Figure 71: ST MC Workbench – Speed Sensing with 6 step algo – Hall Sensor .................................................62
+Figure 72: ST MC Workbench – Speed Sensing – Sensorless start-up parameters ...........................................63
+Figure 73: ST MC Workbench – Speed Sensing – HSO Sensorless start-up parameters ...................................64
+Figure 74: ST MC Workbench – 6 Step – Sensorless ADC ..................................................................................65
+Figure 75: ST MC Workbench – 6 Step – Sensorless – Start-up parameters .....................................................66
+Figure 76: ST MC Workbench –Driver Protection..............................................................................................67
+Figure 77: ST MC Workbench – Drive Settings – Speed Control .......................................................................68
+Figure 78: ST MC Workbench – Drive Settings – Torque Control ......................................................................69
+Figure 79: ST MC Workbench – Drive Settings – Position Control ....................................................................70
+Figure 80: ST MC Workbench – Drive Settings – FOC Speed Control (for HSO) ................................................71
+Figure 81: ST MC Workbench – Drive Settings – FOC Torque Control (for HSO) ..............................................72
+Figure 82: ST MC Workbench – Drive Settings – 6 Step ....................................................................................73
+Figure 83: ST MC Workbench – Stage Configuration.........................................................................................74
+Figure 84: ST MC Workbench – User Interface ..................................................................................................75
+Figure 85: ST MC Workbench – Application Configuration ...............................................................................76
+Figure 86: ST MC Workbench – Pin Usage .........................................................................................................77
+Figure 87: ST MC Workbench – Hardware Changes ..........................................................................................78
+   1. General information
+The ST MC Workbench software tool provides an easy and friendly way to configure your MC application
+based on your hardware setup.
+After the configuration, the user can generate the project file and use it together with STM32CubeMX
+software for further application extension.
+
+The ST MC Workbench runs on PC systems using Windows® OS, requiring a USB type A connector.
+    2. Related documents
+
+Available from www.arm.com
+
+•   Cortex®-M0 Technical Reference Manual, available from: http://infocenter.arm.com
+•   Cortex®-M3 Technical Reference Manual, available from: http://infocenter.arm.com
+•   Cortex®-M4 Technical Reference Manual, available from: http://infocenter.arm.com
+
+
+
+Available from www.st.com or your STMicroelectronics sales office
+
+•   STM32C0xx datasheets
+•   STM32F0xx datasheets
+•   STM32F3xx datasheets
+•   STM32F4xx datasheets
+•   STM32G4xx datasheets
+•   STM32G0xx datasheets
+•   STM32F7xx datasheets
+•   STM32H5xx datasheets
+•   STM32H7xx datasheets
+•   STM32L4xx datasheets
+•   STM32U5xx datasheets
+    3. The ST Motor Control Workbench
+Launch the “ST Motor Control Workbench” software tool by clicking either its icon (Cf. Figure 1: ST MC
+Workbench – Icon) or by running it directly from the installation folder.
+
+
+
+
+                                        Figure 1: ST MC Workbench – Icon
+
+The first view presented by the ST MC Workbench GUI is a home area (start-up page), containing the
+following sections:
+1. The Toolbar (Id. 1 in Figure 2: ST MC Workbench – GUI (Home View)), used to start a New Project or
+     Load an already existing one, launch the ST Motor Profiler or Motor Pilot software tools, or learn more
+     about software’s documentation. Here It’s also possible to change the language and customize
+   application settings from the Setting button (     ).
+2. The “Recent projects” area (Id. 2 in Figure 2: ST MC Workbench – GUI (Home View)), used to load an
+   already existing project recently modified by the user.
+3. The “Examples projects” area (Id. 3 in Figure 2: ST MC Workbench – GUI (Home View)) used to load one
+   of the project samples.
+
+
+
+
+                                   Figure 2: ST MC Workbench – GUI (Home View)
+3.1       Editing field behavior
+Frequently encountered elements in the ST MC Workbench are the Edit and Combo fields. They present the
+following format and behavior:
+
+
+
+
+                                         Figure 3: ST MC Workbench – Editing field
+
+•     Label area: this area contains the field’s name, which may or may not show a numbered notification
+      bullet providing additional info about the field. The color of the bullet specifies its type, that may
+      indicate a info (blue), warning (orange) or error (red) message. The message will pop-up on mouse over.
+•     Editing area: this area lets the user set the field’s value. The field (edit or combo) can assume different
+      styles depending on its editing state:
+          − Field with default value: no value specified by user (value in light grey). The default value can be
+               changed silently by the application itself.
+                                           Edit fields                      Combo fields
+
+
+          −   Field with default value in editing mode (value in light grey): The user can edit the field’s value.
+              By clicking on the upper-right small icon, the user can transform the value shown in the field
+              from default value to explicit user value      ).
+                                                             Edit fields
+
+
+          −   Field with explicit user value (value in black). The explicit user value cannot be recalculated by
+              the application. The user can reset the field to its default value by pressing the upper-right small
+              icon ( ).
+                                           Edit fields                         Combo fields
+
+
+          −   Field with error on value (value in red): The field needs to be reviewed. The user can edit the
+              value or reset the field to its default value by pressing the upper-right icon.
+                                            Edit fields                    Combo fields
+
+
+
+
+•     Unit and legend area: this area is optional. It indicates the unit and/or the legend of the field (i.e., valid
+      range) (Figure 4: ST MC Workbench – Unit and Legend Area).
+
+
+
+                                     Figure 4: ST MC Workbench – Unit and Legend Area
+3.2      Hardware Cards
+The Hardware Cards (or simply Cards) are frequently used in the whole Workbench. They are UI elements
+that represent the hardware (Motor, Control, Power, Inverter, Adapter) (Figure 5: ST MC Workbench –
+Cards (Motor-Control-Power-Inverter-Adapter)). Depending on the context the cards are used in, or the
+hardware that they represent, the cards can present different actions and information.
+
+
+
+
+                        Figure 5: ST MC Workbench – Cards (Motor-Control-Power-Inverter-Adapter)
+
+3.2.1        Cards Information
+In most cases the cards consist of four sections:
+
+•     the header, which contains the name of the associated hardware and an optional small icon based on
+      hardware’s type;
+•     the image of the physical board or a default one for each hardware type;
+•     the info area, which contains specific info relative to the hardware;
+•     the action icon, shown in the middle right;
+•     the optional footer, which presents two hyperlinks to www.st.com pointing to external documentation
+      about the Data Brief or the Product folder of the board.
+
+3.2.2        Cards Actions
+The middle right icon of the card identifies the hardware owner and allows specific actions for the
+
+hardware; the icon    identifies the hardware provided by MC Workbench; the icon                   identifies a user
+custom hardware. The available actions for each kind of hardware:
+                                         Figure 6: ST MC Workbench – Cards Actions
+
+Hovering on the action icon with the mouse, additional buttons will appear (Figure 6: ST MC Workbench –
+Cards Actions):
+
+•   The View button ( ) lets the user open the related board with the external software Board Designer in
+    view mode. This is available with provided hardware only.
+•   The Clone button ( ) lets the user clone the relative hardware with the external software Board
+    Designer. This is available with both provided and user custom hardware.
+•   The Edit button ( ) lets the user edit the relative hardware with the external software Board Designer.
+    This is available with user custom hardware only.
+•   The Delete button ( ) lets the user delete the relative hardware. This is available with user custom
+    hardware only. Warning: the delete action cannot be reverted and the Hardware data will be lost; a
+    dedicated warning message will be shown, asking the user to confirm the action (Figure 7: ST MC
+    Workbench – Cards – Delete Custom Hardware Warning).
+
+
+
+
+                           Figure 7: ST MC Workbench – Cards – Delete Custom Hardware Warning
+
+3.2.3         Hardware Preferred
+Any kind of hardware can be flagged as preferred using the star icon (               ) that appears when the mouse
+overs the associated card. If the hardware is not flagged as preferred, the star will be empty ( ). Clicking
+on it will set the relative hardware as preferred, and the star will become always visible, filled with an
+orange color ( ). Clicking it while it is in the preferred state, will remove the hardware from the preferred
+list, while the aspect and behavior of the star icon will be restored as before. The preferred information
+changes the order of displayed cards when the relative dialog is refreshed; the cards are sorted first by
+preferred (    ), after by then user (      ) and last by provided (       ) hardware.
+3.3     Project Composer Page
+The “New Project” button (Cf. Figure 2: ST MC Workbench – GUI (Home View)) leads to the Composer page
+(Figure 8: ST MC Workbench – Composer window). Here the user can define a new project by choosing the
+hardware and the relative connections step by step. The Composer page is a full featured section that helps
+and guides the user build a new project in an interactive and easy way.
+
+
+
+
+                                     Figure 8: ST MC Workbench – Composer window
+
+3.3.1       Composer Start View
+At start, the Composer Page lets the user choose whether to start creating the project from a Pack (Id. 1 in
+Figure 8: ST MC Workbench – Composer window), a Board (Id. 2 in Figure 8: ST MC Workbench – Composer
+window ) or a Motor (Id. 3 in Figure 8: ST MC Workbench – Composer window); there is no preferable order,
+the user can start from any of the options with no limitation.
+
+3.3.2       Motor
+When clicking on Motor, a dialog containing the list of available motors pops up (Figure 9: ST MC Workbench –
+New Project window – Motors), allowing the user to select the desired one. In the dialog it is possible to search
+for a specific motor through the search field placed in the right top (id 1 in Figure 9: ST MC Workbench – New
+Project window – Motors). A counter placed next to the field shows the number of visible motors over the
+
+available motors. It’s also possible to refresh the motor list by pressing the Refresh button (       ) and to
+import a new motor from the Import button (          ).
+                                Figure 9: ST MC Workbench – New Project window – Motors
+
+Placed on the top left (Id. 2 in Figure 9: ST MC Workbench – New Project window – Motors), the Filters button gives
+options to filter motors by specific parameters (advanced filter).
+
+
+
+
+                                Figure 10: ST MC Workbench – New Project – Motors – Filters
+
+
+A red bubble (     ) keeps count of the active filters; the relative summary is also displayed right next to it on
+
+the right side (                   ). Clicking the same red bubble resets all active filters, as described by
+the bubble’s UI when hovered by the mouse.
+
+Selecting a motor card with a single click and then pressing the Ok button (        ) placed on bottom right, or
+simply double clicking a motor card, will finalize the motor’s selection, closing the Select Motor dialog and
+adding the selected motor’s card to the main View. The Cancel button (                    ) in the bottom right or the
+ESC keyboard’s key will close the dialog without applying any changes.
+
+
+
+
+                         Figure 11: ST MC Workbench – New Project Window – Selected Motor
+3.3.2.1     Dual Motor
+When a first motor is already been added to the main view, an Add Motor button ( ) will appear under it
+(Figure 11: ST MC Workbench – New Project Window – Selected Motor). Clicking will start the procedure for
+the selection of the second motor, similarly to the one described for the first motor. Once the second motor
+is selected, the Composer Main View will appear in as described below (Figure 12: ST MC Workbench – New
+Project window – Dual Motor selection)
+
+
+
+
+                        Figure 12: ST MC Workbench – New Project window – Dual Motor selection
+
+
+It is possible to remove a motor from the main view by clicking the red recycle icon (           ) in the motor card,
+shown when the mouse overs the card.
+3.3.2.2     Clone Motor
+All the motors in the list (provided and user custom motors) can be cloned by pressing the Clone icon    ,
+visible in the middle right of motor card when the mouse overs the action icon.
+
+
+
+
+                       Figure 13: ST MC Workbench – New Project window – Clone/Save as Motor
+
+Clicking the Clone button will show a new form (Figure 13: ST MC Workbench – New Project window –
+Clone/Save as Motor), letting the user customize the new clone motor’s parameters. The clone motor will
+be saved with the name specified in the General Info Name field - assuming that no errors are found – when
+the OK button is pressed. The new clone motor will be shown in the list as a user custom motor. Pressing
+Cancel button will abort the cloning procedure, closing the form.
+
+
+
+
+                        Figure 14: ST MC Workbench – New Project window – Save as Motor Error
+
+When the user clones a custom motor, it is mandatory to specify a different name from the cloned one to
+avoid data overwrite. A message will pop up otherwise (Figure 14: ST MC Workbench – New Project window
+– Save as Motor Error)
+3.3.2.3     Import Motor
+
+On the top right, next to the search field, the Import button (       ) lets the user import a motor from a file.
+The click will open a system dialog box allowing the selection of the motor file, which will be validated
+before being locally stored in a dedicated subfolder inside the user’s system user area. If successfully
+validated, the motor will be correctly added and visible in the list as a “user custom motor”.
+
+3.3.3       Board
+Starting from Board by clicking on it, a Select Board dialog will pop up (Figure 15: ST MC Workbench – New
+Project Window – Board Selection). This dialog will show Power, Control and Inverter cards, all together
+sorted by type. The user can choose to select one of them in order to add it in the main view.
+
+
+
+
+                           Figure 15: ST MC Workbench – New Project Window – Board Selection
+The header of the dialog, placed at the top, consists of:
+      • the filtering options for each type,
+      • a single search text field for all the boards,
+      • the label indicating the currently visible boards over the total number,
+        • the Refresh button (        ) used to refresh the hardware list.
+The filtering options are similar for each of the three types. They consist of
+
+        •   the Visibility Button     activate/deactivate the boards’ visibility,
+        •   the Filters Button      opens a set of advanced filters,
+      • the Pin Button       sets the relative type as the only visible one.
+The hardware is displayed on the list using cards, according to the relative type’s filters.
+3.3.3.1 Power Filters
+
+
+
+
+                     Figure 16: ST MC Workbench – New Project Window – Board Selection Power Filters
+
+
+
+
+The Power Cards displayed in the dialog can be filtered with specific filters for this type of hardware, using
+the relative filter button placed on the header of the dialog.
+
+Power filters can filter powers based on:
+
+    •   Features: it refers to the power kind of feature that the board can implement. It supports multiple
+        selections in case multiple features are needed in a single board;
+    •   Connector type: it refers to the type of connector that the board is provided with. The supported
+        types of connectors are Morpho connector, MotorControlConnector connector or PCIe connector;
+    •   Rated Voltage: it refers to the voltage range at which the board is projected to work with;
+    •   Rated Current: it refers to the current range at which the board is projected to work with;
+    •   User boards only: it filters out the provided hardware, showing only the custom user boards.
+
+The number of active filters is shown as a red bubble on top of the Filters icon. By clicking on it, all the filters
+can be reset, as shown by the bubble UI when hovered by the mouse. Each filter can also be reset singularly
+by the relative buttons.
+
+3.3.3.2 Control Filters
+                     Figure 17: ST MC Workbench – New Project Window – Board Selection Control Filters
+
+
+
+
+The Control Cards displayed in the dialog can be filtered with specific filters for this type of hardware, using
+the relative filter button placed on the header of the dialog.
+
+Control filters can filter controls based on:
+
+    •   Features: it refers to the control kind of feature that the board can implement. It supports multiple
+        selections in case multiple features are needed in a single board;
+    •   Number of connectors: it refers to the number of connectors available to connect the board to the
+        powers or adapters. It can have up to two connectors.
+    •   MCU family: it refers to the family of the MCU built in the relative hardware. It supports multiple
+        selection in case different families of control hardware need to be shown at the same time;
+    •   User boards only: it filters out the provided hardware, showing only the custom user boards.
+
+The number of active filters is shown as a red bubble on top of the Filters icon. By clicking on it, all the filters
+can be reset, as shown by the bubble UI when hovered by the mouse. Each filter can also be reset singularly
+by the relative buttons.
+
+3.3.3.3 Inverter Filters
+The Inverter Cards displayed in the dialog can be filtered with specific filters for this type of hardware, using
+the relative filter button placed on the header of the dialog.
+
+
+
+
+                     Figure 18: ST MC Workbench – New Project Window – Board Selection Inverter Filters
+
+Inverter filters can filter inverters based on:
+
+    •   Control Features: it refers to the control kind of feature that the board can implement. It supports
+        multiple selections in case multiple features are needed in a single board;
+    •   Power Features: it refers to the power kind of feature that the board can implement. It supports
+        multiple selections in case multiple features are needed in a single board;
+    •   Number of motor drives: it refers to the number of motor drives available to connect the board to
+        the motors. It can have up to two motor drives;
+    •   MCU family: it refers to the family of the MCU built in the relative hardware. It supports multiple
+         selection in case different families of hardware need to be shown at the same time;
+    •    Rated Voltage: it refers to the voltage range at which the board is projected to work with;
+    •    Rated Current: it refers to the current range at which the board is projected to work with;
+    •    User boards only: it filters out the provided hardware, showing only the custom user boards.
+
+The number of active filters is shown as a red bubble on top of the Filters icon. By clicking on it, all the filters
+can be reset, as shown by the bubble UI when hovered by the mouse. Each filter can also be reset singularly
+by the relative buttons.
+
+Selecting a card with a single click and then pressing the Ok button (       ) placed on bottom right, or simply
+double clicking a card, will finalize the selection, closing the Select Board dialog and adding the selected
+hardware to the Main View. The Cancel button (           ) in the bottom right or the ESC keyboard’s key will
+close the dialog without applying any changes.
+
+3.3.4 Composer Flow
+Once the first selection has been made, the process will guide the user through the next steps, towards a
+correct configuration of the new project.
+
+A correct configuration is a set of hardware composed as one of the following possibilities:
+
+    -    For Single Motor configurations:
+
+
+        1)      CONTROL                ADAPTER               POWER                  MOTOR
+                                       optional
+
+
+        2)      INVERTER              MOTOR
+                                       MOTOR
+
+
+
+    -    For Dual Motor configurations:
+
+                                        ADAPTER                POWER                  MOTOR
+        3)       CONTROL                optional
+
+                                        ADAPTER                POWER                  MOTOR
+                                         optional
+
+
+
+                                          MOTOR
+
+        4)       INVERTER
+
+                                          MOTOR
+According to the already selected hardware, the UI will suggest the rest of the hardware needed to reach a
+correct configuration using placeholders.
+
+
+
+
+                      Figure 19: ST MC Workbench – New Project Window – Board Selection Cases
+
+For example, if the first hardware selection is:
+
+    •   A control board: power and motor placeholders will appear;
+    •   A power board: control and motor placeholders will appear;
+    •   An inverter board: a motor placeholder will appear.
+3.3.5.1 Dual Motor
+To create a dual motor project, it’s sufficient to add a second motor clicking the Add Motor button ( ) – as
+already discussed in previews paragraphs – or add a second power clicking the Add Power button, similarly
+to how it’s done for the motor.
+
+3.3.5.2 Adapter Board
+
+
+
+
+                     Figure 20: ST MC Workbench – New Project Window – Board Selection Need Adapter
+
+
+
+
+When a control board and a power board are in the scene, their connectors may not be physically
+
+compatible. If that’s the case, a warning icon (       ) will appear to alert about the necessity of an Adapter
+Board to connect them.
+
+
+
+
+                     Figure 21: ST MC Workbench – New Project Window – Pop-up for Adapter required
+
+Hovering on the icon with the mouse will show a pop over which describes what’s needed and contains
+instructions to add an Adapter Board. It can be accomplished by pressing the button or by connecting the
+connectors dragging a line between them. This will open the Adapter Selection Dialog.
+3.3.5.2.1       Adapter Selection Dialog
+
+
+
+
+                      Figure 22: ST MC Workbench – New Project Window – Adapter Selection dialog
+
+The Adapter Selection dialog is divided into two main parts.
+
+    •   The header, which contains info about the connectors that the adapters shown need to have,
+    •   The Manage Adapters button that will open the external software “Board Manager” to create or
+        modify adapters,
+    •   The Adapters List which contains the adapters (provided and custom) whose connectors match the
+        ones needed,
+
+The Adapter Card behaves similarly to the ones already described (3.2).
+
+Clicking on an Adapter card and then pressing the “Ok” button on the bottom right – or simply double
+clicking one of the Adapter Cards – will finalize the selection adding the Adapter Board to the scene.
+Clicking on the “Cancel” button will close the dialog applying no change.
+3.3.5.3 Composer UI features and elements
+
+
+
+
+                        Figure 23: ST MC Workbench – New Project Window – Board Connections
+
+Regardless of what hardware has been added to the scene, when a correct configuration is detected then it
+will be possible to go to next step (Summary step) by clicking on the “Go to Summary” button.
+Hovering the mouse on the “Go to Summary” button will highlight the hardware in the scene that composes
+the detected valid configuration.
+
+The Reset Configuration button (  ) will pop up on the upper right side of the scene (if at least one
+hardware element has been selected) to remove all selections made.
+
+When a hardware element is added or changed, the Composer tool will automatically update its
+connections using the first compatible connectors found.
+
+3.3.5.4 Connections
+Hardware elements in the Composer’s scene need to be connected to compose a proper configuration.
+
+The common way to connect two hardware elements is to drag a connection between two connectors of
+the same type.
+The connectors may be of type:
+
+
+    •   Motor Drive (     ): it may be part of a Motor or a Power board;
+    •   Morpho (     ): it may be part of a Power, Adapter or Control board;
+    •   Motor Control Connector (        ): it may be part of a Power, Adapter or Control board;
+
+    •   PCI Express (    ): it may be part of a Power, Adapter or Control board.
+
+Connections may also be performed automatically when adding or editing hardware elements – as already
+stated in previous paragraphs.
+
+Any connection can be removed using the Disconnect button (              ) visible when hovering the mouse on the
+
+Connection Established icon (       ).
+
+Connections’ main color depend on the type of connectors it’s linking.
+
+3.3.5 Pack
+
+
+
+
+                        Figure 24: ST MC Workbench – New Project Window – Pack Selection Dialog
+
+Starting the project composition from the Pack button, the Pack Selection dialog will open.
+
+A Pack is a predefined and preconnected set of hardware provided by ST MC Workbench.
+
+Double clicking a pack card or selecting it and then pressing the Ok button will add the hardware in the
+scene already connected, based on the selected pack info.
+
+It will be possible to edit hardware or connections or just go to the next step (Summary step).
+3.4 Summary Page
+
+
+
+
+               Figure 25: ST MC Workbench – New Project Window – Summary Board Selection and Connections
+
+
+Clicking on the Go To Summary button (                      ) will show the Summary Page where the full
+hardware configuration will be analyzed.
+
+The process starts a deep analysis of the creating project, going through hardware elements characteristics
+and how they are connected, understanding what features it can implement and what driving algorithms
+can be used.
+
+The view is divided into four main parts.
+
+3.4.1 Summary Header
+
+
+
+
+                          Figure 26: ST MC Workbench – New Project Window – Summary Header
+
+At the top, two optional editable text fields contain the project title and project description. These fields
+may be left blank.
+
+Right under these two fields, the Driving Algorithm section contains a radio button that selects the driving
+algorithm to use for the creating project. The supported driving algorithms are FOC and 6-Step.
+                   Figure 27: ST MC Workbench – New Project Window – Summary Algorithm not available
+
+Depending on the result of the hardware analysis, any algorithm may or may not be available for the
+configured project. If no algorithm is available, it will not be possible to create the project.
+
+3.4.2 Project’s Available Features
+
+
+
+
+                     Figure 28: ST MC Workbench – New Project Window – Summary Available features
+
+On the left side of the view, the features section shows what features can be implemented using the project.
+
+The features availability is listed for each motor, potentially together with an additional list of features
+whose availability is not related to any specific motor (Common features).
+                    Figure 29: ST MC Workbench – New Project Window – Summary Warning Report
+
+
+
+
+Under the features list area, technical messages may be displayed depending on the hardware analysis’
+result. These messages may be simple info messages, warning messages or error messages.
+
+
+
+
+                      Figure 30: ST MC Workbench – New Project Window – Summary Stage motor
+
+Note: Hovering on a motor name’s label will highlight the relative motor component on the Summary
+Schema Area.
+
+3.4.3 Summary Schema
+
+
+
+
+                       Figure 31: ST MC Workbench – New Project Window – Summary Schema
+In the middle-right of the view, the Summary Schema area shows the hardware and connections made in
+the previews step. It helps the user understand the rest of the information represented in the Summary
+Page, without allowing any modifications.
+
+3.4.4 Summary Footer
+On the bottom of the page, the Summary Footer area contains two buttons positioned on the right side.
+
+
+The Back button (         ) can be used to navigate back to the project composing step.
+
+The Create button (         ) can be used to create the project and move to the Project View.
+3.5 Loading an existing Project
+When clicking on the “Load Project” button (Cf. id 1 Figure 2: ST MC Workbench – GUI (Home View)), a
+system dialog window will be shown letting the user select a project file (.stwb6) to load. Loaded Projects
+will be shown in the “Project view” (Cf. Figure 32: ST MC Workbench – Project view (global view)) where the
+user can refine it.
+It’s also possible to load the IOC project file (CubeMx file (.ioc)) with some limitations:
+     - The IOC file to load must have been generated by the latest ST MC Workbench (version >= 6.2.0);
+     - No hardware changes are allowed (enable/disable protections, edit current sensing, …);
+     - Only motor(s) and some firmware parameters can be modified;
+In any case, in order to have a full control on the project, using a ST MC Workbench (.stwb6) project file is
+strongly suggested.
+3.6 Project view
+The project view is composed by the following components:
+    • A Toolbar area
+    • A Hardware area info
+    • A Project Steps area to select which hardware parameters to customize:
+        − Motor
+        − Power Supply
+        − PWM Generation
+        − …
+    • A Hardware configuration details area: it is used to fine tune the selected hardware functionality
+        and to view all the main info and the protections at a first glance.
+
+
+
+
+                              Figure 32: ST MC Workbench – Project view (global view)
+3.6.3 Toolbar area
+The toolbar area is useful to control application navigation, project saving and generation.
+
+3.6.3.1 Home
+The          button provides the user as easy way to close the current project and go back to the Home View
+(Cf. Figure 2: ST MC Workbench – GUI (Home View)). In order to do so, if the project contains any changes
+and has not been saved yet, a confirmation window will pop-up (Cf. Figure 33: ST MC Workbench – Close
+Project confirmation window) asking the user to save the current project, cancel the action, or going further
+with the choice of quitting the project without saving it (Cf. Figure 34: ST MC Workbench – Save menu).
+
+
+
+
+                           Figure 33: ST MC Workbench – Close Project confirmation window
+
+3.6.3.2 Save
+Clicking on          shows the Save menu.
+
+
+
+
+                                      Figure 34: ST MC Workbench – Save menu
+
+
+
+
+•   Save: save user current project;
+    If the project has never been saved before, a file manager window pops-up to select the local
+    destination folder for the project file to be saved (Cf. Figure 35).
+•   Save as… save user project as new one file;
+    A file manager window will always pop-up to save user project as a new one (Cf. Figure 35).
+                                  Figure 35: ST MC Workbench – Project Save As window
+
+3.6.3.3 Generate the project
+Clicking on the                       button will start the process of user application project files generation.
+If the project file has some has not already been saved, an information window will pop-up to indicate that
+this project needs to be saved before the generation. Use the “Save & Generate” button to save it and start
+generating.
+
+
+
+
+                                     Figure 36: ST MC Workbench – Save & Generate
+
+If some hardware change needs depending on the hardware and the configuration used in the project, an
+information window pop-up with the required changes (Figure 37: ST MC Workbench – Generate –
+Hardware Changes). The user can continue with the generation phase or cancel returning to the project
+window to refine the project setting.
+
+
+
+
+                               Figure 37: ST MC Workbench – Generate – Hardware Changes
+When the generation process starts, a window pops-up (Cf. Figure 38: ST MC Workbench – Project
+generation) to allow the user select the Target Toolchain, Firmware Package Version, Drive Type and the
+STM32CubeMx version that will be used to generate the project. Finally, the “GENERATE” button will start
+the project generation.
+
+
+
+
+                                  Figure 38: ST MC Workbench – Project generation
+
+3.6.3.4 Motor Pilot
+Clicking on Motor Pilot toolbar button, the Motor Pilot application will be launched.
+
+3.6.3.5 About
+Clicking on the About menu, a window pops-up showing relevant Workbench information and useful links.
+
+
+
+
+                                       Figure 39: ST MC Workbench – About
+
+3.6.4 Hardware information area
+This area will display the main hardware information for the current project.
+3.6.4.1 MCU - Pin Usage & Conflicts
+
+Moving over       MCU a window pops-up will be shown (Cf. Figure 40: ST MC Workbench – MCU):
+
+
+
+
+                                       Figure 40: ST MC Workbench – MCU
+
+    •   Product Folder
+           o Clicking on it, the Product Folder page for the MCU selected will be open.
+3.6.4.2 Control Board
+
+Moving over        Control Board, a window pops-up giving general information about the control board
+selected. In particular, it shows:
+     • Data Brief Folder
+             o Clicking on it, the relative Data Brief will be open.
+     • Product Folder
+             o Clicking on it, the relative Product Folder page will be open.
+
+
+
+
+                                   Figure 41: ST MC Workbench – Control Board
+3.6.4.3 Power Board
+
+Moving over         Power Board, a window pops-up giving general information about the power board
+selected. In particular, it shows:
+     • Data Brief Folder
+             o Clicking on it, the relative Data Brief page will be open.
+     • Product Folder
+             o Clicking on it, the relative Product Folder page will be open.
+
+
+
+
+                                    Figure 42: ST MC Workbench – Power Board
+
+
+
+
+3.6.5 Project steps and hardware configuration details
+All the hardware configuration relative to the hardware selected are accessible from the wizard steps. The
+wizard steps are shown in the left application pane (Project Steps area) as well as in the hardware
+configuration details area (main project view), by clicking on the boxes. The information shown in the
+displayed schematic reflect the configuration visible in the wizard steps choices.
+3.7 Project wizard
+The project wizard is accessible from the left pane items or the main schematic view. Clicking on one of
+these items, the full wizard pop-up and the relative step will be shown. The wizard is customized depending
+on the selected algorithm, though all the steps are always available having the user being able to freely
+move over all of them. The project wizard is the smart way to customize and configure the motor control
+application. Each wizard step contains several checks and info that help the user make the right
+configurations; in case of errors the wizard doesn’t allow to apply the edits made, asking the user to fix the
+problems before applying them. In any case, the firmware project generation is not allowed if any kind of
+error is found.
+
+The step sequence on the wizard has a specific meaning: the value of any field in any given step needs to
+be compatible with all the parameters set in the previous steps (while parameters of the following steps
+have no importance). The same dependency is also applied within fields inside the same step: the bounding
+hierarchy always follow the simple “from top to bottom, from left to right” rule.
+
+In case of multi motors application projects, the wizard shows the steps grouped by motor (stage). A “Stage”
+is a logical concept that identifies a full set composed by the interconnection of the Motor Drive, Power
+board, eventual connector(s) and/or bridge and Control board, that can make the motor spin.
+
+3.7.3 Project Hw & Info
+This is a common step where the user can set the project description, to better identify the project
+specifying characteristics and extra user information. The project description will be also visible in the recent
+project section through a small pop-up information icon (Id. 2 in Figure 2: ST MC Workbench – GUI (Home
+View)).
+                                  Figure 43: ST MC Workbench – Project Hw & Info
+
+From this step it’s possible to open the project output folder and/or launch the CubeMx application if the
+motor control application project has already been generated before (a project is defined as generated
+when the relative IOC and firmware source code are properly generated by the ST MC Workbench
+application). By pressing the            button, the user can switch the selected motor(s) choosing from the
+same list found in the new project creation wizard (both provided or user custom motors) (Figure 44: ST MC
+Workbench – Project Hw & Info - Change motor). After a switch, it is suggested to review all the steps to
+check the parameters changes. In the Project HW & Info step there are cards representation of the
+hardware used and the connection (how hardware is connected). The motor is currently the only hardware
+switch allowed by ST MC Workbench.
+                           Figure 44: ST MC Workbench – Project Hw & Info - Change motor
+
+3.7.4 Motor
+This step is relative to the Motor’s parameters, whose default values are loaded during the creation of the
+project. The user can modify each available parameter according to its value bounds (Cf. Figure 45: ST MC
+Workbench – Motor), can activate and configure the Hall sensor or Quadrature Encoder for the selected
+motor (Cf. Figure 46: ST MC Workbench – Motor – Hall Effect – Quadrature Encoder) and change the motor
+
+name (this information is used by Motor Pilot application) and save it (throw the save button         ).
+The motor saved will be available as a new user custom motor with the defined parameters to be easily
+used in other motor control application projects.
+Figure 45: ST MC Workbench – Motor
+                         Figure 46: ST MC Workbench – Motor – Hall Effect – Quadrature Encoder
+
+3.7.5 Power Supply
+In this step, the Max Current and the Bus Voltage levels that will be used by the application can be set. The
+values in this step needs to be the one provided from the power supply and must be compatible with the
+power board and motor.
+
+
+
+
+                                      Figure 47: ST MC Workbench – Power Supply
+
+3.7.6 PWM Generation
+In this step, the user can select from the PWM driving topologies available for the selected hardware, the
+PWM frequency, charge boot capacitor (Time and Duty) and the MCU pin configuration for the topology
+used. The available configurations depend on the selected driving topology .
+
+3.7.6.1 High and Low Side topology
+The following image shows the step for high and low side driving topology.
+                          Figure 48: ST MC Workbench - PWM Generation - High and Low Side
+
+3.7.6.2 High Side and One Enable topology
+The following image shows the step for high side and one enable driving topology.
+                       Figure 49: ST MC Workbench - PWM Generation – High Side and One Enable
+
+3.7.6.3 High Side and Three Enables topology
+The following image shows the step for high side and three enables driving topology.
+                      Figure 50: ST MC Workbench – PWM Generation – High Side and Three Enables
+
+3.7.7 Speed Sensing Selection
+This step is available for FOC algorithm projects only. The Speed Sensing Selection is the pre-selection step
+for the Main Speed Sensing Mode, as in this step it’s possible to select the main sensing mode later used in
+the Speed Sensing Config. Step; this selection has a relevant impact on many following steps.
+                                Figure 51: ST MC Workbench – Speed Sensing Selection
+
+All the main speed sensor modes are available from the combo; their availability depend on the hardware
+used.
+
+
+
+
+                             Figure 52: ST MC Workbench – Speed Sensing Selection Modes
+
+The High Sensitivity Observer (a.k.a. HSO) has specific Current sensing, Speed Sensing, Start-up and Drive
+Settings parameter, so it’s available for specific hardware configuration only.
+
+3.7.8 Current Sensing
+In this step, the user can choose from the available current reading topologies and amplifications (Cf. Figure
+53: ST MC Workbench – Current Sensing). Depending on the topology, amplification and gain, the user will
+be prompted with the relative fields to set. Also, the MCU Pin for that configuration will be shown along
+with a relative graphical schema. The information on the step also depends on the algorithm selected (FOC
+or 6 Step).
+
+3.7.8.1 FOC 3 Shunt External Amplification
+In this Current Sensing topology, the user can set the Regulator execution time, T-Rise and T-Noise. In this
+topology, the current amplification happens inside the power board. The following image shows this
+configuration.
+
+
+
+
+                      Figure 53: ST MC Workbench – Current Sensing – FOC 3Sh External amplification
+
+3.7.8.2 FOC 3 Shunt Internal Amplification – Internal Gain
+In this Current Sensing topology, the user can set the Regulator execution time, internal PGA Gain factor, T-
+Rise and T-Noise. In this case, the current amplification is executed using internal MCU OpAmps. The
+following image shows the configuration.
+                 Figure 54: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – Internal Gain
+
+3.7.8.3 FOC 3 Shunt Internal Amplification – External Gain
+In this Current Sensing topology, the user can set the Regulator execution time, T-Rise and T-Noise. In this
+case, the current amplification is executed using internal MCU OpAmps, while the gain depends on the gain
+net inside the Control board. The following image shows this configuration.
+                 Figure 55: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – External Gain
+
+3.7.8.4 FOC Two Insulated Current Sensor
+This Current Sensing mode is available for FOC projects only, if the relative hardware variant is available for
+the selected hardware.
+                      Figure 56: ST MC Workbench – Current Sensing – Two Insulated Current Sensor
+
+3.7.8.5 FOC 3 Shunt for HSO
+For FOC HSO applications, there are specific configurations that can be done. Here blow the HSO external
+amplification (REF) and the HSO internal amplification.
+
+The HSO is only available for projects using both FOC algorithm and 3 Shunt Current Sensing.
+Figure 57: ST MC Workbench – Current Sensing – FOC 3 Shunt External Amp – HSO
+                     Figure 58: ST MC Workbench – Current Sensing – FOC 3 Shunt Internal Amp – HSO
+
+3.7.8.6 6 Step Current Mode
+This is available only for 6 Step algorithm projects. The Current Mode is disabled by the default, the user can
+freely enable it, given that the feature is available for the selected hardware (C.f. Figure 59: ST MC
+Workbench – 6 Step – Current Mode), (C.f. Figure 60: ST MC Workbench – 6 Step – Current Mode disabled).
+    Figure 59: ST MC Workbench – 6 Step – Current Mode
+
+
+
+
+Figure 60: ST MC Workbench – 6 Step – Current Mode disabled
+3.7.8.7 6 Step Current Reading
+Current Reading is optionally available from Current Sensing step, it depends on the hardware availability
+(Figure 61: ST MC Workbench – 6 Step – Current Reading available and Figure 62: ST MC Workbench – 6
+Step – Current Reading not available when the hardware doesn’t support the feature). The Current Reading
+is required to enable the current monitoring flag (                ) and to use the Initial Position
+Detection (Figure 75: ST MC Workbench – 6 Step – Sensorless – Start-up parameters)
+
+
+
+
+                               Figure 61: ST MC Workbench – 6 Step – Current Reading
+                         Figure 62: ST MC Workbench – 6 Step – Current Reading not available
+
+3.7.8.8 Over Current Protection
+From the Current Sensing step, the user can also enable and configure the Over Current Protection (OCP)
+with external comparator (Cf. Figure 63: ST MC Workbench – Current Sensing – Over Current Protection) or
+internal comparator (Cf. Figure 64: ST MC Workbench – Current Sensing – Over Current Protection Internal
+Comparators); the settings depend on the available OCP mode for the selected hardware. A schema will
+show the hardware connections between signals and MCU.
+               Figure 63: ST MC Workbench – Current Sensing – Over Current Protection External Comparators
+
+
+
+
+               Figure 64: ST MC Workbench – Current Sensing – Over Current Protection Internal Comparators
+
+3.7.9 Bus Voltage Sensing
+In the Bus Voltage Sensing step, the user can configure the relevant parameters to sense the bus voltage (if
+available for the hardware specified) and the relative Over Voltage and/or Under Voltage protection.
+                                Figure 65: ST MC Workbench – Bus Voltage Sensing
+
+3.7.10 Temperature Sensing
+In the Temperature Sensing step, the user can configure some useful parameters relevant to sense the
+temperature (if available for the hardware specified) and the relative Over Temperature protection.
+                                 Figure 66: ST MC Workbench – Temperature Sensing
+
+3.7.11 Speed Sensing Config
+In the Speed Sensing step, the user can configure the main parameters in relation to the speed sensing
+mode selected in the previews Speed Sensing Selection step (Speed Sensing Selection ref paragraph 3.7.7);
+there are different speed sensing modes that are available for the Auxiliary Sensor and, for 6 Step Algorithm
+projects, also for the Main sensor (to change the Main Sensor Mode in FOC algorithm projects the user has
+to move to the previews Speed Sensing Selection Step). The available modes depend on the selected
+algorithm. Auxiliary sensor is optional, disabled by default.
+
+3.7.11.1 FOC Observer + PLL (Sensorless)
+This is the default speed sensing mode for the main sensor; it is always available.
+                             Figure 67: ST MC Workbench – Speed Sensing – Observer PLL
+
+3.7.11.2 FOC Observer + Cordic (Sensorless)
+This speed sensor mode is always available.
+
+
+
+
+                           Figure 68: ST MC Workbench – Speed Sensing – Observer Cordic
+3.7.11.3 FOC High Sensitivity Observer (HSO)
+This speed sensor mode is available only for FOC driving mode, given that the hardware selected supports
+the HSO.
+
+
+
+
+                   Figure 69: ST MC Workbench – Speed Sensing – High Sensitivity Observer (Sensorless)
+
+3.7.11.4 FOC Quadrature Encoder
+In order for this mode to be selectable, the motor needs to have the Quadrature Encoder sensor enabled
+and the feature must to be supported by the hardware.
+                          Figure 70: ST MC Workbench – Speed Sensing – Quadrature Encoder
+
+3.7.11.5 Hall Sensor
+In order for this mode to be selectable, the motor needs to have the Hall Effect sensor enabled and the
+feature must be supported by the hardware. This speed sensor mode is compatible with both FOC and 6
+Step algorithm.
+                        Figure 71: ST MC Workbench – Speed Sensing with 6 step algo – Hall Sensor
+
+3.7.11.6 FOC Sensorless Start-up parameters
+The settings for this section are available only if the main sensor selected is sensor less (Observer + PLL or
+Observer + Cordic).
+                     Figure 72: ST MC Workbench – Speed Sensing – Sensorless start-up parameters
+
+3.7.11.7 FOC HSO Startup parameters
+The following image shows the startup parameters available for HSO Speed Sensing mode.
+                   Figure 73: ST MC Workbench – Speed Sensing – HSO Sensorless start-up parameters
+
+3.7.11.8     6 Step Sensorless ADC
+Sensorless – ADC is a specific Speed Sensing mode for 6 Step algorithm (Cf. Figure 74: ST MC Workbench – 6
+Step – Sensorless ADC).
+Figure 74: ST MC Workbench – 6 Step – Sensorless ADC
+3.7.11.9       6 Step Sensorless Start-up parameters
+6 Step algorithm has specific “Sensorless Start-up parameters” settings, available if Speed Sensing mode
+selected is Sensorless-ADC (Figure 75: ST MC Workbench – 6 Step – Sensorless – Start-up parameters). The
+Initial Position Detection is available only when current reading is enabled (6 Step Current Reading).Figure
+61: ST MC Workbench – 6 Step – Current Reading).
+
+
+
+
+                        Figure 75: ST MC Workbench – 6 Step – Sensorless – Start-up parameters
+3.7.12 Driver Protection
+If available for the selected hardware, in this step the user can configure the driver protection parameters.
+
+
+
+
+                                   Figure 76: ST MC Workbench –Driver Protection
+3.7.13 Drive Settings
+In the Drive Settings step, the user can configure the Current Regulator as one of the following three control
+mode:
+
+3.7.13.1 FOC Speed control
+This drive settings mode is always available.
+
+
+
+
+                              Figure 77: ST MC Workbench – Drive Settings – Speed Control
+3.7.13.2 FOC Torque control
+This drive settings mode is always available.
+
+
+
+
+                             Figure 78: ST MC Workbench – Drive Settings – Torque Control
+3.7.13.3 FOC Position Control
+This drive settings mode is available only if Quadrature Encoder is selected as main Speed Sensing sensor.
+
+
+
+
+                            Figure 79: ST MC Workbench – Drive Settings – Position Control
+3.7.13.4 FOC Speed control (for HSO)
+This Drive setting is available in HSO Speed Sensing mode only.
+
+
+
+
+                       Figure 80: ST MC Workbench – Drive Settings – FOC Speed Control (for HSO)
+3.7.13.5 FOC Torque control (for HSO)
+This Drive setting is available only in HSO Speed Sensing mode only.
+
+
+
+
+                       Figure 81: ST MC Workbench – Drive Settings – FOC Torque Control (for HSO)
+3.7.13.6      6 Step – Drive Setting
+This step is available only on 6 Step projects. It is the Drive Setting step for this configuration.
+
+
+
+
+                                  Figure 82: ST MC Workbench – Drive Settings – 6 Step
+3.7.14 Stage Configuration
+This step contains extra configuration parameters and a summary about protections available for the
+current stage.
+
+
+
+
+                                Figure 83: ST MC Workbench – Stage Configuration
+3.7.15 User Interface
+This is a common step (available for all the stages) that lets the user configure “Start and Stop button” and
+the “Motor Control Protocol (MCP)”, given that these features are available for the selected hardware.
+
+
+
+
+                                    Figure 84: ST MC Workbench – User Interface
+
+The user can only edit configurations that are available for the specific selected hardware. In example visible
+in the above image, for instance, the start/stop is available on PC13 pin only. If the selected hardware allows
+more possibilities a combo will be available to allow user to choose a different pin. The Start/Stop feature
+can be disabled if the user doesn’t want to use it.
+3.7.16 Application Configuration
+This step is a common step that allows generic configurations unrelated to any specific stage.
+
+
+
+
+                               Figure 85: ST MC Workbench – Application Configuration
+3.7.17 Pin usage & Hardware Changes
+This step shows a summary about all the pins used in the project. Any detected pin conflict is alerted by a
+red triangle . The conflict is also alerted in the correlated steps.
+
+
+
+
+                                      Figure 86: ST MC Workbench – Pin Usage
+
+In the same step, the Hardware Changes section shows the hardware changes needed (if any) to make the
+project properly work with the user’s configurations.
+Figure 87: ST MC Workbench – Hardware Changes
+

@@ -1,0 +1,2 @@
+Drivers/STM32G4xx_HAL_Driver/stm32g4xx_ll_adc.o: \
+ C:/mic_practice/mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.c

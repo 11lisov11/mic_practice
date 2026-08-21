@@ -1,0 +1,93 @@
+{
+  "tool": "mcsdk_release_preflight",
+  "pass": false,
+  "project": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV",
+  "artifacts": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug",
+  "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_nameplate_verified_vf.json",
+  "failed_checks": [
+    "precharge_interlock_implemented",
+    "motor_profile_is_real_acim",
+    "generated_motor_configuration_matches_profile"
+  ],
+  "checks": {
+    "project_directory": {
+      "pass": true,
+      "evidence": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
+    },
+    "cube_ioc_present": {
+      "pass": true,
+      "evidence": [
+        "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc"
+      ]
+    },
+    "target_is_nucleo_g431rb": {
+      "pass": true,
+      "evidence": "STM32G431RB"
+    },
+    "mcsdk_topology_markers": {
+      "pass": true,
+      "evidence": {
+        "IHM09M2_or_NUCLEO_G431RB": true,
+        "IPM15B": true,
+        "ACIM": true
+      }
+    },
+    "precharge_interlock_implemented": {
+      "pass": false,
+      "evidence": {
+        "required_define": "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1",
+        "note": "Must be added only with a real Nucleo relay output, bus-ready threshold, fault/E-stop opening path, and HIL evidence."
+      }
+    },
+    "motor_profile_present": {
+      "pass": true,
+      "evidence": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_nameplate_verified_vf.json"
+    },
+    "motor_profile_is_real_acim": {
+      "pass": false,
+      "evidence": {
+        "errors": [
+          "profile_provenance"
+        ],
+        "source_kind": "nameplate_verified_vf_open_loop_pending_identification"
+      }
+    },
+    "generated_motor_configuration_matches_profile": {
+      "pass": false,
+      "evidence": {
+        "errors": [
+          "profile_invalid"
+        ],
+        "values": {},
+        "required_dc_bus_v": null
+      }
+    },
+    "release_artifacts": {
+      "pass": true,
+      "evidence": {
+        ".elf": [
+          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf"
+        ],
+        ".bin": [
+          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin"
+        ],
+        ".hex": [
+          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex"
+        ]
+      }
+    },
+    "release_artifacts_are_one_build": {
+      "pass": true,
+      "evidence": [
+        "ACIM-NUCLEOG431RB-IPM15B-VF_OL"
+      ]
+    },
+    "artifacts_inside_project": {
+      "pass": true,
+      "evidence": {
+        "project": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV",
+        "artifacts": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug"
+      }
+    }
+  }
+}

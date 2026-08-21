@@ -1,0 +1,27 @@
+{
+  "schema": "mic_ai.mcsdk.acim_motor_profile.v1",
+  "source_kind": "nameplate_and_measurement",
+  "motor_type": "acim",
+  "motor_label": "FILL_FROM_NAMEPLATE",
+  "pole_pairs": null,
+  "rated_line_voltage_v": null,
+  "rated_phase_voltage_v": null,
+  "controller_equivalent_phase_voltage_v": null,
+  "rated_current_a": null,
+  "rated_frequency_hz": null,
+  "rated_speed_rpm": null,
+  "rated_power_w": null,
+  "connection": "FILL_WITH_delta_OR_star",
+  "stator_resistance_ohm": null,
+  "rotor_resistance_ohm": null,
+  "stator_leakage_inductance_h": null,
+  "rotor_leakage_inductance_h": null,
+  "magnetizing_inductance_h": null,
+  "rotor_inertia_kg_m2": null,
+  "measurement_evidence": {
+    "date": "FILL_YYYY-MM-DD",
+    "method": "FILL_locked_rotor_no_load_coast_down_or_motor_profiler",
+    "report_path": "FILL_relative_or_absolute_path_to_raw_measurements"
+  },
+  "measurement_note": "Enter values from the actual nameplate and measured ACIM parameters. rated_phase_voltage_v is the physical winding voltage: equal to line voltage for Delta and line/sqrt(3) for Star. controller_equivalent_phase_voltage_v is always MCSDK phase-to-neutral voltage (line/sqrt(3)); it is required for a physical Delta motor. Do not copy the synthetic identification example or catalog-only values."
+}

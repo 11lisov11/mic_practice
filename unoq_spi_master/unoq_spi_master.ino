@@ -135,6 +135,8 @@ static void matrix_draw_freq_tenths(uint16_t tenths) {
 #if LINK_BLUEPILL
 static const uint16_t FRAME_LEN = 32;
 static const uint8_t CRC_OFF = FRAME_LEN - 1;
+// Must match the NUCLEO-G431RB bridge contract.
+static const uint8_t MIC_PROTOCOL_VERSION = 0x02;
 static const uint8_t CMD_HDR0 = 0xAA;
 static const uint8_t CMD_HDR1 = 0x55;
 static const uint8_t RSP_HDR0 = 0x55;
@@ -264,7 +266,7 @@ static void build_cmd(uint8_t flags, uint8_t mode) {
   memset(tx_frame, 0, sizeof(tx_frame));
   tx_frame[0] = CMD_HDR0;
   tx_frame[1] = CMD_HDR1;
-  tx_frame[2] = 0x01;
+  tx_frame[2] = MIC_PROTOCOL_VERSION;
   tx_frame[3] = flags;
   tx_frame[4] = mode;
   tx_frame[5] = seq++;
@@ -297,6 +299,7 @@ static void build_cmd(uint8_t flags, uint8_t mode) {
 
 static void handle_reply(void) {
   if (rx_frame[0] != RSP_HDR0 || rx_frame[1] != RSP_HDR1) return;
+  if (rx_frame[2] != MIC_PROTOCOL_VERSION) return;
   if (crc_xor(rx_frame, CRC_OFF) != rx_frame[CRC_OFF]) return;
   last_status = rx_frame[3];
   last_good = (uint16_t)rx_frame[5] | ((uint16_t)rx_frame[6] << 8);

@@ -139,6 +139,16 @@ def main() -> int:
         (root / MANIFEST_NAME).write_text(json.dumps(manifest), encoding="utf-8")
         assert verify_manifest(root)["ok"] is True
 
+        cache = root / "model_identification" / "source" / "tests" / "__pycache__" / "fixture.pyc"
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_bytes(b"python-cache")
+        assert verify_manifest(root)["ok"] is True
+
+        pytest_cache = root / "snh_pwm" / "source" / ".pytest_cache" / "v" / "cache" / "nodeids"
+        pytest_cache.parent.mkdir(parents=True, exist_ok=True)
+        pytest_cache.write_text("pytest-cache", encoding="utf-8")
+        assert verify_manifest(root)["ok"] is True
+
         target = root / "PROVENANCE.json"
         target.write_text("tampered\n", encoding="utf-8")
         result = verify_manifest(root)

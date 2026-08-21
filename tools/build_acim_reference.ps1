@@ -1,0 +1,140 @@
+[CmdletBinding()]
+param(
+    [string]$ProjectRoot,
+    [string]$Workspace,
+    [ValidateSet("Debug", "Release")]
+    [string]$Configuration = "Debug",
+    [string]$MotorProfile,
+    [switch]$RunReleaseGate
+)
+
+$ErrorActionPreference = "Stop"
+
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
+    $ProjectRoot = Join-Path $scriptRoot "..\mcsdk_reference\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
+}
+if ([string]::IsNullOrWhiteSpace($Workspace)) {
+    $Workspace = Join-Path $scriptRoot "..\_cubeide_ws_air56b2_vf_nameplate"
+}
+
+$projectName = "ACIM-NUCLEOG431RB-IPM15B-VF_OL"
+$cubeIde = "C:\ST\STM32CubeIDE_2.2.0\STM32CubeIDE\stm32cubeidec.exe"
+$objcopy = "C:\ST\STM32CubeIDE_2.2.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\tools\bin\arm-none-eabi-objcopy.exe"
+
+$projectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+$ideProject = Join-Path $projectRoot "STM32CubeIDE"
+$buildDir = Join-Path $ideProject $Configuration
+$elf = Join-Path $buildDir "$projectName.elf"
+$bin = Join-Path $buildDir "$projectName.bin"
+$hex = Join-Path $buildDir "$projectName.hex"
+
+# Keep the artifact manifest tied to the motor actually selected in this project,
+# rather than to the original ST reference project used as a starting point.
+$iocFiles = @(Get-ChildItem -LiteralPath $projectRoot -Filter "*.ioc" -File)
+$iocText = if ($iocFiles.Count -eq 1) { Get-Content -LiteralPath $iocFiles[0].FullName -Raw } else { "" }
+function Get-MotorControlIocValue([string]$Key) {
+    $match = [regex]::Match(
+        $iocText,
+        "(?m)^MotorControl\." + [regex]::Escape($Key) + "=(.+?)\s*$"
+    )
+    if ($match.Success) {
+        return $match.Groups[1].Value.Trim()
+    }
+    return $null
+}
+
+$selectedMotorName = Get-MotorControlIocValue "M1_MOTOR_NAME"
+$selectedNominalPhaseVoltage = Get-MotorControlIocValue "NOMINAL_PHASE_VOLTAGE"
+$selectedNominalCurrent = Get-MotorControlIocValue "ACIM_NOMINAL_CURRENT"
+$selectedPolePairs = Get-MotorControlIocValue "ACIM_POLE_PAIR_NUM"
+$isAir56B2 = $selectedMotorName -match "(?i)AIR56B2"
+
+$manifestMotor = "Siemens (official ST reference; not AIR-56)"
+$manifestMotorStatus = "NOT APPROVED FOR AIR-56: add verified nameplate/measured values before flashing a motor"
+$manifestProfileStatus = "st_reference_not_air56"
+if ($isAir56B2) {
+    $manifestMotor = "IEK AIR56B2 0.25 kW 220/380 V Delta/Y"
+    $manifestMotorStatus = "NAMEPLATE V/F CANDIDATE ONLY: controller uses the 220 V Delta star-equivalent phase voltage; no identification or HV interlock validation"
+    $manifestProfileStatus = "nameplate_verified_vf_open_loop_pending_identification"
+}
+
+foreach ($path in @($cubeIde, $objcopy, $ideProject)) {
+    if (-not (Test-Path -LiteralPath $path)) {
+        throw "Required build path is missing: $path"
+    }
+}
+
+New-Item -ItemType Directory -Force -Path $Workspace | Out-Null
+
+& $cubeIde `
+    -nosplash `
+    -application org.eclipse.cdt.managedbuilder.core.headlessbuild `
+    -data $Workspace `
+    -import $ideProject `
+    -cleanBuild "$projectName/$Configuration"
+if ($LASTEXITCODE -ne 0) {
+    throw "STM32CubeIDE build failed with exit code $LASTEXITCODE."
+}
+
+if (-not (Test-Path -LiteralPath $elf)) {
+    throw "CubeIDE reported success, but ELF is missing: $elf"
+}
+
+& $objcopy -O binary $elf $bin
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not create BIN from ELF (exit code $LASTEXITCODE)."
+}
+
+& $objcopy -O ihex $elf $hex
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not create HEX from ELF (exit code $LASTEXITCODE)."
+}
+
+$artifacts = @($elf, $bin, $hex) | ForEach-Object {
+    $item = Get-Item -LiteralPath $_
+    [ordered]@{
+        file = $item.Name
+        bytes = $item.Length
+        sha256 = (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash
+    }
+}
+
+$manifest = [ordered]@{
+    schema = "mic_ai.mcsdk.acim_reference_build.v1"
+    generated_at = (Get-Date).ToUniversalTime().ToString("o")
+    project = $projectName
+    configuration = $Configuration
+    target = "NUCLEO-G431RB + X-NUCLEO-IHM09M2 + STEVAL-IPM15B"
+    control_mode = "ACIM V/F open loop"
+    reference_motor = $manifestMotor
+    motor_status = $manifestMotorStatus
+    motor_profile_status = $manifestProfileStatus
+    ioc_motor_name = $selectedMotorName
+    ioc_nominal_phase_voltage_v = $selectedNominalPhaseVoltage
+    ioc_nominal_current_a = $selectedNominalCurrent
+    ioc_pole_pairs = $selectedPolePairs
+    artifacts = $artifacts
+}
+$manifestPath = Join-Path $buildDir "$projectName.build-manifest.json"
+$manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+
+Write-Host "Build artifacts: $buildDir"
+Write-Host "Manifest: $manifestPath"
+
+if ($RunReleaseGate) {
+    if ([string]::IsNullOrWhiteSpace($MotorProfile)) {
+        throw "-RunReleaseGate requires -MotorProfile with real AIR-56 nameplate/measured data."
+    }
+
+    $gate = Join-Path $scriptRoot "mcsdk_release_preflight.py"
+    $python = (Get-Command python -ErrorAction Stop).Source
+    & $python $gate `
+        --project $projectRoot `
+        --motor-profile $MotorProfile `
+        --artifacts $buildDir `
+        --output (Join-Path $buildDir "mcsdk_release_preflight.json")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Release gate rejected the package. Read mcsdk_release_preflight.json."
+    }
+}

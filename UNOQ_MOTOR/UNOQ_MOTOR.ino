@@ -64,6 +64,8 @@ static const bool PWM_LOW_INVERTED = true;
 static const bool PWM_THREE_PWM_MODE = true;
 // External PWM bridge to Nucleo (SPI/UART) for hardware dead-time + complementary outputs.
 static const bool USE_EXTERNAL_PWM = true;
+// MCSDK owns the PWM pins and accepts only a scalar V/F setpoint over UART.
+static const bool NUCLEO_MCSDK_ACIM_BACKEND = true;
 static const bool USE_NUCLEO_SPI = false;
 static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
@@ -157,7 +159,8 @@ static const uint32_t CONTROL_HZ = 1000;                  // 1 kHz control loop 
 static const uint32_t CONTROL_US = 1000000UL / CONTROL_HZ;
 static const uint32_t TELEMETRY_MS = 20;                  // 50 Hz telemetry
 #define LOG_TELEMETRY_DATA 0
-static const float POLE_PAIRS = 2.0f;
+// IEK AIR56B2 is a 2-pole induction motor: one electrical pole pair.
+static const float POLE_PAIRS = 1.0f;
 static const float VDC_NOMINAL = 24.0f;
 static const float VDC_ADC_VREF = 3.3f;
 static const float VDC_ADC_DIVIDER = 11.0f;
@@ -206,7 +209,9 @@ static const float CURRENT_LIMIT_A = 6.0f;
 // already-validated duty backend remains the safe preflight baseline.
 static const bool BP_FOC_BACKEND_DEFAULT = false;
 static const float BP_FOC_CURRENT_A_PER_PU = CURRENT_LIMIT_A;
-static const float VF_BASE_FREQ_HZ = 50.0f;
+static const float AIR56B2_RATED_ELECTRICAL_FREQ_HZ = 50.0f;
+static const float AIR56B2_MAX_ELECTRICAL_FREQ_HZ = AIR56B2_RATED_ELECTRICAL_FREQ_HZ;
+static const float VF_BASE_FREQ_HZ = AIR56B2_RATED_ELECTRICAL_FREQ_HZ;
 static const float VF_VOLT_PER_HZ_RATIO = 0.5f;
 // Low-frequency scalar boost: enough startup voltage to overcome stiction
 // without changing the high-frequency V/Hz slope.
@@ -254,8 +259,8 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
 static void nucleo_send_stop(bool force = false);
 // ----------------------- Globals -----------------------
 static ControlState g_state = STATE_SAFE;
-static ControlMode g_mode = MODE_FOC;
-static ControlMode g_mode_pending = MODE_FOC;
+static ControlMode g_mode = MODE_VF;
+static ControlMode g_mode_pending = MODE_VF;
 static bool g_mode_change_pending = false;
 static bool g_pwm_enabled = false;
 static bool g_pwm_outputs_active = false;
@@ -1351,7 +1356,7 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       const char *p = cmd + 8;
       float f = 0.0f;
       if (parse_single_float_arg(p, &f)) {
-        f = clampf(f, 0.0f, 50.0f);
+        f = clampf(f, 0.0f, AIR56B2_MAX_ELECTRICAL_FREQ_HZ);
         g_freq_cmd = f;
         if (f > 0.1f) g_last_nonzero_freq = f;
       } else {
@@ -1840,7 +1845,7 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     const char *p = cmd + 8;
     float f = 0.0f;
     if (parse_single_float_arg(p, &f)) {
-      f = clampf(f, 0.0f, 50.0f);
+      f = clampf(f, 0.0f, AIR56B2_MAX_ELECTRICAL_FREQ_HZ);
       g_freq_cmd = f;
       if (f > 0.1f) g_last_nonzero_freq = f;
     } else {
@@ -2274,7 +2279,7 @@ static int16_t bp_foc_current_q15(float current_a) {
   return q15_signed(current_a / scale);
 }
 static uint32_t bp_freq_millihz(float freq_hz) {
-  freq_hz = clampf(freq_hz, -500.0f, 500.0f);
+  freq_hz = clampf(freq_hz, 0.0f, AIR56B2_MAX_ELECTRICAL_FREQ_HZ);
   int32_t value = (int32_t)(freq_hz * 1000.0f);
   return (uint32_t)value;
 }
@@ -2448,6 +2453,7 @@ static void enc_speed_update(uint16_t raw, bool ok, uint32_t now_ms) {
 static bool nucleo_check_reply(const uint8_t *rx) {
   if (!rx) return false;
   if (rx[0] != 0x55 || rx[1] != 0xAA) return false;
+  if (rx[2] != BP_VER) return false;
   uint8_t crc = nucleo_crc8(rx, BP_CRC_OFF);
   if (crc != rx[BP_CRC_OFF]) return false;
   uint32_t now_ms = millis();
@@ -2635,9 +2641,11 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   }
   uint32_t now = millis();
   uint32_t now_us = micros();
-  const bool local_scalar =
-      enable && !g_estop_latched && !g_diag_pwm && !g_duty_mode &&
-      g_mode == MODE_VF && g_state == STATE_VF_RUN;
+  const bool mcsdk_scalar =
+      NUCLEO_MCSDK_ACIM_BACKEND && enable && !g_estop_latched && !g_io_test_mode;
+  const bool local_scalar = mcsdk_scalar ||
+      (enable && !g_estop_latched && !g_diag_pwm && !g_duty_mode &&
+       g_mode == MODE_VF && g_state == STATE_VF_RUN);
   // When outputs are off we throttle updates to a heartbeat rate,
   // but if a CLEAR is pending we keep sending until it is acknowledged.
   if (!force && !enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
@@ -2678,6 +2686,21 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   float dv_eff = d_v;
   float dw_eff = d_w;
 
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    // Service outputs belong to separate hardware. They are never tunnelled
+    // through the motor-control UART adapter.
+    ext_flags = 0;
+    brake_q15 = 0;
+    fan_q15 = 0;
+    io_test_eff = false;
+    diag_eff = false;
+    // An UNO-side I/O test has no matching MCSDK service endpoint. Keep the
+    // drive stopped instead of issuing a legacy mode that Nucleo must reject.
+    if (g_io_test_mode) {
+      enable_eff = false;
+    }
+  }
+
   // For CLEAR we must send a "safe" frame: MODE OFF + ENABLE=0 + ESTOP=0
   // (see Blue Pill can_clear_fault()).
   if (clear_eff) {
@@ -2702,21 +2725,25 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     dv_eff = 0.0f;
     dw_eff = 0.0f;
   } else if (enable_eff && !estop_eff) {
-    const bool foc_backend_allowed =
-        g_bp_foc_backend &&
-        !diag_eff &&
-        !g_duty_mode &&
-        (g_mode == MODE_FOC || g_mode == MODE_MIC) &&
-        (g_state == STATE_FOC_ALIGN || g_state == STATE_FOC_RUN);
-    if (foc_backend_allowed) {
-      mode = BP_MODE_FOC;
-      bp_id_q15 = bp_foc_current_q15(g_id_ref);
-      bp_iq_q15 = bp_foc_current_q15(g_iq_ref);
-      bp_foc_freq_millihz = bp_freq_millihz(g_freq_ref);
-    } else if (local_scalar) {
+    if (mcsdk_scalar) {
       mode = BP_MODE_SCALAR;
     } else {
-      mode = diag_eff ? BP_MODE_DIAG : BP_MODE_DUTY;
+      const bool foc_backend_allowed =
+          g_bp_foc_backend &&
+          !diag_eff &&
+          !g_duty_mode &&
+          (g_mode == MODE_FOC || g_mode == MODE_MIC) &&
+          (g_state == STATE_FOC_ALIGN || g_state == STATE_FOC_RUN);
+      if (foc_backend_allowed) {
+        mode = BP_MODE_FOC;
+        bp_id_q15 = bp_foc_current_q15(g_id_ref);
+        bp_iq_q15 = bp_foc_current_q15(g_iq_ref);
+        bp_foc_freq_millihz = bp_freq_millihz(g_freq_ref);
+      } else if (local_scalar) {
+        mode = BP_MODE_SCALAR;
+      } else {
+        mode = diag_eff ? BP_MODE_DIAG : BP_MODE_DUTY;
+      }
     }
   }
 
@@ -2988,6 +3015,13 @@ static bool should_restart_after_mode_switch() {
   return g_pwm_enabled && !g_stop_req && !g_stop_requested && !g_estop_latched;
 }
 static void request_mode(ControlMode next_mode, bool duty_mode, bool diag_pwm) {
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    // This target is V/F only. Never label a scalar MCSDK run as FOC or MIC.
+    next_mode = MODE_VF;
+    duty_mode = false;
+    diag_pwm = false;
+    g_bp_foc_backend = false;
+  }
   bool same_mode = (g_mode == next_mode);
   bool same_flags = (g_duty_mode == duty_mode && g_diag_pwm == diag_pwm);
   g_duty_mode = duty_mode;

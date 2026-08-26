@@ -48,6 +48,10 @@
   test-траекторию на каждую независимо сформированную calibration-выборку: aggregate
   `759/800` и 99% LCB `0,927645` проходят порог `0,92`, но строгий replication gate
   не пройден из-за отрицательных индивидуальных LCB двух 400-probe серий.
+- `snh_pwm/c6_conformal_reachability/revalidation/ESTIMATOR_FED_20260828_RU.md` -
+  paired oracle/estimator исследование voltage/current observer с processed encoder
+  speed. Истинный flux исключён из входа; полный replay проходит, но coverage пока
+  описательное и аппаратная готовность не заявляется.
 - `model_identification/` — новый воспроизводимый контур определения `Rs`, `Rr`,
   `Lm`, `J`, `B` с rank-gate, C6-многомасштабным возбуждением и nuisance-параметрами
   `Lsigma/Tload`; включены две независимые серии по 12 двигателей и агрегированный аудит.

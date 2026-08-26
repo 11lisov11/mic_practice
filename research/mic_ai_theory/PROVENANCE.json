@@ -26,7 +26,8 @@
     "Two archived 24-split C6-BCR studies provide descriptive bulk held-out coverage and a 26.1% median 5D hypervolume reduction versus a raw global conformal box; their former pooled-binomial coverage p-values are not treated as confirmatory because test blocks share calibration fits.",
     "The rejected action-vector frame, conditional split failures and 1.75x OOD coverage collapse are retained as negative evidence.",
     "The revised coverage audit replays trajectories from hashed protocols, uses one held-out trajectory per independent calibration fit, and requires an exact one-sided 99% lower coverage bound above an internally prospectively locked 92% non-inferiority threshold; this is not claimed as external preregistration.",
-    "The locked 20260826/20260827 series produced 759/800 independent probe coverages and an aggregate 99% lower bound of 0.927645, while both individual 400-probe lower bounds missed 0.92; the strict replication gate therefore remains false despite passing aggregate coverage and sharpness checks."
+    "The locked 20260826/20260827 series produced 759/800 independent probe coverages and an aggregate 99% lower bound of 0.927645, while both individual 400-probe lower bounds missed 0.92; the strict replication gate therefore remains false despite passing aggregate coverage and sharpness checks.",
+    "An estimator-fed C6-BCR exploration replaces oracle flux inputs with measured stator current, reconstructed applied voltage and processed encoder speed; deterministic replay passes, median sector accuracy is 0.973875 and C6 reduces the estimator raw-box volume by 17.5%, but coverage remains descriptive and hardware validity is not claimed."
   ],
   "activation_policy": "Research-only. No SNH-PWM source in this snapshot is imported by live inverter firmware.",
   "hardware_claim": false

@@ -1,0 +1,50 @@
+{
+  "status": "estimator_fed_c6_bcr_exploratory_replay_audit",
+  "host_exploratory_audit_pass": true,
+  "host_method_evidence_pass": false,
+  "coverage_inference_claim": false,
+  "hardware_ready": false,
+  "checks": {
+    "protocol_manifest_and_source_hash_recomputed": true,
+    "deterministic_full_payload_replay_pass": true,
+    "estimator_inputs_exclude_true_flux": true,
+    "true_state_is_simulation_target_only": true,
+    "estimator_sector_accuracy_is_finite": true,
+    "no_test_flux_clip_events": true,
+    "bulk_coverage_is_not_claimed_as_inference": true,
+    "method_pass_is_not_auto_claimed": true,
+    "scientific_novelty_is_not_claimed": true,
+    "hardware_readiness_is_not_claimed": true
+  },
+  "failures": [],
+  "protocol_sha256": "ef0a7f2d18672860f69aaa3cb7e39dfa1faa11ca98f8589e4456fe783b402adc",
+  "summary": {
+    "median_oracle_c6_held_out_coverage_descriptive": 0.9575,
+    "median_estimator_c6_held_out_coverage_descriptive": 0.955,
+    "median_estimator_c6_ood_coverage_descriptive": 0.845,
+    "median_estimator_to_oracle_volume_ratio": 6731680.912940707,
+    "median_estimator_c6_to_raw_volume_ratio": 0.8247877892271198,
+    "median_estimated_sector_accuracy": 0.973875,
+    "test_flux_clip_events": 0
+  },
+  "derived_diagnostics": {
+    "median_state_rmse": {
+      "psi_s_alpha": 0.008595007060243538,
+      "psi_s_beta": 0.008288858289067358,
+      "psi_r_alpha": 0.008904656788170607,
+      "psi_r_beta": 0.00857704192729034,
+      "omega_m": 0.26811735923399904
+    },
+    "median_oracle_c6_log10_volume": -11.141148293188344,
+    "median_estimator_c6_log10_volume": -4.298299223721028,
+    "estimator_c6_held_out_coverage_range_descriptive": [
+      0.915,
+      0.9825
+    ],
+    "estimator_c6_ood_coverage_range_descriptive": [
+      0.74,
+      0.9
+    ]
+  },
+  "claim_boundary": "deterministically replayed estimator-fed host exploration; coverage remains descriptive and no independent-probe, hardware-estimator, recursive-safety, or novelty claim is made"
+}

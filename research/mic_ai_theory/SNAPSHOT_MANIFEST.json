@@ -1,7 +1,7 @@
 {
   "schema": "mic_ai_theory_snapshot/v1",
-  "generated_utc": "2026-08-26T09:48:57.398257+00:00",
-  "file_count": 213,
+  "generated_utc": "2026-08-26T10:52:54.768943+00:00",
+  "file_count": 222,
   "files": [
     {
       "path": "articles/fig/fig_algorithm_block_ru.png",
@@ -505,18 +505,18 @@
     },
     {
       "path": "PROVENANCE.json",
-      "bytes": 3424,
-      "sha256": "5f90357bdb689e6dfbe68d44a54b17deff1636d1784d6d38c4c0ece247da2bb4"
+      "bytes": 3773,
+      "sha256": "541c4d52087d065f14a64a4711688e7bddbec9f9aca6810296a0933c82d4e862"
     },
     {
       "path": "README_RU.md",
-      "bytes": 7142,
-      "sha256": "de7115ea395960cae24cc13409d149a49fd4c1d29ef991deb81c36282c2df4e0"
+      "bytes": 7546,
+      "sha256": "33bcdbcec69593bb19f6e788077b065bf2d15e9200293d9dae1ef691e83671ee"
     },
     {
       "path": "snh_pwm/c6_conformal_reachability/RESEARCH_RU.md",
-      "bytes": 18881,
-      "sha256": "1b974945510bbf5c5b906fef1b44db123ab21c1d8d477bb820c74a7f163ce694"
+      "bytes": 20137,
+      "sha256": "5480a61d1ecf83aecbb21179c5d0314386eb494794777530567ec17adfa429bb"
     },
     {
       "path": "snh_pwm/c6_conformal_reachability/revalidation/c6_conformal_confirmatory_20260810_20260811_audit.json",
@@ -632,6 +632,26 @@
       "path": "snh_pwm/c6_conformal_reachability/revalidation/c6_conformal_power_analysis_20260826.md",
       "bytes": 866,
       "sha256": "2586f5a20a6dcf7749798bcac966e6e65bf2eb1af3146458e8de6bcf06e8269d"
+    },
+    {
+      "path": "snh_pwm/c6_conformal_reachability/revalidation/c6_estimator_fed_exploratory_seed_20260828.json",
+      "bytes": 42809,
+      "sha256": "2caa589fcf26ca45620dd4046a4026da194fe23c2d73ec2c3da03ebdb20d71fa"
+    },
+    {
+      "path": "snh_pwm/c6_conformal_reachability/revalidation/c6_estimator_fed_exploratory_seed_20260828_audit.json",
+      "bytes": 2050,
+      "sha256": "fd011e8885360154608693bb0c747766145e8e2b722aad665a2868c075c7aef6"
+    },
+    {
+      "path": "snh_pwm/c6_conformal_reachability/revalidation/c6_estimator_fed_exploratory_seed_20260828_audit.md",
+      "bytes": 1349,
+      "sha256": "2928997d53cb166d08a8dc59adea0e95728b9d1567704e9be5ee6f2a27ee99e1"
+    },
+    {
+      "path": "snh_pwm/c6_conformal_reachability/revalidation/ESTIMATOR_FED_20260828_RU.md",
+      "bytes": 5628,
+      "sha256": "49d26a5dd205d763430ee399bd1ff715fcb8ed6b3cbefcbf3b070c2b4cf9f1b2"
     },
     {
       "path": "snh_pwm/c6_conformal_reachability/revalidation/PROTOCOL_LOCK_20260826_RU.md",
@@ -929,6 +949,11 @@
       "sha256": "3737dcb74bd9de25574b9dd81e2442d47bede1d62dcbc24decabf7b5d2024c39"
     },
     {
+      "path": "snh_pwm/source/estimation/current_voltage_flux_observer.py",
+      "bytes": 6702,
+      "sha256": "b1bcd78e1c96fbfde5c3061354ad49b6dfad01d3f99f4f6c9eeb8a1117e5ad0a"
+    },
+    {
       "path": "snh_pwm/source/models/induction_motor_alpha_beta.py",
       "bytes": 9224,
       "sha256": "9f3557e798e0b6b79d8500114a65383bc1b58346069746f5e30fdd96d2a71bb6"
@@ -954,6 +979,11 @@
       "sha256": "f75e6684f150d33d512f6a4b6d27425ffe088366132ba6724defa0bbb2a1b53b"
     },
     {
+      "path": "snh_pwm/source/tests/test_current_voltage_flux_observer.py",
+      "bytes": 5280,
+      "sha256": "b310e1f4493590d0ffce76b3178afd6a7db82d57611081aa4d6b5cc829d6b8ad"
+    },
+    {
       "path": "snh_pwm/source/tests/test_cyclic_conformal_reachability.py",
       "bytes": 10878,
       "sha256": "96701db194b40dbe33cd3e2ee4d0e2037cd775d73c394abd37ca4f7894f61dbd"
@@ -962,6 +992,11 @@
       "path": "snh_pwm/source/tests/test_cyclic_robust_viability_pwm.py",
       "bytes": 7109,
       "sha256": "4d98b7dcc194c719b3ae6dc3c3a77474cc127f8564d358f2ea9869b611778366"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_estimator_fed_conformal_lab.py",
+      "bytes": 4113,
+      "sha256": "440cc3c7f8177bfc84f517e64da05420fd397b40a87120488be157ef115f6929"
     },
     {
       "path": "snh_pwm/source/tests/test_safe_neural_horizon_pwm.py",
@@ -982,6 +1017,11 @@
       "path": "snh_pwm/source/tools/analyze_cyclic_robust_viability_lab.py",
       "bytes": 9222,
       "sha256": "788bf07c6fa5df13779aa4471e2f678fa91fa3a3ac3cc41aacccf53dc438e281"
+    },
+    {
+      "path": "snh_pwm/source/tools/analyze_estimator_fed_conformal_lab.py",
+      "bytes": 8749,
+      "sha256": "94e20f42194062a3913a875d16150b84fff3e7ee98cb977fd014ef9573299f2b"
     },
     {
       "path": "snh_pwm/source/tools/analyze_safe_neural_horizon_pwm_revalidation.py",
@@ -1062,6 +1102,11 @@
       "path": "snh_pwm/source/tools/run_cyclic_robust_viability_lab.py",
       "bytes": 16863,
       "sha256": "839003573fa749aaf07f9b36d740eb4be1a3433bfcc3d04c40ccbf12c93bf768"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_estimator_fed_conformal_lab.py",
+      "bytes": 24388,
+      "sha256": "b609f39214c4a0c739b4d139e895737d5fe612601cda301b120a536f175857ee"
     },
     {
       "path": "snh_pwm/source/tools/run_safe_neural_horizon_pwm_study.py",

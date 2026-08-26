@@ -23,8 +23,11 @@
 /* USER CODE BEGIN Includes */
 
 #include "acim_motor_parameters.h"
+#include "bus_voltage_sensor.h"
 #include "mc_api.h"
+#include "mc_config.h"
 #include "mc_stm_types.h"
+#include "ntc_temperature_sensor.h"
 
 #include <string.h>
 
@@ -104,6 +107,12 @@ enum {
   UNO_STATUS_TIMEOUT = 0x10U,
   UNO_STATUS_PWM_ACTIVE = 0x20U,
   UNO_STATUS_SHUTDOWN_RELEASED = 0x40U,
+  UNO_EXT_PRECHARGE_RELAY = 0x08U,
+  UNO_TELEMETRY_PRECHARGE_MANAGED = 0x20U,
+  UNO_TELEMETRY_VBUS_VALID = 0x40U,
+  UNO_TELEMETRY_MCSDK_UNITS = 0x80U,
+  UNO_TEMP_VALID = 0x01U,
+  UNO_TEMP_FAULT = 0x02U,
   UNO_FAULT_OK = 0U,
   UNO_FAULT_ESTOP = 1U,
   UNO_FAULT_TIMEOUT = 2U,
@@ -112,7 +121,17 @@ enum {
   UNO_LINK_TIMEOUT_MS = 300U,
   UNO_REPLY_TIMEOUT_MS = 5U,
   UNO_SPEED_RAMP_MS = 150U,
+  UNO_PRECHARGE_READY_V = 250U,
+  UNO_PRECHARGE_HOLD_V = 200U,
+  UNO_PRECHARGE_MAX_V = 385U,
+  UNO_PRECHARGE_TIMEOUT_MS = 5000U,
+  UNO_PRECHARGE_SETTLE_MS = 350U,
 };
+
+#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1
+#define MIC_PRECHARGE_HIL_VALIDATED 0
+#define UNO_PRECHARGE_GPIO_PORT GPIOB
+#define UNO_PRECHARGE_GPIO_PIN GPIO_PIN_4
 
 typedef struct {
   uint8_t parser_state;
@@ -128,6 +147,10 @@ typedef struct {
   bool link_seen;
   bool command_enabled;
   bool fault_latched;
+  bool precharge_closed;
+  bool precharge_waiting;
+  uint32_t precharge_started_ms;
+  uint32_t precharge_closed_ms;
 } uno_link_state_t;
 
 static uno_link_state_t uno_link;
@@ -157,8 +180,20 @@ static bool uno_mcsdk_fault_present(void) {
          state == FAULT_NOW || state == FAULT_OVER;
 }
 
+static void uno_precharge_set(bool closed) {
+  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN,
+                    closed ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  uno_link.precharge_closed = closed;
+  if (!closed) {
+    uno_link.precharge_waiting = false;
+    uno_link.precharge_started_ms = 0U;
+    uno_link.precharge_closed_ms = 0U;
+  }
+}
+
 static void uno_stop_motor(void) {
   (void)MC_StopMotor1();
+  uno_precharge_set(false);
   uno_link.command_enabled = false;
   uno_link.last_mode = UNO_MODE_OFF;
 }
@@ -198,6 +233,12 @@ static void uno_send_reply(void) {
   const MCI_State_t motor_state = MC_GetSTMStateMotor1();
   const bool mcsdk_fault = uno_mcsdk_fault_present();
   const bool fault = uno_link.fault_latched || mcsdk_fault;
+  const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
+  const uint16_t vbus_deci_v = (vbus_v <= (UINT16_MAX / 10U))
+                                  ? (uint16_t)(vbus_v * 10U)
+                                  : UINT16_MAX;
+  const int16_t temp_deci_c = (int16_t)(NTC_GetAvTemp_C(&TempSensor_M1) * 10);
+  const uint16_t mcsdk_faults = MC_GetCurrentFaultsMotor1();
   uint8_t fault_code = uno_link.fault_code;
   uint8_t status = 0U;
 
@@ -220,9 +261,20 @@ static void uno_send_reply(void) {
   reply[8] = (uint8_t)(uno_link.bad_count >> 8U);
   reply[9] = fault_code;
   reply[10] = uno_link.last_mode;
+  reply[14] = uno_link.precharge_closed ? UNO_EXT_PRECHARGE_RELAY : 0U;
+  reply[17] = (uint8_t)(vbus_deci_v & 0xFFU);
+  reply[18] = (uint8_t)(vbus_deci_v >> 8U);
+  reply[19] = (uint8_t)(((uint16_t)temp_deci_c) & 0xFFU);
+  reply[20] = (uint8_t)(((uint16_t)temp_deci_c) >> 8U);
+  reply[21] = UNO_TEMP_VALID;
+  if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
+  reply[29] = UNO_TELEMETRY_MCSDK_UNITS |
+              UNO_TELEMETRY_VBUS_VALID |
+              UNO_TELEMETRY_PRECHARGE_MANAGED;
   reply[UNO_FRAME_LEN - 1U] = uno_crc_xor(reply);
   if (HAL_UART_Transmit(&huart1, reply, UNO_FRAME_LEN, UNO_REPLY_TIMEOUT_MS) != HAL_OK) {
     uno_saturating_increment(&uno_link.bad_count);
+    uno_latch_fault(UNO_FAULT_INTERNAL);
   }
 }
 
@@ -290,6 +342,33 @@ static void uno_handle_valid_frame(const uint8_t *frame) {
       frequency_millihz == 0U || frequency_millihz > max_frequency_millihz ||
       uno_mcsdk_fault_present()) {
     uno_latch_fault(UNO_FAULT_INTERNAL);
+    return;
+  }
+
+  const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
+  if (!uno_link.precharge_closed) {
+    if (!uno_link.precharge_waiting) {
+      uno_link.precharge_waiting = true;
+      uno_link.precharge_started_ms = now_ms;
+    }
+    if (vbus_v > UNO_PRECHARGE_MAX_V ||
+        (uint32_t)(now_ms - uno_link.precharge_started_ms) > UNO_PRECHARGE_TIMEOUT_MS) {
+      uno_latch_fault(UNO_FAULT_INTERNAL);
+      return;
+    }
+    if (vbus_v >= UNO_PRECHARGE_READY_V) {
+      uno_precharge_set(true);
+      uno_link.precharge_waiting = true;
+      uno_link.precharge_started_ms = now_ms;
+      uno_link.precharge_closed_ms = now_ms;
+    }
+    return;
+  }
+  if (vbus_v < UNO_PRECHARGE_HOLD_V || vbus_v > UNO_PRECHARGE_MAX_V) {
+    uno_latch_fault(UNO_FAULT_INTERNAL);
+    return;
+  }
+  if ((uint32_t)(now_ms - uno_link.precharge_closed_ms) < UNO_PRECHARGE_SETTLE_MS) {
     return;
   }
 
@@ -375,6 +454,10 @@ static void uno_link_poll(void) {
   if (uno_link.link_seen && !uno_link.fault_latched &&
       (uint32_t)(HAL_GetTick() - uno_link.last_valid_ms) > UNO_LINK_TIMEOUT_MS) {
     uno_latch_fault(UNO_FAULT_TIMEOUT);
+  }
+  if ((uno_link.command_enabled || uno_link.precharge_closed) &&
+      uno_mcsdk_fault_present()) {
+    uno_latch_fault(UNO_FAULT_INTERNAL);
   }
 }
 
@@ -940,6 +1023,13 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
+  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN, GPIO_PIN_RESET);
+  GPIO_InitStruct.Pin = UNO_PRECHARGE_GPIO_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(UNO_PRECHARGE_GPIO_PORT, &GPIO_InitStruct);
+
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
@@ -955,6 +1045,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
+  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN, GPIO_PIN_RESET);
   __disable_irq();
   while (1)
   {

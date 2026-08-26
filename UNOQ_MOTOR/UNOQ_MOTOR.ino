@@ -40,7 +40,7 @@
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026080704U;
+static const uint32_t FW_BUILD_ID = 2026082601U;
 #ifndef UART_ECHO_TEST
 #define UART_ECHO_TEST 0
 #endif
@@ -337,6 +337,9 @@ static uint16_t g_bp_phase_a_raw = 0;
 static uint16_t g_bp_phase_b_raw = 0;
 static uint16_t g_bp_phase_c_raw = 2048;
 static uint8_t g_bp_phase_flags = 0;
+static bool g_bp_mcsdk_telemetry = false;
+static bool g_bp_vbus_valid = false;
+static bool g_bp_precharge_managed = false;
 static float g_bp_phase_a_v = 0.0f;
 static float g_bp_phase_b_v = 0.0f;
 static float g_bp_phase_c_v = 0.0f;
@@ -918,7 +921,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(72);
+  mp_tx_array(75);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -1002,7 +1005,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)bp_phase_age);
   mp_tx_int((int32_t)g_bp_ext_flags);
   mp_tx_int(g_io_test_mode ? 1 : 0);
-  mp_tx_int((g_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
+  mp_tx_int((g_bp_ext_flags & BP_EXT_PRECHARGE_RELAY) ? 1 : 0);
   mp_tx_float((float)g_fan_q15 / 32767.0f);
   mp_tx_float(g_bp_fan_duty);
   mp_tx_float(g_bp_fan_rpm);
@@ -1010,6 +1013,9 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)g_bp_cmd_mode);
   mp_tx_int((int32_t)FW_BUILD_ID);
   mp_tx_int((int32_t)(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0));
+  mp_tx_int(g_bp_mcsdk_telemetry ? 1 : 0);
+  mp_tx_int(g_bp_vbus_valid ? 1 : 0);
+  mp_tx_int(g_bp_precharge_managed ? 1 : 0);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -2062,6 +2068,9 @@ static String rpc_get() {
   s += " bp_phase_b_v="; s += format_fixed(g_bp_phase_b_v, 3);
   s += " bp_phase_c_v="; s += format_fixed(g_bp_phase_c_v, 3);
   s += " bp_phase_flags="; s += String((int)g_bp_phase_flags);
+  s += " bp_mcsdk_telemetry="; s += String(g_bp_mcsdk_telemetry ? 1 : 0);
+  s += " bp_vbus_valid="; s += String(g_bp_vbus_valid ? 1 : 0);
+  s += " bp_precharge_managed="; s += String(g_bp_precharge_managed ? 1 : 0);
   s += " bp_phase_valid="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_VALID) ? 1 : 0);
   s += " bp_phase_c_virtual="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_C_VIRTUAL) ? 1 : 0);
   uint32_t bp_phase_age = (g_bp_phase_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_phase_ms);
@@ -2470,23 +2479,36 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   enc_speed_update(g_bp_enc_raw, g_bp_enc_ok, now_ms);
   g_bp_ext_flags = rx[14];
   g_bp_brake_q15 = (uint16_t)rx[15] | ((uint16_t)rx[16] << 8);
+  g_bp_phase_flags = rx[29];
+  g_bp_mcsdk_telemetry = (g_bp_phase_flags & 0x80U) != 0U;
+  g_bp_vbus_valid = (g_bp_phase_flags & 0x40U) != 0U;
+  g_bp_precharge_managed = (g_bp_phase_flags & 0x20U) != 0U;
   g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
-  if (g_bp_vbus_raw > 4095U) {
-    g_bp_vbus_raw = 4095U;
+  if (g_bp_mcsdk_telemetry) {
+    g_bp_vdc = (float)g_bp_vbus_raw * 0.1f;
+  } else {
+    if (g_bp_vbus_raw > 4095U) {
+      g_bp_vbus_raw = 4095U;
+    }
+    g_bp_vdc = bp_vdc_from_raw(g_bp_vbus_raw);
   }
-  g_bp_vdc = bp_vdc_from_raw(g_bp_vbus_raw);
   g_bp_vbus_ms = now_ms;
   g_bp_temp_raw = (uint16_t)rx[19] | ((uint16_t)rx[20] << 8);
-  if (g_bp_temp_raw > 4095U) {
-    g_bp_temp_raw = 4095U;
-  }
   g_bp_temp_flags = rx[21];
-  g_bp_temp_v = bp_temp_voltage_from_raw(g_bp_temp_raw);
-  float temp_c = 0.0f;
-  if ((g_bp_temp_flags & BP_TEMP_FLAG_VALID) != 0 && bp_temp_c_from_raw(g_bp_temp_raw, &temp_c)) {
-    g_bp_temp_c = temp_c;
+  if (g_bp_mcsdk_telemetry) {
+    g_bp_temp_v = 0.0f;
+    g_bp_temp_c = ((float)(int16_t)g_bp_temp_raw) * 0.1f;
   } else {
-    g_bp_temp_c = 0.0f;
+    if (g_bp_temp_raw > 4095U) {
+      g_bp_temp_raw = 4095U;
+    }
+    g_bp_temp_v = bp_temp_voltage_from_raw(g_bp_temp_raw);
+    float temp_c = 0.0f;
+    if ((g_bp_temp_flags & BP_TEMP_FLAG_VALID) != 0 && bp_temp_c_from_raw(g_bp_temp_raw, &temp_c)) {
+      g_bp_temp_c = temp_c;
+    } else {
+      g_bp_temp_c = 0.0f;
+    }
   }
   g_bp_temp_ms = now_ms;
   g_bp_fan_duty_q8 = rx[BP_RSP_FAN_DUTY_Q8];
@@ -2499,7 +2521,6 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   if (g_bp_phase_a_raw > 4095U) g_bp_phase_a_raw = 4095U;
   if (g_bp_phase_b_raw > 4095U) g_bp_phase_b_raw = 4095U;
   if (g_bp_phase_c_raw > 4095U) g_bp_phase_c_raw = 4095U;
-  g_bp_phase_flags = rx[29];
   g_bp_phase_a_v = bp_phase_voltage_from_raw(g_bp_phase_a_raw);
   g_bp_phase_b_v = bp_phase_voltage_from_raw(g_bp_phase_b_raw);
   g_bp_phase_c_v = bp_phase_voltage_from_raw(g_bp_phase_c_raw);
@@ -2847,6 +2868,11 @@ static void pwm_force_off(bool force_link) {
   g_pwm_forced_gpio = false;
 }
 static void brake_set(bool on) {
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    pinMode(BRAKE_PIN, INPUT);
+    g_brake_on = false;
+    return;
+  }
   g_brake_on = on;
   if (BRAKE_ACTIVE_HIGH) {
     digitalWrite(BRAKE_PIN, on ? HIGH : LOW);
@@ -3477,12 +3503,16 @@ static void matrix_update() {
     matrix_set_pixel(x0 + 7, y0 + 4);
     matrix_set_pixel(x0 + 7, y0 + 5);
   }
-  // The left marker is reserved for legacy K1 hardware; it stays dark now.
-  if (BP_PRECHARGE_RELAY_PRESENT && (g_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
+  // Left marker follows the Nucleo-owned precharge relay; right marker follows
+  // actual MCSDK PWM feedback rather than the local START request.
+  if ((g_bp_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
     matrix_set_pixel(0, 0);
     matrix_set_pixel(0, 1);
   }
-  if (g_pwm_enabled && !g_estop_latched) {
+  bool pwm_feedback = NUCLEO_MCSDK_ACIM_BACKEND
+                        ? ((g_bp_status & BP_STATUS_PWM_ACTIVE) != 0U)
+                        : g_pwm_enabled;
+  if (pwm_feedback && !g_estop_latched) {
     matrix_set_pixel(MATRIX_W - 1, 0);
     matrix_set_pixel(MATRIX_W - 1, 1);
   }
@@ -3677,8 +3707,13 @@ void setup() {
     nucleo_send_pwm(0.0f, 0.0f, 0.0f, false);
     g_nucleo_last_tx_ms = millis();
   }
-  pinMode(BRAKE_PIN, OUTPUT);
-  brake_set(true);
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    pinMode(BRAKE_PIN, INPUT);
+    g_brake_on = false;
+  } else {
+    pinMode(BRAKE_PIN, OUTPUT);
+    brake_set(true);
+  }
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 #if defined(ARDUINO_ARCH_ZEPHYR)
   analogReadResolution(12);

@@ -240,7 +240,7 @@ def main() -> int:
         getattr(bridge._serial_text, "_baud", None) == 460800,
         "serial_baud=460800",
     )
-    full_status = [0] * 70
+    full_status = [0] * 75
     full_status[0] = 0
     full_status[1] = 1
     full_status[2] = 0
@@ -311,6 +311,11 @@ def main() -> int:
     full_status[67] = 1230.0
     full_status[68] = 1
     full_status[69] = 5
+    full_status[70] = 2026082601
+    full_status[71] = 0
+    full_status[72] = 1
+    full_status[73] = 1
+    full_status[74] = 1
     bridge._call = lambda method, params, timeout=1.5, retries=1: [1, 42, None, full_status]  # type: ignore[method-assign]
     st_ok, st_data, st_err = bridge.get()
     mapping_ok = (
@@ -329,8 +334,11 @@ def main() -> int:
         and st_data.get("bp_temp_fault") == 1
         and st_data.get("bp_phase_valid") == 1
         and st_data.get("bp_phase_c_virtual") == 1
+        and st_data.get("bp_mcsdk_telemetry") == 1
+        and st_data.get("bp_vbus_valid") == 1
+        and st_data.get("bp_precharge_managed") == 1
     )
-    add_case(cases, "rpc_status_array_70_mapping", bool(mapping_ok), st_err or "", st_data)
+    add_case(cases, "rpc_status_array_75_mapping", bool(mapping_ok), st_err or "", st_data)
 
     for cmd in ("START",):
         add_case(cases, f"start_detected_{cmd}", mod.command_requests_start(cmd), cmd)
@@ -419,6 +427,19 @@ def main() -> int:
     add_case(cases, "guard_rejects_invalid_raw_vbus", (not ok) and "invalid" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status(bp_vbus_age_ms=5000))
     add_case(cases, "guard_rejects_stale_raw_vbus", (not ok) and "stale" in msg, msg)
+    direct_status = safe_status(
+        bp_vbus_raw=0,
+        bp_vdc=0.0,
+        vdc=0.0,
+        bp_mcsdk_telemetry=1,
+        bp_vbus_valid=1,
+    )
+    ok, msg = guard(mod, "FAN PWM 0.25", direct_status)
+    add_case(cases, "guard_accepts_direct_mcsdk_zero_bus", ok, msg)
+    ok, msg = guard(mod, "FAN PWM 0.25", dict(direct_status, bp_vbus_valid=0))
+    add_case(cases, "guard_rejects_invalid_direct_mcsdk_vbus", (not ok) and "not valid" in msg, msg)
+    ok, msg = guard(mod, "FAN PWM 0.25", dict(direct_status, bp_vbus_raw=20))
+    add_case(cases, "guard_rejects_disagreeing_direct_mcsdk_vbus", (not ok) and "disagree" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status(vdc=315.0, bp_vdc=315.0))
     add_case(cases, "guard_rejects_high_vdc", (not ok) and "too high" in msg, msg)
     ok, msg = guard(mod, "BPFOC ON", safe_status(vdc=315.0, bp_vdc=315.0))
@@ -608,6 +629,44 @@ def main() -> int:
         and no_k1_app.arm_snapshot(seq_status)["hmi_precharge_relay_present"] == 0,
         seq_msg,
         {"commands": no_k1_rpc.commands, "status": seq_status},
+    )
+
+    managed_arm = mod.HvArmState(lv_cfg)
+    managed_arm.arm("ARM LV HV OFF", safe_status())
+    managed_rpc = FakeRpc(
+        [
+            safe_status(bp_precharge_managed=1),
+            safe_status(
+                state="VF_RUN", state_code=1, pwm=1, precharge=1, bp_ext=8,
+                bp_status=0x01, bp_precharge_managed=1,
+            ),
+            safe_status(
+                state="VF_RUN", state_code=1, pwm=1, precharge=1, bp_ext=8,
+                bp_status=0x21, bp_precharge_managed=1,
+            ),
+        ]
+    )
+    managed_app = mod.AppState(
+        managed_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
+        hv_arm=managed_arm,
+        start_runlimit_sec=3.0,
+    )
+    seq_ok, seq_msg, seq_status = managed_app.start_sequence(
+        run_timeout_sec=0.1,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_start_waits_for_nucleo_precharge_and_actual_mcsdk_pwm",
+        seq_ok
+        and seq_status is not None
+        and seq_status.get("bp_status") == 0x21
+        and managed_app.arm_snapshot(seq_status)["hmi_precharge_relay_present"] == 1,
+        seq_msg,
+        {"commands": managed_rpc.commands, "status": seq_status},
     )
 
     reject_arm = mod.HvArmState(lv_cfg)

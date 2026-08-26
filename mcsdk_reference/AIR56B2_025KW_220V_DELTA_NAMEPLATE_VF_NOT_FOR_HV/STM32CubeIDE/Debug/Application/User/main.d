@@ -87,7 +87,8 @@ Application/User/main.o: \
  ../../MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/G4xx/Inc/r3_2_g4xx_pwm_curr_fdbk.h \
  ../../MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Inc/circle_limitation.h \
  ../../MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Inc/pwm.h \
- ../../Inc/mc_api.h ../../Inc/acim_motor_parameters.h ../../Inc/mc_api.h
+ ../../Inc/mc_api.h ../../Inc/acim_motor_parameters.h ../../Inc/mc_api.h \
+ ../../Inc/mc_config.h
 ../../Inc/main.h:
 ../../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 ../../Inc/stm32g4xx_hal_conf.h:
@@ -187,3 +188,4 @@ Application/User/main.o: \
 ../../Inc/mc_api.h:
 ../../Inc/acim_motor_parameters.h:
 ../../Inc/mc_api.h:
+../../Inc/mc_config.h:

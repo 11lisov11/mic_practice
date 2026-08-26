@@ -383,12 +383,17 @@ def main() -> int:
                     "metrics": metrics,
                     "capture_error": capture_error,
                 }
-                power_path_ok = bool(
+                precharge_managed = bool(st is not None and int(st_num(st, "bp_precharge_managed", 0.0)) == 1)
+                relay_active = bool(
                     st is not None
-                    and int(st_num(st, "precharge", 1.0)) == 0
-                    and (int(st_num(st, "bp_ext", 0x08)) & 0x08) == 0
+                    and (
+                        int(st_num(st, "precharge", 0.0)) != 0
+                        or (int(st_num(st, "bp_ext", 0.0)) & 0x08) != 0
+                    )
                 )
-                item["removed_precharge_stays_off"] = power_path_ok
+                power_path_ok = relay_active if precharge_managed else not relay_active
+                item["precharge_path_confirmed"] = power_path_ok
+                item["precharge_managed"] = precharge_managed
                 item["pass"] = bool(
                     cmds_ok
                     and steady_ok

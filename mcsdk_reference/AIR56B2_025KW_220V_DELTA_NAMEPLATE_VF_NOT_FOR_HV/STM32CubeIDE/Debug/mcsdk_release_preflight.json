@@ -4,9 +4,9 @@
   "project": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV",
   "artifacts": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug",
   "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json",
-  "motor_profile_sha256": "69705C4E67C105D6D7646465283FBC4A70758E6C7BF005A7B5F7DA911A971471",
+  "motor_profile_sha256": "AF32D0B28CF4638C65D7AAC25A6B33095B971EB43A470A23F78A44940EE6E275",
   "failed_checks": [
-    "precharge_interlock_implemented",
+    "precharge_interlock_hil_validated",
     "motor_profile_is_real_acim",
     "generated_motor_configuration_matches_profile"
   ],
@@ -34,10 +34,17 @@
       }
     },
     "precharge_interlock_implemented": {
-      "pass": false,
+      "pass": true,
       "evidence": {
         "required_define": "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1",
-        "note": "Must be added only with a real Nucleo relay output, bus-ready threshold, fault/E-stop opening path, and HIL evidence."
+        "note": "Requires a real Nucleo relay output, bus-ready threshold, and fault/E-stop/timeout opening paths."
+      }
+    },
+    "precharge_interlock_hil_validated": {
+      "pass": false,
+      "evidence": {
+        "required_define": "#define MIC_PRECHARGE_HIL_VALIDATED 1",
+        "note": "Set to 1 only after scope-verified PB4 polarity, Vbus threshold, settle delay, and opening on STOP, E-stop, UART timeout, and MCSDK fault."
       }
     },
     "motor_profile_present": {
@@ -69,22 +76,22 @@
         ".elf": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-            "bytes": 2059608,
-            "sha256": "EB0081B5D2EB0902C3A28FAEE63EB0B207BE5810F7C0E80753D58086A39502C1"
+            "bytes": 2062148,
+            "sha256": "02827A0E486A4C581D3E9E8991349C9B7FF73E54D0CB86870049E95B732FE5DF"
           }
         ],
         ".bin": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-            "bytes": 38604,
-            "sha256": "D1034CD74A2D6E3FA1D08D60EF7319D291BA1F9A1C261AB0013A967F25C89BB2"
+            "bytes": 39348,
+            "sha256": "9102EA7A31642557CFCFC961F5838B4C84A2BCA5AC8916E9963815953990E7FB"
           }
         ],
         ".hex": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-            "bytes": 108680,
-            "sha256": "26D30D4DD4763C47F5287359987C1D6C6C6173AA5A852AB67A6BB34DD0C0CB41"
+            "bytes": 110766,
+            "sha256": "F871B566BF758B297EFE73704F0AB3FFF855D8F027574178CC66562C4200C01C"
           }
         ]
       }

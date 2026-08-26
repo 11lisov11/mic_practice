@@ -31,7 +31,8 @@ def main() -> int:
     else:
         raise AssertionError("invalid JSON must be rejected")
     assert MODULE.read_expected_build_id("UNOQ_MOTOR", 1234) == 1234
-    assert MODULE.read_expected_build_id("UNOQ_MOTOR", 0) == 2026080704
+    expected_build = 2026082601
+    assert MODULE.read_expected_build_id("UNOQ_MOTOR", 0) == expected_build
 
     cfg = (Path(__file__).resolve().parents[1] / "web_hmi" / "flash_unoq_sketch_090.cfg").read_text(
         encoding="utf-8"
@@ -40,17 +41,17 @@ def main() -> int:
     assert "0xCAFFEEEE" in cfg
     assert "0x80F0000" not in cfg
 
-    statuses = iter([{"fw_build": 0}, {"fw_build": 2026080704, "state": "SAFE", "pwm": 0}])
+    statuses = iter([{"fw_build": 0}, {"fw_build": expected_build, "state": "SAFE", "pwm": 0}])
     original_fetch = MODULE.fetch_status
     original_sleep = MODULE.time.sleep
     try:
         MODULE.fetch_status = lambda _url: next(statuses)
         MODULE.time.sleep = lambda _seconds: None
-        activated = MODULE.wait_for_build("http://uno-q", 2026080704, 1.0)
+        activated = MODULE.wait_for_build("http://uno-q", expected_build, 1.0)
     finally:
         MODULE.fetch_status = original_fetch
         MODULE.time.sleep = original_sleep
-    assert activated["fw_build"] == 2026080704
+    assert activated["fw_build"] == expected_build
 
     healthy = {
         "state": "SAFE",

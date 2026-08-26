@@ -50,7 +50,9 @@ def make_project(root: Path) -> None:
     )
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
-        "X-NUCLEO-IHM09M2 STEVAL-IPM15B ACIM\n#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n",
+        "X-NUCLEO-IHM09M2 STEVAL-IPM15B ACIM\n"
+        "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n"
+        "#define MIC_PRECHARGE_HIL_VALIDATED 1\n",
         encoding="utf-8",
     )
     (root / "acim_motor_parameters.h").write_text(
@@ -77,7 +79,9 @@ def make_official_style_project(root: Path) -> None:
     )
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
-        "STEVAL-IPM15B ACIM\n#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n",
+        "STEVAL-IPM15B ACIM\n"
+        "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n"
+        "#define MIC_PRECHARGE_HIL_VALIDATED 1\n",
         encoding="utf-8",
     )
     (root / "acim_motor_parameters.h").write_text(

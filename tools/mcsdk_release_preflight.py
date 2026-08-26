@@ -288,7 +288,16 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
     ))
     record("precharge_interlock_implemented", precharge_interlock, {
         "required_define": "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1",
-        "note": "Must be added only with a real Nucleo relay output, bus-ready threshold, fault/E-stop opening path, and HIL evidence.",
+        "note": "Requires a real Nucleo relay output, bus-ready threshold, and fault/E-stop/timeout opening paths.",
+    })
+    precharge_hil = bool(re.search(
+        r"^\s*#define\s+MIC_PRECHARGE_HIL_VALIDATED\s+1\b",
+        source_text,
+        flags=re.MULTILINE,
+    ))
+    record("precharge_interlock_hil_validated", precharge_hil, {
+        "required_define": "#define MIC_PRECHARGE_HIL_VALIDATED 1",
+        "note": "Set to 1 only after scope-verified PB4 polarity, Vbus threshold, settle delay, and opening on STOP, E-stop, UART timeout, and MCSDK fault.",
     })
 
     record("motor_profile_present", profile_path.is_file(), str(profile_path))

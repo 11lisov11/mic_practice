@@ -515,14 +515,14 @@ def run_checks(repo: Path) -> list[CaseResult]:
             "float freq = g_pwm_enabled ? g_freq_ref : g_freq_cmd;",
             "bool show_rpm = g_pwm_enabled",
             "(freq * 60.0f) / POLE_PAIRS",
-            "static const bool BP_PRECHARGE_RELAY_PRESENT = false;",
-            "g_pwm_enabled && !g_estop_latched",
+            "(g_bp_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U",
+            "g_bp_status & BP_STATUS_PWM_ACTIVE",
         )
     )
     if matrix_feedback_ok:
-        cases.append(ok_case("unoq_matrix_shows_command_and_pwm", {"digits": "frequency/RPM", "left": "reserved/off", "right": "PWM"}))
+        cases.append(ok_case("unoq_matrix_shows_command_and_pwm", {"digits": "frequency/RPM", "left": "Nucleo precharge", "right": "MCSDK PWM"}))
     else:
-        cases.append(fail_case("unoq_matrix_shows_command_and_pwm", "UNO Q matrix must expose frequency/RPM and PWM while the legacy relay marker stays disabled"))
+        cases.append(fail_case("unoq_matrix_shows_command_and_pwm", "UNO Q matrix must expose frequency/RPM, Nucleo precharge, and actual MCSDK PWM feedback"))
     hard_stop_body = unoq_text.split("static void hard_stop(bool clear_cmd, bool force_link) {", 1)
     hard_stop_releases_relay = bool(
         len(hard_stop_body) == 2

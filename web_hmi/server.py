@@ -449,6 +449,18 @@ def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[b
     if "bp_vbus_raw" not in data:
         return False, "raw DC bus telemetry is missing"
     raw = _as_int(data, "bp_vbus_raw", -1)
+    if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
+        if _as_int(data, "bp_vbus_valid", 0) != 1:
+            return False, "MCSDK DC bus telemetry is not valid"
+        if raw < 0 or raw > 5000:
+            return False, f"MCSDK DC bus telemetry is invalid: decivolts={raw}"
+        direct_vdc = float(raw) * 0.1
+        scaled_vdc = _status_vdc(data)
+        if not math.isfinite(scaled_vdc) or abs(scaled_vdc - direct_vdc) > 1.0:
+            return False, "MCSDK DC bus telemetry fields disagree"
+        if direct_vdc < min_vdc or direct_vdc > max_vdc:
+            return False, f"MCSDK DC bus is outside window: vdc={direct_vdc:.1f} V"
+        return True, "ok"
     if raw < VBUS_RAW_MIN_VALID or raw > VBUS_RAW_MAX_VALID:
         return False, f"raw DC bus telemetry is invalid: raw={raw}"
 
@@ -1286,11 +1298,13 @@ class RpcBridge:
 
             if len(result) >= 31:
                 data["bp_status"] = int(result[27])
+                data["bp_pwm_active"] = 1 if (data["bp_status"] & 0x20) else 0
                 data["bp_fault"] = int(result[28])
                 data["bp_mode"] = bp_mode
                 data["bp_seq"] = int(result[30])
             else:
                 data["bp_status"] = 0
+                data["bp_pwm_active"] = 0
                 data["bp_fault"] = 255
                 data["bp_mode"] = 0
                 data["bp_seq"] = 0
@@ -1417,6 +1431,9 @@ class RpcBridge:
                 data["bp_cmd_mode"] = data.get("bp_mode", 0)
             data["fw_build"] = int(result[70]) if len(result) >= 71 else 0
             data["matrix_test"] = int(result[71]) if len(result) >= 72 else 0
+            data["bp_mcsdk_telemetry"] = int(result[72]) if len(result) >= 73 else 0
+            data["bp_vbus_valid"] = int(result[73]) if len(result) >= 74 else 0
+            data["bp_precharge_managed"] = int(result[74]) if len(result) >= 75 else 0
             return True, data, None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -1509,6 +1526,9 @@ class RpcBridge:
                 "bp_vbus_raw": int(float(kv.get("bp_vbus_raw", "0"))),
                 "bp_vdc": float(kv.get("bp_vdc", kv.get("vdc", "0"))),
                 "bp_vbus_age_ms": int(float(kv.get("bp_vbus_age_ms", "999999"))),
+                "bp_mcsdk_telemetry": int(float(kv.get("bp_mcsdk_telemetry", "0"))),
+                "bp_vbus_valid": int(float(kv.get("bp_vbus_valid", "0"))),
+                "bp_precharge_managed": int(float(kv.get("bp_precharge_managed", "0"))),
                 "bp_temp_raw": int(float(kv.get("bp_temp_raw", "0"))),
                 "bp_temp_v": float(kv.get("bp_temp_v", "0")),
                 "bp_temp_c": float(kv.get("bp_temp_c", "0")),
@@ -1570,7 +1590,7 @@ class AppState:
         self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
 
     def _precharge_off(self) -> tuple[bool, str]:
-        return True, "not-installed"
+        return True, "nucleo-managed-via-stop"
 
     def stop_sequence(
         self,
@@ -1622,7 +1642,7 @@ class AppState:
         run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
         poll_sec: float = 0.05,
     ) -> tuple[bool, str, Optional[dict]]:
-        """Confirm safety and start PWM without a controllable power relay."""
+        """Confirm safety, then let Nucleo sequence its local precharge relay."""
         st_ok, status, st_err = self.rpc.get()
         allowed, guard_err = command_guard_check(
             "START", status if st_ok else None, self.command_guard
@@ -1652,7 +1672,11 @@ class AppState:
         run_timeout_sec: float,
         poll_sec: float,
     ) -> tuple[bool, str, Optional[dict]]:
-        self.logs.add("WIFI_START_STEP PRECHARGE_SKIPPED relay_present=0")
+        precharge_managed = _as_int(initial_status, "bp_precharge_managed", 0) == 1
+        self.logs.add(
+            f"WIFI_START_STEP PRECHARGE_OWNER "
+            f"owner={'nucleo' if precharge_managed else 'none'}"
+        )
         arm_ok, arm_err = self.hv_arm.command_allowed(initial_status)
         if self.hv_arm.cfg.enabled and not arm_ok:
             self.stop_sequence(emergency=False)
@@ -1684,21 +1708,33 @@ class AppState:
                 run_ok, run_err = output_sequence_health_check(
                     candidate, self.hv_arm.cfg, self.command_guard
                 )
+                relay_active = bool(
+                    _as_int(candidate, "precharge", 0) != 0
+                    or (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
+                )
+                relay_state_ok = relay_active if precharge_managed else not relay_active
+                nucleo_pwm_ok = (
+                    (_as_int(candidate, "bp_status", 0) & 0x20) != 0
+                    if precharge_managed
+                    else True
+                )
                 running = (
                     _as_int(candidate, "pwm", 0) == 1
                     and str(candidate.get("state", "")).upper()
                     in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
-                    and _as_int(candidate, "precharge", 0) == 0
-                    and (_as_int(candidate, "bp_ext", 0) & 0x08) == 0
+                    and relay_state_ok
+                    and nucleo_pwm_ok
                 )
                 if run_ok and running:
                     self.hv_arm.mark_started()
                     self.logs.add(
                         f"WIFI_START_OK state={candidate.get('state')} "
                         f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
-                        f"speed={_as_float(candidate, 'speed', 0.0):.1f} relay_present=0"
+                        f"speed={_as_float(candidate, 'speed', 0.0):.1f} "
+                        f"precharge_owner={'nucleo' if precharge_managed else 'none'}"
                     )
-                    return True, "PWM started; precharge relay is not installed", candidate
+                    detail = "PWM started; precharge relay confirmed by Nucleo" if precharge_managed else "PWM started"
+                    return True, detail, candidate
                 last_run_error = run_err if not run_ok else "PWM did not enter a running state"
             else:
                 last_run_error = read_err or "status unavailable"
@@ -1714,7 +1750,9 @@ class AppState:
         available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
         snapshot["hmi_arm_profiles"] = available
         snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
-        snapshot["hmi_precharge_relay_present"] = 0
+        snapshot["hmi_precharge_relay_present"] = int(
+            status is not None and _as_int(status, "bp_precharge_managed", 0) == 1
+        )
         snapshot["hmi_vbus_hv_calibrated"] = int(VBUS_HV_CALIBRATION_VALID)
         current_cfg = self.hv_arm.cfg
         switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
@@ -1916,7 +1954,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
             return
         if _cmd_head(cmd) in ("PRECHARGE", "RELAY"):
-            self._send_json({"ok": False, "error": "unsupported: precharge relay is not installed"}, 400)
+            self._send_json({"ok": False, "error": "unsupported: precharge relay is managed by Nucleo"}, 400)
             return
         with self.server.app.control_lock:  # type: ignore[attr-defined]
             self._handle_cmd_locked(cmd)
@@ -2487,7 +2525,7 @@ def main() -> None:
     print(
         f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
         f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
-        f"precharge_relay=0, runlimit={start_runlimit_sec:.1f}s)"
+        f"precharge_relay=nucleo-managed, runlimit={start_runlimit_sec:.1f}s)"
     )
     app.start_safety_watchdog()
     try:

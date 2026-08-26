@@ -103,6 +103,20 @@ py -3 -u tools\motor_parameter_api.py --host 127.0.0.1 --port 18110
 API предоставляет только `GET /api/health`, `POST /api/validate` и
 `POST /api/identify`. Полный `capture` и `prior` передаются JSON-объектами.
 
+Строгий мост к будущему FOC-проекту:
+
+```powershell
+py -3 -u tools\mcsdk_motor_model_bridge.py render `
+  --identification <hardware-result.json> `
+  --profile docs\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json `
+  --output <motor-model-bundle.json>
+```
+
+Мост требует совпадение `motor_id` и числа пар полюсов, конечные SI-значения,
+полный acceptance-gate и аппаратное происхождение. Флаг
+`--allow-synthetic-dry-run` создаёт только `simulation_only`-артефакт и никогда
+не разрешает генерацию FOC-прошивки или высоковольтный запуск.
+
 ## Условия принятия результата
 
 Результат получает `accepted=true` только одновременно при выполнении условий:
@@ -119,6 +133,18 @@ API предоставляет только `GET /api/health`, `POST /api/valida
 помечается как аппаратная проверка. Блок `estimated_params` совместим с
 существующим загрузчиком MIC AI; при этом `Ls=Lr=Lm+Lsigma`. Блок
 `estimated_params_si` сохраняет явные единицы в именах полей.
+
+Текущие 95%-интервалы являются локальной Fisher-аппроксимацией. Их фактическое
+покрытие на нелинейной модели и при model mismatch ещё не откалибровано; поэтому
+они пригодны для fail-closed фильтра ширины, но не для заявления о подтверждённом
+95%-покрытии. Следующий статистический этап — отдельный MC-UQ coverage-аудит.
+
+## Мост к MCSDK
+
+Артефакт `mic_ai.motor_model_bundle.v1` явно фиксирует конвенцию
+`Lsigma=Lls=Llr`, `LMS=Lm/1.5`, `LM=1.5*LMS`, а также производные `Ls`, `Lr`,
+`tau_s`, `tau_r` и `sigma`. Сам bundle не разрешает HV: даже аппаратный кандидат
+требует отдельной регенерации staging-проекта, проверки runtime-констант и стенда.
 
 ## Что ещё требуется от железа
 

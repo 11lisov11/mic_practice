@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import tempfile
 from pathlib import Path
 
@@ -90,6 +91,18 @@ def make_official_style_project(root: Path) -> None:
 
 
 def main() -> int:
+    nonfinite_profile = profile("nameplate_and_measurement")
+    nonfinite_profile["rated_current_a"] = math.nan
+    nonfinite_rejected = "profile_rated_current_a" in gate.profile_errors(nonfinite_profile)
+    fractional_profile = profile("nameplate_and_measurement")
+    fractional_profile["pole_pairs"] = 1.9
+    fractional_rejected = "profile_pole_pairs_integer" in gate.profile_errors(fractional_profile)
+    infinite_model_profile = profile("nameplate_and_measurement")
+    infinite_model_profile["magnetizing_inductance_h"] = math.inf
+    infinite_model_rejected = (
+        "profile_measured_magnetizing_inductance_h" in gate.profile_errors(infinite_model_profile)
+    )
+
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         make_project(root)
@@ -141,6 +154,9 @@ def main() -> int:
             and not stale_firmware_rejected["pass"]
             and "generated_motor_configuration_matches_profile" in stale_firmware_rejected["failed_checks"]
             and official_style["pass"]
+            and nonfinite_rejected
+            and fractional_rejected
+            and infinite_model_rejected
         ),
         "accepted_project": accepted["pass"],
         "artifacts_are_hashed": artifacts_are_hashed,
@@ -150,6 +166,9 @@ def main() -> int:
         "catalog_profile_rejected": "motor_profile_is_real_acim" in catalog_rejected["failed_checks"],
         "stale_firmware_rejected": "generated_motor_configuration_matches_profile" in stale_firmware_rejected["failed_checks"],
         "official_nucleo_ipm15b_topology_accepted": official_style["pass"],
+        "nonfinite_profile_rejected": nonfinite_rejected,
+        "fractional_pole_pairs_rejected": fractional_rejected,
+        "infinite_measured_model_rejected": infinite_model_rejected,
     }
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     return 0 if summary["pass"] else 1

@@ -331,6 +331,14 @@ def identify_motor(
             "integration": {
                 "mic_ai_legacy_loader_compatible": True,
                 "leakage_mapping": "Ls=Lr=Lm+Lsigma",
+                "parameter_convention": {
+                    "coordinate_system": "stationary_alpha_beta",
+                    "clarke_scaling": "amplitude_invariant_2_over_3",
+                    "identified_leakage": "Lsigma_equals_Lls_equals_Llr",
+                    "identified_magnetizing_inductance": "Lm_is_dynamic_mutual_inductance",
+                    "mcsdk_input_mapping": "LLS=Lsigma; LLR=Lsigma; LMS=Lm/1.5",
+                    "mcsdk_runtime_mapping": "LM=1.5*LMS=Lm; LS=LLS+LM; LR=LLR+LM",
+                },
             },
         }
     )

@@ -455,7 +455,16 @@ def prior_from_payload(payload: Mapping[str, object]) -> MotorParameters:
     for target, source in aliases.items():
         if source not in payload:
             raise ValueError(f"prior is missing {source}")
-        values[target] = int(payload[source]) if target == "pole_pairs" else float(payload[source])
+        if target == "pole_pairs":
+            raw_pole_pairs = payload[source]
+            if isinstance(raw_pole_pairs, bool):
+                raise ValueError("prior pole_pairs must be a positive integer")
+            pole_pairs = float(raw_pole_pairs)
+            if not math.isfinite(pole_pairs) or not pole_pairs.is_integer() or pole_pairs < 1.0:
+                raise ValueError("prior pole_pairs must be a positive integer")
+            values[target] = int(pole_pairs)
+        else:
+            values[target] = float(payload[source])
     return MotorParameters(**values)  # type: ignore[arg-type]
 
 

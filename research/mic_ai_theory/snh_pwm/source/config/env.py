@@ -20,19 +20,19 @@ SIM_LOAD_TORQUE = 1.0      # постоянный момент нагрузки,
 
 # ------ Паспортные данные электродвигателя -------
 NAMEPLATE_P_KW = 0.25       # номинальная мощность, кВт
-NAMEPLATE_U_LL = 380.0      # линейное напряжение, В
-NAMEPLATE_I_N = 0.7         # линейный ток, А
-NAMEPLATE_COSPHI = 0.68     # cos φ номинальный
-NAMEPLATE_ETA = 0.75        # КПД (0..1)
+NAMEPLATE_U_LL = 220.0      # AIR56B2: линейное напряжение при соединении D, В
+NAMEPLATE_I_N = 1.24        # AIR56B2: линейный ток, А
+NAMEPLATE_COSPHI = 0.68     # только simulation prior; заменить результатом идентификации
+NAMEPLATE_ETA = 0.75        # только simulation prior; заменить результатом идентификации
 NAMEPLATE_F_N = 50.0        # частота сети, Гц
-NAMEPLATE_POLE_PAIRS = 2    # число пар полюсов
-NAMEPLATE_N_RATED = 1450.0  # номинальная скорость, об/мин
-NAMEPLATE_CONNECTION = "Y"  # соединение "Y" или "D"
-NAMEPLATE_J = 0.01          # инерция, кг*м^2 (оценка)
+NAMEPLATE_POLE_PAIRS = 1    # AIR56B2: число пар полюсов
+NAMEPLATE_N_RATED = 2720.0  # AIR56B2: номинальная скорость, об/мин
+NAMEPLATE_CONNECTION = "D"  # AIR56B2: треугольник для 220 В line-to-line
+NAMEPLATE_J = 0.01          # только simulation prior, кг*м^2
 # -------------------------------------------------
 
 # ------ Параметры инвертора -------
-INVERTER_VDC = 540.0       # звено постоянного тока, В
+INVERTER_VDC = 310.0       # расчетное звено после выпрямления 220 В, В
 INVERTER_F_PWM = 10_000.0  # частота ШИМ, Гц
 # ----------------------------------
 

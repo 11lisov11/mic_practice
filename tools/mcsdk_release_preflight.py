@@ -22,6 +22,14 @@ REQUIRED_PROFILE_FIELDS = (
 REQUIRED_ARTIFACT_SUFFIXES = (".elf", ".bin", ".hex")
 REQUIRED_PROFILE_SOURCE_KIND = "nameplate_and_measurement"
 STEVAL_IPM15B_MAX_INPUT_DC_V = 400.0
+PROFILE_NUMERIC_LIMITS = {
+    "pole_pairs": (1.0, 32.0),
+    "rated_line_voltage_v": (10.0, 1000.0),
+    "rated_phase_voltage_v": (5.0, 1000.0),
+    "rated_current_a": (0.01, 1000.0),
+    "rated_frequency_hz": (1.0, 1000.0),
+    "rated_speed_rpm": (1.0, 100000.0),
+}
 MEASURED_MODEL_FIELDS = (
     "stator_resistance_ohm",
     "rotor_resistance_ohm",
@@ -84,8 +92,22 @@ def profile_errors(profile: dict[str, Any]) -> list[str]:
         errors.append("profile_connection")
     for field in REQUIRED_PROFILE_FIELDS:
         value = profile.get(field)
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+        limits = PROFILE_NUMERIC_LIMITS[field]
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not math.isfinite(float(value))
+            or not limits[0] <= float(value) <= limits[1]
+        ):
             errors.append(f"profile_{field}")
+    pole_pairs = profile.get("pole_pairs")
+    if (
+        isinstance(pole_pairs, (int, float))
+        and not isinstance(pole_pairs, bool)
+        and math.isfinite(float(pole_pairs))
+        and not float(pole_pairs).is_integer()
+    ):
+        errors.append("profile_pole_pairs_integer")
 
     if not errors:
         line_voltage = float(profile["rated_line_voltage_v"])
@@ -96,7 +118,12 @@ def profile_errors(profile: dict[str, Any]) -> list[str]:
 
     controller_phase_voltage = profile.get("controller_equivalent_phase_voltage_v")
     if controller_phase_voltage is not None:
-        if isinstance(controller_phase_voltage, bool) or not isinstance(controller_phase_voltage, (int, float)) or controller_phase_voltage <= 0:
+        if (
+            isinstance(controller_phase_voltage, bool)
+            or not isinstance(controller_phase_voltage, (int, float))
+            or not math.isfinite(float(controller_phase_voltage))
+            or not 5.0 <= float(controller_phase_voltage) <= 1000.0
+        ):
             errors.append("profile_controller_equivalent_phase_voltage_v")
         elif not errors:
             # MCSDK ACIM V/F uses phase-to-neutral quantities. A physical delta
@@ -108,7 +135,12 @@ def profile_errors(profile: dict[str, Any]) -> list[str]:
     if str(profile.get("source_kind", "")).lower() == REQUIRED_PROFILE_SOURCE_KIND:
         for field in MEASURED_MODEL_FIELDS:
             value = profile.get(field)
-            if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not math.isfinite(float(value))
+                or not 1.0e-12 <= float(value) <= 1.0e6
+            ):
                 errors.append(f"profile_measured_{field}")
         evidence = profile.get("measurement_evidence")
         if not isinstance(evidence, dict) or not str(evidence.get("method", "")).strip() or not str(evidence.get("date", "")).strip():

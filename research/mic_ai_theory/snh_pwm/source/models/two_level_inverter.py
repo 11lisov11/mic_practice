@@ -37,6 +37,25 @@ class InverterLossEstimate:
     common_mode_v: float
 
 
+@dataclass(frozen=True)
+class SpaceVectorDwell:
+    vector_id: int
+    dwell_s: float
+
+
+@dataclass(frozen=True)
+class SpaceVectorSchedule:
+    sector: int
+    segments: Tuple[SpaceVectorDwell, ...]
+    requested_alpha_beta_v: Tuple[float, float]
+    synthesized_alpha_beta_v: Tuple[float, float]
+    saturated: bool
+
+    @property
+    def total_dwell_s(self) -> float:
+        return sum(segment.dwell_s for segment in self.segments)
+
+
 def validate_vector_id(vector_id: int) -> int:
     if not isinstance(vector_id, int):
         raise ValueError(f"vector_id must be int, got {vector_id!r}")
@@ -101,6 +120,90 @@ def switch_events(prev_vector_id: int, next_vector_id: int) -> int:
     return sum(1 for a, b in zip(prev, nxt) if a != b)
 
 
+def space_vector_schedule(
+    v_alpha_ref: float,
+    v_beta_ref: float,
+    params: TwoLevelInverterParams,
+    *,
+    previous_vector_id: int = 0,
+) -> SpaceVectorSchedule:
+    """Synthesize one ideal linear-region SVPWM period.
+
+    The returned schedule contains the two adjacent active vectors and one zero
+    vector. If the requested reference is outside the linear hexagon, active
+    dwell times are scaled so their sum equals one PWM period. Pulse suppression
+    and dead-time distortion deliberately remain downstream safety concerns.
+    """
+
+    alpha = float(v_alpha_ref)
+    beta = float(v_beta_ref)
+    vdc = abs(float(params.Vdc))
+    period = float(params.t_pwm_s)
+    if not all(math.isfinite(value) for value in (alpha, beta, vdc, period)):
+        raise ValueError("SVPWM inputs must be finite")
+    if vdc <= 0.0 or period <= 0.0:
+        raise ValueError("SVPWM requires positive Vdc and PWM period")
+    previous = validate_vector_id(previous_vector_id)
+
+    magnitude = math.hypot(alpha, beta)
+    if magnitude <= 1.0e-15:
+        zero = min((0, 7), key=lambda candidate: (switch_events(previous, candidate), candidate))
+        return SpaceVectorSchedule(
+            sector=0,
+            segments=(SpaceVectorDwell(zero, period),),
+            requested_alpha_beta_v=(alpha, beta),
+            synthesized_alpha_beta_v=(0.0, 0.0),
+            saturated=False,
+        )
+
+    theta = math.atan2(beta, alpha) % (2.0 * math.pi)
+    sector = min(int(theta / (math.pi / 3.0)), 5)
+    angle_in_sector = theta - sector * (math.pi / 3.0)
+    active_vectors = (4, 6, 2, 3, 1, 5)
+    first = active_vectors[sector]
+    second = active_vectors[(sector + 1) % 6]
+    modulation = math.sqrt(3.0) * magnitude / vdc
+    t_first = period * modulation * math.sin(math.pi / 3.0 - angle_in_sector)
+    t_second = period * modulation * math.sin(angle_in_sector)
+    active_total = max(0.0, t_first) + max(0.0, t_second)
+    saturated = active_total > period
+    if saturated:
+        scale = period / active_total
+        t_first *= scale
+        t_second *= scale
+    t_zero = max(0.0, period - t_first - t_second)
+
+    candidates: list[tuple[int, tuple[int, int, int]]] = []
+    for zero in (0, 7):
+        for ordered in ((first, second, zero), (second, first, zero)):
+            events = switch_events(previous, ordered[0])
+            events += switch_events(ordered[0], ordered[1])
+            events += switch_events(ordered[1], ordered[2])
+            candidates.append((events, ordered))
+    _, ordered_vectors = min(candidates, key=lambda item: (item[0], item[1]))
+    dwell_by_vector = {first: t_first, second: t_second, ordered_vectors[2]: t_zero}
+    segments = tuple(
+        SpaceVectorDwell(vector_id, dwell_by_vector[vector_id])
+        for vector_id in ordered_vectors
+        if dwell_by_vector[vector_id] > 1.0e-15
+    )
+
+    synth_alpha = 0.0
+    synth_beta = 0.0
+    for segment in segments:
+        vector_alpha, vector_beta = alpha_beta_voltage(segment.vector_id, params)
+        weight = segment.dwell_s / period
+        synth_alpha += weight * vector_alpha
+        synth_beta += weight * vector_beta
+    return SpaceVectorSchedule(
+        sector=sector,
+        segments=segments,
+        requested_alpha_beta_v=(alpha, beta),
+        synthesized_alpha_beta_v=(float(synth_alpha), float(synth_beta)),
+        saturated=saturated,
+    )
+
+
 def estimate_inverter_losses(
     *,
     prev_vector_id: int,
@@ -126,12 +229,15 @@ def estimate_inverter_losses(
 
 __all__ = [
     "InverterLossEstimate",
+    "SpaceVectorDwell",
+    "SpaceVectorSchedule",
     "TwoLevelInverterParams",
     "VectorBits",
     "alpha_beta_voltage",
     "common_mode_voltage",
     "estimate_inverter_losses",
     "phase_voltages",
+    "space_vector_schedule",
     "switch_events",
     "validate_vector_id",
     "vector_bits",

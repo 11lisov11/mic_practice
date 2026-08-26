@@ -13,8 +13,10 @@ from typing import Any
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+SNH_SOURCE = Path(__file__).resolve().parents[3] / "snh_pwm" / "source"
+for source_root in (SNH_SOURCE, ROOT):
+    if str(source_root) not in sys.path:
+        sys.path.insert(0, str(source_root))
 
 from mic_ai.ident.model_based import (  # noqa: E402
     FIT_PARAMETER_NAMES,
@@ -89,7 +91,9 @@ def run_study(
         for method in METHODS
     }
     reports = {
-        method: analyze_identifiability(sensitivity_matrix(base_motor, experiments[method]))
+        method: analyze_identifiability(
+            sensitivity_matrix(base_motor, experiments[method], noise_scales=noise_scales)
+        )
         for method in METHODS
     }
     if design_repetitions < 4:
@@ -104,7 +108,9 @@ def run_study(
             seed=profile_seed + design_index,
         )
         prbs_design_reports.append(
-            analyze_identifiability(sensitivity_matrix(base_motor, design_experiments))
+            analyze_identifiability(
+                sensitivity_matrix(base_motor, design_experiments, noise_scales=noise_scales)
+            )
         )
     c6_logdet = reports["c6_multiscale"].log10_fisher_determinant
     prbs_logdets = [report.log10_fisher_determinant for report in prbs_design_reports]
@@ -127,7 +133,11 @@ def run_study(
         ),
     }
     separate_leakage_report = analyze_identifiability(
-        separate_leakage_sensitivity_matrix(base_motor, experiments["c6_multiscale"]),
+        separate_leakage_sensitivity_matrix(
+            base_motor,
+            experiments["c6_multiscale"],
+            noise_scales=noise_scales,
+        ),
         parameter_names=SEPARATE_LEAKAGE_PARAMETER_NAMES,
     )
 

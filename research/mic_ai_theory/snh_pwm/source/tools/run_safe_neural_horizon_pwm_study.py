@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import argparse
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import replace
+from dataclasses import asdict, is_dataclass, replace
 import hashlib
 import json
 import math
 from pathlib import Path
 from random import Random
 import sys
-from typing import Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Mapping
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -64,6 +64,16 @@ EXTENDED_CONTROLLER_SPECS = [
     ("safe_neural_horizon_pwm_h3_thermal", 3, 12),
     ("safe_neural_horizon_pwm_h4_sparse", 4, 15),
 ]
+
+BASELINE_CONFIG_TYPES = {
+    "protected_ai_pwm_h1_baseline": NeuralHorizonConfig,
+    "fcs_mpc_one_step_baseline": FcsMpcOneStepBaselineConfig,
+    "foc_svm_key_baseline": FocSvmKeyBaselineConfig,
+    "dtc_hysteresis_baseline": DtcHysteresisBaselineConfig,
+    "dtc_svm_baseline": DtcSvmBaselineConfig,
+    "deadbeat_current_baseline": DeadbeatCurrentBaselineConfig,
+    "sensorless_adaptive_foc_baseline": SensorlessAdaptiveFocBaselineConfig,
+}
 
 DEFAULT_SCENARIOS = [
     "start_no_load",
@@ -172,6 +182,49 @@ def _make_base_params() -> tuple[AlphaBetaMotorParams, TwoLevelInverterParams]:
     return motor, inverter
 
 
+def controller_config_overrides_from_tuning(
+    payload: Mapping[str, object],
+    *,
+    dt_s: float,
+) -> Dict[str, object]:
+    """Rebuild exact selected baseline configs from paired tuning evidence."""
+
+    if payload.get("comparison_design") != "paired_common_random_numbers_across_variants_and_controllers":
+        raise ValueError("baseline tuning payload does not declare paired common random numbers")
+    if payload.get("selection_evidence_ready") is not True:
+        raise ValueError("baseline tuning selection evidence is not ready")
+    controllers = payload.get("controllers")
+    if not isinstance(controllers, Mapping):
+        raise ValueError("baseline tuning payload is missing controllers")
+
+    overrides: Dict[str, object] = {}
+    for label, config_type in BASELINE_CONFIG_TYPES.items():
+        row = controllers.get(label)
+        if not isinstance(row, Mapping):
+            raise ValueError(f"baseline tuning payload is missing {label}")
+        selected_name = row.get("selected_variant")
+        selected_config = row.get("selected_config")
+        variants = row.get("variants")
+        if not isinstance(selected_name, str) or not isinstance(selected_config, Mapping):
+            raise ValueError(f"baseline tuning payload has no selected configuration for {label}")
+        if not isinstance(variants, Mapping):
+            raise ValueError(f"baseline tuning payload has no variant table for {label}")
+        selected_variant = variants.get(selected_name)
+        if not isinstance(selected_variant, Mapping) or selected_variant.get("config") != selected_config:
+            raise ValueError(f"selected configuration for {label} does not match its variant record")
+        try:
+            config = config_type(**dict(selected_config))
+        except TypeError as exc:
+            raise ValueError(f"invalid selected configuration for {label}: {exc}") from exc
+        config_dt = float(getattr(config, "dt_s", float("nan")))
+        if not math.isclose(config_dt, float(dt_s), rel_tol=0.0, abs_tol=1.0e-15):
+            raise ValueError(
+                f"selected configuration for {label} has dt_s={config_dt}, expected {float(dt_s)}"
+            )
+        overrides[label] = config
+    return overrides
+
+
 def _controller_specs(quick: bool = False) -> list[tuple[str, int, int]]:
     specs = list(BASE_CONTROLLER_SPECS)
     if quick:
@@ -196,7 +249,27 @@ def _controller(
     inverter: TwoLevelInverterParams,
     horizon: int,
     feedback_period: int,
+    config_override: object | None = None,
 ) -> SafeNeuralHorizonPwmController:
+    if config_override is not None and label not in BASELINE_CONFIG_TYPES:
+        raise ValueError(f"configuration overrides are not supported for {label}")
+
+    def selected(default: object) -> object:
+        if config_override is None:
+            return default
+        if not isinstance(config_override, type(default)):
+            raise TypeError(
+                f"configuration override for {label} must be {type(default).__name__}, "
+                f"got {type(config_override).__name__}"
+            )
+        default_dt = float(getattr(default, "dt_s", inverter.t_pwm_s))
+        override_dt = float(getattr(config_override, "dt_s", default_dt))
+        if not math.isclose(override_dt, default_dt, rel_tol=0.0, abs_tol=1.0e-15):
+            raise ValueError(
+                f"configuration override for {label} has dt_s={override_dt}, expected {default_dt}"
+            )
+        return config_override
+
     if label.startswith("cyclic_robust_viability_pwm"):
         limits = GatewayLimits(
             t_pwm_s=inverter.t_pwm_s,
@@ -240,7 +313,7 @@ def _controller(
             confidence_min=0.25,
             risk_max=1.4,
         )
-        cfg = protected_h1_config(dt_s=inverter.t_pwm_s, feedback_period=feedback_period)
+        cfg = selected(protected_h1_config(dt_s=inverter.t_pwm_s, feedback_period=feedback_period))
         return ProtectedAiPwmH1BaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)
 
     if label == "dtc_hysteresis_baseline":
@@ -256,7 +329,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = DtcHysteresisBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(DtcHysteresisBaselineConfig(dt_s=inverter.t_pwm_s))
         return DtcHysteresisBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     if label == "dtc_svm_baseline":
@@ -272,7 +345,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = DtcSvmBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(DtcSvmBaselineConfig(dt_s=inverter.t_pwm_s))
         return DtcSvmBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     if label == "deadbeat_current_baseline":
@@ -288,7 +361,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = DeadbeatCurrentBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(DeadbeatCurrentBaselineConfig(dt_s=inverter.t_pwm_s))
         return DeadbeatCurrentBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     if label == "sensorless_adaptive_foc_baseline":
@@ -304,7 +377,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = SensorlessAdaptiveFocBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(SensorlessAdaptiveFocBaselineConfig(dt_s=inverter.t_pwm_s))
         return SensorlessAdaptiveFocBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     if label == "fcs_mpc_one_step_baseline":
@@ -320,7 +393,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = FcsMpcOneStepBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(FcsMpcOneStepBaselineConfig(dt_s=inverter.t_pwm_s))
         return FcsMpcOneStepBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     if label == "foc_svm_key_baseline":
@@ -336,7 +409,7 @@ def _controller(
             confidence_min=0.35,
             risk_max=1.6,
         )
-        cfg = FocSvmKeyBaselineConfig(dt_s=inverter.t_pwm_s)
+        cfg = selected(FocSvmKeyBaselineConfig(dt_s=inverter.t_pwm_s))
         return FocSvmKeyBaselineController(base_motor, inverter, AIPwmSafetyGateway(limits), cfg)  # type: ignore[return-value]
 
     max_branching = 4 if horizon >= 3 else 5
@@ -497,6 +570,7 @@ def run_trial(
     horizon: int,
     feedback_period: int,
     scenario: str = "load_step",
+    controller_config: object | None = None,
 ) -> Dict[str, float]:
     real_params = randomized_motor_params(base_motor, rng)
     scenario_name = str(scenario).strip().lower()
@@ -523,6 +597,7 @@ def run_trial(
         inverter=inverter,
         horizon=horizon,
         feedback_period=feedback_period,
+        config_override=controller_config,
     )
     controller.reset(AlphaBetaMotorState())
 
@@ -709,8 +784,32 @@ def _safety_thresholds(base_motor: AlphaBetaMotorParams) -> Dict[str, float]:
     }
 
 
-def _run_seeded_trial(job: tuple[str, int, int, AlphaBetaMotorParams, TwoLevelInverterParams, int, int, int, str]) -> tuple[str, int, Dict[str, float]]:
-    label, trial_index, trial_seed, base_motor, inverter, steps, horizon, feedback_period, scenario = job
+def _run_seeded_trial(
+    job: tuple[
+        str,
+        int,
+        int,
+        AlphaBetaMotorParams,
+        TwoLevelInverterParams,
+        int,
+        int,
+        int,
+        str,
+        object | None,
+    ]
+) -> tuple[str, int, Dict[str, float]]:
+    (
+        label,
+        trial_index,
+        trial_seed,
+        base_motor,
+        inverter,
+        steps,
+        horizon,
+        feedback_period,
+        scenario,
+        controller_config,
+    ) = job
     row = run_trial(
         label=label,
         base_motor=base_motor,
@@ -720,6 +819,7 @@ def _run_seeded_trial(job: tuple[str, int, int, AlphaBetaMotorParams, TwoLevelIn
         horizon=horizon,
         feedback_period=feedback_period,
         scenario=scenario,
+        controller_config=controller_config,
     )
     return label, trial_index, row
 
@@ -733,9 +833,25 @@ def _run_controller_trials(
     steps: int,
     scenario: str,
     workers: int,
+    controller_config_overrides: Mapping[str, object] | None = None,
 ) -> Dict[str, list[Dict[str, float]]]:
+    overrides = dict(controller_config_overrides or {})
+    unknown = sorted(set(overrides) - {label for label, _, _ in controller_specs})
+    if unknown:
+        raise ValueError(f"configuration overrides reference controllers outside this run: {unknown}")
     jobs = [
-        (label, trial_index, trial_seed, base_motor, inverter, steps, horizon, feedback_period, scenario)
+        (
+            label,
+            trial_index,
+            trial_seed,
+            base_motor,
+            inverter,
+            steps,
+            horizon,
+            feedback_period,
+            scenario,
+            overrides.get(label),
+        )
         for label, horizon, feedback_period in controller_specs
         for trial_index, trial_seed in enumerate(trial_seeds)
     ]
@@ -948,6 +1064,7 @@ def run_matrix(
     scenarios: list[str] | None = None,
     include_ablation: bool = True,
     workers: int = 1,
+    controller_config_overrides: Mapping[str, object] | None = None,
 ) -> Dict[str, object]:
     scenario_names = scenarios if scenarios is not None else (DEFAULT_SCENARIOS[:3] if quick else DEFAULT_SCENARIOS)
     base_motor, inverter = _make_base_params()
@@ -965,6 +1082,7 @@ def run_matrix(
             steps=steps,
             scenario=scenario,
             workers=workers,
+            controller_config_overrides=controller_config_overrides,
         )
         for label, _, _ in controller_specs:
             rows = rows_by_controller[label]
@@ -1003,6 +1121,12 @@ def run_matrix(
             ablation[label] = _summarize_rows(rows)
         ablation["pareto_front"] = pareto_front({k: v for k, v in ablation.items() if k != "pareto_front"})
 
+    serialized_overrides: Dict[str, object] = {}
+    for label, config in dict(controller_config_overrides or {}).items():
+        if not is_dataclass(config):
+            raise TypeError(f"configuration override for {label} must be a dataclass instance")
+        serialized_overrides[label] = asdict(config)
+
     return {
         "study": "Safe Neural Horizon PWM",
         "status": "host_simulation_matrix_only",
@@ -1011,6 +1135,8 @@ def run_matrix(
         "steps_per_trial": int(steps),
         "seed": int(seed),
         "workers": max(int(workers), 1),
+        "baseline_tuning_applied": bool(serialized_overrides),
+        "controller_config_overrides": serialized_overrides,
         "scenarios": scenario_names,
         "matrix": matrix,
         "paired_effects_vs_foc_svm": paired_effects,
@@ -1032,10 +1158,32 @@ def main() -> None:
     parser.add_argument("--scenarios", default="", help="Comma-separated scenario list for --matrix.")
     parser.add_argument("--no-ablation", action="store_true")
     parser.add_argument("--workers", type=int, default=1, help="Parallel worker processes; deterministic output order is preserved.")
+    parser.add_argument(
+        "--baseline-tuning-json",
+        default="",
+        help="Paired tuning evidence whose exact selected configs must be applied to the final matrix.",
+    )
     parser.add_argument("--out-json", default=".tmp_pytest/safe_neural_horizon_pwm_study.json")
     args = parser.parse_args()
 
     scenario_list = [x.strip() for x in str(args.scenarios).split(",") if x.strip()] or None
+    tuning_source: Dict[str, object] | None = None
+    controller_config_overrides: Dict[str, object] | None = None
+    if str(args.baseline_tuning_json).strip():
+        if not bool(args.matrix):
+            parser.error("--baseline-tuning-json requires --matrix")
+        tuning_path = Path(args.baseline_tuning_json).expanduser().resolve()
+        tuning_bytes = tuning_path.read_bytes()
+        tuning_payload = json.loads(tuning_bytes.decode("utf-8"))
+        _, tuning_inverter = _make_base_params()
+        controller_config_overrides = controller_config_overrides_from_tuning(
+            tuning_payload,
+            dt_s=tuning_inverter.t_pwm_s,
+        )
+        tuning_source = {
+            "sha256": hashlib.sha256(tuning_bytes).hexdigest(),
+            "selected_controller_count": len(controller_config_overrides),
+        }
     if bool(args.matrix):
         payload = run_matrix(
             mc=args.mc,
@@ -1045,6 +1193,7 @@ def main() -> None:
             scenarios=scenario_list,
             include_ablation=not bool(args.no_ablation),
             workers=max(int(args.workers), 1),
+            controller_config_overrides=controller_config_overrides,
         )
     else:
         payload = run_study(
@@ -1055,6 +1204,8 @@ def main() -> None:
             scenario=str(args.scenario),
             workers=max(int(args.workers), 1),
         )
+    if tuning_source is not None:
+        payload["baseline_tuning_source"] = tuning_source
     out = Path(args.out_json).expanduser().resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

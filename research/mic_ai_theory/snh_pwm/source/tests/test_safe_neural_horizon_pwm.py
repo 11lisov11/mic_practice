@@ -21,6 +21,7 @@ from models.two_level_inverter import (
     TwoLevelInverterParams,
     alpha_beta_voltage,
     phase_voltages,
+    space_vector_schedule,
     switch_events,
     vector_bits,
     vector_id_from_bits,
@@ -35,7 +36,14 @@ from safety.ai_pwm_gateway import (
     nearest_zero_vector,
     transition_waveform,
 )
-from tools.run_safe_neural_horizon_pwm_study import pareto_front, run_fault_injection_matrix, run_matrix, run_study
+from tools.run_safe_neural_horizon_pwm_study import (
+    _make_base_params,
+    controller_config_overrides_from_tuning,
+    pareto_front,
+    run_fault_injection_matrix,
+    run_matrix,
+    run_study,
+)
 from tools.build_safe_neural_horizon_pwm_report import build_report
 from tools.build_safe_neural_horizon_pwm_baseline_stress import build_baseline_stress
 from tools.build_safe_neural_horizon_pwm_baseline_tuning import build_baseline_tuning
@@ -162,6 +170,35 @@ def test_two_level_inverter_vector_mapping_and_voltage() -> None:
     assert alpha > 0.0
     assert math.isfinite(beta)
     assert switch_events(0b000, 0b111) == 3
+
+
+def test_space_vector_schedule_reconstructs_linear_reference() -> None:
+    inverter = _inverter_params()
+    magnitude = 0.45 * inverter.Vdc
+    for index in range(24):
+        angle = 2.0 * math.pi * index / 24.0
+        requested = (magnitude * math.cos(angle), magnitude * math.sin(angle))
+        schedule = space_vector_schedule(*requested, inverter, previous_vector_id=index % 8)
+        assert math.isclose(schedule.total_dwell_s, inverter.t_pwm_s, rel_tol=0.0, abs_tol=1.0e-15)
+        assert len(schedule.segments) in (2, 3)
+        assert schedule.saturated is False
+        assert math.isclose(schedule.synthesized_alpha_beta_v[0], requested[0], rel_tol=0.0, abs_tol=1.0e-9)
+        assert math.isclose(schedule.synthesized_alpha_beta_v[1], requested[1], rel_tol=0.0, abs_tol=1.0e-9)
+
+
+def test_space_vector_schedule_zero_and_overmodulation_are_bounded() -> None:
+    inverter = _inverter_params()
+    zero = space_vector_schedule(0.0, 0.0, inverter, previous_vector_id=7)
+    assert len(zero.segments) == 1
+    assert zero.segments[0].vector_id == 7
+    assert zero.segments[0].dwell_s == inverter.t_pwm_s
+    assert zero.saturated is False
+
+    saturated = space_vector_schedule(2.0 * inverter.Vdc, 0.0, inverter)
+    assert saturated.saturated is True
+    assert math.isclose(saturated.total_dwell_s, inverter.t_pwm_s, rel_tol=0.0, abs_tol=1.0e-15)
+    synth_magnitude = math.hypot(*saturated.synthesized_alpha_beta_v)
+    assert synth_magnitude <= (2.0 / 3.0) * inverter.Vdc + 1.0e-9
 
 
 def test_gateway_transition_waveforms_never_shoot_through() -> None:
@@ -895,15 +932,40 @@ def test_build_safe_neural_horizon_pwm_baseline_tuning() -> None:
     payload = build_baseline_tuning(mc=1, steps=8, seed=17, scenarios=["load_step"])
     assert payload["hardware_claim"] is False
     assert payload["baseline_tuning_ready"] is True
-    assert payload["publication_tuning_claim"] is True
+    assert payload["selection_evidence_ready"] is True
+    assert payload["publication_tuning_claim"] is False
     assert payload["superiority_claim"] is False
+    assert payload["comparison_design"] == "paired_common_random_numbers_across_variants_and_controllers"
+    assert len(payload["trial_seeds"]["load_step"]) == 1
     assert set(payload["controllers"]) == set(COMPARISON_CONTROLLERS)
     for row in payload["controllers"].values():
         assert row["candidate_count"] >= 3
+        assert row["selected_config"] == row["variants"][row["selected_variant"]]["config"]
         assert row["selected_score"] <= row["default_score"] + 1e-9
         assert row["safety_violations_worst"] == 0.0
         assert row["unexpected_failure_count"] == 0
         assert row["tuning_ready"] is True
+        rs_means = {
+            variant["scenarios"]["load_step"]["randomized_rs_ohm"]["mean"]
+            for variant in row["variants"].values()
+        }
+        assert len(rs_means) == 1
+
+    _, inverter = _make_base_params()
+    overrides = controller_config_overrides_from_tuning(payload, dt_s=inverter.t_pwm_s)
+    matrix = run_matrix(
+        mc=1,
+        steps=8,
+        seed=23,
+        quick=True,
+        scenarios=["load_step"],
+        include_ablation=False,
+        controller_config_overrides=overrides,
+    )
+    assert matrix["baseline_tuning_applied"] is True
+    assert matrix["controller_config_overrides"] == {
+        label: row["selected_config"] for label, row in payload["controllers"].items()
+    }
 
 
 def test_check_safe_neural_horizon_pwm_release_and_figures(tmp_path) -> None:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import replace
+from dataclasses import asdict, replace
 import json
 import math
 from pathlib import Path
@@ -30,6 +30,7 @@ from tools.check_safe_neural_horizon_pwm_novelty import COMPARISON_CONTROLLERS
 from tools.run_safe_neural_horizon_pwm_study import (
     BASE_CONTROLLER_SPECS,
     _make_base_params,
+    _paired_trial_seeds,
     _scenario_values,
     _summarize_rows,
     randomized_motor_params,
@@ -247,6 +248,10 @@ def _run_trial_with_controller(
         "rejected_action_count": float(rejected_count),
         "fault_latch_count": float(fault_latch_count),
         "safety_violations": float(safety_violations),
+        "randomized_rs_ohm": float(real_params.Rs),
+        "randomized_rr_ohm": float(real_params.Rr),
+        "randomized_lm_h": float(real_params.Lm),
+        "randomized_j_kg_m2": float(real_params.J),
     }
 
 
@@ -294,7 +299,15 @@ def build_baseline_tuning(
     scenario_names = list(scenarios or DEFAULT_TUNING_SCENARIOS)
     base_motor, inverter = _make_base_params()
     spec_map = {label: (horizon, feedback_period) for label, horizon, feedback_period in BASE_CONTROLLER_SPECS}
-    rng = Random(seed)
+    trial_seeds_by_scenario = {
+        scenario: _paired_trial_seeds(
+            seed=seed,
+            scenario=scenario,
+            trials=mc,
+            stream="baseline_tuning",
+        )
+        for scenario in scenario_names
+    }
     controllers: Dict[str, Any] = {}
 
     for label in sorted(COMPARISON_CONTROLLERS):
@@ -302,7 +315,8 @@ def build_baseline_tuning(
             continue
         _, feedback_period = spec_map[label]
         variants: Dict[str, Any] = {}
-        for variant_name, cfg in _config_variants(label, inverter.t_pwm_s).items():
+        config_variants = _config_variants(label, inverter.t_pwm_s)
+        for variant_name, cfg in config_variants.items():
             scenario_summaries: Dict[str, Any] = {}
             all_rows: list[Dict[str, float]] = []
             for scenario in scenario_names:
@@ -312,18 +326,19 @@ def build_baseline_tuning(
                         cfg=cfg,
                         base_motor=base_motor,
                         inverter=inverter,
-                        rng=rng,
+                        rng=Random(trial_seed),
                         steps=steps,
                         feedback_period=feedback_period,
                         scenario=scenario,
                     )
-                    for _ in range(max(int(mc), 1))
+                    for trial_seed in trial_seeds_by_scenario[scenario]
                 ]
                 summary = _summarize_rows(rows)
                 scenario_summaries[scenario] = summary
                 all_rows.extend(rows)
             aggregate = _summarize_rows(all_rows)
             variants[variant_name] = {
+                "config": asdict(cfg),
                 "score": _score(aggregate),
                 "aggregate": aggregate,
                 "scenarios": scenario_summaries,
@@ -336,6 +351,7 @@ def build_baseline_tuning(
         controllers[label] = {
             "candidate_count": len(variants),
             "selected_variant": selected_name,
+            "selected_config": asdict(config_variants[selected_name]),
             "default_score": default_score,
             "selected_score": selected_score,
             "improvement_vs_default_pct": 100.0 * (default_score - selected_score) / max(default_score, 1e-9),
@@ -356,8 +372,11 @@ def build_baseline_tuning(
         "steps_per_trial": int(steps),
         "seed": int(seed),
         "scenarios": scenario_names,
+        "comparison_design": "paired_common_random_numbers_across_variants_and_controllers",
+        "trial_seeds": trial_seeds_by_scenario,
         "baseline_tuning_ready": baseline_tuning_ready,
-        "publication_tuning_claim": baseline_tuning_ready,
+        "selection_evidence_ready": baseline_tuning_ready,
+        "publication_tuning_claim": False,
         "superiority_claim": False,
         "controllers": controllers,
         "score_definition": {
@@ -370,8 +389,9 @@ def build_baseline_tuning(
             "failure_count": 1000.0,
         },
         "interpretation": (
-            "Bounded host parameter-sweep evidence for comparison baselines. It selects a safe baseline variant "
-            "from a small fixed grid and supports fairer host comparison; it does not claim SNH-PWM superiority."
+            "Bounded paired host parameter-sweep evidence for comparison baselines. It selects a safe baseline "
+            "variant from a small fixed grid and records the exact configuration and common-random-number seeds. "
+            "Publication tuning is not claimed until those configurations are applied to an independent final matrix."
         ),
     }
 

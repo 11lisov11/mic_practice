@@ -42,6 +42,11 @@ class SpaceVectorDwell:
     vector_id: int
     dwell_s: float
 
+    def __post_init__(self) -> None:
+        validate_vector_id(self.vector_id)
+        if not math.isfinite(float(self.dwell_s)) or float(self.dwell_s) <= 0.0:
+            raise ValueError("space-vector dwell must be finite and positive")
+
 
 @dataclass(frozen=True)
 class SpaceVectorSchedule:
@@ -50,6 +55,7 @@ class SpaceVectorSchedule:
     requested_alpha_beta_v: Tuple[float, float]
     synthesized_alpha_beta_v: Tuple[float, float]
     saturated: bool
+    pulse_adjusted: bool = False
 
     @property
     def total_dwell_s(self) -> float:
@@ -126,13 +132,15 @@ def space_vector_schedule(
     params: TwoLevelInverterParams,
     *,
     previous_vector_id: int = 0,
+    min_pulse_s: float = 0.0,
 ) -> SpaceVectorSchedule:
     """Synthesize one ideal linear-region SVPWM period.
 
     The returned schedule contains the two adjacent active vectors and one zero
     vector. If the requested reference is outside the linear hexagon, active
-    dwell times are scaled so their sum equals one PWM period. Pulse suppression
-    and dead-time distortion deliberately remain downstream safety concerns.
+    dwell times are scaled so their sum equals one PWM period. Optional minimum
+    pulse suppression records the resulting voltage distortion; dead-time
+    distortion deliberately remains a downstream plant concern.
     """
 
     alpha = float(v_alpha_ref)
@@ -144,6 +152,9 @@ def space_vector_schedule(
     if vdc <= 0.0 or period <= 0.0:
         raise ValueError("SVPWM requires positive Vdc and PWM period")
     previous = validate_vector_id(previous_vector_id)
+    minimum_pulse = float(min_pulse_s)
+    if not math.isfinite(minimum_pulse) or minimum_pulse < 0.0 or minimum_pulse >= period:
+        raise ValueError("min_pulse_s must be finite and in [0, T_pwm)")
 
     magnitude = math.hypot(alpha, beta)
     if magnitude <= 1.0e-15:
@@ -154,6 +165,7 @@ def space_vector_schedule(
             requested_alpha_beta_v=(alpha, beta),
             synthesized_alpha_beta_v=(0.0, 0.0),
             saturated=False,
+            pulse_adjusted=False,
         )
 
     theta = math.atan2(beta, alpha) % (2.0 * math.pi)
@@ -181,7 +193,35 @@ def space_vector_schedule(
             events += switch_events(ordered[1], ordered[2])
             candidates.append((events, ordered))
     _, ordered_vectors = min(candidates, key=lambda item: (item[0], item[1]))
-    dwell_by_vector = {first: t_first, second: t_second, ordered_vectors[2]: t_zero}
+    zero_vector = ordered_vectors[2]
+    dwell_by_vector = {first: t_first, second: t_second, zero_vector: t_zero}
+    pulse_adjusted = False
+    if minimum_pulse > 0.0:
+        for active_vector in (first, second):
+            dwell = dwell_by_vector[active_vector]
+            if 0.0 < dwell < minimum_pulse:
+                dwell_by_vector[active_vector] = 0.0
+                dwell_by_vector[zero_vector] += dwell
+                pulse_adjusted = True
+        zero_dwell = dwell_by_vector[zero_vector]
+        if 0.0 < zero_dwell < minimum_pulse:
+            dwell_by_vector[zero_vector] = 0.0
+            active_total = dwell_by_vector[first] + dwell_by_vector[second]
+            if active_total > 0.0:
+                scale = period / active_total
+                dwell_by_vector[first] *= scale
+                dwell_by_vector[second] *= scale
+            else:
+                dwell_by_vector[zero_vector] = period
+            pulse_adjusted = True
+
+    dwell_sum = sum(dwell_by_vector.values())
+    if dwell_sum <= 0.0:
+        dwell_by_vector = {first: 0.0, second: 0.0, zero_vector: period}
+        pulse_adjusted = True
+    elif not math.isclose(dwell_sum, period, rel_tol=0.0, abs_tol=1.0e-15):
+        largest = max(dwell_by_vector, key=dwell_by_vector.get)
+        dwell_by_vector[largest] += period - dwell_sum
     segments = tuple(
         SpaceVectorDwell(vector_id, dwell_by_vector[vector_id])
         for vector_id in ordered_vectors
@@ -201,6 +241,7 @@ def space_vector_schedule(
         requested_alpha_beta_v=(alpha, beta),
         synthesized_alpha_beta_v=(float(synth_alpha), float(synth_beta)),
         saturated=saturated,
+        pulse_adjusted=pulse_adjusted,
     )
 
 

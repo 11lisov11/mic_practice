@@ -457,7 +457,17 @@ def analyze_theory(path: Path) -> Dict[str, Any]:
     strong_baselines_ready = publication_baselines_ready
     foc_svm_key_baseline_ready = _source_contains(
         ROOT / "control" / "foc_svm_key_baseline.py",
-        ["FocSvmKeyBaselineController", "_select_svm_vector", "alpha_beta_to_dq", "dq_to_alpha_beta"],
+        [
+            "FocSvmKeyBaselineController",
+            "space_vector_schedule",
+            "evaluate_sequence_atomic",
+            "vector_schedule=tuple(applied_schedule)",
+            "alpha_beta_to_dq",
+            "dq_to_alpha_beta",
+        ],
+    ) and _source_contains(
+        ROOT / "models" / "two_level_inverter.py",
+        ["SpaceVectorSchedule", "min_pulse_s", "pulse_adjusted"],
     ) and comparison_matrix
     fcs_mpc_one_step_baseline_ready = _source_contains(
         ROOT / "control" / "fcs_mpc_baseline.py",

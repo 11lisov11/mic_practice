@@ -16,8 +16,15 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from models.induction_motor_alpha_beta import AlphaBetaInductionMotorModel, AlphaBetaMotorParams, AlphaBetaMotorState, randomized_motor_params
-from models.two_level_inverter import TwoLevelInverterParams, alpha_beta_voltage, switch_events
+from control.safe_neural_horizon_pwm import effective_vector_schedule
+from models.induction_motor_alpha_beta import (
+    AlphaBetaInductionMotorModel,
+    AlphaBetaMotorParams,
+    AlphaBetaMotorState,
+    randomized_motor_params,
+    step_inverter_schedule,
+)
+from models.two_level_inverter import TwoLevelInverterParams, switch_events
 from safety.ai_pwm_gateway import has_shoot_through, transition_waveform
 from tools.run_safe_neural_horizon_pwm_study import _controller, _controller_specs, _make_base_params, _scenario_values
 
@@ -170,22 +177,24 @@ def _simulate_trace(
         if result.decision.fault_latched:
             fault_latch_count += 1
 
-        waveform = transition_waveform(prev_vector, result.vector_id, dead_time_ticks=2)
-        if has_shoot_through(waveform):
-            safety_violations += 1
-        switch_now = switch_events(prev_vector, result.vector_id)
+        applied_schedule = effective_vector_schedule(result, step_inverter.t_pwm_s)
+        switch_now = 0
+        if result.decision.pwm_enabled:
+            for segment in applied_schedule:
+                waveform = transition_waveform(prev_vector, segment.vector_id, dead_time_ticks=2)
+                if has_shoot_through(waveform):
+                    safety_violations += 1
+                switch_now += switch_events(prev_vector, segment.vector_id)
+                prev_vector = segment.vector_id
         switch_total += switch_now
         prev_vector = result.vector_id
-
-        if result.decision.pwm_enabled:
-            v_alpha, v_beta = alpha_beta_voltage(
-                result.vector_id,
-                step_inverter,
-                i_alpha_beta=(real_currents.i_s_alpha, real_currents.i_s_beta),
-            )
-        else:
-            v_alpha, v_beta = 0.0, 0.0
-        step = real_motor.step(v_alpha, v_beta, load_torque, step_inverter.t_pwm_s)
+        step = step_inverter_schedule(
+            real_motor,
+            applied_schedule,
+            step_inverter,
+            load_torque,
+            pwm_enabled=result.decision.pwm_enabled,
+        )
         rows.append(
             {
                 "k": k,

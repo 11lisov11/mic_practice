@@ -214,7 +214,7 @@ def _open_items(
         baseline_item = "- Bounded baseline tuning evidence exists; MC=500..1000 remains open after any final controller/model edits."
         complete_guard = "- Keep `publication_theory_complete=false` until MC=500..1000 and plot gates are present."
     else:
-        baseline_item = "- Tune the host key-level FOC-SVM, FCS-MPC, DTC hysteresis, DTC-SVM, deadbeat, and sensorless/adaptive FOC baselines to publication-grade strength."
+        baseline_item = "- Tune the host subinterval FOC-SVPWM, FCS-MPC, DTC hysteresis, DTC-SVM, deadbeat, and sensorless/adaptive FOC baselines to publication-grade strength."
         complete_guard = (
             "- Keep `publication_theory_complete=false` until strong baselines are present; host trace/twin/MC500 evidence alone is not enough."
             if mc500_ready

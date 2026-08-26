@@ -3,9 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import math
 from random import Random
-from typing import Mapping
+from typing import Mapping, Sequence
 
 from config.env import MotorParams
+from models.two_level_inverter import SpaceVectorDwell, TwoLevelInverterParams, alpha_beta_voltage
 
 
 @dataclass(frozen=True)
@@ -197,6 +198,35 @@ class AlphaBetaInductionMotorModel:
         return result
 
 
+def step_inverter_schedule(
+    model: AlphaBetaInductionMotorModel,
+    schedule: Sequence[SpaceVectorDwell],
+    inverter: TwoLevelInverterParams,
+    load_torque_nm: float,
+    *,
+    pwm_enabled: bool = True,
+) -> AlphaBetaStep:
+    """Advance the plant through every dwell of one controller period."""
+
+    if not schedule:
+        raise ValueError("inverter schedule must be non-empty")
+    result: AlphaBetaStep | None = None
+    for segment in schedule:
+        currents = model.currents()
+        if pwm_enabled:
+            v_alpha, v_beta = alpha_beta_voltage(
+                segment.vector_id,
+                inverter,
+                i_alpha_beta=(currents.i_s_alpha, currents.i_s_beta),
+            )
+        else:
+            v_alpha, v_beta = 0.0, 0.0
+        result = model.step(v_alpha, v_beta, load_torque_nm, segment.dwell_s)
+    if result is None:  # pragma: no cover - guarded by the non-empty check above
+        raise RuntimeError("inverter schedule produced no plant step")
+    return result
+
+
 def randomized_motor_params(
     base: AlphaBetaMotorParams,
     rng: Random,
@@ -232,4 +262,5 @@ __all__ = [
     "AlphaBetaMotorState",
     "AlphaBetaStep",
     "randomized_motor_params",
+    "step_inverter_schedule",
 ]

@@ -4,6 +4,8 @@ import json
 import math
 from pathlib import Path
 
+import pytest
+
 from config.env import create_default_env
 from control.deadbeat_current_baseline import DeadbeatCurrentBaselineConfig, DeadbeatCurrentBaselineController
 from control.dtc_baseline import DtcHysteresisBaselineConfig, DtcHysteresisBaselineController
@@ -11,7 +13,11 @@ from control.dtc_svm_baseline import DtcSvmBaselineConfig, DtcSvmBaselineControl
 from control.fcs_mpc_baseline import FcsMpcOneStepBaselineConfig, FcsMpcOneStepBaselineController
 from control.foc_svm_key_baseline import FocSvmKeyBaselineConfig, FocSvmKeyBaselineController
 from control.protected_ai_pwm_h1_baseline import ProtectedAiPwmH1BaselineController, protected_h1_config
-from control.safe_neural_horizon_pwm import NeuralHorizonConfig, SafeNeuralHorizonPwmController
+from control.safe_neural_horizon_pwm import (
+    NeuralHorizonConfig,
+    SafeNeuralHorizonPwmController,
+    effective_vector_schedule,
+)
 from control.sensorless_adaptive_foc_baseline import (
     SensorlessAdaptiveFocBaselineConfig,
     SensorlessAdaptiveFocBaselineController,
@@ -201,6 +207,20 @@ def test_space_vector_schedule_zero_and_overmodulation_are_bounded() -> None:
     assert synth_magnitude <= (2.0 / 3.0) * inverter.Vdc + 1.0e-9
 
 
+def test_space_vector_schedule_suppresses_subminimum_dwell() -> None:
+    inverter = _inverter_params()
+    magnitude = 0.20 * inverter.Vdc
+    schedule = space_vector_schedule(
+        magnitude * math.cos(1.0e-3),
+        magnitude * math.sin(1.0e-3),
+        inverter,
+        min_pulse_s=inverter.min_pulse_s,
+    )
+    assert schedule.pulse_adjusted is True
+    assert math.isclose(schedule.total_dwell_s, inverter.t_pwm_s, rel_tol=0.0, abs_tol=1.0e-15)
+    assert all(segment.dwell_s >= inverter.min_pulse_s for segment in schedule.segments)
+
+
 def test_gateway_transition_waveforms_never_shoot_through() -> None:
     for prev in range(8):
         for nxt in range(8):
@@ -293,6 +313,47 @@ def test_gateway_soft_current_fallback_uses_zero_voltage_vector() -> None:
         assert decision.fault_latched is False
 
 
+def test_gateway_atomic_sequence_commits_all_or_no_transitions() -> None:
+    limits = GatewayLimits(max_switch_events_per_window=12)
+    gateway = AIPwmSafetyGateway(limits)
+
+    accepted = gateway.evaluate_sequence_atomic(
+        [
+            AIPwmRequest(4, 30e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+            AIPwmRequest(6, 30e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+            AIPwmRequest(7, 40e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+        ]
+    )
+    assert len(accepted) == 3
+    assert all(decision.accepted for decision in accepted)
+    assert gateway.current_vector_id == 7
+
+    gateway.reset(0)
+    rejected = gateway.evaluate_sequence_atomic(
+        [
+            AIPwmRequest(4, 50e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+            AIPwmRequest(6, 1e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+        ]
+    )
+    assert len(rejected) == 1
+    assert rejected[0].accepted is False
+    assert FaultFlag.MIN_PULSE_FAULT in rejected[0].fault_flags
+    assert gateway.current_vector_id == 0
+
+    gateway.reset(0)
+    critical = gateway.evaluate_sequence_atomic(
+        [
+            AIPwmRequest(4, 50e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+            AIPwmRequest(99, 50e-6, 0.9, 0.5, 0.4, 300.0, 40.0, 0.1),
+        ]
+    )
+    assert len(critical) == 1
+    assert critical[0].pwm_enabled is False
+    assert critical[0].fault_latched is True
+    assert FaultFlag.INVALID_VECTOR_FAULT in critical[0].fault_flags
+    assert gateway.current_vector_id == 0
+
+
 def test_controller_step_uses_gateway_and_returns_safe_decision() -> None:
     motor = _motor_params()
     inverter = _inverter_params()
@@ -319,7 +380,7 @@ def test_controller_step_uses_gateway_and_returns_safe_decision() -> None:
     assert math.isfinite(result.metrics["cost"])
 
 
-def test_foc_svm_key_baseline_selects_legal_active_vector() -> None:
+def test_foc_svm_key_baseline_applies_complete_legal_schedule() -> None:
     params = _motor_params()
     inverter = _inverter_params()
     limits = GatewayLimits(
@@ -347,10 +408,36 @@ def test_foc_svm_key_baseline_selects_legal_active_vector() -> None:
         vdc=inverter.Vdc,
     )
     assert 0 <= result.vector_id <= 7
-    assert result.vector_id not in {0, 7}
+    schedule = effective_vector_schedule(result, inverter.t_pwm_s)
+    assert 2 <= len(schedule) <= 3
+    assert any(segment.vector_id not in {0, 7} for segment in schedule)
+    assert all(segment.dwell_s >= inverter.min_pulse_s for segment in schedule)
+    assert result.vector_id == schedule[-1].vector_id
+    assert result.metrics["svm_sequence_accepted"] == 1.0
+    assert math.isclose(result.metrics["svm_total_dwell_s"], inverter.t_pwm_s)
     assert result.decision.gates.shoot_through is False
     assert result.metrics["id_ref"] >= 0.0
     assert abs(result.metrics["iq_ref"]) <= params.i_limit
+
+
+def test_foc_svm_key_baseline_rejects_period_mismatch() -> None:
+    params = _motor_params()
+    inverter = _inverter_params()
+    limits = GatewayLimits(t_pwm_s=inverter.t_pwm_s)
+    with pytest.raises(ValueError, match="controller dt_s"):
+        FocSvmKeyBaselineController(
+            params,
+            inverter,
+            AIPwmSafetyGateway(limits),
+            FocSvmKeyBaselineConfig(dt_s=0.5 * inverter.t_pwm_s),
+        )
+    with pytest.raises(ValueError, match="gateway period"):
+        FocSvmKeyBaselineController(
+            params,
+            inverter,
+            AIPwmSafetyGateway(GatewayLimits(t_pwm_s=0.5 * inverter.t_pwm_s)),
+            FocSvmKeyBaselineConfig(dt_s=inverter.t_pwm_s),
+        )
 
 
 def test_fcs_mpc_one_step_baseline_selects_legal_vector() -> None:

@@ -23,8 +23,14 @@ from control.sensorless_adaptive_foc_baseline import (
     SensorlessAdaptiveFocBaselineConfig,
     SensorlessAdaptiveFocBaselineController,
 )
-from models.induction_motor_alpha_beta import AlphaBetaInductionMotorModel, AlphaBetaMotorParams, AlphaBetaMotorState
-from models.two_level_inverter import TwoLevelInverterParams, alpha_beta_voltage, switch_events
+from control.safe_neural_horizon_pwm import effective_vector_schedule
+from models.induction_motor_alpha_beta import (
+    AlphaBetaInductionMotorModel,
+    AlphaBetaMotorParams,
+    AlphaBetaMotorState,
+    step_inverter_schedule,
+)
+from models.two_level_inverter import TwoLevelInverterParams, switch_events
 from safety.ai_pwm_gateway import AIPwmSafetyGateway, GatewayLimits, has_shoot_through, transition_waveform
 from tools.check_safe_neural_horizon_pwm_novelty import COMPARISON_CONTROLLERS
 from tools.run_safe_neural_horizon_pwm_study import (
@@ -40,7 +46,13 @@ from tools.run_safe_neural_horizon_pwm_study import (
 DEFAULT_TUNING_SCENARIOS = ["load_step", "overload", "dc_sag", "ood"]
 
 
-def _limits(base_motor: AlphaBetaMotorParams, inverter: TwoLevelInverterParams, *, confidence_min: float = 0.35) -> GatewayLimits:
+def _limits(
+    base_motor: AlphaBetaMotorParams,
+    inverter: TwoLevelInverterParams,
+    *,
+    confidence_min: float = 0.35,
+    scheduled_svpwm: bool = False,
+) -> GatewayLimits:
     return GatewayLimits(
         t_pwm_s=inverter.t_pwm_s,
         dead_time_s=inverter.dead_time_s,
@@ -52,6 +64,7 @@ def _limits(base_motor: AlphaBetaMotorParams, inverter: TwoLevelInverterParams, 
         tj_trip_c=125.0,
         confidence_min=confidence_min,
         risk_max=1.6,
+        max_switch_events_per_window=24 if scheduled_svpwm else 12,
     )
 
 
@@ -121,7 +134,14 @@ def _controller(
     inverter: TwoLevelInverterParams,
     cfg: Any,
 ) -> Any:
-    gateway = AIPwmSafetyGateway(_limits(base_motor, inverter, confidence_min=0.25 if label == "protected_ai_pwm_h1_baseline" else 0.35))
+    gateway = AIPwmSafetyGateway(
+        _limits(
+            base_motor,
+            inverter,
+            confidence_min=0.25 if label == "protected_ai_pwm_h1_baseline" else 0.35,
+            scheduled_svpwm=label == "foc_svm_key_baseline",
+        )
+    )
     if label == "protected_ai_pwm_h1_baseline":
         return ProtectedAiPwmH1BaselineController(base_motor, inverter, gateway, cfg)
     if label == "fcs_mpc_one_step_baseline":
@@ -214,21 +234,22 @@ def _run_trial_with_controller(
         if result.decision.fault_latched:
             fault_latch_count += 1
 
-        waveform = transition_waveform(prev_vector, result.vector_id, dead_time_ticks=2)
-        if has_shoot_through(waveform):
-            safety_violations += 1
-        switch_total += switch_events(prev_vector, result.vector_id)
-        prev_vector = result.vector_id
-
+        applied_schedule = effective_vector_schedule(result, step_inverter.t_pwm_s)
         if result.decision.pwm_enabled:
-            v_alpha, v_beta = alpha_beta_voltage(
-                result.vector_id,
-                step_inverter,
-                i_alpha_beta=(real_currents.i_s_alpha, real_currents.i_s_beta),
-            )
-        else:
-            v_alpha, v_beta = 0.0, 0.0
-        step = real_motor.step(v_alpha, v_beta, load_torque, step_inverter.t_pwm_s)
+            for segment in applied_schedule:
+                waveform = transition_waveform(prev_vector, segment.vector_id, dead_time_ticks=2)
+                if has_shoot_through(waveform):
+                    safety_violations += 1
+                switch_total += switch_events(prev_vector, segment.vector_id)
+                prev_vector = segment.vector_id
+        prev_vector = result.vector_id
+        step = step_inverter_schedule(
+            real_motor,
+            applied_schedule,
+            step_inverter,
+            load_torque,
+            pwm_enabled=result.decision.pwm_enabled,
+        )
         speed_errors.append(abs(omega_ref - step.state.omega_m))
         currents.append(step.currents.stator_abs)
         torque_values.append(step.torque_nm)

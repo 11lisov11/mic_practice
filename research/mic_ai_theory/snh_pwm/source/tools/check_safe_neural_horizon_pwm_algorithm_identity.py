@@ -58,7 +58,7 @@ BASELINE_DIFFERENCES = {
     },
     "foc_svm_key_baseline": {
         "missing_snh_features": ["direct finite-horizon legal-vector search", "neural cost shaping", "event-triggered twin feedback"],
-        "snh_distinction": "FOC-SVM synthesizes dq voltage references and then selects an SVM-like vector; SNH-PWM searches vector sequences directly.",
+        "snh_distinction": "FOC-SVPWM synthesizes dq voltage references and executes a protected subinterval dwell schedule; SNH-PWM optimizes vector sequences directly over a finite horizon.",
     },
     "fcs_mpc_one_step_baseline": {
         "missing_snh_features": ["horizon H>1", "neural cost shaping", "feedback-economy objective", "twin residual confidence"],

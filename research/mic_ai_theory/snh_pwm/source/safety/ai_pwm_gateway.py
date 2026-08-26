@@ -365,6 +365,67 @@ class AIPwmSafetyGateway:
     def evaluate_sequence(self, requests: Sequence[AIPwmRequest]) -> list[GateDecision]:
         return [self.evaluate(req) for req in requests]
 
+    def evaluate_sequence_atomic(self, requests: Sequence[AIPwmRequest]) -> list[GateDecision]:
+        """Validate a complete PWM schedule before committing any transition."""
+
+        sequence = tuple(requests)
+        if not sequence:
+            raise ValueError("PWM request sequence must be non-empty")
+        shadow = AIPwmSafetyGateway(self.limits, initial_vector_id=self.current_vector_id)
+        shadow.fault_latched = self.fault_latched
+        shadow._switch_window = deque(self._switch_window, maxlen=self._switch_window.maxlen)
+        decisions: list[GateDecision] = []
+        for request in sequence:
+            decision = shadow.evaluate(request)
+            decisions.append(decision)
+            if not decision.accepted:
+                break
+        if len(decisions) == len(sequence) and all(decision.accepted for decision in decisions):
+            self.current_vector_id = shadow.current_vector_id
+            self.fault_latched = shadow.fault_latched
+            self._switch_window = deque(shadow._switch_window, maxlen=shadow._switch_window.maxlen)
+            return decisions
+
+        failure = decisions[-1]
+        flags = failure.fault_flags
+        requested = failure.requested_vector_id
+        if self.fault_latched or flags & CRITICAL_FAULTS:
+            self.fault_latched = True
+            return [
+                GateDecision(
+                    accepted=False,
+                    pwm_enabled=False,
+                    vector_id=self.current_vector_id,
+                    requested_vector_id=requested,
+                    gates=GateOutput(),
+                    fault_flags=flags,
+                    fault_latched=True,
+                    fallback_reason="atomic_sequence:" + (_fault_names(flags) or "fault_latched"),
+                )
+            ]
+
+        zero_fallback_faults = FaultFlag.CURRENT_SOFT_FAULT | FaultFlag.AI_CONFIDENCE_FAULT | FaultFlag.OOD_FAULT
+        safe_vector = (
+            nearest_zero_vector(self.current_vector_id)
+            if flags & zero_fallback_faults
+            else self.current_vector_id
+        )
+        events = switch_events(self.current_vector_id, safe_vector)
+        self._switch_window.append(events)
+        self.current_vector_id = safe_vector
+        return [
+            GateDecision(
+                accepted=False,
+                pwm_enabled=True,
+                vector_id=safe_vector,
+                requested_vector_id=requested,
+                gates=gates_from_vector(safe_vector),
+                fault_flags=flags,
+                fault_latched=False,
+                fallback_reason="atomic_sequence:" + (_fault_names(flags) or "rejected"),
+            )
+        ]
+
 
 __all__ = [
     "AIPwmRequest",

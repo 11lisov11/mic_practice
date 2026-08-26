@@ -12,9 +12,10 @@ from models.induction_motor_alpha_beta import (
 )
 from models.transformations import alpha_beta_to_dq, dq_to_alpha_beta
 from models.two_level_inverter import (
+    SpaceVectorDwell,
     TwoLevelInverterParams,
-    alpha_beta_voltage,
     estimate_inverter_losses,
+    space_vector_schedule,
 )
 from safety.ai_pwm_gateway import AIPwmRequest, AIPwmSafetyGateway, GateDecision
 
@@ -47,12 +48,11 @@ def _wrap_angle(theta: float) -> float:
 
 
 class FocSvmKeyBaselineController:
-    """Host key-level FOC-SVM baseline with PI speed/current loops and gateway protection.
+    """Host FOC-SVPWM baseline with PI loops and atomic gateway protection.
 
-    The simulation plant only applies one inverter vector per PWM tick, so the SVM
-    stage is represented by nearest legal-vector selection under the same inverter
-    nonidealities and Safety Gateway as SNH-PWM. This is stronger than the old
-    weight-tuned proxy, but still not a final publication/MCU baseline.
+    Each PWM period is synthesized from two adjacent active vectors and a zero
+    vector. The same accepted dwell schedule is propagated through the gateway,
+    digital twin, loss estimate, and simulation plant.
     """
 
     def __init__(
@@ -66,6 +66,10 @@ class FocSvmKeyBaselineController:
         self.inverter_params = inverter_params
         self.gateway = gateway
         self.cfg = cfg if cfg is not None else FocSvmKeyBaselineConfig(dt_s=inverter_params.t_pwm_s)
+        if not math.isclose(self.cfg.dt_s, inverter_params.t_pwm_s, rel_tol=0.0, abs_tol=1.0e-15):
+            raise ValueError("FOC controller dt_s must match the inverter PWM period")
+        if not math.isclose(gateway.limits.t_pwm_s, inverter_params.t_pwm_s, rel_tol=0.0, abs_tol=1.0e-15):
+            raise ValueError("FOC gateway period must match the inverter PWM period")
         self.twin = NeuralTwin(motor_params)
         self.speed_integral = 0.0
         self.id_integral = 0.0
@@ -162,30 +166,6 @@ class FocSvmKeyBaselineController:
             v_beta *= scale
         return float(v_alpha), float(v_beta)
 
-    def _select_svm_vector(
-        self,
-        *,
-        v_alpha_ref: float,
-        v_beta_ref: float,
-        currents_alpha_beta: Tuple[float, float],
-        inverter: TwoLevelInverterParams,
-    ) -> int:
-        scored: list[tuple[float, int]] = []
-        prev = self.gateway.current_vector_id
-        for vector_id in range(8):
-            v_alpha, v_beta = alpha_beta_voltage(vector_id, inverter, i_alpha_beta=currents_alpha_beta)
-            dist = (v_alpha - v_alpha_ref) ** 2 + (v_beta - v_beta_ref) ** 2
-            losses = estimate_inverter_losses(
-                prev_vector_id=prev,
-                next_vector_id=vector_id,
-                params=inverter,
-                i_alpha_beta=currents_alpha_beta,
-            )
-            cost = dist + float(self.cfg.switching_tiebreak_weight) * losses.switch_events * max(abs(inverter.Vdc), 1.0)
-            scored.append((cost, vector_id))
-        scored.sort(key=lambda item: item[0])
-        return int(scored[0][1])
-
     def step(
         self,
         *,
@@ -222,26 +202,26 @@ class FocSvmKeyBaselineController:
             v_pre = float(self.cfg.preflux_voltage_fraction) * abs(float(inverter.Vdc))
             v_alpha_ref += v_pre * math.cos(self.theta_e)
             v_beta_ref += v_pre * math.sin(self.theta_e)
-        vector_id = self._select_svm_vector(
-            v_alpha_ref=v_alpha_ref,
-            v_beta_ref=v_beta_ref,
-            currents_alpha_beta=(currents.i_s_alpha, currents.i_s_beta),
-            inverter=inverter,
+        requested_schedule = space_vector_schedule(
+            v_alpha_ref,
+            v_beta_ref,
+            inverter,
+            previous_vector_id=self.gateway.current_vector_id,
+            min_pulse_s=self.gateway.limits.min_pulse_s,
         )
-        predicted_state, predicted_torque, predicted_i_abs = self.twin.predict(
-            vector_id,
+        _, predicted_torque, predicted_i_abs = self.twin.predict_schedule(
+            requested_schedule.segments,
             inverter,
             load_torque_nm,
-            self.cfg.dt_s,
         )
         current_ratio = predicted_i_abs / max(self.motor_params.i_limit, 1e-9)
         predicted_risk = max(0.0, current_ratio - 0.85) + 0.25 * self.twin.uncertainty
         confidence = max(0.50, min(0.99, self.twin.confidence()))
         prev_vector_id = self.gateway.current_vector_id
-        decision: GateDecision = self.gateway.evaluate(
+        requests = tuple(
             AIPwmRequest(
-                vector_id=vector_id,
-                dwell_s=self.cfg.dt_s,
+                vector_id=segment.vector_id,
+                dwell_s=segment.dwell_s,
                 confidence=confidence,
                 predicted_i_abs=predicted_i_abs,
                 measured_i_abs=measured_i_abs,
@@ -249,26 +229,41 @@ class FocSvmKeyBaselineController:
                 tj_c=self.tj_c,
                 predicted_risk=predicted_risk,
             )
+            for segment in requested_schedule.segments
         )
-        applied_vector = decision.vector_id if decision.pwm_enabled else 0
+        decisions = self.gateway.evaluate_sequence_atomic(requests)
+        sequence_accepted = len(decisions) == len(requests) and all(item.accepted for item in decisions)
+        decision: GateDecision = decisions[-1]
+        if sequence_accepted:
+            applied_schedule = requested_schedule.segments
+        else:
+            applied_schedule = (SpaceVectorDwell(decision.vector_id, self.cfg.dt_s),)
+        applied_vector = applied_schedule[-1].vector_id
+
         if decision.pwm_enabled:
-            losses = estimate_inverter_losses(
-                prev_vector_id=prev_vector_id,
-                next_vector_id=applied_vector,
-                params=inverter,
-                i_alpha_beta=(currents.i_s_alpha, currents.i_s_beta),
-            )
-            applied_loss_w = float(losses.total_w)
-            applied_switch_events = float(losses.switch_events)
+            applied_loss_w = 0.0
+            applied_switch_events = 0.0
+            loss_prev_vector = prev_vector_id
+            for segment in applied_schedule:
+                losses = estimate_inverter_losses(
+                    prev_vector_id=loss_prev_vector,
+                    next_vector_id=segment.vector_id,
+                    params=inverter,
+                    i_alpha_beta=(currents.i_s_alpha, currents.i_s_beta),
+                )
+                dwell_fraction = segment.dwell_s / max(self.cfg.dt_s, 1.0e-12)
+                applied_loss_w += float(losses.conduction_w) * dwell_fraction + float(losses.switching_w)
+                applied_switch_events += float(losses.switch_events)
+                loss_prev_vector = segment.vector_id
         else:
             applied_loss_w = 0.0
             applied_switch_events = 0.0
 
-        applied_state, applied_torque, _ = self.twin.predict(
-            applied_vector,
+        applied_state, applied_torque, _ = self.twin.predict_schedule(
+            applied_schedule,
             inverter,
             load_torque_nm,
-            self.cfg.dt_s,
+            pwm_enabled=decision.pwm_enabled,
         )
         self.twin.state_hat = applied_state
         tau = max(inverter.thermal_rth_k_per_w * inverter.thermal_cth_j_per_k, 1e-9)
@@ -291,6 +286,18 @@ class FocSvmKeyBaselineController:
             "accepted": 1.0 if decision.accepted else 0.0,
             "fault_flags": float(int(decision.fault_flags)),
             "tj_c": float(self.tj_c),
+            "svm_segment_count": float(len(applied_schedule)),
+            "svm_sector": float(requested_schedule.sector),
+            "svm_saturated": 1.0 if requested_schedule.saturated else 0.0,
+            "svm_pulse_adjusted": 1.0 if requested_schedule.pulse_adjusted else 0.0,
+            "svm_voltage_error_v": float(
+                math.hypot(
+                    requested_schedule.synthesized_alpha_beta_v[0] - v_alpha_ref,
+                    requested_schedule.synthesized_alpha_beta_v[1] - v_beta_ref,
+                )
+            ),
+            "svm_sequence_accepted": 1.0 if sequence_accepted else 0.0,
+            "svm_total_dwell_s": float(sum(segment.dwell_s for segment in applied_schedule)),
         }
         return ControllerStepResult(
             decision=decision,
@@ -299,6 +306,7 @@ class FocSvmKeyBaselineController:
             confidence=confidence,
             predicted_i_abs=float(predicted_i_abs),
             predicted_risk=float(predicted_risk),
+            vector_schedule=tuple(applied_schedule),
             metrics=metrics,
         )
 

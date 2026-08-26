@@ -11,6 +11,7 @@ from models.induction_motor_alpha_beta import (
     AlphaBetaMotorState,
 )
 from models.two_level_inverter import (
+    SpaceVectorDwell,
     TwoLevelInverterParams,
     alpha_beta_voltage,
     estimate_inverter_losses,
@@ -57,7 +58,26 @@ class ControllerStepResult:
     confidence: float
     predicted_i_abs: float
     predicted_risk: float
+    vector_schedule: Tuple[SpaceVectorDwell, ...] = field(default_factory=tuple)
     metrics: Dict[str, float] = field(default_factory=dict)
+
+
+def effective_vector_schedule(
+    result: ControllerStepResult,
+    period_s: float,
+) -> Tuple[SpaceVectorDwell, ...]:
+    """Return the applied subinterval schedule, including legacy one-vector results."""
+
+    period = float(period_s)
+    if not math.isfinite(period) or period <= 0.0:
+        raise ValueError("controller period must be finite and positive")
+    schedule = result.vector_schedule or (SpaceVectorDwell(result.vector_id, period),)
+    total_dwell = sum(segment.dwell_s for segment in schedule)
+    if not math.isclose(total_dwell, period, rel_tol=1.0e-9, abs_tol=1.0e-12):
+        raise ValueError(
+            f"controller schedule dwell {total_dwell:.12g} s does not match period {period:.12g} s"
+        )
+    return tuple(schedule)
 
 
 class NeuralCostShaper:
@@ -126,6 +146,36 @@ class NeuralTwin:
         )
         step = model.next_state(v_alpha, v_beta, load_torque_nm, dt_s)
         return step.state, step.torque_nm, step.currents.stator_abs
+
+    def predict_schedule(
+        self,
+        schedule: Sequence[SpaceVectorDwell],
+        inverter: TwoLevelInverterParams,
+        load_torque_nm: float,
+        *,
+        pwm_enabled: bool = True,
+    ) -> tuple[AlphaBetaMotorState, float, float]:
+        if not schedule:
+            raise ValueError("prediction schedule must be non-empty")
+        state = self.state_hat
+        final_torque = 0.0
+        max_current = 0.0
+        for segment in schedule:
+            model = AlphaBetaInductionMotorModel(self.params, state)
+            currents = model.currents()
+            if pwm_enabled:
+                v_alpha, v_beta = alpha_beta_voltage(
+                    segment.vector_id,
+                    inverter,
+                    i_alpha_beta=(currents.i_s_alpha, currents.i_s_beta),
+                )
+            else:
+                v_alpha, v_beta = 0.0, 0.0
+            step = model.next_state(v_alpha, v_beta, load_torque_nm, segment.dwell_s)
+            state = step.state
+            final_torque = float(step.torque_nm)
+            max_current = max(max_current, float(step.currents.stator_abs))
+        return state, final_torque, max_current
 
     def confidence(self) -> float:
         conf = math.exp(-self.uncertainty - 0.35 * self.residual_norm)
@@ -504,6 +554,7 @@ class SafeNeuralHorizonPwmController:
 
 __all__ = [
     "ControllerStepResult",
+    "effective_vector_schedule",
     "EventTriggeredFeedbackPolicy",
     "NeuralCostShaper",
     "NeuralHorizonConfig",

@@ -11,3 +11,7 @@
 *.js text eol=lf
 
 *.pdf binary
+
+# Flash-package hashes cover exact bytes; never rewrite line endings here.
+firmware/ready_to_flash/** -text -whitespace
+firmware/ready_to_flash.zip binary -whitespace

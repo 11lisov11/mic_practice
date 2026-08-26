@@ -293,7 +293,8 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
 
       case START_MOTOR:
       {
-        MCPResponse = (MCI_StartMotor(pMCI) == true) ? MCP_CMD_OK : MCP_CMD_NOK;
+        /* MIC_AI safety policy: only the validated UNO Q scalar link may start the motor. */
+        MCPResponse = MCP_CMD_NOK;
         break;
       }
 
@@ -330,7 +331,8 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
         /* Queries the STM and a command start or stop depending on the state */
         if (IDLE == MCI_GetSTMState(pMCI))
         {
-          MCPResponse = (MCI_StartMotor(pMCI) == true) ? MCP_CMD_OK : MCP_CMD_NOK;
+          /* Keep Motor Pilot/MCP as a monitoring and stop path, never as a start bypass. */
+          MCPResponse = MCP_CMD_NOK;
         }
         else
         {

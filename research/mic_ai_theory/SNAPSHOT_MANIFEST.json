@@ -1,7 +1,7 @@
 {
   "schema": "mic_ai_theory_snapshot/v1",
-  "generated_utc": "2026-08-09T01:18:48.602661+00:00",
-  "file_count": 172,
+  "generated_utc": "2026-08-25T20:42:07.764717+00:00",
+  "file_count": 197,
   "files": [
     {
       "path": "articles/fig/fig_algorithm_block_ru.png",
@@ -409,14 +409,79 @@
       "sha256": "808f2cdbc5f8d750f448188bca956b4227f4c7cd9aaf20732ee0844cfc80061c"
     },
     {
+      "path": "model_identification/source/mic_ai/drivers/driver_adapter.py",
+      "bytes": 10350,
+      "sha256": "fc3feacfb7ac733d771969daaa5301b27101e216ac245d5d4f878bd0a0455b2f"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/__init__.py",
+      "bytes": 1689,
+      "sha256": "25c9e1561dc90a7215710f3be5990935401cf7ca877179a25ab39fe5c459ac02"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/apply.py",
+      "bytes": 2382,
+      "sha256": "4701c59797024bc274a52da741acb72d973a5811d1a48745ede7570386225e1c"
+    },
+    {
       "path": "model_identification/source/mic_ai/ident/auto_id.py",
       "bytes": 19002,
       "sha256": "2454a8fd4bd9d7c2933563fc0b1eb0dfb7a4e87f2a11cad31468f96532558d91"
     },
     {
+      "path": "model_identification/source/mic_ai/ident/estimators.py",
+      "bytes": 15742,
+      "sha256": "8181e384c0f6642db8a27e275ffd46eeeeed33c80a2e6aefff0f7eaf9e0684ff"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/ident_result.py",
+      "bytes": 609,
+      "sha256": "4e6005e86f263f6f4b3dc092892ebee8807e1d2183afd32b1cb570111805a6ca"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/io.py",
+      "bytes": 2209,
+      "sha256": "088f94842a625711956fb11d3ca46cb7a180bf1acba355d6fe876d53faf5d213"
+    },
+    {
       "path": "model_identification/source/mic_ai/ident/model_based.py",
       "bytes": 19488,
       "sha256": "fe8959db466dccccdd6e938201d350de8c37e9dda52dd464a68521f08a92a6f5"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/motor_params.py",
+      "bytes": 847,
+      "sha256": "6c7201f1563d434ec92d6d69c6e844079be09c6632f308b3831a3d59e0fcdc65"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/selfcheck.py",
+      "bytes": 5259,
+      "sha256": "8daac2ba308bf2b77d6c4bd328711d0f1d26caf211121180f6b296be2d7b3b52"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/signal_interface.py",
+      "bytes": 1858,
+      "sha256": "12319d36decdaf44f2395921dde029c4ea102f65be1b2378a376ec4acd80f41c"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/test_runner.py",
+      "bytes": 4674,
+      "sha256": "77aa44d1810c8ad949b8bf20cedadac0662d9bf0a5a6fc94f7cd65bac38f6bb2"
+    },
+    {
+      "path": "model_identification/source/mic_ai/ident/test_sequences.py",
+      "bytes": 1175,
+      "sha256": "66b628bb24254172b69dfb9acafea8140e0839ed35e1c975661873787f149a0d"
+    },
+    {
+      "path": "model_identification/source/models/induction_motor.py",
+      "bytes": 5353,
+      "sha256": "27a3ed204012b1b3e90b45bd5648268bbfaabf5690b04d2b683ffccb2780c329"
+    },
+    {
+      "path": "model_identification/source/models/inverter_ideal.py",
+      "bytes": 2484,
+      "sha256": "67372b1cb41a9786d3b8f963912d55bdd6af0e83d6e6f2beda991569c1ac672c"
     },
     {
       "path": "model_identification/source/tests/test_model_based_identification.py",
@@ -440,8 +505,8 @@
     },
     {
       "path": "README_RU.md",
-      "bytes": 5566,
-      "sha256": "f88dd96c2c754aca4f580b53d3abc7889fee71efad31c29a4ecef4c8e900b02e"
+      "bytes": 5973,
+      "sha256": "5b3a053638b17290b73e14ba2b06924bd5b5d6c61b79c0d1277717bb0ad3f34c"
     },
     {
       "path": "snh_pwm/c6_conformal_reachability/RESEARCH_RU.md",
@@ -825,8 +890,8 @@
     },
     {
       "path": "snh_pwm/source/tests/test_safe_neural_horizon_pwm.py",
-      "bytes": 46062,
-      "sha256": "d973796c3332b65ec11daab140292dd27e476899e84db47016022f2ee2631406"
+      "bytes": 45970,
+      "sha256": "21b802511f21192141c34d7cc50fc508495c63d442e8f37c192707c04e44120d"
     },
     {
       "path": "snh_pwm/source/tools/aggregate_cyclic_conformal_reachability.py",
@@ -847,6 +912,66 @@
       "path": "snh_pwm/source/tools/analyze_safe_neural_horizon_pwm_revalidation.py",
       "bytes": 9324,
       "sha256": "b729ec684a282bc8b57ff6f65e495d1ea9bdda4b10f065f42a0ffa367785142b"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_baseline_stress.py",
+      "bytes": 5149,
+      "sha256": "c8c36127cd9ffd51f24e6b9deb75bd36f2fbd9f3c700e421707b93039947df6b"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_baseline_tuning.py",
+      "bytes": 17417,
+      "sha256": "bfce5a1a5dd6d06c7922107efba68c4e12c989ef447a366e8ff51a1274bda8a8"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_figures.py",
+      "bytes": 7698,
+      "sha256": "851f7058d58cb4f501d6c1dc3bc740e7ffae1fe2c6a36ff512455208eaca6f98"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_report.py",
+      "bytes": 6586,
+      "sha256": "34c3a0bc974723186f7dfbfbd8b9f3fc7dd644c94f5f6f9b05ca8333e86e4b14"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_trace_evidence.py",
+      "bytes": 19398,
+      "sha256": "d9e9d938c466132d9052f7fad8e615924fa6eb35a5d4ea6da6179a1fbd4b81fb"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_twin_evidence.py",
+      "bytes": 21499,
+      "sha256": "a7a2cf7d5d9fd61990df34f6b2a8449ff07a9840084e1a07cb9d8863bcb189ab"
+    },
+    {
+      "path": "snh_pwm/source/tools/check_safe_neural_horizon_pwm_algorithm_identity.py",
+      "bytes": 12213,
+      "sha256": "d46e8956c20db283c67d7b7cfb026c92bdef66ab352f990bc415d7ae69bf91c7"
+    },
+    {
+      "path": "snh_pwm/source/tools/check_safe_neural_horizon_pwm_baselines.py",
+      "bytes": 14183,
+      "sha256": "dce27ca1ad1acf05a433bcb02f3b8c191b5e9e552ac7e9986af1d19438df5f80"
+    },
+    {
+      "path": "snh_pwm/source/tools/check_safe_neural_horizon_pwm_novelty.py",
+      "bytes": 8315,
+      "sha256": "1b928473447fc3e3208722b64e50f7144a63c7f0ef8a9340a67d84dbe55b9a77"
+    },
+    {
+      "path": "snh_pwm/source/tools/check_safe_neural_horizon_pwm_release.py",
+      "bytes": 18300,
+      "sha256": "e6f04e01f7df262c4d916a4e8f6d1d2258c060b4974e5b3ffc0bc3da0abe118c"
+    },
+    {
+      "path": "snh_pwm/source/tools/check_safe_neural_horizon_pwm_theory.py",
+      "bytes": 25763,
+      "sha256": "e2c8e21b6a2f9ce9e7ba032e017ebbdc6bd13998b008ef4532a18dee29deeebc"
+    },
+    {
+      "path": "snh_pwm/source/tools/package_safe_neural_horizon_pwm_release.py",
+      "bytes": 26246,
+      "sha256": "143f1727b9d8d728e007341678a0dafa175d99e466548deca2c8af567eb27adc"
     },
     {
       "path": "snh_pwm/source/tools/run_cyclic_conformal_reachability_lab.py",

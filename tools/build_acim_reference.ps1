@@ -55,8 +55,8 @@ $manifestMotorStatus = "NOT APPROVED FOR AIR-56: add verified nameplate/measured
 $manifestProfileStatus = "st_reference_not_air56"
 if ($isAir56B2) {
     $manifestMotor = "IEK AIR56B2 0.25 kW 220/380 V Delta/Y"
-    $manifestMotorStatus = "NAMEPLATE V/F CANDIDATE ONLY: controller uses the 220 V Delta star-equivalent phase voltage; no identification or HV interlock validation"
-    $manifestProfileStatus = "nameplate_verified_vf_open_loop_pending_identification"
+    $manifestMotorStatus = "CATALOG/OPERATOR-CONFIRMED V/F CANDIDATE ONLY: no target-motor photo provenance, identification, or HV interlock validation"
+    $manifestProfileStatus = "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
 }
 
 foreach ($path in @($cubeIde, $objcopy, $ideProject)) {
@@ -66,15 +66,18 @@ foreach ($path in @($cubeIde, $objcopy, $ideProject)) {
 }
 
 New-Item -ItemType Directory -Force -Path $Workspace | Out-Null
+New-Item -ItemType Directory -Force -Path $buildDir | Out-Null
+$buildLog = Join-Path $buildDir "$projectName.build.log"
 
 & $cubeIde `
     -nosplash `
     -application org.eclipse.cdt.managedbuilder.core.headlessbuild `
     -data $Workspace `
     -import $ideProject `
-    -cleanBuild "$projectName/$Configuration"
-if ($LASTEXITCODE -ne 0) {
-    throw "STM32CubeIDE build failed with exit code $LASTEXITCODE."
+    -cleanBuild "$projectName/$Configuration" 2>&1 | Tee-Object -FilePath $buildLog
+$buildExitCode = $LASTEXITCODE
+if ($buildExitCode -ne 0) {
+    throw "STM32CubeIDE build failed with exit code $buildExitCode. See $buildLog"
 }
 
 if (-not (Test-Path -LiteralPath $elf)) {
@@ -100,6 +103,17 @@ $artifacts = @($elf, $bin, $hex) | ForEach-Object {
     }
 }
 
+$buildErrors = $null
+$buildWarnings = $null
+$buildSummaryMatch = [regex]::Matches(
+    (Get-Content -LiteralPath $buildLog -Raw),
+    "(?im)(\d+)\s+errors?\s*,\s*(\d+)\s+warnings?"
+) | Select-Object -Last 1
+if ($null -ne $buildSummaryMatch) {
+    $buildErrors = [int]$buildSummaryMatch.Groups[1].Value
+    $buildWarnings = [int]$buildSummaryMatch.Groups[2].Value
+}
+
 $manifest = [ordered]@{
     schema = "mic_ai.mcsdk.acim_reference_build.v1"
     generated_at = (Get-Date).ToUniversalTime().ToString("o")
@@ -114,27 +128,38 @@ $manifest = [ordered]@{
     ioc_nominal_phase_voltage_v = $selectedNominalPhaseVoltage
     ioc_nominal_current_a = $selectedNominalCurrent
     ioc_pole_pairs = $selectedPolePairs
+    build_log = (Split-Path -Leaf $buildLog)
+    build_exit_code = $buildExitCode
+    build_errors = $buildErrors
+    build_warnings = $buildWarnings
     artifacts = $artifacts
 }
 $manifestPath = Join-Path $buildDir "$projectName.build-manifest.json"
 $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8
+$releaseGateReport = Join-Path $buildDir "mcsdk_release_preflight.json"
 
 Write-Host "Build artifacts: $buildDir"
 Write-Host "Manifest: $manifestPath"
 
-if ($RunReleaseGate) {
-    if ([string]::IsNullOrWhiteSpace($MotorProfile)) {
-        throw "-RunReleaseGate requires -MotorProfile with real AIR-56 nameplate/measured data."
-    }
+$reportProfile = $MotorProfile
+if ([string]::IsNullOrWhiteSpace($reportProfile)) {
+    $reportProfile = Join-Path $scriptRoot "..\docs\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json"
+}
+if (-not (Test-Path -LiteralPath $reportProfile -PathType Leaf)) {
+    throw "Motor profile for the build preflight report is missing: $reportProfile"
+}
 
-    $gate = Join-Path $scriptRoot "mcsdk_release_preflight.py"
-    $python = (Get-Command python -ErrorAction Stop).Source
-    & $python $gate `
-        --project $projectRoot `
-        --motor-profile $MotorProfile `
-        --artifacts $buildDir `
-        --output (Join-Path $buildDir "mcsdk_release_preflight.json")
-    if ($LASTEXITCODE -ne 0) {
-        throw "Release gate rejected the package. Read mcsdk_release_preflight.json."
-    }
+$gate = Join-Path $scriptRoot "mcsdk_release_preflight.py"
+$python = (Get-Command python -ErrorAction Stop).Source
+& $python $gate `
+    --project $projectRoot `
+    --motor-profile $reportProfile `
+    --artifacts $buildDir `
+    --output $releaseGateReport
+$gateExitCode = $LASTEXITCODE
+if ($RunReleaseGate -and $gateExitCode -ne 0) {
+    throw "Release gate rejected the package. Read mcsdk_release_preflight.json."
+}
+if (-not $RunReleaseGate) {
+    Write-Host "Updated non-gating preflight report (exit $gateExitCode). It is not an HV release approval."
 }

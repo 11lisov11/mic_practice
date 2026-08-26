@@ -1,0 +1,17 @@
+{
+  "schema": "mic_ai.mcsdk.acim_motor_profile.v1",
+  "source_kind": "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification",
+  "motor_type": "acim",
+  "motor_label": "IEK AIR56B2 0.25 kW 220/380 V Delta/Y",
+  "pole_pairs": 1,
+  "rated_line_voltage_v": 220.0,
+  "rated_phase_voltage_v": 220.0,
+  "controller_equivalent_phase_voltage_v": 127.017059,
+  "rated_current_a": 1.24,
+  "rated_frequency_hz": 50.0,
+  "rated_speed_rpm": 2720.0,
+  "rated_power_w": 250.0,
+  "connection": "delta",
+  "catalog_source": "IEK AIR56B2 catalog data confirmed by the operator as the intended motor variant; instance nameplate photo and hash are not yet attached",
+  "measurement_note": "This profile is a provisional MCSDK ACIM V/F open-loop candidate. The physical motor is intended to be connected in Delta to a 220 V line-to-line inverter. MCSDK uses the star-equivalent 127.017 V phase-to-neutral model. Rs/Rr/Lls/Llr/Lm/inertia are intentionally absent: they must be measured before FOC/identification or any high-voltage release."
+}

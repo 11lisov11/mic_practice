@@ -87,6 +87,50 @@ def vector_errors() -> list[str]:
     return [f"vector:{name}:{classify_frame(frame)}" for name, frame, expected in cases if classify_frame(frame) != expected]
 
 
+def stateful_vector_errors() -> list[str]:
+    faulting_results = {
+        "estop",
+        "invalid_crc",
+        "invalid_version",
+        "invalid_clear",
+        "invalid_service",
+        "invalid_mode",
+        "invalid_frequency",
+        "duplicate_enable",
+        "timeout",
+    }
+
+    def apply(latched: bool, result: str) -> bool:
+        if result == "clear":
+            return False
+        if result in faulting_results:
+            return True
+        return latched
+
+    errors: list[str] = []
+    latched = False
+    sequence = (
+        ("estop", True),
+        ("scalar", True),
+        ("stop", True),
+        ("clear", False),
+        ("scalar", False),
+        ("timeout", True),
+        ("scalar", True),
+        ("clear", False),
+        ("duplicate_enable", True),
+        ("clear", False),
+        ("invalid_crc", True),
+        ("stop", True),
+        ("clear", False),
+    )
+    for index, (result, expected) in enumerate(sequence):
+        latched = apply(latched, result)
+        if latched != expected:
+            errors.append(f"stateful_vector:{index}:{result}:expected={expected}:actual={latched}")
+    return errors
+
+
 def require(text: str, pattern: str, name: str, errors: list[str]) -> None:
     if not re.search(pattern, text, flags=re.MULTILINE | re.DOTALL):
         errors.append(name)
@@ -109,6 +153,18 @@ def source_errors(
     uno = uno_path.read_text(encoding="utf-8", errors="replace")
     nucleo = nucleo_path.read_text(encoding="utf-8", errors="replace")
     user_code = user_code_section(nucleo)
+    mcp_path = nucleo_path.parent / "mcp.c"
+    tasks_path = nucleo_path.parent / "mc_tasks.c"
+    if not mcp_path.is_file():
+        errors.append(f"missing_mcp_source:{mcp_path}")
+        mcp = ""
+    else:
+        mcp = mcp_path.read_text(encoding="utf-8", errors="replace")
+    if not tasks_path.is_file():
+        errors.append(f"missing_mc_tasks_source:{tasks_path}")
+        tasks = ""
+    else:
+        tasks = tasks_path.read_text(encoding="utf-8", errors="replace")
 
     for pattern, name in (
         (r"NUCLEO_MCSDK_ACIM_BACKEND\s*=\s*true", "uno_mcsdk_backend_disabled"),
@@ -117,6 +173,21 @@ def source_errors(
         (r"USE_NUCLEO_UART_FALLBACK\s*=\s*true", "uno_uart_bridge_disabled"),
         (r"BP_VER\s*=\s*0x02", "uno_protocol_version_not_v2"),
         (r"if\s*\(rx\[2\]\s*!=\s*BP_VER\)\s*return false", "uno_does_not_validate_reply_version"),
+        (
+            r"if\s*\(require_sequence\s*&&\s*rx\[4\]\s*!=\s*expected_sequence\)\s*return false",
+            "uno_does_not_reject_unexpected_reply_sequence",
+        ),
+        (
+            r"g_nucleo_waiting_rsp\s*=\s*true;\s*"
+            r"g_nucleo_waiting_seq\s*=\s*seq;\s*"
+            r"NUCLEO_SERIAL\.write\(pkt, sizeof\(pkt\)\)",
+            "uno_does_not_arm_reply_sequence_before_uart_write",
+        ),
+        (
+            r"g_nucleo_waiting_rsp\s*&&\s*"
+            r"nucleo_check_reply\(buf, true, g_nucleo_waiting_seq\)",
+            "uno_uart_parser_accepts_unsolicited_reply",
+        ),
         (r"if\s*\(g_io_test_mode\)\s*\{\s*enable_eff\s*=\s*false", "uno_io_test_can_drive_mcsdk"),
         (r"if\s*\(USE_EXTERNAL_PWM\)\s*\{\s*g_pwm_outputs_active\s*=\s*true;\s*nucleo_send_pwm\(d_u, d_v, d_w, true\);\s*return", "uno_pwm_not_routed_only_to_nucleo"),
     ):
@@ -129,10 +200,38 @@ def source_errors(
         (r"GPIO_PIN_6\s*\|\s*GPIO_PIN_7", "nucleo_usart1_pins_missing"),
         (r"GPIO_AF7_USART1", "nucleo_usart1_af_missing"),
         (
+            r"UART_FLAG_ORE\s*\|\s*UART_FLAG_NE\s*\|\s*UART_FLAG_FE\s*\|\s*UART_FLAG_PE.*?"
+            r"__HAL_UART_CLEAR_OREFLAG.*?__HAL_UART_CLEAR_NEFLAG.*?"
+            r"__HAL_UART_CLEAR_FEFLAG.*?__HAL_UART_CLEAR_PEFLAG.*?"
+            r"parser_state\s*=\s*0U.*?parser_index\s*=\s*0U.*?"
+            r"uno_latch_fault\(UNO_FAULT_INTERNAL\);\s*return;",
+            "nucleo_uart_errors_not_fail_closed",
+        ),
+        (
             r"/\* USER CODE BEGIN 2 \*/\s*/\* Keep the external UNO Q transport outside generated peripheral lists\. \*/\s*MX_USART1_UART_Init\(\);\s*uno_link_init\(\);",
             "nucleo_usart1_init_not_regeneration_safe",
         ),
         (r"if\s*\(!uno_service_fields_are_zero\(frame\)\)", "nucleo_service_fields_not_rejected"),
+        (
+            r"if\s*\(uno_clear_frame_is_safe\(frame\)\)\s*\{.*?"
+            r"uno_link\.fault_latched\s*=\s*false;.*?"
+            r"uno_link\.fault_code\s*=\s*UNO_FAULT_OK;.*?"
+            r"uno_link\.bad_count\s*=\s*0U;",
+            "nucleo_clear_does_not_reset_bad_counter",
+        ),
+        (
+            r"if\s*\(\(flags\s*&\s*UNO_FLAG_ESTOP\)\s*!=\s*0U\).*?"
+            r"uno_latch_fault\(UNO_FAULT_ESTOP\);\s*return;.*?"
+            r"if\s*\(uno_link\.fault_latched\)\s*\{\s*uno_stop_motor\(\);\s*return;\s*\}",
+            "nucleo_latched_fault_can_bypass_clear",
+        ),
+        (
+            r"uno_link\.link_seen\s*&&\s*flags\s*==\s*UNO_FLAG_ENABLE\s*&&\s*"
+            r"mode\s*==\s*UNO_MODE_SCALAR\s*&&\s*frame\[5\]\s*==\s*uno_link\.last_seq.*?"
+            r"uno_saturating_increment\(&uno_link\.bad_count\);\s*"
+            r"uno_latch_fault\(UNO_FAULT_INTERNAL\);\s*return;",
+            "nucleo_duplicate_enable_refreshes_watchdog",
+        ),
         (r"flags\s*!=\s*UNO_FLAG_ENABLE\s*\|\|\s*mode\s*!=\s*UNO_MODE_SCALAR", "nucleo_legacy_modes_not_rejected"),
         (r"MC_ProgramSpeedRampMotor1", "nucleo_does_not_apply_speed_api"),
         (r"MC_StartMotor1", "nucleo_does_not_start_with_mcsdk_api"),
@@ -141,9 +240,39 @@ def source_errors(
     ):
         require(nucleo, pattern, name, errors)
 
+    if len(re.findall(r"uno_link\.fault_latched\s*=\s*false", user_code)) != 1:
+        errors.append("nucleo_fault_latch_has_non_clear_reset_path")
+
     for forbidden in ("HAL_TIM_", "HAL_ADC_", "HAL_GPIO_WritePin"):
         if forbidden in user_code:
             errors.append(f"nucleo_adapter_uses_forbidden_direct_control:{forbidden}")
+
+    require(
+        mcp,
+        r"case\s+START_MOTOR\s*:\s*\{.*?MCPResponse\s*=\s*MCP_CMD_NOK\s*;",
+        "mcp_start_motor_bypass_enabled",
+        errors,
+    )
+    require(
+        mcp,
+        r"case\s+START_STOP\s*:\s*\{.*?if\s*\(IDLE\s*==\s*MCI_GetSTMState\(pMCI\)\)\s*\{.*?MCPResponse\s*=\s*MCP_CMD_NOK\s*;.*?else\s*\{.*?MCI_StopMotor",
+        "mcp_start_stop_bypass_enabled",
+        errors,
+    )
+    callback = re.search(
+        r"UI_HandleStartStopButton_cb\s*\(void\)\s*\{(.*?)\n\}",
+        tasks,
+        flags=re.DOTALL,
+    )
+    if callback is None:
+        errors.append("start_stop_button_callback_missing")
+    else:
+        callback_body = callback.group(1)
+        if "MC_StartMotor1" in callback_body:
+            errors.append("start_stop_button_can_start_motor")
+        if "MC_StopMotor1" not in callback_body:
+            errors.append("start_stop_button_cannot_stop_motor")
+
     if expected_pole_pairs is not None:
         pole_pair_match = re.search(
             r"static\s+const\s+float\s+POLE_PAIRS\s*=\s*([0-9]+(?:\.[0-9]+)?)f\s*;",
@@ -165,18 +294,28 @@ def main() -> int:
     parser.add_argument(
         "--nucleo",
         type=Path,
-        default=root / "mcsdk_reference" / "ACIM_IPM15B_SIEMENS_REFERENCE_NOT_AIR56" / "CubeIDE_V1.6.3" / "Src" / "main.c",
+        default=root
+        / "mcsdk_reference"
+        / "AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
+        / "Src"
+        / "main.c",
     )
-    parser.add_argument("--expected-pole-pairs", type=float)
+    parser.add_argument("--expected-pole-pairs", type=float, default=1.0)
     args = parser.parse_args()
-    errors = vector_errors() + source_errors(args.uno, args.nucleo, args.expected_pole_pairs)
+    errors = vector_errors() + stateful_vector_errors() + source_errors(args.uno, args.nucleo, args.expected_pole_pairs)
     report = {
         "tool": "uno_nucleo_mcsdk_contract_check",
         "pass": not errors,
         "uno": str(args.uno),
         "nucleo": str(args.nucleo),
         "expected_pole_pairs": args.expected_pole_pairs,
-        "checks": ["protocol_vectors", "source_contract", "no_direct_motor_control_in_adapter"],
+        "checks": [
+            "protocol_vectors",
+            "stateful_fault_latch_vectors",
+            "source_contract",
+            "no_direct_motor_control_in_adapter",
+            "alternate_start_paths_blocked",
+        ],
         "failures": errors,
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))

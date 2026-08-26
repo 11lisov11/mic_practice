@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -43,6 +44,14 @@ MEASURED_MODEL_IOC_KEYS = {
 
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest().upper()
 
 
 def find_ioc(project: Path) -> list[Path]:
@@ -273,7 +282,17 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
     )
 
     artifact_paths = {suffix: matching_artifacts(artifacts, suffix) for suffix in REQUIRED_ARTIFACT_SUFFIXES}
-    artifact_map = {suffix: [str(path) for path in paths] for suffix, paths in artifact_paths.items()}
+    artifact_map = {
+        suffix: [
+            {
+                "path": str(path),
+                "bytes": path.stat().st_size,
+                "sha256": sha256(path),
+            }
+            for path in paths
+        ]
+        for suffix, paths in artifact_paths.items()
+    }
     record("release_artifacts", all(artifact_map.values()), artifact_map)
     release_stems = coherent_artifact_stems(artifact_paths)
     record("release_artifacts_are_one_build", bool(release_stems), release_stems)
@@ -285,6 +304,7 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
         "project": str(project),
         "artifacts": str(artifacts),
         "motor_profile": str(profile_path),
+        "motor_profile_sha256": sha256(profile_path) if profile_path.is_file() else "",
         "failed_checks": failures,
         "checks": checks,
     }

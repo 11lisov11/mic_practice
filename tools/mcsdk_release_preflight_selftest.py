@@ -96,6 +96,13 @@ def main() -> int:
         profile_path = root / "motor.json"
         profile_path.write_text(json.dumps(profile("nameplate_and_measurement")), encoding="utf-8")
         accepted = gate.inspect(root, profile_path, root / "Release")
+        artifact_evidence = accepted["checks"]["release_artifacts"]["evidence"]
+        artifacts_are_hashed = all(
+            entry["bytes"] == 2048 and len(entry["sha256"]) == 64
+            for entries in artifact_evidence.values()
+            for entry in entries
+        )
+        profile_is_hashed = len(accepted["motor_profile_sha256"]) == 64
 
         (root / "Release" / "motor.hex").rename(root / "Release" / "other.hex")
         incoherent = gate.inspect(root, profile_path, root / "Release")
@@ -123,6 +130,8 @@ def main() -> int:
         "tool": "mcsdk_release_preflight_selftest",
         "pass": (
             accepted["pass"]
+            and artifacts_are_hashed
+            and profile_is_hashed
             and not incoherent["pass"]
             and "release_artifacts_are_one_build" in incoherent["failed_checks"]
             and not rejected["pass"]
@@ -134,6 +143,8 @@ def main() -> int:
             and official_style["pass"]
         ),
         "accepted_project": accepted["pass"],
+        "artifacts_are_hashed": artifacts_are_hashed,
+        "profile_is_hashed": profile_is_hashed,
         "mixed_artifacts_rejected": "release_artifacts_are_one_build" in incoherent["failed_checks"],
         "synthetic_profile_rejected": "motor_profile_is_real_acim" in rejected["failed_checks"],
         "catalog_profile_rejected": "motor_profile_is_real_acim" in catalog_rejected["failed_checks"],

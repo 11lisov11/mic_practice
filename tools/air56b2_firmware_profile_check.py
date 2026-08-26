@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 
-EXPECTED_PROFILE_KIND = "nameplate_verified_vf_open_loop_pending_identification"
+EXPECTED_PROFILE_KIND = "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
 EXPECTED_LINE_VOLTAGE_V = 220.0
 EXPECTED_CURRENT_A = 1.24
 EXPECTED_FREQUENCY_HZ = 50.0
@@ -90,7 +90,7 @@ def check_profile(profile: dict[str, Any]) -> list[str]:
     if "AIR56B2" not in label.upper():
         errors.append("profile_motor_not_air56b2")
     if str(profile.get("source_kind", "")) != EXPECTED_PROFILE_KIND:
-        errors.append("profile_kind_not_nameplate_vf_candidate")
+        errors.append("profile_kind_not_catalog_vf_candidate")
     if str(profile.get("connection", "")).lower() != "delta":
         errors.append("profile_connection_not_delta")
 
@@ -235,7 +235,7 @@ def main() -> int:
     root = Path(__file__).resolve().parents[1]
     parser = argparse.ArgumentParser(description="Validate AIR56B2 values across MCSDK, UNO Q and built artifacts.")
     parser.add_argument("--project", type=Path, default=root / "mcsdk_reference" / "AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV")
-    parser.add_argument("--profile", type=Path, default=root / "docs" / "mcsdk_acim_motor_profile.iek_air56b2_nameplate_verified_vf.json")
+    parser.add_argument("--profile", type=Path, default=root / "docs" / "mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json")
     parser.add_argument("--uno", type=Path, default=root / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino")
     parser.add_argument("--artifacts", type=Path)
     args = parser.parse_args()

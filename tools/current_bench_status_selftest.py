@@ -110,6 +110,77 @@ def run_missing_gate_case(results: list[CaseResult]) -> None:
         add_case(results, "missing_gate_fails_closed", ok, detail="" if ok else text, expected=expected, actual=actual)
 
 
+def run_nucleo_backend_case(results: list[CaseResult]) -> None:
+    with tempfile.TemporaryDirectory(prefix="current_bench_status_selftest_") as tmp:
+        repo = Path(tmp)
+        bench_path = repo / "tools/_preflight_exports/bench_gate_report_20260704_010000/summary.json"
+        readiness_path = repo / "tools/_readiness_exports/research_readiness_20260704_010001/summary.json"
+        build_path = repo / "tools/_preflight_exports/full_system_preflight_20260704_010002/summary.json"
+        write_json(
+            bench_path,
+            {
+                "ready_for_active_pwm": False,
+                "next_actions": [
+                    {
+                        "id": "run_runtime_static_preflight",
+                        "command": "py -3 -u .\\tools\\bluepill_runtime_static_preflight.py --confirm-hv-off",
+                    }
+                ],
+            },
+        )
+        write_json(
+            readiness_path,
+            {
+                "ready": False,
+                "active_motor_backend": "nucleo_mcsdk_acim",
+                "latest_nucleo_mcsdk_preflight": "nucleo-build.json",
+                "latest_nucleo_mcsdk_runtime_preflight": None,
+                "failed_checks": [
+                    {
+                        "name": "nucleo_mcsdk_runtime_validation",
+                        "detail": "hardware runtime proof is pending",
+                    }
+                ],
+                "next_actions": [
+                    {
+                        "id": "validate_nucleo_mcsdk_hardware",
+                        "detail": "Flash Nucleo and verify UART/static PWM.",
+                    }
+                ],
+            },
+        )
+        write_json(build_path, {"summary": {"build_only": True, "build_only_pass": True}})
+        text, payload = status.build_current_status(repo)
+        expected = [
+            "Активный motor backend: `nucleo_mcsdk_acim`",
+            "validate_nucleo_mcsdk_hardware",
+            "`nucleo_mcsdk_runtime_validation`",
+            "Nucleo MCSDK build preflight: `nucleo-build.json`",
+            "Nucleo MCSDK runtime preflight: `нет`",
+        ]
+        actual = [item for item in expected if item in text]
+        forbidden = [
+            "run_runtime_static_preflight",
+            "bluepill_runtime_static_preflight.py",
+            "Bench-gate operator steps:",
+        ]
+        leaked = [item for item in forbidden if item in text]
+        ok = (
+            actual == expected
+            and not leaked
+            and payload["active_motor_backend"] == "nucleo_mcsdk_acim"
+            and payload["next_actions"] == ["validate_nucleo_mcsdk_hardware"]
+        )
+        add_case(
+            results,
+            "nucleo_backend_uses_active_readiness_actions",
+            ok,
+            detail="" if ok else text,
+            expected=expected,
+            actual=actual + ([f"forbidden={leaked}"] if leaked else []),
+        )
+
+
 def run_stale_build_case(results: list[CaseResult]) -> None:
     with tempfile.TemporaryDirectory(prefix="current_bench_status_selftest_") as tmp:
         repo = Path(tmp)
@@ -526,6 +597,7 @@ def main() -> int:
     results: list[CaseResult] = []
     run_red_gate_case(results)
     run_missing_gate_case(results)
+    run_nucleo_backend_case(results)
     run_stale_build_case(results)
     run_failure_digest_case(results)
     run_check_mode_detects_stale_case(results)

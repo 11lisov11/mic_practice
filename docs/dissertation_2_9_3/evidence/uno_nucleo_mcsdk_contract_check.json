@@ -1,0 +1,16 @@
+{
+  "tool": "uno_nucleo_mcsdk_contract_check",
+  "pass": true,
+  "uno": "C:\\mic_practice\\UNOQ_MOTOR\\UNOQ_MOTOR.ino",
+  "nucleo": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c",
+  "expected_pole_pairs": 1.0,
+  "checks": [
+    "protocol_vectors",
+    "stateful_fault_latch_vectors",
+    "source_contract",
+    "no_direct_motor_control_in_adapter",
+    "alternate_start_paths_blocked"
+  ],
+  "failures": [],
+  "runner_exit_code": 0
+}

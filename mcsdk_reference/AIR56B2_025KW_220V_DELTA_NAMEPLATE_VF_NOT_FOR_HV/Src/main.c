@@ -240,6 +240,16 @@ static void uno_handle_valid_frame(const uint8_t *frame) {
     return;
   }
 
+  /* A frozen transmitter must not keep the motor alive by replaying the last
+     valid ENABLE frame. Repeated CLEAR remains legal so MCSDK faults can be
+     acknowledged until the state machine accepts the request. */
+  if (uno_link.link_seen && flags == UNO_FLAG_ENABLE &&
+      mode == UNO_MODE_SCALAR && frame[5] == uno_link.last_seq) {
+    uno_saturating_increment(&uno_link.bad_count);
+    uno_latch_fault(UNO_FAULT_INTERNAL);
+    return;
+  }
+
   uno_link.link_seen = true;
   uno_link.last_valid_ms = now_ms;
   uno_link.last_seq = frame[5];
@@ -250,11 +260,19 @@ static void uno_handle_valid_frame(const uint8_t *frame) {
     (void)MC_AcknowledgeFaultMotor1();
     uno_link.fault_latched = false;
     uno_link.fault_code = UNO_FAULT_OK;
+    uno_link.bad_count = 0U;
     return;
   }
 
   if ((flags & UNO_FLAG_ESTOP) != 0U) {
     uno_latch_fault(UNO_FAULT_ESTOP);
+    return;
+  }
+
+  /* A latched transport or E-stop fault can only be released by the clean
+     CLEAR frame handled above. STOP and ENABLE frames must never clear it. */
+  if (uno_link.fault_latched) {
+    uno_stop_motor();
     return;
   }
 
@@ -289,7 +307,6 @@ static void uno_handle_valid_frame(const uint8_t *frame) {
 
   uno_link.command_enabled = true;
   uno_link.last_mode = UNO_MODE_SCALAR;
-  uno_link.fault_latched = false;
   uno_link.fault_code = UNO_FAULT_OK;
 }
 
@@ -336,13 +353,24 @@ static void uno_link_init(void) {
 }
 
 static void uno_link_poll(void) {
-  while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET) {
-    uno_consume_byte((uint8_t)(huart1.Instance->RDR & 0xFFU));
-  }
-  if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE) != RESET) {
-    __HAL_UART_CLEAR_OREFLAG(&huart1);
+  const uint32_t uart_errors = huart1.Instance->ISR &
+      (UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
+  if (uart_errors != 0U) {
+    if ((uart_errors & UART_FLAG_ORE) != 0U) __HAL_UART_CLEAR_OREFLAG(&huart1);
+    if ((uart_errors & UART_FLAG_NE) != 0U) __HAL_UART_CLEAR_NEFLAG(&huart1);
+    if ((uart_errors & UART_FLAG_FE) != 0U) __HAL_UART_CLEAR_FEFLAG(&huart1);
+    if ((uart_errors & UART_FLAG_PE) != 0U) __HAL_UART_CLEAR_PEFLAG(&huart1);
+    if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET) {
+      (void)huart1.Instance->RDR;
+    }
+    uno_link.parser_state = 0U;
+    uno_link.parser_index = 0U;
     uno_saturating_increment(&uno_link.bad_count);
     uno_latch_fault(UNO_FAULT_INTERNAL);
+    return;
+  }
+  while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET) {
+    uno_consume_byte((uint8_t)(huart1.Instance->RDR & 0xFFU));
   }
   if (uno_link.link_seen && !uno_link.fault_latched &&
       (uint32_t)(HAL_GetTick() - uno_link.last_valid_ms) > UNO_LINK_TIMEOUT_MS) {

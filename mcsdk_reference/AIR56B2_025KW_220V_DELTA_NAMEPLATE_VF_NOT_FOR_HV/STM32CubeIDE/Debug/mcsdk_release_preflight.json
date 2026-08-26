@@ -3,7 +3,8 @@
   "pass": false,
   "project": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV",
   "artifacts": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug",
-  "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_nameplate_verified_vf.json",
+  "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json",
+  "motor_profile_sha256": "69705C4E67C105D6D7646465283FBC4A70758E6C7BF005A7B5F7DA911A971471",
   "failed_checks": [
     "precharge_interlock_implemented",
     "motor_profile_is_real_acim",
@@ -41,7 +42,7 @@
     },
     "motor_profile_present": {
       "pass": true,
-      "evidence": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_nameplate_verified_vf.json"
+      "evidence": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json"
     },
     "motor_profile_is_real_acim": {
       "pass": false,
@@ -49,7 +50,7 @@
         "errors": [
           "profile_provenance"
         ],
-        "source_kind": "nameplate_verified_vf_open_loop_pending_identification"
+        "source_kind": "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
       }
     },
     "generated_motor_configuration_matches_profile": {
@@ -66,13 +67,25 @@
       "pass": true,
       "evidence": {
         ".elf": [
-          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf"
+          {
+            "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+            "bytes": 2059608,
+            "sha256": "EB0081B5D2EB0902C3A28FAEE63EB0B207BE5810F7C0E80753D58086A39502C1"
+          }
         ],
         ".bin": [
-          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin"
+          {
+            "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+            "bytes": 38604,
+            "sha256": "D1034CD74A2D6E3FA1D08D60EF7319D291BA1F9A1C261AB0013A967F25C89BB2"
+          }
         ],
         ".hex": [
-          "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex"
+          {
+            "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+            "bytes": 108680,
+            "sha256": "26D30D4DD4763C47F5287359987C1D6C6C6173AA5A852AB67A6BB34DD0C0CB41"
+          }
         ]
       }
     },

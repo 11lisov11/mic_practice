@@ -757,12 +757,8 @@ __weak void TSK_HardwareFaultTask(void)
 __weak void UI_HandleStartStopButton_cb (void)
 {
 /* USER CODE BEGIN START_STOP_BTN */
-  if (MC_GetSTMStateMotor1() == IDLE)
-  {
-    /* Ramp parameters should be tuned for the actual motor */
-    MC_StartMotor1();
-  }
-  else
+  /* PC13 is deliberately stop-only; motor start requires a validated UNO Q frame. */
+  if (MC_GetSTMStateMotor1() != IDLE)
   {
     MC_StopMotor1();
   }

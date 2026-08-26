@@ -1,32 +1,36 @@
 ﻿{
     "schema":  "mic_ai.mcsdk.acim_reference_build.v1",
-    "generated_at":  "2026-08-21T08:50:55.7699178Z",
+    "generated_at":  "2026-08-25T22:12:28.2405595Z",
     "project":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL",
     "configuration":  "Debug",
     "target":  "NUCLEO-G431RB + X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
     "control_mode":  "ACIM V/F open loop",
     "reference_motor":  "IEK AIR56B2 0.25 kW 220/380 V Delta/Y",
-    "motor_status":  "NAMEPLATE V/F CANDIDATE ONLY: controller uses the 220 V Delta star-equivalent phase voltage; no identification or HV interlock validation",
-    "motor_profile_status":  "nameplate_verified_vf_open_loop_pending_identification",
+    "motor_status":  "CATALOG/OPERATOR-CONFIRMED V/F CANDIDATE ONLY: no target-motor photo provenance, identification, or HV interlock validation",
+    "motor_profile_status":  "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification",
     "ioc_motor_name":  "IEK_AIR56B2_D",
     "ioc_nominal_phase_voltage_v":  "127",
     "ioc_nominal_current_a":  "1.24",
     "ioc_pole_pairs":  "1",
+    "build_log":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.build.log",
+    "build_exit_code":  0,
+    "build_errors":  0,
+    "build_warnings":  0,
     "artifacts":  [
                       {
                           "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-                          "bytes":  2059400,
-                          "sha256":  "42A05F0ECB261C0E42310A240C4BAFB1CA8CCB3EFDDB5B30704ED8CD6D539575"
+                          "bytes":  2059608,
+                          "sha256":  "EB0081B5D2EB0902C3A28FAEE63EB0B207BE5810F7C0E80753D58086A39502C1"
                       },
                       {
                           "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-                          "bytes":  38532,
-                          "sha256":  "DC99D8C33B865B0292087907C603FE23AD29A4FA5BE01B9ACE00D0481187CA40"
+                          "bytes":  38604,
+                          "sha256":  "D1034CD74A2D6E3FA1D08D60EF7319D291BA1F9A1C261AB0013A967F25C89BB2"
                       },
                       {
                           "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-                          "bytes":  108471,
-                          "sha256":  "4F4C7FB8E461DDC68008F71DA09E85E6A3D72F6544287779940B607327B346ED"
+                          "bytes":  108680,
+                          "sha256":  "26D30D4DD4763C47F5287359987C1D6C6C6173AA5A852AB67A6BB34DD0C0CB41"
                       }
                   ]
 }

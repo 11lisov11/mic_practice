@@ -2450,12 +2450,13 @@ static void enc_speed_update(uint16_t raw, bool ok, uint32_t now_ms) {
   g_enc_accum_counts = 0;
   g_enc_accum_ms = 0;
 }
-static bool nucleo_check_reply(const uint8_t *rx) {
+static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t expected_sequence) {
   if (!rx) return false;
   if (rx[0] != 0x55 || rx[1] != 0xAA) return false;
   if (rx[2] != BP_VER) return false;
   uint8_t crc = nucleo_crc8(rx, BP_CRC_OFF);
   if (crc != rx[BP_CRC_OFF]) return false;
+  if (require_sequence && rx[4] != expected_sequence) return false;
   uint32_t now_ms = millis();
   g_bp_status = rx[3];
   g_bp_last_seq = rx[4];
@@ -2558,7 +2559,8 @@ static void nucleo_uart_poll() {
     if (idx >= sizeof(buf)) {
       st = 0;
       idx = 0;
-      if (nucleo_check_reply(buf)) {
+      if (g_nucleo_waiting_rsp &&
+          nucleo_check_reply(buf, true, g_nucleo_waiting_seq)) {
         if (g_nucleo_rx_good < 0xFFFFu) g_nucleo_rx_good++;
         g_nucleo_last_rx_ms = millis();
         g_link_led_ms = g_nucleo_last_rx_ms;
@@ -2803,7 +2805,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   if (USE_NUCLEO_SPI) {
     uint8_t rx[BP_FRAME_LEN] = {0};
     nucleo_spi_transfer(pkt, rx, sizeof(pkt));
-    if (nucleo_check_reply(rx)) {
+    if (nucleo_check_reply(rx, false, seq)) {
       if (g_nucleo_rx_good < 0xFFFFu) g_nucleo_rx_good++;
       g_nucleo_last_rx_ms = now;
       g_link_led_ms = now;
@@ -2812,13 +2814,11 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     }
   }
   if (USE_NUCLEO_UART_FALLBACK) {
+    // Accept only the reply that echoes this command sequence. A delayed or
+    // replayed valid frame must not refresh status or acknowledge CLEAR.
+    g_nucleo_waiting_rsp = true;
+    g_nucleo_waiting_seq = seq;
     NUCLEO_SERIAL.write(pkt, sizeof(pkt));
-    if (enable_eff && !estop_eff && !clear_eff) {
-      g_nucleo_waiting_rsp = true;
-      g_nucleo_waiting_seq = seq;
-    } else {
-      g_nucleo_waiting_rsp = false;
-    }
     nucleo_uart_poll();
   }
   g_nucleo_last_send_ms = now;

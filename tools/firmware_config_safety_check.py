@@ -192,6 +192,26 @@ def unoq_pole_pairs(path: Path) -> float:
     return float(match.group(1))
 
 
+def unoq_uses_nucleo_mcsdk(path: Path) -> bool:
+    text = path.read_text(encoding="utf-8", errors="replace")
+    match = re.search(r"\bNUCLEO_MCSDK_ACIM_BACKEND\s*=\s*(true|false)\s*;", text)
+    if not match:
+        raise CheckError("UNOQ_MOTOR NUCLEO_MCSDK_ACIM_BACKEND not found")
+    return match.group(1) == "true"
+
+
+def nucleo_mcsdk_pole_pairs(repo: Path) -> float:
+    project = repo / "mcsdk_reference" / "AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
+    ioc_files = list(project.glob("*.ioc"))
+    if len(ioc_files) != 1:
+        raise CheckError(f"expected one Nucleo MCSDK IOC, found {len(ioc_files)}")
+    text = ioc_files[0].read_text(encoding="utf-8", errors="replace")
+    match = re.search(r"(?m)^MotorControl\.ACIM_POLE_PAIR_NUM=([0-9]+(?:\.[0-9]+)?)\s*$", text)
+    if not match:
+        raise CheckError("Nucleo MCSDK ACIM_POLE_PAIR_NUM not found")
+    return float(match.group(1))
+
+
 def source_contains(path: Path, needle: str) -> bool:
     return needle in path.read_text(encoding="utf-8", errors="replace")
 
@@ -1184,11 +1204,27 @@ def run_checks(repo: Path) -> list[CaseResult]:
         cases.append(fail_case("heatsink_sensor_failure_is_fail_closed", "Temperature ADC failure must latch a fault and block CLEAR while the failure remains live"))
 
     bp_poles = float(macro_num(defs, "AS5600_POLE_PAIRS"))
-    uq_poles = unoq_pole_pairs(repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino")
-    if abs(bp_poles - uq_poles) < 0.001:
-        cases.append(ok_case("pole_pairs_match", {"bluepill": bp_poles, "unoq": uq_poles}))
+    uno_path = repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino"
+    uq_poles = unoq_pole_pairs(uno_path)
+    if unoq_uses_nucleo_mcsdk(uno_path):
+        active_poles = nucleo_mcsdk_pole_pairs(repo)
+        evidence = {"active_backend": "nucleo_mcsdk", "nucleo": active_poles, "unoq": uq_poles}
+        if abs(active_poles - uq_poles) < 0.001:
+            cases.append(ok_case("pole_pairs_match_active_backend", evidence))
+        else:
+            cases.append(fail_case("pole_pairs_match_active_backend", "Nucleo MCSDK and UNO Q pole-pair constants differ", evidence))
+        if abs(bp_poles - uq_poles) >= 0.001:
+            cases.append(
+                warn_case(
+                    "inactive_bluepill_pole_pairs_differ",
+                    "Blue Pill is not the active motor backend; update its motor profile before enabling it again",
+                    {"bluepill": bp_poles, "unoq": uq_poles},
+                )
+            )
+    elif abs(bp_poles - uq_poles) < 0.001:
+        cases.append(ok_case("pole_pairs_match_active_backend", {"active_backend": "bluepill", "bluepill": bp_poles, "unoq": uq_poles}))
     else:
-        cases.append(fail_case("pole_pairs_match", "Blue Pill and UNO Q pole-pair constants differ", {"bluepill": bp_poles, "unoq": uq_poles}))
+        cases.append(fail_case("pole_pairs_match_active_backend", "Blue Pill and UNO Q pole-pair constants differ", {"bluepill": bp_poles, "unoq": uq_poles}))
 
     foc_require_hall = int(macro_num(defs, "FOC_REQUIRE_HALL"))
     cases.append(ok_case("foc_requires_sensor", {"FOC_REQUIRE_HALL": foc_require_hall}) if foc_require_hall == 1 else fail_case("foc_requires_sensor", "FOC open-loop fallback is enabled by config"))

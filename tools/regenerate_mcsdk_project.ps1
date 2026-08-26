@@ -70,6 +70,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Could not restore the CMSIS-DSP include path."
 }
 
+& $python (Join-Path $scriptRoot "patch_mcsdk_uno_start_interlock.py") $output
+if ($LASTEXITCODE -ne 0) {
+    throw "Could not restore the UNO-only motor-start interlock."
+}
+
 & $python (Join-Path $scriptRoot "uno_nucleo_mcsdk_contract_check.py") --nucleo $main
 if ($LASTEXITCODE -ne 0) {
     throw "UNO Q to Nucleo adapter did not survive regeneration."

@@ -51,6 +51,9 @@ from tools.analyze_safe_neural_horizon_pwm_revalidation import analyze_payload a
 from tools.build_safe_neural_horizon_pwm_figures import build_figures
 
 
+TRACKED_RELEASE_DIR = Path(__file__).resolve().parents[2] / "historical_host_release"
+
+
 def _motor_params() -> AlphaBetaMotorParams:
     return AlphaBetaMotorParams.from_motor_params(create_default_env().motor)
 
@@ -916,7 +919,7 @@ def test_check_safe_neural_horizon_pwm_release_and_figures(tmp_path) -> None:
 
 
 def test_safe_neural_horizon_pwm_tracked_release_supports_host_novelty_claim() -> None:
-    release_dir = Path("paper/safe_neural_horizon_pwm_2026/20260522_host_release")
+    release_dir = TRACKED_RELEASE_DIR
     audit = analyze_novelty(release_dir)
     assert audit["host_novelty_claim_supported"] is True
     assert audit["checks"]["deadtime_path_detector_triggered"] is True
@@ -924,7 +927,7 @@ def test_safe_neural_horizon_pwm_tracked_release_supports_host_novelty_claim() -
 
 
 def test_safe_neural_horizon_pwm_tracked_release_supports_algorithm_identity() -> None:
-    release_dir = Path("paper/safe_neural_horizon_pwm_2026/20260522_host_release")
+    release_dir = TRACKED_RELEASE_DIR
     audit = analyze_algorithm_identity(release_dir)
     assert audit["new_algorithm_identity_supported"] is True
     assert audit["checks"]["host_scope"] is True
@@ -939,7 +942,7 @@ def test_safe_neural_horizon_pwm_tracked_release_supports_algorithm_identity() -
 
 
 def test_safe_neural_horizon_pwm_tracked_release_has_baseline_strength_audit() -> None:
-    release_dir = Path("paper/safe_neural_horizon_pwm_2026/20260522_host_release")
+    release_dir = TRACKED_RELEASE_DIR
     audit = analyze_baselines(release_dir)
     assert audit["host_baseline_scaffold_ready"] is True
     assert audit["publication_strong_baselines_ready"] is True
@@ -960,7 +963,7 @@ def test_safe_neural_horizon_pwm_tracked_release_has_baseline_strength_audit() -
 
 
 def test_safe_neural_horizon_pwm_tracked_release_supports_host_theory_scaffold() -> None:
-    release_dir = Path("paper/safe_neural_horizon_pwm_2026/20260522_host_release")
+    release_dir = TRACKED_RELEASE_DIR
     audit = analyze_theory(release_dir)
     assert audit["host_theory_scaffold_ready"] is True
     assert audit["publication_theory_complete"] is True

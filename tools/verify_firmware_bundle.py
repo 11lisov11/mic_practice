@@ -76,7 +76,11 @@ def main() -> int:
     parser.add_argument(
         "--nucleo-directory",
         type=Path,
-        default=root / "mcsdk_reference" / "ACIM_IPM15B_SIEMENS_REFERENCE_NOT_AIR56" / "CubeIDE_V1.6.3" / "STM32CubeIDE" / "Debug",
+        default=root
+        / "mcsdk_reference"
+        / "AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
+        / "STM32CubeIDE"
+        / "Debug",
     )
     parser.add_argument("--uno-directory", type=Path, default=root / "firmware" / "unoq_mcsdk_scalar")
     args = parser.parse_args()

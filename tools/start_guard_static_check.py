@@ -184,8 +184,10 @@ START_TEXT_ONLY_FILES = {
     "tools/bluepill_uart_diagnose.py",
     "tools/current_bench_status.py",
     "tools/encoder_test.py",
+    "tools/patch_mcsdk_uno_start_interlock.py",
     "tools/start_guard_static_check.py",
     "tools/uart_loopback_preflight.py",
+    "tools/uno_nucleo_mcsdk_contract_check.py",
     "tools/ui_http_bridge.py",
 }
 

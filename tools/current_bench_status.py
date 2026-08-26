@@ -383,6 +383,24 @@ def failure_digest(bench: dict[str, Any] | None) -> list[str]:
     return lines
 
 
+def readiness_failure_digest(readiness: dict[str, Any] | None) -> list[str]:
+    if not isinstance(readiness, dict):
+        return ["Нет читаемого active-backend readiness summary."]
+    rows = readiness.get("failed_checks", [])
+    if not isinstance(rows, list):
+        return ["Active-backend readiness не содержит списка failed_checks."]
+    lines: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        name = str(row.get("name", "unknown"))
+        detail = str(row.get("detail", "")).strip()
+        message = detail or "проверка не пройдена"
+        suffix = "" if message.endswith((".", "!", "?")) else "."
+        lines.append(f"`{name}`: {message}{suffix}")
+    return lines
+
+
 def render_status(
     repo: Path,
     *,
@@ -393,21 +411,29 @@ def render_status(
     build_path: Path | None,
     build: dict[str, Any] | None,
 ) -> str:
-    ready = bool(bench.get("ready_for_active_pwm")) if isinstance(bench, dict) else False
-    next_actions = [a for a in (bench or {}).get("next_actions", []) if isinstance(a, dict)]
+    active_backend = str((readiness or {}).get("active_motor_backend", "bluepill"))
+    nucleo_active = active_backend == "nucleo_mcsdk_acim"
+    if nucleo_active:
+        ready = bool((readiness or {}).get("ready"))
+        next_actions = [a for a in (readiness or {}).get("next_actions", []) if isinstance(a, dict)]
+        digest = readiness_failure_digest(readiness)
+    else:
+        ready = bool(bench.get("ready_for_active_pwm")) if isinstance(bench, dict) else False
+        next_actions = [a for a in (bench or {}).get("next_actions", []) if isinstance(a, dict)]
+        digest = failure_digest(bench)
     build_summary = build.get("summary", {}) if isinstance(build, dict) and isinstance(build.get("summary"), dict) else {}
     build_ok = bool((build or {}).get("build_only_pass") or build_summary.get("build_only_pass"))
     build_fresh = "run_full_build_only_preflight" not in next_action_ids(next_actions)
     build_ready = build_ok and build_fresh
     readiness_ok = bool((readiness or {}).get("ready"))
     generated = datetime.now().isoformat(timespec="seconds")
-    digest = failure_digest(bench)
 
     lines = [
         "# Текущий статус стенда",
         "",
         f"- Сформировано: `{generated}`",
         f"- Проект: `{repo.resolve()}`",
+        f"- Активный motor backend: `{active_backend}`",
         f"- Active PWM разрешен: **{bool_ru(ready)}**",
         f"- Build-only preflight свежий и прошел: **{bool_ru(build_ready)}**",
         f"- Bringup/readiness готов: **{bool_ru(readiness_ok)}**",
@@ -462,23 +488,39 @@ def render_status(
         [
             "## Последние доказательства",
             "",
-            f"- Bench-gate summary: `{path_text(bench_path)}`",
-            f"- Bench-gate operator steps: `{path_text(Path(bench.get('operator_steps_ru')) if isinstance(bench, dict) and bench.get('operator_steps_ru') else None)}`",
+            (
+                f"- Nucleo MCSDK build preflight: `{(readiness or {}).get('latest_nucleo_mcsdk_preflight') or 'нет'}`"
+                if nucleo_active
+                else f"- Bench-gate summary: `{path_text(bench_path)}`"
+            ),
+            (
+                f"- Nucleo MCSDK runtime preflight: `{(readiness or {}).get('latest_nucleo_mcsdk_runtime_preflight') or 'нет'}`"
+                if nucleo_active
+                else f"- Bench-gate operator steps: `{path_text(Path(bench.get('operator_steps_ru')) if isinstance(bench, dict) and bench.get('operator_steps_ru') else None)}`"
+            ),
             f"- Build-only summary: `{path_text(build_path)}`",
             f"- Readiness summary: `{path_text(readiness_path)}`",
             "",
             "## Запреты до зеленого gate",
             "",
             "- Не запускать active PWM без `ready_for_active_pwm=true`.",
-            "- Не выполнять `bluepill_runtime_static_preflight.py --confirm-hv-off`, пока HV/J7 не отключена и DC-шина не разряжена.",
-            "- Не выполнять `bluepill_static_low_preflight.py --confirm-hv-off`, пока HV/J7 не отключена и DC-шина не разряжена.",
+            (
+                "- Не прошивать и не испытывать Nucleo/IPM с подключенной HV/J7 до статической проверки шести PWM-входов и аварийного останова."
+                if nucleo_active
+                else "- Не выполнять `bluepill_runtime_static_preflight.py --confirm-hv-off`, пока HV/J7 не отключена и DC-шина не разряжена."
+            ),
+            (
+                "- Не считать предупреждение `nucleo_mcsdk_hv_release_gate` разрешением на подачу высокого напряжения."
+                if nucleo_active
+                else "- Не выполнять `bluepill_static_low_preflight.py --confirm-hv-off`, пока HV/J7 не отключена и DC-шина не разряжена."
+            ),
             "- UART loopback делать только при отключенных TX/RX от STM32: коротить TX-RX нужно на стороне USB-UART/изолятора.",
             "- Не держать HMI/serial monitor открытым во время UART loopback на том же COM-порту.",
             "- Если JSON и этот файл расходятся, главным считается свежий `summary.json`; затем нужно заново запустить генератор статуса.",
             "",
         ]
     )
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 
 def repair_operator_text(text: str) -> str:
@@ -513,7 +555,9 @@ def build_current_status(repo: Path) -> tuple[str, dict[str, Any]]:
     bench = read_json(bench_path)
     readiness = read_json(readiness_path)
     build = read_json(build_path)
-    next_actions = [a for a in (bench or {}).get("next_actions", []) if isinstance(a, dict)]
+    nucleo_active = str((readiness or {}).get("active_motor_backend", "")) == "nucleo_mcsdk_acim"
+    action_source = readiness if nucleo_active else bench
+    next_actions = [a for a in (action_source or {}).get("next_actions", []) if isinstance(a, dict)]
     build_summary = build.get("summary", {}) if isinstance(build, dict) and isinstance(build.get("summary"), dict) else {}
     build_ok = bool((build or {}).get("build_only_pass") or build_summary.get("build_only_pass"))
     build_ready = build_ok and "run_full_build_only_preflight" not in next_action_ids(next_actions)
@@ -528,7 +572,12 @@ def build_current_status(repo: Path) -> tuple[str, dict[str, Any]]:
     )
     text = repair_operator_text(text)
     status = {
-        "ready_for_active_pwm": bool(bench.get("ready_for_active_pwm")) if isinstance(bench, dict) else False,
+        "ready_for_active_pwm": (
+            bool((readiness or {}).get("ready"))
+            if nucleo_active
+            else (bool(bench.get("ready_for_active_pwm")) if isinstance(bench, dict) else False)
+        ),
+        "active_motor_backend": str((readiness or {}).get("active_motor_backend", "unknown")),
         "build_only_fresh_and_passed": build_ready,
         "bench_summary": path_text(bench_path),
         "readiness_summary": path_text(readiness_path),

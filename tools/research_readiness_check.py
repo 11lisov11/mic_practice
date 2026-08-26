@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import time
@@ -22,7 +23,7 @@ EXPORT_DIR_NAMES = {
     "_research_exports",
 }
 
-CODE_SUFFIXES = {".c", ".cpp", ".h", ".hpp", ".ino", ".py", ".js", ".html", ".css", ".ini", ".toml"}
+CODE_SUFFIXES = {".c", ".cpp", ".h", ".hpp", ".ino", ".ioc", ".py", ".js", ".html", ".css", ".ini", ".toml"}
 
 FIRMWARE_HMI_PREFIXES = [
     "UNOQ_MOTOR",
@@ -111,6 +112,7 @@ MOTOR_IDENTIFICATION_FILES = [
     "requirements-identification.txt",
 ]
 MOTOR_IDENTIFICATION_RESULT_SCHEMA = "mic_ai.motor_identification.result.v1"
+NUCLEO_MCSDK_PROJECT = "AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
 
 
 def ts_tag() -> str:
@@ -378,6 +380,34 @@ def latest_bench_gate(repo: Path) -> tuple[Path | None, dict | None]:
     return path, read_json(path)
 
 
+def active_motor_backend(repo: Path) -> str:
+    uno = repo / "UNOQ_MOTOR" / "UNOQ_MOTOR.ino"
+    try:
+        text = uno.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return "unknown"
+    if "NUCLEO_MCSDK_ACIM_BACKEND = true" in text:
+        return "nucleo_mcsdk_acim"
+    return "bluepill"
+
+
+def latest_nucleo_mcsdk_preflight(repo: Path) -> tuple[Path | None, dict | None]:
+    path = (
+        repo
+        / "mcsdk_reference"
+        / NUCLEO_MCSDK_PROJECT
+        / "STM32CubeIDE"
+        / "Debug"
+        / "mcsdk_release_preflight.json"
+    )
+    return (path, read_json(path)) if path.is_file() else (None, None)
+
+
+def latest_nucleo_mcsdk_runtime_preflight(repo: Path) -> tuple[Path | None, dict | None]:
+    path = newest(list(repo.glob("tools/_preflight_exports/nucleo_mcsdk_runtime_preflight_*/summary.json")))
+    return path, read_json(path)
+
+
 def find_named_check(summary: dict | None, name: str) -> dict | None:
     if not isinstance(summary, dict):
         return None
@@ -566,6 +596,157 @@ def check_bench_gate_artifact(result: dict, repo: Path) -> None:
             detail=str(uart.get("detail", "")),
             evidence=uart.get("evidence"),
         )
+
+
+def check_nucleo_mcsdk_artifact(result: dict, repo: Path, args) -> None:
+    checks = result["checks"]
+    path, data = latest_nucleo_mcsdk_preflight(repo)
+    result["latest_nucleo_mcsdk_preflight"] = str(path) if path else None
+    if not data:
+        add_check(checks, "nucleo_mcsdk_preflight_present", False, detail="MCSDK build preflight is missing")
+        return
+
+    add_check(checks, "nucleo_mcsdk_preflight_present", True, evidence=str(path))
+    project_rel = f"mcsdk_reference/{NUCLEO_MCSDK_PROJECT}"
+    nucleo_source_scope = latest_scoped_source_mtime(
+        repo,
+        [f"{project_rel}/Src", f"{project_rel}/Inc"],
+        [f"{project_rel}/ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc"],
+    )
+    check_artifact_fresh(
+        checks,
+        path,
+        source_scope=nucleo_source_scope,
+        name="nucleo_mcsdk_preflight_fresh",
+    )
+    report_checks = data.get("checks", {}) if isinstance(data.get("checks"), dict) else {}
+    for source_name, readiness_name in (
+        ("target_is_nucleo_g431rb", "nucleo_mcsdk_target_g431rb"),
+        ("release_artifacts", "nucleo_mcsdk_release_artifacts"),
+        ("release_artifacts_are_one_build", "nucleo_mcsdk_artifacts_are_one_build"),
+        ("artifacts_inside_project", "nucleo_mcsdk_artifacts_inside_project"),
+        ("motor_profile_present", "nucleo_mcsdk_motor_profile_present"),
+    ):
+        item = report_checks.get(source_name, {}) if isinstance(report_checks.get(source_name), dict) else {}
+        add_check(
+            checks,
+            readiness_name,
+            item.get("pass") is True,
+            detail=f"source_check={source_name}",
+            evidence=item.get("evidence"),
+        )
+
+    artifact_evidence = report_checks.get("release_artifacts", {}).get("evidence", {})
+    artifact_rows: list[dict] = []
+    if isinstance(artifact_evidence, dict):
+        for rows in artifact_evidence.values():
+            if isinstance(rows, list):
+                artifact_rows.extend(row for row in rows if isinstance(row, dict))
+    hashes_ok = len(artifact_rows) >= 3
+    verified_nucleo_rows: list[dict] = []
+    for row in artifact_rows:
+        artifact = Path(str(row.get("path", "")))
+        expected_hash = str(row.get("sha256", "")).upper()
+        expected_bytes = int(row.get("bytes", 0) or 0)
+        if not artifact.is_file():
+            hashes_ok = False
+            verified_nucleo_rows.append({"path": str(artifact), "present": False})
+            continue
+        digest = hashlib.sha256(artifact.read_bytes()).hexdigest().upper()
+        actual_bytes = artifact.stat().st_size
+        row_ok = digest == expected_hash and actual_bytes == expected_bytes and expected_bytes > 0
+        hashes_ok = hashes_ok and row_ok
+        verified_nucleo_rows.append(
+            {
+                "path": str(artifact),
+                "bytes": actual_bytes,
+                "sha256": digest,
+                "pass": row_ok,
+            }
+        )
+    add_check(
+        checks,
+        "nucleo_mcsdk_artifact_hashes",
+        hashes_ok,
+        detail=f"hashed_artifacts={len(verified_nucleo_rows)}",
+        evidence=verified_nucleo_rows,
+    )
+
+    uno_manifest_path = repo / "firmware" / "unoq_mcsdk_scalar" / "unoq_mcsdk_scalar.build-manifest.json"
+    uno_manifest = read_json(uno_manifest_path)
+    add_check(
+        checks,
+        "unoq_mcsdk_manifest_present",
+        isinstance(uno_manifest, dict),
+        evidence=str(uno_manifest_path),
+    )
+    if isinstance(uno_manifest, dict):
+        uno_source_scope = latest_scoped_source_mtime(repo, ["UNOQ_MOTOR"], [])
+        check_artifact_fresh(
+            checks,
+            uno_manifest_path,
+            source_scope=uno_source_scope,
+            name="unoq_mcsdk_manifest_fresh",
+        )
+        uno_rows = uno_manifest.get("artifacts", [])
+        uno_hashes_ok = isinstance(uno_rows, list) and len(uno_rows) >= 4
+        verified_rows: list[dict] = []
+        if uno_hashes_ok:
+            for row in uno_rows:
+                if not isinstance(row, dict):
+                    uno_hashes_ok = False
+                    break
+                artifact = uno_manifest_path.parent / str(row.get("file", ""))
+                expected_hash = str(row.get("sha256", "")).upper()
+                expected_bytes = int(row.get("bytes", 0) or 0)
+                if not artifact.is_file():
+                    uno_hashes_ok = False
+                    verified_rows.append({"path": str(artifact), "present": False})
+                    continue
+                digest = hashlib.sha256(artifact.read_bytes()).hexdigest().upper()
+                actual_bytes = artifact.stat().st_size
+                row_ok = digest == expected_hash and actual_bytes == expected_bytes and expected_bytes > 0
+                uno_hashes_ok = uno_hashes_ok and row_ok
+                verified_rows.append(
+                    {
+                        "path": str(artifact),
+                        "bytes": actual_bytes,
+                        "sha256": digest,
+                        "pass": row_ok,
+                    }
+                )
+        add_check(
+            checks,
+            "unoq_mcsdk_artifact_hashes",
+            uno_hashes_ok,
+            detail=f"hashed_artifacts={len(verified_rows)}",
+            evidence=verified_rows,
+        )
+
+    hv_gate_ok = data.get("pass") is True
+    hv_gate_severity = "fail" if args.profile == "science" or args.allow_hv else "warn"
+    add_check(
+        checks,
+        "nucleo_mcsdk_hv_release_gate",
+        hv_gate_ok,
+        severity=hv_gate_severity,
+        detail=f"failed_checks={data.get('failed_checks', [])}",
+        evidence=str(path),
+    )
+
+    runtime_path, runtime_data = latest_nucleo_mcsdk_runtime_preflight(repo)
+    result["latest_nucleo_mcsdk_runtime_preflight"] = str(runtime_path) if runtime_path else None
+    add_check(
+        checks,
+        "nucleo_mcsdk_runtime_validation",
+        isinstance(runtime_data, dict) and runtime_data.get("pass") is True,
+        detail=(
+            "Аппаратное подтверждение ожидает платы: прошить обе платы при отключённой HV/J7, затем проверить UART и статические уровни PWM."
+            if not runtime_data
+            else f"pass={runtime_data.get('pass')}"
+        ),
+        evidence=str(runtime_path) if runtime_path else None,
+    )
 
 
 def check_full_preflight_artifact(
@@ -894,6 +1075,47 @@ def build_next_actions(failed: list[dict], warnings: list[dict], args) -> list[d
     actions: list[dict] = []
     seen: set[str] = set()
     url = args.url
+
+    nucleo_build_failures = {
+        "nucleo_mcsdk_preflight_present",
+        "nucleo_mcsdk_preflight_fresh",
+        "nucleo_mcsdk_target_g431rb",
+        "nucleo_mcsdk_release_artifacts",
+        "nucleo_mcsdk_artifacts_are_one_build",
+        "nucleo_mcsdk_artifacts_inside_project",
+        "nucleo_mcsdk_artifact_hashes",
+        "unoq_mcsdk_manifest_present",
+        "unoq_mcsdk_manifest_fresh",
+        "unoq_mcsdk_artifact_hashes",
+    }
+    if names & nucleo_build_failures:
+        add_action(
+            actions,
+            seen,
+            "rebuild_nucleo_mcsdk_bundle",
+            "Пересобрать комплект прошивок Nucleo MCSDK и UNO Q.",
+            "Исходники новее артефактов либо манифест/хеши не совпадают. Сборка обновит ELF/BIN/HEX, UNO Q payload, SHA-256 и release-preflight без прошивки плат.",
+            "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\build_firmware_bundle.ps1",
+        )
+
+    if "nucleo_mcsdk_runtime_validation" in names:
+        add_action(
+            actions,
+            seen,
+            "validate_nucleo_mcsdk_hardware",
+            "Проверить Nucleo MCSDK на стенде после получения плат.",
+            "Оставить HV/J7 отключённой, разрядить DC-шину, прошить проверенные артефакты UNO Q и Nucleo, проверить sequence/CRC/тайм-аут 300 мс через USART1 PB6/PB7 и подтвердить Saleae безопасные статические уровни всех шести PWM-входов IPM.",
+        )
+
+    if "nucleo_mcsdk_hv_release_gate" in names:
+        add_action(
+            actions,
+            seen,
+            "close_nucleo_mcsdk_hv_release_gate",
+            "Закрыть блокеры высоковольтного gate Nucleo.",
+            "Реализовать и испытать реальный interlock предзаряда, зафиксировать происхождение и идентификацию конкретного АИР56, затем перегенерировать MCSDK из принятого профиля.",
+            "py -3 -u .\\tools\\mcsdk_release_preflight.py --help",
+        )
 
     bench_gate_fail = next((c for c in failed if c.get("name") == "bench_gate_ready_for_active_pwm"), None)
     if bench_gate_fail:
@@ -1242,10 +1464,23 @@ def main() -> int:
         "checks": [],
     }
 
+    backend = active_motor_backend(repo)
+    result["active_motor_backend"] = backend
+
     check_live_status(result, args)
     check_theory_snapshot(result, repo, args)
-    check_bench_gate_artifact(result, repo)
-    check_full_preflight_artifact(result, repo, args, source_scopes["full_preflight"])
+    if backend == "nucleo_mcsdk_acim":
+        add_check(
+            result["checks"],
+            "legacy_bluepill_bench_gate_skipped",
+            True,
+            severity="warn",
+            detail="inactive Blue Pill runtime evidence is not used for the active Nucleo MCSDK backend",
+        )
+        check_nucleo_mcsdk_artifact(result, repo, args)
+    else:
+        check_bench_gate_artifact(result, repo)
+        check_full_preflight_artifact(result, repo, args, source_scopes["full_preflight"])
     check_research_matrix_artifact(result, repo, args, source_scopes["research_matrix"])
     check_calibration_artifact(result, repo, args, source_scopes["calibration"])
     check_motor_identification_artifact(

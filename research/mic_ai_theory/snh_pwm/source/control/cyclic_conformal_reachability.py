@@ -22,11 +22,30 @@ class ResidualSample:
     sector: int
     values: tuple[float, float, float, float, float]
 
+    def __post_init__(self) -> None:
+        if type(self.sector) is not int or not 0 <= self.sector < 6:
+            raise ValueError("residual sample sector must be an integer in 0..5")
+        if len(self.values) != len(DIMENSIONS):
+            raise ValueError(f"residual sample must contain {len(DIMENSIONS)} dimensions")
+        normalized = tuple(float(value) for value in self.values)
+        if not all(math.isfinite(value) for value in normalized):
+            raise ValueError("residual sample values must be finite")
+        object.__setattr__(self, "values", normalized)
+
 
 @dataclass(frozen=True)
 class ResidualTrajectory:
     trajectory_id: int
     samples: tuple[ResidualSample, ...]
+
+    def __post_init__(self) -> None:
+        if type(self.trajectory_id) is not int:
+            raise ValueError("trajectory_id must be an integer")
+        if not self.samples:
+            raise ValueError("residual trajectory must contain at least one sample")
+        if not all(isinstance(sample, ResidualSample) for sample in self.samples):
+            raise ValueError("trajectory samples must be ResidualSample instances")
+        object.__setattr__(self, "samples", tuple(self.samples))
 
 
 @dataclass(frozen=True)
@@ -90,6 +109,8 @@ def split_conformal_quantile(scores: Sequence[float], alpha: float) -> tuple[flo
     if not 0.0 < alpha < 1.0:
         raise ValueError("alpha must be in (0, 1)")
     ordered = sorted(float(score) for score in scores)
+    if not all(math.isfinite(score) for score in ordered):
+        raise ValueError("calibration scores must be finite")
     rank = int(math.ceil((len(ordered) + 1) * (1.0 - alpha)))
     if rank > len(ordered):
         return float("inf"), rank
@@ -119,6 +140,12 @@ def fit_conformal_tube(
 ) -> ConformalTube:
     if not training or not calibration:
         raise ValueError("training and calibration trajectories must be non-empty")
+    if method not in ("raw_global", "sectorwise", "c6_canonical"):
+        raise ValueError(f"unsupported conformal method: {method!r}")
+    if not math.isfinite(float(shape_quantile)) or not 0.0 < float(shape_quantile) <= 1.0:
+        raise ValueError("shape_quantile must be finite and in (0, 1]")
+    if not math.isfinite(float(scale_floor)) or float(scale_floor) <= 0.0:
+        raise ValueError("scale_floor must be finite and positive")
     expected_keys = tuple(range(6)) if method == "sectorwise" else (0,)
     values_by_key: dict[int, list[tuple[float, float, float, float, float]]] = {
         key: [] for key in expected_keys
@@ -162,7 +189,7 @@ def fit_conformal_tube(
     )
 
 
-def _wilson_interval(successes: int, total: int, z: float = 1.959963984540054) -> tuple[float, float]:
+def wilson_interval(successes: int, total: int, z: float = 1.959963984540054) -> tuple[float, float]:
     if total <= 0:
         return float("nan"), float("nan")
     p = float(successes) / total
@@ -194,12 +221,50 @@ def binomial_lower_tail(successes: int, total: int, probability: float) -> float
     return max(0.0, min(1.0, cumulative))
 
 
+def binomial_upper_tail(successes: int, total: int, probability: float) -> float:
+    """Return P[X >= successes] for X ~ Binomial(total, probability)."""
+
+    if total <= 0:
+        return float("nan")
+    successes = max(0, min(int(successes), int(total)))
+    if successes <= 0:
+        return 1.0
+    return binomial_lower_tail(total - successes, total, 1.0 - float(probability))
+
+
+def binomial_lower_confidence_bound(
+    successes: int,
+    total: int,
+    *,
+    error_probability: float = 0.01,
+) -> float:
+    """One-sided exact Clopper-Pearson lower confidence bound."""
+
+    if total <= 0:
+        return float("nan")
+    successes = max(0, min(int(successes), int(total)))
+    error_probability = float(error_probability)
+    if not math.isfinite(error_probability) or not 0.0 < error_probability < 1.0:
+        raise ValueError("error_probability must be finite and in (0, 1)")
+    if successes == 0:
+        return 0.0
+    lo = 0.0
+    hi = successes / total
+    for _ in range(80):
+        mid = 0.5 * (lo + hi)
+        if binomial_upper_tail(successes, total, mid) < error_probability:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
 def evaluate_tube(tube: ConformalTube, trajectories: Iterable[ResidualTrajectory]) -> dict[str, float | int | bool]:
     rows = list(trajectories)
     covered = sum(1 for trajectory in rows if tube.covers(trajectory))
     total = len(rows)
     coverage = float(covered) / total if total else float("nan")
-    low, high = _wilson_interval(covered, total)
+    low, high = wilson_interval(covered, total)
     target = 1.0 - tube.alpha
     undercoverage_p = binomial_lower_tail(covered, total, target)
     return {
@@ -223,8 +288,11 @@ __all__ = [
     "Method",
     "ResidualSample",
     "ResidualTrajectory",
+    "binomial_lower_confidence_bound",
     "binomial_lower_tail",
+    "binomial_upper_tail",
     "evaluate_tube",
     "fit_conformal_tube",
     "split_conformal_quantile",
+    "wilson_interval",
 ]

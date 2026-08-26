@@ -23,9 +23,9 @@
     "A deterministic cross-entropy falsifier searches motor, DC-link, scenario and seed space for safety or performance counterexamples.",
     "The C6-RV-PWM exploratory matrix covers 31 scenarios, five paired trials and 0.2 s, while explicitly withholding novelty, publication and hardware claims.",
     "C6-BCR canonicalizes five-dimensional model residuals by stator-flux sector and calibrates one split-conformal score over complete 40-switching-step trajectory blocks.",
-    "Two blind 24-split C6-BCR studies preserve 95% marginal block coverage within statistical resolution; their 48-split aggregate reduces median 5D hypervolume by 26.1% versus a raw global conformal box.",
+    "Two archived 24-split C6-BCR studies provide descriptive bulk held-out coverage and a 26.1% median 5D hypervolume reduction versus a raw global conformal box; their former pooled-binomial coverage p-values are not treated as confirmatory because test blocks share calibration fits.",
     "The rejected action-vector frame, conditional split failures and 1.75x OOD coverage collapse are retained as negative evidence.",
-    "An independent audit recomputes conformal rank, pooled coverage, paired sharpness, seed separation and claim boundaries from raw laboratory output."
+    "The revised coverage audit replays trajectories from hashed protocols, uses one held-out trajectory per independent calibration fit, and requires an exact one-sided 99% lower coverage bound above the preregistered 92% non-inferiority threshold; bulk held-out coverage remains descriptive."
   ],
   "activation_policy": "Research-only. No SNH-PWM source in this snapshot is imported by live inverter firmware.",
   "hardware_claim": false

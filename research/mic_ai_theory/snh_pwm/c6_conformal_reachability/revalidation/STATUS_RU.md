@@ -1,0 +1,32 @@
+# Статус C6-BCR revalidation
+
+Дата пересмотра coverage-аудита: 26 августа 2026 г.
+
+Файлы `c6_conformal_lab_seed_20260809..20260811*` и агрегированный аудит сохранены
+как исторические артефакты. Их bulk coverage, OOD coverage и сравнение гиперобъёмов
+остаются воспроизводимой описательной информацией.
+
+Прежние `pooled_undercoverage_p_value` больше не являются подтверждающей
+статистикой. В каждом split сотни test-траекторий проверялись одним случайным
+calibration tube и поэтому не образуют независимую биномиальную выборку.
+
+Актуальный генератор использует отдельный inferential-контур:
+
+- фиксируется независимая training-выборка, определяющая форму score;
+- для каждой coverage-пробы заново формируется calibration-выборка;
+- из того же распределения формируется ровно одна независимая test-траектория;
+- exact one-sided Clopper-Pearson 99% lower bound применяется только к таким пробам;
+- положительный coverage-gate требует lower bound не ниже `0,92` при цели `0,95`
+  и заранее заданном non-inferiority margin `0,03`;
+- bulk test-траектории используются только описательно.
+
+До двух новых серий минимум по 400 независимых проб старый confirmatory coverage
+pass считается отозванным. Теоретическая split-conformal гарантия для обменных
+блоков и архивное свидетельство sharpness этим пересмотром не отменяются.
+
+```powershell
+py -3 -u tools\run_cyclic_conformal_reachability_lab.py `
+  --repetitions 24 --train 220 --calibration 400 --test 800 --ood 200 `
+  --steps 40 --burn-in 20 --coverage-probes 400 --seed 20260826 `
+  --out c6_conformal_lab_seed_20260826.json
+```

@@ -24,9 +24,15 @@ calibration tube и поэтому не образуют независимую 
 pass считается отозванным. Теоретическая split-conformal гарантия для обменных
 блоков и архивное свидетельство sharpness этим пересмотром не отменяются.
 
+Параметры и два root seed до запуска зафиксированы в
+`PROTOCOL_LOCK_20260826_RU.md`: `20260826` и `20260827`. Фиксация является
+внутренней записью в Git и не называется внешней пререгистрацией.
+
 ```powershell
 py -3 -u tools\run_cyclic_conformal_reachability_lab.py `
   --repetitions 24 --train 220 --calibration 400 --test 800 --ood 200 `
   --steps 40 --burn-in 20 --coverage-probes 400 --seed 20260826 `
   --out c6_conformal_lab_seed_20260826.json
 ```
+
+Вторая серия запускается с той же конфигурацией и `--seed 20260827`.

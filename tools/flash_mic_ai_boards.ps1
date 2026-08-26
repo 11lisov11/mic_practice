@@ -2,7 +2,7 @@
 param(
     [ValidateSet("All", "Nucleo", "UnoQ", "Linux")]
     [string]$Target = "All",
-    [string]$PackageDirectory = (Join-Path $PSScriptRoot "..\firmware\ready_to_flash"),
+    [string]$PackageDirectory,
     [string]$UnoPort,
     [string]$StLinkSerial,
     [string]$AdbDevice,
@@ -13,9 +13,16 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$scriptRoot = $PSScriptRoot
+if ([string]::IsNullOrWhiteSpace($scriptRoot)) {
+    $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+}
+if ([string]::IsNullOrWhiteSpace($PackageDirectory)) {
+    $PackageDirectory = Join-Path $scriptRoot "..\firmware\ready_to_flash"
+}
 $package = [System.IO.Path]::GetFullPath($PackageDirectory)
 $python = (Get-Command py -ErrorAction Stop).Source
-& $python -3 (Join-Path $PSScriptRoot "verify_board_flash_package.py") $package
+& $python -3 (Join-Path $scriptRoot "verify_board_flash_package.py") $package
 if ($LASTEXITCODE -ne 0) { throw "Package verification failed; nothing was flashed." }
 
 $targets = if ($Target -eq "All") { @("Nucleo", "UnoQ", "Linux") } else { @($Target) }

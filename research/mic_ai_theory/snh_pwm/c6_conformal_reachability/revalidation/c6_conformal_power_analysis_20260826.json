@@ -1,0 +1,45 @@
+{
+  "schema": "c6_binomial_noninferiority_power/v1",
+  "assumed_true_coverage": 0.95,
+  "lower_bound_threshold": 0.92,
+  "one_sided_error_probability": 0.01,
+  "fixed_designs": [
+    {
+      "probe_count": 400,
+      "critical_successes": 381,
+      "critical_empirical_coverage": 0.9525,
+      "acceptance_power_at_assumed_coverage": 0.46796994929122976
+    },
+    {
+      "probe_count": 800,
+      "critical_successes": 754,
+      "critical_empirical_coverage": 0.9425,
+      "acceptance_power_at_assumed_coverage": 0.8537831855435937
+    }
+  ],
+  "minimum_designs": [
+    {
+      "desired_power": 0.8,
+      "minimum_probe_count": 694,
+      "critical_successes": 655,
+      "critical_empirical_coverage": 0.9438040345821326,
+      "achieved_power": 0.8007541879308853
+    },
+    {
+      "desired_power": 0.9,
+      "minimum_probe_count": 897,
+      "critical_successes": 844,
+      "critical_empirical_coverage": 0.9409141583054627,
+      "achieved_power": 0.9049128297071026
+    },
+    {
+      "desired_power": 0.95,
+      "minimum_probe_count": 1069,
+      "critical_successes": 1004,
+      "critical_empirical_coverage": 0.9391955098222639,
+      "achieved_power": 0.9511617826582738
+    }
+  ],
+  "joint_power_for_two_independent_400_probe_series": 0.21899587343963614,
+  "interpretation_boundary": "exact binomial design calculation for independent coverage indicators; it does not repair a failed locked protocol and does not establish model adequacy, recursive coverage, or hardware validity"
+}

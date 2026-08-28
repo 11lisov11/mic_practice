@@ -45,13 +45,16 @@ MODE_NAMES = {
 }
 STATE_CODES = {v: k for k, v in STATE_NAMES.items()}
 MODE_CODES = {v: k for k, v in MODE_NAMES.items()}
-BP_MODE_DIAG = 1
-BP_MODE_DUTY = 2
+MC_MODE_DIAG = 1
+MC_MODE_DUTY = 2
+MC_CAP_VF = 0x01
+MC_CAP_FOC = 0x02
+MC_CAP_MIC = 0x04
 DEFAULT_REMOTEOCD = "/home/arduino/.arduino15/packages/arduino/tools/remoteocd/0.0.4-rc.4/remoteocd"
 DEFAULT_REMOTEOCD_CFG = os.path.join(os.path.dirname(__file__), "flash_unoq_sketch_090.cfg")
 DEFAULT_CMD_GUARD_MAX_VDC = 60.0
 CMD_GUARD_MAX_AGE_MS = 1000.0
-# Independent raw-ADC gate mirrored from Blue Pill config.h. The raw check does
+# Independent raw-ADC gate mirrored from the motor-controller firmware. The raw check does
 # not trust the scaled Vbus field, but its calibration points must stay in sync
 # with the firmware and are enforced by firmware_config_safety_check.py.
 VBUS_RAW_MIN_VALID = 1
@@ -74,9 +77,10 @@ DEFAULT_LV_ARM_MIN_VDC = 0.0
 DEFAULT_LV_ARM_MAX_VDC = 10.0
 DEFAULT_LV_ARM_CONFIRM = "ARM LV HV OFF"
 DEFAULT_LV_START_RUNLIMIT_SEC = 3.0
+DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC = 3.0
 DEFAULT_RELAY_CONFIRM_TIMEOUT_SEC = 1.5
 DEFAULT_RELAY_SETTLE_SEC = 0.35
-DEFAULT_RUN_CONFIRM_TIMEOUT_SEC = 1.0
+DEFAULT_RUN_CONFIRM_TIMEOUT_SEC = 6.0
 ARM_PROFILE_HV = "hv"
 ARM_PROFILE_LV = "lv"
 HV_RUNTIME_BAD_BURST_LIMIT = 3
@@ -93,19 +97,19 @@ except Exception:  # pragma: no cover - fail closed if tooling import is broken
 
 def effective_mode(
     mode_code: int,
-    bp_mode: int,
+    mc_mode: int,
     diag_mode: Optional[int] = None,
     duty_mode: Optional[int] = None,
 ) -> tuple[int, str]:
     if diag_mode is not None:
         if int(diag_mode) != 0:
             return 3, MODE_NAMES[3]
-    elif bp_mode == BP_MODE_DIAG:
+    elif mc_mode == MC_MODE_DIAG:
         return 3, MODE_NAMES[3]
     if duty_mode is not None:
         if int(duty_mode) != 0:
             return 4, MODE_NAMES[4]
-    elif bp_mode == BP_MODE_DUTY:
+    elif mc_mode == MC_MODE_DUTY:
         return 4, MODE_NAMES[4]
     return mode_code, MODE_NAMES.get(mode_code, str(mode_code))
 
@@ -224,6 +228,8 @@ def _tail_text(text: str, max_chars: int = 4000) -> str:
 
 
 def _as_float(data: dict, key: str, default: float = 0.0) -> float:
+    if key.startswith("bp_") and f"mc_{key[3:]}" in data:
+        key = f"mc_{key[3:]}"
     try:
         return float(data.get(key, default))
     except (TypeError, ValueError):
@@ -231,10 +237,34 @@ def _as_float(data: dict, key: str, default: float = 0.0) -> float:
 
 
 def _as_int(data: dict, key: str, default: int = 0) -> int:
+    if key.startswith("bp_") and f"mc_{key[3:]}" in data:
+        key = f"mc_{key[3:]}"
     try:
         return int(float(data.get(key, default)))
     except (TypeError, ValueError):
         return default
+
+
+def with_motor_controller_aliases(data: dict) -> dict:
+    """Publish mc_* as the canonical API while retaining bp_* compatibility."""
+    for key, value in list(data.items()):
+        if key.startswith("mc_") and key not in ("mc_capabilities", "mc_supported_modes"):
+            data[f"bp_{key[3:]}"] = value
+    for key, value in list(data.items()):
+        if key.startswith("bp_"):
+            data.setdefault(f"mc_{key[3:]}", value)
+    return data
+
+
+def supported_modes_from_caps(capabilities: int) -> list[str]:
+    modes: list[str] = []
+    if capabilities & MC_CAP_VF:
+        modes.append("VF")
+    if capabilities & MC_CAP_FOC:
+        modes.append("FOC")
+    if capabilities & MC_CAP_MIC:
+        modes.append("MIC")
+    return modes
 
 
 def _truthy_env(name: str) -> bool:
@@ -282,7 +312,7 @@ def command_requests_service_output(cmd: str) -> bool:
     head = parts[0].upper()
     if head == "IOTEST":
         return _on_off_arg(parts) is True
-    if head == "BPFOC":
+    if head in ("MCFOC", "BPFOC"):
         return _on_off_arg(parts) is True
     if head in ("PFC", "PRECHARGE"):
         return _on_off_arg(parts) is True
@@ -313,7 +343,7 @@ def command_releases_service_output(cmd: str) -> bool:
     if not parts:
         return False
     head = parts[0].upper()
-    if head in ("IOTEST", "BPFOC", "PFC", "PRECHARGE"):
+    if head in ("IOTEST", "MCFOC", "BPFOC", "PFC", "PRECHARGE"):
         return _on_off_arg(parts) is False
     if head == "FAN":
         if len(parts) == 2:
@@ -420,8 +450,12 @@ def attested_bench_gate_runner(log_fn: Callable[[str], None], url: Optional[str]
     return ok
 
 
-def _status_bp_bad(data: dict) -> int:
-    values = [_as_int(data, key, 999999) for key in ("bp_bad_cnt", "bp_bad") if key in data]
+def _status_mc_bad(data: dict) -> int:
+    values = [
+        _as_int(data, key, 999999)
+        for key in ("mc_bad_cnt", "mc_bad", "bp_bad_cnt", "bp_bad")
+        if key in data
+    ]
     if not values:
         return 999999
     return max(values)
@@ -429,7 +463,7 @@ def _status_bp_bad(data: dict) -> int:
 
 def _status_vdc(data: dict) -> float:
     values: list[float] = []
-    for key in ("vdc", "bp_vdc"):
+    for key in ("vdc", "mc_vdc", "bp_vdc"):
         if key not in data:
             continue
         value = _as_float(data, key, float("nan"))
@@ -446,7 +480,7 @@ def _vbus_raw_for_voltage(vdc: float) -> float:
 def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[bool, str]:
     if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
         return False, "raw DC bus telemetry is stale"
-    if "bp_vbus_raw" not in data:
+    if "bp_vbus_raw" not in data and "mc_vbus_raw" not in data:
         return False, "raw DC bus telemetry is missing"
     raw = _as_int(data, "bp_vbus_raw", -1)
     if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
@@ -489,14 +523,14 @@ def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    if _status_bp_bad(data) != 0:
-        return False, "Blue Pill bad counter is non-zero"
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    if _status_mc_bad(data) != 0:
+        return False, "motor-controller bad-frame counter is non-zero"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
     if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
         return False, "DC bus telemetry is stale"
-    if "bp_vbus_raw" not in data:
+    if "bp_vbus_raw" not in data and "mc_vbus_raw" not in data:
         return False, "raw DC bus telemetry is missing"
     raw = _as_int(data, "bp_vbus_raw", -1)
     if raw < 0 or raw > 4095:
@@ -529,7 +563,7 @@ def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dic
     raw_values = [float(_as_int(sample, "bp_vbus_raw", -1)) for sample in samples]
     vdc_values = [float(_status_vdc(sample)) for sample in samples]
     temp_values = [float(_as_float(sample, "bp_temp_c", float("nan"))) for sample in samples]
-    return {
+    return with_motor_controller_aliases({
         "timestamp": _now_ts(),
         "meter_vdc": meter_vdc,
         "outputs_commanded": False,
@@ -538,14 +572,14 @@ def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dic
         "bp_vbus_raw": stats(raw_values),
         "bp_vdc": stats(vdc_values),
         "bp_temp_c": stats(temp_values),
-    }
+    })
 
 
 def _status_link_live(data: dict) -> bool:
     if data.get("link") is False:
         return False
     ages: list[float] = []
-    for key in ("bp_rsp_age_ms", "bp_age_ms"):
+    for key in ("mc_rsp_age_ms", "mc_age_ms", "bp_rsp_age_ms", "bp_age_ms"):
         if key in data:
             ages.append(_as_float(data, key, 999999.0))
     if data.get("last_rx_age_s") is not None:
@@ -567,12 +601,12 @@ def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig)
     if _as_int(data, "estop", 1) != 0:
         return False, f"ESTOP is active: estop={_as_int(data, 'estop', 1)}"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    bad = _status_bp_bad(data)
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
     if bad != 0:
-        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
     vdc = _status_vdc(data)
     if not math.isfinite(vdc):
         return False, "DC bus telemetry is not readable"
@@ -629,12 +663,12 @@ def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    bad = _status_bp_bad(data)
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
     if bad != 0:
-        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
 
     vdc = _status_vdc(data)
     if not math.isfinite(vdc):
@@ -676,12 +710,12 @@ def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple
     if _as_int(data, "brake", 1) != 0 or _as_float(data, "brake_duty", 1.0) > 0.0001:
         return False, "brake output is active"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    bad = _status_bp_bad(data)
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
     if bad != 0:
-        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
 
     if cfg.profile == ARM_PROFILE_LV:
         # LV selection itself is fail-closed. Arming repeats the complete check.
@@ -704,12 +738,12 @@ def hv_runtime_check(
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    bad = _status_bp_bad(data)
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
     if bad != 0 and not allow_nonzero_bad:
-        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
 
     vdc = _status_vdc(data)
     if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
@@ -740,12 +774,12 @@ def output_sequence_health_check(
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
     if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"Blue Pill fault is active: bp_fault={_as_int(data, 'bp_fault', 255)}"
-    bad = _status_bp_bad(data)
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
     if bad != 0:
-        return False, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
     if not _status_link_live(data):
-        return False, "Blue Pill link is stale or down"
+        return False, "motor-controller link is stale or down"
     vdc = _status_vdc(data)
     if not math.isfinite(vdc):
         return False, "DC bus telemetry is not readable"
@@ -779,7 +813,7 @@ class HvRuntimeBadFrameMonitor:
         timestamp = _now_ts() if now is None else float(now)
         delta = 0
         current: dict[str, int] = {}
-        for key in ("bp_bad_cnt", "bp_bad"):
+        for key in ("mc_bad_cnt", "mc_bad", "bp_bad_cnt", "bp_bad"):
             if key not in data:
                 continue
             value = max(0, _as_int(data, key, 999999))
@@ -796,9 +830,9 @@ class HvRuntimeBadFrameMonitor:
             self._events.popleft()
         burst = sum(count for _, count in self._events)
         if burst >= self.burst_limit:
-            return False, f"Blue Pill UART error burst: {burst} errors/{self.window_sec:.1f}s"
+            return False, f"motor-controller UART error burst: {burst} errors/{self.window_sec:.1f}s"
         if delta > 0:
-            return True, f"isolated Blue Pill UART errors: delta={delta}, window={burst}"
+            return True, f"isolated motor-controller UART errors: delta={delta}, window={burst}"
         return True, "ok"
 
 
@@ -879,6 +913,27 @@ class HvArmState:
                 "hmi_arm_profile": self.cfg.profile if self.cfg.enabled else "none",
                 "hmi_arm_confirm": self.cfg.confirm if self.cfg.enabled else "",
             }
+
+
+class ControlAccessConfig:
+    def __init__(self, token_file: Optional[str] = None) -> None:
+        self.token_file = token_file
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.token_file)
+
+    def read_token(self) -> Optional[str]:
+        if not self.token_file:
+            return None
+        try:
+            with open(os.path.expanduser(self.token_file), "r", encoding="utf-8") as f:
+                token = f.read().strip()
+        except OSError:
+            return None
+        if len(token) < 16:
+            return None
+        return token
 
 
 class FirmwareUpdateConfig:
@@ -1225,10 +1280,10 @@ class RpcBridge:
                 return False, None, "bad result"
             state_code = int(result[0])
             mode_code = int(result[1])
-            bp_mode = int(result[29]) if len(result) >= 31 else 0
+            mc_mode = int(result[29]) if len(result) >= 31 else 0
             diag_mode = int(result[45]) if len(result) >= 47 else None
             duty_mode = int(result[46]) if len(result) >= 47 else None
-            mode_code_eff, mode_name_eff = effective_mode(mode_code, bp_mode, diag_mode, duty_mode)
+            mode_code_eff, mode_name_eff = effective_mode(mode_code, mc_mode, diag_mode, duty_mode)
             data = {
                 "state_code": state_code,
                 "state": STATE_NAMES.get(state_code, str(state_code)),
@@ -1300,7 +1355,7 @@ class RpcBridge:
                 data["bp_status"] = int(result[27])
                 data["bp_pwm_active"] = 1 if (data["bp_status"] & 0x20) else 0
                 data["bp_fault"] = int(result[28])
-                data["bp_mode"] = bp_mode
+                data["bp_mode"] = mc_mode
                 data["bp_seq"] = int(result[30])
             else:
                 data["bp_status"] = 0
@@ -1434,7 +1489,16 @@ class RpcBridge:
             data["bp_mcsdk_telemetry"] = int(result[72]) if len(result) >= 73 else 0
             data["bp_vbus_valid"] = int(result[73]) if len(result) >= 74 else 0
             data["bp_precharge_managed"] = int(result[74]) if len(result) >= 75 else 0
-            return True, data, None
+            data["rpc_schema_version"] = int(result[75]) if len(result) >= 76 else 1
+            if data["rpc_schema_version"] >= 2 and len(result) >= 78:
+                data["bp_softstart_ready"] = int(result[76])
+                data["mc_capabilities"] = int(result[77])
+            else:
+                # Fail closed for the ambiguous 75-element transition format.
+                data["bp_softstart_ready"] = 0
+                data["mc_capabilities"] = 0
+            data["mc_supported_modes"] = supported_modes_from_caps(data["mc_capabilities"])
+            return True, with_motor_controller_aliases(data), None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
             if not line:
@@ -1463,7 +1527,8 @@ class RpcBridge:
             diag_mode = int(float(kv.get("diag", "0")))
             duty_mode = int(float(kv.get("duty", "0")))
             mode_code_eff, mode_name_eff = effective_mode(mode_code, int(float(kv.get("bp_mode", "0"))), diag_mode, duty_mode)
-            return {
+            capabilities = int(float(kv.get("mc_caps", "0")))
+            return with_motor_controller_aliases({
                 "state_code": int(state_code),
                 "state": state_s or str(state_code),
                 "mode_code": int(mode_code_eff),
@@ -1528,7 +1593,11 @@ class RpcBridge:
                 "bp_vbus_age_ms": int(float(kv.get("bp_vbus_age_ms", "999999"))),
                 "bp_mcsdk_telemetry": int(float(kv.get("bp_mcsdk_telemetry", "0"))),
                 "bp_vbus_valid": int(float(kv.get("bp_vbus_valid", "0"))),
-                "bp_precharge_managed": int(float(kv.get("bp_precharge_managed", "0"))),
+                "bp_softstart_ready": int(float(kv.get("bp_softstart_ready", "0"))),
+                "bp_precharge_managed": 0,
+                "rpc_schema_version": int(float(kv.get("rpc_schema", "1"))),
+                "mc_capabilities": capabilities,
+                "mc_supported_modes": supported_modes_from_caps(capabilities),
                 "bp_temp_raw": int(float(kv.get("bp_temp_raw", "0"))),
                 "bp_temp_v": float(kv.get("bp_temp_v", "0")),
                 "bp_temp_c": float(kv.get("bp_temp_c", "0")),
@@ -1550,7 +1619,7 @@ class RpcBridge:
                 "bp_ping_pairs": int(float(kv.get("bp_ping_pairs", "0"))),
                 "bp_ping_age_ms": int(float(kv.get("bp_ping_age_ms", "999999"))),
                 "ts": int(_now_ts() * 1000.0),
-            }
+            })
         except Exception:
             return None
 
@@ -1568,6 +1637,8 @@ class AppState:
         arm_profiles: Optional[dict[str, HvArmConfig]] = None,
         profile_runlimits: Optional[dict[str, float]] = None,
         guard_max_vdc: float = DEFAULT_CMD_GUARD_MAX_VDC,
+        control_access: Optional[ControlAccessConfig] = None,
+        operator_heartbeat_timeout_sec: float = DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC,
     ) -> None:
         self.rpc = rpc
         self.logs = logs
@@ -1581,6 +1652,9 @@ class AppState:
             for name, limit in (profile_runlimits or {}).items()
         }
         self.guard_max_vdc = float(guard_max_vdc)
+        self.control_access = control_access or ControlAccessConfig()
+        self.operator_heartbeat_timeout_sec = max(1.0, float(operator_heartbeat_timeout_sec))
+        self._operator_heartbeat_ts = 0.0
         self.control_lock = threading.Lock()
         self._status_log_interval = status_log_interval
         self._last_status_log = 0.0
@@ -1590,7 +1664,21 @@ class AppState:
         self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
 
     def _precharge_off(self) -> tuple[bool, str]:
-        return True, "nucleo-managed-via-stop"
+        return True, "external-autonomous-no-control"
+
+    def mark_operator_heartbeat(self) -> None:
+        with self._lock:
+            self._operator_heartbeat_ts = time.monotonic()
+
+    def operator_heartbeat_age(self) -> float:
+        with self._lock:
+            stamp = self._operator_heartbeat_ts
+        if stamp <= 0.0:
+            return math.inf
+        return max(0.0, time.monotonic() - stamp)
+
+    def operator_heartbeat_fresh(self) -> bool:
+        return self.operator_heartbeat_age() <= self.operator_heartbeat_timeout_sec
 
     def stop_sequence(
         self,
@@ -1642,7 +1730,7 @@ class AppState:
         run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
         poll_sec: float = 0.05,
     ) -> tuple[bool, str, Optional[dict]]:
-        """Confirm safety, then let Nucleo sequence its local precharge relay."""
+        """Confirm safety, then wait for the autonomous AC soft-start and PWM."""
         st_ok, status, st_err = self.rpc.get()
         allowed, guard_err = command_guard_check(
             "START", status if st_ok else None, self.command_guard
@@ -1662,7 +1750,7 @@ class AppState:
             return False, "status unavailable", None
         if _as_int(status, "precharge", 0) != 0 or (_as_int(status, "bp_ext", 0) & 0x08) != 0:
             self.stop_sequence(emergency=False)
-            return False, "precharge relay was already active; outputs were forced off, retry START", status
+            return False, "reserved precharge bit was nonzero; outputs were forced off, retry START", status
 
         return self._start_without_precharge(status, run_timeout_sec, poll_sec)
 
@@ -1672,10 +1760,11 @@ class AppState:
         run_timeout_sec: float,
         poll_sec: float,
     ) -> tuple[bool, str, Optional[dict]]:
-        precharge_managed = _as_int(initial_status, "bp_precharge_managed", 0) == 1
+        mcsdk_backend = _as_int(initial_status, "bp_mcsdk_telemetry", 0) == 1
         self.logs.add(
-            f"WIFI_START_STEP PRECHARGE_OWNER "
-            f"owner={'nucleo' if precharge_managed else 'none'}"
+            "WIFI_START_STEP SOFTSTART owner=external-autonomous "
+            f"ready={_as_int(initial_status, 'bp_softstart_ready', 0)} "
+            f"mcsdk={int(mcsdk_backend)}"
         )
         arm_ok, arm_err = self.hv_arm.command_allowed(initial_status)
         if self.hv_arm.cfg.enabled and not arm_ok:
@@ -1708,21 +1797,26 @@ class AppState:
                 run_ok, run_err = output_sequence_health_check(
                     candidate, self.hv_arm.cfg, self.command_guard
                 )
-                relay_active = bool(
+                reserved_relay_bit = bool(
                     _as_int(candidate, "precharge", 0) != 0
                     or (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
                 )
-                relay_state_ok = relay_active if precharge_managed else not relay_active
+                softstart_ready = (
+                    _as_int(candidate, "bp_softstart_ready", 0) == 1
+                    if mcsdk_backend
+                    else True
+                )
                 nucleo_pwm_ok = (
                     (_as_int(candidate, "bp_status", 0) & 0x20) != 0
-                    if precharge_managed
+                    if mcsdk_backend
                     else True
                 )
                 running = (
                     _as_int(candidate, "pwm", 0) == 1
                     and str(candidate.get("state", "")).upper()
                     in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
-                    and relay_state_ok
+                    and not reserved_relay_bit
+                    and softstart_ready
                     and nucleo_pwm_ok
                 )
                 if run_ok and running:
@@ -1731,11 +1825,13 @@ class AppState:
                         f"WIFI_START_OK state={candidate.get('state')} "
                         f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
                         f"speed={_as_float(candidate, 'speed', 0.0):.1f} "
-                        f"precharge_owner={'nucleo' if precharge_managed else 'none'}"
+                        "softstart=external-ready"
                     )
-                    detail = "PWM started; precharge relay confirmed by Nucleo" if precharge_managed else "PWM started"
-                    return True, detail, candidate
-                last_run_error = run_err if not run_ok else "PWM did not enter a running state"
+                    return True, "PWM started; external soft-start bus is stable", candidate
+                if not softstart_ready:
+                    last_run_error = "external soft-start bus is not stable yet"
+                else:
+                    last_run_error = run_err if not run_ok else "PWM did not enter a running state"
             else:
                 last_run_error = read_err or "status unavailable"
             if time.monotonic() >= run_deadline:
@@ -1750,13 +1846,20 @@ class AppState:
         available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
         snapshot["hmi_arm_profiles"] = available
         snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
-        snapshot["hmi_precharge_relay_present"] = int(
-            status is not None and _as_int(status, "bp_precharge_managed", 0) == 1
+        snapshot["hmi_precharge_relay_present"] = 0
+        snapshot["hmi_external_softstart_ready"] = int(
+            status is not None and _as_int(status, "bp_softstart_ready", 0) == 1
         )
         snapshot["hmi_vbus_hv_calibrated"] = int(VBUS_HV_CALIBRATION_VALID)
         current_cfg = self.hv_arm.cfg
         switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
         snapshot["hmi_arm_profile_switch_ready"] = int(switch_ok and not snapshot["hmi_hv_armed"])
+        heartbeat_age = self.operator_heartbeat_age()
+        snapshot["hmi_operator_heartbeat_age_s"] = round(heartbeat_age, 2) if math.isfinite(heartbeat_age) else None
+        snapshot["hmi_operator_heartbeat_ok"] = int(
+            not self.control_access.enabled or heartbeat_age <= self.operator_heartbeat_timeout_sec
+        )
+        snapshot["hmi_operator_heartbeat_timeout_s"] = self.operator_heartbeat_timeout_sec
         return snapshot
 
     def switch_arm_profile(self, profile: str, status: Optional[dict]) -> tuple[bool, str]:
@@ -1797,21 +1900,25 @@ class AppState:
             if self.hv_arm.take_expired_session_action():
                 reason = "HV_ARM_EXPIRED"
             elif self.hv_arm.runtime_monitor_required():
-                status_ok, status, status_err = self.rpc.get()
-                live_ok, live_err = hv_runtime_check(
-                    status if status_ok else None,
-                    self.hv_arm.cfg,
-                    allow_nonzero_bad=True,
-                )
-                if live_ok and status is not None:
-                    live_ok, bad_err = self._runtime_bad_monitor.observe(status)
-                    if live_ok and bad_err != "ok":
-                        self.logs.add(f"HV_RUNTIME_UART_WARN {bad_err}")
-                    elif not live_ok:
-                        live_err = bad_err
-                if not live_ok:
-                    reason = f"HV_RUNTIME_REJECT {status_err or live_err}"
+                if self.control_access.enabled and not self.operator_heartbeat_fresh():
+                    reason = f"OPERATOR_HEARTBEAT_LOST age={self.operator_heartbeat_age():.2f}s"
                     self.hv_arm.disarm()
+                else:
+                    status_ok, status, status_err = self.rpc.get()
+                    live_ok, live_err = hv_runtime_check(
+                        status if status_ok else None,
+                        self.hv_arm.cfg,
+                        allow_nonzero_bad=True,
+                    )
+                    if live_ok and status is not None:
+                        live_ok, bad_err = self._runtime_bad_monitor.observe(status)
+                        if live_ok and bad_err != "ok":
+                            self.logs.add(f"HV_RUNTIME_UART_WARN {bad_err}")
+                        elif not live_ok:
+                            live_err = bad_err
+                    if not live_ok:
+                        reason = f"HV_RUNTIME_REJECT {status_err or live_err}"
+                        self.hv_arm.disarm()
             else:
                 self._runtime_bad_monitor.reset()
             if not reason:
@@ -1890,6 +1997,20 @@ class Handler(BaseHTTPRequestHandler):
         except (BrokenPipeError, ConnectionResetError, OSError):
             return
 
+    def _require_control_access(self) -> bool:
+        cfg = self.server.app.control_access  # type: ignore[attr-defined]
+        if not cfg.enabled:
+            return True
+        expected = cfg.read_token()
+        provided = self.headers.get("X-UNOQ-Control-Token", "")
+        if expected and provided and secrets.compare_digest(provided, expected):
+            self.server.app.mark_operator_heartbeat()  # type: ignore[attr-defined]
+            return True
+        peer = self.client_address[0] if self.client_address else "unknown"
+        self.server.app.logs.add(f"AUTH_REJECT peer={peer} path={urlparse(self.path).path}")  # type: ignore[attr-defined]
+        self._send_json({"ok": False, "error": "control access key is missing or invalid"}, 401)
+        return False
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path == "/":
@@ -1905,12 +2026,24 @@ class Handler(BaseHTTPRequestHandler):
             self._handle_status()
             return
         if parsed.path == "/api/logs":
+            if not self._require_control_access():
+                return
             self._handle_logs(parsed)
             return
         self.send_error(404)
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
+        protected = {
+            "/api/cmd",
+            "/api/start-sequence",
+            "/api/hv-arm",
+            "/api/arm-profile",
+            "/api/calibration/vbus",
+            "/api/operator-heartbeat",
+        }
+        if parsed.path in protected and not self._require_control_access():
+            return
         if parsed.path == "/api/cmd":
             self._handle_cmd()
             return
@@ -1928,6 +2061,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/calibration/vbus":
             self._handle_vbus_capture()
+            return
+        if parsed.path == "/api/operator-heartbeat":
+            self._send_json({"ok": True})
             return
         if parsed.path == "/api/firmware/update":
             self._handle_firmware_update(parsed)
@@ -1954,7 +2090,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
             return
         if _cmd_head(cmd) in ("PRECHARGE", "RELAY"):
-            self._send_json({"ok": False, "error": "unsupported: precharge relay is managed by Nucleo"}, 400)
+            self._send_json({"ok": False, "error": "unsupported: external soft-start is autonomous"}, 400)
             return
         with self.server.app.control_lock:  # type: ignore[attr-defined]
             self._handle_cmd_locked(cmd)
@@ -2043,6 +2179,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({"ok": False, "error": err or "no response"}, 503)
             return
         data.update(self.server.app.arm_snapshot(data))  # type: ignore[attr-defined]
+        data["hmi_control_auth_required"] = int(self.server.app.control_access.enabled)  # type: ignore[attr-defined]
         self.server.app.maybe_log_status(data)  # type: ignore[attr-defined]
         self._send_json({"ok": True, "data": data})
 
@@ -2207,12 +2344,12 @@ class Handler(BaseHTTPRequestHandler):
                 if estop != 0:
                     return False, data, f"ESTOP is active: estop={estop}"
                 if bp_fault != 0:
-                    return False, data, f"Blue Pill fault is active: bp_fault={bp_fault}"
-                bad = _status_bp_bad(data)
+                    return False, data, f"motor-controller fault is active: mc_fault={bp_fault}"
+                bad = _status_mc_bad(data)
                 if bad != 0:
-                    return False, data, f"Blue Pill bad counter is non-zero: bp_bad={bad}"
+                    return False, data, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
                 if not _status_link_live(data):
-                    return False, data, "Blue Pill link is stale or down"
+                    return False, data, "motor-controller link is stale or down"
                 if not math.isfinite(vdc):
                     return False, data, "DC bus telemetry is not readable for firmware update"
                 if vdc > cfg.max_vdc:
@@ -2349,8 +2486,19 @@ def main() -> None:
         default=os.path.join(os.path.dirname(__file__), "logs", "unoq.log"),
         help="Log file path (empty to disable)",
     )
-    parser.add_argument("--log-file-bytes", type=int, default=4 * 1024 * 1024, help="Max log file bytes")
+    parser.add_argument("--log-file-bytes", type=int, default=64 * 1024 * 1024, help="Max persistent log file bytes")
     parser.add_argument("--status-log-sec", type=float, default=5.0, help="Status log interval")
+    parser.add_argument(
+        "--operator-heartbeat-timeout-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_OPERATOR_HEARTBEAT_TIMEOUT_SEC", DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC)),
+        help="STOP/ESTOP an active autonomous run when the authenticated browser heartbeat is lost",
+    )
+    parser.add_argument(
+        "--control-token-file",
+        default=os.environ.get("UNOQ_HMI_CONTROL_TOKEN_FILE", ""),
+        help="Protect control commands and log download with a token stored in this file",
+    )
     parser.add_argument(
         "--firmware-update-token-file",
         default=os.environ.get("UNOQ_FIRMWARE_UPDATE_TOKEN_FILE", ""),
@@ -2460,6 +2608,10 @@ def main() -> None:
         )
     attestation_url = args.bench_gate_attestation_url.strip()
     standalone_enabled = bool(args.standalone_hv or args.standalone_lv)
+    control_token_file = args.control_token_file.strip()
+    control_access = ControlAccessConfig(control_token_file or None)
+    if standalone_enabled and not control_access.read_token():
+        parser.error("standalone operation requires --control-token-file containing at least 16 characters")
     initial_profile = ARM_PROFILE_LV if args.standalone_lv else ARM_PROFILE_HV
     hv_cfg = HvArmConfig(
         enabled=standalone_enabled,
@@ -2516,6 +2668,8 @@ def main() -> None:
         arm_profiles=arm_profiles,
         profile_runlimits=profile_runlimits,
         guard_max_vdc=float(args.cmd_guard_max_vdc),
+        control_access=control_access,
+        operator_heartbeat_timeout_sec=float(args.operator_heartbeat_timeout_sec),
     )
 
     server = ThreadingHTTPServer((args.bind, args.port), Handler)
@@ -2525,7 +2679,8 @@ def main() -> None:
     print(
         f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
         f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
-        f"precharge_relay=nucleo-managed, runlimit={start_runlimit_sec:.1f}s)"
+        f"control_auth={int(control_access.enabled)}, softstart=external-autonomous, "
+        f"runlimit={start_runlimit_sec:.1f}s)"
     )
     app.start_safety_watchdog()
     try:

@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Legacy all-target regression runner.
+
+This file intentionally keeps the retired Blue Pill target for historical
+regressions. Active UNO Q + Nucleo releases use nucleo_release_preflight.py.
+"""
+
 from __future__ import annotations
 
 import argparse
@@ -304,7 +310,12 @@ def stabilize_ui_phase(
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Build + HIL regression runner for the full UNO Q / Blue Pill project.")
+    ap = argparse.ArgumentParser(
+        description=(
+            "LEGACY all-target regression runner (includes Blue Pill). "
+            "Use tools/nucleo_release_preflight.py for active UNO Q + Nucleo releases."
+        )
+    )
     ap.add_argument("--url", default="http://127.0.0.1:18080")
     ap.add_argument("--forward-port", type=int, default=18080)
     ap.add_argument("--outdir", default=os.path.join(os.path.dirname(__file__), "_preflight_exports"))
@@ -343,6 +354,11 @@ def main() -> int:
     ap.add_argument("--timeout-build", type=float, default=300.0)
     ap.add_argument("--timeout-step", type=float, default=900.0)
     args = ap.parse_args()
+
+    log(
+        "WARNING: full_system_preflight.py is a legacy compatibility runner; "
+        "use tools/nucleo_release_preflight.py for the active Nucleo release gate."
+    )
 
     repo_root = Path(__file__).resolve().parents[1]
     run_dir = Path(args.outdir).resolve() / f"full_system_preflight_{ts_tag()}"

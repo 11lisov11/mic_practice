@@ -1,0 +1,70 @@
+{
+  "schema": "mic-ai-ppo-checkpoint-bundle-v1",
+  "status": "simulation_only",
+  "hardware_identified": false,
+  "hardware_release_ready": false,
+  "seed": 560225,
+  "environment_profile": "C:\\mic_practice\\research\\mic_ai_foc_ppo\\config\\env_air56b2_iek_025kw_delta_foc.py",
+  "control_mode": "ai_id_ref",
+  "feature_keys": [
+    "omega_norm",
+    "omega_ref_norm",
+    "err_norm",
+    "id_norm",
+    "iq_norm",
+    "slip_norm",
+    "load_torque_norm"
+  ],
+  "action_dim": 1,
+  "action_mapping": {
+    "network_output": "tanh_normal_clamped_-1_to_1",
+    "ai_id_ref_relative": true,
+    "delta_id_max_a": 0.25,
+    "id_ref_min_a": 0.0,
+    "id_ref_max_a": 1.8599999999999999
+  },
+  "normalization": {
+    "omega_base_rad_s": 284.8377339254746,
+    "i_base_a": 1.24,
+    "i_max_a": 5.0,
+    "v_max_v": 175.76554208738398
+  },
+  "network": {
+    "hidden_sizes": [
+      64,
+      64
+    ],
+    "actor_critic": "C:\\mic_practice\\artifacts\\foc_ppo_replay_b\\runs\\20260827_233504_env_air56b2_iek_025kw_delta_foc_ai_id_ref\\actor_critic.pth",
+    "actor_only": "C:\\mic_practice\\artifacts\\foc_ppo_replay_b\\runs\\20260827_233504_env_air56b2_iek_025kw_delta_foc_ai_id_ref\\actor_only.pth",
+    "critic_only": "C:\\mic_practice\\artifacts\\foc_ppo_replay_b\\runs\\20260827_233504_env_air56b2_iek_025kw_delta_foc_ai_id_ref\\critic_only.pth",
+    "best_checkpoint": "C:\\mic_practice\\artifacts\\foc_ppo_replay_b\\shared\\checkpoints\\env_air56b2_iek_025kw_delta_foc\\best_actor.pth",
+    "last_checkpoint": "C:\\mic_practice\\artifacts\\foc_ppo_replay_b\\shared\\checkpoints\\env_air56b2_iek_025kw_delta_foc\\last_actor.pth"
+  },
+  "compute": {
+    "device_requested": "cuda",
+    "device_resolved": "cuda",
+    "torch_version": "2.11.0+cu128",
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "cuda_device_name": "NVIDIA GeForce RTX 5070",
+    "deterministic_algorithms": true
+  },
+  "source_hashes": {
+    "env_config": {
+      "path": "C:\\mic_practice\\research\\mic_ai_foc_ppo\\config\\env_air56b2_iek_025kw_delta_foc.py",
+      "sha256": "cc8847d1ec5a678c7e4f378dd2f403df419561c32806e264d0d7d3bc09b1fa6c"
+    },
+    "trainer": {
+      "path": "C:\\mic_practice\\research\\mic_ai_foc_ppo\\mic_ai\\ai\\train_ai_id_ref.py",
+      "sha256": "cd26a0eea968d85762affc62c76b3da5e96cd8612985b0132e4163fb4ecebb8c"
+    },
+    "ppo_agent": {
+      "path": "C:\\mic_practice\\research\\mic_ai_foc_ppo\\mic_ai\\ai\\agents\\ppo_voltage.py",
+      "sha256": "4aaaa5b85dbc8d65412631a3ffd35bffc5027ffa3ba9b48c39b125b84d183678"
+    },
+    "source_port_manifest": {
+      "path": "C:\\mic_practice\\research\\mic_ai_foc_ppo\\SOURCE_PORT_MANIFEST.json",
+      "sha256": "c531e0848276675f153c0b614ac075fd2c79eb0495b74caa5ab7cae3b48b7daf"
+    }
+  }
+}

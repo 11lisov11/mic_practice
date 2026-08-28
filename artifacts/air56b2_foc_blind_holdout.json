@@ -1,0 +1,66 @@
+{
+  "schema": "air56b2-foc-blind-holdout-v1",
+  "status": "host_simulation_blind_holdout_only",
+  "hardware_claim": false,
+  "hardware_release_ready": false,
+  "master_seed": 560225,
+  "holdout_seed": 654218833942512606,
+  "holdout_sample_count": 30,
+  "holdout_reference": {
+    "sample_count": 30,
+    "sample_reference_sha256": "2a63c420dabe00bb563417b4cae69918be2726bfa1b3f6aa911a5b395fcbf05f"
+  },
+  "reconstructed_train_reference": {
+    "sample_count": 6,
+    "sample_reference_sha256": "07c7e6b6fc8734a06fbcaa5175e1edd81792a13dd5777f6c53d7089a36c9c7cf"
+  },
+  "steps_per_trial": 5000,
+  "selected_candidate_index": 3,
+  "selected_config": {
+    "dt_s": 0.0001,
+    "speed_kp": 0.04032540960075322,
+    "speed_ki": 2.3567057937530196,
+    "current_kp": 1.4103132295418133,
+    "current_ki": 1024.2327159154847,
+    "torque_limit_nm": 3.4096334709703666,
+    "flux_ref_wb": 0.3678881392070237,
+    "id_max_fraction": 0.7961738500342264,
+    "iq_max_fraction": 0.8594897655006316,
+    "voltage_limit_fraction": 0.9737938276864814,
+    "switching_tiebreak_weight": 0.07081631972568617,
+    "preflux_voltage_fraction": 0.08633077066676115,
+    "feedback_error_threshold_rad_s": 6.0,
+    "feedback_uncertainty_threshold": 0.4,
+    "temp_trip_c": 125.0
+  },
+  "state_feedback_contract": "oracle_full_simulated_state",
+  "model_matched_feasibility": {
+    "score": 2.7038533382278967e-06,
+    "passed": true,
+    "steady_speed_error_worst_rad_s": 0.09136660796798873,
+    "final_speed_error_worst_rad_s": 0.10540423153082656,
+    "peak_current_worst_a": 3.292713356651794,
+    "safety_violations_worst": 0.0,
+    "fault_latch_steps_worst": 0.0,
+    "fallback_steps_mean": 0.0,
+    "inverter_loss_proxy_mean_w": 0.2532493191268306,
+    "trial_count": 60
+  },
+  "frozen_nameplate_only_robustness": {
+    "score": 19.704786634896422,
+    "passed": false,
+    "steady_speed_error_worst_rad_s": 948.8125332342829,
+    "final_speed_error_worst_rad_s": 1181.8933664561841,
+    "peak_current_worst_a": 3.5273725672436025,
+    "safety_violations_worst": 0.0,
+    "fault_latch_steps_worst": 0.0,
+    "fallback_steps_mean": 0.21666666666666667,
+    "inverter_loss_proxy_mean_w": 0.6384645317680897,
+    "trial_count": 60
+  },
+  "algorithm_feasibility_pass": true,
+  "nameplate_only_release_pass": false,
+  "conclusion": "FOC algorithm is simulation-feasible after parameter identification; nameplate-only hardware release remains forbidden.",
+  "tuning_source": "C:\\mic_practice\\artifacts\\air56b2_foc_matched_tuning.json",
+  "tuning_sha256": "53a2783611347b36b3a5b4a124b9d66d3904b02a25a30865134ec59418935d34"
+}

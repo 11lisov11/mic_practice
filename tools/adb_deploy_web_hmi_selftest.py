@@ -26,7 +26,13 @@ def main() -> int:
         cases.append({"name": name, "ok": bool(ok), "evidence": evidence})
 
     low = mod.autostart_script("/home/arduino/app", None, False)
-    hv = mod.autostart_script("/home/arduino/app", "/home/arduino/token", True)
+    hv = mod.autostart_script(
+        "/home/arduino/app",
+        "/home/arduino/update-token",
+        True,
+        False,
+        "/home/arduino/control-token",
+    )
     lv = mod.autostart_script("/home/arduino/app", None, False, True)
     service = mod.systemd_service()
     privileged = mod.privileged_command("systemctl restart unoq-hmi.service")
@@ -39,7 +45,9 @@ def main() -> int:
     check("standalone_lv_mode_is_explicit", "--standalone-lv" in lv and "--standalone-hv" not in lv)
     check("standalone_lv_runlimit_is_three_seconds", "--start-runlimit-sec 3.0" in lv)
     check("autostart_does_not_exit_when_port_is_owned_by_stale_process", "grep -q ':8080'" not in low)
-    check("firmware_token_is_explicit", "--firmware-update-token-file" in hv and "/home/arduino/token" in hv)
+    check("firmware_token_is_explicit", "--firmware-update-token-file" in hv and "/home/arduino/update-token" in hv)
+    check("control_token_is_explicit", "--control-token-file" in hv and "/home/arduino/control-token" in hv)
+    check("persistent_log_limit_is_64_mib", "--log-file-bytes 67108864" in hv)
     check("systemd_runs_as_arduino", "User=arduino" in service)
     check("systemd_restarts_hmi", "Restart=always" in service and "RestartSec=2" in service)
     check("systemd_starts_on_boot", "WantedBy=multi-user.target" in service)

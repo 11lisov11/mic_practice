@@ -18,17 +18,10 @@ if ([string]::IsNullOrWhiteSpace($Workspace)) {
     $Workspace = Join-Path $scriptRoot "..\_cubeide_ws_air56b2_vf_nameplate"
 }
 
-$projectName = "ACIM-NUCLEOG431RB-IPM15B-VF_OL"
 $cubeIde = "C:\ST\STM32CubeIDE_2.2.0\STM32CubeIDE\stm32cubeidec.exe"
 $objcopy = "C:\ST\STM32CubeIDE_2.2.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\tools\bin\arm-none-eabi-objcopy.exe"
 
 $projectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
-$ideProject = Join-Path $projectRoot "STM32CubeIDE"
-$buildDir = Join-Path $ideProject $Configuration
-$elf = Join-Path $buildDir "$projectName.elf"
-$bin = Join-Path $buildDir "$projectName.bin"
-$hex = Join-Path $buildDir "$projectName.hex"
-
 # Keep the artifact manifest tied to the motor actually selected in this project,
 # rather than to the original ST reference project used as a starting point.
 $iocFiles = @(Get-ChildItem -LiteralPath $projectRoot -Filter "*.ioc" -File)
@@ -43,19 +36,41 @@ function Get-MotorControlIocValue([string]$Key) {
     }
     return $null
 }
+function Get-IocValue([string]$Key) {
+    $match = [regex]::Match(
+        $iocText,
+        "(?m)^" + [regex]::Escape($Key) + "=(.+?)\s*$"
+    )
+    if ($match.Success) {
+        return $match.Groups[1].Value.Trim()
+    }
+    return $null
+}
+
+$projectName = Get-IocValue "ProjectManager.ProjectName"
+if ([string]::IsNullOrWhiteSpace($projectName)) {
+    throw "ProjectManager.ProjectName is missing from the single IOC file."
+}
+$ideProject = Join-Path $projectRoot "STM32CubeIDE"
+$buildDir = Join-Path $ideProject $Configuration
+$elf = Join-Path $buildDir "$projectName.elf"
+$bin = Join-Path $buildDir "$projectName.bin"
+$hex = Join-Path $buildDir "$projectName.hex"
 
 $selectedMotorName = Get-MotorControlIocValue "M1_MOTOR_NAME"
 $selectedNominalPhaseVoltage = Get-MotorControlIocValue "NOMINAL_PHASE_VOLTAGE"
 $selectedNominalCurrent = Get-MotorControlIocValue "ACIM_NOMINAL_CURRENT"
 $selectedPolePairs = Get-MotorControlIocValue "ACIM_POLE_PAIR_NUM"
+$selectedControlConfig = Get-MotorControlIocValue "ACIM_CONFIG"
 $isAir56B2 = $selectedMotorName -match "(?i)AIR56B2"
+$controlMode = if ($selectedControlConfig -eq "LSO_FOC") { "ACIM LSO-FOC sensorless" } else { "ACIM V/F open loop" }
 
 $manifestMotor = "Siemens (official ST reference; not AIR-56)"
 $manifestMotorStatus = "NOT APPROVED FOR AIR-56: add verified nameplate/measured values before flashing a motor"
 $manifestProfileStatus = "st_reference_not_air56"
 if ($isAir56B2) {
     $manifestMotor = "IEK AIR56B2 0.25 kW 220/380 V Delta/Y"
-    $manifestMotorStatus = "CATALOG/OPERATOR-CONFIRMED V/F CANDIDATE ONLY: no target-motor photo provenance, identification, or HV interlock validation"
+    $manifestMotorStatus = "AIR56B2 CANDIDATE ONLY: target-motor provenance, measured model, and external soft-start HIL must match this generated project"
     $manifestProfileStatus = "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
 }
 
@@ -120,7 +135,8 @@ $manifest = [ordered]@{
     project = $projectName
     configuration = $Configuration
     target = "NUCLEO-G431RB + X-NUCLEO-IHM09M2 + STEVAL-IPM15B"
-    control_mode = "ACIM V/F open loop"
+    control_mode = $controlMode
+    mcsdk_acim_config = $selectedControlConfig
     reference_motor = $manifestMotor
     motor_status = $manifestMotorStatus
     motor_profile_status = $manifestProfileStatus

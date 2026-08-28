@@ -1,0 +1,448 @@
+{
+  "schema": "mic-ai-foc-ppo-source-port-v1",
+  "source_root": "C:\\mic_theory",
+  "source_git_head": "539bbe502751f7389a556b1ae90d18d3e639f6ca",
+  "source_worktree_dirty": true,
+  "source_status_sha256": "183f895152787b50bea6df4d5a47bd1729f38d961bfc09689523bf13d058576f",
+  "destination_root": "C:\\mic_practice\\research\\mic_ai_foc_ppo",
+  "copied_file_count": 62,
+  "old_checkpoints_copied": false,
+  "old_results_copied": false,
+  "hardware_claim": false,
+  "files": [
+    {
+      "path": "requirements.txt",
+      "bytes": 171,
+      "source_sha256": "62baa473f7cf003900f357b4f09def2234631a5c75bb9160cb4e9c4e50a2d251",
+      "destination_sha256": "62baa473f7cf003900f357b4f09def2234631a5c75bb9160cb4e9c4e50a2d251",
+      "source_git_status": ""
+    },
+    {
+      "path": "config/__init__.py",
+      "bytes": 74,
+      "source_sha256": "8ccfcd79cd4e9f2d0cec1ca3efc213a0a61482f8f41bb403008ecc511c337e97",
+      "destination_sha256": "8ccfcd79cd4e9f2d0cec1ca3efc213a0a61482f8f41bb403008ecc511c337e97",
+      "source_git_status": ""
+    },
+    {
+      "path": "config/env.py",
+      "bytes": 8636,
+      "source_sha256": "d1a6e106e0838f75bebc99783c9ffce76ff97acef60687dbb94b5bdc03c4d400",
+      "destination_sha256": "d1a6e106e0838f75bebc99783c9ffce76ff97acef60687dbb94b5bdc03c4d400",
+      "source_git_status": " M config/env.py"
+    },
+    {
+      "path": "config/env_demo_true_motor1.py",
+      "bytes": 1366,
+      "source_sha256": "d8d6e2e77dd2840da7ea941492186b3eada13c4a8cb84c7aad81de1e9f3748af",
+      "destination_sha256": "d8d6e2e77dd2840da7ea941492186b3eada13c4a8cb84c7aad81de1e9f3748af",
+      "source_git_status": ""
+    },
+    {
+      "path": "config/env_demo_true_motor1_physical.py",
+      "bytes": 2001,
+      "source_sha256": "9678a175e75b795e553c0c75b8df870c643a9f98f5ddd6843d9c06e4881e6a11",
+      "destination_sha256": "9678a175e75b795e553c0c75b8df870c643a9f98f5ddd6843d9c06e4881e6a11",
+      "source_git_status": ""
+    },
+    {
+      "path": "config/env_air56b2_iek_025kw_delta.py",
+      "bytes": 3531,
+      "source_sha256": "6638ae287e5d16a98f40a8f6f747a8d55b65695ceef189d1dd311b09e3263d28",
+      "destination_sha256": "6638ae287e5d16a98f40a8f6f747a8d55b65695ceef189d1dd311b09e3263d28",
+      "source_git_status": "?? config/env_air56b2_iek_025kw_delta.py"
+    },
+    {
+      "path": "control/__init__.py",
+      "bytes": 82,
+      "source_sha256": "e7e7cc04b0133e44ec14c18c697d89ff4f41134d0537b5815c79deb99b884615",
+      "destination_sha256": "e7e7cc04b0133e44ec14c18c697d89ff4f41134d0537b5815c79deb99b884615",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/aff_foc.py",
+      "bytes": 4519,
+      "source_sha256": "ec9430d4c61917412a0c141b0ce3c74dbe1daaa4c813cb4db40d7d34a124908e",
+      "destination_sha256": "ec9430d4c61917412a0c141b0ce3c74dbe1daaa4c813cb4db40d7d34a124908e",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/ebs_foc.py",
+      "bytes": 7437,
+      "source_sha256": "b92e1e6607b57f28c7569c5a25c1961364f911edfb43fa4fb774a7bdafe4c7fe",
+      "destination_sha256": "b92e1e6607b57f28c7569c5a25c1961364f911edfb43fa4fb774a7bdafe4c7fe",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/esc_foc.py",
+      "bytes": 7015,
+      "source_sha256": "5f0fb00ddc76102defc22e27cef0d4a7d4d362ded784e80d1223fd3fa6b9ca26",
+      "destination_sha256": "5f0fb00ddc76102defc22e27cef0d4a7d4d362ded784e80d1223fd3fa6b9ca26",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/lmc_foc.py",
+      "bytes": 5197,
+      "source_sha256": "539ce327aed66ef1a385c64a39dd5b014d754d28fcd37886b83439a3122b8c02",
+      "destination_sha256": "539ce327aed66ef1a385c64a39dd5b014d754d28fcd37886b83439a3122b8c02",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/load_map_foc.py",
+      "bytes": 4982,
+      "source_sha256": "86549f6ab73629f1221a13235137934ed1f03d668fb3a9e516ac10b60ee50e87",
+      "destination_sha256": "86549f6ab73629f1221a13235137934ed1f03d668fb3a9e516ac10b60ee50e87",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/vector_foc.py",
+      "bytes": 7284,
+      "source_sha256": "769e0e2f6be8658e2aa979bbd256e8498f385f7b24af3eec5d7de5e7d4c2b60a",
+      "destination_sha256": "769e0e2f6be8658e2aa979bbd256e8498f385f7b24af3eec5d7de5e7d4c2b60a",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/scalar_vf.py",
+      "bytes": 3305,
+      "source_sha256": "cdddfaad8e3a883775c4ab02e6f93e837d6958f83ee3d1f3a0a65b0d47870027",
+      "destination_sha256": "cdddfaad8e3a883775c4ab02e6f93e837d6958f83ee3d1f3a0a65b0d47870027",
+      "source_git_status": " M control/scalar_vf.py"
+    },
+    {
+      "path": "control/v3_ternary.py",
+      "bytes": 6952,
+      "source_sha256": "c6ad3fe05fdb1705e362f83d0f986d043c593ba92c350a21ee63c7bcbc4a3b92",
+      "destination_sha256": "c6ad3fe05fdb1705e362f83d0f986d043c593ba92c350a21ee63c7bcbc4a3b92",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/hybrid_v3_foc.py",
+      "bytes": 3367,
+      "source_sha256": "981688d3c75976da1247117e630e57477b0e79f57cf32dcaa726d561adaf6f4e",
+      "destination_sha256": "981688d3c75976da1247117e630e57477b0e79f57cf32dcaa726d561adaf6f4e",
+      "source_git_status": ""
+    },
+    {
+      "path": "control/id_ref_lut.py",
+      "bytes": 3517,
+      "source_sha256": "e681d0d9ec8877d1f65b3404c6ba3cf37717e65eeab24e08213bc57f2e5673c1",
+      "destination_sha256": "e681d0d9ec8877d1f65b3404c6ba3cf37717e65eeab24e08213bc57f2e5673c1",
+      "source_git_status": ""
+    },
+    {
+      "path": "models/__init__.py",
+      "bytes": 72,
+      "source_sha256": "3d315740e315a0a8d3e67c2e8e082101c70301b340440a758c192efe5b0ba3b3",
+      "destination_sha256": "3d315740e315a0a8d3e67c2e8e082101c70301b340440a758c192efe5b0ba3b3",
+      "source_git_status": ""
+    },
+    {
+      "path": "models/induction_motor.py",
+      "bytes": 5353,
+      "source_sha256": "27a3ed204012b1b3e90b45bd5648268bbfaabf5690b04d2b683ffccb2780c329",
+      "destination_sha256": "27a3ed204012b1b3e90b45bd5648268bbfaabf5690b04d2b683ffccb2780c329",
+      "source_git_status": ""
+    },
+    {
+      "path": "models/inverter_ideal.py",
+      "bytes": 2484,
+      "source_sha256": "67372b1cb41a9786d3b8f963912d55bdd6af0e83d6e6f2beda991569c1ac672c",
+      "destination_sha256": "67372b1cb41a9786d3b8f963912d55bdd6af0e83d6e6f2beda991569c1ac672c",
+      "source_git_status": ""
+    },
+    {
+      "path": "models/transformations.py",
+      "bytes": 2373,
+      "source_sha256": "095483f0749b8cdfdd456fe5b462f5fe147db9ce8882e1757c4350c8ba9e100a",
+      "destination_sha256": "095483f0749b8cdfdd456fe5b462f5fe147db9ce8882e1757c4350c8ba9e100a",
+      "source_git_status": ""
+    },
+    {
+      "path": "simulation/__init__.py",
+      "bytes": 51,
+      "source_sha256": "7303b6c072f848f14a71bb627190f8fc87de0c9b9d3cc7eac2a8153830c908e7",
+      "destination_sha256": "7303b6c072f848f14a71bb627190f8fc87de0c9b9d3cc7eac2a8153830c908e7",
+      "source_git_status": ""
+    },
+    {
+      "path": "simulation/gym_env.py",
+      "bytes": 14126,
+      "source_sha256": "6ad7cdf390d5f75ca2a66c071c7744dbcf1cf079d5dfe1905bfd050f9ce063c8",
+      "destination_sha256": "6ad7cdf390d5f75ca2a66c071c7744dbcf1cf079d5dfe1905bfd050f9ce063c8",
+      "source_git_status": ""
+    },
+    {
+      "path": "simulation/scenarios.py",
+      "bytes": 3711,
+      "source_sha256": "2d2c7042ec9813c1993656711f7d8d43ef908f2534d0a893032a4d14d170ce2a",
+      "destination_sha256": "2d2c7042ec9813c1993656711f7d8d43ef908f2534d0a893032a4d14d170ce2a",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/__init__.py",
+      "bytes": 104,
+      "source_sha256": "17ecba7c10d3c93e8ffa559c8b79c2c2a8268a5e6fef0cb8f07fe875a705761c",
+      "destination_sha256": "17ecba7c10d3c93e8ffa559c8b79c2c2a8268a5e6fef0cb8f07fe875a705761c",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/core/__init__.py",
+      "bytes": 168,
+      "source_sha256": "78ad82039eeff45134bbbefa9c5e885575875ec6a12bc0833bf88f90e390aee3",
+      "destination_sha256": "78ad82039eeff45134bbbefa9c5e885575875ec6a12bc0833bf88f90e390aee3",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/core/env.py",
+      "bytes": 7453,
+      "source_sha256": "808f2cdbc5f8d750f448188bca956b4227f4c7cd9aaf20732ee0844cfc80061c",
+      "destination_sha256": "808f2cdbc5f8d750f448188bca956b4227f4c7cd9aaf20732ee0844cfc80061c",
+      "source_git_status": " M mic_ai/core/env.py"
+    },
+    {
+      "path": "mic_ai/ident/motor_params.py",
+      "bytes": 847,
+      "source_sha256": "6c7201f1563d434ec92d6d69c6e844079be09c6632f308b3831a3d59e0fcdc65",
+      "destination_sha256": "6c7201f1563d434ec92d6d69c6e844079be09c6632f308b3831a3d59e0fcdc65",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/analysis/__init__.py",
+      "bytes": 56,
+      "source_sha256": "6c4503a343743a93ee5492c11bd39148e8755449892f0aa197bda0f1511c360f",
+      "destination_sha256": "6c4503a343743a93ee5492c11bd39148e8755449892f0aa197bda0f1511c360f",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/analysis/metrics.py",
+      "bytes": 6000,
+      "source_sha256": "48a35ec80277b40f97f42c9416babe10691e53357a23306a8a2f191769fad50e",
+      "destination_sha256": "48a35ec80277b40f97f42c9416babe10691e53357a23306a8a2f191769fad50e",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/__init__.py",
+      "bytes": 596,
+      "source_sha256": "5756d9d3373ec2d207432ffa5748a2ab548a2e4ff13b6e9c32d23808da553bd1",
+      "destination_sha256": "5756d9d3373ec2d207432ffa5748a2ab548a2e4ff13b6e9c32d23808da553bd1",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/simple_agent.py",
+      "bytes": 8909,
+      "source_sha256": "c1379a79e64ea5605ac9f0391261cc79b0130f7f67be3d2fe7bdb6d5f4f289a1",
+      "destination_sha256": "c1379a79e64ea5605ac9f0391261cc79b0130f7f67be3d2fe7bdb6d5f4f289a1",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/ai_agent_ai_only.py",
+      "bytes": 330,
+      "source_sha256": "1e50bf8ca05c970a0d7e93da98cd902b2cd5273128acf465412f34185b80f656",
+      "destination_sha256": "1e50bf8ca05c970a0d7e93da98cd902b2cd5273128acf465412f34185b80f656",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/plots_ai.py",
+      "bytes": 4082,
+      "source_sha256": "0513e5a37de33c3eeb6b4142fd305a2588489a66e5492b6eeda24baec7755e06",
+      "destination_sha256": "0513e5a37de33c3eeb6b4142fd305a2588489a66e5492b6eeda24baec7755e06",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/agents/ppo_voltage.py",
+      "bytes": 11595,
+      "source_sha256": "4aaaa5b85dbc8d65412631a3ffd35bffc5027ffa3ba9b48c39b125b84d183678",
+      "destination_sha256": "4aaaa5b85dbc8d65412631a3ffd35bffc5027ffa3ba9b48c39b125b84d183678",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/ai_env.py",
+      "bytes": 110789,
+      "source_sha256": "c3703c10ddd1928c8267a7d7e0e06e3a997981b4f5014f110b607a7b8ab86188",
+      "destination_sha256": "c3703c10ddd1928c8267a7d7e0e06e3a997981b4f5014f110b607a7b8ab86188",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/ai_voltage_config.py",
+      "bytes": 4890,
+      "source_sha256": "90814c6000a49b10392362812c19254f59626b146d19f4a6cfc408129ec65adf",
+      "destination_sha256": "90814c6000a49b10392362812c19254f59626b146d19f4a6cfc408129ec65adf",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/id_ref_supervisor.py",
+      "bytes": 5702,
+      "source_sha256": "e1d4110637b7bdb245a964affb7327309f93a11fc7adf0506cda829d4a8c37f8",
+      "destination_sha256": "e1d4110637b7bdb245a964affb7327309f93a11fc7adf0506cda829d4a8c37f8",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/scenario_randomization.py",
+      "bytes": 2930,
+      "source_sha256": "2c4c667670f509cdd5e548fdad1f44aa88b23d1abaee8c0a891f141b5c02010e",
+      "destination_sha256": "2c4c667670f509cdd5e548fdad1f44aa88b23d1abaee8c0a891f141b5c02010e",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/curiosity.py",
+      "bytes": 1203,
+      "source_sha256": "f95d2fce08d48f5fbc311efa9b0266c6125c0fd9f5cd28d366ab260f1f338389",
+      "destination_sha256": "f95d2fce08d48f5fbc311efa9b0266c6125c0fd9f5cd28d366ab260f1f338389",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/world_model/__init__.py",
+      "bytes": 5250,
+      "source_sha256": "457ae34db0c96065e9eac0049b217ef64957e4b1a87bba512b2edd079eaf83b9",
+      "destination_sha256": "457ae34db0c96065e9eac0049b217ef64957e4b1a87bba512b2edd079eaf83b9",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/train_ai_id_ref.py",
+      "bytes": 93999,
+      "source_sha256": "8a92da37f6790aecce34bec7f75d67b1166f683084934cb65d5709c93f869272",
+      "destination_sha256": "8a92da37f6790aecce34bec7f75d67b1166f683084934cb65d5709c93f869272",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/ai/distill_voltage.py",
+      "bytes": 5451,
+      "source_sha256": "c59d52c2b99562bec371a80a2128195c90444b33ba756e394c889b5ef2925d82",
+      "destination_sha256": "c59d52c2b99562bec371a80a2128195c90444b33ba756e394c889b5ef2925d82",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/tools/checkpoint_adaptation.py",
+      "bytes": 2491,
+      "source_sha256": "3dfc6676b8cf3115086784a3a093ee68aae713b1ac1b48e5f1820ebd0dbff2f1",
+      "destination_sha256": "3dfc6676b8cf3115086784a3a093ee68aae713b1ac1b48e5f1820ebd0dbff2f1",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/tools/scenario_compare.py",
+      "bytes": 41096,
+      "source_sha256": "8c1970ae2e1a98824117c6d8815e8f5fb2c2c1fbabf8320027a1d8f0b75beedf",
+      "destination_sha256": "8c1970ae2e1a98824117c6d8815e8f5fb2c2c1fbabf8320027a1d8f0b75beedf",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/tools/plot_style.py",
+      "bytes": 1760,
+      "source_sha256": "aa844952f521511ea53ebb0c59bd887051600508ee02d3ea65b841b0378ca206",
+      "destination_sha256": "aa844952f521511ea53ebb0c59bd887051600508ee02d3ea65b841b0378ca206",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/tools/id_ref_lut.py",
+      "bytes": 9552,
+      "source_sha256": "2906112cad9694c4fcd82b7943c5c45a6f0287ba7e61e8b64cc9a13ffd7adf5e",
+      "destination_sha256": "2906112cad9694c4fcd82b7943c5c45a6f0287ba7e61e8b64cc9a13ffd7adf5e",
+      "source_git_status": ""
+    },
+    {
+      "path": "mic_ai/tools/export_id_ref_lut_c.py",
+      "bytes": 7765,
+      "source_sha256": "d273b6f5077e1ddb0362058f2c21d484e3ea3cdb3ab0abce303cffa844e747bb",
+      "destination_sha256": "d273b6f5077e1ddb0362058f2c21d484e3ea3cdb3ab0abce303cffa844e747bb",
+      "source_git_status": ""
+    },
+    {
+      "path": "outputs/__init__.py",
+      "bytes": 52,
+      "source_sha256": "b518eccd1ea4681b3482db850fa43091e7ea17b51217bb923a082bcca24590e6",
+      "destination_sha256": "b518eccd1ea4681b3482db850fa43091e7ea17b51217bb923a082bcca24590e6",
+      "source_git_status": ""
+    },
+    {
+      "path": "outputs/styles.py",
+      "bytes": 498,
+      "source_sha256": "0424dd36a8040ac691aea580cae0bcbf644d651b68c8bacac631be821b25498e",
+      "destination_sha256": "0424dd36a8040ac691aea580cae0bcbf644d651b68c8bacac631be821b25498e",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_motor_model.py",
+      "bytes": 740,
+      "source_sha256": "279615cb8b5bb07360c3b03dade1d845f95f1bb2290f79b5484b0d9ac3e0c9b7",
+      "destination_sha256": "279615cb8b5bb07360c3b03dade1d845f95f1bb2290f79b5484b0d9ac3e0c9b7",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_control.py",
+      "bytes": 1859,
+      "source_sha256": "4c692b8b76b9fc31b264cfc71f0266c00974ef4ce32c9f2b0e43db9e57fb76e1",
+      "destination_sha256": "4c692b8b76b9fc31b264cfc71f0266c00974ef4ce32c9f2b0e43db9e57fb76e1",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_sim_env.py",
+      "bytes": 1275,
+      "source_sha256": "968afa3b425197612c026bbb57e46a97b33baee8d4c7a232b97b520e7ddf107c",
+      "destination_sha256": "968afa3b425197612c026bbb57e46a97b33baee8d4c7a232b97b520e7ddf107c",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_ai_env.py",
+      "bytes": 2968,
+      "source_sha256": "d305058c912875ed6ffc627235451f6dd5b127968d107545b87b4e7493f69bc1",
+      "destination_sha256": "d305058c912875ed6ffc627235451f6dd5b127968d107545b87b4e7493f69bc1",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_ai_env_reward_gate.py",
+      "bytes": 2897,
+      "source_sha256": "ec440437981933e2e381366d3cdbab7386c6f0a4858ea35a9e26025739793272",
+      "destination_sha256": "ec440437981933e2e381366d3cdbab7386c6f0a4858ea35a9e26025739793272",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_ppo_voltage_anchor.py",
+      "bytes": 2153,
+      "source_sha256": "e6631e8560abf1b0b8eba0f647717e5c21c9df8580f1de44b51ece1af972514c",
+      "destination_sha256": "e6631e8560abf1b0b8eba0f647717e5c21c9df8580f1de44b51ece1af972514c",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_scenario_compare.py",
+      "bytes": 720,
+      "source_sha256": "f87f33d3b40d6aa475e4abc1f70653d80dfd872504c32e518c281668aeca5a20",
+      "destination_sha256": "f87f33d3b40d6aa475e4abc1f70653d80dfd872504c32e518c281668aeca5a20",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_id_ref_lut.py",
+      "bytes": 1133,
+      "source_sha256": "39b5e027edd68826302649dd988ff29adfe3142571f335999c4a312d279b57b8",
+      "destination_sha256": "39b5e027edd68826302649dd988ff29adfe3142571f335999c4a312d279b57b8",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_export_id_ref_lut_c.py",
+      "bytes": 1162,
+      "source_sha256": "fa323f7ad9a5a10ce70e4a59e8629b2be56cfe5bd34b4728688da8fea054c190",
+      "destination_sha256": "fa323f7ad9a5a10ce70e4a59e8629b2be56cfe5bd34b4728688da8fea054c190",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_distill.py",
+      "bytes": 844,
+      "source_sha256": "f28d40a9bdc2d2d81803dbc39bcb205e573a06abc568a3853300a4729617c5be",
+      "destination_sha256": "f28d40a9bdc2d2d81803dbc39bcb205e573a06abc568a3853300a4729617c5be",
+      "source_git_status": ""
+    },
+    {
+      "path": "tests/test_air56b2_iek_profile.py",
+      "bytes": 1200,
+      "source_sha256": "49d7223fe6ce2a1a5f8e929b69b9357dcf45ca490b2b03b75333928c3305088e",
+      "destination_sha256": "49d7223fe6ce2a1a5f8e929b69b9357dcf45ca490b2b03b75333928c3305088e",
+      "source_git_status": "?? tests/test_air56b2_iek_profile.py"
+    },
+    {
+      "path": "mic_ai/ident/__init__.py",
+      "bytes": 195,
+      "source_sha256": null,
+      "destination_sha256": "9eb5b25e0527cf5614d66fec6e98a65e85c41917e817be7f6dbfafe77175783a",
+      "source_git_status": "generated_minimal_namespace"
+    }
+  ]
+}

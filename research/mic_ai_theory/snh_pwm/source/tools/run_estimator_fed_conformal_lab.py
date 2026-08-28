@@ -149,8 +149,14 @@ def generate_paired_trajectory(
     spans = {name: value * float(span_scale) for name, value in PARAMETER_SPANS.items()}
     actual_params = randomized_motor_params(base_motor, rng, **spans)
     inverter = replace(base_inverter, Vdc=base_inverter.Vdc * rng.uniform(0.72, 1.08))
-    temperature = rng.uniform(20.0, 105.0)
-    state = AlphaBetaMotorState(temp_s_c=temperature, temp_r_c=temperature + rng.uniform(-8.0, 8.0))
+    reference_temperature = float(base_motor.temp_ref_c)
+    thermal_scale = max(0.0, float(span_scale))
+    temperature = reference_temperature + thermal_scale * rng.uniform(0.0, 85.0)
+    rotor_temperature = temperature + thermal_scale * rng.uniform(-8.0, 8.0)
+    state = AlphaBetaMotorState(
+        temp_s_c=temperature,
+        temp_r_c=rotor_temperature,
+    )
     actual_model = AlphaBetaInductionMotorModel(actual_params, state)
     nominal_model = AlphaBetaInductionMotorModel(base_motor)
     observer = CurrentVoltageFluxObserver(
@@ -605,4 +611,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

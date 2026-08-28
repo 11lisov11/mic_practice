@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "tool": "gpu_research_preflight",
+  "generated_at_utc": "2026-08-27T23:33:08.232673+00:00",
+  "status": "gpu_ready",
+  "cpu_ready": true,
+  "gpu_ready": true,
+  "python": {
+    "executable": "C:\\mic_practice\\.venv-research-gpu\\Scripts\\python.exe",
+    "version": "3.12.10",
+    "version_info": [
+      3,
+      12,
+      10
+    ],
+    "implementation": "CPython",
+    "architecture": "64bit",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "supported": true
+  },
+  "numpy": {
+    "installed": true,
+    "version": "2.5.2",
+    "error": null
+  },
+  "nvidia_smi": {
+    "available": true,
+    "query_ok": true,
+    "returncode": 0,
+    "timed_out": false,
+    "error": null,
+    "stderr": null,
+    "gpus": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 5070",
+        "vram_mib": 12227,
+        "driver_version": "610.88"
+      }
+    ]
+  },
+  "torch": {
+    "installed": true,
+    "version": "2.11.0+cu128",
+    "cuda_available": true,
+    "compiled_cuda_version": "12.8",
+    "cudnn_version": 91900,
+    "device_count": 1,
+    "arch_list": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "devices": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 5070",
+        "capability": [
+          12,
+          0
+        ],
+        "total_memory_mib": 12227
+      }
+    ],
+    "smoke_test": {
+      "attempted": true,
+      "pass": true,
+      "error": null
+    },
+    "error": null,
+    "architecture_coverage": [
+      {
+        "index": 0,
+        "capability": [
+          12,
+          0
+        ],
+        "target_arch": "sm_120",
+        "listed_by_torch": true
+      }
+    ]
+  },
+  "probe": {
+    "python_subprocess_ok": true,
+    "returncode": 0,
+    "timed_out": false,
+    "error": null,
+    "stderr": null
+  },
+  "workload_guidance": {
+    "numpy_models_are_cpu_only": true,
+    "gpu_presence_alone_accelerates_numpy": false,
+    "summary": "Use GPU readiness only for CUDA-aware code; existing NumPy-only simulations remain CPU-bound."
+  },
+  "recommended_actions": [
+    {
+      "priority": "recommended",
+      "code": "pin_environment",
+      "message": "Record Python, PyTorch, CUDA, driver and GPU metadata with every mass-run result."
+    },
+    {
+      "priority": "recommended",
+      "code": "verify_cuda_code_path",
+      "message": "Confirm that tensor models and batches are explicitly placed on a CUDA device before expecting acceleration."
+    },
+    {
+      "priority": "information",
+      "code": "numpy_cpu_only",
+      "message": "The current NumPy-only models remain CPU-bound; an installed GPU does not accelerate them unless they are deliberately ported and validated on a GPU-capable backend."
+    }
+  ]
+}

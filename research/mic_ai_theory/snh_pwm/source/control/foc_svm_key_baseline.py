@@ -33,7 +33,7 @@ class FocSvmKeyBaselineConfig:
     iq_max_fraction: float = 0.80
     voltage_limit_fraction: float = 0.92
     switching_tiebreak_weight: float = 0.015
-    preflux_voltage_fraction: float = 0.50
+    preflux_voltage_fraction: float = 0.12
     feedback_error_threshold_rad_s: float = 6.0
     feedback_uncertainty_threshold: float = 0.40
     temp_trip_c: float = 125.0
@@ -75,6 +75,8 @@ class FocSvmKeyBaselineController:
         self.id_integral = 0.0
         self.iq_integral = 0.0
         self.theta_e = 0.0
+        self.omega_slip = 0.0
+        self.omega_e = 0.0
         self.last_torque_ref = 0.0
         self.tj_c = float(inverter_params.ambient_c)
 
@@ -85,54 +87,80 @@ class FocSvmKeyBaselineController:
         self.id_integral = 0.0
         self.iq_integral = 0.0
         self.theta_e = 0.0
+        self.omega_slip = 0.0
+        self.omega_e = 0.0
         self.last_torque_ref = 0.0
         self.tj_c = float(self.inverter_params.ambient_c)
 
     def _flux_ref(self) -> float:
         if self.cfg.flux_ref_wb is not None and self.cfg.flux_ref_wb > 0.0:
             return float(self.cfg.flux_ref_wb)
+        if float(self.motor_params.psi_sat) > 0.0:
+            return max(0.02, min(0.50, 0.78 * float(self.motor_params.psi_sat)))
         return max(0.02, min(0.45, 0.15 * float(self.motor_params.Lm) * max(self.motor_params.i_limit, 1e-3)))
 
     def _torque_ref(self, omega_ref: float, omega_hat: float) -> float:
         err = float(omega_ref) - float(omega_hat)
-        self.speed_integral = _clamp(
-            self.speed_integral + err * float(self.cfg.dt_s),
-            -10.0,
-            10.0,
-        )
-        raw = float(self.cfg.speed_kp) * err + float(self.cfg.speed_ki) * self.speed_integral
         limit = max(float(self.cfg.torque_limit_nm), 1e-9)
+        ki = float(self.cfg.speed_ki)
+        integral_limit = limit / max(abs(ki), 1e-9)
+        candidate_integral = _clamp(
+            self.speed_integral + err * float(self.cfg.dt_s),
+            -integral_limit,
+            integral_limit,
+        )
+        candidate_raw = float(self.cfg.speed_kp) * err + ki * candidate_integral
+        driving_further_into_saturation = (
+            (candidate_raw > limit and err > 0.0)
+            or (candidate_raw < -limit and err < 0.0)
+        )
+        if not driving_further_into_saturation:
+            self.speed_integral = candidate_integral
+        raw = float(self.cfg.speed_kp) * err + ki * self.speed_integral
         self.last_torque_ref = _clamp(raw, -limit, limit)
         return self.last_torque_ref
 
-    def _update_angle(self, state: AlphaBetaMotorState, omega_ref: float, torque_ref: float) -> None:
+    def _update_angle(
+        self,
+        state: AlphaBetaMotorState,
+        id_ref: float,
+        iq_ref: float,
+    ) -> float:
         flux_alpha, flux_beta = state.psi_r_alpha, state.psi_r_beta
         flux_abs = math.hypot(flux_alpha, flux_beta)
         if flux_abs < 1.0e-5:
             flux_alpha, flux_beta = state.psi_s_alpha, state.psi_s_beta
             flux_abs = math.hypot(flux_alpha, flux_beta)
 
-        flux_ref = self._flux_ref()
-        slip = 0.0
-        if flux_ref > 1.0e-6:
-            slip = _clamp(torque_ref / (1.5 * max(self.motor_params.p, 1) * flux_ref), -120.0, 120.0)
+        rotor_inductance = float(self.motor_params.Llr) + float(self.motor_params.Lm)
+        rotor_inverse_time_constant = float(self.motor_params.Rr) / max(rotor_inductance, 1e-9)
+        slip = rotor_inverse_time_constant * float(iq_ref) / max(abs(float(id_ref)), 1e-4)
+        slip = _clamp(slip, -160.0, 160.0)
+        omega_e = float(self.motor_params.p) * float(state.omega_m) + slip
+        self.omega_slip = slip
+        self.omega_e = omega_e
         self.theta_e = _wrap_angle(
-            self.theta_e + (float(self.motor_params.p) * float(omega_ref) + slip) * float(self.cfg.dt_s)
+            self.theta_e + omega_e * float(self.cfg.dt_s)
         )
         if flux_abs > 1.0e-4:
-            measured = math.atan2(flux_beta, flux_alpha)
-            # Blend on the unit circle to avoid wrap discontinuities.
-            x = 0.70 * math.cos(self.theta_e) + 0.30 * math.cos(measured)
-            y = 0.70 * math.sin(self.theta_e) + 0.30 * math.sin(measured)
-            self.theta_e = math.atan2(y, x)
+            self.theta_e = math.atan2(flux_beta, flux_alpha)
+        return omega_e
 
     def _dq_references(self, torque_ref: float) -> Tuple[float, float]:
         flux_ref = self._flux_ref()
         id_limit = max(0.05, float(self.cfg.id_max_fraction) * max(self.motor_params.i_limit, 1e-6))
         iq_limit = max(0.05, float(self.cfg.iq_max_fraction) * max(self.motor_params.i_limit, 1e-6))
         id_ref = _clamp(flux_ref / max(float(self.motor_params.Lm), 1e-9), 0.0, id_limit)
+        rotor_inductance = float(self.motor_params.Llr) + float(self.motor_params.Lm)
+        torque_gain = (
+            1.5
+            * max(self.motor_params.p, 1)
+            * float(self.motor_params.Lm)
+            / max(rotor_inductance, 1e-9)
+            * max(flux_ref, 1e-6)
+        )
         iq_ref = _clamp(
-            torque_ref / max(1.5 * max(self.motor_params.p, 1) * max(flux_ref, 1e-6), 1e-9),
+            torque_ref / max(torque_gain, 1e-9),
             -iq_limit,
             iq_limit,
         )
@@ -145,25 +173,57 @@ class FocSvmKeyBaselineController:
         iq_ref: float,
         i_d: float,
         i_q: float,
-        omega_ref: float,
+        omega_e: float,
         inverter: TwoLevelInverterParams,
+        rotor_flux_abs: float,
+        preflux_v: float = 0.0,
     ) -> Tuple[float, float]:
         err_d = float(id_ref) - float(i_d)
         err_q = float(iq_ref) - float(i_q)
-        self.id_integral = _clamp(self.id_integral + err_d * float(self.cfg.dt_s), -1.5, 1.5)
-        self.iq_integral = _clamp(self.iq_integral + err_q * float(self.cfg.dt_s), -1.5, 1.5)
-        ls = float(self.motor_params.Lls) + float(self.motor_params.Lm)
-        omega_e = float(self.motor_params.p) * float(omega_ref)
-        v_d = float(self.cfg.current_kp) * err_d + float(self.cfg.current_ki) * self.id_integral - omega_e * ls * i_q
-        v_q = float(self.cfg.current_kp) * err_q + float(self.cfg.current_ki) * self.iq_integral + omega_e * ls * i_d
-
-        v_alpha, v_beta = dq_to_alpha_beta(v_d, v_q, self.theta_e)
+        lm = float(self.motor_params.Lm)
+        ls = float(self.motor_params.Lls) + lm
+        lr = float(self.motor_params.Llr) + lm
+        sigma_ls = max(ls - lm * lm / max(lr, 1e-9), 1e-9)
         limit = max(1.0, float(self.cfg.voltage_limit_fraction) * abs(float(inverter.Vdc)) / math.sqrt(3.0))
-        mag = math.hypot(v_alpha, v_beta)
+        kp = float(self.cfg.current_kp)
+        ki = float(self.cfg.current_ki)
+        integral_limit = limit / max(abs(ki), 1e-9)
+        candidate_id_integral = _clamp(
+            self.id_integral + err_d * float(self.cfg.dt_s),
+            -integral_limit,
+            integral_limit,
+        )
+        candidate_iq_integral = _clamp(
+            self.iq_integral + err_q * float(self.cfg.dt_s),
+            -integral_limit,
+            integral_limit,
+        )
+        decouple_d = -float(omega_e) * sigma_ls * float(i_q) + float(preflux_v)
+        decouple_q = float(omega_e) * (
+            sigma_ls * float(i_d) + lm / max(lr, 1e-9) * float(rotor_flux_abs)
+        )
+        v_d = kp * err_d + ki * candidate_id_integral + decouple_d
+        v_q = kp * err_q + ki * candidate_iq_integral + decouple_q
+        mag = math.hypot(v_d, v_q)
         if mag > limit:
             scale = limit / mag
-            v_alpha *= scale
-            v_beta *= scale
+            v_d *= scale
+            v_q *= scale
+            if abs(ki) > 1e-9:
+                self.id_integral = _clamp(
+                    (v_d - kp * err_d - decouple_d) / ki,
+                    -integral_limit,
+                    integral_limit,
+                )
+                self.iq_integral = _clamp(
+                    (v_q - kp * err_q - decouple_q) / ki,
+                    -integral_limit,
+                    integral_limit,
+                )
+        else:
+            self.id_integral = candidate_id_integral
+            self.iq_integral = candidate_iq_integral
+        v_alpha, v_beta = dq_to_alpha_beta(v_d, v_q, self.theta_e)
         return float(v_alpha), float(v_beta)
 
     def step(
@@ -185,23 +245,24 @@ class FocSvmKeyBaselineController:
         model = AlphaBetaInductionMotorModel(self.motor_params, state)
         currents = model.currents()
         torque_ref = self._torque_ref(omega_ref, state.omega_m)
-        self._update_angle(state, omega_ref, torque_ref)
-        i_d, i_q = alpha_beta_to_dq(currents.i_s_alpha, currents.i_s_beta, self.theta_e)
         id_ref, iq_ref = self._dq_references(torque_ref)
+        omega_e = self._update_angle(state, id_ref, iq_ref)
+        i_d, i_q = alpha_beta_to_dq(currents.i_s_alpha, currents.i_s_beta, self.theta_e)
+        flux_ref = self._flux_ref()
+        flux_abs = math.hypot(state.psi_s_alpha, state.psi_s_beta)
+        preflux_v = 0.0
+        if flux_abs < 0.65 * flux_ref:
+            preflux_v = float(self.cfg.preflux_voltage_fraction) * abs(float(inverter.Vdc))
         v_alpha_ref, v_beta_ref = self._voltage_reference(
             id_ref=id_ref,
             iq_ref=iq_ref,
             i_d=i_d,
             i_q=i_q,
-            omega_ref=omega_ref,
+            omega_e=omega_e,
             inverter=inverter,
+            rotor_flux_abs=math.hypot(state.psi_r_alpha, state.psi_r_beta),
+            preflux_v=preflux_v,
         )
-        flux_ref = self._flux_ref()
-        flux_abs = math.hypot(state.psi_s_alpha, state.psi_s_beta)
-        if flux_abs < 0.65 * flux_ref:
-            v_pre = float(self.cfg.preflux_voltage_fraction) * abs(float(inverter.Vdc))
-            v_alpha_ref += v_pre * math.cos(self.theta_e)
-            v_beta_ref += v_pre * math.sin(self.theta_e)
         requested_schedule = space_vector_schedule(
             v_alpha_ref,
             v_beta_ref,
@@ -276,6 +337,8 @@ class FocSvmKeyBaselineController:
             "i_d": float(i_d),
             "i_q": float(i_q),
             "torque_ref": float(torque_ref),
+            "omega_slip_rad_s": float(self.omega_slip),
+            "omega_e_rad_s": float(self.omega_e),
             "predicted_torque": float(predicted_torque),
             "applied_torque": float(applied_torque),
             "v_alpha_ref": float(v_alpha_ref),

@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from config.env import create_default_env
+from models.air56b2_nameplate_ensemble import Air56B2Nameplate, derive_nameplate
 from control.cyclic_robust_viability_pwm import (
     CyclicRobustViabilityConfig,
     CyclicRobustViabilityPwmController,
@@ -52,6 +53,9 @@ from safety.ai_pwm_gateway import (
     has_shoot_through,
     transition_waveform,
 )
+
+
+AIR56B2_DERIVED = derive_nameplate(Air56B2Nameplate())
 
 
 BASE_CONTROLLER_SPECS = [
@@ -552,6 +556,14 @@ def _scenario_values(name: str, k: int, steps: int, omega_nom: float) -> tuple[f
         if steps // 2 <= k < steps // 2 + max(2, steps // 20):
             load = 1.1
         return 0.55 * omega_nom, load, 1.0, False
+    if name == "air56b2_half_load":
+        omega_rated = AIR56B2_DERIVED.rated_omega_rad_s
+        load = 0.0 if k < steps // 2 else 0.5 * AIR56B2_DERIVED.rated_torque_nm
+        return omega_rated * progress if k < ramp_steps else omega_rated, load, 1.0, False
+    if name == "air56b2_rated_load":
+        omega_rated = AIR56B2_DERIVED.rated_omega_rad_s
+        load = 0.0 if k < steps // 2 else AIR56B2_DERIVED.rated_torque_nm
+        return omega_rated * progress if k < ramp_steps else omega_rated, load, 1.0, False
     if name == "two_mass_proxy":
         load = 0.3 + 0.12 * math.sin(2.0 * math.pi * k / max(steps // 6, 1))
         return 0.5 * omega_nom, load, 1.0, False
@@ -577,8 +589,13 @@ def run_trial(
     feedback_period: int,
     scenario: str = "load_step",
     controller_config: object | None = None,
+    real_params_override: AlphaBetaMotorParams | None = None,
 ) -> Dict[str, float]:
-    real_params = randomized_motor_params(base_motor, rng)
+    real_params = (
+        real_params_override
+        if real_params_override is not None
+        else randomized_motor_params(base_motor, rng)
+    )
     scenario_name = str(scenario).strip().lower()
     if scenario_name == "rs_error":
         real_params = replace(real_params, Rs=real_params.Rs * 1.65)
@@ -609,8 +626,11 @@ def run_trial(
 
     omega_nom = 2.0 * math.pi * 50.0 / max(base_motor.p, 1)
     speed_errors: List[float] = []
+    speed_references: List[float] = []
     currents: List[float] = []
     torque_values: List[float] = []
+    controller_loss_values: List[float] = []
+    load_work_j = 0.0
     switch_total = 0
     fallback_count = 0
     fault_latch_count = 0
@@ -687,6 +707,7 @@ def run_trial(
         if isinstance(controller, SafeNeuralHorizonPwmController):
             step_kwargs["feedback_requested_override"] = use_feedback
         result = controller.step(**step_kwargs)
+        controller_loss_values.append(float(result.metrics.get("loss_w", 0.0)))
         planner_candidate_counts.append(float(result.metrics.get("candidate_count", 0.0)))
         planner_model_evaluations.append(float(result.metrics.get("total_model_evaluations", 0.0)))
         planner_viability_rejections.append(float(result.metrics.get("viability_rejections", 0.0)))
@@ -726,17 +747,30 @@ def run_trial(
             pwm_enabled=result.decision.pwm_enabled,
         )
         speed_errors.append(abs(omega_ref - step.state.omega_m))
+        speed_references.append(float(omega_ref))
         currents.append(step.currents.stator_abs)
         torque_values.append(step.torque_nm)
+        load_work_j += max(float(load_torque) * float(step.state.omega_m), 0.0) * step_inverter.t_pwm_s
 
     torque_ripple = 0.0
     if len(torque_values) > 1:
         torque_ripple = sum(abs(b - a) for a, b in zip(torque_values, torque_values[1:])) / (len(torque_values) - 1)
+    steady_start = max(0, 3 * len(speed_errors) // 4)
+    steady_errors = speed_errors[steady_start:]
     return {
         "mean_abs_speed_error": sum(speed_errors) / max(len(speed_errors), 1),
         "p95_abs_speed_error": _percentile(speed_errors, 0.95),
+        "steady_mean_abs_speed_error": sum(steady_errors) / max(len(steady_errors), 1),
+        "steady_p95_abs_speed_error": _percentile(steady_errors, 0.95),
+        "final_abs_speed_error": speed_errors[-1] if speed_errors else 0.0,
+        "final_speed_rad_s": float(real_motor.state.omega_m),
+        "final_speed_reference_rad_s": speed_references[-1] if speed_references else 0.0,
         "mean_current_abs": sum(currents) / max(len(currents), 1),
         "max_current_abs": max(currents) if currents else 0.0,
+        "controller_inverter_loss_proxy_mean_w": (
+            sum(controller_loss_values) / max(len(controller_loss_values), 1)
+        ),
+        "load_work_j": load_work_j,
         "torque_ripple_proxy": torque_ripple,
         "switch_events": float(switch_total),
         "feedback_usage_ratio": feedback_count / max(steps, 1),

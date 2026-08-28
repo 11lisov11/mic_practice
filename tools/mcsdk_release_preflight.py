@@ -265,6 +265,11 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
         for path in project.rglob("*")
         if path.is_file() and path.suffix.lower() in {".c", ".cpp", ".h", ".ioc", ".xml", ".json", ".ftl"}
     ) if project.is_dir() else ""
+    control_source_text = "\n".join(
+        path.read_text(encoding="utf-8", errors="replace")
+        for path in project.rglob("*")
+        if path.is_file() and path.suffix.lower() in {".c", ".cpp", ".h"}
+    ) if project.is_dir() else ""
     source_upper = source_text.upper()
     topology_markers = {
         # The official IPM15B examples name the Nucleo control board, but do
@@ -277,27 +282,46 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
     }
     record("mcsdk_topology_markers", all(topology_markers.values()), topology_markers)
 
-    # The supplied MIC_AI.pdf includes an external precharge relay. Do not allow
-    # a motor-release result until the Nucleo application explicitly declares
-    # an implemented interlock; a UART command or a relay driver on an obsolete
-    # Blue Pill is not an interlock for this target.
-    precharge_interlock = bool(re.search(
-        r"^\s*#define\s+MIC_PRECHARGE_INTERLOCK_IMPLEMENTED\s+1\b",
-        source_text,
+    softstart_configured = bool(re.search(
+        r"^\s*#define\s+MIC_EXTERNAL_SOFTSTART_CONFIGURED\s+1\b",
+        control_source_text,
         flags=re.MULTILINE,
     ))
-    record("precharge_interlock_implemented", precharge_interlock, {
-        "required_define": "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1",
-        "note": "Requires a real Nucleo relay output, bus-ready threshold, and fault/E-stop/timeout opening paths.",
+    softstart_gpio_disabled = bool(re.search(
+        r"^\s*#define\s+MIC_SOFTSTART_GPIO_CONTROLLED\s+0\b",
+        control_source_text,
+        flags=re.MULTILINE,
+    )) and not any(marker in control_source_text for marker in (
+        "UNO_PRECHARGE_GPIO",
+        "uno_precharge_set",
+        "MIC_PRECHARGE_INTERLOCK_IMPLEMENTED",
+    ))
+    settle_match = re.search(
+        r"^\s*#define\s+MIC_EXTERNAL_SOFTSTART_SETTLE_MS\s+(\d+)U?\b",
+        control_source_text,
+        flags=re.MULTILINE,
+    )
+    settle_ms = int(settle_match.group(1)) if settle_match else 0
+    record("external_softstart_configured", softstart_configured, {
+        "required_define": "#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1",
+        "note": "The mains soft-start is autonomous and installed ahead of the rectifier.",
     })
-    precharge_hil = bool(re.search(
-        r"^\s*#define\s+MIC_PRECHARGE_HIL_VALIDATED\s+1\b",
-        source_text,
+    record("external_softstart_has_no_mcu_control", softstart_gpio_disabled, {
+        "required_define": "#define MIC_SOFTSTART_GPIO_CONTROLLED 0",
+        "forbidden_markers": ["UNO_PRECHARGE_GPIO", "uno_precharge_set"],
+    })
+    record("external_softstart_bus_settle_guard", settle_ms >= 3000, {
+        "settle_ms": settle_ms,
+        "minimum_ms": 3000,
+    })
+    softstart_hil = bool(re.search(
+        r"^\s*#define\s+MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED\s+1\b",
+        control_source_text,
         flags=re.MULTILINE,
     ))
-    record("precharge_interlock_hil_validated", precharge_hil, {
-        "required_define": "#define MIC_PRECHARGE_HIL_VALIDATED 1",
-        "note": "Set to 1 only after scope-verified PB4 polarity, Vbus threshold, settle delay, and opening on STOP, E-stop, UART timeout, and MCSDK fault.",
+    record("external_softstart_hil_validated", softstart_hil, {
+        "required_define": "#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 1",
+        "note": "Set to 1 only after checking NTC limiting, autonomous bypass timing, DC-bus stability, and restart behavior on the assembled power path.",
     })
 
     record("motor_profile_present", profile_path.is_file(), str(profile_path))

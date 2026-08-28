@@ -197,6 +197,7 @@ def source_errors(
         (r"UNO_FRAME_LEN\s*=\s*32U", "nucleo_frame_length_not_32"),
         (r"UNO_PROTOCOL_VERSION\s*=\s*0x02U", "nucleo_protocol_version_not_v2"),
         (r"UNO_LINK_TIMEOUT_MS\s*=\s*300U", "nucleo_timeout_not_300ms"),
+        (r"UNO_SPEED_RAMP_MS\s*=\s*3000U", "nucleo_first_spin_ramp_not_3000ms"),
         (r"GPIO_PIN_6\s*\|\s*GPIO_PIN_7", "nucleo_usart1_pins_missing"),
         (r"GPIO_AF7_USART1", "nucleo_usart1_af_missing"),
         (
@@ -237,15 +238,15 @@ def source_errors(
         (r"MC_StartMotor1", "nucleo_does_not_start_with_mcsdk_api"),
         (r"MC_StopMotor1", "nucleo_does_not_stop_with_mcsdk_api"),
         (r"MC_AcknowledgeFaultMotor1", "nucleo_does_not_ack_mcsdk_fault"),
-        (r"#define\s+MIC_PRECHARGE_INTERLOCK_IMPLEMENTED\s+1", "nucleo_precharge_interlock_missing"),
-        (r"#define\s+MIC_PRECHARGE_HIL_VALIDATED\s+0", "nucleo_precharge_hil_flag_not_fail_closed"),
-        (r"UNO_PRECHARGE_GPIO_PORT\s+GPIOB", "nucleo_precharge_port_not_pb"),
-        (r"UNO_PRECHARGE_GPIO_PIN\s+GPIO_PIN_4", "nucleo_precharge_pin_not_pb4"),
-        (r"uno_stop_motor\s*\(void\).*?uno_precharge_set\(false\)", "nucleo_stop_does_not_open_precharge"),
-        (r"UNO_PRECHARGE_READY_V\s*=\s*250U", "nucleo_precharge_bus_ready_threshold_missing"),
-        (r"UNO_PRECHARGE_SETTLE_MS\s*=\s*350U", "nucleo_precharge_settle_missing"),
+        (r"#define\s+MIC_EXTERNAL_SOFTSTART_CONFIGURED\s+1", "nucleo_external_softstart_missing"),
+        (r"#define\s+MIC_SOFTSTART_GPIO_CONTROLLED\s+0", "nucleo_softstart_gpio_control_not_disabled"),
+        (r"#define\s+MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED\s+0", "nucleo_softstart_hil_flag_not_fail_closed"),
+        (r"#define\s+MIC_EXTERNAL_SOFTSTART_SETTLE_MS\s+3500U", "nucleo_softstart_settle_missing"),
+        (r"UNO_SOFTSTART_READY_V\s*=\s*250U", "nucleo_softstart_bus_ready_threshold_missing"),
+        (r"reply\[14\]\s*=\s*0U", "nucleo_reserved_precharge_bit_not_forced_off"),
+        (r"uno_update_softstart_state\(now_ms\).*?if\s*\(!uno_link\.softstart_ready\)", "nucleo_softstart_readiness_not_enforced"),
         (r"reply\[17\].*?reply\[18\].*?reply\[19\].*?reply\[20\].*?reply\[21\].*?reply\[29\]", "nucleo_mcsdk_telemetry_reply_missing"),
-        (r"HAL_UART_Transmit.*?uno_saturating_increment\(&uno_link\.bad_count\);\s*uno_latch_fault\(UNO_FAULT_INTERNAL\)", "nucleo_tx_failure_does_not_open_precharge"),
+        (r"HAL_UART_Transmit.*?uno_saturating_increment\(&uno_link\.bad_count\);\s*uno_latch_fault\(UNO_FAULT_INTERNAL\)", "nucleo_tx_failure_does_not_latch_fault"),
     ):
         require(nucleo, pattern, name, errors)
 
@@ -255,6 +256,10 @@ def source_errors(
     for forbidden in ("HAL_TIM_", "HAL_ADC_"):
         if forbidden in user_code:
             errors.append(f"nucleo_adapter_uses_forbidden_direct_control:{forbidden}")
+
+    for forbidden in ("UNO_PRECHARGE_GPIO", "uno_precharge_set"):
+        if forbidden in user_code:
+            errors.append(f"nucleo_obsolete_precharge_control_present:{forbidden}")
 
     require(
         mcp,

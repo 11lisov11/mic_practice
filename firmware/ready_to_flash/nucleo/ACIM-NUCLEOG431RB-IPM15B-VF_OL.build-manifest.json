@@ -1,36 +1,37 @@
-{
-  "schema": "mic_ai.mcsdk.acim_reference_build.v1",
-  "generated_at": "2026-08-26T14:16:32.3777596Z",
-  "project": "ACIM-NUCLEOG431RB-IPM15B-VF_OL",
-  "configuration": "Debug",
-  "target": "NUCLEO-G431RB + X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
-  "control_mode": "ACIM V/F open loop",
-  "reference_motor": "IEK AIR56B2 0.25 kW 220/380 V Delta/Y",
-  "motor_status": "CATALOG/OPERATOR-CONFIRMED V/F CANDIDATE ONLY: no target-motor photo provenance, identification, or HV interlock validation",
-  "motor_profile_status": "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification",
-  "ioc_motor_name": "IEK_AIR56B2_D",
-  "ioc_nominal_phase_voltage_v": "127",
-  "ioc_nominal_current_a": "1.24",
-  "ioc_pole_pairs": "1",
-  "build_log": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.build.log",
-  "build_exit_code": 0,
-  "build_errors": 0,
-  "build_warnings": 0,
-  "artifacts": [
-    {
-      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-      "bytes": 2062148,
-      "sha256": "02827A0E486A4C581D3E9E8991349C9B7FF73E54D0CB86870049E95B732FE5DF"
-    },
-    {
-      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-      "bytes": 39348,
-      "sha256": "9102EA7A31642557CFCFC961F5838B4C84A2BCA5AC8916E9963815953990E7FB"
-    },
-    {
-      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-      "bytes": 110766,
-      "sha256": "F871B566BF758B297EFE73704F0AB3FFF855D8F027574178CC66562C4200C01C"
-    }
-  ]
+﻿{
+    "schema":  "mic_ai.mcsdk.acim_reference_build.v1",
+    "generated_at":  "2026-08-26T23:36:43.7929630Z",
+    "project":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL",
+    "configuration":  "Debug",
+    "target":  "NUCLEO-G431RB + X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
+    "control_mode":  "ACIM V/F open loop",
+    "mcsdk_acim_config":  "VF_OL",
+    "reference_motor":  "IEK AIR56B2 0.25 kW 220/380 V Delta/Y",
+    "motor_status":  "AIR56B2 CANDIDATE ONLY: target-motor provenance, measured model, and external soft-start HIL must match this generated project",
+    "motor_profile_status":  "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification",
+    "ioc_motor_name":  "IEK_AIR56B2_D",
+    "ioc_nominal_phase_voltage_v":  "127",
+    "ioc_nominal_current_a":  "1.24",
+    "ioc_pole_pairs":  "1",
+    "build_log":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.build.log",
+    "build_exit_code":  0,
+    "build_errors":  0,
+    "build_warnings":  0,
+    "artifacts":  [
+                      {
+                          "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+                          "bytes":  2062168,
+                          "sha256":  "AABC5CDB0ABB0F6050B1BC689BA6E4F153ED76F4D8338D5BF880BF829B7210EF"
+                      },
+                      {
+                          "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+                          "bytes":  39004,
+                          "sha256":  "693EEC675CE2599AD45DD608B2BAAB7C2E365DDA09AF8AFB7A1FF34544341EBE"
+                      },
+                      {
+                          "file":  "ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+                          "bytes":  109805,
+                          "sha256":  "2A0F4656E50C447F91C902D0F74AD21A4AFAFDE0F14EDB3C0D5B9D5B3AB16142"
+                      }
+                  ]
 }

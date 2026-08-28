@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1191" height="842" viewBox="0 0 1191 842">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="36.00" y="38.00" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#163c32">MIC_AI REV 2.1</text>
+<text x="36.00" y="38.00" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#163c32">MIC_AI REV 2.2</text>
 <text x="235.00" y="37.00" font-family="Arial, sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#172126">Архитектура и домены земли</text>
 <text x="36.00" y="58.00" font-family="Arial, sans-serif" font-size="9" font-weight="400" text-anchor="start" fill="#4b5f59">Каноническая схема: SAFE_GND никогда напрямую не соединяется с HV_DC-/HOT_GND</text>
 <line x1="36.00" y1="68.00" x2="1154.55" y2="68.00" stroke="#286f5d" stroke-width="2"/>
-<text x="1154.55" y="821.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="end" fill="#5b6965">Лист 1/6   2026-07-17</text>
+<text x="1154.55" y="821.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="end" fill="#5b6965">Лист 1/6   2026-08-26</text>
 <rect x="30.00" y="111.89" width="325.00" height="650.00" rx="10" fill="#eef8f4" stroke="#276e5c" stroke-width="2"/>
 <rect x="383.00" y="111.89" width="220.00" height="650.00" rx="10" fill="#fff7e8" stroke="#d78823" stroke-width="2"/>
 <rect x="632.00" y="111.89" width="525.00" height="650.00" rx="10" fill="#fff0ef" stroke="#a32b28" stroke-width="2"/>
@@ -41,7 +41,7 @@
 <text x="423.00" y="349.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">U_LA1 + U_LA2</text>
 <text x="423.00" y="367.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">2 x ISO7740FDWR</text>
 <text x="423.00" y="379.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">8 hot-to-safe channels</text>
-<text x="423.00" y="390.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PWM/EM_STOP/PB4</text>
+<text x="423.00" y="390.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PWM/EM_STOP/reserved</text>
 <text x="423.00" y="402.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">default LOW</text>
 <rect x="413.00" y="501.89" width="160.00" height="95.00" rx="6" fill="#fffdf8" stroke="#be761b" stroke-width="1.8"/>
 <text x="423.00" y="519.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">U_ESTOP_OPTO</text>
@@ -76,7 +76,7 @@
 <text x="930.00" y="397.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">3-pin: только полная скорость</text>
 <rect x="665.00" y="486.89" width="460.00" height="110.00" rx="6" fill="#fffafa" stroke="#a32b28" stroke-width="1.8"/>
 <text x="675.00" y="504.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Силовое питание</text>
-<text x="675.00" y="522.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">230VAC -&gt; F1 -&gt; MOV -&gt; KBPC5010 -&gt; precharge -&gt; HV_DC+</text>
+<text x="675.00" y="522.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">230VAC -&gt; F1/MOV -&gt; autonomous soft-start -&gt; KBPC5010</text>
 <text x="675.00" y="534.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HV_DC- = HOT_GND только внутри опасного домена</text>
 <text x="675.00" y="545.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">PE идет только на корпус/раму/двигатель, не на HV_DC-</text>
 <text x="675.00" y="557.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HLK-20M15 питает горячие 15V/12V/5V/3.3V</text>

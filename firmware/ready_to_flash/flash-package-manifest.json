@@ -1,88 +1,159 @@
-{
-  "schema": "mic_ai.board_flash_package.v1",
-  "generated_at": "2026-08-26T14:16:40.2465680Z",
-  "source_commit": "ca570b8a24537dc07f6c4ab3f6ff05396313b4ed",
-  "identity": {
-    "nucleo_board": "NUCLEO-G431RB",
-    "nucleo_mcu": "STM32G431RBT6",
-    "power_stage": "X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
-    "uno_board": "Arduino UNO Q",
-    "motor": "IEK AIR56B2 0.25 kW, 1 pole pair, 50 Hz, 2720 rpm",
-    "motor_connection": "220 V delta",
-    "protocol": "UART v0x02, 115200 8N1"
-  },
-  "software_verified": true,
-  "hardware_validated": false,
-  "open_release_checks": [
-    "precharge_interlock_hil_validated",
-    "motor_profile_is_real_acim",
-    "generated_motor_configuration_matches_profile"
-  ],
-  "artifacts": [
-    {
-      "path": "FLASHING_RU.md",
-      "bytes": 4380,
-      "sha256": "B06D64DA50203AC2AD979D87B1060F67A62E8CED61B67064C0A50A009BA94AE5"
-    },
-    {
-      "path": "linux/tools/adb_deploy_web_hmi.py",
-      "bytes": 17303,
-      "sha256": "67B97B71BE4A4CB4E4122D266209FEAB8EED69F4FB83EB43BBB427A29D142FCE"
-    },
-    {
-      "path": "linux/web_hmi/flash_unoq_sketch_090.cfg",
-      "bytes": 450,
-      "sha256": "D83AB25F951733F02E5BD88CBAC664F32D17B16D6F3F67500B7A3C76DC05F3C6"
-    },
-    {
-      "path": "linux/web_hmi/requirements.txt",
-      "bytes": 12,
-      "sha256": "2DB2172E314F86716C5C45BB731F4E77D2EB626BA9B6D053AB564E82795C9341"
-    },
-    {
-      "path": "linux/web_hmi/server.py",
-      "bytes": 107283,
-      "sha256": "B7595A1F577DDC44CE808DFE7D1A5A141CC0AB7681B60ADDF5B5518E5892776B"
-    },
-    {
-      "path": "linux/web_hmi/static/app.js",
-      "bytes": 23671,
-      "sha256": "CA56B4AA2865C6094CC96861EB841352710288B38A3DACB96C24031B7CD95CCE"
-    },
-    {
-      "path": "linux/web_hmi/static/index.html",
-      "bytes": 7595,
-      "sha256": "2DCFA0C98D56109CFDE4CBD695662E0746DD2E37C12090A1184B5265C452EFFB"
-    },
-    {
-      "path": "linux/web_hmi/static/style.css",
-      "bytes": 8290,
-      "sha256": "605171FD68A6A88BC1A95B136A9C1EC69E3F72E250F59C4D9C17EDF549C2A609"
-    },
-    {
-      "path": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
-      "bytes": 1441,
-      "sha256": "744FFE6F8EECC65B91E9A106EB64A6EEF8F2A2C1062338198BDCA4A1C0122832"
-    },
-    {
-      "path": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-      "bytes": 110766,
-      "sha256": "F871B566BF758B297EFE73704F0AB3FFF855D8F027574178CC66562C4200C01C"
-    },
-    {
-      "path": "reports/mcsdk_release_preflight.json",
-      "bytes": 4255,
-      "sha256": "E1A481469308370472977E725427EAED03E865F23C5712B45DAABDD7DA8883D6"
-    },
-    {
-      "path": "uno_q_mcu/unoq_mcsdk_scalar.build-manifest.json",
-      "bytes": 1139,
-      "sha256": "64CF660109D42E63742DE0436A2C4CF1E5B4F06210B8BDAEE3706E07877046C7"
-    },
-    {
-      "path": "uno_q_mcu/UNOQ_MOTOR.ino.elf-zsk.bin",
-      "bytes": 121952,
-      "sha256": "69E58E5F5FB8869CB820B120DD5F86E1C298F5643A949CB28FAF78C0AC1DCFDE"
-    }
-  ]
+﻿{
+    "schema":  "mic_ai.board_flash_package.v1",
+    "generated_at":  "2026-08-26T23:36:52.1519756Z",
+    "source_commit":  "2de459d03f6a750207730d89a7a51eeeafe86999",
+    "source_worktree_dirty":  true,
+    "identity":  {
+                     "nucleo_board":  "NUCLEO-G431RB",
+                     "nucleo_mcu":  "STM32G431RBT6",
+                     "power_stage":  "X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
+                     "uno_board":  "Arduino UNO Q",
+                     "motor":  "IEK AIR56B2 0.25 kW, 1 pole pair, 50 Hz, 2720 rpm",
+                     "motor_connection":  "220 V delta",
+                     "protocol":  "UART v0x02, 115200 8N1",
+                     "rpc_schema":  "UNO Q get-array v2, 78 append-only elements",
+                     "telemetry_api":  "mc_* canonical; bp_* deprecated compatibility aliases",
+                     "supported_motor_modes":  [
+                                                   "VF"
+                                               ],
+                     "uart_topology":  "direct 3.3 V UART; UNO Q GND and Nucleo GND are common HOT_GND = STEVAL J7 DC-",
+                     "external_interface_in_hv":  "Wi-Fi only; no USB/ST-Link/Ethernet/HDMI/UART cables"
+                 },
+    "software_verified":  true,
+    "hardware_validated":  false,
+    "active_stage":  "S1_VF_SENSORLESS_FIRST_SPIN",
+    "mcu_controlled_precharge_relay":  false,
+    "external_softstart":  "autonomous AC module ahead of rectifier",
+    "open_release_checks":  [
+                                "external_softstart_hil_validated",
+                                "motor_profile_is_real_acim",
+                                "generated_motor_configuration_matches_profile"
+                            ],
+    "artifacts":  [
+                      {
+                          "path":  "AUTONOMOUS_WIFI_OPERATION_RU.md",
+                          "bytes":  4572,
+                          "sha256":  "7760D7BB1189584ED23844D5880E0F4DBC86A2FBD7021B406ABF465355953BD0"
+                      },
+                      {
+                          "path":  "firmware_stages.json",
+                          "bytes":  2304,
+                          "sha256":  "82B78750ECFB2DC2A0D78D48C5EFC07480581CE1E5E71E33BEC789A67BF6FC4A"
+                      },
+                      {
+                          "path":  "FIRMWARE_STAGES_RU.md",
+                          "bytes":  6279,
+                          "sha256":  "DF4C9562BA26601903C8BCD6D569E4B271C302A91BA2F67A1FDC6FD5E549B1DA"
+                      },
+                      {
+                          "path":  "FLASHING_RU.md",
+                          "bytes":  5728,
+                          "sha256":  "BECF9690BCC3EF277422D7DBF9669B57AC0C627BFC0D6D22C9864308DFD837DF"
+                      },
+                      {
+                          "path":  "linux/tools/adb_deploy_web_hmi.py",
+                          "bytes":  20341,
+                          "sha256":  "0BC86379A750BE4C7CCE40A4C5F590D70F3DC425C7441D27E457AB68E0D4774E"
+                      },
+                      {
+                          "path":  "linux/tools/capture_as5600_teacher_dataset.py",
+                          "bytes":  6390,
+                          "sha256":  "7D7ECAE75BCDD98A55A70308BD5C39DE79A1CCB0D76E2C8E3BF2E02EB29D1F45"
+                      },
+                      {
+                          "path":  "linux/tools/configure_unoq_autonomous_wifi.py",
+                          "bytes":  4464,
+                          "sha256":  "B35872AFCC68266C1E46F74783C19EAB73C178750F499FA9380BBB6D0D0687B4"
+                      },
+                      {
+                          "path":  "linux/web_hmi/flash_unoq_sketch_090.cfg",
+                          "bytes":  450,
+                          "sha256":  "D83AB25F951733F02E5BD88CBAC664F32D17B16D6F3F67500B7A3C76DC05F3C6"
+                      },
+                      {
+                          "path":  "linux/web_hmi/requirements.txt",
+                          "bytes":  12,
+                          "sha256":  "2DB2172E314F86716C5C45BB731F4E77D2EB626BA9B6D053AB564E82795C9341"
+                      },
+                      {
+                          "path":  "linux/web_hmi/server.py",
+                          "bytes":  114557,
+                          "sha256":  "B3B547749A5D98DF6B57ADD84195C34F717B1E173DF0BFE2BD657D3DC1ECE96A"
+                      },
+                      {
+                          "path":  "linux/web_hmi/static/app.js",
+                          "bytes":  26609,
+                          "sha256":  "0D30F9DE4C876051F9E28D7F10730F94A33B5A1A869D35DD46F61CFF157DC457"
+                      },
+                      {
+                          "path":  "linux/web_hmi/static/index.html",
+                          "bytes":  8075,
+                          "sha256":  "5F5F46D63403546C9F4FDE6A418F0B7C7993B2EC81825A391E767D49F9925265"
+                      },
+                      {
+                          "path":  "linux/web_hmi/static/style.css",
+                          "bytes":  8833,
+                          "sha256":  "DE37484A049DE64405D29B11F20300A16D0D589BA0D76758D8B8489CEBFD03A4"
+                      },
+                      {
+                          "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+                          "bytes":  39004,
+                          "sha256":  "693EEC675CE2599AD45DD608B2BAAB7C2E365DDA09AF8AFB7A1FF34544341EBE"
+                      },
+                      {
+                          "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+                          "bytes":  1850,
+                          "sha256":  "0FCC945255FCAB900545C2B8006AFF77AA255D7CD485AEA254118EED07E42280"
+                      },
+                      {
+                          "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+                          "bytes":  2062168,
+                          "sha256":  "AABC5CDB0ABB0F6050B1BC689BA6E4F153ED76F4D8338D5BF880BF829B7210EF"
+                      },
+                      {
+                          "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+                          "bytes":  109805,
+                          "sha256":  "2A0F4656E50C447F91C902D0F74AD21A4AFAFDE0F14EDB3C0D5B9D5B3AB16142"
+                      },
+                      {
+                          "path":  "reports/mcsdk_release_preflight.json",
+                          "bytes":  4677,
+                          "sha256":  "FE33EB56FCA181859697BBE10E3FA8055650EA0A2F53CDB961924BBB04CA114E"
+                      },
+                      {
+                          "path":  "tools/flash_mic_ai_boards.ps1",
+                          "bytes":  3356,
+                          "sha256":  "940BFE1BDD4AA36B34D00D90D561D21AC150E0717FC8843E1EDDB31C7F8D477C"
+                      },
+                      {
+                          "path":  "tools/verify_board_flash_package.py",
+                          "bytes":  5801,
+                          "sha256":  "78EBB4CAEE415CC84D767ADA184FAF35F7CE919C1466E10BD9A85B2ABDA39C73"
+                      },
+                      {
+                          "path":  "uno_q_mcu/unoq_mcsdk_scalar.build-manifest.json",
+                          "bytes":  1581,
+                          "sha256":  "16E237F11FAFC46ADBDD6531E4753492E82CCD63430623964B0D0345F32DF9DA"
+                      },
+                      {
+                          "path":  "uno_q_mcu/UNOQ_MOTOR.ino.bin",
+                          "bytes":  50312,
+                          "sha256":  "EA41E501AAC17835C112384BE8858EB35E0123601F96C3F3CDA25321270DA08D"
+                      },
+                      {
+                          "path":  "uno_q_mcu/UNOQ_MOTOR.ino.elf",
+                          "bytes":  122196,
+                          "sha256":  "AC910D1583358843DD8ACA9A25C7A60554B330F352D3EAF3CFE83A713E20BEB4"
+                      },
+                      {
+                          "path":  "uno_q_mcu/UNOQ_MOTOR.ino.elf-zsk.bin",
+                          "bytes":  122196,
+                          "sha256":  "54045A99F6047BA72023CFFE1E33ECCCB82E281CB9F144878FCB2EDFF62B5E63"
+                      },
+                      {
+                          "path":  "uno_q_mcu/UNOQ_MOTOR.ino.hex",
+                          "bytes":  136711,
+                          "sha256":  "B14D8017591516B7E55C3DEA52565649C7A8F2029F1C85B9EE9BB5C72A51E94A"
+                      }
+                  ]
 }

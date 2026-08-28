@@ -1,17 +1,17 @@
 {
   "project": "MIC_AI",
-  "revision": "2.1",
-  "date": "2026-07-17",
+  "revision": "2.2",
+  "date": "2026-08-26",
   "audit": {
     "pass": true,
     "errors": [],
     "warnings": [],
     "invariants": {
-      "bridge_ac1_is_fused_line": true,
-      "bridge_ac2_is_neutral": true,
+      "bridge_ac1_is_softstart_output": true,
+      "bridge_ac2_is_softstart_output": true,
       "bridge_minus_is_hot_ground": true,
-      "bridge_plus_is_rectified_plus": true,
-      "precharge_is_pb4": true,
+      "bridge_plus_is_hv_bus": true,
+      "softstart_has_no_mcu_control": true,
       "steval_j2_21_is_nc": true,
       "unoq_power_uses_vin": true,
       "unoq_5v_not_backfed": true,
@@ -23,89 +23,90 @@
       "safe_ground_isolated": true,
       "saleae_outputs_explicitly_enabled": true
     },
-    "component_count": 92,
-    "net_count": 89,
-    "connected_endpoint_count": 308,
+    "component_count": 86,
+    "net_count": 86,
+    "connected_endpoint_count": 293,
     "intentional_nc": [
       "J_STEVAL_J2.P21",
       "J_STEVAL_J2.P34",
       "U_BP.5V",
       "U_BP.PB1",
+      "U_BP.PB4",
+      "U_LA2.HI4",
       "U_UNOQ.5V_USB"
     ]
   },
   "pinmap": {
-    "row_count": 71,
-    "critical_component_count": 12,
-    "requires_official_footprint": [
-      "K1"
-    ]
+    "row_count": 62,
+    "critical_component_count": 9,
+    "requires_official_footprint": []
   },
   "canonical_pdf": "C:\\mic_practice\\output\\pdf\\MIC_AI_REV2_SCHEMATIC.pdf",
   "artifacts": [
     {
       "path": "C:\\mic_practice\\output\\pdf\\MIC_AI_REV2_SCHEMATIC.pdf",
-      "bytes": 112687,
-      "sha256": "4d7c72d6de713260170de786d11e00547e22e4bc9c846483c6352194a4066e9d"
+      "bytes": 112440,
+      "sha256": "00d8b002d75fe5235f90da817646ebb0fd0da19541bcba6bdd707934e97056b1"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_NETLIST.edif",
-      "bytes": 80013,
-      "sha256": "867b05e91774ccc2dee18a224b9a3c5c47b539e21f1bac1d9390e01f26eec8e4"
+      "bytes": 75845,
+      "sha256": "be90ec9c9a2d02ad7c1fa61b5ce9b5861604af8a2b0410de3038add5f717ae45"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_BOM.csv",
-      "bytes": 4809,
-      "sha256": "e0707c5c548d4466497e87ec97f5b618b35111dc9cb67a27de7bdc9bc10726b4"
+      "bytes": 4645,
+      "sha256": "1e7d79ee4f3200b160a782c90ea009a9d31c4b846bbc20f0c867692a40176e36"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_CONNECTIONS.csv",
-      "bytes": 14813,
-      "sha256": "6b552dd97a6a0b15e0aef780923031bd5f67d0850c1f1970e156e33cc301ba82"
+      "bytes": 14343,
+      "sha256": "31ae6d5e4d60ea51b83fa743a86e6a2903f7948c1470d429712fa1701f957db8"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\MIC_AI_REV2_PINMAP.csv",
-      "bytes": 8846,
-      "sha256": "7bfd30d32d383d01d1e42dbefb31a8321733ddcd29095cd306c147e6e4c83980"
+      "bytes": 7661,
+      "sha256": "d42ffbf2e87e2c3d93ddcbb5186a2b2cff8282723ec7602237422f31e9e62ce6"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\ASSEMBLY_RU.md",
-      "bytes": 4624,
-      "sha256": "86e04f3bc7f16871ef398ec73ab14e1f434b7d319e5a579b0ad2ef48a1365199"
+      "bytes": 4691,
+      "sha256": "f582d9f045b3454bfd75fbaf82265544ec1536c3cefa5057370a07dda8232500"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_01.svg",
-      "bytes": 16050,
-      "sha256": "2b366780ce42bfeb61db894883d26314e8d8242c9eb477d0e7f17ac7863cd7f2"
+      "bytes": 16048,
+      "sha256": "b08c8ad67ddae9cdf4adb3647f8395e11efecb64fb0ffb9541a731b4b20d8b4a"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_02.svg",
-      "bytes": 17404,
-      "sha256": "8c1dc674e6a8fa0139b46c831e783d2cf7da8868f4b2f044a46ee98a6e72a7b7"
+      "bytes": 17424,
+      "sha256": "6d72423ea362775f15ebb1d39173e36d36079a7bb0915cf1dd5955f08bd4739c"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_03.svg",
-      "bytes": 28642,
-      "sha256": "0f0f51179f2e92088eec1352e6d3c461bd4b0e97ee24b24363fe00d66a7a7248"
+      "bytes": 28656,
+      "sha256": "c24f72a3763fbc1e477da16d621b14000db0cd08ea43cb1d8785f76e3d62dec8"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_04.svg",
-      "bytes": 12589,
-      "sha256": "4a7dc9d9a9eeb6c496c6a4535cd91b20009453162869b25817d4510a4d57c0f4"
+      "bytes": 12590,
+      "sha256": "faa1f618562dd379ba33e93ffd26794427adf35d6547f26f7d67a4427737d96c"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_05.svg",
-      "bytes": 10124,
-      "sha256": "f5d9d9d7d2358dbba6a106e2499bc6e567ac18ed17c928462e12dd2d3265d56d"
+      "bytes": 10131,
+      "sha256": "196dc72095f2e59dfddbbe454b8fc023f0af91820440641080e13a4d1c56b387"
     },
     {
       "path": "C:\\mic_practice\\hardware\\mic_ai_rev2\\svg\\page_06.svg",
-      "bytes": 10617,
-      "sha256": "dbfb34270db9e7a77a93f2f2ac80142af343656975ec2a14d47377e60fc7b5c3"
+      "bytes": 10646,
+      "sha256": "648fa5cef005d246c3f111f75618dc1771abbda25de70d7de2008b3665823ff2"
     }
   ],
   "unresolved": [
     "F1 value requires motor nameplate current, intended maximum power, conductor size, and protection coordination.",
+    "The external soft-start terminal marking, current rating, delay, and insulation must be verified on the purchased module.",
     "PCB layout still requires creepage/clearance, thermal, and mechanical safety review.",
     "The required safety category and external mains contactor must be selected for the final machine/application."
   ]

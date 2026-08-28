@@ -1,0 +1,1776 @@
+{
+  "ts": "211592",
+  "base_url": "http://127.0.0.1:18080",
+  "run_dir": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592",
+  "run_metadata": {
+    "schema": "mic_practice.run_metadata.v1",
+    "timestamp_utc": "2026-08-26T18:16:41+00:00",
+    "cwd": "C:\\mic_practice",
+    "argv": [
+      "tools/full_system_preflight.py",
+      "--build-only",
+      "--outdir",
+      "artifacts/full_system_preflight_stage_s1_20260826_final"
+    ],
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "repo_root": "C:\\mic_practice",
+    "git": {
+      "available": true,
+      "branch": "main",
+      "commit": "2de459d03f6a750207730d89a7a51eeeafe86999",
+      "commit_short": "2de459d03f6a",
+      "remote_origin": "https://github.com/11lisov11/mic_practice.git",
+      "dirty": true,
+      "status_short": [
+        "M README.md",
+        " M UNOQ_MOTOR/UNOQ_MOTOR.ino",
+        " M docs/BOARD_FIRMWARE_FLASH_RU.md",
+        " M docs/MCSDK_ACIM_RELEASE_RU.md",
+        " M docs/MIC_AI_PDF_AUDIT_RU.md",
+        " M docs/UNOQ_MCSDK_UART_CONTRACT_RU.md",
+        " M firmware/ready_to_flash.zip",
+        " M firmware/ready_to_flash/FLASHING_RU.md",
+        " M firmware/ready_to_flash/flash-package-manifest.json",
+        " M firmware/ready_to_flash/linux/web_hmi/server.py",
+        " M firmware/ready_to_flash/nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+        " M firmware/ready_to_flash/nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+        " M firmware/ready_to_flash/reports/mcsdk_release_preflight.json",
+        " M firmware/ready_to_flash/uno_q_mcu/UNOQ_MOTOR.ino.elf-zsk.bin",
+        " M firmware/ready_to_flash/uno_q_mcu/unoq_mcsdk_scalar.build-manifest.json",
+        " M firmware/unoq_mcsdk_scalar/UNOQ_MOTOR.ino.hex",
+        " M firmware/unoq_mcsdk_scalar/unoq_mcsdk_scalar.build-manifest.json",
+        " M hardware/mic_ai_rev2/ASSEMBLY_RU.md",
+        " M hardware/mic_ai_rev2/MIC_AI_REV2_BOM.csv",
+        " M hardware/mic_ai_rev2/MIC_AI_REV2_CONNECTIONS.csv",
+        " M hardware/mic_ai_rev2/MIC_AI_REV2_NETLIST.edif",
+        " M hardware/mic_ai_rev2/MIC_AI_REV2_PINMAP.csv",
+        " M hardware/mic_ai_rev2/manifest.json",
+        " M hardware/mic_ai_rev2/svg/page_01.svg",
+        " M hardware/mic_ai_rev2/svg/page_02.svg",
+        " M hardware/mic_ai_rev2/svg/page_03.svg",
+        " M hardware/mic_ai_rev2/svg/page_04.svg",
+        " M hardware/mic_ai_rev2/svg/page_05.svg",
+        " M hardware/mic_ai_rev2/svg/page_06.svg",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.list",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/Application/User/main.cyclo",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/Application/User/main.su",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/STM32CubeIDE/Debug/mcsdk_release_preflight.json",
+        " M mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Src/main.c",
+        " M output/pdf/MIC_AI_REV2_SCHEMATIC.pdf",
+        " M tools/build_acim_reference.ps1",
+        " M tools/build_board_flash_package.ps1",
+        " M tools/firmware_config_safety_check.py",
+        " M tools/flash_mic_ai_boards.ps1",
+        " M tools/generate_mic_ai_rev2.py",
+        " M tools/mcsdk_release_preflight.py",
+        " M tools/mcsdk_release_preflight_selftest.py",
+        " M tools/regenerate_mcsdk_project.ps1",
+        " M tools/scalar_vf_preflight.py",
+        " M tools/start_guard_static_check.py",
+        " M tools/uno_nucleo_mcsdk_contract_check.py",
+        " M tools/verify_board_flash_package.py",
+        " M tools/web_hmi_command_guard_selftest.py",
+        " M web_hmi/server.py",
+        "?? artifacts/",
+        "?? docs/FIRMWARE_STAGES_RU.md",
+        "?? firmware/firmware_stages.json",
+        "?? firmware/ready_to_flash/FIRMWARE_STAGES_RU.md",
+        "?? firmware/ready_to_flash/firmware_stages.json",
+        "?? firmware/ready_to_flash/linux/tools/capture_as5600_teacher_dataset.py",
+        "?? firmware/ready_to_flash/tools/",
+        "?? firmware/ready_to_flash/uno_q_mcu/UNOQ_MOTOR.ino.hex",
+        "?? tools/capture_as5600_teacher_dataset.py",
+        "?? tools/capture_as5600_teacher_dataset_selftest.py",
+        "?? tools/prepare_air56_lso_foc.ps1",
+        "?? tools/prepare_air56_lso_profile.py",
+        "?? tools/prepare_air56_lso_profile_selftest.py"
+      ]
+    }
+  },
+  "source_fingerprint": {
+    "schema": "mic_practice.source_fingerprint.v1",
+    "patterns": [
+      "README.md",
+      "PC_DIRECT_STM32_RU.md",
+      "BRINGUP_STEPS_RU.md",
+      "CONNECTION_MATRIX_RU.md",
+      "PWM_STATIC_BLOCKER_RU.md",
+      "UART_LOOPBACK_STEPS_RU.md",
+      "RESEARCH_READINESS_RU.md",
+      "NUCLEO_G431_MIGRATION_RU.md",
+      "requirements*.txt",
+      "tools/*.py",
+      "motor_identification/*.py",
+      "web_hmi/server.py",
+      "UNOQ_MOTOR/*.ino",
+      "bluepill_uart_pwm_pio/platformio.ini",
+      "bluepill_uart_pwm_pio/include/*.h",
+      "bluepill_uart_pwm_pio/src/*.cpp",
+      "nucleo_g431_uart_bridge_pio/platformio.ini",
+      "nucleo_g431_uart_bridge_pio/include/*.h",
+      "nucleo_g431_uart_bridge_pio/src/*.cpp"
+    ],
+    "count": 170,
+    "sha256": "9e64ce319b3cf18cdf9c8d5784204c268d8a204b9928658e282dd56ed616d0c9",
+    "files": [
+      {
+        "path": "BRINGUP_STEPS_RU.md",
+        "sha256": "2ceb5492032ea02290f744b8f588c057224f9b2eda39cf3b45a7e71126743c3b",
+        "size": 12493
+      },
+      {
+        "path": "CONNECTION_MATRIX_RU.md",
+        "sha256": "0e095761e9776016aa6c9d34b38e674be16ca0e3454a2a7821e7e6be43a6586c",
+        "size": 12034
+      },
+      {
+        "path": "NUCLEO_G431_MIGRATION_RU.md",
+        "sha256": "fe2a72d2a63dac3da314b3e148b3392e1be2b6e0ad5bafd7684e971c5c481ca6",
+        "size": 25617
+      },
+      {
+        "path": "PC_DIRECT_STM32_RU.md",
+        "sha256": "6c95018e6116310bde8038f5c05ecde666c3f7805ee0d880fbf305e669cf4219",
+        "size": 20467
+      },
+      {
+        "path": "PWM_STATIC_BLOCKER_RU.md",
+        "sha256": "4ca58bf004bd85422c7bffeba4425d072490f3e2edceb53600df80d1fcb6aa74",
+        "size": 6432
+      },
+      {
+        "path": "README.md",
+        "sha256": "8adfe8b921c2a0696c1dc7bbb820b5e2b5d19d4c93a80fb80cf775a3ef29dcc1",
+        "size": 61423
+      },
+      {
+        "path": "RESEARCH_READINESS_RU.md",
+        "sha256": "3554c80da141efa0ecda242e82a8294eefe60caea7a8f4f4410b2cb9f6bf5a53",
+        "size": 16293
+      },
+      {
+        "path": "UART_LOOPBACK_STEPS_RU.md",
+        "sha256": "52c45b6ef9d09a5a1330067319fe89bca911994272b1c4fe32d0380a0fd5d106",
+        "size": 5030
+      },
+      {
+        "path": "UNOQ_MOTOR/UNOQ_MOTOR.ino",
+        "sha256": "b5286ff006314f0d08b1375259b5a4cbfbd4247ee27cd1a2f6c26948d71587f0",
+        "size": 124143
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/adc_currents.h",
+        "sha256": "8cc83d9b8ebfbeefe2e4008f055a8e6dc4579c775459b1dbb93c2cb2eae4a689",
+        "size": 627
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/config.h",
+        "sha256": "8a95953d2b856d594a7f232bfd9b4006dd4645cf63ce37bb9399ba29ef04d2ab",
+        "size": 7081
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/control.h",
+        "sha256": "301700d6cc09add819564cba4c40ff36a56b7dc69578e259e95be17acb3a2e92",
+        "size": 135
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/encoder_as5600.h",
+        "sha256": "7a70003a49242f0d04dbd363bc705bfb0f79a2b5baba58bfda2193f6ef2a16c0",
+        "size": 264
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/fan_control.h",
+        "sha256": "f943be1daf1d8fbe1bb5242c10a011490027194aef369f65c6b895b1047a346f",
+        "size": 294
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/foc_controller.h",
+        "sha256": "3f0cb2edda0519bc4ce07dee42b9bbcd0220901d9646aaa7d8a5b7c0c1157cd7",
+        "size": 216
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/hall_sensor.h",
+        "sha256": "7862f1f064a6ee9d98f98e580db195483c9cdaf89bcfc0f18bc877e1c4652948",
+        "size": 124
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/ipm15_io.h",
+        "sha256": "43102874af20b5ae2bc33bb82a34cca221408e501cadb3cd2018c8f19212b888",
+        "size": 220
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/proto.h",
+        "sha256": "7f0979145bf2430c432f9601eb81f0e7e61649f44fabad8dea211d338d488ce6",
+        "size": 3471
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/pwm_tim1.h",
+        "sha256": "af706facb5bdf07f7720e50208e28bea57a9379a64895ef153ea3a1c036049d8",
+        "size": 328
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/safety.h",
+        "sha256": "3ed3f6a40691bef68932921d28b2e500f8a4fe75837712db50a661449ea04359",
+        "size": 924
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/spi_link.h",
+        "sha256": "0c3ba3b4d1e6a6a1802f1fa14aa9c284a5970df03892c4bd20d5d307c8a1da7e",
+        "size": 260
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/include/uart_link.h",
+        "sha256": "6b0b0c5fc698363e20cb040be5a5a2211e71996640c660480cabddacbfbc164b",
+        "size": 303
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/platformio.ini",
+        "sha256": "6f62bd8c8501d32ff97e990c32106fc815689ef60e77499f364042d10b28adbe",
+        "size": 1197
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/adc_currents.cpp",
+        "sha256": "2c82951ffa1e8b6ca9f4dc44398d17fc33671960f9b4a6a5c6b7650897573931",
+        "size": 10927
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/control.cpp",
+        "sha256": "6c497b7bdccd22e740a5e398fbc7f04f4d7cadc750106781cea71c395f1fd520",
+        "size": 7498
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/encoder_as5600.cpp",
+        "sha256": "fe92755b014058fe6e07f29c1a60aba469ca57b234e3192314be252fc6076187",
+        "size": 5048
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/fan_control.cpp",
+        "sha256": "43afc942f93f37191b84487e804b4928ff548d02884712bed47d3ee5ce2dfc78",
+        "size": 4522
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/foc_controller.cpp",
+        "sha256": "bcb8aaa13c3c5870b980f3fa977f7d49b1e945d75354fd046800f984c1204f8f",
+        "size": 2218
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/hall_sensor.cpp",
+        "sha256": "4c5dd71d1004947cbde0337aba3420c3db17f4bdfed2f220adf2c76b8e3d1710",
+        "size": 2971
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/ipm15_io.cpp",
+        "sha256": "7998e25a52a370d03e421e273d64a91758ea0b9472fca28c1b579d315d49f3bd",
+        "size": 3656
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/main.cpp",
+        "sha256": "439d6ccf563a8e4e23a797b3514ec1bfe76f3bf4c53d31806926c2b5adc79bd0",
+        "size": 12450
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/proto.cpp",
+        "sha256": "f4441a1c63f8d1cc217be1c65ddabca4322e0f328980d8c7ca015dd7be0b8b01",
+        "size": 278
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/pwm_selftest.cpp",
+        "sha256": "d7ff255dbe0276b966c5e7dba057ff718fe5742f0dbb437cb63d58dcf63ad539",
+        "size": 2562
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/pwm_static_low_test.cpp",
+        "sha256": "6de885f23e6e2b2b14e2d269df8ed9fd04234256c1aa8cfc50f2ade138d3aaa4",
+        "size": 3524
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/pwm_tim1.cpp",
+        "sha256": "e741912915f7e6d138e6152ab70b55718bfcdf6de460cfaecbd5da6ce6759ea7",
+        "size": 8279
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/safety.cpp",
+        "sha256": "f00ce74e8244928afe5cf4944e80a2fa4987b2ccf00602f32bf21c8b64dc9674",
+        "size": 11896
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/spi_link.cpp",
+        "sha256": "cd239e49240fdeca26f3d7de9e0f1f52fa37adb763fd137ed77788ab7f5487ca",
+        "size": 2106
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/stm32f1xx_it.cpp",
+        "sha256": "ee653e9dab41997424cf017e4dd4f93797f3a3eca7d2793b3e69ca726d529fcb",
+        "size": 355
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/thermal_diag.cpp",
+        "sha256": "d8810e0e2a173460c0d8498b3999b94dd6c9892b5f7cad54069160073d90c605",
+        "size": 3344
+      },
+      {
+        "path": "bluepill_uart_pwm_pio/src/uart_link.cpp",
+        "sha256": "1c46920d482b1c684f8c30cd3d76baa1794fc3cd0778e01b22b13e1edf105415",
+        "size": 4978
+      },
+      {
+        "path": "motor_identification/__init__.py",
+        "sha256": "316980e54213c41df9077414bda6edad6087b23757c2f4e1d9aba7295284cb10",
+        "size": 661
+      },
+      {
+        "path": "motor_identification/mcsdk_bridge.py",
+        "sha256": "af6fb98293adc25273ee80e0a3b8700e19d46a700520f438509bea76d846eaf7",
+        "size": 14677
+      },
+      {
+        "path": "motor_identification/model.py",
+        "sha256": "b08dc630418983dd22e766c4e2bb58247e686a57beadc1745433dc3fa4578e6a",
+        "size": 17458
+      },
+      {
+        "path": "motor_identification/schema.py",
+        "sha256": "7a07e18e0d3f28d56f3fd169b41d22c0c4332734dc858ada629fc87e4c3f33aa",
+        "size": 23095
+      },
+      {
+        "path": "motor_identification/service.py",
+        "sha256": "5e6a7ed6a1a548a551f3d8f5d013ce68f0ad4092041e67230a0c6a5a32c4d32b",
+        "size": 13902
+      },
+      {
+        "path": "motor_identification/synthetic.py",
+        "sha256": "6c22cda114fc488dd8e0edf9df5a093fc9c012d886c1bc68893a63ebf480e268",
+        "size": 7362
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/bridge_controller.h",
+        "sha256": "f14e7b5e748d50ac91376000234907a53bd4ddcb691c8d0e255b44dfcab22891",
+        "size": 702
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/config.h",
+        "sha256": "e83702660353daf20f8e1b40307a0ac5b106a8c5a739d0d0f6cc33858512142f",
+        "size": 2706
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/motor_backend.h",
+        "sha256": "8b4f58d769f8f5d545d1c9180620a36aea7af0fbf964fd5819bdf76df6521bb9",
+        "size": 737
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/motor_bench_policy.h",
+        "sha256": "9c4d9d9062ee80015ce78a51bbc5e1c0ec56902bcdd2f7358437b55d4fae4d4c",
+        "size": 130
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/motor_control_benchmark.h",
+        "sha256": "de61327a36a9baebe25f9e4af4ab52c26f8497c665f2fb52f43ec3b09863e21f",
+        "size": 1008
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/motor_pwm_math.h",
+        "sha256": "673ad05b5539d1a5195defd68ee9f82b39b67d5549c05ca10afa664cc3546cda",
+        "size": 295
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/proto.h",
+        "sha256": "72ebbea7a37fdce8338a80e1766d5c174a527352c3eb54bcdb4fd1fb4f5830d0",
+        "size": 2985
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/include/uart_link.h",
+        "sha256": "2c09852fe0ca39bf737ea63e39a72f1094fcee2047fa0b0272fff163ed3c46b3",
+        "size": 300
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/platformio.ini",
+        "sha256": "ad505e45f9f8e79b201e11877bc1ad69591039c9e8dc47b348bbdc2590e54ced",
+        "size": 1440
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/bridge_controller.cpp",
+        "sha256": "83fcd42af513155ca466507a121b496c563f8a538ffa358460e34a1b6082e692",
+        "size": 5341
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/main.cpp",
+        "sha256": "cbdc3e6adcee8b8fcfa1d0c2c20b08eaffa72c23162c954083f25c9d23520382",
+        "size": 6620
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/motor_backend_pwm_bench.cpp",
+        "sha256": "6f630ae47dae05b97ea39726fa34adce699ae852c1a51f791048683f7149331f",
+        "size": 12898
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/motor_backend_stub.cpp",
+        "sha256": "e298f23aa91c1e738b8e0bae076ad7d1bf7480711f519742f293c47ffb970618",
+        "size": 987
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/motor_bench_policy.cpp",
+        "sha256": "503eaef0f993819987ec7df5465b418912406506db5a62f6f044839f5ada4413",
+        "size": 469
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/motor_control_benchmark.cpp",
+        "sha256": "a752a26e0e35d543468eb58e8adbaadbaf98fbe36eba7b2f095446cb478c8617",
+        "size": 7961
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/motor_pwm_math.cpp",
+        "sha256": "89f094d05f55fea9c5d1560442d5e856ea50b8b2677ae4476537b59af3a1240f",
+        "size": 1432
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/proto.cpp",
+        "sha256": "4b8408c9b05e99dba5e3b0d63a1ac1e23650cfb972c1d5e4978c4096791a134e",
+        "size": 498
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/stm32g4xx_it.cpp",
+        "sha256": "900c61c1862de88c4c1ff9780c4e4d40e8e0b03712edacd7ef7d8eac46c6d9bf",
+        "size": 346
+      },
+      {
+        "path": "nucleo_g431_uart_bridge_pio/src/uart_link.cpp",
+        "sha256": "c397c5aa471a54d7e5ce895ecb5c8cd5eaecfc9be2a6a0c8c84fe0a5afc245b0",
+        "size": 3491
+      },
+      {
+        "path": "requirements-identification.txt",
+        "sha256": "824cd3269e9be4f0e1cdec3962561aa47d4bf3e94f6bafec251368a237bb9519",
+        "size": 43
+      },
+      {
+        "path": "requirements.txt",
+        "sha256": "1558ca981c49e2c8694c52cd732a5fe67a2b6d268462a538ea80446f32dc89d4",
+        "size": 52
+      },
+      {
+        "path": "tools/active_pwm_guard.py",
+        "sha256": "0655e715b5a4624b3daab5c892b6c42002da73bf764e5364371af95f47ff1f7a",
+        "size": 5381
+      },
+      {
+        "path": "tools/active_pwm_guard_selftest.py",
+        "sha256": "f169fa363410917fedce7a3ebbb19431984f3d4a19e85f4da43f7fcf0a144661",
+        "size": 11225
+      },
+      {
+        "path": "tools/adb_deploy_web_hmi.py",
+        "sha256": "67b97b71be4a4cb4e4122d266209feab8eed69f4fb83eb43bbb427a29d142fce",
+        "size": 17303
+      },
+      {
+        "path": "tools/adb_deploy_web_hmi_selftest.py",
+        "sha256": "df91becacb9c205d43aeffcd4ad9610617601bdc293ebc5f57e6650bfe58c6b1",
+        "size": 3782
+      },
+      {
+        "path": "tools/adb_router_cmd.py",
+        "sha256": "610bb87b54b275b3b589f7d97aadb178e37dd5c5f78e6e2330f5b572d2cebcc9",
+        "size": 3270
+      },
+      {
+        "path": "tools/adb_router_sequence.py",
+        "sha256": "66b0d80f29d12e9f5628e134389be11742f8a4ee325021a81355b935bbd8ec25",
+        "size": 24341
+      },
+      {
+        "path": "tools/adb_router_sequence_selftest.py",
+        "sha256": "99c50e8b78ed63ad0ff4bf9be8b0db92f7bf19c02a2f392326ef82db4ab96a03",
+        "size": 7782
+      },
+      {
+        "path": "tools/air56b2_firmware_profile_check.py",
+        "sha256": "63abd40e464a15c0fa0d8063a9d4044f79465812a1be5c1db9c3db7f327c29bd",
+        "size": 12620
+      },
+      {
+        "path": "tools/bench_gate_attestation_server.py",
+        "sha256": "b6c8c7ac0c225b3bb1d3c0e0176f2bc21bef871ebda8c873bfe42e478892b356",
+        "size": 4277
+      },
+      {
+        "path": "tools/bench_gate_report.py",
+        "sha256": "d597ac1469bb04f206f583d8e915f4586d836d2f4240ed0df0001ec208aaf805",
+        "size": 66726
+      },
+      {
+        "path": "tools/bench_gate_report_selftest.py",
+        "sha256": "9e3f9a553a2ff6764c7c50ba164ed558a020cd4421892d750abd9695e505bb54",
+        "size": 57946
+      },
+      {
+        "path": "tools/bluepill_direct_probe.py",
+        "sha256": "a7ae714910f988d9d57eaaefc500532875e6107e453d5bd8cee91bf960d11076",
+        "size": 7457
+      },
+      {
+        "path": "tools/bluepill_pwm_selftest_preflight.py",
+        "sha256": "bde92151005dca80570a2bd73d6ccd8d6e3694afa7a4e65bd3749e10bce7139d",
+        "size": 10354
+      },
+      {
+        "path": "tools/bluepill_pwm_selftest_preflight_selftest.py",
+        "sha256": "75594b2d480f2bb104102c08c377bff2aad9910562f040ac5a7aeb97b53636f8",
+        "size": 16868
+      },
+      {
+        "path": "tools/bluepill_runtime_static_preflight.py",
+        "sha256": "cb72596131aaf9699f096e13998772739b6e98ca29fdeb906503cb3b80c2bda9",
+        "size": 13867
+      },
+      {
+        "path": "tools/bluepill_runtime_static_preflight_selftest.py",
+        "sha256": "04079ee23c9302f08ab19dc0bdee950ac66c5fb92a1e7762bfb06091ea025111",
+        "size": 16463
+      },
+      {
+        "path": "tools/bluepill_static_low_preflight.py",
+        "sha256": "412199e73ac063b29dc4cddc91ce96ceccb8075d780dd29ce0ea035d0ccbdec8",
+        "size": 10687
+      },
+      {
+        "path": "tools/bluepill_static_low_preflight_selftest.py",
+        "sha256": "a99e8be2043153e344c2b5ca27466132f05c85d00e101ee2eb163639310d0b1c",
+        "size": 17827
+      },
+      {
+        "path": "tools/bluepill_uart_diagnose.py",
+        "sha256": "37152463aead6495f958c4445bfc6d6625d192e31c5e47d0bd915ae3f6214818",
+        "size": 37495
+      },
+      {
+        "path": "tools/bluepill_uart_diagnose_selftest.py",
+        "sha256": "39f4fd4ae4755b23a6f8af717284d1d0771ee16ce3f726cf4fd42863a3ad6124",
+        "size": 21271
+      },
+      {
+        "path": "tools/bpfoc_backend_preflight.py",
+        "sha256": "feabd5ffa7df326e70f29053ab1963de9968fbf20e0734050417ad5f6dfc06c5",
+        "size": 19205
+      },
+      {
+        "path": "tools/bpfoc_backend_preflight_selftest.py",
+        "sha256": "1663bf71f72ca6fa7766f8a0a33a6e1daeaa3a57c1a54863224167c958d7e4cc",
+        "size": 5210
+      },
+      {
+        "path": "tools/capture_as5600_teacher_dataset.py",
+        "sha256": "7d7ecae75bcdd98a55a70308bd5c39de79a1ccb0d76e2c8e3bf2e02eb29d1f45",
+        "size": 6390
+      },
+      {
+        "path": "tools/capture_as5600_teacher_dataset_selftest.py",
+        "sha256": "14234eae3c05b96376a6df99c5522b949e697eee4ec9717890f82ccb00f8cf6c",
+        "size": 1586
+      },
+      {
+        "path": "tools/current_bench_status.py",
+        "sha256": "aaf6a35057e73c9d65df4fb6ff2cb4c1d9f5cc27ab4b82981274625c6717fe98",
+        "size": 29471
+      },
+      {
+        "path": "tools/current_bench_status_selftest.py",
+        "sha256": "07c69855f266e5b667b448249e754a6e1bcc34b830e213334de98c9586dbee55",
+        "size": 27352
+      },
+      {
+        "path": "tools/dense_overlap_sweep.py",
+        "sha256": "ac52ff2e386b80912e8d4dcd98b22bbfeec3299f1b7e1060b0ba6c9ac855f377",
+        "size": 24270
+      },
+      {
+        "path": "tools/dense_overlap_sweep_selftest.py",
+        "sha256": "6e728f2190eec38a6ec29c2f8980ed758c04da494ea7c926483585a3efa56e7b",
+        "size": 3910
+      },
+      {
+        "path": "tools/encoder_test.py",
+        "sha256": "ec0c782391b1466ad3bf6da53afe770417b483edf9059491d72be38c4c35bf25",
+        "size": 3857
+      },
+      {
+        "path": "tools/fan_preflight.py",
+        "sha256": "317d67e525e0beedbe177ca6f76ab214bbf0364377762153e749cbcf9ca3f092",
+        "size": 8544
+      },
+      {
+        "path": "tools/fan_preflight_selftest.py",
+        "sha256": "73457d76a983ff799aefcbb7753f43988d6aa24d1acdb9ecbfb1601063cd4cd4",
+        "size": 3795
+      },
+      {
+        "path": "tools/firmware_config_safety_check.py",
+        "sha256": "d6fe5f4c0715a234d70e3da4a30b4d7c0e113ef4a880fa535b23e7913ecfe36d",
+        "size": 57616
+      },
+      {
+        "path": "tools/foc_mic_preflight.py",
+        "sha256": "f456728ea068c08d2684a33f282280646958af0dc79f7f975bd53da8c2195f46",
+        "size": 24173
+      },
+      {
+        "path": "tools/full_system_preflight.py",
+        "sha256": "9a2b4f5298e5029cf5f2b5b9a4b37ea87093632c962085a714483cbc92bd509d",
+        "size": 44191
+      },
+      {
+        "path": "tools/full_system_preflight_selftest.py",
+        "sha256": "60e31537514f4c9ef30a15fd56d781a6042226ea9fcbeb6bdb773ca126712760",
+        "size": 5513
+      },
+      {
+        "path": "tools/generate_mic_ai_rev2.py",
+        "sha256": "457725de756d3c7a45d1d4d35200f8a8e60dc2636f2c118ba1b6315e810cafb5",
+        "size": 69044
+      },
+      {
+        "path": "tools/hv_j7_preflight.py",
+        "sha256": "c98c120e2972d365dcefd63997b64c2b38c57a39394e4db55e4a0db5cc1da5b9",
+        "size": 18677
+      },
+      {
+        "path": "tools/hv_j7_preflight_selftest.py",
+        "sha256": "fe9dc307c5c98642fa6ea569af9e13969d4c0d3ad4bc1b99c8db583d426f11e1",
+        "size": 5298
+      },
+      {
+        "path": "tools/la_probe.py",
+        "sha256": "70e25ca64e7102778e4c1f0a499dce308e1eb0364c986040b6626127346572e8",
+        "size": 845
+      },
+      {
+        "path": "tools/logic2_recover.py",
+        "sha256": "6c4b6aa2bb66849e3aa67f20dff96231aa0ed1cf1a394cb18cd92fa7a1379fde",
+        "size": 8391
+      },
+      {
+        "path": "tools/mcsdk_motor_model_bridge.py",
+        "sha256": "dc85a11cae619d814573d9ee91f34a5bbfa092919893da02b3cecbe546a3d849",
+        "size": 3826
+      },
+      {
+        "path": "tools/mcsdk_release_preflight.py",
+        "sha256": "a4e6be0918fb6529f09a37b0d58ff42df980d45578472a091c177bbf30cf5a63",
+        "size": 17740
+      },
+      {
+        "path": "tools/mcsdk_release_preflight_selftest.py",
+        "sha256": "3024d23316ab56d33401d9939c956660519d54d39023f476ace2a7b97a90b47d",
+        "size": 8074
+      },
+      {
+        "path": "tools/mic_ai_compare.py",
+        "sha256": "5585db6a38c86173b1643856ec31330c4b7c682b4f5a2fceae34ba7b9ec569d5",
+        "size": 28307
+      },
+      {
+        "path": "tools/mic_ai_compare_selftest.py",
+        "sha256": "56fa775c2e3ee1d9e3fae62bffa296c6321a037e4f6bbc91038f2c36f20d681f",
+        "size": 4434
+      },
+      {
+        "path": "tools/mic_research_matrix.py",
+        "sha256": "0c73bac780c8406c1659fd03377b2031015b6086489f24a396cb6131503e389b",
+        "size": 21919
+      },
+      {
+        "path": "tools/mic_research_report.py",
+        "sha256": "e9230662b6f09b2428ffff803ed36b5511837a44837c9c729ea379d5b956993d",
+        "size": 17705
+      },
+      {
+        "path": "tools/mic_theory_snapshot_check.py",
+        "sha256": "273a9fdeb4701214893aeefe2516eda76b3e891bce7d7746bd8822575751d3f0",
+        "size": 19327
+      },
+      {
+        "path": "tools/mic_theory_snapshot_check_selftest.py",
+        "sha256": "eeb0153308db956a08686bd4b694366a65870ad9509afd64381cfc6a8c6067e6",
+        "size": 7102
+      },
+      {
+        "path": "tools/motor_parameter_api.py",
+        "sha256": "299dbf312b5fa234e30925ef7dffc72b2fee10ae71f93302ce112b713c02b116",
+        "size": 4467
+      },
+      {
+        "path": "tools/motor_parameter_identification.py",
+        "sha256": "502dd96b25395423a457418a408a9685398662d6ac3ca0ac0f55729ebf724c64",
+        "size": 5106
+      },
+      {
+        "path": "tools/motor_parameter_identification_selftest.py",
+        "sha256": "72ec5d67acef120d2545415deac9ed88bddc6f52c7607bcb57018c83ab0624c6",
+        "size": 9842
+      },
+      {
+        "path": "tools/ntc_relay_preflight.py",
+        "sha256": "6fc2b5d2f3572cd436d03743880e74d34cf6143473de3dd2df23c4cf824f520b",
+        "size": 17964
+      },
+      {
+        "path": "tools/ntc_relay_preflight_selftest.py",
+        "sha256": "79a12f7934eb7280436c1a593d462a082cc096ff0b62cf8e374c57b4f1b7c2be",
+        "size": 7984
+      },
+      {
+        "path": "tools/nucleo_bridge_selftest.py",
+        "sha256": "8955a82f709973565d9a6080d5682b89d435e51b38480f2fbc02a9e443a6a184",
+        "size": 2615
+      },
+      {
+        "path": "tools/nucleo_control_timing_analyze.py",
+        "sha256": "cdd0682d6d4545f3c692d256fa543d42bf7ddd41aa67bc7a4fdb40aff4cc7c63",
+        "size": 8186
+      },
+      {
+        "path": "tools/nucleo_control_timing_analyze_selftest.py",
+        "sha256": "d34b7cb5666c2cd8a2b692808bf9fb56b0adb99c19771ad8c77a4275e177bb9b",
+        "size": 4323
+      },
+      {
+        "path": "tools/patch_cubeide_dsp_include.py",
+        "sha256": "2c52c5c7fc30f8925e441aea03666cf27c5dd3ec477edbc6c5227ce0b864fafa",
+        "size": 1640
+      },
+      {
+        "path": "tools/patch_mcsdk_uno_start_interlock.py",
+        "sha256": "aafa89a5c0c5559269f097725f3f21e63daf2db9cdbf49117714067717865c6d",
+        "size": 3257
+      },
+      {
+        "path": "tools/pc_direct_hmi_selftest.py",
+        "sha256": "cb917b853a33a31bc84714378163cd4afa19765023a2670d5b0680cbc8d0f179",
+        "size": 19196
+      },
+      {
+        "path": "tools/pc_direct_hmi_service.py",
+        "sha256": "ca38bc4fba716202cb2b70bfde10faa33ad2e2d229825e5623a49d370f4c3f8d",
+        "size": 16548
+      },
+      {
+        "path": "tools/pc_direct_hmi_service_selftest.py",
+        "sha256": "265105217d1424d84235263132aa0b67b544dbe24361f8a36f7df7c574037dfe",
+        "size": 4305
+      },
+      {
+        "path": "tools/platformio_env_safety_check.py",
+        "sha256": "6837e3210e42c7f78b9808494c189d58c33a3f8956d84d74ed9cfff4f699831a",
+        "size": 16103
+      },
+      {
+        "path": "tools/platformio_env_safety_check_selftest.py",
+        "sha256": "f05e17d374a220c5a81546cf33fb2dc8dfcba4c749249c775d7750d8b660a99c",
+        "size": 7348
+      },
+      {
+        "path": "tools/precharge_relay_preflight.py",
+        "sha256": "c64c22fa057a8d6a4c120b5500f36159caaaa0f37b7f628a1efbe7f8ef546b17",
+        "size": 258
+      },
+      {
+        "path": "tools/prepare_air56_lso_profile.py",
+        "sha256": "98b5499863430bd34276b434fc6853c37a6531f7ecaf3228e2dbeb48656bd6c3",
+        "size": 4510
+      },
+      {
+        "path": "tools/prepare_air56_lso_profile_selftest.py",
+        "sha256": "11e19d24de8ba0c10d042acffca3cf9beb1b10c01d83eaf0bfcccb82ca12ee64",
+        "size": 1619
+      },
+      {
+        "path": "tools/protocol_contract_check.py",
+        "sha256": "1789df31881497184e0310410944f8053f38edb44e325d19f4a15fd2f8e18dd0",
+        "size": 15089
+      },
+      {
+        "path": "tools/protocol_safety_selftest.py",
+        "sha256": "d7181a4a35dff965fab7c3553925499d6bcff725bfd2cd2d30230ce7df295ae2",
+        "size": 14408
+      },
+      {
+        "path": "tools/refresh_bench_status.py",
+        "sha256": "aae6a9df25c0f6e104e33cc21999cb5d214d1bafc20407b28029c91c93b51098",
+        "size": 11301
+      },
+      {
+        "path": "tools/refresh_bench_status_selftest.py",
+        "sha256": "628ea4cb579d7f1e56d9ee76adfba2657201a50a744859e8e3a214555895203c",
+        "size": 10858
+      },
+      {
+        "path": "tools/research_readiness_check.py",
+        "sha256": "c29768094b9c5cebf5071c8dfb9d5768604efe7fe9ec05549ea1805e4df2ade8",
+        "size": 63748
+      },
+      {
+        "path": "tools/research_readiness_check_selftest.py",
+        "sha256": "8631140f47f9f0d0c6853612b3efb59d186356623e09d3d75ba9298232575da7",
+        "size": 24761
+      },
+      {
+        "path": "tools/run_metadata.py",
+        "sha256": "236f9b35b9a94ddcb1270a5cc7c800364a4ad6fdc50c44b074910fbdca140edc",
+        "size": 3500
+      },
+      {
+        "path": "tools/run_metadata_selftest.py",
+        "sha256": "6eb54ed906a96fe9039bbb8a996b45391718f9796fe669199af91e9895b4b7ec",
+        "size": 7951
+      },
+      {
+        "path": "tools/runtime_python.py",
+        "sha256": "1d0a8fee809464c4a62d550fb7e92fe429bf0fcfeb3dcf7a73e0da745ad93a48",
+        "size": 1448
+      },
+      {
+        "path": "tools/runtime_python_selftest.py",
+        "sha256": "6fb3843cd6cb2f32f04aba546e8f1053512a75eb550b050361d8420abf2c01d9",
+        "size": 5010
+      },
+      {
+        "path": "tools/saleae_highlevel_probe.py",
+        "sha256": "b568bda126cd2e3c251825e88dbcab86e2bc07d0c603d4db27bdc8a0d60c3094",
+        "size": 19177
+      },
+      {
+        "path": "tools/saleae_highlevel_probe_selftest.py",
+        "sha256": "b313349acd3a0f023ff0d49dec3332e24dc635c63915fb65cbd1cc54a757c5aa",
+        "size": 10679
+      },
+      {
+        "path": "tools/saleae_pwm_analyze.py",
+        "sha256": "372b5500c2ba92ece5396f83db2ccd68db464314afd8850c4dca7c5567a93a7e",
+        "size": 9773
+      },
+      {
+        "path": "tools/saleae_pwm_analyze_selftest.py",
+        "sha256": "5fcd0ac08a3ca01a0c28fd3bbd4525ef2440255782b79854cee509c1ecdeeda2",
+        "size": 9527
+      },
+      {
+        "path": "tools/scalar_vf_preflight.py",
+        "sha256": "60732bbfe25a3d117cae900c5ea449340b56b1727c4ebf25f58c326530c1b0bf",
+        "size": 23705
+      },
+      {
+        "path": "tools/start_guard_static_check.py",
+        "sha256": "8857968fd1f16171b089c643f31a70f84b8f680a1307d08da7b819daf0cf1e20",
+        "size": 8546
+      },
+      {
+        "path": "tools/start_guard_static_check_selftest.py",
+        "sha256": "5a48f1a24b7d08443e627025f13337edf973583b931ef5e8d3cf2b5467cbeb36",
+        "size": 3202
+      },
+      {
+        "path": "tools/telemetry_calibration.py",
+        "sha256": "2bfe24f4c2ebc27fc7ffadfce5698e0c81e5170e021ee1f62a4673b3d3e6c96f",
+        "size": 13079
+      },
+      {
+        "path": "tools/uart_loopback_preflight.py",
+        "sha256": "5a8b16b063f8a8c0052d4da30a3dfc8f603f470fbd442a139f8be942eafe6337",
+        "size": 9862
+      },
+      {
+        "path": "tools/uart_loopback_preflight_selftest.py",
+        "sha256": "2f8545699d5c06b68562df392c5401246477407776068b5b6732a56b2c5922be",
+        "size": 6976
+      },
+      {
+        "path": "tools/ui_access.py",
+        "sha256": "e329a45790fdf6e9cff38ccd5cb90377d4a25cfb0f75e1915377b7093edae4a0",
+        "size": 6956
+      },
+      {
+        "path": "tools/ui_http_bridge.py",
+        "sha256": "ad7d8c3f4733b2dd8d7feba622bed76bb8f721ba1dab6d3624f48d759e3c49cb",
+        "size": 6946
+      },
+      {
+        "path": "tools/ui_pwm_case.py",
+        "sha256": "24894324545dfd4a71f4285c93db55c8d4574b37eebb69d41bb49b4b67865883",
+        "size": 45572
+      },
+      {
+        "path": "tools/ui_pwm_case_selftest.py",
+        "sha256": "97ee30995cebf9cfe5be28624afef666e01d3124d659c4f593106510f4b431a9",
+        "size": 13395
+      },
+      {
+        "path": "tools/ui_pwm_suite.py",
+        "sha256": "a28ca061392b50bc07aee2b430f9417065c1f0240a51e69892b5e19287abf073",
+        "size": 40642
+      },
+      {
+        "path": "tools/uno_nucleo_mcsdk_contract_check.py",
+        "sha256": "10beea53deeefa0adfb7d0ab0edde5a146501e293d9eb52926f2eeb6f955a54d",
+        "size": 14112
+      },
+      {
+        "path": "tools/unoq_web_server.py",
+        "sha256": "5148c9d72a8d609cfdd7dbc0352d36c54195f1892c22d4d2f115b96245de5270",
+        "size": 51385
+      },
+      {
+        "path": "tools/unoq_wifi_firmware_update.py",
+        "sha256": "99ba349fb0e83b786e95a4acf115519a2de29dc317d0b8371fa958dabdf76aaf",
+        "size": 12102
+      },
+      {
+        "path": "tools/unoq_wifi_firmware_update_selftest.py",
+        "sha256": "946ff1098bd42a0fc4a89addcc54446001eff50eb8185b62cc738b02c6895588",
+        "size": 3142
+      },
+      {
+        "path": "tools/unoq_wifi_hmi_deploy.py",
+        "sha256": "197fada8197c458708566b92302091933ec28c7607be877cdf3906e312dd092c",
+        "size": 8024
+      },
+      {
+        "path": "tools/unoq_wifi_hmi_deploy_selftest.py",
+        "sha256": "60a42b19c804a3085c28cd8fdac310917564278c0c98a9c6fa97c5eaaf1e633f",
+        "size": 2409
+      },
+      {
+        "path": "tools/verify_board_flash_package.py",
+        "sha256": "a650ccfbe2d7618e19aeb75abb07a2af2f967c7bafd1c6e62d6d29939f3ff76b",
+        "size": 5137
+      },
+      {
+        "path": "tools/verify_board_flash_package_selftest.py",
+        "sha256": "cb25a3f5157224aa47f32513c0e78e2cb857784b674dca2c67cc24733e3bdaa5",
+        "size": 1260
+      },
+      {
+        "path": "tools/verify_firmware_bundle.py",
+        "sha256": "9bcde2f39973e62879a742fa44cf657726a0fea9a9b63aa86a25e4fa9b6d8757",
+        "size": 4553
+      },
+      {
+        "path": "tools/web_hmi_command_guard_selftest.py",
+        "sha256": "21d93bd699201b041b2d601aaee66f1c2d4a12670ab7da9ce552f2eb77097152",
+        "size": 34316
+      },
+      {
+        "path": "web_hmi/server.py",
+        "sha256": "d691746c94e7400bada4ab37f55ff83e8ce4da2fc96f9229cd5062ef12a04a51",
+        "size": 107666
+      }
+    ]
+  },
+  "steps": [
+    {
+      "name": "py_compile",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "py_compile",
+        "tools\\active_pwm_guard.py",
+        "tools\\active_pwm_guard_selftest.py",
+        "tools\\adb_deploy_web_hmi.py",
+        "tools\\adb_deploy_web_hmi_selftest.py",
+        "tools\\adb_router_cmd.py",
+        "tools\\adb_router_sequence.py",
+        "tools\\adb_router_sequence_selftest.py",
+        "tools\\air56b2_firmware_profile_check.py",
+        "tools\\bench_gate_attestation_server.py",
+        "tools\\bench_gate_report.py",
+        "tools\\bench_gate_report_selftest.py",
+        "tools\\bluepill_direct_probe.py",
+        "tools\\bluepill_pwm_selftest_preflight.py",
+        "tools\\bluepill_pwm_selftest_preflight_selftest.py",
+        "tools\\bluepill_runtime_static_preflight.py",
+        "tools\\bluepill_runtime_static_preflight_selftest.py",
+        "tools\\bluepill_static_low_preflight.py",
+        "tools\\bluepill_static_low_preflight_selftest.py",
+        "tools\\bluepill_uart_diagnose.py",
+        "tools\\bluepill_uart_diagnose_selftest.py",
+        "tools\\bpfoc_backend_preflight.py",
+        "tools\\bpfoc_backend_preflight_selftest.py",
+        "tools\\capture_as5600_teacher_dataset.py",
+        "tools\\capture_as5600_teacher_dataset_selftest.py",
+        "tools\\current_bench_status.py",
+        "tools\\current_bench_status_selftest.py",
+        "tools\\dense_overlap_sweep.py",
+        "tools\\dense_overlap_sweep_selftest.py",
+        "tools\\encoder_test.py",
+        "tools\\fan_preflight.py",
+        "tools\\fan_preflight_selftest.py",
+        "tools\\firmware_config_safety_check.py",
+        "tools\\foc_mic_preflight.py",
+        "tools\\full_system_preflight.py",
+        "tools\\full_system_preflight_selftest.py",
+        "tools\\generate_mic_ai_rev2.py",
+        "tools\\hv_j7_preflight.py",
+        "tools\\hv_j7_preflight_selftest.py",
+        "tools\\la_probe.py",
+        "tools\\logic2_recover.py",
+        "tools\\mcsdk_motor_model_bridge.py",
+        "tools\\mcsdk_release_preflight.py",
+        "tools\\mcsdk_release_preflight_selftest.py",
+        "tools\\mic_ai_compare.py",
+        "tools\\mic_ai_compare_selftest.py",
+        "tools\\mic_research_matrix.py",
+        "tools\\mic_research_report.py",
+        "tools\\mic_theory_snapshot_check.py",
+        "tools\\mic_theory_snapshot_check_selftest.py",
+        "tools\\motor_parameter_api.py",
+        "tools\\motor_parameter_identification.py",
+        "tools\\motor_parameter_identification_selftest.py",
+        "tools\\ntc_relay_preflight.py",
+        "tools\\ntc_relay_preflight_selftest.py",
+        "tools\\nucleo_bridge_selftest.py",
+        "tools\\nucleo_control_timing_analyze.py",
+        "tools\\nucleo_control_timing_analyze_selftest.py",
+        "tools\\patch_cubeide_dsp_include.py",
+        "tools\\patch_mcsdk_uno_start_interlock.py",
+        "tools\\pc_direct_hmi_selftest.py",
+        "tools\\pc_direct_hmi_service.py",
+        "tools\\pc_direct_hmi_service_selftest.py",
+        "tools\\platformio_env_safety_check.py",
+        "tools\\platformio_env_safety_check_selftest.py",
+        "tools\\precharge_relay_preflight.py",
+        "tools\\prepare_air56_lso_profile.py",
+        "tools\\prepare_air56_lso_profile_selftest.py",
+        "tools\\protocol_contract_check.py",
+        "tools\\protocol_safety_selftest.py",
+        "tools\\refresh_bench_status.py",
+        "tools\\refresh_bench_status_selftest.py",
+        "tools\\research_readiness_check.py",
+        "tools\\research_readiness_check_selftest.py",
+        "tools\\run_metadata.py",
+        "tools\\run_metadata_selftest.py",
+        "tools\\runtime_python.py",
+        "tools\\runtime_python_selftest.py",
+        "tools\\saleae_highlevel_probe.py",
+        "tools\\saleae_highlevel_probe_selftest.py",
+        "tools\\saleae_pwm_analyze.py",
+        "tools\\saleae_pwm_analyze_selftest.py",
+        "tools\\scalar_vf_preflight.py",
+        "tools\\start_guard_static_check.py",
+        "tools\\start_guard_static_check_selftest.py",
+        "tools\\telemetry_calibration.py",
+        "tools\\uart_loopback_preflight.py",
+        "tools\\uart_loopback_preflight_selftest.py",
+        "tools\\ui_access.py",
+        "tools\\ui_http_bridge.py",
+        "tools\\ui_pwm_case.py",
+        "tools\\ui_pwm_case_selftest.py",
+        "tools\\ui_pwm_suite.py",
+        "tools\\uno_nucleo_mcsdk_contract_check.py",
+        "tools\\unoq_web_server.py",
+        "tools\\unoq_wifi_firmware_update.py",
+        "tools\\unoq_wifi_firmware_update_selftest.py",
+        "tools\\unoq_wifi_hmi_deploy.py",
+        "tools\\unoq_wifi_hmi_deploy_selftest.py",
+        "tools\\verify_board_flash_package.py",
+        "tools\\verify_board_flash_package_selftest.py",
+        "tools\\verify_firmware_bundle.py",
+        "tools\\web_hmi_command_guard_selftest.py",
+        "motor_identification\\__init__.py",
+        "motor_identification\\mcsdk_bridge.py",
+        "motor_identification\\model.py",
+        "motor_identification\\schema.py",
+        "motor_identification\\service.py",
+        "motor_identification\\synthetic.py",
+        "web_hmi\\server.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.35899999999674037,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\py_compile.log"
+    },
+    {
+      "name": "firmware_config_safety_check",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\firmware_config_safety_check.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.046000000002095476,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\firmware_config_safety_check.log"
+    },
+    {
+      "name": "platformio_env_safety_check",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\platformio_env_safety_check.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\platformio_env_safety_check.log"
+    },
+    {
+      "name": "protocol_contract_check",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\protocol_contract_check.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.09400000001187436,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\protocol_contract_check.log"
+    },
+    {
+      "name": "protocol_safety_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\protocol_safety_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0779999999795109,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\protocol_safety_selftest.log"
+    },
+    {
+      "name": "pc_direct_hmi_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\pc_direct_hmi_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.6720000000204891,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\pc_direct_hmi_selftest.log"
+    },
+    {
+      "name": "pc_direct_hmi_service_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\pc_direct_hmi_service_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0779999999795109,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\pc_direct_hmi_service_selftest.log"
+    },
+    {
+      "name": "web_hmi_command_guard_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\web_hmi_command_guard_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.4370000000053551,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\web_hmi_command_guard_selftest.log"
+    },
+    {
+      "name": "ui_pwm_case_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\ui_pwm_case_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.375,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\ui_pwm_case_selftest.log"
+    },
+    {
+      "name": "dense_overlap_sweep_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\dense_overlap_sweep_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.046999999991385266,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\dense_overlap_sweep_selftest.log"
+    },
+    {
+      "name": "bluepill_uart_diagnose_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bluepill_uart_diagnose_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.09400000001187436,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bluepill_uart_diagnose_selftest.log"
+    },
+    {
+      "name": "uart_loopback_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\uart_loopback_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.062000000005355105,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\uart_loopback_preflight_selftest.log"
+    },
+    {
+      "name": "adb_router_sequence_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\adb_router_sequence_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.07800000000861473,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\adb_router_sequence_selftest.log"
+    },
+    {
+      "name": "adb_deploy_web_hmi_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\adb_deploy_web_hmi_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.046999999991385266,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\adb_deploy_web_hmi_selftest.log"
+    },
+    {
+      "name": "active_pwm_guard_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\active_pwm_guard_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\active_pwm_guard_selftest.log"
+    },
+    {
+      "name": "fan_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\fan_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.062000000005355105,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\fan_preflight_selftest.log"
+    },
+    {
+      "name": "bpfoc_backend_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bpfoc_backend_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.062000000005355105,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bpfoc_backend_preflight_selftest.log"
+    },
+    {
+      "name": "mic_ai_compare_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\mic_ai_compare_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.09399999998277053,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\mic_ai_compare_selftest.log"
+    },
+    {
+      "name": "hv_j7_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\hv_j7_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.07800000000861473,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\hv_j7_preflight_selftest.log"
+    },
+    {
+      "name": "bluepill_runtime_static_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bluepill_runtime_static_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 1.0780000000086147,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bluepill_runtime_static_preflight_selftest.log"
+    },
+    {
+      "name": "bluepill_static_low_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bluepill_static_low_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 2.187999999994645,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bluepill_static_low_preflight_selftest.log"
+    },
+    {
+      "name": "bluepill_pwm_selftest_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bluepill_pwm_selftest_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 4.077999999979511,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bluepill_pwm_selftest_preflight_selftest.log"
+    },
+    {
+      "name": "bench_gate_report_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\bench_gate_report_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.1090000000258442,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bench_gate_report_selftest.log"
+    },
+    {
+      "name": "current_bench_status_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\current_bench_status_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.3909999999741558,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\current_bench_status_selftest.log"
+    },
+    {
+      "name": "refresh_bench_status_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\refresh_bench_status_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 1.437000000005355,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\refresh_bench_status_selftest.log"
+    },
+    {
+      "name": "research_readiness_check_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\research_readiness_check_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.20300000000861473,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\research_readiness_check_selftest.log"
+    },
+    {
+      "name": "start_guard_static_check",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\start_guard_static_check.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\start_guard_static_check.log"
+    },
+    {
+      "name": "start_guard_static_check_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\start_guard_static_check_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.062000000005355105,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\start_guard_static_check_selftest.log"
+    },
+    {
+      "name": "saleae_highlevel_probe_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\saleae_highlevel_probe_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.07899999999790452,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\saleae_highlevel_probe_selftest.log"
+    },
+    {
+      "name": "saleae_pwm_analyze_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\saleae_pwm_analyze_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.45300000000861473,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\saleae_pwm_analyze_selftest.log"
+    },
+    {
+      "name": "runtime_python_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\runtime_python_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.046999999991385266,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\runtime_python_selftest.log"
+    },
+    {
+      "name": "run_metadata_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\run_metadata_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.26500000001396984,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\run_metadata_selftest.log"
+    },
+    {
+      "name": "full_system_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\full_system_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0779999999795109,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\full_system_preflight_selftest.log"
+    },
+    {
+      "name": "capture_as5600_teacher_dataset_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\capture_as5600_teacher_dataset_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\capture_as5600_teacher_dataset_selftest.log"
+    },
+    {
+      "name": "mcsdk_release_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\mcsdk_release_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.07800000000861473,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\mcsdk_release_preflight_selftest.log"
+    },
+    {
+      "name": "mic_theory_snapshot_check_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\mic_theory_snapshot_check_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.21900000001187436,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\mic_theory_snapshot_check_selftest.log"
+    },
+    {
+      "name": "motor_parameter_identification_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\motor_parameter_identification_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.9370000000053551,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\motor_parameter_identification_selftest.log"
+    },
+    {
+      "name": "ntc_relay_preflight_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\ntc_relay_preflight_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.2029999999795109,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\ntc_relay_preflight_selftest.log"
+    },
+    {
+      "name": "nucleo_bridge_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\nucleo_bridge_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 1.797000000020489,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\nucleo_bridge_selftest.log"
+    },
+    {
+      "name": "nucleo_control_timing_analyze_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\nucleo_control_timing_analyze_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\nucleo_control_timing_analyze_selftest.log"
+    },
+    {
+      "name": "platformio_env_safety_check_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\platformio_env_safety_check_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 2.812000000005355,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\platformio_env_safety_check_selftest.log"
+    },
+    {
+      "name": "prepare_air56_lso_profile_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\prepare_air56_lso_profile_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\prepare_air56_lso_profile_selftest.log"
+    },
+    {
+      "name": "unoq_wifi_firmware_update_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\unoq_wifi_firmware_update_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.062000000005355105,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\unoq_wifi_firmware_update_selftest.log"
+    },
+    {
+      "name": "unoq_wifi_hmi_deploy_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\unoq_wifi_hmi_deploy_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.0629999999946449,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\unoq_wifi_hmi_deploy_selftest.log"
+    },
+    {
+      "name": "verify_board_flash_package_selftest",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-u",
+        "tools\\verify_board_flash_package_selftest.py"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 0.389999999984866,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\verify_board_flash_package_selftest.log"
+    },
+    {
+      "name": "unoq_build",
+      "cmd": [
+        "arduino-cli",
+        "compile",
+        "--fqbn",
+        "arduino:zephyr:unoq:link_mode=static",
+        ".\\UNOQ_MOTOR"
+      ],
+      "cwd": "C:\\mic_practice",
+      "rc": 0,
+      "elapsed_s": 6.625,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\unoq_build.log"
+    },
+    {
+      "name": "bluepill_build",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "platformio",
+        "run"
+      ],
+      "cwd": "C:\\mic_practice\\bluepill_uart_pwm_pio",
+      "rc": 0,
+      "elapsed_s": 4.953000000008615,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\bluepill_build.log"
+    },
+    {
+      "name": "nucleo_build",
+      "cmd": [
+        "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "-m",
+        "platformio",
+        "run",
+        "-e",
+        "nucleo_g431_uart_bridge",
+        "-e",
+        "nucleo_g431_uart_bridge_vcp",
+        "-e",
+        "nucleo_g431_pwm_bench",
+        "-e",
+        "nucleo_g431_pwm_bench_vcp"
+      ],
+      "cwd": "C:\\mic_practice\\nucleo_g431_uart_bridge_pio",
+      "rc": 0,
+      "elapsed_s": 3.35999999998603,
+      "ok": true,
+      "log": "C:\\mic_practice\\artifacts\\full_system_preflight_stage_s1_20260826_final\\full_system_preflight_20260826_211641_211592\\logs\\nucleo_build.log"
+    }
+  ],
+  "summary": {
+    "build_only": true,
+    "build_only_pass": true,
+    "build_pass": true,
+    "build_step_audit": {
+      "pass": true,
+      "required_count": 48,
+      "present_count": 48,
+      "missing": [],
+      "failed": [],
+      "duplicates": []
+    },
+    "required_hil_pass": false,
+    "full_suite_pass": false,
+    "precharge_relay_stage_enabled": false,
+    "precharge_relay_pass": null,
+    "precharge_relay_saleae_enabled": false,
+    "precharge_relay_saleae_pass": null,
+    "fan_stage_enabled": false,
+    "fan_pass": null,
+    "bpfoc_stage_enabled": false,
+    "bpfoc_pass": null,
+    "bluepill_pwm_selftest_stage_enabled": false,
+    "bluepill_pwm_selftest_pass": null,
+    "hv_stage_enabled": false,
+    "hv_pass": null,
+    "mic_compare_status": "not_run_build_only",
+    "final_safe": null,
+    "overall_pass": false
+  },
+  "build_only": true,
+  "build_only_pass": true,
+  "build_pass": true,
+  "build_step_audit": {
+    "pass": true,
+    "required_count": 48,
+    "present_count": 48,
+    "missing": [],
+    "failed": [],
+    "duplicates": []
+  },
+  "required_hil_pass": false,
+  "full_suite_pass": false,
+  "precharge_relay_stage_enabled": false,
+  "precharge_relay_pass": null,
+  "precharge_relay_saleae_enabled": false,
+  "precharge_relay_saleae_pass": null,
+  "fan_stage_enabled": false,
+  "fan_pass": null,
+  "bpfoc_stage_enabled": false,
+  "bpfoc_pass": null,
+  "bluepill_pwm_selftest_stage_enabled": false,
+  "bluepill_pwm_selftest_pass": null,
+  "hv_stage_enabled": false,
+  "hv_pass": null,
+  "mic_compare_status": "not_run_build_only",
+  "final_safe": null,
+  "overall_pass": false
+}

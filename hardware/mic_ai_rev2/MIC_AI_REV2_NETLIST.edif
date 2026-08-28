@@ -4,7 +4,7 @@
   (keywordMap (keywordLevel 0))
   (status (written
     (timestamp 2026 7 17 0 0 0)
-    (program "Codex MIC_AI generator" (version "2.1"))))
+    (program "Codex MIC_AI generator" (version "2.2"))))
   (library MICAI_LIB
     (edifLevel 0)
     (technology (numberDefinition))
@@ -39,6 +39,18 @@
         )
       )
     )
+    (cell CELL_A_SOFTSTART
+      (cellType generic)
+      (view schematic
+        (viewType netlist)
+        (interface
+          (port L_IN (direction inout))
+          (port N_IN (direction inout))
+          (port L_OUT (direction inout))
+          (port N_OUT (direction inout))
+        )
+      )
+    )
     (cell CELL_BR1
       (cellType generic)
       (view schematic
@@ -48,79 +60,6 @@
           (port AC2 (direction inout))
           (port PLUS (direction inout))
           (port MINUS (direction inout))
-        )
-      )
-    )
-    (cell CELL_RPRE1
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port N_1 (direction inout))
-          (port N_2 (direction inout))
-        )
-      )
-    )
-    (cell CELL_RPRE2
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port N_1 (direction inout))
-          (port N_2 (direction inout))
-        )
-      )
-    )
-    (cell CELL_K1
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port COM (direction inout))
-          (port NO (direction inout))
-          (port COIL_PLUS (direction inout))
-          (port COIL_LOW (direction inout))
-        )
-      )
-    )
-    (cell CELL_Q1
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port G (direction inout))
-          (port D (direction inout))
-          (port S (direction inout))
-        )
-      )
-    )
-    (cell CELL_R_Q1_GATE
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port N_1 (direction inout))
-          (port N_2 (direction inout))
-        )
-      )
-    )
-    (cell CELL_R_Q1_PD
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port N_1 (direction inout))
-          (port N_2 (direction inout))
-        )
-      )
-    )
-    (cell CELL_D_K1
-      (cellType generic)
-      (view schematic
-        (viewType netlist)
-        (interface
-          (port A (direction inout))
-          (port K (direction inout))
         )
       )
     )
@@ -1084,60 +1023,18 @@
             (property DOMAIN (string "HV"))
             (property POPULATE (string "YES"))
           )
+          (instance A_SOFTSTART
+            (viewRef schematic (cellRef CELL_A_SOFTSTART (libraryRef MICAI_LIB)))
+            (property VALUE (string "AUTONOMOUS AC SOFT-START; 4x NTC 10D-20 + internal bypass relay"))
+            (property FOOTPRINT (string "External_Module_4Wire"))
+            (property DOMAIN (string "HV"))
+            (property POPULATE (string "YES"))
+          )
           (instance BR1
             (viewRef schematic (cellRef CELL_BR1 (libraryRef MICAI_LIB)))
             (property VALUE (string "KBPC5010"))
             (property FOOTPRINT (string "KBPC"))
             (property DOMAIN (string "HV"))
-            (property POPULATE (string "YES"))
-          )
-          (instance RPRE1
-            (viewRef schematic (cellRef CELL_RPRE1 (libraryRef MICAI_LIB)))
-            (property VALUE (string "20R 25W pulse-rated"))
-            (property FOOTPRINT (string "Chassis_Resistor_25W"))
-            (property DOMAIN (string "HV"))
-            (property POPULATE (string "YES"))
-          )
-          (instance RPRE2
-            (viewRef schematic (cellRef CELL_RPRE2 (libraryRef MICAI_LIB)))
-            (property VALUE (string "20R 25W pulse-rated"))
-            (property FOOTPRINT (string "Chassis_Resistor_25W"))
-            (property DOMAIN (string "HV"))
-            (property POPULATE (string "YES"))
-          )
-          (instance K1
-            (viewRef schematic (cellRef CELL_K1 (libraryRef MICAI_LIB)))
-            (property VALUE (string "TE Mini K HV 2-1904058-5, 12V coil, 400VDC/20A"))
-            (property FOOTPRINT (string "TE_2-1904058-5"))
-            (property DOMAIN (string "HV"))
-            (property POPULATE (string "YES"))
-          )
-          (instance Q1
-            (viewRef schematic (cellRef CELL_Q1 (libraryRef MICAI_LIB)))
-            (property VALUE (string "AO3400A (AOS)"))
-            (property FOOTPRINT (string "SOT-23"))
-            (property DOMAIN (string "HOT"))
-            (property POPULATE (string "YES"))
-          )
-          (instance R_Q1_GATE
-            (viewRef schematic (cellRef CELL_R_Q1_GATE (libraryRef MICAI_LIB)))
-            (property VALUE (string "100R"))
-            (property FOOTPRINT (string "R_0603"))
-            (property DOMAIN (string "HOT"))
-            (property POPULATE (string "YES"))
-          )
-          (instance R_Q1_PD
-            (viewRef schematic (cellRef CELL_R_Q1_PD (libraryRef MICAI_LIB)))
-            (property VALUE (string "100K"))
-            (property FOOTPRINT (string "R_0603"))
-            (property DOMAIN (string "HOT"))
-            (property POPULATE (string "YES"))
-          )
-          (instance D_K1
-            (viewRef schematic (cellRef CELL_D_K1 (libraryRef MICAI_LIB)))
-            (property VALUE (string "SS14"))
-            (property FOOTPRINT (string "SMA"))
-            (property DOMAIN (string "HOT"))
             (property POPULATE (string "YES"))
           )
           (instance C_HV
@@ -1717,7 +1614,7 @@
             (joined
               (portRef N_2 (instanceRef F1))
               (portRef N_1 (instanceRef MOV1))
-              (portRef AC1 (instanceRef BR1))
+              (portRef L_IN (instanceRef A_SOFTSTART))
               (portRef AC1 (instanceRef PS1))
             )
           )
@@ -1725,8 +1622,20 @@
             (joined
               (portRef N (instanceRef J_AC_IN))
               (portRef N_2 (instanceRef MOV1))
-              (portRef AC2 (instanceRef BR1))
+              (portRef N_IN (instanceRef A_SOFTSTART))
               (portRef AC2 (instanceRef PS1))
+            )
+          )
+          (net AC_L_AFTER_SOFTSTART
+            (joined
+              (portRef L_OUT (instanceRef A_SOFTSTART))
+              (portRef AC1 (instanceRef BR1))
+            )
+          )
+          (net AC_N_AFTER_SOFTSTART
+            (joined
+              (portRef N_OUT (instanceRef A_SOFTSTART))
+              (portRef AC2 (instanceRef BR1))
             )
           )
           (net PE_CHASSIS
@@ -1735,23 +1644,9 @@
               (portRef PE (instanceRef J_PE))
             )
           )
-          (net RECT_DC_PLUS
-            (joined
-              (portRef PLUS (instanceRef BR1))
-              (portRef N_1 (instanceRef RPRE1))
-              (portRef COM (instanceRef K1))
-            )
-          )
-          (net PRECHARGE_MID
-            (joined
-              (portRef N_2 (instanceRef RPRE1))
-              (portRef N_1 (instanceRef RPRE2))
-            )
-          )
           (net HV_DC_PLUS
             (joined
-              (portRef N_2 (instanceRef RPRE2))
-              (portRef NO (instanceRef K1))
+              (portRef PLUS (instanceRef BR1))
               (portRef PLUS (instanceRef C_HV))
               (portRef N_1 (instanceRef RB1))
               (portRef PLUS (instanceRef J_J7))
@@ -1788,8 +1683,6 @@
               (portRef GND (instanceRef U_BUCK3V3))
               (portRef RETURN (instanceRef J_STEVAL_J4))
               (portRef GND (instanceRef U_BP))
-              (portRef S (instanceRef Q1))
-              (portRef N_2 (instanceRef R_Q1_PD))
               (portRef GND_HOT (instanceRef U_UART_ISO))
               (portRef N_2 (instanceRef C_UART_HOT))
               (portRef GND_HOT (instanceRef U_LA1))
@@ -1857,8 +1750,6 @@
           (net HOT_12V
             (joined
               (portRef OUT (instanceRef U_BUCK12))
-              (portRef COIL_PLUS (instanceRef K1))
-              (portRef K (instanceRef D_K1))
               (portRef V12 (instanceRef J_FAN))
               (portRef PLUS (instanceRef C_FAN_BULK))
               (portRef N_1 (instanceRef C_FAN_HF))
@@ -1892,27 +1783,6 @@
               (portRef N_1 (instanceRef R_SCL_PU))
               (portRef N_1 (instanceRef R_SDA_PU))
               (portRef VREF (instanceRef J_SWD))
-            )
-          )
-          (net PB4_PRECHARGE
-            (joined
-              (portRef PB4 (instanceRef U_BP))
-              (portRef N_1 (instanceRef R_Q1_GATE))
-              (portRef HI4 (instanceRef U_LA2))
-            )
-          )
-          (net Q1_GATE
-            (joined
-              (portRef N_2 (instanceRef R_Q1_GATE))
-              (portRef G (instanceRef Q1))
-              (portRef N_1 (instanceRef R_Q1_PD))
-            )
-          )
-          (net K1_COIL_LOW
-            (joined
-              (portRef COIL_LOW (instanceRef K1))
-              (portRef D (instanceRef Q1))
-              (portRef A (instanceRef D_K1))
             )
           )
           (net BP_PA8_RAW

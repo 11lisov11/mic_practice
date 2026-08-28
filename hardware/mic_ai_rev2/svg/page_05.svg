@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1191" height="842" viewBox="0 0 1191 842">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="36.00" y="38.00" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#163c32">MIC_AI REV 2.1</text>
+<text x="36.00" y="38.00" font-family="Arial, sans-serif" font-size="18" font-weight="700" text-anchor="start" fill="#163c32">MIC_AI REV 2.2</text>
 <text x="235.00" y="37.00" font-family="Arial, sans-serif" font-size="17" font-weight="700" text-anchor="start" fill="#172126">Вентилятор, AS5600, SWD и сборочные проверки</text>
 <text x="36.00" y="58.00" font-family="Arial, sans-serif" font-size="9" font-weight="400" text-anchor="start" fill="#4b5f59">Стандартный fan header: 1 GND, 2 +12V, 3 TACH, 4 PWM open-collector</text>
 <line x1="36.00" y1="68.00" x2="1154.55" y2="68.00" stroke="#286f5d" stroke-width="2"/>
-<text x="1154.55" y="821.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="end" fill="#5b6965">Лист 5/6   2026-07-17</text>
+<text x="1154.55" y="821.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="end" fill="#5b6965">Лист 5/6   2026-08-26</text>
 <rect x="45.00" y="151.89" width="300.00" height="125.00" rx="6" fill="#fff7e8" stroke="#b36b16" stroke-width="1.8"/>
 <text x="55.00" y="169.89" font-family="Arial, sans-serif" font-size="11" font-weight="700" text-anchor="start" fill="#153b32">Fan power</text>
 <text x="55.00" y="187.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">HOT_15V -&gt; buck -&gt; HOT_12V</text>
@@ -45,7 +45,7 @@
 <text x="55.00" y="562.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">1. Омметр: SAFE_GND - HOT_GND = разрыв.</text>
 <text x="55.00" y="574.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">2. Омметр: AC_N - HV_DC- = разрыв при снятом BR1.</text>
 <text x="55.00" y="585.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">3. Проверить BR1 по маркировке + / - / ~ / ~.</text>
-<text x="55.00" y="597.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">4. Проверить K1: PB4, не PB1.</text>
+<text x="55.00" y="597.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">4. Проверить PB4/PB1/J2-21: NC.</text>
 <text x="55.00" y="608.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">5. Проверить все J2 GND pins.</text>
 <text x="55.00" y="620.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">6. Проверить UNO Q: только VIN или USB-C.</text>
 <rect x="605.00" y="526.89" width="520.00" height="180.00" rx="6" fill="#f4f8f6" stroke="#35524a" stroke-width="1.8"/>
@@ -53,7 +53,7 @@
 <text x="615.00" y="562.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">7. Выбрать один HOT_15V source; подать low voltage без J7.</text>
 <text x="615.00" y="574.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">8. Проверить E-STOP truth table.</text>
 <text x="615.00" y="585.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">9. Проверить UART и isolated Saleae static LOW.</text>
-<text x="615.00" y="597.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">10. Проверить precharge relay при HV OFF.</text>
+<text x="615.00" y="597.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">10. Проверить soft-start отдельно от MCU.</text>
 <text x="615.00" y="608.89" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">11. Проверить PWM overlap при EM_STOP active.</text>
 <text x="615.00" y="620.39" font-family="Arial, sans-serif" font-size="8.4" font-weight="400" text-anchor="start" fill="#24332f">12. E-STOP должен также снимать питание внешним контактором.</text>
 <rect x="45.00" y="723.89" width="1080.00" height="36.00" rx="5" fill="#ffe4e2" stroke="#a32b28" stroke-width="1.5"/>

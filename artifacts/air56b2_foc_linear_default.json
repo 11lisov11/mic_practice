@@ -1,0 +1,143 @@
+{
+  "schema": "air56b2-foc-ensemble-tuning-v1",
+  "status": "host_simulation_tuning_only",
+  "hardware_claim": false,
+  "blind_holdout_used": false,
+  "master_seed": 560225,
+  "train_seed": 3400310821418824409,
+  "validation_seed": 11095681550673942618,
+  "candidate_count": 1,
+  "train_sample_count": 2,
+  "validation_sample_count": 8,
+  "train_steps": 500,
+  "validation_steps": 3000,
+  "controller_model_sample": 0,
+  "acceptance_limits": {
+    "steady_and_final_speed_error_rad_s": 28.483773392547462,
+    "current_alpha_beta_peak_a": 9.75892210851178
+  },
+  "selected": {
+    "candidate_index": 0,
+    "config": {
+      "dt_s": 0.0001,
+      "speed_kp": 0.035,
+      "speed_ki": 1.0,
+      "current_kp": 22.0,
+      "current_ki": 650.0,
+      "torque_limit_nm": 3.0,
+      "flux_ref_wb": null,
+      "id_max_fraction": 0.45,
+      "iq_max_fraction": 0.8,
+      "voltage_limit_fraction": 0.92,
+      "switching_tiebreak_weight": 0.015,
+      "preflux_voltage_fraction": 0.5,
+      "feedback_error_threshold_rad_s": 6.0,
+      "feedback_uncertainty_threshold": 0.4,
+      "temp_trip_c": 125.0
+    },
+    "train_metrics": {
+      "score": 1.5992632191341776,
+      "passed": false,
+      "steady_speed_error_worst_rad_s": 288.71200441769093,
+      "final_speed_error_worst_rad_s": 304.6222538582208,
+      "peak_current_worst_a": 5.846806540859873,
+      "safety_violations_worst": 0.0,
+      "fault_latch_steps_worst": 0.0,
+      "fallback_steps_mean": 0.0,
+      "inverter_loss_proxy_mean_w": 0.3676720190022017,
+      "trial_count": 4
+    },
+    "validation_metrics": {
+      "score": 2.875448292154909,
+      "passed": false,
+      "steady_speed_error_worst_rad_s": 389.38025987086087,
+      "final_speed_error_worst_rad_s": 404.1660682596498,
+      "peak_current_worst_a": 5.8698042757888595,
+      "safety_violations_worst": 0.0,
+      "fault_latch_steps_worst": 0.0,
+      "fallback_steps_mean": 0.0,
+      "inverter_loss_proxy_mean_w": 0.38961606844033125,
+      "trial_count": 16
+    }
+  },
+  "validation_leaderboard": [
+    {
+      "candidate_index": 0,
+      "config": {
+        "dt_s": 0.0001,
+        "speed_kp": 0.035,
+        "speed_ki": 1.0,
+        "current_kp": 22.0,
+        "current_ki": 650.0,
+        "torque_limit_nm": 3.0,
+        "flux_ref_wb": null,
+        "id_max_fraction": 0.45,
+        "iq_max_fraction": 0.8,
+        "voltage_limit_fraction": 0.92,
+        "switching_tiebreak_weight": 0.015,
+        "preflux_voltage_fraction": 0.5,
+        "feedback_error_threshold_rad_s": 6.0,
+        "feedback_uncertainty_threshold": 0.4,
+        "temp_trip_c": 125.0
+      },
+      "train_metrics": {
+        "score": 1.5992632191341776,
+        "passed": false,
+        "steady_speed_error_worst_rad_s": 288.71200441769093,
+        "final_speed_error_worst_rad_s": 304.6222538582208,
+        "peak_current_worst_a": 5.846806540859873,
+        "safety_violations_worst": 0.0,
+        "fault_latch_steps_worst": 0.0,
+        "fallback_steps_mean": 0.0,
+        "inverter_loss_proxy_mean_w": 0.3676720190022017,
+        "trial_count": 4
+      },
+      "validation_metrics": {
+        "score": 2.875448292154909,
+        "passed": false,
+        "steady_speed_error_worst_rad_s": 389.38025987086087,
+        "final_speed_error_worst_rad_s": 404.1660682596498,
+        "peak_current_worst_a": 5.8698042757888595,
+        "safety_violations_worst": 0.0,
+        "fault_latch_steps_worst": 0.0,
+        "fallback_steps_mean": 0.0,
+        "inverter_loss_proxy_mean_w": 0.38961606844033125,
+        "trial_count": 16
+      }
+    }
+  ],
+  "train_leaderboard": [
+    {
+      "candidate_index": 0,
+      "config": {
+        "dt_s": 0.0001,
+        "speed_kp": 0.035,
+        "speed_ki": 1.0,
+        "current_kp": 22.0,
+        "current_ki": 650.0,
+        "torque_limit_nm": 3.0,
+        "flux_ref_wb": null,
+        "id_max_fraction": 0.45,
+        "iq_max_fraction": 0.8,
+        "voltage_limit_fraction": 0.92,
+        "switching_tiebreak_weight": 0.015,
+        "preflux_voltage_fraction": 0.5,
+        "feedback_error_threshold_rad_s": 6.0,
+        "feedback_uncertainty_threshold": 0.4,
+        "temp_trip_c": 125.0
+      },
+      "metrics": {
+        "score": 1.5992632191341776,
+        "passed": false,
+        "steady_speed_error_worst_rad_s": 288.71200441769093,
+        "final_speed_error_worst_rad_s": 304.6222538582208,
+        "peak_current_worst_a": 5.846806540859873,
+        "safety_violations_worst": 0.0,
+        "fault_latch_steps_worst": 0.0,
+        "fallback_steps_mean": 0.0,
+        "inverter_loss_proxy_mean_w": 0.3676720190022017,
+        "trial_count": 4
+      }
+    }
+  ]
+}

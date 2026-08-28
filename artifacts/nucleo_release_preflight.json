@@ -1,0 +1,82 @@
+{
+  "tool": "nucleo_release_preflight",
+  "profile": "active-nucleo-only",
+  "pass": true,
+  "duration_s": 2.207,
+  "checks": [
+    {
+      "check": "configure_unoq_autonomous_wifi_selftest.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.056,
+      "stdout_tail": "{\n  \"tool\": \"configure_unoq_autonomous_wifi_selftest\",\n  \"pass\": true,\n  \"cases\": {\n    \"station_is_persistent\": true,\n    \"station_ssid_is_shell_quoted\": true,\n    \"ap_uses_wpa_psk\": true,\n    \"ap_has_static_shared_network\": true,\n    \"labels_do_not_leak_password\": true\n  }\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "web_hmi_control_access_selftest.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 1.127,
+      "stdout_tail": "{\n  \"tool\": \"web_hmi_control_access_selftest\",\n  \"pass\": true,\n  \"cases\": {\n    \"status_is_read_only_public\": true,\n    \"logs_reject_missing_token\": true,\n    \"logs_accept_valid_token\": true,\n    \"start_rejects_missing_token\": true,\n    \"command_rejects_bad_token\": true,\n    \"command_accepts_valid_token\": true,\n    \"heartbeat_accepts_valid_token\": true,\n    \"stop_remains_fail_safe_without_token\": true,\n    \"lost_heartbeat_forces_stop_and_estop\": true\n  }\n}",
+      "stderr_tail": "127.0.0.1 - - [27/Aug/2026 02:48:08] \"GET /api/status HTTP/1.1\" 200 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"GET /api/logs?hours=1 HTTP/1.1\" 401 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"GET /api/logs?hours=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"POST /api/start-sequence HTTP/1.1\" 401 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"POST /api/cmd HTTP/1.1\" 401 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"POST /api/cmd HTTP/1.1\" 200 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"POST /api/operator-heartbeat HTTP/1.1\" 200 -\n127.0.0.1 - - [27/Aug/2026 02:48:08] \"POST /api/stop-sequence HTTP/1.1\" 200 -"
+    },
+    {
+      "check": "web_hmi_command_guard_selftest.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.448,
+      "stdout_tail": "    {\n      \"name\": \"firmware_update_rejects_stale_raw_vbus\",\n      \"ok\": true,\n      \"detail\": \"firmware update blocked: raw DC bus telemetry is stale\",\n      \"evidence\": null\n    },\n    {\n      \"name\": \"firmware_update_rejects_bad_counter\",\n      \"ok\": true,\n      \"detail\": \"motor-controller bad-frame counter is non-zero: mc_bad=1\",\n      \"evidence\": null\n    },\n    {\n      \"name\": \"firmware_update_rejects_stale_motor_controller_link\",\n      \"ok\": true,\n      \"detail\": \"motor-controller link is stale or down\",\n      \"evidence\": null\n    }\n  ]\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "adb_deploy_web_hmi_selftest.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.053,
+      "stdout_tail": "      \"ok\": true,\n      \"evidence\": null\n    },\n    {\n      \"name\": \"user_sshd_is_key_only\",\n      \"ok\": true,\n      \"evidence\": null\n    },\n    {\n      \"name\": \"user_sshd_start_is_idempotent\",\n      \"ok\": true,\n      \"evidence\": null\n    },\n    {\n      \"name\": \"adb_bootstrap_falls_back_to_user_sshd\",\n      \"ok\": true,\n      \"evidence\": null\n    }\n  ]\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "uno_nucleo_mcsdk_contract_check.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.051,
+      "stdout_tail": "{\n  \"tool\": \"uno_nucleo_mcsdk_contract_check\",\n  \"pass\": true,\n  \"uno\": \"C:\\\\mic_practice\\\\UNOQ_MOTOR\\\\UNOQ_MOTOR.ino\",\n  \"nucleo\": \"C:\\\\mic_practice\\\\mcsdk_reference\\\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\\\Src\\\\main.c\",\n  \"expected_pole_pairs\": 1.0,\n  \"checks\": [\n    \"protocol_vectors\",\n    \"stateful_fault_latch_vectors\",\n    \"source_contract\",\n    \"no_direct_motor_control_in_adapter\",\n    \"alternate_start_paths_blocked\"\n  ],\n  \"failures\": []\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "air56b2_firmware_profile_check.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.059,
+      "stdout_tail": "{\n  \"tool\": \"air56b2_firmware_profile_check\",\n  \"pass\": true,\n  \"project\": \"C:\\\\mic_practice\\\\mcsdk_reference\\\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\",\n  \"profile\": \"C:\\\\mic_practice\\\\docs\\\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json\",\n  \"uno\": \"C:\\\\mic_practice\\\\UNOQ_MOTOR\\\\UNOQ_MOTOR.ino\",\n  \"artifacts\": \"C:\\\\mic_practice\\\\mcsdk_reference\\\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\\\STM32CubeIDE\\\\Debug\",\n  \"derived\": {\n    \"nucleo_max_frequency_millihz\": 50000.0\n  },\n  \"checks\": {\n    \"profile\": [],\n    \"mcsdk_project\": [],\n    \"uno_and_uart_adapter\": [],\n    \"build_manifest\": []\n  },\n  \"failed_checks\": []\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "nucleo_firmware_safety_check.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.037,
+      "stdout_tail": "        \"uart_topology\": \"direct 3.3 V UART; UNO Q GND and Nucleo GND are common HOT_GND = STEVAL J7 DC-\",\n        \"external_interface_in_hv\": \"Wi-Fi only; no USB/ST-Link/Ethernet/HDMI/UART cables\"\n      }\n    },\n    {\n      \"name\": \"package_has_no_bluepill_artifacts\",\n      \"ok\": true,\n      \"detail\": []\n    },\n    {\n      \"name\": \"hardware_validation_remains_explicit\",\n      \"ok\": true,\n      \"detail\": {\n        \"software_verified\": true,\n        \"hardware_validated\": false\n      }\n    }\n  ],\n  \"legacy_bluepill_sources_read\": false\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "start_guard_static_check.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.064,
+      "stdout_tail": "    {\n      \"name\": \"operator_doc_safe_upload:PWM_STATIC_BLOCKER_RU.md\",\n      \"ok\": true,\n      \"file\": \"C:\\\\mic_practice\\\\PWM_STATIC_BLOCKER_RU.md\",\n      \"missing\": []\n    },\n    {\n      \"name\": \"operator_doc_safe_upload:UART_LOOPBACK_STEPS_RU.md\",\n      \"ok\": true,\n      \"file\": \"C:\\\\mic_practice\\\\UART_LOOPBACK_STEPS_RU.md\",\n      \"missing\": []\n    },\n    {\n      \"name\": \"operator_doc_safe_upload:RESEARCH_READINESS_RU.md\",\n      \"ok\": true,\n      \"file\": \"C:\\\\mic_practice\\\\RESEARCH_READINESS_RU.md\",\n      \"missing\": []\n    }\n  ]\n}",
+      "stderr_tail": ""
+    },
+    {
+      "check": "verify_board_flash_package_selftest.py",
+      "pass": true,
+      "returncode": 0,
+      "duration_s": 0.31,
+      "stdout_tail": "PASS verify_board_flash_package_selftest",
+      "stderr_tail": ""
+    }
+  ],
+  "legacy_bluepill_executed": false,
+  "legacy_bluepill_sources_read": false
+}

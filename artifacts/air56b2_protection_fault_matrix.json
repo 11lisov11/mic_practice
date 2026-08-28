@@ -1,0 +1,3098 @@
+{
+  "schema": "air56b2-protection-fault-matrix-v1",
+  "status": "PASS",
+  "evidence_level": "host_gateway_sil_only",
+  "hardware_claim": false,
+  "hardware_identified": false,
+  "hardware_release_ready": false,
+  "master_seed": 560225,
+  "component_seeds": {
+    "F3": 6836490015695282832
+  },
+  "sample_count": 24,
+  "fault_case_count_per_sample": 7,
+  "total_fault_case_count": 168,
+  "f1_reference": {
+    "schema": "air56b2-nameplate-ensemble-v2",
+    "master_seed": 560225,
+    "sample_count": 24,
+    "sample_reference_sha256": "54bb6f940dee92551de13361120e917a3388a77dbc848ff4bdc5d8f6093151d4"
+  },
+  "fault_cases": [
+    "overcurrent",
+    "undervoltage",
+    "overvoltage",
+    "overtemperature",
+    "watchdog",
+    "nonfinite_current",
+    "invalid_vector"
+  ],
+  "gates": {
+    "all_fault_cases_passed": true,
+    "every_fault_tested_on_every_sample": true,
+    "critical_faults_disable_all_gates": true,
+    "fault_latch_requires_explicit_reset": true,
+    "hardware_claim_absent": true
+  },
+  "summary": {
+    "passed_samples": 24,
+    "failed_samples": 0,
+    "passed_fault_cases": 168,
+    "failed_fault_cases": 0
+  },
+  "samples": [
+    {
+      "index": 0,
+      "f1_seed": 983691068288974403,
+      "f3_seed": 7550403387836783084,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "f1_seed": 6846217559414787944,
+      "f3_seed": 7152370224192835391,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "f1_seed": 5849782376871259603,
+      "f3_seed": 8680383007690626226,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "f1_seed": 7230607078922031949,
+      "f3_seed": 3819528998311369046,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "f1_seed": 7082650564444463620,
+      "f3_seed": 1431457692806993292,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "f1_seed": 8549144746613691326,
+      "f3_seed": 304253818952669749,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "f1_seed": 4770916335219980242,
+      "f3_seed": 8780273786301237417,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "f1_seed": 4579312345751918043,
+      "f3_seed": 5124930939721403448,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "f1_seed": 6480149920700512361,
+      "f3_seed": 1223983718679124659,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "f1_seed": 3605427814717976727,
+      "f3_seed": 7863002634466586737,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "f1_seed": 6200044419266197524,
+      "f3_seed": 1397375113063452675,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "f1_seed": 4860700540717414519,
+      "f3_seed": 4027814689776007399,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "f1_seed": 4222900247255106265,
+      "f3_seed": 9008437249459698395,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "f1_seed": 2834627334412181475,
+      "f3_seed": 5928581140658240782,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "f1_seed": 8209064433897070965,
+      "f3_seed": 3298550190094610151,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "f1_seed": 1177651087037246594,
+      "f3_seed": 6236420590801084864,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "f1_seed": 2957699143450134477,
+      "f3_seed": 2811129694877502596,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "f1_seed": 1606746516725346219,
+      "f3_seed": 8300725456184667241,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "f1_seed": 4603901383289370788,
+      "f3_seed": 7148128193021841134,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "f1_seed": 9095905660468371100,
+      "f3_seed": 4149420528149208290,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "f1_seed": 3953410059548025363,
+      "f3_seed": 1615082275937689224,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "f1_seed": 1657883898168730250,
+      "f3_seed": 2276815563819622316,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "f1_seed": 7179967574974954694,
+      "f3_seed": 2638460353078498802,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "f1_seed": 879791268492173932,
+      "f3_seed": 6463896658010234017,
+      "status": "PASS",
+      "cases": [
+        {
+          "case_id": "overcurrent",
+          "expected_fault_flag": "OC_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 1,
+          "injected_fallback_reason": "OC_FAULT"
+        },
+        {
+          "case_id": "undervoltage",
+          "expected_fault_flag": "UNDERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 32,
+          "injected_fallback_reason": "UNDERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overvoltage",
+          "expected_fault_flag": "OVERVOLTAGE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16,
+          "injected_fallback_reason": "OVERVOLTAGE_FAULT"
+        },
+        {
+          "case_id": "overtemperature",
+          "expected_fault_flag": "OVERTEMP_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 8,
+          "injected_fallback_reason": "OVERTEMP_FAULT"
+        },
+        {
+          "case_id": "watchdog",
+          "expected_fault_flag": "WATCHDOG_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 64,
+          "injected_fallback_reason": "WATCHDOG_FAULT"
+        },
+        {
+          "case_id": "nonfinite_current",
+          "expected_fault_flag": "NONFINITE_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 16384,
+          "injected_fallback_reason": "NONFINITE_FAULT"
+        },
+        {
+          "case_id": "invalid_vector",
+          "expected_fault_flag": "INVALID_VECTOR_FAULT",
+          "status": "PASS",
+          "checks": {
+            "healthy_precondition_accepted": true,
+            "expected_fault_flag_present": true,
+            "fault_request_rejected": true,
+            "pwm_disabled_on_critical_fault": true,
+            "all_gates_off_on_critical_fault": true,
+            "fault_latched": true,
+            "healthy_request_blocked_while_latched": true,
+            "explicit_reset_restores_healthy_request": true
+          },
+          "injected_fault_flags": 128,
+          "injected_fallback_reason": "INVALID_VECTOR_FAULT"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This is software-in-the-loop validation of the host gateway, not an IPM propagation-time model.",
+    "Gate-driver UVLO, DESAT, analog comparator timing, relay behavior, and MCU reset timing require HIL or bench measurements.",
+    "Passing this matrix does not authorize high-voltage commissioning."
+  ]
+}

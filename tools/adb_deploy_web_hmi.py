@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import secrets
 import subprocess
 import sys
 import tempfile
@@ -52,6 +53,7 @@ def server_args(
     firmware_update_token_file: str | None,
     standalone_hv: bool,
     standalone_lv: bool = False,
+    control_token_file: str | None = None,
 ) -> str:
     args = ""
     if firmware_update_token_file:
@@ -60,6 +62,8 @@ def server_args(
         args += " --standalone-hv"
     if standalone_lv:
         args += " --standalone-lv --start-runlimit-sec 3.0"
+    if control_token_file:
+        args += " --control-token-file " + shell_quote(control_token_file)
     return args
 
 
@@ -68,8 +72,9 @@ def autostart_script(
     firmware_update_token_file: str | None,
     standalone_hv: bool,
     standalone_lv: bool = False,
+    control_token_file: str | None = None,
 ) -> str:
-    extra_args = server_args(firmware_update_token_file, standalone_hv, standalone_lv)
+    extra_args = server_args(firmware_update_token_file, standalone_hv, standalone_lv, control_token_file)
     return (
         "#!/bin/sh\n"
         f"cd {shell_quote(remote)} || exit 1\n"
@@ -82,7 +87,7 @@ def autostart_script(
         "  sleep 1\n"
         "done\n"
         "exec ./.venv/bin/python server.py --bind 0.0.0.0 --port 8080 "
-        "--router /var/run/arduino-router.sock"
+        "--router /var/run/arduino-router.sock --log-file-bytes 67108864"
         f"{extra_args} >> logs/server.log 2>&1\n"
     )
 
@@ -254,8 +259,9 @@ def install_autostart(
     firmware_update_token_file: str | None,
     standalone_hv: bool,
     standalone_lv: bool = False,
+    control_token_file: str | None = None,
 ) -> bool:
-    script = autostart_script(remote, firmware_update_token_file, standalone_hv, standalone_lv)
+    script = autostart_script(remote, firmware_update_token_file, standalone_hv, standalone_lv, control_token_file)
     remote_script = "/home/arduino/bin/start_unoq_hmi.sh"
     run(adb + ["shell", "mkdir -p /home/arduino/bin"])
     run(adb + ["shell", "cat > /tmp/start_unoq_hmi.sh <<'SH'\n" + script + "SH\n"])
@@ -296,6 +302,11 @@ def main() -> int:
     ap.add_argument("--remote", default="/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi")
     ap.add_argument("--restart", action="store_true", help="Restart server after deploy")
     ap.add_argument(
+        "--confirm-service-mode",
+        action="store_true",
+        help="Confirm mains, rectifier and STEVAL J7 are disconnected and DC-link is discharged",
+    )
+    ap.add_argument(
         "--enable-firmware-update",
         action="store_true",
         help="Start HMI with the Wi-Fi firmware update endpoint enabled",
@@ -314,6 +325,21 @@ def main() -> int:
         "--firmware-update-token-file",
         default="/home/arduino/.unoq_firmware_update_token",
         help="Remote token file used by the HMI firmware update endpoint",
+    )
+    ap.add_argument(
+        "--control-token",
+        default="",
+        help="HMI control token; generated automatically for standalone mode when omitted",
+    )
+    ap.add_argument(
+        "--control-token-local-file",
+        default="",
+        help="Read the HMI control token from this local file",
+    )
+    ap.add_argument(
+        "--control-token-file",
+        default="/home/arduino/.config/mic-ai/control_token",
+        help="Remote token file used by HMI commands and log download",
     )
     ap.add_argument(
         "--no-autostart",
@@ -342,6 +368,10 @@ def main() -> int:
         help="Install both Wi-Fi profiles and start in the HV-disconnected LV test mode.",
     )
     args = ap.parse_args()
+    if not args.confirm_service_mode:
+        raise SystemExit(
+            "ERROR: ADB deployment is allowed only in service mode; add --confirm-service-mode after physically disconnecting HV"
+        )
 
     device = args.device or detect_device()
     if not device:
@@ -395,6 +425,42 @@ def main() -> int:
                 except OSError:
                     pass
 
+    control_token = args.control_token.strip()
+    if args.control_token_local_file:
+        control_token = Path(args.control_token_local_file).read_text(encoding="utf-8").strip()
+    standalone_enabled = bool(args.standalone_hv or args.standalone_lv)
+    if standalone_enabled and not control_token:
+        control_token = secrets.token_urlsafe(32)
+        log("GENERATED HMI CONTROL TOKEN: " + control_token)
+        log("Store this token in the phone HMI; it is not written to project files.")
+    if control_token and len(control_token) < 16:
+        raise SystemExit("ERROR: HMI control token must contain at least 16 characters")
+    control_token_enabled = bool(control_token)
+    if control_token_enabled:
+        tmp_name = ""
+        try:
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as f:
+                f.write(control_token + "\n")
+                tmp_name = f.name
+            run(adb + ["push", tmp_name, "/tmp/unoq_hmi_control_token"])
+            token_dir = os.path.dirname(args.control_token_file) or "."
+            install_token = (
+                "sh -lc "
+                + shell_quote(
+                    f"mkdir -p {shell_quote(token_dir)} && "
+                    f"cp /tmp/unoq_hmi_control_token {shell_quote(args.control_token_file)} && "
+                    f"chmod 600 {shell_quote(args.control_token_file)} && "
+                    "rm -f /tmp/unoq_hmi_control_token"
+                )
+            )
+            run(adb + ["shell", install_token])
+        finally:
+            if tmp_name:
+                try:
+                    os.remove(tmp_name)
+                except OSError:
+                    pass
+
     systemd_installed = False
     if not args.no_autostart:
         systemd_installed = install_autostart(
@@ -403,6 +469,7 @@ def main() -> int:
             args.firmware_update_token_file if firmware_update_enabled else None,
             bool(args.standalone_hv),
             bool(args.standalone_lv),
+            args.control_token_file if control_token_enabled else None,
         )
 
     if args.restart:
@@ -432,6 +499,7 @@ def main() -> int:
             args.firmware_update_token_file if firmware_update_enabled else None,
             bool(args.standalone_hv),
             bool(args.standalone_lv),
+            args.control_token_file if control_token_enabled else None,
         )
         # Kill by port 8080 first (robust and avoids pkill matching the current shell argv).
         kill_and_start = (

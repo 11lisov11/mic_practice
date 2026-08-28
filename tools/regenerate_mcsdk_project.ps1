@@ -93,7 +93,7 @@ $report = [ordered]@{
     adapter_contract = "passed"
     cubeide_build = "passed"
     hardware_accessed = $false
-    motor_release = "not approved: reference Siemens parameters and no precharge HIL gate"
+    motor_release = "not approved: measured AIR56B2 model and external soft-start HIL gate are still open"
 }
 $reportPath = Join-Path $output "mcsdk_regeneration_report.json"
 $report | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportPath -Encoding utf8

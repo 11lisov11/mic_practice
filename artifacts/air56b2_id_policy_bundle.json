@@ -1,0 +1,115 @@
+{
+  "schema": "air56b2-id-policy-checkpoint-bundle-v1",
+  "status": "simulation_only",
+  "hardware_release_ready": false,
+  "checkpoint": {
+    "path": "C:\\mic_practice\\artifacts\\air56b2_id_policy_actor.pt",
+    "state_sha256": "7bfc88c608002e35e5d60ddf345ffbbc2b989ae1b44398a9ad5417679b320b6d",
+    "replay_state_sha256": "7bfc88c608002e35e5d60ddf345ffbbc2b989ae1b44398a9ad5417679b320b6d",
+    "architecture": {
+      "type": "MLP_tanh_sigmoid",
+      "hidden_sizes": [
+        48,
+        48
+      ]
+    }
+  },
+  "feature_keys": [
+    "speed_pu",
+    "torque_command_pu",
+    "stator_temperature_norm",
+    "rotor_temperature_norm"
+  ],
+  "scaling": {
+    "id_lower_a": 0.12,
+    "id_upper_a": 1.86,
+    "temperature_reference_c": 20.0,
+    "temperature_span_c": 140.0
+  },
+  "splits": {
+    "train_sample_indices": [
+      20,
+      26,
+      31,
+      48,
+      62,
+      72,
+      79,
+      80,
+      83,
+      85,
+      88,
+      94,
+      97,
+      110,
+      115,
+      119,
+      122,
+      131,
+      142,
+      148,
+      155,
+      165,
+      166,
+      172,
+      184,
+      186,
+      196,
+      201,
+      204,
+      212,
+      219,
+      249
+    ],
+    "validation_sample_indices": [
+      9,
+      42,
+      57,
+      59,
+      69,
+      87,
+      103,
+      145,
+      206,
+      214,
+      239,
+      254
+    ],
+    "holdout_sample_indices": [
+      1,
+      15,
+      17,
+      33,
+      44,
+      101,
+      127,
+      130,
+      169,
+      231,
+      234,
+      250
+    ],
+    "train_case_count": 1600,
+    "validation_case_count": 600,
+    "holdout_case_count": 600
+  },
+  "benchmark": {
+    "path": "C:\\mic_practice\\artifacts\\air56b2_policy_benchmark.json",
+    "sha256": "7d7a20a2b5b92c4f794a5dd81c5f356ac52e971ee27cbb513884a2a769420d55"
+  },
+  "source": {
+    "path": "C:\\mic_practice\\artifacts\\air56b2_fidelity_bundle.json",
+    "sha256": "5a95aab1a02643f17e4a41f7a2e957cc1de43d5f13d7487a7fbed7ec7748b115"
+  },
+  "gates": {
+    "source_bundle_passed": true,
+    "splits_pairwise_disjoint": true,
+    "checkpoint_replay_bitwise_identical": true,
+    "holdout_constraint_violations_zero": true,
+    "holdout_id_mae_below_0_08_a": true,
+    "holdout_median_loss_saving_positive": true,
+    "holdout_median_optimality_gap_below_5pct": true,
+    "lut_hardware_release_disabled": true,
+    "no_hardware_claim": true
+  }
+}

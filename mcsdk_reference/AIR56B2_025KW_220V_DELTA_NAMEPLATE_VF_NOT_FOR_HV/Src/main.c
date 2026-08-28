@@ -62,7 +62,8 @@ DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 
-/* Application-owned, isolated UNO Q link: USART1 PB6/PB7 at 115200 8N1. */
+/* Application-owned direct UNO Q link: USART1 PB6/PB7 at 115200 8N1.
+ * UNO Q and Nucleo share HOT_GND; this interface is not galvanically isolated. */
 UART_HandleTypeDef huart1;
 
 /* USER CODE END PV */
@@ -107,8 +108,7 @@ enum {
   UNO_STATUS_TIMEOUT = 0x10U,
   UNO_STATUS_PWM_ACTIVE = 0x20U,
   UNO_STATUS_SHUTDOWN_RELEASED = 0x40U,
-  UNO_EXT_PRECHARGE_RELAY = 0x08U,
-  UNO_TELEMETRY_PRECHARGE_MANAGED = 0x20U,
+  UNO_TELEMETRY_SOFTSTART_READY = 0x20U,
   UNO_TELEMETRY_VBUS_VALID = 0x40U,
   UNO_TELEMETRY_MCSDK_UNITS = 0x80U,
   UNO_TEMP_VALID = 0x01U,
@@ -120,18 +120,16 @@ enum {
   UNO_FAULT_INTERNAL = 5U,
   UNO_LINK_TIMEOUT_MS = 300U,
   UNO_REPLY_TIMEOUT_MS = 5U,
-  UNO_SPEED_RAMP_MS = 150U,
-  UNO_PRECHARGE_READY_V = 250U,
-  UNO_PRECHARGE_HOLD_V = 200U,
-  UNO_PRECHARGE_MAX_V = 385U,
-  UNO_PRECHARGE_TIMEOUT_MS = 5000U,
-  UNO_PRECHARGE_SETTLE_MS = 350U,
+  UNO_SPEED_RAMP_MS = 3000U,
+  UNO_SOFTSTART_READY_V = 250U,
+  UNO_SOFTSTART_HOLD_V = 200U,
+  UNO_SOFTSTART_MAX_V = 385U,
 };
 
-#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1
-#define MIC_PRECHARGE_HIL_VALIDATED 0
-#define UNO_PRECHARGE_GPIO_PORT GPIOB
-#define UNO_PRECHARGE_GPIO_PIN GPIO_PIN_4
+#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1
+#define MIC_SOFTSTART_GPIO_CONTROLLED 0
+#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 0
+#define MIC_EXTERNAL_SOFTSTART_SETTLE_MS 3500U
 
 typedef struct {
   uint8_t parser_state;
@@ -147,10 +145,9 @@ typedef struct {
   bool link_seen;
   bool command_enabled;
   bool fault_latched;
-  bool precharge_closed;
-  bool precharge_waiting;
-  uint32_t precharge_started_ms;
-  uint32_t precharge_closed_ms;
+  bool softstart_ready;
+  bool softstart_tracking;
+  uint32_t softstart_stable_since_ms;
 } uno_link_state_t;
 
 static uno_link_state_t uno_link;
@@ -180,22 +177,38 @@ static bool uno_mcsdk_fault_present(void) {
          state == FAULT_NOW || state == FAULT_OVER;
 }
 
-static void uno_precharge_set(bool closed) {
-  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN,
-                    closed ? GPIO_PIN_SET : GPIO_PIN_RESET);
-  uno_link.precharge_closed = closed;
-  if (!closed) {
-    uno_link.precharge_waiting = false;
-    uno_link.precharge_started_ms = 0U;
-    uno_link.precharge_closed_ms = 0U;
-  }
-}
-
 static void uno_stop_motor(void) {
   (void)MC_StopMotor1();
-  uno_precharge_set(false);
   uno_link.command_enabled = false;
   uno_link.last_mode = UNO_MODE_OFF;
+}
+
+static void uno_update_softstart_state(uint32_t now_ms) {
+  const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
+
+  if (vbus_v < UNO_SOFTSTART_HOLD_V || vbus_v > UNO_SOFTSTART_MAX_V) {
+    uno_link.softstart_ready = false;
+    uno_link.softstart_tracking = false;
+    uno_link.softstart_stable_since_ms = 0U;
+    return;
+  }
+  if (uno_link.softstart_ready) {
+    return;
+  }
+  if (vbus_v < UNO_SOFTSTART_READY_V) {
+    uno_link.softstart_tracking = false;
+    uno_link.softstart_stable_since_ms = 0U;
+    return;
+  }
+  if (!uno_link.softstart_tracking) {
+    uno_link.softstart_tracking = true;
+    uno_link.softstart_stable_since_ms = now_ms;
+    return;
+  }
+  if ((uint32_t)(now_ms - uno_link.softstart_stable_since_ms) >=
+      MIC_EXTERNAL_SOFTSTART_SETTLE_MS) {
+    uno_link.softstart_ready = true;
+  }
 }
 
 static void uno_latch_fault(uint8_t fault_code) {
@@ -261,7 +274,9 @@ static void uno_send_reply(void) {
   reply[8] = (uint8_t)(uno_link.bad_count >> 8U);
   reply[9] = fault_code;
   reply[10] = uno_link.last_mode;
-  reply[14] = uno_link.precharge_closed ? UNO_EXT_PRECHARGE_RELAY : 0U;
+  /* The legacy relay bit is reserved and must stay zero. The external AC
+     soft-start module is autonomous and has no MCU control connection. */
+  reply[14] = 0U;
   reply[17] = (uint8_t)(vbus_deci_v & 0xFFU);
   reply[18] = (uint8_t)(vbus_deci_v >> 8U);
   reply[19] = (uint8_t)(((uint16_t)temp_deci_c) & 0xFFU);
@@ -269,8 +284,8 @@ static void uno_send_reply(void) {
   reply[21] = UNO_TEMP_VALID;
   if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
   reply[29] = UNO_TELEMETRY_MCSDK_UNITS |
-              UNO_TELEMETRY_VBUS_VALID |
-              UNO_TELEMETRY_PRECHARGE_MANAGED;
+              UNO_TELEMETRY_VBUS_VALID;
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
   reply[UNO_FRAME_LEN - 1U] = uno_crc_xor(reply);
   if (HAL_UART_Transmit(&huart1, reply, UNO_FRAME_LEN, UNO_REPLY_TIMEOUT_MS) != HAL_OK) {
     uno_saturating_increment(&uno_link.bad_count);
@@ -346,29 +361,12 @@ static void uno_handle_valid_frame(const uint8_t *frame) {
   }
 
   const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
-  if (!uno_link.precharge_closed) {
-    if (!uno_link.precharge_waiting) {
-      uno_link.precharge_waiting = true;
-      uno_link.precharge_started_ms = now_ms;
-    }
-    if (vbus_v > UNO_PRECHARGE_MAX_V ||
-        (uint32_t)(now_ms - uno_link.precharge_started_ms) > UNO_PRECHARGE_TIMEOUT_MS) {
-      uno_latch_fault(UNO_FAULT_INTERNAL);
-      return;
-    }
-    if (vbus_v >= UNO_PRECHARGE_READY_V) {
-      uno_precharge_set(true);
-      uno_link.precharge_waiting = true;
-      uno_link.precharge_started_ms = now_ms;
-      uno_link.precharge_closed_ms = now_ms;
-    }
-    return;
-  }
-  if (vbus_v < UNO_PRECHARGE_HOLD_V || vbus_v > UNO_PRECHARGE_MAX_V) {
+  uno_update_softstart_state(now_ms);
+  if (vbus_v > UNO_SOFTSTART_MAX_V) {
     uno_latch_fault(UNO_FAULT_INTERNAL);
     return;
   }
-  if ((uint32_t)(now_ms - uno_link.precharge_closed_ms) < UNO_PRECHARGE_SETTLE_MS) {
+  if (!uno_link.softstart_ready) {
     return;
   }
 
@@ -432,6 +430,7 @@ static void uno_link_init(void) {
 }
 
 static void uno_link_poll(void) {
+  uno_update_softstart_state(HAL_GetTick());
   const uint32_t uart_errors = huart1.Instance->ISR &
       (UART_FLAG_ORE | UART_FLAG_NE | UART_FLAG_FE | UART_FLAG_PE);
   if (uart_errors != 0U) {
@@ -455,8 +454,7 @@ static void uno_link_poll(void) {
       (uint32_t)(HAL_GetTick() - uno_link.last_valid_ms) > UNO_LINK_TIMEOUT_MS) {
     uno_latch_fault(UNO_FAULT_TIMEOUT);
   }
-  if ((uno_link.command_enabled || uno_link.precharge_closed) &&
-      uno_mcsdk_fault_present()) {
+  if (uno_link.command_enabled && uno_mcsdk_fault_present()) {
     uno_latch_fault(UNO_FAULT_INTERNAL);
   }
 }
@@ -1023,13 +1021,6 @@ static void MX_GPIO_Init(void)
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
-  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN, GPIO_PIN_RESET);
-  GPIO_InitStruct.Pin = UNO_PRECHARGE_GPIO_PIN;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(UNO_PRECHARGE_GPIO_PORT, &GPIO_InitStruct);
-
   /* USER CODE END MX_GPIO_Init_2 */
 }
 
@@ -1045,7 +1036,6 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  HAL_GPIO_WritePin(UNO_PRECHARGE_GPIO_PORT, UNO_PRECHARGE_GPIO_PIN, GPIO_PIN_RESET);
   __disable_irq();
   while (1)
   {

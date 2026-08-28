@@ -1,0 +1,174 @@
+{
+  "schema": "air56b2-research-package-manifest-v6",
+  "status": "PASS",
+  "pc_research_ready_for_hardware_identification": true,
+  "hardware_release_ready": false,
+  "motor": "IEK AIR56B2 0.25 kW 220 V Delta",
+  "gates": {
+    "gpu_ready": true,
+    "research_result_consistency": true,
+    "ensemble_is_not_hardware_identified": true,
+    "ensemble_has_256_samples": true,
+    "nameplate_provenance_schema_v2": true,
+    "official_nameplate_fields_complete": true,
+    "non_nameplate_parameters_marked_as_estimates": true,
+    "f1_torque_limit_disclosed": true,
+    "fidelity_bundle_passed": true,
+    "fidelity_bundle_matches_ensemble": true,
+    "f1s_starting_extension_passed": true,
+    "f2_f3_priors_have_no_hardware_claim": true,
+    "loss_optimization_study_passed": true,
+    "classical_loss_baseline_has_complete_comparable_matrix": true,
+    "sensorless_independent_plant_study_passed": true,
+    "sensorless_observer_uses_only_voltage_and_current": true,
+    "id_policy_holdout_benchmark_passed": true,
+    "id_policy_checkpoint_and_lut_are_linked": true,
+    "common_control_benchmark_passed": true,
+    "common_control_benchmark_evidence_is_linked": true,
+    "vf_fidelity_study_passed": true,
+    "vf_study_matches_ensemble_prefix": true,
+    "vf_controller_has_no_hidden_state_feedback": true,
+    "vf_operating_matrix_passed": true,
+    "vf_operating_matrix_evidence_is_linked": true,
+    "vf_operating_matrix_has_no_hidden_feedback": true,
+    "protection_fault_matrix_passed": true,
+    "protection_fault_matrix_evidence_is_linked": true,
+    "validation_passed": true,
+    "foc_oracle_scope_disclosed": true,
+    "foc_split_seeds_are_canonical": true,
+    "foc_evidence_chain_is_linked": true,
+    "encoder_foc_tuning_passed": true,
+    "encoder_foc_train_validation_are_disjoint": true,
+    "encoder_foc_fidelity_study_passed": true,
+    "encoder_foc_evidence_chain_is_linked": true,
+    "encoder_foc_uses_measurements_not_true_state": true,
+    "tuning_did_not_use_holdout": true,
+    "blind_holdout_algorithm_feasibility": true,
+    "nameplate_only_release_rejected": true,
+    "hardware_release_rejected": true
+  },
+  "selected_foc_candidate": 3,
+  "selected_foc_config": {
+    "dt_s": 0.0001,
+    "speed_kp": 0.04032540960075322,
+    "speed_ki": 2.3567057937530196,
+    "current_kp": 1.4103132295418133,
+    "current_ki": 1024.2327159154847,
+    "torque_limit_nm": 3.4096334709703666,
+    "flux_ref_wb": 0.3678881392070237,
+    "id_max_fraction": 0.7961738500342264,
+    "iq_max_fraction": 0.8594897655006316,
+    "voltage_limit_fraction": 0.9737938276864814,
+    "switching_tiebreak_weight": 0.07081631972568617,
+    "preflux_voltage_fraction": 0.08633077066676115,
+    "feedback_error_threshold_rad_s": 6.0,
+    "feedback_uncertainty_threshold": 0.4,
+    "temp_trip_c": 125.0
+  },
+  "selected_encoder_foc_candidate": 5,
+  "selected_encoder_foc_config": {
+    "dt_s": 0.0001,
+    "speed_kp": 0.015655323729517605,
+    "speed_ki": 0.7184094639314441,
+    "current_kp": 21.748623173854043,
+    "current_ki": 7529.941334787845,
+    "torque_limit_nm": 3.5294909548478874,
+    "flux_ref_wb": 0.5072957794837314,
+    "id_max_fraction": 0.8744087385907102,
+    "iq_max_fraction": 1.3305040694264063,
+    "voltage_limit_fraction": 0.9367226126622612,
+    "switching_tiebreak_weight": 0.007251870050066821,
+    "preflux_voltage_fraction": 0.09357556269933648,
+    "feedback_error_threshold_rad_s": 6.0,
+    "feedback_uncertainty_threshold": 0.4,
+    "temp_trip_c": 125.0
+  },
+  "files": {
+    "gpu_preflight": {
+      "path": "C:\\mic_practice\\artifacts\\gpu_research_preflight.json",
+      "sha256": "d9fb549c0f5fbb35b1eeed614d1e7bae4c1e2330b7d8df760b757588e84e346c",
+      "size_bytes": 2874
+    },
+    "result_consistency": {
+      "path": "C:\\mic_practice\\artifacts\\research_result_consistency.json",
+      "sha256": "01757c9b637395b92982f8517886dee032e62a47cb800d30e481d2d8a441725b",
+      "size_bytes": 67882
+    },
+    "nameplate_ensemble": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_nameplate_ensemble.json",
+      "sha256": "652ac6682ae7c8b2d2b3b44bcf2b760c5b2bb5344733b514f7107ea698968beb",
+      "size_bytes": 492130
+    },
+    "fidelity_bundle": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_fidelity_bundle.json",
+      "sha256": "5a95aab1a02643f17e4a41f7a2e957cc1de43d5f13d7487a7fbed7ec7748b115",
+      "size_bytes": 1210761
+    },
+    "loss_optimization_study": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_loss_optimization_study.json",
+      "sha256": "cfc910e6120209a37eef93f0efe4aef08320f3c867d25724c55b3f687b554ae8",
+      "size_bytes": 1067208
+    },
+    "sensorless_independent_plant_study": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_sensorless_independent_plant_study.json",
+      "sha256": "5d21a83362179d1f067db5c1abfb4d74e20cdb33bc5324e7bbe80e49c5bd933c",
+      "size_bytes": 36038
+    },
+    "id_policy_benchmark": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_policy_benchmark.json",
+      "sha256": "7d7a20a2b5b92c4f794a5dd81c5f356ac52e971ee27cbb513884a2a769420d55",
+      "size_bytes": 357204
+    },
+    "id_policy_bundle": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_id_policy_bundle.json",
+      "sha256": "37cc2f6a3a81b89ebdf961162e6d6641411ecc7cf73f8751ca51d8e4fd1c6a91",
+      "size_bytes": 2465
+    },
+    "id_ref_lut": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_id_ref_lut.json",
+      "sha256": "e6c3f5c4a111052d19c5250a0cadb6ad43989d0d73a9e1ddc76291f0dd75c48a",
+      "size_bytes": 5408
+    },
+    "common_control_benchmark": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_common_control_benchmark.json",
+      "sha256": "6212b9958c1aa928c02f76423e54a5a76d3d861e516c46b35d48cd53001f04cd",
+      "size_bytes": 575565
+    },
+    "vf_fidelity_study": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_vf_fidelity_study.json",
+      "sha256": "c239b305bbb6655ae81609483a21bf35cbf8750f236615be8bb9b18dcb9c1e13",
+      "size_bytes": 52151
+    },
+    "vf_operating_matrix": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_vf_operating_matrix.json",
+      "sha256": "cde9199ff1a9ef0b36c9f7917c011e78245ff688f4fe58f3cd1b704dd7c6a06c",
+      "size_bytes": 130837
+    },
+    "protection_fault_matrix": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_protection_fault_matrix.json",
+      "sha256": "822bf94ec214379a18796f95ed0bff056a2aec3f97bf60e2aac73db41fe85057",
+      "size_bytes": 121066
+    },
+    "foc_tuning": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_foc_matched_tuning.json",
+      "sha256": "53a2783611347b36b3a5b4a124b9d66d3904b02a25a30865134ec59418935d34",
+      "size_bytes": 32463
+    },
+    "foc_blind_holdout": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_foc_blind_holdout.json",
+      "sha256": "52682e934224ab6d75ad7ad8ceb442e08b762f3c36cc0e4eda18cccddf788fa4",
+      "size_bytes": 2669
+    },
+    "encoder_foc_tuning": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_encoder_foc_tuning.json",
+      "sha256": "03da6c80ac8aea087982d67f5fe73e3b8f082533a38b4417f5f9f0583505f3ab",
+      "size_bytes": 36762
+    },
+    "encoder_foc_fidelity_study": {
+      "path": "C:\\mic_practice\\artifacts\\air56b2_encoder_foc_fidelity_study.json",
+      "sha256": "185dbe762b091670aa8fef42bf1f854fae1f79d58e853fc1f2b7f4b0aa4c2e21",
+      "size_bytes": 46613
+    }
+  },
+  "interpretation": "The scalar V/f baseline passed its canonical point and four-point operating matrix and protected-gateway fault matrix. A classical loss baseline, an honest voltage/current-only sensorless observer on an independent RK4 plant, and a paired 600-case comparison of fixed flux, classical optimum, neural id policy, bounded extremum search, and a guarded disabled-release LUT also passed. Encoder-observer FOC passed deterministic F1/F1S/F2/F3 host gates. The oracle-state FOC also passed model-matched validation and blind holdout. A frozen nameplate-only model failed robustness, so hardware identification remains mandatory."
+}

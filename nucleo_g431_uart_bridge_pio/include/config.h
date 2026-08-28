@@ -7,7 +7,8 @@
 #define LINK_TIMEOUT_MS 300U
 #define BOOT_PING_INTERVAL_MS 250U
 
-// Production bridge: USART1 on PB6/PB7 to the isolated UNO Q link.
+// Production bridge: direct USART1 PB6/PB7 link to UNO Q with common HOT_GND.
+// This interface is not galvanically isolated and must remain inside the enclosure.
 // Dedicated _vcp build profiles select PC4/PC5 for the on-board ST-LINK VCP.
 #ifndef NUCLEO_UART_USE_STLINK_VCP
 #define NUCLEO_UART_USE_STLINK_VCP 0

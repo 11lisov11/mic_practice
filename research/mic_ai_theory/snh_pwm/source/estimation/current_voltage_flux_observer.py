@@ -181,4 +181,3 @@ __all__ = [
     "CurrentVoltageFluxObserverConfig",
     "FluxObserverUpdate",
 ]
-

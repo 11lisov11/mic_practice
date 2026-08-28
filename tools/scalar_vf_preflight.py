@@ -308,6 +308,7 @@ def main() -> int:
         "run_limit_sec": args.run_limit_sec,
         "hmi_arm_requested": bool(args.arm_confirm.strip()),
         "precharge_relay_present": False,
+        "external_softstart": "autonomous",
         "freqs": [],
         "estop": [],
     }
@@ -383,17 +384,22 @@ def main() -> int:
                     "metrics": metrics,
                     "capture_error": capture_error,
                 }
-                precharge_managed = bool(st is not None and int(st_num(st, "bp_precharge_managed", 0.0)) == 1)
-                relay_active = bool(
+                mcsdk_backend = bool(st is not None and int(st_num(st, "bp_mcsdk_telemetry", 0.0)) == 1)
+                reserved_relay_bit = bool(
                     st is not None
                     and (
                         int(st_num(st, "precharge", 0.0)) != 0
                         or (int(st_num(st, "bp_ext", 0.0)) & 0x08) != 0
                     )
                 )
-                power_path_ok = relay_active if precharge_managed else not relay_active
-                item["precharge_path_confirmed"] = power_path_ok
-                item["precharge_managed"] = precharge_managed
+                softstart_ready = bool(
+                    not mcsdk_backend
+                    or (st is not None and int(st_num(st, "bp_softstart_ready", 0.0)) == 1)
+                )
+                power_path_ok = not reserved_relay_bit and softstart_ready
+                item["external_softstart_confirmed"] = power_path_ok
+                item["softstart_ready"] = softstart_ready
+                item["reserved_precharge_bit_clear"] = not reserved_relay_bit
                 item["pass"] = bool(
                     cmds_ok
                     and steady_ok

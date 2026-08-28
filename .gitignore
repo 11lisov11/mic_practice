@@ -16,6 +16,7 @@ __pycache__/
 
 # Virtual environments
 .venv/
+.venv-research-gpu/
 venv/
 env/
 
@@ -53,6 +54,12 @@ tmp_pdf_check/
 _pdf_check/
 MIC_AI_latest.txt
 .cache/
+
+# Visual QA renders are reproducible and not release artifacts.
+output/documents/qa_*/
+
+# Incomplete upstream-port snapshots are retained locally for forensic comparison only.
+research/mic_ai_foc_ppo_incomplete_port_v*/
 
 # Local STM32CubeIDE workspaces and one-off MCSDK generation probes.
 _cubeide_ws_*/

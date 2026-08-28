@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from functools import lru_cache
 
 # -------- Параметры симуляции ----------
 SIM_T_END = 3.0            # время моделирования, с
@@ -22,13 +23,12 @@ SIM_LOAD_TORQUE = 1.0      # постоянный момент нагрузки,
 NAMEPLATE_P_KW = 0.25       # номинальная мощность, кВт
 NAMEPLATE_U_LL = 220.0      # AIR56B2: линейное напряжение при соединении D, В
 NAMEPLATE_I_N = 1.24        # AIR56B2: линейный ток, А
-NAMEPLATE_COSPHI = 0.68     # только simulation prior; заменить результатом идентификации
-NAMEPLATE_ETA = 0.75        # только simulation prior; заменить результатом идентификации
+NAMEPLATE_COSPHI = 0.78     # AIR56B2: коэффициент мощности по каталогу IEK
+NAMEPLATE_ETA = 0.68        # AIR56B2: КПД по каталогу IEK
 NAMEPLATE_F_N = 50.0        # частота сети, Гц
 NAMEPLATE_POLE_PAIRS = 1    # AIR56B2: число пар полюсов
 NAMEPLATE_N_RATED = 2720.0  # AIR56B2: номинальная скорость, об/мин
 NAMEPLATE_CONNECTION = "D"  # AIR56B2: треугольник для 220 В line-to-line
-NAMEPLATE_J = 0.01          # только simulation prior, кг*м^2
 # -------------------------------------------------
 
 # ------ Параметры инвертора -------
@@ -46,7 +46,6 @@ NAMEPLATE_DEFAULT = {
     "p": NAMEPLATE_POLE_PAIRS,
     "n_rated": NAMEPLATE_N_RATED,
     "connection": NAMEPLATE_CONNECTION,
-    "J": NAMEPLATE_J,
 }
 
 VF_K = NAMEPLATE_U_LL / (math.sqrt(3.0) * NAMEPLATE_F_N)
@@ -128,106 +127,63 @@ class EnvConfig:
 # ---------------------------------------
 
 
-def estimate_id_ref_from_nameplate(nameplate: dict, k_m: float = 0.35) -> float:
-    """
-    Оценка опорного магнитообразующего тока d-оси по паспортным данным.
-    """
-    connection = str(nameplate.get("connection", "Y")).upper()
-    I_n = float(nameplate.get("I_n", 3.0))
-    if connection == "D":
-        I_ph = I_n / math.sqrt(3.0)
-    else:
-        I_ph = I_n
-    return k_m * I_ph
+def _require_official_air56b2_nameplate(nameplate: dict) -> None:
+    """Reject silent substitution of guessed or legacy motor data."""
+
+    if set(nameplate) != set(NAMEPLATE_DEFAULT):
+        raise ValueError("nameplate must contain only the official AIR56B2 fields")
+    for key, expected in NAMEPLATE_DEFAULT.items():
+        actual = nameplate[key]
+        if isinstance(expected, str):
+            matches = str(actual).upper() == expected.upper()
+        else:
+            matches = math.isclose(float(actual), float(expected), rel_tol=0.0, abs_tol=1e-12)
+        if not matches:
+            raise ValueError(f"{key}={actual!r} does not match official AIR56B2 value {expected!r}")
+
+
+@lru_cache(maxsize=1)
+def _default_nameplate_constrained_estimate() -> tuple[MotorParams, float]:
+    """Return a reproducible estimate; no value here is claimed as measured."""
+
+    # Local import keeps the base dataclasses independent from the estimator.
+    from models.air56b2_nameplate_ensemble import (
+        generate_air56b2_ensemble,
+        select_nominal_sample,
+    )
+
+    samples = generate_air56b2_ensemble(256, seed=560225)
+    nominal = select_nominal_sample(samples)
+    return nominal.motor, nominal.magnetizing_current_a
 
 
 def estimate_motor_params_from_nameplate(nameplate: dict) -> MotorParams:
+    """Select the canonical passport-constrained AIR56B2 simulation estimate.
+
+    Rs, Rr, leakage, Lm, J and B are not uniquely calculable from one rounded
+    nameplate operating point. The returned model is the deterministic central
+    member of the constrained ensemble, not a hardware-identified parameter set.
     """
-    Приближённый расчёт MotorParams по паспортным данным.
-    """
-    default_eta = 0.9
-    default_cosphi = 0.85
-    default_f = 50.0
-    default_p = 2
-    default_J = 0.05
-    default_B = 1e-3
-    default_slip = 0.03
 
-    P_n = float(nameplate.get("P_n", 1000.0))
-    U_ll = float(nameplate.get("U_ll", 400.0))
-    I_n = float(nameplate.get("I_n", 3.0))
-    cos_phi_n = float(nameplate.get("cos_phi_n", default_cosphi))
-    eta_n = float(nameplate.get("eta_n", default_eta))
-    f_n = float(nameplate.get("f_n", default_f))
-    p = int(nameplate.get("p", default_p))
-    connection = str(nameplate.get("connection", "Y")).upper()
+    _require_official_air56b2_nameplate(nameplate)
+    motor, _ = _default_nameplate_constrained_estimate()
+    return motor
 
-    # Фазные величины
-    if connection == "D":
-        U_ph = U_ll
-        I_ph = I_n / math.sqrt(3.0)
-    else:
-        U_ph = U_ll / math.sqrt(3.0)
-        I_ph = I_n
 
-    # Мощности
-    P_out = P_n
-    P_in = P_out / eta_n if eta_n > 0 else P_out
-    P_loss_total = max(P_in - P_out, 0.0)
+def estimate_id_ref_from_nameplate(nameplate: dict) -> float:
+    """Return the nominal model magnetizing current, marked as an estimate."""
 
-    # Скольжение и скорость
-    n_sync = 60.0 * f_n / p if p else 0.0
-    n_rated = float(nameplate.get("n_rated", n_sync * (1 - default_slip)))
-    s_n = (n_sync - n_rated) / n_sync if n_sync > 0 else default_slip
-    s_n = max(min(s_n, 0.2), 0.0)
-    omega_rated = 2.0 * math.pi * n_rated / 60.0
-
-    # Потери
-    # более простое и управляемое разбиение потерь
-    P_loss_total = max(P_loss_total, 0.0)
-    P_cu_r = 0.4 * P_loss_total
-    P_cu_s = 0.3 * P_loss_total
-    P_mech_fe = P_loss_total - P_cu_r - P_cu_s
-
-    # Сопротивления
-    Rs = P_cu_s / (3.0 * I_ph**2) if I_ph > 0 else 0.5
-    phi_n = math.acos(max(min(cos_phi_n, 1.0), -1.0))
-    I_2 = I_ph * math.sin(phi_n)
-    Rr = P_cu_r / (3.0 * I_2**2) if I_2 > 0 else Rs
-
-    # Индуктивности
-    k_m = 0.35
-    Im = k_m * I_ph
-    Xm = U_ph / Im if Im > 0 else 0.0
-    Lm = Xm / (2.0 * math.pi * f_n) if f_n > 0 else 1e-3
-
-    # Рассеяние фиксируем для снижения пульсаций
-    Ls_sigma = 0.05
-    Lr_sigma = 0.05
-
-    # Механика
-    B = P_mech_fe / (omega_rated**2) if omega_rated > 0 else default_B
-    J = float(nameplate.get("J", default_J))
-
-    return MotorParams(
-        Rs=Rs,
-        Rr=Rr,
-        Ls_sigma=Ls_sigma,
-        Lr_sigma=Lr_sigma,
-        Lm=Lm,
-        J=J,
-        B=B,
-        p=p,
-        I_n=I_n,
-    )
+    _require_official_air56b2_nameplate(nameplate)
+    _, magnetizing_current_a = _default_nameplate_constrained_estimate()
+    return magnetizing_current_a
 
 
 # --------- Готовая конфигурация ENV ------------
-NAMEPLATE_ID_REF = estimate_id_ref_from_nameplate(NAMEPLATE_DEFAULT)
-
 def create_default_env() -> EnvConfig:
+    motor = estimate_motor_params_from_nameplate(NAMEPLATE_DEFAULT)
+    id_ref = estimate_id_ref_from_nameplate(NAMEPLATE_DEFAULT)
     return EnvConfig(
-        motor=estimate_motor_params_from_nameplate(NAMEPLATE_DEFAULT),
+        motor=motor,
         inverter=InverterParams(
             Vdc=INVERTER_VDC,
             f_pwm=INVERTER_F_PWM,
@@ -245,7 +201,7 @@ def create_default_env() -> EnvConfig:
             ki_iq=100.0,
             kp_speed=0.5,
             ki_speed=2.5,
-            id_ref=0.4,
+            id_ref=id_ref,
             iq_limit=2.0,
             v_limit=INVERTER_VDC / math.sqrt(3.0),
         ),
@@ -259,7 +215,8 @@ def create_default_env() -> EnvConfig:
         ),
     )
 
-ENV = create_default_env()
+# No module-level ENV: call create_default_env() explicitly so that construction
+# of the passport-constrained estimate is visible to the caller.
 # -----------------------------------------------
 
 
@@ -270,7 +227,6 @@ __all__ = [
     "FocParams",
     "SimulationParams",
     "EnvConfig",
-    "ENV",
     "estimate_motor_params_from_nameplate",
     "estimate_id_ref_from_nameplate",
     "NAMEPLATE_DEFAULT",
@@ -282,6 +238,5 @@ __all__ = [
     "SIM_LOAD_TORQUE",
     "INVERTER_VDC",
     "INVERTER_F_PWM",
-    "NAMEPLATE_ID_REF",
     "create_default_env", 
 ]

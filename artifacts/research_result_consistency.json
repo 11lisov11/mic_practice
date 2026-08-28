@@ -1,0 +1,1654 @@
+{
+  "schema_version": "mic_ai.research_result_consistency.v1",
+  "generated_at_utc": "2026-08-27T23:33:08.448939+00:00",
+  "root": "C:\\mic_practice",
+  "strict": true,
+  "status": "PASS",
+  "ok": true,
+  "policy": {
+    "comparison_identity": [
+      "metric_id",
+      "dataset",
+      "scope"
+    ],
+    "conflicts_always_fail": true,
+    "strict_required_source_errors_fail": true,
+    "incompatible_units_fail": true,
+    "default_percent_tolerance": 0.001,
+    "default_ratio_tolerance": 1e-06
+  },
+  "summary": {
+    "source_count": 5,
+    "parsed_source_count": 5,
+    "claim_count": 40,
+    "comparison_group_count": 24,
+    "conflict_count": 0,
+    "source_issue_count": 0
+  },
+  "sources": [
+    {
+      "path": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "format": "json",
+      "parser": "legacy_acceptance_json",
+      "dataset": "legacy_mic_three_motor_release",
+      "required": true,
+      "exists": true,
+      "claim_count": 19,
+      "status": "parsed"
+    },
+    {
+      "path": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "format": "markdown",
+      "parser": "research_audit_markdown",
+      "dataset": "legacy_mic_three_motor_release",
+      "required": true,
+      "exists": true,
+      "claim_count": 5,
+      "status": "parsed"
+    },
+    {
+      "path": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "format": "markdown",
+      "parser": "air56_release_markdown",
+      "dataset": "legacy_mic_three_motor_release",
+      "required": true,
+      "exists": true,
+      "claim_count": 5,
+      "status": "parsed"
+    },
+    {
+      "path": "research/mic_ai_theory/articles/ieee_manuscript.md",
+      "format": "markdown",
+      "parser": "ieee_markdown",
+      "dataset": "legacy_mic_step28_frozen",
+      "required": true,
+      "exists": true,
+      "claim_count": 3,
+      "status": "parsed"
+    },
+    {
+      "path": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "format": "markdown",
+      "parser": "pgups_markdown",
+      "dataset": "pgups_2026_validation",
+      "required": true,
+      "exists": true,
+      "claim_count": 8,
+      "status": "parsed"
+    }
+  ],
+  "source_issues": [],
+  "claims": [
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "value": 0.0715,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.0715,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+      "location": "line:46",
+      "raw": "MIC mean eta gain: `+0.0715%"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.123,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.123,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "location": "line:148",
+      "raw": "`avg_eta_gain_pct_mean = +0.123%"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.123332978753004,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.123332978753004,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[0].avg_eta_gain_pct_mean",
+      "raw": "avg_eta_gain_pct_mean=0.123332978753004"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.0065847670812257,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.0065847670812257,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[1].avg_eta_gain_pct_mean",
+      "raw": "avg_eta_gain_pct_mean=0.0065847670812257"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "value": 2.9546136064418205,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 2.9546136064418205,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[2].avg_eta_gain_pct_mean",
+      "raw": "avg_eta_gain_pct_mean=2.9546136064418205"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 1.0281771,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.0281771,
+      "tolerance": 0.001,
+      "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "location": "line:48",
+      "raw": "Среднее изменение интегрального КПД равно `+1,0281771 %"
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 1.02817711742535,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.02817711742535,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "derived:mean(rows.*.avg_eta_gain_pct_mean)",
+      "raw": "unweighted mean of avg_eta_gain_pct_mean"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "value": 0.9176,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.9176,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+      "location": "line:45",
+      "raw": "MIC mean power saving: `0.9176%"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 1.024,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.024,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "location": "line:146",
+      "raw": "`avg_power_saving_pct_mean = +1.024%"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 1.0235631825310492,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.0235631825310492,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[0].avg_power_saving_pct_mean",
+      "raw": "avg_power_saving_pct_mean=1.0235631825310492"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "value": 1.0482255792898605,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.0482255792898605,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[1].avg_power_saving_pct_mean",
+      "raw": "avg_power_saving_pct_mean=1.0482255792898605"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.4756327972195923,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.4756327972195923,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[2].avg_power_saving_pct_mean",
+      "raw": "avg_power_saving_pct_mean=0.4756327972195923"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 0.849,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.849,
+      "tolerance": 0.001,
+      "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "location": "line:11",
+      "raw": "среднюю экономию\nположительной входной мощности `0,849 %"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 0.8491405,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.8491405,
+      "tolerance": 0.001,
+      "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "location": "line:46",
+      "raw": "Среднее снижение `Pвх+` по трём двигателям равно `0,8491405 %"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 0.8491405196801672,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.8491405196801672,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "derived:mean(rows.*.avg_power_saving_pct_mean)",
+      "raw": "unweighted mean of avg_power_saving_pct_mean"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+      "value": 1.8,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.8,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:14",
+      "raw": "средняя экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+      "value": 1.8,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.8,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:229",
+      "raw": "В среднем по трем двигателям экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+      "value": 1.8,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.8,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:287",
+      "raw": "Средняя экономия составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+      "value": 1.8,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.8,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:327",
+      "raw": "mean input-power saving is 1.80% over the full interval and 1.31% in the steady window"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+      "value": 1.31,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.31,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:14",
+      "raw": "средняя экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+      "value": 1.31,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.31,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:229",
+      "raw": "В среднем по трем двигателям экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+      "value": 1.31,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.31,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:287",
+      "raw": "Средняя экономия составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+      "value": 1.31,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.31,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+      "location": "line:327",
+      "raw": "mean input-power saving is 1.80% over the full interval and 1.31% in the steady window"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "value": 2.6697,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 2.6697,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+      "location": "line:48",
+      "raw": "Mean `start_stop` saving: `2.6697%"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 1.835,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.835,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "location": "line:150",
+      "raw": "`start_stop_power_saving_pct_mean = +1.835%"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 1.83460534987264,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.83460534987264,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[0].start_stop_power_saving_pct_mean",
+      "raw": "start_stop_power_saving_pct_mean=1.83460534987264"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "value": 3.897135110315648,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 3.897135110315648,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[1].start_stop_power_saving_pct_mean",
+      "raw": "start_stop_power_saving_pct_mean=3.897135110315648"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.0,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.0,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[2].start_stop_power_saving_pct_mean",
+      "raw": "start_stop_power_saving_pct_mean=0.0"
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "value": 1.910580153396096,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 1.910580153396096,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "derived:mean(rows.*.start_stop_power_saving_pct_mean)",
+      "raw": "unweighted mean of start_stop_power_saving_pct_mean"
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.104,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.104,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "location": "line:149",
+      "raw": "`avg_eta_gain_pct_min = +0.104%"
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.1043507717743419,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.1043507717743419,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[0].avg_eta_gain_pct_min",
+      "raw": "avg_eta_gain_pct_min=0.1043507717743419"
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "value": -0.0002060151986144,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": -0.0002060151986144,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[1].avg_eta_gain_pct_min",
+      "raw": "avg_eta_gain_pct_min=-0.0002060151986144"
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.8501016150291529,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.8501016150291529,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[2].avg_eta_gain_pct_min",
+      "raw": "avg_eta_gain_pct_min=0.8501016150291529"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.901,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.901,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+      "location": "line:147",
+      "raw": "`avg_power_saving_pct_min = +0.901%"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.9007889773490402,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.9007889773490402,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[0].avg_power_saving_pct_min",
+      "raw": "avg_power_saving_pct_min=0.9007889773490402"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.3880779822114183,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.3880779822114183,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[1].avg_power_saving_pct_min",
+      "raw": "avg_power_saving_pct_min=0.3880779822114183"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "value": 0.3555318656212447,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.3555318656212447,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "rows[2].avg_power_saving_pct_min",
+      "raw": "avg_power_saving_pct_min=0.3555318656212447"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+      "value": 0.356,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.356,
+      "tolerance": 0.001,
+      "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "location": "line:12",
+      "raw": "минимальное среднее по двигателю и режиму\nв итоговой приёмочной таблице составило `0,356 %"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+      "value": 0.3555319,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.3555319,
+      "tolerance": 0.001,
+      "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+      "location": "line:47",
+      "raw": "Минимум показателя из приёмочной таблицы равен `0,3555319 %"
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+      "value": 0.3555318656212447,
+      "unit": "percent",
+      "canonical_unit": "percent",
+      "canonical_value": 0.3555318656212447,
+      "tolerance": 0.001,
+      "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+      "location": "derived:min(rows.*.avg_power_saving_pct_min)",
+      "raw": "minimum of avg_power_saving_pct_min"
+    }
+  ],
+  "groups": [
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_eta_gain",
+        "dataset": "legacy_mic_step28_frozen",
+        "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.0715,
+      "maximum": 0.0715,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_step28_frozen",
+          "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+          "value": 0.0715,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.0715,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+          "location": "line:46",
+          "raw": "MIC mean eta gain: `+0.0715%"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.123,
+      "maximum": 0.123332978753004,
+      "spread": 0.00033297875300400404,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.123,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.123,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+          "location": "line:148",
+          "raw": "`avg_eta_gain_pct_mean = +0.123%"
+        },
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.123332978753004,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.123332978753004,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[0].avg_eta_gain_pct_mean",
+          "raw": "avg_eta_gain_pct_mean=0.123332978753004"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.0065847670812257,
+      "maximum": 0.0065847670812257,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.0065847670812257,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.0065847670812257,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[1].avg_eta_gain_pct_mean",
+          "raw": "avg_eta_gain_pct_mean=0.0065847670812257"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 2.9546136064418205,
+      "maximum": 2.9546136064418205,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+          "value": 2.9546136064418205,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 2.9546136064418205,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[2].avg_eta_gain_pct_mean",
+          "raw": "avg_eta_gain_pct_mean=2.9546136064418205"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.0281771,
+      "maximum": 1.02817711742535,
+      "spread": 1.7425350051780697e-08,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 1.0281771,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.0281771,
+          "tolerance": 0.001,
+          "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+          "location": "line:48",
+          "raw": "Среднее изменение интегрального КПД равно `+1,0281771 %"
+        },
+        {
+          "metric_id": "mic.mean_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 1.02817711742535,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.02817711742535,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "derived:mean(rows.*.avg_eta_gain_pct_mean)",
+          "raw": "unweighted mean of avg_eta_gain_pct_mean"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "legacy_mic_step28_frozen",
+        "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.9176,
+      "maximum": 0.9176,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_step28_frozen",
+          "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+          "value": 0.9176,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.9176,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+          "location": "line:45",
+          "raw": "MIC mean power saving: `0.9176%"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.0235631825310492,
+      "maximum": 1.024,
+      "spread": 0.0004368174689508564,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 1.024,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.024,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+          "location": "line:146",
+          "raw": "`avg_power_saving_pct_mean = +1.024%"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 1.0235631825310492,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.0235631825310492,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[0].avg_power_saving_pct_mean",
+          "raw": "avg_power_saving_pct_mean=1.0235631825310492"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.0482255792898605,
+      "maximum": 1.0482255792898605,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+          "value": 1.0482255792898605,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.0482255792898605,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[1].avg_power_saving_pct_mean",
+          "raw": "avg_power_saving_pct_mean=1.0482255792898605"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.4756327972195923,
+      "maximum": 0.4756327972195923,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.4756327972195923,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.4756327972195923,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[2].avg_power_saving_pct_mean",
+          "raw": "avg_power_saving_pct_mean=0.4756327972195923"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 3,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.849,
+      "maximum": 0.8491405196801672,
+      "spread": 0.00014051968016726146,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 0.849,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.849,
+          "tolerance": 0.001,
+          "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+          "location": "line:11",
+          "raw": "среднюю экономию\nположительной входной мощности `0,849 %"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 0.8491405,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.8491405,
+          "tolerance": 0.001,
+          "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+          "location": "line:46",
+          "raw": "Среднее снижение `Pвх+` по трём двигателям равно `0,8491405 %"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 0.8491405196801672,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.8491405196801672,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "derived:mean(rows.*.avg_power_saving_pct_mean)",
+          "raw": "unweighted mean of avg_power_saving_pct_mean"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "pgups_2026_validation",
+        "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 4,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.8,
+      "maximum": 1.8,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+          "value": 1.8,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.8,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:14",
+          "raw": "средняя экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+          "value": 1.8,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.8,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:229",
+          "raw": "В среднем по трем двигателям экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+          "value": 1.8,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.8,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:287",
+          "raw": "Средняя экономия составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=full;aggregation=unweighted_motor_mean",
+          "value": 1.8,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.8,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:327",
+          "raw": "mean input-power saving is 1.80% over the full interval and 1.31% in the steady window"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_input_power_saving",
+      "dataset": "pgups_2026_validation",
+      "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_input_power_saving",
+        "dataset": "pgups_2026_validation",
+        "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 4,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.31,
+      "maximum": 1.31,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+          "value": 1.31,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.31,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:14",
+          "raw": "средняя экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+          "value": 1.31,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.31,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:229",
+          "raw": "В среднем по трем двигателям экономия Pвх+ составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+          "value": 1.31,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.31,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:287",
+          "raw": "Средняя экономия составила 1,80 % на полном интервале и 1,31 % в установившемся окне"
+        },
+        {
+          "metric_id": "mic.mean_input_power_saving",
+          "dataset": "pgups_2026_validation",
+          "scope": "motors=air56,al31,ao2;scenarios=5;interval=steady_window;aggregation=unweighted_motor_mean",
+          "value": 1.31,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.31,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/pgups_article_ru.md",
+          "location": "line:327",
+          "raw": "mean input-power saving is 1.80% over the full interval and 1.31% in the steady window"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_step28_frozen",
+      "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_start_stop_power_saving",
+        "dataset": "legacy_mic_step28_frozen",
+        "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 2.6697,
+      "maximum": 2.6697,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_step28_frozen",
+          "scope": "motors=air56,al31,ao2;scenarios=speed_step,ramp,load_step,start_stop;seeds=101,202,303,404,505;aggregation=unweighted_motor_mean",
+          "value": 2.6697,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 2.6697,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/articles/ieee_manuscript.md",
+          "location": "line:48",
+          "raw": "Mean `start_stop` saving: `2.6697%"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_start_stop_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.83460534987264,
+      "maximum": 1.835,
+      "spread": 0.0003946501273599523,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 1.835,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.835,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+          "location": "line:150",
+          "raw": "`start_stop_power_saving_pct_mean = +1.835%"
+        },
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 1.83460534987264,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.83460534987264,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[0].start_stop_power_saving_pct_mean",
+          "raw": "start_stop_power_saving_pct_mean=1.83460534987264"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_start_stop_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 3.897135110315648,
+      "maximum": 3.897135110315648,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+          "value": 3.897135110315648,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 3.897135110315648,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[1].start_stop_power_saving_pct_mean",
+          "raw": "start_stop_power_saving_pct_mean=3.897135110315648"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.mean_start_stop_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.0,
+      "maximum": 0.0,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.0,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.0,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[2].start_stop_power_saving_pct_mean",
+          "raw": "start_stop_power_saving_pct_mean=0.0"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.mean_start_stop_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+      "comparison_key": {
+        "metric_id": "mic.mean_start_stop_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 1.910580153396096,
+      "maximum": 1.910580153396096,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.mean_start_stop_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=unweighted_motor_mean",
+          "value": 1.910580153396096,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 1.910580153396096,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "derived:mean(rows.*.start_stop_power_saving_pct_mean)",
+          "raw": "unweighted mean of start_stop_power_saving_pct_mean"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.104,
+      "maximum": 0.1043507717743419,
+      "spread": 0.00035077177434190976,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.104,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.104,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+          "location": "line:149",
+          "raw": "`avg_eta_gain_pct_min = +0.104%"
+        },
+        {
+          "metric_id": "mic.minimum_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.1043507717743419,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.1043507717743419,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[0].avg_eta_gain_pct_min",
+          "raw": "avg_eta_gain_pct_min=0.1043507717743419"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": -0.0002060151986144,
+      "maximum": -0.0002060151986144,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+          "value": -0.0002060151986144,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": -0.0002060151986144,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[1].avg_eta_gain_pct_min",
+          "raw": "avg_eta_gain_pct_min=-0.0002060151986144"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_eta_gain",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_eta_gain",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.8501016150291529,
+      "maximum": 0.8501016150291529,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_eta_gain",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.8501016150291529,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.8501016150291529,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[2].avg_eta_gain_pct_min",
+          "raw": "avg_eta_gain_pct_min=0.8501016150291529"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 2,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.9007889773490402,
+      "maximum": 0.901,
+      "spread": 0.00021102265095984674,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.901,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.901,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/air56_deployment_reference/README.md",
+          "location": "line:147",
+          "raw": "`avg_power_saving_pct_min = +0.901%"
+        },
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=air56;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.9007889773490402,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.9007889773490402,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[0].avg_power_saving_pct_min",
+          "raw": "avg_power_saving_pct_min=0.9007889773490402"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.3880779822114183,
+      "maximum": 0.3880779822114183,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=al31;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.3880779822114183,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.3880779822114183,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[1].avg_power_saving_pct_min",
+          "raw": "avg_power_saving_pct_min=0.3880779822114183"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+      "comparison_key": {
+        "metric_id": "mic.minimum_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds"
+      },
+      "status": "single_claim",
+      "conflict_type": null,
+      "claim_count": 1,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.3555318656212447,
+      "maximum": 0.3555318656212447,
+      "spread": 0.0,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motor=ao2;aggregation=mean_over_scenarios_and_seeds",
+          "value": 0.3555318656212447,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.3555318656212447,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "rows[2].avg_power_saving_pct_min",
+          "raw": "avg_power_saving_pct_min=0.3555318656212447"
+        }
+      ]
+    },
+    {
+      "metric_id": "mic.minimum_input_power_saving",
+      "dataset": "legacy_mic_three_motor_release",
+      "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+      "comparison_key": {
+        "metric_id": "mic.minimum_input_power_saving",
+        "dataset": "legacy_mic_three_motor_release",
+        "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value"
+      },
+      "status": "consistent",
+      "conflict_type": null,
+      "claim_count": 3,
+      "canonical_units": [
+        "percent"
+      ],
+      "minimum": 0.3555318656212447,
+      "maximum": 0.356,
+      "spread": 0.0004681343787552583,
+      "tolerance": 0.001,
+      "claims": [
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+          "value": 0.356,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.356,
+          "tolerance": 0.001,
+          "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+          "location": "line:12",
+          "raw": "минимальное среднее по двигателю и режиму\nв итоговой приёмочной таблице составило `0,356 %"
+        },
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+          "value": 0.3555319,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.3555319,
+          "tolerance": 0.001,
+          "source": "research/MIC_AI_RESEARCH_AUDIT_RU.md",
+          "location": "line:47",
+          "raw": "Минимум показателя из приёмочной таблицы равен `0,3555319 %"
+        },
+        {
+          "metric_id": "mic.minimum_input_power_saving",
+          "dataset": "legacy_mic_three_motor_release",
+          "scope": "motors=air56,al31,ao2;aggregation=minimum_acceptance_value",
+          "value": 0.3555318656212447,
+          "unit": "percent",
+          "canonical_unit": "percent",
+          "canonical_value": 0.3555318656212447,
+          "tolerance": 0.001,
+          "source": "research/mic_ai_theory/legacy_mic/three_motor_release/motor_tuning_acceptance_summary.json",
+          "location": "derived:min(rows.*.avg_power_saving_pct_min)",
+          "raw": "minimum of avg_power_saving_pct_min"
+        }
+      ]
+    }
+  ],
+  "conflicts": []
+}

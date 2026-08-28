@@ -4,9 +4,9 @@
   "project": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV",
   "artifacts": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug",
   "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json",
-  "motor_profile_sha256": "69705C4E67C105D6D7646465283FBC4A70758E6C7BF005A7B5F7DA911A971471",
+  "motor_profile_sha256": "AF32D0B28CF4638C65D7AAC25A6B33095B971EB43A470A23F78A44940EE6E275",
   "failed_checks": [
-    "precharge_interlock_implemented",
+    "external_softstart_hil_validated",
     "motor_profile_is_real_acim",
     "generated_motor_configuration_matches_profile"
   ],
@@ -33,11 +33,35 @@
         "ACIM": true
       }
     },
-    "precharge_interlock_implemented": {
+    "external_softstart_configured": {
+      "pass": true,
+      "evidence": {
+        "required_define": "#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1",
+        "note": "The mains soft-start is autonomous and installed ahead of the rectifier."
+      }
+    },
+    "external_softstart_has_no_mcu_control": {
+      "pass": true,
+      "evidence": {
+        "required_define": "#define MIC_SOFTSTART_GPIO_CONTROLLED 0",
+        "forbidden_markers": [
+          "UNO_PRECHARGE_GPIO",
+          "uno_precharge_set"
+        ]
+      }
+    },
+    "external_softstart_bus_settle_guard": {
+      "pass": true,
+      "evidence": {
+        "settle_ms": 3500,
+        "minimum_ms": 3000
+      }
+    },
+    "external_softstart_hil_validated": {
       "pass": false,
       "evidence": {
-        "required_define": "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1",
-        "note": "Must be added only with a real Nucleo relay output, bus-ready threshold, fault/E-stop opening path, and HIL evidence."
+        "required_define": "#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 1",
+        "note": "Set to 1 only after checking NTC limiting, autonomous bypass timing, DC-bus stability, and restart behavior on the assembled power path."
       }
     },
     "motor_profile_present": {
@@ -69,22 +93,22 @@
         ".elf": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-            "bytes": 2059608,
-            "sha256": "EB0081B5D2EB0902C3A28FAEE63EB0B207BE5810F7C0E80753D58086A39502C1"
+            "bytes": 2062168,
+            "sha256": "AABC5CDB0ABB0F6050B1BC689BA6E4F153ED76F4D8338D5BF880BF829B7210EF"
           }
         ],
         ".bin": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-            "bytes": 38604,
-            "sha256": "D1034CD74A2D6E3FA1D08D60EF7319D291BA1F9A1C261AB0013A967F25C89BB2"
+            "bytes": 39004,
+            "sha256": "693EEC675CE2599AD45DD608B2BAAB7C2E365DDA09AF8AFB7A1FF34544341EBE"
           }
         ],
         ".hex": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-            "bytes": 108680,
-            "sha256": "26D30D4DD4763C47F5287359987C1D6C6C6173AA5A852AB67A6BB34DD0C0CB41"
+            "bytes": 109805,
+            "sha256": "2A0F4656E50C447F91C902D0F74AD21A4AFAFDE0F14EDB3C0D5B9D5B3AB16142"
           }
         ]
       }

@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1191" height="842" viewBox="0 0 1191 842">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="18.00" y="18.00" width="1154.55" height="805.89" fill="#ffffff" stroke="#111111" stroke-width="1.8"/>
+<rect x="28.00" y="38.00" width="1134.55" height="709.89" fill="#ffffff" stroke="#111111" stroke-width="0.8"/>
+<text x="38.00" y="49.00" font-family="Arial, sans-serif" font-size="15" font-weight="700" text-anchor="start" fill="#111111">Автономная связь: Wi-Fi + прямой UART</text>
+<text x="38.00" y="66.00" font-family="Arial, sans-serif" font-size="8.5" font-weight="400" text-anchor="start" fill="#333333">UNO Q и Nucleo имеют общую HOT_GND; проводного интерфейса наружу при HV нет</text>
+<line x1="28.00" y1="78.00" x2="1162.55" y2="78.00" stroke="#111111" stroke-width="1.0"/>
+<rect x="650.55" y="755.89" width="512.00" height="62.00" fill="#ffffff" stroke="#111111" stroke-width="1.0"/>
+<line x1="650.55" y1="786.89" x2="1162.55" y2="786.89" stroke="#111111" stroke-width="0.7"/>
+<line x1="935.55" y1="817.89" x2="935.55" y2="755.89" stroke="#111111" stroke-width="0.7"/>
+<line x1="1055.55" y1="817.89" x2="1055.55" y2="755.89" stroke="#111111" stroke-width="0.7"/>
+<text x="658.55" y="774.89" font-family="Arial, sans-serif" font-size="8.5" font-weight="700" text-anchor="start" fill="#111111">Схема электрическая подключений</text>
+<text x="658.55" y="805.89" font-family="Arial, sans-serif" font-size="8" font-weight="400" text-anchor="start" fill="#111111">MIC_AI: Nucleo — IHM09M2 — IPM15B</text>
+<text x="943.55" y="774.89" font-family="Arial, sans-serif" font-size="8" font-weight="700" text-anchor="start" fill="#111111">MIC-AI.Э4.NUCLEO.001</text>
+<text x="943.55" y="805.89" font-family="Arial, sans-serif" font-size="7.5" font-weight="400" text-anchor="start" fill="#111111">Рев. 1.0   2026-08-26</text>
+<text x="1063.55" y="774.89" font-family="Arial, sans-serif" font-size="8.5" font-weight="700" text-anchor="start" fill="#111111">Лист 2</text>
+<text x="1063.55" y="805.89" font-family="Arial, sans-serif" font-size="7.5" font-weight="400" text-anchor="start" fill="#111111">Листов 7   A3</text>
+<text x="32.00" y="804.89" font-family="Arial, sans-serif" font-size="7.2" font-weight="400" text-anchor="start" fill="#111111">Э4-подобный монтажный документ; не сертифицированный комплект КД</text>
+<rect x="55.00" y="151.89" width="250.00" height="160.00" fill="#f7f7f7" stroke="#111111" stroke-width="1.2"/>
+<rect x="55.00" y="151.89" width="250.00" height="24.00" fill="#f4f4f4" stroke="#111111" stroke-width="1.0"/>
+<text x="63.00" y="168.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">Телефон / ноутбук</text>
+<text x="63.00" y="190.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">браузер</text>
+<text x="63.00" y="202.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">Wi-Fi station или AP</text>
+<text x="63.00" y="213.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">контрольный ключ HMI</text>
+<text x="63.00" y="225.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">скачивание логов</text>
+<text x="63.00" y="236.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">физически не соединён со стендом</text>
+<rect x="455.00" y="136.89" width="280.00" height="190.00" fill="#fff8f0" stroke="#9b1c1c" stroke-width="1.2"/>
+<rect x="455.00" y="136.89" width="280.00" height="24.00" fill="#f4f4f4" stroke="#9b1c1c" stroke-width="1.0"/>
+<text x="463.00" y="153.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">Arduino UNO Q / HOT</text>
+<text x="463.00" y="175.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">wlan0: HMI :8080</text>
+<text x="463.00" y="187.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">D1/PB6/USART1_TX -&gt; команды</text>
+<text x="463.00" y="198.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">D0/PB7/USART1_RX &lt;- телеметрия</text>
+<text x="463.00" y="210.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">GND -&gt; HOT_GND</text>
+<text x="463.00" y="221.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">VIN &lt;- 15 V</text>
+<text x="463.00" y="233.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">eMMC: логи и архивы</text>
+<rect x="885.00" y="151.89" width="250.00" height="160.00" fill="#fff8f0" stroke="#9b1c1c" stroke-width="1.2"/>
+<rect x="885.00" y="151.89" width="250.00" height="24.00" fill="#f4f4f4" stroke="#9b1c1c" stroke-width="1.0"/>
+<text x="893.00" y="168.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">NUCLEO-G431RB / HOT</text>
+<text x="893.00" y="190.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">PB7/CN7-21/USART1_RX</text>
+<text x="893.00" y="202.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">PB6/CN10-17/USART1_TX</text>
+<text x="893.00" y="213.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">GND -&gt; HOT_GND</text>
+<text x="893.00" y="225.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">VIN &lt;- 9 V</text>
+<text x="893.00" y="236.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">PB4 = NC</text>
+<line x1="305.00" y1="216.89" x2="455.00" y2="216.89" stroke="#111111" stroke-width="1.5"/>
+<line x1="455.00" y1="216.89" x2="448.36" y2="212.43" stroke="#111111" stroke-width="1.5"/>
+<line x1="455.00" y1="216.89" x2="448.36" y2="221.35" stroke="#111111" stroke-width="1.5"/>
+<text x="380.00" y="208.89" font-family="Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" fill="#111111">Wi-Fi only</text>
+<line x1="735.00" y1="206.89" x2="885.00" y2="206.89" stroke="#111111" stroke-width="1.5"/>
+<line x1="885.00" y1="206.89" x2="878.36" y2="202.43" stroke="#111111" stroke-width="1.5"/>
+<line x1="885.00" y1="206.89" x2="878.36" y2="211.35" stroke="#111111" stroke-width="1.5"/>
+<text x="810.00" y="198.89" font-family="Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" fill="#111111">D1/TX -&gt; PB7/RX</text>
+<line x1="885.00" y1="266.89" x2="735.00" y2="266.89" stroke="#111111" stroke-width="1.5"/>
+<line x1="735.00" y1="266.89" x2="741.64" y2="271.35" stroke="#111111" stroke-width="1.5"/>
+<line x1="735.00" y1="266.89" x2="741.64" y2="262.43" stroke="#111111" stroke-width="1.5"/>
+<text x="810.00" y="258.89" font-family="Arial, sans-serif" font-size="7.5" font-weight="700" text-anchor="middle" fill="#111111">PB6/TX -&gt; D0/RX</text>
+<line x1="735.00" y1="296.89" x2="885.00" y2="296.89" stroke="#111111" stroke-width="2.0"/>
+<text x="810.00" y="289.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="700" text-anchor="middle" fill="#9b1c1c">GND &lt;-&gt; GND = HOT_GND</text>
+<rect x="55.00" y="391.89" width="330.00" height="120.00" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<rect x="55.00" y="391.89" width="330.00" height="24.00" fill="#f4f4f4" stroke="#111111" stroke-width="1.0"/>
+<text x="63.00" y="408.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">Режим через роутер</text>
+<text x="63.00" y="430.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">UNO Q подключается к заданному SSID</text>
+<text x="63.00" y="442.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">адрес через DHCP + mDNS</text>
+<text x="63.00" y="453.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">HMI открывается по IP/имени</text>
+<text x="63.00" y="465.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">heartbeat браузера каждые 1 s</text>
+<text x="63.00" y="476.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">потеря &gt;3 s -&gt; STOP/ESTOP</text>
+<rect x="430.00" y="391.89" width="330.00" height="120.00" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<rect x="430.00" y="391.89" width="330.00" height="24.00" fill="#f4f4f4" stroke="#111111" stroke-width="1.0"/>
+<text x="438.00" y="408.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">Автономная точка доступа</text>
+<text x="438.00" y="430.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">UNO Q поднимает WPA2 hotspot</text>
+<text x="438.00" y="442.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">телефон подключается напрямую</text>
+<text x="438.00" y="453.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">статический адрес HMI</text>
+<text x="438.00" y="465.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">пароль AP и ключ управления различаются</text>
+<text x="438.00" y="476.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">режим выбирается до подачи HV</text>
+<rect x="805.00" y="391.89" width="330.00" height="120.00" fill="#ffffff" stroke="#111111" stroke-width="1.2"/>
+<rect x="805.00" y="391.89" width="330.00" height="24.00" fill="#f4f4f4" stroke="#111111" stroke-width="1.0"/>
+<text x="813.00" y="408.89" font-family="Arial, sans-serif" font-size="10" font-weight="700" text-anchor="start" fill="#111111">Логи</text>
+<text x="813.00" y="430.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">кольцевой журнал 64 MiB на eMMC</text>
+<text x="813.00" y="442.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">статус и события сохраняются локально</text>
+<text x="813.00" y="453.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">выгрузка через /api/logs по Wi-Fi</text>
+<text x="813.00" y="465.39" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">скачивание требует ключ HMI</text>
+<text x="813.00" y="476.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#111111">после сбоя питания журнал остаётся</text>
+<rect x="90.00" y="546.89" width="245.00" height="22.00" fill="#e9e9e9" stroke="#666666" stroke-width="0.8"/>
+<text x="94.00" y="561.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="700" text-anchor="start" fill="#111111">источник</text>
+<rect x="335.00" y="546.89" width="245.00" height="22.00" fill="#e9e9e9" stroke="#666666" stroke-width="0.8"/>
+<text x="339.00" y="561.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="700" text-anchor="start" fill="#111111">приёмник</text>
+<rect x="580.00" y="546.89" width="245.00" height="22.00" fill="#e9e9e9" stroke="#666666" stroke-width="0.8"/>
+<text x="584.00" y="561.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="700" text-anchor="start" fill="#111111">назначение</text>
+<rect x="825.00" y="546.89" width="275.00" height="22.00" fill="#e9e9e9" stroke="#666666" stroke-width="0.8"/>
+<text x="829.00" y="561.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="700" text-anchor="start" fill="#111111">условие</text>
+<rect x="90.00" y="568.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="94.00" y="583.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">UNO Q D1/TX</text>
+<rect x="335.00" y="568.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="339.00" y="583.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">Nucleo PB7/RX</text>
+<rect x="580.00" y="568.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="584.00" y="583.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">команды</text>
+<rect x="825.00" y="568.89" width="275.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="829.00" y="583.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">3.3 V, 115200 8N1</text>
+<rect x="90.00" y="590.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="94.00" y="605.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">Nucleo PB6/TX</text>
+<rect x="335.00" y="590.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="339.00" y="605.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">UNO Q D0/RX</text>
+<rect x="580.00" y="590.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="584.00" y="605.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">телеметрия</text>
+<rect x="825.00" y="590.89" width="275.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="829.00" y="605.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">3.3 V, 115200 8N1</text>
+<rect x="90.00" y="612.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="94.00" y="627.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">UNO Q GND</text>
+<rect x="335.00" y="612.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="339.00" y="627.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">Nucleo GND</text>
+<rect x="580.00" y="612.89" width="245.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="584.00" y="627.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">общая точка отсчёта</text>
+<rect x="825.00" y="612.89" width="275.00" height="22.00" fill="#ffffff" stroke="#999999" stroke-width="0.5"/>
+<text x="829.00" y="627.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">вся цепь HOT</text>
+<rect x="90.00" y="634.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="94.00" y="649.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">UNO Q Wi-Fi</text>
+<rect x="335.00" y="634.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="339.00" y="649.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">телефон/роутер</text>
+<rect x="580.00" y="634.89" width="245.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="584.00" y="649.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">HMI и логи</text>
+<rect x="825.00" y="634.89" width="275.00" height="22.00" fill="#f7f7f7" stroke="#999999" stroke-width="0.5"/>
+<text x="829.00" y="649.89" font-family="Arial, sans-serif" font-size="7.8" font-weight="400" text-anchor="start" fill="#111111">единственная рабочая связь наружу</text>
+<rect x="55.00" y="689.89" width="1080.00" height="56.00" fill="#fff0f0" stroke="#9b1c1c" stroke-width="1.0"/>
+<text x="68.00" y="713.89" font-family="Arial, sans-serif" font-size="9" font-weight="700" text-anchor="start" fill="#9b1c1c">Сервисный USB/ST-Link:</text>
+<text x="205.00" y="713.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#9b1c1c">разрешён только после OFF, физического снятия сети/BR1/J7 и измерения разряда DC-link.</text>
+<text x="68.00" y="735.89" font-family="Arial, sans-serif" font-size="8.2" font-weight="400" text-anchor="start" fill="#9b1c1c">Во время HV запрещены USB-C, Ethernet-донгл, HDMI, JTAG/SWD, UART-адаптер и любой провод от UNO Q/Nucleo к внешнему устройству.</text>
+</svg>

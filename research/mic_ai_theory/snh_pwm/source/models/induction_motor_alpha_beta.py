@@ -152,6 +152,7 @@ class AlphaBetaInductionMotorModel:
         *,
         state: AlphaBetaMotorState | None = None,
         params: AlphaBetaMotorParams | None = None,
+        electromagnetic_torque_scale: float = 1.0,
     ) -> AlphaBetaStep:
         state = state if state is not None else self.state
         params = params if params is not None else self.params
@@ -159,6 +160,9 @@ class AlphaBetaInductionMotorModel:
         v_beta = _finite_or(v_beta, 0.0)
         load_torque_nm = _finite_or(load_torque_nm, 0.0)
         dt = max(_finite_or(dt, 0.0), 0.0)
+        torque_scale = _finite_or(electromagnetic_torque_scale, 1.0)
+        if not (0.0 <= torque_scale <= 1.0):
+            raise ValueError("electromagnetic_torque_scale must be in [0, 1]")
 
         currents = self.currents(state, params)
         rs = _temp_scaled_r(params.Rs, params.rs_temp_coeff, state.temp_s_c, params.temp_ref_c)
@@ -170,7 +174,7 @@ class AlphaBetaInductionMotorModel:
         dpsi_r_alpha = -rr * currents.i_r_alpha - omega_r_e * state.psi_r_beta
         dpsi_r_beta = -rr * currents.i_r_beta + omega_r_e * state.psi_r_alpha
 
-        torque = self.torque_nm(state, currents, params)
+        torque = self.torque_nm(state, currents, params) * torque_scale
         j = max(float(params.J), 1e-12)
         domega_m = (torque - load_torque_nm - float(params.B) * state.omega_m) / j
 
@@ -184,7 +188,7 @@ class AlphaBetaInductionMotorModel:
             theta_m=state.theta_m + dt * state.omega_m,
         )
         next_currents = self.currents(next_state, params)
-        next_torque = self.torque_nm(next_state, next_currents, params)
+        next_torque = self.torque_nm(next_state, next_currents, params) * torque_scale
         return AlphaBetaStep(
             state=next_state,
             currents=next_currents,
@@ -192,8 +196,22 @@ class AlphaBetaInductionMotorModel:
             p_mech_w=next_torque * next_state.omega_m,
         )
 
-    def step(self, v_alpha: float, v_beta: float, load_torque_nm: float, dt: float) -> AlphaBetaStep:
-        result = self.next_state(v_alpha, v_beta, load_torque_nm, dt)
+    def step(
+        self,
+        v_alpha: float,
+        v_beta: float,
+        load_torque_nm: float,
+        dt: float,
+        *,
+        electromagnetic_torque_scale: float = 1.0,
+    ) -> AlphaBetaStep:
+        result = self.next_state(
+            v_alpha,
+            v_beta,
+            load_torque_nm,
+            dt,
+            electromagnetic_torque_scale=electromagnetic_torque_scale,
+        )
         self.state = result.state
         return result
 
@@ -205,6 +223,7 @@ def step_inverter_schedule(
     load_torque_nm: float,
     *,
     pwm_enabled: bool = True,
+    electromagnetic_torque_scale: float = 1.0,
 ) -> AlphaBetaStep:
     """Advance the plant through every dwell of one controller period."""
 
@@ -221,7 +240,13 @@ def step_inverter_schedule(
             )
         else:
             v_alpha, v_beta = 0.0, 0.0
-        result = model.step(v_alpha, v_beta, load_torque_nm, segment.dwell_s)
+        result = model.step(
+            v_alpha,
+            v_beta,
+            load_torque_nm,
+            segment.dwell_s,
+            electromagnetic_torque_scale=electromagnetic_torque_scale,
+        )
     if result is None:  # pragma: no cover - guarded by the non-empty check above
         raise RuntimeError("inverter schedule produced no plant step")
     return result

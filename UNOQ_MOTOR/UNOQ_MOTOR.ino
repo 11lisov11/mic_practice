@@ -1,10 +1,10 @@
-// Arduino UNO Q motor control sketch (RouterBridge RPC + Blue Pill UART)
+// Arduino UNO Q motor-control sketch (RouterBridge RPC + Nucleo UART)
 // Target: arduino:zephyr:unoq (STM32U585)
 //
 // IMPORTANT (UNOQ): /dev/ttyHS1 on the Linux side is the control link to the MCU.
 // In RouterBridge mode the core maps that internal link to the router serial and
 // exposes debug/control logs through Monitor. D0/D1/Serial1 stay dedicated to
-// the Blue Pill high-rate control link.
+// the Nucleo motor-controller link.
 #define USE_ROUTER_BRIDGE 1
 #define USE_MSGPACK_RPC 0
 #include <Arduino.h>
@@ -32,7 +32,7 @@
 #define LOG_SERIAL Serial
 #endif
 // RouterBridge aliases Serial to Monitor on UNO Q. Serial1 is the physical D0/D1
-// UART used for the Blue Pill link; do not also poll it as a text UI stream.
+// UART used for the Nucleo link; do not also poll it as a text UI stream.
 #if USE_ROUTER_BRIDGE
 #define NUCLEO_SERIAL Serial1
 #else
@@ -41,6 +41,8 @@
 #endif
 #define RPC_BAUD 115200
 static const uint32_t FW_BUILD_ID = 2026082601U;
+static const uint8_t RPC_SCHEMA_VERSION = 2U;
+static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
 #define UART_ECHO_TEST 0
 #endif
@@ -76,11 +78,12 @@ static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // HTTP polling and Saleae captures can starve Serial polling briefly; 10 ms gives
 // a 100 Hz command stream while leaving much more RX headroom.
 static const uint32_t NUCLEO_RUN_MIN_SEND_US = 10000;
-// Scalar/VF is generated locally by the Blue Pill. A 20 Hz setpoint heartbeat
+// Scalar V/f is generated locally by the Nucleo. A 20 Hz setpoint heartbeat
 // is enough for the frequency ramp and cuts UART activity near switching nodes.
 static const uint32_t NUCLEO_SCALAR_MIN_SEND_US = 50000;
 static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 8000;
-// Blue Pill UART protocol (see bluepill_uart_pwm_pio/include/proto.h)
+// Motor-controller UART protocol. BP_* identifiers are retained as wire-ABI
+// compatibility names; the active peer is the STM32G431RB Nucleo firmware.
 static const size_t BP_FRAME_LEN = 32;
 static const size_t BP_CRC_OFF = BP_FRAME_LEN - 1;
 static const uint8_t BP_VER = 0x02;
@@ -113,7 +116,7 @@ static const uint8_t BP_CMD_FAN_DUTY_HI = 18;
 static const uint8_t BP_RSP_FAN_DUTY_Q8 = 22;
 static const uint8_t BP_RSP_FAN_TACH_X30 = 30;
 static const float BP_FAN_TACH_RPM_STEP = 30.0f;
-// New Blue Pill zero capture; the high point remains provisional and HV arming
+// New motor-controller zero capture; the high point remains provisional and HV arming
 // is blocked by the HMI until a known-voltage capture is recorded.
 static const uint16_t BP_VBUS_ZERO_RAW = 1966U;
 static const uint16_t BP_VBUS_CAL_RAW = 3459U;
@@ -133,6 +136,9 @@ static const uint8_t BP_TEMP_FLAG_FAULT = 0x02;
 static const float BP_PHASE_VREF = 3.3f;
 static const uint8_t BP_PHASE_FLAG_VALID = 0x01;
 static const uint8_t BP_PHASE_FLAG_C_VIRTUAL = 0x02;
+static const uint8_t MC_TELEMETRY_FLAG_SOFTSTART_READY = 0x20;
+static const uint8_t MC_TELEMETRY_FLAG_VBUS_VALID = 0x40;
+static const uint8_t MC_TELEMETRY_FLAG_MCSDK_UNITS = 0x80;
 // SPI pins for UNOQ header
 static const uint8_t NUCLEO_SPI_CS = 10;   // D10
 static const uint8_t NUCLEO_SPI_SCK = 13;  // D13
@@ -204,7 +210,7 @@ static const uint32_t BP_REPLY_TIMEOUT_MS = 500;
 // from bypassing the PC/HMI bench gate and leaving the inverter enabled.
 static const bool START_REQUIRE_RUN_LIMIT = true;
 static const float CURRENT_LIMIT_A = 6.0f;
-// Experimental opt-in backend: UNO Q sends id/iq setpoints and Blue Pill closes
+// Experimental opt-in backend: UNO Q sends id/iq setpoints and the motor controller closes
 // measured-angle FOC from AS5600/Hall/current ADC. Disabled by default so the
 // already-validated duty backend remains the safe preflight baseline.
 static const bool BP_FOC_BACKEND_DEFAULT = false;
@@ -309,7 +315,7 @@ static uint32_t g_nucleo_last_tx_ms = 0;
 static uint16_t g_bp_enc_raw = 0;
 static bool g_bp_enc_ok = false;
 static uint32_t g_bp_enc_ms = 0;
-// Encoder speed estimate computed on UNOQ from Blue Pill AS5600 samples.
+// Encoder speed estimate computed on UNO Q from motor-controller AS5600 samples.
 // Units: RPM is mechanical (shaft) rpm. Electrical Hz assumes POLE_PAIRS.
 static float g_enc_rpm = 0.0f;
 static float g_enc_mech_hz = 0.0f;
@@ -319,7 +325,7 @@ static uint16_t g_enc_prev_raw = 0;
 static uint32_t g_enc_prev_ms = 0;
 static int32_t g_enc_accum_counts = 0;
 static uint32_t g_enc_accum_ms = 0;
-// Blue Pill reply fields (decoded from the UART reply frame).
+// Motor-controller reply fields (decoded from the UART reply frame).
 static uint8_t g_bp_status = 0;
 static uint8_t g_bp_fault_code = 0;
 static uint8_t g_bp_last_mode = 0;
@@ -339,7 +345,7 @@ static uint16_t g_bp_phase_c_raw = 2048;
 static uint8_t g_bp_phase_flags = 0;
 static bool g_bp_mcsdk_telemetry = false;
 static bool g_bp_vbus_valid = false;
-static bool g_bp_precharge_managed = false;
+static bool g_bp_softstart_ready = false;
 static float g_bp_phase_a_v = 0.0f;
 static float g_bp_phase_b_v = 0.0f;
 static float g_bp_phase_c_v = 0.0f;
@@ -348,7 +354,7 @@ static uint16_t g_bp_good_cnt = 0;
 static uint16_t g_bp_bad_cnt = 0;
 static uint8_t g_bp_last_seq = 0;
 static uint32_t g_bp_last_rsp_ms = 0;
-// Blue Pill boot ping (0x5A 0xA5 ...) detector, helps diagnose wiring/baud before the link is up.
+// Motor-controller boot ping (0x5A 0xA5 ...) detector for wiring/baud diagnostics.
 static uint32_t g_bp_ping_pairs = 0;
 static uint32_t g_bp_ping_ms = 0;
 static uint8_t g_bp_ping_prev = 0;
@@ -921,7 +927,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(75);
+  mp_tx_array(78);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -945,7 +951,7 @@ static void rpc_send_response_get(int32_t msgid) {
   float brake = (g_ext_flags & BP_EXT_BRAKE_PWM) ? ((float)g_brake_q15 / 32767.0f) : 0.0f;
   mp_tx_float(brake);
 
-  // Encoder telemetry (from Blue Pill reply)
+  // Encoder telemetry from the motor controller.
   bool enc_recent = (uint32_t)(millis() - g_bp_enc_ms) < 500U;
   int enc_ok = (g_bp_enc_ok && enc_recent) ? 1 : 0;
   float enc_deg = ((float)g_bp_enc_raw * 360.0f) / 4096.0f;
@@ -953,13 +959,13 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(enc_ok);
   mp_tx_float(enc_deg);
 
-  // Blue Pill link stats (UNOQ-side counters + ages).
+  // Motor-controller link stats (UNO Q-side counters + ages).
   uint32_t bp_age = (g_nucleo_last_rx_ms == 0) ? 999999U : (uint32_t)(millis() - g_nucleo_last_rx_ms);
   mp_tx_int((int32_t)g_nucleo_rx_good);
   mp_tx_int((int32_t)g_nucleo_rx_bad);
   mp_tx_int((int32_t)bp_age);
 
-  // Decoded fields from the last Blue Pill reply.
+  // Decoded fields from the last motor-controller reply.
   mp_tx_int((int32_t)g_bp_status);
   mp_tx_int((int32_t)g_bp_fault_code);
   mp_tx_int((int32_t)g_bp_last_mode);
@@ -1015,7 +1021,10 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0));
   mp_tx_int(g_bp_mcsdk_telemetry ? 1 : 0);
   mp_tx_int(g_bp_vbus_valid ? 1 : 0);
-  mp_tx_int(g_bp_precharge_managed ? 1 : 0);
+  mp_tx_int(0);  // RPC index 74: legacy precharge_managed, always false.
+  mp_tx_int((int32_t)RPC_SCHEMA_VERSION);
+  mp_tx_int(g_bp_softstart_ready ? 1 : 0);
+  mp_tx_int((int32_t)MC_CAP_VF);  // Current Nucleo MCSDK image supports scalar V/f only.
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1146,7 +1155,7 @@ static void clear_estop_latch() {
 static void request_estop_stop() {
   g_estop_latched = true;
   g_fault = 2;
-  // Emergency stop wins over any pending Blue Pill CLEAR handshake.
+  // Emergency stop wins over any pending motor-controller CLEAR handshake.
   g_clear_fault_req = false;
   g_estop_auto_clear_deadline_ms = (ESTOP_AUTO_CLEAR_MS > 0) ? (millis() + ESTOP_AUTO_CLEAR_MS) : 0;
   hard_stop(false, true);
@@ -1182,7 +1191,7 @@ static bool handle_fan_command(const char *arg) {
   fan_set(clampf(duty, 0.0f, 1.0f));
   return true;
 }
-static bool handle_bpfoc_command(const char *arg) {
+static bool handle_mcfoc_command(const char *arg) {
   while (*arg == ' ' || *arg == '\t') arg++;
   if (icmp(arg, "OFF") || icmp(arg, "0")) {
     g_bp_foc_backend = false;
@@ -1194,6 +1203,9 @@ static bool handle_bpfoc_command(const char *arg) {
     return true;
   }
   if (icmp(arg, "ON") || icmp(arg, "1")) {
+    if (NUCLEO_MCSDK_ACIM_BACKEND) {
+      return false;
+    }
     if (g_pwm_enabled || g_state != STATE_SAFE || g_estop_latched || g_fault != 0) {
       return false;
     }
@@ -1453,8 +1465,10 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       }
     } else if (starts_ci(cmd, "FAN")) {
       handled = handle_fan_command(cmd + 3);
+    } else if (starts_ci(cmd, "MCFOC")) {
+      handled = handle_mcfoc_command(cmd + 5);
     } else if (starts_ci(cmd, "BPFOC")) {
-      handled = handle_bpfoc_command(cmd + 5);
+      handled = handle_mcfoc_command(cmd + 5);  // Legacy alias.
     } else if (starts_ci(cmd, "BRAKE")) {
       const char *p = cmd + 5;
       while (*p == ' ' || *p == '\t') p++;
@@ -1912,8 +1926,10 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     }
   } else if (starts_ci(cmd, "FAN")) {
     handled = handle_fan_command(cmd + 3);
+  } else if (starts_ci(cmd, "MCFOC")) {
+    handled = handle_mcfoc_command(cmd + 5);
   } else if (starts_ci(cmd, "BPFOC")) {
-    handled = handle_bpfoc_command(cmd + 5);
+    handled = handle_mcfoc_command(cmd + 5);  // Legacy alias.
   } else if (starts_ci(cmd, "SCOPE")) {
     const char *p = cmd + 5;
     while (*p == ' ' || *p == '	') p++;
@@ -2037,7 +2053,7 @@ static String rpc_get() {
   s += " bp_good="; s += String((int)g_nucleo_rx_good);
   s += " bp_bad="; s += String((int)g_nucleo_rx_bad);
   s += " bp_age_ms="; s += String((int)bp_age);
-  // Low-level Blue Pill link observability.
+  // Low-level motor-controller link observability.
   s += " bp_status="; s += String((int)g_bp_status);
   s += " bp_fault="; s += String((int)g_bp_fault_code);
   s += " bp_mode="; s += String((int)g_bp_last_mode);
@@ -2070,7 +2086,8 @@ static String rpc_get() {
   s += " bp_phase_flags="; s += String((int)g_bp_phase_flags);
   s += " bp_mcsdk_telemetry="; s += String(g_bp_mcsdk_telemetry ? 1 : 0);
   s += " bp_vbus_valid="; s += String(g_bp_vbus_valid ? 1 : 0);
-  s += " bp_precharge_managed="; s += String(g_bp_precharge_managed ? 1 : 0);
+  s += " bp_softstart_ready="; s += String(g_bp_softstart_ready ? 1 : 0);
+  s += " bp_precharge_managed=0";
   s += " bp_phase_valid="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_VALID) ? 1 : 0);
   s += " bp_phase_c_virtual="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_C_VIRTUAL) ? 1 : 0);
   uint32_t bp_phase_age = (g_bp_phase_ms == 0) ? 999999U : (uint32_t)(millis() - g_bp_phase_ms);
@@ -2081,6 +2098,8 @@ static String rpc_get() {
   s += " bp_ping_pairs="; s += String((unsigned long)g_bp_ping_pairs);
   s += " bp_ping_age_ms="; s += String((int)ping_age);
   s += " fw_build="; s += String((unsigned long)FW_BUILD_ID);
+  s += " rpc_schema="; s += String((int)RPC_SCHEMA_VERSION);
+  s += " mc_caps="; s += String((int)MC_CAP_VF);
   s += " matrix_test=";
   s += String(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0);
   return s;
@@ -2301,7 +2320,7 @@ static uint16_t bp_scalar_vmag_q15() {
   }
   float v_mag = (g_vf_v_per_hz * g_freq_ref) + boost_v;
   v_mag = clampf(v_mag, 0.0f, g_v_limit);
-  // Blue Pill MODE_SCALAR uses alpha/beta magnitude in per-unit and then
+  // MODE_SCALAR uses alpha/beta magnitude in per-unit and then
   // maps it to duty with 0.5 + 0.5*v. Match the UNO Q voltage-domain SVM.
   float mag_pu = (g_vdc > 0.1f) ? ((2.0f * v_mag) / g_vdc) : 0.0f;
   return q15_unit(clampf(mag_pu, 0.0f, 0.95f));
@@ -2317,7 +2336,7 @@ static void ext_flag_set(uint8_t flag, bool on) {
     g_ext_flags &= (uint8_t)(~flag);
   }
   if (USE_EXTERNAL_PWM && !g_pwm_enabled) {
-    // Service outputs must reach Blue Pill immediately in normal Wi-Fi mode;
+    // Service outputs must reach the motor controller immediately in normal Wi-Fi mode;
     // waiting for the SAFE heartbeat made relay operation nondeterministic.
     nucleo_send_stop(true);
   }
@@ -2356,7 +2375,7 @@ static void io_test_set(bool on) {
     nucleo_send_stop(true);
     return;
   }
-  // Service I/O test: allow Blue Pill to apply ext_flags while keeping PWM off.
+  // Service I/O test: allow the motor controller to apply ext_flags while keeping PWM off.
   nucleo_send_pwm(0.0f, 0.0f, 0.0f, true, true);
 }
 static uint8_t nucleo_crc8(const uint8_t *buf, size_t len) {
@@ -2480,9 +2499,9 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   g_bp_ext_flags = rx[14];
   g_bp_brake_q15 = (uint16_t)rx[15] | ((uint16_t)rx[16] << 8);
   g_bp_phase_flags = rx[29];
-  g_bp_mcsdk_telemetry = (g_bp_phase_flags & 0x80U) != 0U;
-  g_bp_vbus_valid = (g_bp_phase_flags & 0x40U) != 0U;
-  g_bp_precharge_managed = (g_bp_phase_flags & 0x20U) != 0U;
+  g_bp_mcsdk_telemetry = (g_bp_phase_flags & MC_TELEMETRY_FLAG_MCSDK_UNITS) != 0U;
+  g_bp_vbus_valid = (g_bp_phase_flags & MC_TELEMETRY_FLAG_VBUS_VALID) != 0U;
+  g_bp_softstart_ready = (g_bp_phase_flags & MC_TELEMETRY_FLAG_SOFTSTART_READY) != 0U;
   g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
   if (g_bp_mcsdk_telemetry) {
     g_bp_vdc = (float)g_bp_vbus_raw * 0.1f;
@@ -2530,7 +2549,7 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
     g_nucleo_waiting_rsp = false;
     g_nucleo_last_ack_us = micros();
   }
-  // Clear is held until we observe "no fault" from the Blue Pill.
+  // Clear is held until we observe "no fault" from the motor controller.
   if (g_clear_fault_req) {
     bool fault = (g_bp_fault_code != 0) || ((g_bp_status & 0x08u) != 0u);
     if (!fault) {
@@ -2540,7 +2559,7 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   return true;
 }
 
-// Non-blocking UART reply parser (Blue Pill -> UNOQ).
+// Non-blocking UART reply parser (Nucleo -> UNO Q).
 // We keep it simple: sync to 0x55 0xAA header, then collect one reply frame.
 static void nucleo_uart_poll() {
   static uint8_t st = 0;
@@ -2548,7 +2567,7 @@ static void nucleo_uart_poll() {
   static uint8_t buf[BP_FRAME_LEN];
   while (NUCLEO_SERIAL.available() > 0) {
     uint8_t b = (uint8_t)NUCLEO_SERIAL.read();
-    // Detect the Blue Pill's boot ping (0x5A 0xA5 ...) to diagnose RX wiring/baud
+    // Detect the motor controller's boot ping (0x5A 0xA5 ...) to diagnose RX wiring/baud
     // even when no valid reply frames are received yet.
     if (g_bp_ping_prev == 0x5A && b == 0xA5) {
       if (g_bp_ping_pairs < 0xFFFFFFFFu) g_bp_ping_pairs++;
@@ -2725,7 +2744,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   }
 
   // For CLEAR we must send a "safe" frame: MODE OFF + ENABLE=0 + ESTOP=0
-  // (see Blue Pill can_clear_fault()).
+  // (see the motor-controller can_clear_fault()).
   if (clear_eff) {
     enable_eff = false;
     estop_eff = false;
@@ -2737,7 +2756,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     dv_eff = 0.0f;
     dw_eff = 0.0f;
   } else if (io_test_eff && !estop_eff) {
-    // Blue Pill applies service outputs in its MODE_OFF/ENABLE=0 path.
+    // The motor controller applies service outputs in its MODE_OFF/ENABLE=0 path.
     // Keeping this frame disabled prevents any PWM mode from being entered.
     enable_eff = false;
     diag_eff = false;
@@ -3503,9 +3522,9 @@ static void matrix_update() {
     matrix_set_pixel(x0 + 7, y0 + 4);
     matrix_set_pixel(x0 + 7, y0 + 5);
   }
-  // Left marker follows the Nucleo-owned precharge relay; right marker follows
-  // actual MCSDK PWM feedback rather than the local START request.
-  if ((g_bp_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U) {
+  // Left marker confirms that the autonomous AC soft-start has produced a
+  // stable DC bus; right marker follows actual MCSDK PWM feedback.
+  if (g_bp_softstart_ready) {
     matrix_set_pixel(0, 0);
     matrix_set_pixel(0, 1);
   }

@@ -37,8 +37,8 @@ PINMAP_PATH = OUT_DIR / "MIC_AI_REV2_PINMAP.csv"
 MANIFEST_PATH = OUT_DIR / "manifest.json"
 ASSEMBLY_PATH = OUT_DIR / "ASSEMBLY_RU.md"
 
-REVISION = "2.1"
-REVISION_DATE = "2026-07-17"
+REVISION = "2.2"
+REVISION_DATE = "2026-08-26"
 TOTAL_PAGES = 6
 
 
@@ -96,12 +96,12 @@ class ElectricalModel:
             "AC_L",
             "AC_L_FUSED",
             "AC_N",
+            "AC_L_AFTER_SOFTSTART",
+            "AC_N_AFTER_SOFTSTART",
             "PE_CHASSIS",
-            "RECT_DC_PLUS",
             "HV_DC_PLUS",
             "HV_DC_MINUS_HOT_GND",
             "SAFE_GND",
-            "PB4_PRECHARGE",
             "SAFE_UART_TX",
             "SAFE_UART_RX",
         }
@@ -123,11 +123,11 @@ class ElectricalModel:
             return endpoint_owner.get((ref, port))
 
         invariants = {
-            "bridge_ac1_is_fused_line": endpoint_net("BR1", "AC1") == "AC_L_FUSED",
-            "bridge_ac2_is_neutral": endpoint_net("BR1", "AC2") == "AC_N",
+            "bridge_ac1_is_softstart_output": endpoint_net("BR1", "AC1") == "AC_L_AFTER_SOFTSTART",
+            "bridge_ac2_is_softstart_output": endpoint_net("BR1", "AC2") == "AC_N_AFTER_SOFTSTART",
             "bridge_minus_is_hot_ground": endpoint_net("BR1", "MINUS") == "HV_DC_MINUS_HOT_GND",
-            "bridge_plus_is_rectified_plus": endpoint_net("BR1", "PLUS") == "RECT_DC_PLUS",
-            "precharge_is_pb4": endpoint_net("U_BP", "PB4") == "PB4_PRECHARGE",
+            "bridge_plus_is_hv_bus": endpoint_net("BR1", "PLUS") == "HV_DC_PLUS",
+            "softstart_has_no_mcu_control": endpoint_net("U_BP", "PB4") is None,
             "steval_j2_21_is_nc": endpoint_net("U_BP", "PB1") is None
             and endpoint_net("J_STEVAL_J2", "P21") is None,
             "unoq_power_uses_vin": endpoint_net("U_UNOQ", "VIN") == "SAFE_VIN_7_24V",
@@ -174,6 +174,8 @@ class ElectricalModel:
         intentional_nc = {
             ("U_BP", "5V"),
             ("U_BP", "PB1"),
+            ("U_BP", "PB4"),
+            ("U_LA2", "HI4"),
             ("U_UNOQ", "5V_USB"),
             ("J_STEVAL_J2", "P21"),
             ("J_STEVAL_J2", "P34"),
@@ -221,18 +223,19 @@ def comp(
 def build_model() -> ElectricalModel:
     m = ElectricalModel()
 
-    # Mains, rectifier, precharge, and HV bus.
+    # Mains, autonomous AC soft-start, rectifier, and HV bus.
     m.add(comp("J_AC_IN", "230VAC INPUT", ("L", "N", "PE"), "TerminalBlock_1x03_P7.62mm", "HV"))
     m.add(comp("F1", "F1_VALUE_BY_LOAD slow-blow 250VAC", ("1", "2"), "Fuse_5x20mm", "HV"))
     m.add(comp("MOV1", "S14K300", ("1", "2"), "MOV_D14mm", "HV", "Must be after F1"))
+    m.add(comp(
+        "A_SOFTSTART",
+        "AUTONOMOUS AC SOFT-START; 4x NTC 10D-20 + internal bypass relay",
+        ("L_IN", "N_IN", "L_OUT", "N_OUT"),
+        "External_Module_4Wire",
+        "HV",
+        "Ahead of bridge; no MCU control; verify actual terminal marking and current rating",
+    ))
     m.add(comp("BR1", "KBPC5010", ("AC1", "AC2", "PLUS", "MINUS"), "KBPC", "HV", "Verify body marks + - ~ ~"))
-    m.add(comp("RPRE1", "20R 25W pulse-rated", ("1", "2"), "Chassis_Resistor_25W", "HV"))
-    m.add(comp("RPRE2", "20R 25W pulse-rated", ("1", "2"), "Chassis_Resistor_25W", "HV"))
-    m.add(comp("K1", "TE Mini K HV 2-1904058-5, 12V coil, 400VDC/20A", ("COM", "NO", "COIL_PLUS", "COIL_LOW"), "TE_2-1904058-5", "HV"))
-    m.add(comp("Q1", "AO3400A (AOS)", ("G", "D", "S"), "SOT-23", "HOT", "Pin 1 G, pin 2 S, pin 3 D"))
-    m.add(comp("R_Q1_GATE", "100R", ("1", "2"), "R_0603", "HOT"))
-    m.add(comp("R_Q1_PD", "100K", ("1", "2"), "R_0603", "HOT"))
-    m.add(comp("D_K1", "SS14", ("A", "K"), "SMA", "HOT", "Cathode to HOT_12V"))
     m.add(comp("C_HV", "220uF 450V, optional if STEVAL C1 fitted", ("PLUS", "MINUS"), "Electrolytic_SnapIn", "HV", populate="VERIFY"))
     for index in range(1, 5):
         m.add(comp(f"RB{index}", "100K 0.5W HV-rated", ("1", "2"), "R_Axial_10mm", "HV"))
@@ -341,12 +344,12 @@ def build_model() -> ElectricalModel:
 
     # HV and power nets.
     m.connect("AC_L", ("J_AC_IN", "L"), ("F1", "1"))
-    m.connect("AC_L_FUSED", ("F1", "2"), ("MOV1", "1"), ("BR1", "AC1"), ("PS1", "AC1"))
-    m.connect("AC_N", ("J_AC_IN", "N"), ("MOV1", "2"), ("BR1", "AC2"), ("PS1", "AC2"))
+    m.connect("AC_L_FUSED", ("F1", "2"), ("MOV1", "1"), ("A_SOFTSTART", "L_IN"), ("PS1", "AC1"))
+    m.connect("AC_N", ("J_AC_IN", "N"), ("MOV1", "2"), ("A_SOFTSTART", "N_IN"), ("PS1", "AC2"))
+    m.connect("AC_L_AFTER_SOFTSTART", ("A_SOFTSTART", "L_OUT"), ("BR1", "AC1"))
+    m.connect("AC_N_AFTER_SOFTSTART", ("A_SOFTSTART", "N_OUT"), ("BR1", "AC2"))
     m.connect("PE_CHASSIS", ("J_AC_IN", "PE"), ("J_PE", "PE"))
-    m.connect("RECT_DC_PLUS", ("BR1", "PLUS"), ("RPRE1", "1"), ("K1", "COM"))
-    m.connect("PRECHARGE_MID", ("RPRE1", "2"), ("RPRE2", "1"))
-    m.connect("HV_DC_PLUS", ("RPRE2", "2"), ("K1", "NO"), ("C_HV", "PLUS"), ("RB1", "1"), ("J_J7", "PLUS"))
+    m.connect("HV_DC_PLUS", ("BR1", "PLUS"), ("C_HV", "PLUS"), ("RB1", "1"), ("J_J7", "PLUS"))
     m.connect("BLEEDER_1", ("RB1", "2"), ("RB2", "1"))
     m.connect("BLEEDER_2", ("RB2", "2"), ("RB3", "1"))
     m.connect("BLEEDER_3", ("RB3", "2"), ("RB4", "1"))
@@ -355,7 +358,7 @@ def build_model() -> ElectricalModel:
         ("BR1", "MINUS"), ("C_HV", "MINUS"), ("RB4", "2"), ("J_J7", "MINUS"),
         ("PS1", "GND_OUT"), ("J_HOT15_EXT", "RETURN"),
         ("U_BUCK12", "GND"), ("U_BUCK5", "GND"), ("U_BUCK3V3", "GND"),
-        ("J_STEVAL_J4", "RETURN"), ("U_BP", "GND"), ("Q1", "S"), ("R_Q1_PD", "2"),
+        ("J_STEVAL_J4", "RETURN"), ("U_BP", "GND"),
         ("U_UART_ISO", "GND_HOT"), ("C_UART_HOT", "2"),
         ("U_LA1", "GND_HOT"), ("U_LA2", "GND_HOT"), ("C_LA1_HOT", "2"), ("C_LA2_HOT", "2"),
         ("U_ESTOP_OPTO", "E"), ("U_ESTOP_INV", "GND"), ("U_ESTOP_AND", "GND"),
@@ -374,7 +377,7 @@ def build_model() -> ElectricalModel:
     m.connect("ONBOARD_HOT_15V", ("PS1", "VOUT"), ("JP_HOT15_SRC", "ONBOARD"))
     m.connect("EXTERNAL_HOT_15V", ("J_HOT15_EXT", "PLUS"), ("JP_HOT15_SRC", "EXTERNAL"))
     m.connect("HOT_15V", ("JP_HOT15_SRC", "COMMON"), ("U_BUCK12", "IN"), ("U_BUCK5", "IN"), ("U_BUCK3V3", "IN"), ("J_STEVAL_J4", "PLUS"))
-    m.connect("HOT_12V", ("U_BUCK12", "OUT"), ("K1", "COIL_PLUS"), ("D_K1", "K"), ("J_FAN", "V12"), ("C_FAN_BULK", "PLUS"), ("C_FAN_HF", "1"))
+    m.connect("HOT_12V", ("U_BUCK12", "OUT"), ("J_FAN", "V12"), ("C_FAN_BULK", "PLUS"), ("C_FAN_HF", "1"))
     m.connect("HOT_5V", ("U_BUCK5", "OUT"), ("J_STEVAL_J2", "P25"))
     hot_3v3_eps = [
         ("U_BUCK3V3", "OUT"), ("U_BP", "3V3"), ("J_STEVAL_J2", "P28"), ("J_STEVAL_J2", "P29"),
@@ -385,11 +388,6 @@ def build_model() -> ElectricalModel:
         ("J_AS5600", "VCC"), ("R_SCL_PU", "1"), ("R_SDA_PU", "1"), ("J_SWD", "VREF"),
     ]
     m.connect("HOT_3V3", *hot_3v3_eps)
-
-    # Precharge relay driver.
-    m.connect("PB4_PRECHARGE", ("U_BP", "PB4"), ("R_Q1_GATE", "1"), ("U_LA2", "HI4"))
-    m.connect("Q1_GATE", ("R_Q1_GATE", "2"), ("Q1", "G"), ("R_Q1_PD", "1"))
-    m.connect("K1_COIL_LOW", ("K1", "COIL_LOW"), ("Q1", "D"), ("D_K1", "A"))
 
     # PWM with series resistors and isolated monitor taps at the STEVAL side.
     for ref, bp_pin, j2_pin, signal in pwm_map:
@@ -579,7 +577,7 @@ def draw_architecture(p: DualPage) -> None:
     p.box(58, 120, 265, 100, "SAFE питание", ["SAFE_GND отдельно от PE и HOT_GND", "SAFE_3V3: UNO Q OUT либо внешний источник", "SAFE_5V питает только E-STOP loop"], fill="#ffffff")
 
     p.box(413, 555, 160, 110, "U_UART_ISO", ["ISO7721DWR", "UART 1 канал туда", "1 канал обратно", "8 mm creepage package"], fill="#fffdf8", stroke="#be761b")
-    p.box(413, 390, 160, 120, "U_LA1 + U_LA2", ["2 x ISO7740FDWR", "8 hot-to-safe channels", "PWM/EM_STOP/PB4", "default LOW"], fill="#fffdf8", stroke="#be761b")
+    p.box(413, 390, 160, 120, "U_LA1 + U_LA2", ["2 x ISO7740FDWR", "8 hot-to-safe channels", "PWM/EM_STOP/reserved", "default LOW"], fill="#fffdf8", stroke="#be761b")
     p.box(413, 245, 160, 95, "U_ESTOP_OPTO", ["LTV-817", "Безопасный loop", "74LVC1G14 + AND"], fill="#fffdf8", stroke="#be761b")
     p.line(603, 100, 603, 720, color="#d78823", width=3, dash=(8, 6))
     p.text(603, 90, "НЕТ медного соединения земель", 9, "#9a5a0d", True, "middle")
@@ -588,7 +586,7 @@ def draw_architecture(p: DualPage) -> None:
     p.box(920, 565, 205, 105, "STEVAL-IPM15B", ["J2 signals + J4 15V", "J7: 125..400VDC", "J2 GND = J7 DC-", "Внутри закрытого корпуса"], fill="#fffafa", stroke="#a32b28")
     p.box(665, 410, 215, 105, "AS5600", ["PB10 SCL / PB11 SDA", "HOT_3V3 / HOT_GND", "Кабель и модуль недоступны", "при включенной HV"], fill="#fffafa", stroke="#a32b28")
     p.box(920, 410, 205, 105, "4-pin PWM fan", ["HOT_12V постоянно", "PB3 -> NPN open collector", "PA11 TACH", "3-pin: только полная скорость"], fill="#fffafa", stroke="#a32b28")
-    p.box(665, 245, 460, 110, "Силовое питание", ["230VAC -> F1 -> MOV -> KBPC5010 -> precharge -> HV_DC+", "HV_DC- = HOT_GND только внутри опасного домена", "PE идет только на корпус/раму/двигатель, не на HV_DC-", "HLK-20M15 питает горячие 15V/12V/5V/3.3V"], fill="#fffafa", stroke="#a32b28")
+    p.box(665, 245, 460, 110, "Силовое питание", ["230VAC -> F1/MOV -> autonomous soft-start -> KBPC5010", "HV_DC- = HOT_GND только внутри опасного домена", "PE идет только на корпус/раму/двигатель, не на HV_DC-", "HLK-20M15 питает горячие 15V/12V/5V/3.3V"], fill="#fffafa", stroke="#a32b28")
     p.box(665, 115, 460, 80, "Запрещено при поданной HV", ["USB Blue Pill, обычный ST-Link, прямой Saleae, заземленный осциллограф", "Любая пайка и перестановка проводов - только после разряда DC-шины"], fill="#ffe1df", stroke="#a32b28")
 
     p.arrow(323, 620, 413, 610)
@@ -604,50 +602,41 @@ def draw_architecture(p: DualPage) -> None:
 
 
 def draw_power(p: DualPage) -> None:
-    p.title(2, "230VAC, мост, предзаряд и питание", "Проверять по именам выводов + / - / ~ / ~; номера footprint не считать источником истины")
-    p.box(45, 620, 90, 80, "J_AC_IN", ["L", "N", "PE"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(170, 640, 100, 60, "F1", ["slow-blow", "BY LOAD"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(315, 535, 120, 65, "MOV1", ["S14K300", "после F1"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(480, 620, 130, 80, "BR1", ["KBPC5010", "AC1 AC2 + -"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(690, 665, 170, 55, "RPRE1 + RPRE2", ["20R + 20R; 25W pulse"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(690, 575, 170, 55, "K1 bypass", ["TE 2-1904058-5; 400VDC"], fill="#fff9f8", stroke="#9f2d29")
-    p.box(995, 610, 100, 90, "J_J7", ["DC+", "DC-"], fill="#fff9f8", stroke="#9f2d29")
+    p.title(2, "230VAC, автономный soft-start, мост и питание", "Soft-start установлен до BR1 и не имеет управляющего соединения с MCU")
+    p.box(45, 600, 90, 110, "J_AC_IN", ["L", "N", "PE"], fill="#fff9f8", stroke="#9f2d29")
+    p.box(165, 645, 100, 65, "F1", ["slow-blow", "BY LOAD"], fill="#fff9f8", stroke="#9f2d29")
+    p.box(300, 590, 270, 130, "A_SOFTSTART", ["L_IN / N_IN", "L_OUT / N_OUT", "4 x NTC 10D-20", "внутреннее реле bypass", "без управления от MCU"], fill="#fff1ef", stroke="#9f2d29")
+    p.box(650, 610, 145, 100, "BR1", ["KBPC5010", "AC1 / AC2", "PLUS / MINUS"], fill="#fff9f8", stroke="#9f2d29")
+    p.box(995, 610, 100, 100, "J_J7", ["DC+", "DC-"], fill="#fff9f8", stroke="#9f2d29")
+    p.box(190, 500, 120, 65, "MOV1", ["S14K300", "после F1"], fill="#fff9f8", stroke="#9f2d29")
 
-    p.arrow(135, 680, 170, 680, color="#a32b28")
-    p.arrow(270, 680, 480, 680, color="#a32b28")
-    p.text(285, 687, "AC_L_FUSED", 8, "#7e1f1c", True)
-    p.arrow(135, 642, 480, 642, color="#a32b28")
-    p.text(315, 649, "AC_N", 8, "#7e1f1c", True)
-    p.line(300, 680, 300, 580, color="#a32b28", width=1.8)
-    p.line(300, 580, 315, 580, color="#a32b28", width=1.8)
-    p.line(435, 555, 455, 555, color="#a32b28", width=1.8)
-    p.line(455, 555, 455, 642, color="#a32b28", width=1.8)
-    p.circle(300, 680, 2.5, fill="#a32b28", stroke="#a32b28")
-    p.circle(455, 642, 2.5, fill="#a32b28", stroke="#a32b28")
+    p.arrow(135, 685, 165, 685, color="#a32b28")
+    p.arrow(265, 685, 300, 685, color="#a32b28")
+    p.text(290, 696, "AC_L_FUSED", 7.5, "#7e1f1c", True, "end")
+    p.arrow(135, 625, 300, 625, color="#a32b28")
+    p.text(195, 636, "AC_N", 8, "#7e1f1c", True)
+    p.arrow(570, 685, 650, 685, color="#a32b28")
+    p.arrow(570, 625, 650, 625, color="#a32b28")
+    p.text(578, 696, "L_OUT -> AC1", 7.5, "#7e1f1c", True)
+    p.text(578, 636, "N_OUT -> AC2", 7.5, "#7e1f1c", True)
+    p.arrow(795, 685, 995, 685, color="#a32b28")
+    p.text(840, 696, "HV_DC_PLUS", 8, "#7e1f1c", True)
+    p.arrow(795, 625, 995, 625, color="#7e1f1c")
+    p.text(820, 636, "HV_DC_MINUS / HOT_GND", 8, "#7e1f1c", True)
+    p.line(275, 685, 275, 545, color="#a32b28", width=1.8)
+    p.line(275, 545, 310, 545, color="#a32b28", width=1.8)
+    p.line(190, 520, 150, 520, color="#a32b28", width=1.8)
+    p.line(150, 520, 150, 625, color="#a32b28", width=1.8)
+    p.circle(275, 685, 2.5, fill="#a32b28", stroke="#a32b28")
+    p.circle(150, 625, 2.5, fill="#a32b28", stroke="#a32b28")
 
-    p.line(610, 680, 650, 680, color="#a32b28", width=2)
-    p.circle(650, 680, 3, fill="#a32b28", stroke="#a32b28")
-    p.arrow(650, 680, 690, 692, color="#a32b28")
-    p.arrow(650, 680, 690, 602, color="#a32b28")
-    p.line(860, 692, 925, 680, color="#a32b28", width=2)
-    p.line(860, 602, 925, 680, color="#a32b28", width=2)
-    p.circle(925, 680, 3, fill="#a32b28", stroke="#a32b28")
-    p.arrow(925, 680, 995, 680, color="#a32b28")
-    p.line(610, 642, 630, 642, color="#7e1f1c", width=2)
-    p.line(630, 642, 630, 548, color="#7e1f1c", width=2)
-    p.line(630, 548, 960, 548, color="#7e1f1c", width=2)
-    p.line(960, 548, 960, 635, color="#7e1f1c", width=2)
-    p.arrow(960, 635, 995, 635, color="#7e1f1c")
-    p.text(704, 646, "K1 подключён ПАРАЛЛЕЛЬНО 40R", 9, "#7e1f1c", True)
-    p.text(650, 555, "BR1.MINUS = HV_DC-/HOT_GND", 8.5, "#7e1f1c", True)
-
-    p.box(45, 430, 330, 100, "K1 coil driver", ["HOT_12V -> K1 coil -> Q1 drain", "Q1 AO3400A: source -> HOT_GND", "PB4 -> 100R -> gate; 100K pulldown", "SS14: cathode to HOT_12V"], fill="#f7fbf9")
-    p.box(410, 430, 330, 100, "DC bus support", ["C_HV 220uF/450V if STEVAL C1 absent", "RB1..RB4: 4 x 100K 0.5W HV-rated", "Bleeder is not an ADC divider", "Test points remain shrouded"], fill="#f7fbf9")
-    p.box(775, 430, 350, 100, "Relay rules", ["K1 closes only after Vbus precharge check", "K1 opens only with PWM off and no bus current", "Observe TE contact pinout", "SRD-12VDC-SL-C forbidden at 325VDC"], fill="#ffeceb", stroke="#a32b28")
+    p.box(45, 380, 330, 100, "Soft-start module", ["Установить перед выпрямителем", "Проверить маркировку IN/OUT и L/N", "Рейтинг не ниже реального тока стенда", "Внутреннее реле не связано с PB4/J2-21"], fill="#ffeceb", stroke="#a32b28")
+    p.box(410, 380, 330, 100, "DC bus support", ["C_HV 220uF/450V if STEVAL C1 absent", "RB1..RB4: 4 x 100K 0.5W HV-rated", "Bleeder is not an ADC divider", "Test points remain shrouded"], fill="#f7fbf9")
+    p.box(775, 380, 350, 100, "Acceptance checks", ["Измерить пусковой ток", "Проверить время внутреннего bypass", "Проверить устойчивость Vbus", "Повторный пуск только после остывания NTC"], fill="#ffeceb", stroke="#a32b28")
 
     p.box(45, 235, 190, 120, "PS1 onboard", ["HLK-20M15", "AC_L_FUSED + AC_N", "Output -> source selector", "Secondary tied to HOT_GND"], fill="#fff7e8", stroke="#b06b16")
     p.box(255, 235, 190, 120, "External 15V / JP", ["Isolated bench source", "HV/J7 OFF only", "JP: ONBOARD or EXTERNAL", "Never bridge both positions"], fill="#fff7e8", stroke="#b06b16")
-    p.box(465, 235, 190, 120, "U_BUCK12", ["15V -> 12V", "K1 coil", "4-pin fan", "Total PS1 budget applies"], fill="#fff7e8", stroke="#b06b16")
+    p.box(465, 235, 190, 120, "U_BUCK12", ["15V -> 12V", "4-pin fan", "No relay coil", "Total PS1 budget applies"], fill="#fff7e8", stroke="#b06b16")
     p.box(675, 235, 190, 120, "U_BUCK5", ["15V -> 5V", "STEVAL J2-25", "Blue Pill 5V = NC", "HOT_GND"], fill="#fff7e8", stroke="#b06b16")
     p.box(885, 235, 240, 120, "U_BUCK3V3", ["15V -> 3.3V", "Blue Pill 3V3", "STEVAL J2-28/29", "HOT isolators"], fill="#fff7e8", stroke="#b06b16")
     p.text(45, 208, "HOT_15V существует только после JP_HOT15_SRC; внешний БП отключить перед подачей сети/HV.", 9, "#8a5315", True)
@@ -710,7 +699,7 @@ def draw_j2_mapping(p: DualPage) -> None:
 
     p.rect(45, 88, 1080, 48, stroke="#a32b28", fill="#ffe8e6", width=1.5, radius=5)
     p.text(58, 115, "Важно:", 10, "#8f211e", True)
-    p.text(115, 115, "PB4 управляет внешним K1 precharge. PB1 и STEVAL J2-21 оставлены NC.", 9, "#612321")
+    p.text(115, 115, "PB4, PB1 и STEVAL J2-21 оставлены NC. Автономный soft-start не имеет MCU-control.", 9, "#612321")
     p.text(58, 96, "Blue Pill питается через HOT_3V3; его 5V pin остается NC. J4 RETURN - это HOT_GND, а не отрицательные -15V.", 9, "#612321")
     p.finish()
 
@@ -723,9 +712,9 @@ def draw_interfaces(p: DualPage) -> None:
     p.arrow(305, 632, 395, 632)
     p.arrow(635, 632, 725, 632)
 
-    p.box(45, 390, 260, 120, "Safe Saleae", ["J_SALEAE CH0..CH7 + SAFE_GND", "CH0..5 complementary PWM", "CH6 PB12 command", "CH7 PB4 precharge command"], fill="#eef8f4")
+    p.box(45, 390, 260, 120, "Safe Saleae", ["J_SALEAE CH0..CH7 + SAFE_GND", "CH0..5 complementary PWM", "CH6 PB12 command", "CH7 reserved, expected LOW"], fill="#eef8f4")
     p.box(395, 385, 240, 130, "2 x ISO7740FDWR", ["CH0..CH3 via U_LA1", "CH4..CH7 via U_LA2", "EN2 (pin 10) -> SAFE_3V3", "100Mbps / default LOW", "2000ns deadtime remains measurable"], fill="#fff7e8", stroke="#b36b16")
-    p.box(725, 390, 400, 120, "Hot monitor taps", ["CH0 PWM_UH after 33R", "CH1 PWM_UL after 33R", "CH2 PWM_VH / CH3 PWM_VL", "CH4 PWM_WH / CH5 PWM_WL", "CH6 PB12_RUN / CH7 PB4_PRECHARGE"], fill="#fff0ef", stroke="#a32b28")
+    p.box(725, 390, 400, 120, "Hot monitor taps", ["CH0 PWM_UH after 33R", "CH1 PWM_UL after 33R", "CH2 PWM_VH / CH3 PWM_VL", "CH4 PWM_WH / CH5 PWM_WL", "CH6 PB12_RUN / CH7 reserved LOW"], fill="#fff0ef", stroke="#a32b28")
     p.arrow(725, 450, 635, 450, color="#7d5b22")
     p.arrow(395, 450, 305, 450, color="#7d5b22")
 
@@ -753,7 +742,7 @@ def draw_aux(p: DualPage) -> None:
         "1. Омметр: SAFE_GND - HOT_GND = разрыв.",
         "2. Омметр: AC_N - HV_DC- = разрыв при снятом BR1.",
         "3. Проверить BR1 по маркировке + / - / ~ / ~.",
-        "4. Проверить K1: PB4, не PB1.",
+        "4. Проверить PB4/PB1/J2-21: NC.",
         "5. Проверить все J2 GND pins.",
         "6. Проверить UNO Q: только VIN или USB-C.",
     ]
@@ -761,7 +750,7 @@ def draw_aux(p: DualPage) -> None:
         "7. Выбрать один HOT_15V source; подать low voltage без J7.",
         "8. Проверить E-STOP truth table.",
         "9. Проверить UART и isolated Saleae static LOW.",
-        "10. Проверить precharge relay при HV OFF.",
+        "10. Проверить soft-start отдельно от MCU.",
         "11. Проверить PWM overlap при EM_STOP active.",
         "12. E-STOP должен также снимать питание внешним контактором.",
     ]
@@ -802,13 +791,13 @@ def draw_pinmap(p: DualPage) -> None:
         "J2-1 имеет 47K pulldown: питание пропало -> STOP",
     ], fill="#fff7e8", stroke="#b36b16")
 
-    p.box(45, 285, 335, 170, "Драйвер K1", [
-        "Q1 AO3400A: 1 G, 2 S, 3 D",
-        "D_K1 SS14: полоса = K -> HOT_12V",
-        "K1 TE 2-1904058-5: 12V, coil 50R",
-        "K1 contact: 400VDC / 20A",
-        "Посадочное место K1 брать только из TE CAD",
-        "Катушка не содержит встроенного резистора",
+    p.box(45, 285, 335, 170, "Автономный soft-start", [
+        "L_IN/N_IN <- F1/MOV и сеть",
+        "L_OUT/N_OUT -> BR1 AC1/AC2",
+        "Внутри: 4 x NTC 10D-20 + bypass relay",
+        "Нет контакта управления от MCU",
+        "Сверить маркировку реального модуля",
+        "Проверить ток и изоляционные расстояния",
     ], fill="#fff0ef", stroke="#a32b28")
 
     p.box(420, 285, 350, 170, "Вентилятор", [
@@ -831,7 +820,7 @@ def draw_pinmap(p: DualPage) -> None:
     p.text(60, 204, "ОБЯЗАТЕЛЬНО ПЕРЕД ПАЙКОЙ", 12, "#8f211e", True)
     p.multiline(60, 182, [
         "1. Сверить фактический MPN каждой микросхемы с MIC_AI_REV2_PINMAP.csv; заменять производителя без повторной проверки pinout нельзя.",
-        "2. Для K1 импортировать официальный TE CAD/footprint 2-1904058-5 и вручную сопоставить две силовые площадки и две площадки катушки.",
+        "2. Soft-start оформить как внешний четырёхпроводный модуль; не переносить его неизвестную разводку на основную PCB.",
         "3. После разводки выполнить ERC/DRC, проверку creepage/clearance и прозвонку SAFE_GND - HOT_GND - PE - AC_N как четырех разных сетей.",
         "4. Номинал F1 остаётся F1_VALUE_BY_LOAD до расчёта по двигателю, проводам и допустимому току входа.",
     ], size=9, leading=21, color="#612321")
@@ -1024,22 +1013,8 @@ def build_pinmap(model: ElectricalModel) -> list[dict[str, str]]:
     for port, pin in (("A", "1"), ("B", "2"), ("GND", "3"), ("Y", "4"), ("VCC", "5")):
         add("U_ESTOP_AND", port, pin, port, "DATASHEET_VERIFIED", ti_and)
 
-    for port, pin in (("G", "1"), ("S", "2"), ("D", "3")):
-        add("Q1", port, pin, port, "DATASHEET_VERIFIED", "AOS AO3400A Rev.3.1")
     for port, pin in (("B", "1"), ("E", "2"), ("C", "3")):
         add("Q_FAN_N", port, pin, port, "DATASHEET_VERIFIED", "Diodes MMBT2222A Rev.18-2")
-
-    add("D_K1", "K", "BANDED_END", "CATHODE", "BODY_MARK_VERIFIED", "SS14 body marking")
-    add("D_K1", "A", "UNBANDED_END", "ANODE", "BODY_MARK_VERIFIED", "SS14 body marking")
-
-    te_source = "TE 2-1904058-5 official product/CAD"
-    for port, pad, name in (
-        ("COM", "TE_CONTACT_A", "POWER_CONTACT_A"),
-        ("NO", "TE_CONTACT_B", "POWER_CONTACT_B"),
-        ("COIL_PLUS", "TE_COIL_A", "COIL_A"),
-        ("COIL_LOW", "TE_COIL_B", "COIL_B"),
-    ):
-        add("K1", port, pad, name, "TE_CAD_FOOTPRINT_REQUIRED", te_source, "Lock official TE footprint before PCB release")
 
     for port, mark in (("AC1", "~1"), ("AC2", "~2"), ("PLUS", "+"), ("MINUS", "-")):
         add("BR1", port, mark, mark, "BODY_MARK_VERIFIED", "KBPC5010 body markings", "Do not infer from footprint numbering")
@@ -1049,7 +1024,7 @@ def build_pinmap(model: ElectricalModel) -> list[dict[str, str]]:
 
     critical_refs = {
         "U_UART_ISO", "U_LA1", "U_LA2", "U_ESTOP_OPTO", "U_ESTOP_INV",
-        "U_ESTOP_AND", "Q1", "Q_FAN_N", "D_K1", "K1", "BR1", "J_FAN",
+        "U_ESTOP_AND", "Q_FAN_N", "BR1", "J_FAN",
     }
     covered = {
         (row["Ref"], row["LogicalPort"])
@@ -1118,8 +1093,8 @@ def write_assembly() -> None:
 
 1. У KBPC5010 четыре отдельные сети: два `AC~`, `PLUS`, `MINUS`.
 2. MOV установлен после F1.
-3. Внешний precharge K1 управляется `PB4`; `PB1` и STEVAL J2-21 оставлены NC.
-4. K1 - TE Mini K HV `2-1904058-5`, а не SRD-12VDC-SL-C.
+3. Внешний автономный soft-start включён до моста и не имеет связи с MCU.
+4. `PB4`, `PB1` и STEVAL J2-21 оставлены NC; старый байпасный K1 отсутствует.
 5. UNO Q питается через `VIN 7-24V` или USB-C. Его 3.3V и 5V не являются входами питания в этой схеме.
 6. Blue Pill питается только через внешний `HOT_3V3`; pin 5V не подключен.
 7. Все GND-контакты STEVAL J2 подключены к горячей земле.
@@ -1135,7 +1110,6 @@ def write_assembly() -> None:
 ## Исходные документы
 
 - ST UM2014, STEVAL-IPM15B: `../../um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf`.
-- TE Mini K HV `2-1904058-5`: https://www.te.com/en/product-2-1904058-5.html
 - TI ISO7721: https://www.ti.com/product/ISO7721
 - TI ISO7740: https://www.ti.com/product/ISO7740
 - Arduino UNO Q datasheet: https://docs.arduino.cc/resources/datasheets/ABX00162-datasheet.pdf
@@ -1147,7 +1121,7 @@ def write_assembly() -> None:
 2. Выбрать `EXTERNAL` на `JP_HOT15_SRC`, подать изолированные 15 В без J7/HV и проверить аппаратный запрет PWM.
 3. Проверить UART через изолятор.
 4. Проверить static LOW и PWM через изолированный Saleae.
-5. Проверить K1 при отключенной HV.
+5. Отдельно проверить ограничение тока и внутренний bypass автономного soft-start.
 6. Провести отдельный PCB/layout review по creepage, clearance, ширине дорожек и защитному корпусу.
 7. Только после этого рассматривать подачу 230VAC.
 """
@@ -1183,7 +1157,7 @@ def generate() -> dict:
         "pinmap": {
             "row_count": len(pinmap),
             "critical_component_count": len({row["Ref"] for row in pinmap}),
-            "requires_official_footprint": ["K1"],
+            "requires_official_footprint": [],
         },
         "canonical_pdf": str(PDF_PATH),
         "artifacts": [
@@ -1192,6 +1166,7 @@ def generate() -> dict:
         ],
         "unresolved": [
             "F1 value requires motor nameplate current, intended maximum power, conductor size, and protection coordination.",
+            "The external soft-start terminal marking, current rating, delay, and insulation must be verified on the purchased module.",
             "PCB layout still requires creepage/clearance, thermal, and mechanical safety review.",
             "The required safety category and external mains contactor must be selected for the final machine/application.",
         ],

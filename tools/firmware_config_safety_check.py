@@ -515,14 +515,14 @@ def run_checks(repo: Path) -> list[CaseResult]:
             "float freq = g_pwm_enabled ? g_freq_ref : g_freq_cmd;",
             "bool show_rpm = g_pwm_enabled",
             "(freq * 60.0f) / POLE_PAIRS",
-            "(g_bp_ext_flags & BP_EXT_PRECHARGE_RELAY) != 0U",
+            "if (g_bp_softstart_ready)",
             "g_bp_status & BP_STATUS_PWM_ACTIVE",
         )
     )
     if matrix_feedback_ok:
-        cases.append(ok_case("unoq_matrix_shows_command_and_pwm", {"digits": "frequency/RPM", "left": "Nucleo precharge", "right": "MCSDK PWM"}))
+        cases.append(ok_case("unoq_matrix_shows_command_and_pwm", {"digits": "frequency/RPM", "left": "external soft-start ready", "right": "MCSDK PWM"}))
     else:
-        cases.append(fail_case("unoq_matrix_shows_command_and_pwm", "UNO Q matrix must expose frequency/RPM, Nucleo precharge, and actual MCSDK PWM feedback"))
+        cases.append(fail_case("unoq_matrix_shows_command_and_pwm", "UNO Q matrix must expose frequency/RPM, external soft-start readiness, and actual MCSDK PWM feedback"))
     hard_stop_body = unoq_text.split("static void hard_stop(bool clear_cmd, bool force_link) {", 1)
     hard_stop_releases_relay = bool(
         len(hard_stop_body) == 2
@@ -626,10 +626,11 @@ def run_checks(repo: Path) -> list[CaseResult]:
             )
         )
 
-    bpfoc_body = function_body(unoq_text, "static bool handle_bpfoc_command")
-    bpfoc_on_requires_safe_state = all(
-        token in bpfoc_body
+    mcfoc_body = function_body(unoq_text, "static bool handle_mcfoc_command")
+    mcfoc_on_requires_safe_state = all(
+        token in mcfoc_body
         for token in (
+            "NUCLEO_MCSDK_ACIM_BACKEND",
             "g_pwm_enabled",
             "g_state != STATE_SAFE",
             "g_estop_latched",
@@ -639,19 +640,19 @@ def run_checks(repo: Path) -> list[CaseResult]:
             "nucleo_send_stop(true);",
         )
     )
-    bpfoc_off_is_fail_safe = (
-        "g_bp_foc_backend = false" in bpfoc_body
-        and "request_normal_stop();" in bpfoc_body
-        and "nucleo_send_stop(true);" in bpfoc_body
+    mcfoc_off_is_fail_safe = (
+        "g_bp_foc_backend = false" in mcfoc_body
+        and "request_normal_stop();" in mcfoc_body
+        and "nucleo_send_stop(true);" in mcfoc_body
     )
-    if bpfoc_on_requires_safe_state and bpfoc_off_is_fail_safe:
-        cases.append(ok_case("unoq_bpfoc_backend_command_safety", {"on_guards": "pwm_off,state_safe,estop_clear,fault_clear", "off": "stop_if_active"}))
+    if mcfoc_on_requires_safe_state and mcfoc_off_is_fail_safe:
+        cases.append(ok_case("unoq_mcfoc_backend_command_safety", {"nucleo_scalar": "reject_on", "on_guards": "pwm_off,state_safe,estop_clear,fault_clear", "off": "stop_if_active"}))
     else:
         cases.append(
             fail_case(
-                "unoq_bpfoc_backend_command_safety",
-                "direct UNOQ BPFOC ON must fail unless the bridge is fully safe; BPFOC OFF must stop if already active",
-                {"on_safe": bpfoc_on_requires_safe_state, "off_fail_safe": bpfoc_off_is_fail_safe},
+                "unoq_mcfoc_backend_command_safety",
+                "MCFOC ON must be rejected by the scalar Nucleo backend and guarded for future backends; OFF must stop if active",
+                {"on_safe": mcfoc_on_requires_safe_state, "off_fail_safe": mcfoc_off_is_fail_safe},
             )
         )
 

@@ -1,9 +1,4 @@
-# MIC_AI REV 2.1 - схема сборки
-
-> **АРХИВНАЯ РЕВИЗИЯ, НЕ СОБИРАТЬ.** Этот комплект содержит K1/PB4 и не
-> соответствует текущей конфигурации без управляемого реле. Актуальные правила:
-> `../../POWER_INPUT_NO_RELAY_RU.md`. Перед изготовлением нужна новая ревизия
-> схемы, ERC/DRC и повторное аппаратное ревью.
+# MIC_AI REV 2.2 - схема сборки
 
 Канонический PDF: `../../output/pdf/MIC_AI_REV2_SCHEMATIC.pdf`.
 
@@ -29,8 +24,8 @@
 
 1. У KBPC5010 четыре отдельные сети: два `AC~`, `PLUS`, `MINUS`.
 2. MOV установлен после F1.
-3. Внешний precharge K1 управляется `PB4`; `PB1` и STEVAL J2-21 оставлены NC.
-4. K1 - TE Mini K HV `2-1904058-5`, а не SRD-12VDC-SL-C.
+3. Внешний автономный soft-start включён до моста и не имеет связи с MCU.
+4. `PB4`, `PB1` и STEVAL J2-21 оставлены NC; старый байпасный K1 отсутствует.
 5. UNO Q питается через `VIN 7-24V` или USB-C. Его 3.3V и 5V не являются входами питания в этой схеме.
 6. Blue Pill питается только через внешний `HOT_3V3`; pin 5V не подключен.
 7. Все GND-контакты STEVAL J2 подключены к горячей земле.
@@ -46,7 +41,6 @@
 ## Исходные документы
 
 - ST UM2014, STEVAL-IPM15B: `../../um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf`.
-- TE Mini K HV `2-1904058-5`: https://www.te.com/en/product-2-1904058-5.html
 - TI ISO7721: https://www.ti.com/product/ISO7721
 - TI ISO7740: https://www.ti.com/product/ISO7740
 - Arduino UNO Q datasheet: https://docs.arduino.cc/resources/datasheets/ABX00162-datasheet.pdf
@@ -58,6 +52,6 @@
 2. Выбрать `EXTERNAL` на `JP_HOT15_SRC`, подать изолированные 15 В без J7/HV и проверить аппаратный запрет PWM.
 3. Проверить UART через изолятор.
 4. Проверить static LOW и PWM через изолированный Saleae.
-5. Проверить K1 при отключенной HV.
+5. Отдельно проверить ограничение тока и внутренний bypass автономного soft-start.
 6. Провести отдельный PCB/layout review по creepage, clearance, ширине дорожек и защитному корпусу.
 7. Только после этого рассматривать подачу 230VAC.

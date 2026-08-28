@@ -51,8 +51,10 @@ def make_project(root: Path) -> None:
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
         "X-NUCLEO-IHM09M2 STEVAL-IPM15B ACIM\n"
-        "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n"
-        "#define MIC_PRECHARGE_HIL_VALIDATED 1\n",
+        "#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1\n"
+        "#define MIC_SOFTSTART_GPIO_CONTROLLED 0\n"
+        "#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 1\n"
+        "#define MIC_EXTERNAL_SOFTSTART_SETTLE_MS 3500U\n",
         encoding="utf-8",
     )
     (root / "acim_motor_parameters.h").write_text(
@@ -80,8 +82,10 @@ def make_official_style_project(root: Path) -> None:
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
         "STEVAL-IPM15B ACIM\n"
-        "#define MIC_PRECHARGE_INTERLOCK_IMPLEMENTED 1\n"
-        "#define MIC_PRECHARGE_HIL_VALIDATED 1\n",
+        "#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1\n"
+        "#define MIC_SOFTSTART_GPIO_CONTROLLED 0\n"
+        "#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 1\n"
+        "#define MIC_EXTERNAL_SOFTSTART_SETTLE_MS 3500U\n",
         encoding="utf-8",
     )
     (root / "acim_motor_parameters.h").write_text(

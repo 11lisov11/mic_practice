@@ -240,7 +240,7 @@ def main() -> int:
         getattr(bridge._serial_text, "_baud", None) == 460800,
         "serial_baud=460800",
     )
-    full_status = [0] * 75
+    full_status = [0] * 78
     full_status[0] = 0
     full_status[1] = 1
     full_status[2] = 0
@@ -315,7 +315,10 @@ def main() -> int:
     full_status[71] = 0
     full_status[72] = 1
     full_status[73] = 1
-    full_status[74] = 1
+    full_status[74] = 0
+    full_status[75] = 2
+    full_status[76] = 1
+    full_status[77] = 1
     bridge._call = lambda method, params, timeout=1.5, retries=1: [1, 42, None, full_status]  # type: ignore[method-assign]
     st_ok, st_data, st_err = bridge.get()
     mapping_ok = (
@@ -336,9 +339,30 @@ def main() -> int:
         and st_data.get("bp_phase_c_virtual") == 1
         and st_data.get("bp_mcsdk_telemetry") == 1
         and st_data.get("bp_vbus_valid") == 1
-        and st_data.get("bp_precharge_managed") == 1
+        and st_data.get("bp_softstart_ready") == 1
+        and st_data.get("bp_precharge_managed") == 0
+        and st_data.get("rpc_schema_version") == 2
+        and st_data.get("mc_supported_modes") == ["VF"]
+        and st_data.get("mc_vdc") == st_data.get("bp_vdc")
     )
-    add_case(cases, "rpc_status_array_75_mapping", bool(mapping_ok), st_err or "", st_data)
+    add_case(cases, "rpc_status_array_78_mapping", bool(mapping_ok), st_err or "", st_data)
+
+    transition_status = full_status[:75]
+    transition_status[74] = 1
+    bridge._call = lambda method, params, timeout=1.5, retries=1: [1, 43, None, transition_status]  # type: ignore[method-assign]
+    transition_ok, transition_data, transition_err = bridge.get()
+    add_case(
+        cases,
+        "rpc_status_array_75_transition_fails_closed",
+        transition_ok
+        and transition_err is None
+        and transition_data is not None
+        and transition_data.get("bp_softstart_ready") == 0
+        and transition_data.get("rpc_schema_version") == 1
+        and transition_data.get("mc_supported_modes") == [],
+        transition_err or "",
+        transition_data,
+    )
 
     for cmd in ("START",):
         add_case(cases, f"start_detected_{cmd}", mod.command_requests_start(cmd), cmd)
@@ -352,6 +376,7 @@ def main() -> int:
         "FAN DUTY 0.25",
         "PRECHARGE ON",
         "PFC ON",
+        "MCFOC ON",
         "BPFOC ON",
         "BRAKE 0.2",
         "BRAKE PWM 0.2",
@@ -366,6 +391,7 @@ def main() -> int:
         "FAN PWM 0",
         "PRECHARGE OFF",
         "PFC OFF",
+        "MCFOC OFF",
         "BPFOC OFF",
         "BRAKE OFF",
         "BRAKE 0",
@@ -381,8 +407,8 @@ def main() -> int:
 
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status())
     add_case(cases, "guard_allows_safe_service", ok, msg)
-    ok, msg = guard(mod, "BPFOC ON", safe_status())
-    add_case(cases, "guard_allows_safe_bpfoc_on", ok, msg)
+    ok, msg = guard(mod, "MCFOC ON", safe_status())
+    add_case(cases, "guard_allows_safe_mcfoc_on", ok, msg)
     ok, msg = guard(mod, "START", safe_status())
     add_case(cases, "guard_rejects_start_without_bench_gate", (not ok) and "bench gate" in msg, msg)
     ok, msg = guard(mod, "START", safe_status(), bench_gate_url="http://127.0.0.1:18080", bench_gate_runner=fake_bench_gate(True))
@@ -393,12 +419,12 @@ def main() -> int:
     add_case(cases, "guard_allows_start_with_explicit_local_gate", ok and "standalone" in msg, msg)
     ok, msg = guard(mod, "FAN OFF", safe_status(bp_fault=9, bp_bad_cnt=3, bp_rsp_age_ms=999999, vdc=315.0))
     add_case(cases, "guard_ignores_off_command", ok, msg)
-    ok, msg = guard(mod, "BPFOC OFF", safe_status(bp_fault=9, bp_bad_cnt=3, bp_rsp_age_ms=999999, vdc=315.0))
-    add_case(cases, "guard_ignores_bpfoc_off_command", ok, msg)
+    ok, msg = guard(mod, "MCFOC OFF", safe_status(bp_fault=9, bp_bad_cnt=3, bp_rsp_age_ms=999999, vdc=315.0))
+    add_case(cases, "guard_ignores_mcfoc_off_command", ok, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", None)
     add_case(cases, "guard_rejects_missing_status", (not ok) and "unavailable" in msg, msg)
-    ok, msg = guard(mod, "BPFOC ON", None)
-    add_case(cases, "guard_rejects_bpfoc_missing_status", (not ok) and "unavailable" in msg, msg)
+    ok, msg = guard(mod, "MCFOC ON", None)
+    add_case(cases, "guard_rejects_mcfoc_missing_status", (not ok) and "unavailable" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status(link=False))
     add_case(cases, "guard_rejects_link_down", (not ok) and "stale or down" in msg, msg)
     ok, msg = guard(mod, "FAN PWM 0.25", safe_status(bp_rsp_age_ms=5000))
@@ -475,7 +501,7 @@ def main() -> int:
     )
     add_case(cases, "hv_arm_rejects_temperature_fault", (not ok) and "temperature fault" in msg, msg)
     ok, msg = mod.hv_arm_precheck(safe_status(vdc=315.0, bp_vdc=315.0, bp_bad_cnt=1), hv_cfg)
-    add_case(cases, "hv_arm_rejects_bad_uart_counter", (not ok) and "bad counter" in msg, msg)
+    add_case(cases, "hv_arm_rejects_bad_uart_counter", (not ok) and "bad-frame counter" in msg, msg)
     ok, msg = mod.hv_runtime_check(hv_status, hv_cfg)
     add_case(cases, "hv_runtime_accepts_clean_315v_status", ok, msg)
     ok, msg = mod.hv_runtime_check(
@@ -631,42 +657,48 @@ def main() -> int:
         {"commands": no_k1_rpc.commands, "status": seq_status},
     )
 
-    managed_arm = mod.HvArmState(lv_cfg)
-    managed_arm.arm("ARM LV HV OFF", safe_status())
-    managed_rpc = FakeRpc(
+    softstart_arm = mod.HvArmState(lv_cfg)
+    softstart_arm.arm("ARM LV HV OFF", safe_status())
+    softstart_rpc = FakeRpc(
         [
-            safe_status(bp_precharge_managed=1),
             safe_status(
-                state="VF_RUN", state_code=1, pwm=1, precharge=1, bp_ext=8,
-                bp_status=0x01, bp_precharge_managed=1,
+                bp_vbus_raw=0, bp_vdc=0.0, vdc=0.0,
+                bp_mcsdk_telemetry=1, bp_vbus_valid=1, bp_softstart_ready=0,
             ),
             safe_status(
-                state="VF_RUN", state_code=1, pwm=1, precharge=1, bp_ext=8,
-                bp_status=0x21, bp_precharge_managed=1,
+                state="VF_RUN", state_code=1, pwm=1, precharge=0, bp_ext=0,
+                bp_status=0x01, bp_vbus_raw=0, bp_vbus_valid=1,
+                bp_mcsdk_telemetry=1, bp_softstart_ready=0,
+            ),
+            safe_status(
+                state="VF_RUN", state_code=1, pwm=1, precharge=0, bp_ext=0,
+                bp_status=0x21, bp_vbus_raw=0, bp_vbus_valid=1,
+                bp_mcsdk_telemetry=1, bp_softstart_ready=1,
             ),
         ]
     )
-    managed_app = mod.AppState(
-        managed_rpc,
+    softstart_app = mod.AppState(
+        softstart_rpc,
         FakeLogs(),
         status_log_interval=60.0,
         command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
-        hv_arm=managed_arm,
+        hv_arm=softstart_arm,
         start_runlimit_sec=3.0,
     )
-    seq_ok, seq_msg, seq_status = managed_app.start_sequence(
+    seq_ok, seq_msg, seq_status = softstart_app.start_sequence(
         run_timeout_sec=0.1,
         poll_sec=0.0,
     )
     add_case(
         cases,
-        "wifi_start_waits_for_nucleo_precharge_and_actual_mcsdk_pwm",
+        "wifi_start_waits_for_external_softstart_and_actual_mcsdk_pwm",
         seq_ok
         and seq_status is not None
         and seq_status.get("bp_status") == 0x21
-        and managed_app.arm_snapshot(seq_status)["hmi_precharge_relay_present"] == 1,
+        and softstart_app.arm_snapshot(seq_status)["hmi_precharge_relay_present"] == 0
+        and softstart_app.arm_snapshot(seq_status)["hmi_external_softstart_ready"] == 1,
         seq_msg,
-        {"commands": managed_rpc.commands, "status": seq_status},
+        {"commands": softstart_rpc.commands, "status": seq_status},
     )
 
     reject_arm = mod.HvArmState(lv_cfg)
@@ -797,7 +829,7 @@ def main() -> int:
     add_case(cases, "firmware_update_rejects_bad_counter", (not ok) and "bad" in msg, msg)
 
     ok, _data, msg, _commands = firmware_update_safe(safe_status(bp_rsp_age_ms=5000))
-    add_case(cases, "firmware_update_rejects_stale_bluepill_link", (not ok) and "stale or down" in msg, msg)
+    add_case(cases, "firmware_update_rejects_stale_motor_controller_link", (not ok) and "stale or down" in msg, msg)
 
     failed = [c for c in cases if not c.ok]
     summary = {

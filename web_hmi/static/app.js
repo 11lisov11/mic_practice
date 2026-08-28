@@ -24,13 +24,16 @@ const modeButtons = Array.from(modeToggle.querySelectorAll(".seg"));
 const freqSlider = document.getElementById("freqSlider");
 const freqReadout = document.getElementById("freqReadout");
 const pfcBtn = document.getElementById("pfcBtn");
-const bpFocBtn = document.getElementById("bpFocBtn");
 const brakeSlider = document.getElementById("brakeSlider");
 const brakeReadout = document.getElementById("brakeReadout");
 const fanSlider = document.getElementById("fanSlider");
 const fanReadout = document.getElementById("fanReadout");
 const logHours = document.getElementById("logHours");
 const logDownload = document.getElementById("logDownload");
+const controlAccessBlock = document.getElementById("controlAccessBlock");
+const controlTokenInput = document.getElementById("controlToken");
+const controlTokenSave = document.getElementById("controlTokenSave");
+const controlAccessStatus = document.getElementById("controlAccessStatus");
 const stateVal = document.getElementById("stateVal");
 const modeVal = document.getElementById("modeVal");
 const backendVal = document.getElementById("backendVal");
@@ -59,15 +62,45 @@ let fanDragging = false;
 let fanTimer = null;
 let lastFanDuty = null;
 let pfcOn = false;
-let bpFocOn = false;
-let bpFocCanSwitch = false;
+let supportedModes = ["VF"];
 let hvArmed = false;
 let hvArmLastError = "";
 let armProfileSwitchReady = false;
 let vbusCaptureBusy = false;
+let controlAuthRequired = false;
+let controlToken = localStorage.getItem("unoqControlToken") || "";
+
+if (controlTokenInput) controlTokenInput.value = controlToken;
+
+function controlHeaders(json = false) {
+  const headers = {};
+  if (json) headers["Content-Type"] = "application/json";
+  if (controlToken) headers["X-UNOQ-Control-Token"] = controlToken;
+  return headers;
+}
+
+function setAccessStatus(ok, message = "") {
+  if (!controlAccessStatus) return;
+  controlAccessStatus.classList.toggle("ok", Boolean(ok));
+  controlAccessStatus.textContent = message || (ok ? "Ключ сохранён" : "Требуется правильный ключ управления");
+}
+
+function noteApiAccess(data) {
+  if (data && data.error === "control access key is missing or invalid") {
+    setAccessStatus(false);
+  }
+}
 
 function clamp01(value) {
   return Math.max(0, Math.min(1, Number(value)));
+}
+
+function mcField(data, suffix, fallback = 0) {
+  const canonical = `mc_${suffix}`;
+  const legacy = `bp_${suffix}`;
+  if (Object.prototype.hasOwnProperty.call(data, canonical)) return data[canonical];
+  if (Object.prototype.hasOwnProperty.call(data, legacy)) return data[legacy];
+  return fallback;
 }
 
 function setConnection(ok) {
@@ -116,9 +149,9 @@ function updateFanReadout(value) {
   fanReadout.textContent = `FAN ${(clamp01(value) * 100).toFixed(0)}%`;
 }
 
-function bpModeName(mode) {
+function mcModeName(mode) {
   const code = Number(mode);
-  if (code === 5) return "BP FOC";
+  if (code === 5) return "FOC";
   if (code === 4) return "VECTOR";
   if (code === 3) return "SCALAR";
   if (code === 2) return "DUTY";
@@ -126,7 +159,7 @@ function bpModeName(mode) {
   return "OFF";
 }
 
-function bpFaultName(code) {
+function mcFaultName(code) {
   const names = {
     1: "ESTOP",
     2: "ТАЙМ-АУТ",
@@ -143,23 +176,16 @@ function setIoButtons() {
     pfcBtn.classList.toggle("active", pfcOn);
     pfcBtn.textContent = `PFC: ${pfcOn ? "ON" : "OFF"}`;
   }
-  if (bpFocBtn) {
-    bpFocBtn.classList.toggle("active", bpFocOn);
-    bpFocBtn.disabled = !bpFocCanSwitch;
-    bpFocBtn.textContent = `BP FOC: ${bpFocOn ? "ON" : "OFF"}`;
-    bpFocBtn.title = bpFocCanSwitch
-      ? "Переключать только перед запуском"
-      : "Доступно только в SAFE при pwm=0";
-  }
 }
 
 async function apiCmd(cmd) {
   const res = await fetch("/api/cmd", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: controlHeaders(true),
     body: JSON.stringify({ cmd }),
   });
   const data = await res.json().catch(() => ({ ok: false }));
+  noteApiAccess(data);
   if (data.ok !== true && hvArmStatus) {
     hvArmLastError = data.error || "Команда отклонена";
     hvArmStatus.textContent = hvArmLastError;
@@ -170,10 +196,11 @@ async function apiCmd(cmd) {
 async function apiSequence(path, body = {}) {
   const res = await fetch(path, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: controlHeaders(true),
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  noteApiAccess(data);
   if (data.ok) {
     hvArmLastError = "";
     if (hvArmStatus) hvArmStatus.textContent = data.message || "Команда выполнена";
@@ -187,10 +214,11 @@ async function apiSequence(path, body = {}) {
 async function apiHvArm(action, confirm = "") {
   const res = await fetch("/api/hv-arm", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: controlHeaders(true),
     body: JSON.stringify({ action, confirm }),
   });
   const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  noteApiAccess(data);
   if (data.ok !== true && hvArmStatus) {
     hvArmLastError = data.error || "HV-разрешение отклонено";
     hvArmStatus.textContent = hvArmLastError;
@@ -203,10 +231,11 @@ async function apiHvArm(action, confirm = "") {
 async function apiArmProfile(profile) {
   const res = await fetch("/api/arm-profile", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: controlHeaders(true),
     body: JSON.stringify({ profile }),
   });
   const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  noteApiAccess(data);
   if (!data.ok) {
     hvArmLastError = data.error || "Переключение профиля отклонено";
     if (hvArmStatus) hvArmStatus.textContent = hvArmLastError;
@@ -221,10 +250,11 @@ async function apiVbusCapture(meterVdc) {
   if (Number.isFinite(meterVdc)) body.meter_vdc = meterVdc;
   const res = await fetch("/api/calibration/vbus", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: controlHeaders(true),
     body: JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  noteApiAccess(data);
   if (!data.ok) throw new Error(data.error || "Измерение Vbus отклонено");
   return data.capture;
 }
@@ -236,6 +266,44 @@ async function apiStatus() {
     throw new Error(data.error || "status error");
   }
   return data.data;
+}
+
+async function sendOperatorHeartbeat() {
+  if (!controlAuthRequired || !controlToken) return;
+  try {
+    const res = await fetch("/api/operator-heartbeat", {
+      method: "POST",
+      headers: controlHeaders(true),
+      body: "{}",
+      cache: "no-store",
+    });
+    const data = await res.json().catch(() => ({ ok: false }));
+    if (!res.ok || data.ok !== true) noteApiAccess(data);
+  } catch (_) {
+    setAccessStatus(false, "Нет связи: привод будет остановлен watchdog");
+  }
+}
+
+async function downloadLogs() {
+  const hours = logHours.value;
+  const res = await fetch(`/api/logs?hours=${encodeURIComponent(hours)}&download=1`, {
+    cache: "no-store",
+    headers: controlHeaders(false),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({ error: "Логи недоступны" }));
+    noteApiAccess(data);
+    throw new Error(data.error || "Логи недоступны");
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `unoq_logs_${hours}h.txt`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 function setSystemStatus(data) {
@@ -254,12 +322,12 @@ function setSystemStatus(data) {
     sysChip.classList.add("estop");
     return;
   }
-  const bpFault = Number(data.bp_fault || 0);
-  const bpBad = Number(data.bp_bad_cnt || data.bp_bad || 0);
-  if (bpFault !== 0 || bpBad !== 0) {
-    sysText.textContent = bpFault !== 0
-      ? `БЛОКИРОВКА: ${bpFaultName(bpFault)}`
-      : `ОШИБКА UART: ${bpBad}`;
+  const mcFault = Number(mcField(data, "fault", 0));
+  const mcBad = Number(mcField(data, "bad_cnt", mcField(data, "bad", 0)));
+  if (mcFault !== 0 || mcBad !== 0) {
+    sysText.textContent = mcFault !== 0
+      ? `БЛОКИРОВКА: ${mcFaultName(mcFault)}`
+      : `ОШИБКА UART: ${mcBad}`;
     sysChip.classList.remove("run", "stop");
     sysChip.classList.add("estop");
     return;
@@ -396,8 +464,8 @@ if (vbusCaptureBtn) {
     vbusCaptureResult.textContent = "Собираю 20 безопасных отсчётов...";
     try {
       const capture = await apiVbusCapture(meterVdc);
-      const raw = capture.bp_vbus_raw;
-      const scaled = capture.bp_vdc;
+      const raw = capture.mc_vbus_raw;
+      const scaled = capture.mc_vdc;
       const meter = capture.meter_vdc == null ? "не введено" : `${Number(capture.meter_vdc).toFixed(1)} В`;
       vbusCaptureResult.textContent =
         `Записано: raw ${raw.mean.toFixed(1)} (${raw.min.toFixed(0)}...${raw.max.toFixed(0)}), ` +
@@ -434,21 +502,10 @@ if (pfcBtn) {
   });
 }
 
-if (bpFocBtn) {
-  bpFocBtn.addEventListener("click", async () => {
-    if (!bpFocCanSwitch) return;
-    const next = !bpFocOn;
-    const ok = await apiCmd(`BPFOC ${next ? "ON" : "OFF"}`);
-    if (ok) {
-      bpFocOn = next;
-      setIoButtons();
-    }
-  });
-}
-
 modeButtons.forEach((btn) => {
   btn.addEventListener("click", async () => {
     const mode = btn.dataset.mode;
+    if (!supportedModes.includes(mode)) return;
     setModeUI(mode);
     await apiCmd(`MODE ${mode}`);
   });
@@ -511,41 +568,70 @@ if (fanSlider) {
   });
 }
 
-logHours.addEventListener("change", () => {
-  const hours = logHours.value;
-  logDownload.href = `/api/logs?hours=${hours}&download=1`;
+if (controlTokenSave) {
+  controlTokenSave.addEventListener("click", () => {
+    controlToken = controlTokenInput ? controlTokenInput.value.trim() : "";
+    if (controlToken) {
+      localStorage.setItem("unoqControlToken", controlToken);
+      setAccessStatus(true);
+    } else {
+      localStorage.removeItem("unoqControlToken");
+      setAccessStatus(false, "Ключ удалён");
+    }
+  });
+}
+
+logDownload.addEventListener("click", async () => {
+  logDownload.disabled = true;
+  try {
+    await downloadLogs();
+  } catch (err) {
+    setAccessStatus(false, err.message || "Логи недоступны");
+  } finally {
+    logDownload.disabled = false;
+  }
 });
 
 async function refreshStatus() {
   try {
     const data = await apiStatus();
+    controlAuthRequired = Number(data.hmi_control_auth_required || 0) === 1;
+    if (controlAccessBlock) controlAccessBlock.hidden = !controlAuthRequired;
+    if (controlAuthRequired && controlToken) setAccessStatus(true, "Ключ загружен на этом устройстве");
     setConnection(true);
+    supportedModes = Array.isArray(data.mc_supported_modes) && data.mc_supported_modes.length
+      ? data.mc_supported_modes
+      : ["VF"];
+    modeButtons.forEach((btn) => {
+      const available = supportedModes.includes(btn.dataset.mode);
+      btn.disabled = !available;
+      btn.title = available ? "" : "Не поддерживается загруженной прошивкой контроллера";
+    });
     setModeUI(data.mode);
     setFreqUI(data.freq, true);
     setSystemStatus(data);
     setHvArmUI(data);
     stateVal.textContent = data.state;
     if (backendVal) {
-      const bpFoc = Number(data.bp_foc_backend || 0) === 1;
-      backendVal.textContent = `${bpModeName(data.bp_cmd_mode)}${bpFoc ? " / opt-in" : ""}`;
+      backendVal.textContent = mcModeName(mcField(data, "cmd_mode", mcField(data, "mode", 0)));
     }
     if (linkVal) {
-      const bpFault = Number(data.bp_fault || 0);
-      const bpBad = Number(data.bp_bad_cnt || data.bp_bad || 0);
-      const bpAge = Number(data.bp_rsp_age_ms ?? data.bp_age_ms ?? -1);
-      const linkState = bpFault !== 0 ? bpFaultName(bpFault) : (bpBad !== 0 ? "ОШИБКА UART" : "OK");
-      linkVal.textContent = `${linkState} / bad=${bpBad} / ${bpAge.toFixed(0)} мс`;
+      const mcFault = Number(mcField(data, "fault", 0));
+      const mcBad = Number(mcField(data, "bad_cnt", mcField(data, "bad", 0)));
+      const mcAge = Number(mcField(data, "rsp_age_ms", mcField(data, "age_ms", -1)));
+      const linkState = mcFault !== 0 ? mcFaultName(mcFault) : (mcBad !== 0 ? "ОШИБКА UART" : "OK");
+      linkVal.textContent = `${linkState} / bad=${mcBad} / ${mcAge.toFixed(0)} мс`;
     }
     pwmVal.textContent = data.pwm;
     speedVal.textContent = `${data.speed.toFixed(0)} об/мин`;
     vdcVal.textContent = `${data.vdc.toFixed(2)} В`;
 
     if (tempVal) {
-      const tempRaw = typeof data.bp_temp_raw === "number" ? data.bp_temp_raw : 0;
-      const tempV = typeof data.bp_temp_v === "number" ? data.bp_temp_v : 0;
-      const tempC = typeof data.bp_temp_c === "number" ? data.bp_temp_c : 0;
-      const tempValid = Number(data.bp_temp_valid || 0) === 1;
-      const tempFault = Number(data.bp_temp_fault || 0) === 1 || Number(data.bp_fault || 0) === 6;
+      const tempRaw = Number(mcField(data, "temp_raw", 0));
+      const tempV = Number(mcField(data, "temp_v", 0));
+      const tempC = Number(mcField(data, "temp_c", 0));
+      const tempValid = Number(mcField(data, "temp_valid", 0)) === 1;
+      const tempFault = Number(mcField(data, "temp_fault", 0)) === 1 || Number(mcField(data, "fault", 0)) === 6;
       tempVal.textContent = tempValid
         ? `${tempC.toFixed(1)} C / ${tempV.toFixed(3)} V (${tempRaw})${tempFault ? " ОШИБКА" : ""}`
         : `-- / ${tempV.toFixed(3)} V (${tempRaw})`;
@@ -554,11 +640,11 @@ async function refreshStatus() {
     currVal.textContent = `${data.ia.toFixed(2)} / ${data.ib.toFixed(2)} / ${data.ic.toFixed(2)} А`;
 
     if (phaseVal) {
-      const phaseValid = Number(data.bp_phase_valid || 0) === 1;
-      const cVirtual = Number(data.bp_phase_c_virtual || 0) === 1;
-      const pa = typeof data.bp_phase_a_v === "number" ? data.bp_phase_a_v : 0;
-      const pb = typeof data.bp_phase_b_v === "number" ? data.bp_phase_b_v : 0;
-      const pc = typeof data.bp_phase_c_v === "number" ? data.bp_phase_c_v : 0;
+      const phaseValid = Number(mcField(data, "phase_valid", 0)) === 1;
+      const cVirtual = Number(mcField(data, "phase_c_virtual", 0)) === 1;
+      const pa = Number(mcField(data, "phase_a_v", 0));
+      const pb = Number(mcField(data, "phase_b_v", 0));
+      const pc = Number(mcField(data, "phase_c_v", 0));
       phaseVal.textContent = phaseValid
         ? `${pa.toFixed(3)} / ${pb.toFixed(3)} / ${pc.toFixed(3)} V${cVirtual ? " (C virt)" : ""}`
         : "--";
@@ -576,18 +662,13 @@ async function refreshStatus() {
     }
 
     if (typeof data.pfc === "number") pfcOn = Number(data.pfc) === 1;
-    if (typeof data.bp_foc_backend === "number") bpFocOn = Number(data.bp_foc_backend) === 1;
-    bpFocCanSwitch =
-      String(data.state || "") === "SAFE" &&
-      Number(data.pwm || 0) === 0 &&
-      Number(data.estop || 0) === 0;
     const basicStartReady =
       String(data.state || "") === "SAFE" &&
       Number(data.pwm || 0) === 0 &&
       Number(data.estop || 0) === 0 &&
-      Number(data.bp_fault || 0) === 0 &&
-      Number(data.bp_bad || 0) === 0 &&
-      Number(data.bp_bad_cnt || 0) === 0;
+      Number(mcField(data, "fault", 0)) === 0 &&
+      Number(mcField(data, "bad", 0)) === 0 &&
+      Number(mcField(data, "bad_cnt", 0)) === 0;
     const standaloneHv = Number(data.hmi_hv_enabled || 0) === 1;
     startBtn.disabled = !basicStartReady || (standaloneHv && !hvArmed);
 
@@ -608,9 +689,9 @@ async function refreshStatus() {
       updateFanReadout(fanDuty);
     }
     if (fanVal) {
-      const bpFanDuty = typeof data.bp_fan_duty === "number" ? data.bp_fan_duty : fanDuty;
-      const fanRpm = typeof data.bp_fan_rpm === "number" ? data.bp_fan_rpm : 0;
-      fanVal.textContent = `${(bpFanDuty * 100).toFixed(0)}% / ${fanRpm.toFixed(0)} rpm`;
+      const mcFanDuty = Number(mcField(data, "fan_duty", fanDuty));
+      const fanRpm = Number(mcField(data, "fan_rpm", 0));
+      fanVal.textContent = `${(mcFanDuty * 100).toFixed(0)}% / ${fanRpm.toFixed(0)} rpm`;
     }
 
     if (encVal) {
@@ -631,13 +712,12 @@ async function refreshStatus() {
     setConnection(false);
     setSystemStatus(null);
     startBtn.disabled = true;
-    bpFocCanSwitch = false;
     setIoButtons();
     lastUpdate.textContent = "Нет связи";
   }
 }
 
-setModeUI("FOC");
+setModeUI("VF");
 setFreqUI(10.0);
 setConnection(false);
 setEstopButton(false);
@@ -648,3 +728,5 @@ if (fanSlider) updateFanReadout(fanSlider.value);
 
 refreshStatus();
 setInterval(refreshStatus, 1000);
+sendOperatorHeartbeat();
+setInterval(sendOperatorHeartbeat, 1000);

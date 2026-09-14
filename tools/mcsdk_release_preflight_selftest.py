@@ -36,6 +36,33 @@ def profile(source_kind: str) -> dict:
     }
 
 
+def make_static_safety_sources(root: Path) -> None:
+    source = root / "Src"
+    source.mkdir()
+    (source / "main.c").write_text(
+        "USART1 PB6/PB7 at 115200 8N1\n"
+        "gpio.Pin = GPIO_PIN_6 | GPIO_PIN_7;\n"
+        "gpio.Alternate = GPIO_AF7_USART1;\n"
+        "huart1.Instance = USART1;\n"
+        "huart2.Instance = USART2;\n"
+        "PA2     ------> USART2_TX\n"
+        "PA3     ------> USART2_RX\n"
+        "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;\n",
+        encoding="utf-8",
+    )
+    (source / "stm32g4xx_hal_msp.c").write_text(
+        "GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;\n"
+        "GPIO_InitStruct.Pull = GPIO_PULLUP;\n",
+        encoding="utf-8",
+    )
+    (source / "stm32g4xx_mc_it.c").write_text(
+        "void TIMx_BRK_M1_IRQHandler(void) {\n"
+        "  if (LL_TIM_IsActiveFlag_BRK(TIM1)) {}\n"
+        "}\n",
+        encoding="utf-8",
+    )
+
+
 def make_project(root: Path) -> None:
     (root / "motor.ioc").write_text(
         "Mcu.Name=STM32G431RBTx\n"
@@ -45,9 +72,16 @@ def make_project(root: Path) -> None:
         "MotorControl.LLS=0.003\n"
         "MotorControl.LLR=0.003\n"
         "MotorControl.LMS=0.099\n"
-        "MotorControl.WB_UI_INERTIA=0.001\n",
+        "MotorControl.WB_UI_INERTIA=0.001\n"
+        "PA6.Signal=TIM1_BKIN\n"
+        "PA6.GPIO_PuPd=GPIO_PULLUP\n"
+        "TIM1.BreakState=TIM_BREAK_ENABLE\n"
+        "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE\n"
+        "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW\n"
+        "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE\n",
         encoding="utf-8",
     )
+    make_static_safety_sources(root)
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
         "X-NUCLEO-IHM09M2 STEVAL-IPM15B ACIM\n"
@@ -76,9 +110,16 @@ def make_official_style_project(root: Path) -> None:
         "MotorControl.LLS=0.003\n"
         "MotorControl.LLR=0.003\n"
         "MotorControl.LMS=0.099\n"
-        "MotorControl.WB_UI_INERTIA=0.001\n",
+        "MotorControl.WB_UI_INERTIA=0.001\n"
+        "PA6.Signal=TIM1_BKIN\n"
+        "PA6.GPIO_PuPd=GPIO_PULLUP\n"
+        "TIM1.BreakState=TIM_BREAK_ENABLE\n"
+        "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE\n"
+        "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW\n"
+        "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE\n",
         encoding="utf-8",
     )
+    make_static_safety_sources(root)
     (root / "Core").mkdir()
     (root / "Core" / "mcsdk_config.h").write_text(
         "STEVAL-IPM15B ACIM\n"
@@ -96,6 +137,38 @@ def make_official_style_project(root: Path) -> None:
     (root / "Release").mkdir()
     for suffix in gate.REQUIRED_ARTIFACT_SUFFIXES:
         (root / "Release" / f"motor{suffix}").write_bytes(b"x" * 2048)
+
+
+def make_bkin_evidence(root: Path) -> Path:
+    capture_dir = root / "captures"
+    capture_dir.mkdir(exist_ok=True)
+    capture_path = capture_dir / "sd_bkin_trip.csv"
+    capture_path.write_bytes(b"time,sd,pwm1h,pwm1l,pwm2h,pwm2l,pwm3h,pwm3l\n" + b"0,1,0,0,0,0,0,0\n" * 80)
+    evidence_path = root / "ipm_sd_bkin_hil.json"
+    evidence = {
+        "schema": gate.IPM_SD_BKIN_EVIDENCE_SCHEMA,
+        "pass": True,
+        "tested_at": "2026-09-14T00:00:00Z",
+        "operator": "selftest",
+        "power_stage": "STEVAL-IPM15B",
+        "adapter": "X-NUCLEO-IHM09M2",
+        "mcu": "STM32G431RBT6",
+        "conditions": {
+            "mains_disconnected": True,
+            "dc_bus_below_2v": True,
+            "j7_disconnected": True,
+            "motor_disconnected": True,
+            "auxiliary_vcc_only": True,
+        },
+        "checks": {name: True for name in gate.IPM_SD_BKIN_REQUIRED_CHECKS},
+        "nucleo_hex_sha256": gate.sha256(root / "Release" / "motor.hex"),
+        "capture": {
+            "path": "captures/sd_bkin_trip.csv",
+            "sha256": gate.sha256(capture_path),
+        },
+    }
+    evidence_path.write_text(json.dumps(evidence), encoding="utf-8")
+    return evidence_path
 
 
 def main() -> int:
@@ -116,7 +189,8 @@ def main() -> int:
         make_project(root)
         profile_path = root / "motor.json"
         profile_path.write_text(json.dumps(profile("nameplate_and_measurement")), encoding="utf-8")
-        accepted = gate.inspect(root, profile_path, root / "Release")
+        evidence_path = make_bkin_evidence(root)
+        accepted = gate.inspect(root, profile_path, root / "Release", evidence_path)
         artifact_evidence = accepted["checks"]["release_artifacts"]["evidence"]
         artifacts_are_hashed = all(
             entry["bytes"] == 2048 and len(entry["sha256"]) == 64
@@ -125,27 +199,41 @@ def main() -> int:
         )
         profile_is_hashed = len(accepted["motor_profile_sha256"]) == 64
 
+        missing_bkin_evidence = gate.inspect(root, profile_path, root / "Release")
+
+        capture_path = root / "captures" / "sd_bkin_trip.csv"
+        capture_path.write_bytes(capture_path.read_bytes() + b"tampered\n")
+        tampered_capture = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        evidence_path = make_bkin_evidence(root)
+
+        wrong_hash_payload = json.loads(evidence_path.read_text(encoding="utf-8"))
+        wrong_hash_payload["nucleo_hex_sha256"] = "0" * 64
+        evidence_path.write_text(json.dumps(wrong_hash_payload), encoding="utf-8")
+        wrong_firmware_hash = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        evidence_path = make_bkin_evidence(root)
+
         (root / "Release" / "motor.hex").rename(root / "Release" / "other.hex")
-        incoherent = gate.inspect(root, profile_path, root / "Release")
+        incoherent = gate.inspect(root, profile_path, root / "Release", evidence_path)
         (root / "Release" / "other.hex").rename(root / "Release" / "motor.hex")
 
         profile_path.write_text(json.dumps(profile("synthetic")), encoding="utf-8")
-        rejected = gate.inspect(root, profile_path, root / "Release")
+        rejected = gate.inspect(root, profile_path, root / "Release", evidence_path)
 
         profile_path.write_text(json.dumps(profile("catalog_reference_unverified")), encoding="utf-8")
-        catalog_rejected = gate.inspect(root, profile_path, root / "Release")
+        catalog_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path)
 
         bad_configuration_profile = profile("nameplate_and_measurement")
         bad_configuration_profile["pole_pairs"] = 1
         profile_path.write_text(json.dumps(bad_configuration_profile), encoding="utf-8")
-        stale_firmware_rejected = gate.inspect(root, profile_path, root / "Release")
+        stale_firmware_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path)
 
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         make_official_style_project(root)
         profile_path = root / "motor.json"
         profile_path.write_text(json.dumps(profile("nameplate_and_measurement")), encoding="utf-8")
-        official_style = gate.inspect(root, profile_path, root / "Release")
+        evidence_path = make_bkin_evidence(root)
+        official_style = gate.inspect(root, profile_path, root / "Release", evidence_path)
 
     summary = {
         "tool": "mcsdk_release_preflight_selftest",
@@ -162,6 +250,12 @@ def main() -> int:
             and not stale_firmware_rejected["pass"]
             and "generated_motor_configuration_matches_profile" in stale_firmware_rejected["failed_checks"]
             and official_style["pass"]
+            and not missing_bkin_evidence["pass"]
+            and "ipm_sd_bkin_hardware_trip_validated" in missing_bkin_evidence["failed_checks"]
+            and not tampered_capture["pass"]
+            and "evidence_capture_hash" in tampered_capture["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"]
+            and not wrong_firmware_hash["pass"]
+            and "evidence_nucleo_hex_hash" in wrong_firmware_hash["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"]
             and nonfinite_rejected
             and fractional_rejected
             and infinite_model_rejected
@@ -174,6 +268,9 @@ def main() -> int:
         "catalog_profile_rejected": "motor_profile_is_real_acim" in catalog_rejected["failed_checks"],
         "stale_firmware_rejected": "generated_motor_configuration_matches_profile" in stale_firmware_rejected["failed_checks"],
         "official_nucleo_ipm15b_topology_accepted": official_style["pass"],
+        "missing_bkin_hil_rejected": "ipm_sd_bkin_hardware_trip_validated" in missing_bkin_evidence["failed_checks"],
+        "tampered_bkin_capture_rejected": "evidence_capture_hash" in tampered_capture["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"],
+        "wrong_bkin_firmware_hash_rejected": "evidence_nucleo_hex_hash" in wrong_firmware_hash["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"],
         "nonfinite_profile_rejected": nonfinite_rejected,
         "fractional_pole_pairs_rejected": fractional_rejected,
         "infinite_measured_model_rejected": infinite_model_rejected,

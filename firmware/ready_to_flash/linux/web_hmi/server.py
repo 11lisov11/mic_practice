@@ -62,9 +62,22 @@ VBUS_RAW_MAX_VALID = 4094
 VBUS_RAW_ZERO_CAL = 1966
 VBUS_RAW_CAL = 3459
 VBUS_RAW_CAL_V = 315.0
+# Legacy compile-time override. Production remains False; an authenticated,
+# persisted two-point verification is the normal way to unlock HV arming.
 VBUS_HV_CALIBRATION_VALID = False
 VBUS_RAW_WINDOW_MARGIN_V = 5.0
 VBUS_RAW_ZERO_LOW_MARGIN = 128
+DEFAULT_VBUS_CALIBRATION_FILE = os.path.expanduser("~/.config/mic-ai/vbus_calibration.json")
+VBUS_CAL_ZERO_MAX_METER_V = 2.0
+VBUS_CAL_ZERO_MAX_REPORTED_V = 5.0
+VBUS_CAL_HV_MIN_METER_V = 250.0
+VBUS_CAL_HV_MAX_METER_V = 360.0
+VBUS_CAL_HV_MAX_ERROR_PERCENT = 3.0
+VBUS_CAL_HV_MAX_ERROR_FLOOR_V = 5.0
+VBUS_CAL_ZERO_MAX_STD_V = 0.5
+VBUS_CAL_HV_MAX_STD_FLOOR_V = 1.0
+VBUS_CAL_HV_MAX_STD_PERCENT = 0.5
+VBUS_CAL_CAPTURE_SAMPLES = 20
 DEFAULT_START_RUNLIMIT_SEC = 15.0
 DEFAULT_HV_ARM_TTL_SEC = 30.0
 DEFAULT_HV_ARM_MIN_VDC = 100.0
@@ -269,6 +282,239 @@ def supported_modes_from_caps(capabilities: int) -> list[str]:
 
 def _truthy_env(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _vbus_calibration_identity(data: dict) -> dict:
+    return {
+        "fw_build": _as_int(data, "fw_build", -1),
+        "mc_fw_build": _as_int(data, "mc_fw_build", -1),
+        "rpc_schema_version": _as_int(data, "rpc_schema_version", -1),
+        "mc_capabilities": _as_int(data, "mc_capabilities", -1),
+        "mc_mcsdk_telemetry": _as_int(data, "bp_mcsdk_telemetry", 0),
+    }
+
+
+class VbusCalibrationStore:
+    SCHEMA = "mic_ai.vbus_calibration.v1"
+
+    def __init__(self, path: Optional[str] = None) -> None:
+        self.path = os.path.abspath(os.path.expanduser(path)) if path else None
+        self._lock = threading.RLock()
+        self._record: dict = {}
+        self._load_error = ""
+        self._load()
+
+    @staticmethod
+    def _digest(record: dict) -> str:
+        payload = dict(record)
+        payload.pop("integrity_sha256", None)
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def _load(self) -> None:
+        if not self.path or not os.path.exists(self.path):
+            return
+        try:
+            with open(self.path, "r", encoding="utf-8") as source:
+                record = json.load(source)
+            if not isinstance(record, dict) or record.get("schema") != self.SCHEMA:
+                raise ValueError("unsupported calibration schema")
+            expected = str(record.get("integrity_sha256", ""))
+            if not expected or not secrets.compare_digest(expected, self._digest(record)):
+                raise ValueError("calibration integrity check failed")
+            self._record = record
+        except Exception as exc:
+            self._record = {}
+            self._load_error = str(exc)
+
+    def _save_locked(self) -> None:
+        if not self.path:
+            return
+        directory = os.path.dirname(self.path)
+        if directory:
+            os.makedirs(directory, mode=0o700, exist_ok=True)
+        self._record["integrity_sha256"] = self._digest(self._record)
+        temporary = f"{self.path}.tmp.{os.getpid()}.{threading.get_ident()}"
+        try:
+            with open(temporary, "w", encoding="utf-8", newline="\n") as target:
+                json.dump(self._record, target, indent=2, sort_keys=True, ensure_ascii=True)
+                target.write("\n")
+                target.flush()
+                os.fsync(target.fileno())
+            try:
+                os.chmod(temporary, 0o600)
+            except OSError:
+                pass
+            os.replace(temporary, self.path)
+        finally:
+            try:
+                if os.path.exists(temporary):
+                    os.remove(temporary)
+            except OSError:
+                pass
+
+    def _evaluate_locked(self, status: Optional[dict] = None) -> tuple[bool, str]:
+        if VBUS_HV_CALIBRATION_VALID:
+            return True, "compile-time calibration override"
+        if self._load_error:
+            return False, f"stored calibration rejected: {self._load_error}"
+        if not self._record:
+            return False, "zero-point capture is required"
+        if self._record.get("schema") != self.SCHEMA:
+            return False, "stored calibration schema is invalid"
+        points = self._record.get("points")
+        if not isinstance(points, dict):
+            return False, "stored calibration points are missing"
+        zero = points.get("zero")
+        high = points.get("high")
+        if not isinstance(zero, dict):
+            return False, "zero-point capture is required"
+        if not isinstance(high, dict):
+            return False, "known-HV capture is required"
+        identity = self._record.get("identity")
+        if not isinstance(identity, dict):
+            return False, "calibration identity is missing"
+        if (
+            _as_int(identity, "fw_build", -1) <= 0
+            or _as_int(identity, "mc_fw_build", -1) <= 0
+            or _as_int(identity, "rpc_schema_version", -1) < 3
+            or _as_int(identity, "mc_mcsdk_telemetry", 0) != 1
+        ):
+            return False, "calibration identity is incomplete"
+        if status is not None and identity != _vbus_calibration_identity(status):
+            return False, "firmware or telemetry identity changed; recalibration is required"
+        try:
+            meter_span = float(high.get("meter_vdc")) - float(zero.get("meter_vdc"))
+            reported_span = float(high.get("mc_vdc_mean")) - float(zero.get("mc_vdc_mean"))
+        except (TypeError, ValueError):
+            return False, "calibration point values are invalid"
+        if not (math.isfinite(meter_span) and math.isfinite(reported_span)):
+            return False, "calibration point values are invalid"
+        if meter_span < (VBUS_CAL_HV_MIN_METER_V - VBUS_CAL_ZERO_MAX_METER_V) or reported_span <= 0.0:
+            return False, "calibration span is invalid"
+        gain = meter_span / reported_span
+        if gain < 0.97 or gain > 1.03:
+            return False, f"calibration gain mismatch: {gain:.5f}"
+        return True, "two-point Vbus verification passed"
+
+    def is_valid(self, status: Optional[dict] = None) -> bool:
+        with self._lock:
+            valid, _ = self._evaluate_locked(status)
+            return valid
+
+    def snapshot(self, status: Optional[dict] = None) -> dict:
+        with self._lock:
+            valid, reason = self._evaluate_locked(status)
+            points = self._record.get("points", {}) if isinstance(self._record, dict) else {}
+            zero = points.get("zero") if isinstance(points, dict) else None
+            high = points.get("high") if isinstance(points, dict) else None
+            return {
+                "valid": bool(valid),
+                "reason": reason,
+                "zero_captured": isinstance(zero, dict),
+                "high_captured": isinstance(high, dict),
+                "zero_meter_vdc": zero.get("meter_vdc") if isinstance(zero, dict) else None,
+                "zero_mc_vdc": zero.get("mc_vdc_mean") if isinstance(zero, dict) else None,
+                "high_meter_vdc": high.get("meter_vdc") if isinstance(high, dict) else None,
+                "high_mc_vdc": high.get("mc_vdc_mean") if isinstance(high, dict) else None,
+                "updated_at": self._record.get("updated_at") if isinstance(self._record, dict) else None,
+            }
+
+    def record_capture(self, capture: dict, status: dict) -> tuple[bool, str, dict]:
+        meter_vdc = capture.get("meter_vdc")
+        try:
+            meter = float(meter_vdc)
+            reported = float(capture["mc_vdc"]["mean"])
+            reported_std = float(capture["mc_vdc"]["std"])
+            raw_mean = float(capture["mc_vbus_raw"]["mean"])
+            bad_min = int(capture["mc_bad"]["min"])
+            bad_max = int(capture["mc_bad"]["max"])
+            sample_count = int(capture["mc_vdc"]["samples"])
+        except (KeyError, TypeError, ValueError):
+            return False, "calibration capture is incomplete", self.snapshot(status)
+        if sample_count != VBUS_CAL_CAPTURE_SAMPLES:
+            return False, (
+                f"calibration capture requires {VBUS_CAL_CAPTURE_SAMPLES} samples; got {sample_count}"
+            ), self.snapshot(status)
+        if not all(math.isfinite(value) for value in (meter, reported, reported_std, raw_mean)):
+            return False, "calibration capture contains non-finite values", self.snapshot(status)
+        if _as_int(status, "bp_mcsdk_telemetry", 0) != 1 or _as_int(status, "bp_vbus_valid", 0) != 1:
+            return False, "MCSDK Vbus telemetry is not valid", self.snapshot(status)
+        if _as_int(status, "mc_fw_build", 0) <= 0:
+            return False, "Nucleo firmware identity is not available", self.snapshot(status)
+        if abs((raw_mean * 0.1) - reported) > 1.0:
+            return False, "MCSDK Vbus telemetry fields disagree", self.snapshot(status)
+        if bad_min != bad_max:
+            return False, "motor-controller UART error counter changed during capture", self.snapshot(status)
+
+        if 0.0 <= meter <= VBUS_CAL_ZERO_MAX_METER_V:
+            kind = "zero"
+            if reported < 0.0 or reported > VBUS_CAL_ZERO_MAX_REPORTED_V:
+                return False, f"reported zero-bus voltage is too high: {reported:.2f} V", self.snapshot(status)
+            if reported_std > VBUS_CAL_ZERO_MAX_STD_V:
+                return False, f"zero-point capture is unstable: std={reported_std:.3f} V", self.snapshot(status)
+            if abs(reported - meter) > VBUS_CAL_ZERO_MAX_METER_V:
+                return False, f"zero-point mismatch is too large: meter={meter:.2f} V, MCSDK={reported:.2f} V", self.snapshot(status)
+        elif VBUS_CAL_HV_MIN_METER_V <= meter <= VBUS_CAL_HV_MAX_METER_V:
+            kind = "high"
+            if bad_max != 0:
+                return False, "clear motor-controller UART error counters before known-HV capture", self.snapshot(status)
+            allowed_error = max(VBUS_CAL_HV_MAX_ERROR_FLOOR_V, meter * VBUS_CAL_HV_MAX_ERROR_PERCENT / 100.0)
+            if abs(reported - meter) > allowed_error:
+                return False, (
+                    f"known-HV mismatch is too large: meter={meter:.2f} V, "
+                    f"MCSDK={reported:.2f} V, allowed={allowed_error:.2f} V"
+                ), self.snapshot(status)
+            allowed_std = max(VBUS_CAL_HV_MAX_STD_FLOOR_V, meter * VBUS_CAL_HV_MAX_STD_PERCENT / 100.0)
+            if reported_std > allowed_std:
+                return False, f"known-HV capture is unstable: std={reported_std:.3f} V", self.snapshot(status)
+        else:
+            return False, "meter voltage must be 0..2 V for zero or 250..360 V for known HV", self.snapshot(status)
+
+        identity = _vbus_calibration_identity(status)
+        point = {
+            "kind": kind,
+            "captured_at": _now_ts(),
+            "meter_vdc": round(meter, 6),
+            "mc_vdc_mean": round(reported, 6),
+            "mc_vdc_std": round(reported_std, 6),
+            "mc_vbus_raw_mean": round(raw_mean, 6),
+            "samples": sample_count,
+        }
+        with self._lock:
+            if kind == "zero":
+                self._record = {
+                    "schema": self.SCHEMA,
+                    "updated_at": _now_ts(),
+                    "identity": identity,
+                    "points": {"zero": point},
+                }
+                self._load_error = ""
+                self._save_locked()
+                valid, reason = self._evaluate_locked(status)
+            else:
+                points = self._record.get("points", {}) if isinstance(self._record, dict) else {}
+                if self._record.get("identity") != identity or not isinstance(points.get("zero"), dict):
+                    valid, reason = False, "capture a new zero point before the known-HV point"
+                    return valid, reason, self.snapshot(status)
+                points["high"] = point
+                self._record["points"] = points
+                self._record["updated_at"] = _now_ts()
+                self._save_locked()
+                valid, reason = self._evaluate_locked(status)
+            snapshot = self.snapshot(status)
+        return valid or kind == "zero", reason, snapshot
+
+    def reset(self) -> dict:
+        with self._lock:
+            self._record = {}
+            self._load_error = ""
+            if self.path:
+                try:
+                    os.remove(self.path)
+                except FileNotFoundError:
+                    pass
+            return self.snapshot()
 
 
 def _cmd_tokens(cmd: str) -> list[str]:
@@ -511,7 +757,7 @@ def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[b
     return True, "ok"
 
 
-def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
+def vbus_capture_precheck(data: Optional[dict], meter_vdc: Optional[float] = None) -> tuple[bool, str]:
     if data is None:
         return False, "status unavailable"
     state = str(data.get("state", "")).upper()
@@ -522,10 +768,6 @@ def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
         return False, "PWM is not off"
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
-    if _as_int(data, "bp_fault", 255) != 0:
-        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
-    if _status_mc_bad(data) != 0:
-        return False, "motor-controller bad-frame counter is non-zero"
     if not _status_link_live(data):
         return False, "motor-controller link is stale or down"
     if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
@@ -533,10 +775,14 @@ def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
     if "bp_vbus_raw" not in data and "mc_vbus_raw" not in data:
         return False, "raw DC bus telemetry is missing"
     raw = _as_int(data, "bp_vbus_raw", -1)
-    if raw < 0 or raw > 4095:
+    raw_max = 5000 if _as_int(data, "bp_mcsdk_telemetry", 0) == 1 else 4095
+    if raw < 0 or raw > raw_max:
         return False, f"raw DC bus telemetry is invalid: raw={raw}"
-    if not math.isfinite(_status_vdc(data)):
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
         return False, "scaled DC bus telemetry is not readable"
+    if _as_int(data, "bp_mcsdk_telemetry", 0) != 1 or _as_int(data, "bp_vbus_valid", 0) != 1:
+        return False, "MCSDK Vbus telemetry is not valid"
     if _as_int(data, "bp_temp_valid", 0) != 1 or _as_int(data, "bp_temp_fault", 1) != 0:
         return False, "heatsink temperature protection is not healthy"
     if not math.isfinite(_as_float(data, "bp_temp_c", float("nan"))):
@@ -544,6 +790,18 @@ def vbus_capture_precheck(data: Optional[dict]) -> tuple[bool, str]:
     for key in ("precharge", "pfc", "brake", "bp_ext"):
         if _as_int(data, key, 0) != 0:
             return False, f"output must be off during Vbus capture: {key}={_as_int(data, key, 0)}"
+    zero_capture = meter_vdc is not None and 0.0 <= float(meter_vdc) <= VBUS_CAL_ZERO_MAX_METER_V
+    if zero_capture:
+        # MCSDK normally reports undervoltage while the bus is discharged. The
+        # zero-point path may observe that fault, but still requires SAFE,
+        # fresh telemetry, healthy temperature sensing and every output off.
+        if vdc > VBUS_CAL_ZERO_MAX_REPORTED_V:
+            return False, f"DC bus is too high for zero-point capture: vdc={vdc:.2f} V"
+    else:
+        if _as_int(data, "bp_fault", 255) != 0:
+            return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+        if _status_mc_bad(data) != 0:
+            return False, "motor-controller bad-frame counter is non-zero"
     return True, "ok"
 
 
@@ -563,6 +821,7 @@ def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dic
     raw_values = [float(_as_int(sample, "bp_vbus_raw", -1)) for sample in samples]
     vdc_values = [float(_status_vdc(sample)) for sample in samples]
     temp_values = [float(_as_float(sample, "bp_temp_c", float("nan"))) for sample in samples]
+    bad_values = [float(_status_mc_bad(sample)) for sample in samples]
     return with_motor_controller_aliases({
         "timestamp": _now_ts(),
         "meter_vdc": meter_vdc,
@@ -572,6 +831,7 @@ def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dic
         "bp_vbus_raw": stats(raw_values),
         "bp_vdc": stats(vdc_values),
         "bp_temp_c": stats(temp_values),
+        "bp_bad": stats(bad_values),
     })
 
 
@@ -647,10 +907,13 @@ class HvArmConfig:
         return self.profile.upper()
 
 
-def hv_arm_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+def hv_arm_precheck(
+    data: Optional[dict], cfg: HvArmConfig, vbus_calibrated: Optional[bool] = None
+) -> tuple[bool, str]:
     if not cfg.enabled:
         return False, "standalone arm mode is disabled"
-    if cfg.profile == ARM_PROFILE_HV and not VBUS_HV_CALIBRATION_VALID:
+    calibration_ready = VBUS_HV_CALIBRATION_VALID if vbus_calibrated is None else bool(vbus_calibrated)
+    if cfg.profile == ARM_PROFILE_HV and not calibration_ready:
         return False, "HV Vbus calibration is incomplete; capture a known-voltage point before arming"
     if data is None:
         return False, "status unavailable"
@@ -729,9 +992,11 @@ def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple
 
 
 def hv_runtime_check(
-    data: Optional[dict], cfg: HvArmConfig, allow_nonzero_bad: bool = False
+    data: Optional[dict], cfg: HvArmConfig, allow_nonzero_bad: bool = False,
+    vbus_calibrated: Optional[bool] = None,
 ) -> tuple[bool, str]:
-    if cfg.profile == ARM_PROFILE_HV and not VBUS_HV_CALIBRATION_VALID:
+    calibration_ready = VBUS_HV_CALIBRATION_VALID if vbus_calibrated is None else bool(vbus_calibrated)
+    if cfg.profile == ARM_PROFILE_HV and not calibration_ready:
         return False, "HV Vbus calibration is incomplete"
     if data is None:
         return False, "status unavailable"
@@ -765,10 +1030,11 @@ def hv_runtime_check(
 
 
 def output_sequence_health_check(
-    data: Optional[dict], arm_cfg: HvArmConfig, guard_cfg: CommandGuardConfig
+    data: Optional[dict], arm_cfg: HvArmConfig, guard_cfg: CommandGuardConfig,
+    vbus_calibrated: Optional[bool] = None,
 ) -> tuple[bool, str]:
     if arm_cfg.enabled:
-        return hv_runtime_check(data, arm_cfg)
+        return hv_runtime_check(data, arm_cfg, vbus_calibrated=vbus_calibrated)
     if data is None:
         return False, "status unavailable"
     if _as_int(data, "estop", 1) != 0:
@@ -837,16 +1103,31 @@ class HvRuntimeBadFrameMonitor:
 
 
 class HvArmState:
-    def __init__(self, cfg: HvArmConfig) -> None:
+    def __init__(
+        self,
+        cfg: HvArmConfig,
+        calibration_provider: Optional[Callable[[Optional[dict]], bool]] = None,
+    ) -> None:
         self.cfg = cfg
         self._lock = threading.Lock()
         self._expires_at = 0.0
         self._started = False
+        self._calibration_provider = calibration_provider
+
+    def set_calibration_provider(
+        self, provider: Optional[Callable[[Optional[dict]], bool]]
+    ) -> None:
+        with self._lock:
+            self._calibration_provider = provider
+
+    def _calibration_valid(self, data: Optional[dict]) -> Optional[bool]:
+        provider = self._calibration_provider
+        return provider(data) if provider is not None else None
 
     def arm(self, confirm: str, data: Optional[dict]) -> tuple[bool, str]:
         if not secrets.compare_digest(str(confirm), self.cfg.confirm):
             return False, "confirmation phrase mismatch"
-        ok, reason = hv_arm_precheck(data, self.cfg)
+        ok, reason = hv_arm_precheck(data, self.cfg, self._calibration_valid(data))
         if not ok:
             return False, reason
         with self._lock:
@@ -872,7 +1153,7 @@ class HvArmState:
                 if not self._started:
                     self._expires_at = 0.0
                 return False, f"{self.cfg.profile_label} arm is not active"
-        return hv_arm_precheck(data, self.cfg)
+        return hv_arm_precheck(data, self.cfg, self._calibration_valid(data))
 
     def mark_started(self) -> None:
         with self._lock:
@@ -1497,6 +1778,11 @@ class RpcBridge:
                 # Fail closed for the ambiguous 75-element transition format.
                 data["bp_softstart_ready"] = 0
                 data["mc_capabilities"] = 0
+            data["mc_fw_build"] = (
+                int(result[78])
+                if data["rpc_schema_version"] >= 3 and len(result) >= 79
+                else 0
+            )
             data["mc_supported_modes"] = supported_modes_from_caps(data["mc_capabilities"])
             return True, with_motor_controller_aliases(data), None
         if self._serial_text is not None:
@@ -1582,6 +1868,7 @@ class RpcBridge:
                 "bp_cmd_mode": int(float(kv.get("bp_cmd_mode", kv.get("bp_mode", "0")))),
                 "bp_foc_backend": int(float(kv.get("bp_foc_backend", "0"))),
                 "fw_build": int(float(kv.get("fw_build", "0"))),
+                "mc_fw_build": int(float(kv.get("bp_fw_build", "0"))),
                 "matrix_test": int(float(kv.get("matrix_test", "0"))),
                 "bp_seq": int(float(kv.get("bp_seq", "0"))),
                 "bp_good_cnt": int(float(kv.get("bp_good_cnt", kv.get("bp_good", "0")))),
@@ -1639,6 +1926,7 @@ class AppState:
         guard_max_vdc: float = DEFAULT_CMD_GUARD_MAX_VDC,
         control_access: Optional[ControlAccessConfig] = None,
         operator_heartbeat_timeout_sec: float = DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC,
+        vbus_calibration: Optional[VbusCalibrationStore] = None,
     ) -> None:
         self.rpc = rpc
         self.logs = logs
@@ -1653,6 +1941,8 @@ class AppState:
         }
         self.guard_max_vdc = float(guard_max_vdc)
         self.control_access = control_access or ControlAccessConfig()
+        self.vbus_calibration = vbus_calibration or VbusCalibrationStore()
+        self.hv_arm.set_calibration_provider(self.vbus_calibration.is_valid)
         self.operator_heartbeat_timeout_sec = max(1.0, float(operator_heartbeat_timeout_sec))
         self._operator_heartbeat_ts = 0.0
         self.control_lock = threading.Lock()
@@ -1704,6 +1994,7 @@ class AppState:
                 status = candidate
                 off_confirmed = bool(
                     _as_int(candidate, "pwm", 1) == 0
+                    and (_as_int(candidate, "bp_status", 0x20) & 0x20) == 0
                     and _as_int(candidate, "precharge", 1) == 0
                     and (_as_int(candidate, "bp_ext", 0x08) & 0x08) == 0
                 )
@@ -1795,7 +2086,10 @@ class AppState:
             if read_ok and candidate is not None:
                 run_status = candidate
                 run_ok, run_err = output_sequence_health_check(
-                    candidate, self.hv_arm.cfg, self.command_guard
+                    candidate,
+                    self.hv_arm.cfg,
+                    self.command_guard,
+                    vbus_calibrated=self.vbus_calibration.is_valid(candidate),
                 )
                 reserved_relay_bit = bool(
                     _as_int(candidate, "precharge", 0) != 0
@@ -1850,7 +2144,15 @@ class AppState:
         snapshot["hmi_external_softstart_ready"] = int(
             status is not None and _as_int(status, "bp_softstart_ready", 0) == 1
         )
-        snapshot["hmi_vbus_hv_calibrated"] = int(VBUS_HV_CALIBRATION_VALID)
+        calibration = self.vbus_calibration.snapshot(status)
+        snapshot["hmi_vbus_hv_calibrated"] = int(calibration["valid"])
+        snapshot["hmi_vbus_calibration_reason"] = calibration["reason"]
+        snapshot["hmi_vbus_zero_captured"] = int(calibration["zero_captured"])
+        snapshot["hmi_vbus_high_captured"] = int(calibration["high_captured"])
+        snapshot["hmi_vbus_zero_meter_vdc"] = calibration["zero_meter_vdc"]
+        snapshot["hmi_vbus_zero_mc_vdc"] = calibration["zero_mc_vdc"]
+        snapshot["hmi_vbus_high_meter_vdc"] = calibration["high_meter_vdc"]
+        snapshot["hmi_vbus_high_mc_vdc"] = calibration["high_mc_vdc"]
         current_cfg = self.hv_arm.cfg
         switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
         snapshot["hmi_arm_profile_switch_ready"] = int(switch_ok and not snapshot["hmi_hv_armed"])
@@ -1909,6 +2211,7 @@ class AppState:
                         status if status_ok else None,
                         self.hv_arm.cfg,
                         allow_nonzero_bad=True,
+                        vbus_calibrated=self.vbus_calibration.is_valid(status if status_ok else None),
                     )
                     if live_ok and status is not None:
                         live_ok, bad_err = self._runtime_bad_monitor.observe(status)
@@ -2260,6 +2563,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def _handle_vbus_capture(self) -> None:
         request = self._read_json()
+        action = str(request.get("action", "capture")).strip().lower()
+        app = self.server.app  # type: ignore[attr-defined]
+        if action == "reset":
+            with app.control_lock:
+                stop_ok, stop_err, _ = app.stop_sequence(emergency=False)
+                if not stop_ok:
+                    self._send_json({"ok": False, "error": f"safe stop failed: {stop_err}"}, 500)
+                    return
+                calibration = app.vbus_calibration.reset()
+                app.logs.add("VBUS_CALIBRATION_RESET")
+            self._send_json({"ok": True, "calibration": calibration})
+            return
+        if action != "capture":
+            self._send_json({"ok": False, "error": "unsupported Vbus calibration action"}, 400)
+            return
         try:
             meter_vdc = float(request["meter_vdc"]) if request.get("meter_vdc") not in (None, "") else None
         except (TypeError, ValueError):
@@ -2270,29 +2588,64 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         samples: list[dict] = []
-        for _ in range(20):
-            ok, data, err = self.server.app.rpc.get()  # type: ignore[attr-defined]
-            if not ok or data is None:
-                self._send_json({"ok": False, "error": err or "status unavailable"}, 503)
-                return
-            safe, reason = vbus_capture_precheck(data)
-            if not safe:
-                self.server.app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")  # type: ignore[attr-defined]
-                self._send_json({"ok": False, "error": reason, "status": data}, 409)
-                return
-            samples.append(data)
-            time.sleep(0.02)
+        with app.control_lock:
+            app.hv_arm.disarm()
+            for _ in range(VBUS_CAL_CAPTURE_SAMPLES):
+                ok, data, err = app.rpc.get()
+                if not ok or data is None:
+                    self._send_json({"ok": False, "error": err or "status unavailable"}, 503)
+                    return
+                safe, reason = vbus_capture_precheck(data, meter_vdc)
+                if not safe:
+                    app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")
+                    self._send_json({"ok": False, "error": reason, "status": data}, 409)
+                    return
+                samples.append(data)
+                time.sleep(0.02)
 
-        capture = vbus_capture_summary(samples, meter_vdc)
+            capture_identity = _vbus_calibration_identity(samples[0])
+            if any(_vbus_calibration_identity(sample) != capture_identity for sample in samples[1:]):
+                reason = "firmware or telemetry identity changed during capture"
+                app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")
+                self._send_json({"ok": False, "error": reason}, 409)
+                return
+
+            capture = vbus_capture_summary(samples, meter_vdc)
+            calibration = app.vbus_calibration.snapshot(samples[-1])
+            calibration_ok = True
+            calibration_reason = "measurement-only capture"
+            if meter_vdc is not None:
+                calibration_ok, calibration_reason, calibration = app.vbus_calibration.record_capture(
+                    capture, samples[-1]
+                )
         raw = capture["bp_vbus_raw"]
         scaled = capture["bp_vdc"]
         meter_text = "none" if meter_vdc is None else f"{meter_vdc:.3f}"
-        self.server.app.logs.add(  # type: ignore[attr-defined]
+        app.logs.add(
             "VBUS_CAPTURE "
             f"meter_vdc={meter_text} raw_mean={raw['mean']:.3f} raw_std={raw['std']:.3f} "
-            f"raw_min={raw['min']:.0f} raw_max={raw['max']:.0f} vdc_mean={scaled['mean']:.3f}"
+            f"raw_min={raw['min']:.0f} raw_max={raw['max']:.0f} vdc_mean={scaled['mean']:.3f} "
+            f"calibration_ok={int(calibration_ok)} calibration_reason={calibration_reason}"
         )
-        self._send_json({"ok": True, "capture": capture})
+        if meter_vdc is not None and not calibration_ok:
+            self._send_json(
+                {
+                    "ok": False,
+                    "error": calibration_reason,
+                    "capture": capture,
+                    "calibration": calibration,
+                },
+                409,
+            )
+            return
+        self._send_json(
+            {
+                "ok": True,
+                "capture": capture,
+                "calibration": calibration,
+                "message": calibration_reason,
+            }
+        )
 
     def _handle_logs(self, parsed) -> None:
         query = parse_qs(parsed.query)
@@ -2500,6 +2853,11 @@ def main() -> None:
         help="Protect control commands and log download with a token stored in this file",
     )
     parser.add_argument(
+        "--vbus-calibration-file",
+        default=os.environ.get("UNOQ_VBUS_CALIBRATION_FILE", DEFAULT_VBUS_CALIBRATION_FILE),
+        help="Persistent two-point Vbus verification record used by the autonomous HV arm gate",
+    )
+    parser.add_argument(
         "--firmware-update-token-file",
         default=os.environ.get("UNOQ_FIRMWARE_UPDATE_TOKEN_FILE", ""),
         help="Enable firmware update API with a token stored in this file",
@@ -2657,6 +3015,8 @@ def main() -> None:
         local_bench_gate=standalone_enabled,
     )
     hv_arm = HvArmState(selected_cfg)
+    vbus_calibration_path = str(args.vbus_calibration_file).strip()
+    vbus_calibration = VbusCalibrationStore(vbus_calibration_path or None)
     app = AppState(
         rpc,
         logs,
@@ -2670,6 +3030,7 @@ def main() -> None:
         guard_max_vdc=float(args.cmd_guard_max_vdc),
         control_access=control_access,
         operator_heartbeat_timeout_sec=float(args.operator_heartbeat_timeout_sec),
+        vbus_calibration=vbus_calibration,
     )
 
     server = ThreadingHTTPServer((args.bind, args.port), Handler)
@@ -2678,9 +3039,9 @@ def main() -> None:
 
     print(
         f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
-        f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
-        f"control_auth={int(control_access.enabled)}, softstart=external-autonomous, "
-        f"runlimit={start_runlimit_sec:.1f}s)"
+         f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
+         f"control_auth={int(control_access.enabled)}, softstart=external-autonomous, "
+         f"vbus_calibrated={int(vbus_calibration.is_valid())}, runlimit={start_runlimit_sec:.1f}s)"
     )
     app.start_safety_watchdog()
     try:

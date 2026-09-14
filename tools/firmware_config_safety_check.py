@@ -194,10 +194,12 @@ def unoq_pole_pairs(path: Path) -> float:
 
 def unoq_uses_nucleo_mcsdk(path: Path) -> bool:
     text = path.read_text(encoding="utf-8", errors="replace")
-    match = re.search(r"\bNUCLEO_MCSDK_ACIM_BACKEND\s*=\s*(true|false)\s*;", text)
-    if not match:
+    matches = re.findall(r"\bNUCLEO_MCSDK_ACIM_BACKEND\s*=\s*(true|false)\s*;", text)
+    if not matches:
         raise CheckError("UNOQ_MOTOR NUCLEO_MCSDK_ACIM_BACKEND not found")
-    return match.group(1) == "true"
+    # The first definition belongs to the explicitly compiled logic-bench
+    # branch; the final definition is the normal production branch.
+    return matches[-1] == "true"
 
 
 def nucleo_mcsdk_pole_pairs(repo: Path) -> float:

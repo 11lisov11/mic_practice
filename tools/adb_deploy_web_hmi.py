@@ -9,6 +9,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+MSGPACK_WHEEL_PATTERN = "msgpack-*-cp313-*_aarch64*.whl"
+
 
 def log(msg: str) -> None:
     print(msg, flush=True)
@@ -22,6 +24,21 @@ def run(cmd: list[str], check: bool = True) -> None:
 def ok(cmd: list[str]) -> bool:
     log("RUN " + " ".join(cmd))
     return subprocess.run(cmd, check=False).returncode == 0
+
+
+def read_remote_secret(adb: list[str], path: str) -> str:
+    """Read an existing device secret without echoing it to deployment logs."""
+    result = subprocess.run(
+        adb + ["shell", "cat", path],
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        timeout=10.0,
+    )
+    secret = result.stdout.strip() if result.returncode == 0 else ""
+    return secret if len(secret) >= 16 else ""
 
 
 def adb_device_ids() -> list[str]:
@@ -125,6 +142,15 @@ def privileged_command(command: str) -> str:
     )
 
 
+def ensure_remote_environment(adb: list[str], remote: str) -> None:
+    run(adb + ["shell", "mkdir -p " + shell_quote(remote + "/static")])
+    python = remote + "/.venv/bin/python"
+    if not ok(adb + ["shell", shell_quote(python) + " -c 'import sys'"]):
+        if not ok(adb + ["shell", "python3 -m venv " + shell_quote(remote + "/.venv")]):
+            # Factory Debian may lack ensurepip; ensure_msgpack supports offline wheels.
+            run(adb + ["shell", "python3 -m venv --without-pip " + shell_quote(remote + "/.venv")])
+
+
 def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
     check_cmd = f"cd {shell_quote(remote)} && ./.venv/bin/python -c 'import msgpack'"
     if ok(adb + ["shell", check_cmd]):
@@ -136,7 +162,7 @@ def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
 
     cache_dir = Path(local_root).parent / ".cache" / "wheels"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    wheels = sorted(cache_dir.glob("msgpack-*-cp313-*-aarch64*.whl"))
+    wheels = sorted(cache_dir.glob(MSGPACK_WHEEL_PATTERN))
     if not wheels:
         run(
             [
@@ -158,7 +184,7 @@ def ensure_msgpack(adb: list[str], remote: str, local_root: str) -> None:
                 "msgpack",
             ]
         )
-        wheels = sorted(cache_dir.glob("msgpack-*-cp313-*-aarch64*.whl"))
+        wheels = sorted(cache_dir.glob(MSGPACK_WHEEL_PATTERN))
     if not wheels:
         raise RuntimeError("msgpack wheel was not downloaded")
 
@@ -253,6 +279,18 @@ def enable_network_ssh(adb: list[str], key_path: Path) -> None:
     log(f"User SSH enabled on port 2222 with key authentication: {key_path}")
 
 
+def check_cron_account_setup(adb: list[str]) -> None:
+    result = subprocess.run(
+        adb + ["shell", "LC_ALL=C chage -l arduino"],
+        capture_output=True, text=True, check=False, timeout=15,
+    )
+    if result.returncode != 0 or "password must be changed" in result.stdout.lower():
+        raise RuntimeError(
+            "Cron autostart cannot be confirmed: complete Arduino App Lab first-time "
+            "setup and change the arduino login password, then deploy again."
+        )
+
+
 def install_autostart(
     adb: list[str],
     remote: str,
@@ -281,7 +319,18 @@ def install_autostart(
         "install -m 0644 /tmp/unoq-hmi.service /etc/systemd/system/unoq-hmi.service && "
         "systemctl daemon-reload && systemctl enable unoq-hmi.service"
     )
-    installed = ok(adb + ["shell", install_service])
+    installed_now = ok(adb + ["shell", install_service])
+    existing_service = False
+    if not installed_now:
+        existing_service = ok(
+            adb
+            + [
+                "shell",
+                "systemctl is-active --quiet unoq-hmi.service && "
+                "systemctl is-enabled --quiet unoq-hmi.service",
+            ]
+        )
+    installed = installed_now or existing_service
     if installed:
         remove_cron = (
             "sh -lc "
@@ -290,8 +339,12 @@ def install_autostart(
             )
         )
         run(adb + ["shell", remove_cron])
-        log("Autostart: systemd service installed; duplicate cron watchdog removed.")
+        if installed_now:
+            log("Autostart: systemd service installed; duplicate cron watchdog removed.")
+        else:
+            log("Autostart: existing active systemd service retained; duplicate cron watchdog removed.")
     else:
+        check_cron_account_setup(adb)
         log("WARN: systemd install unavailable; using cron fallback only.")
     return installed
 
@@ -329,7 +382,7 @@ def main() -> int:
     ap.add_argument(
         "--control-token",
         default="",
-        help="HMI control token; generated automatically for standalone mode when omitted",
+        help="HMI control token; an existing remote token is retained, otherwise one is generated",
     )
     ap.add_argument(
         "--control-token-local-file",
@@ -389,6 +442,7 @@ def main() -> int:
         return 3
 
     adb = ["adb", "-s", device]
+    ensure_remote_environment(adb, args.remote)
     run(adb + ["push", os.path.join(local_root, "server.py"), f"{args.remote}/server.py"])
     run(adb + ["push", os.path.join(local_root, "requirements.txt"), f"{args.remote}/requirements.txt"])
     static_dir = os.path.join(local_root, "static")
@@ -426,17 +480,24 @@ def main() -> int:
                     pass
 
     control_token = args.control_token.strip()
+    install_control_token = bool(control_token)
     if args.control_token_local_file:
         control_token = Path(args.control_token_local_file).read_text(encoding="utf-8").strip()
+        install_control_token = True
     standalone_enabled = bool(args.standalone_hv or args.standalone_lv)
     if standalone_enabled and not control_token:
-        control_token = secrets.token_urlsafe(32)
-        log("GENERATED HMI CONTROL TOKEN: " + control_token)
-        log("Store this token in the phone HMI; it is not written to project files.")
+        control_token = read_remote_secret(adb, args.control_token_file)
+        if control_token:
+            log("Preserving existing HMI control token.")
+        else:
+            control_token = secrets.token_urlsafe(32)
+            install_control_token = True
+            log("Generated a new HMI control token and stored it only on the UNO Q.")
+            log("Retrieve it once in service mode before disconnecting the PC.")
     if control_token and len(control_token) < 16:
         raise SystemExit("ERROR: HMI control token must contain at least 16 characters")
     control_token_enabled = bool(control_token)
-    if control_token_enabled:
+    if control_token_enabled and install_control_token:
         tmp_name = ""
         try:
             with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as f:
@@ -484,7 +545,18 @@ def main() -> int:
                 "ss -ltn 2>/dev/null | grep -q ':8080' || break; sleep 0.2; done; "
                 "systemctl start unoq-hmi.service"
             )
-            run(adb + ["shell", restart_service])
+            restarted_privileged = ok(adb + ["shell", restart_service])
+            if not restarted_privileged:
+                restart_by_supervisor = (
+                    "sh -lc '"
+                    "old_pid=\"$(ss -ltnp 2>/dev/null | sed -n \"s/.*:8080 .*pid=\\([0-9]\\+\\).*/\\1/p\" | head -n 1)\"; "
+                    "test -n \"$old_pid\" || exit 1; kill \"$old_pid\" || exit 1; "
+                    "for i in $(seq 1 50); do "
+                    "new_pid=\"$(ss -ltnp 2>/dev/null | sed -n \"s/.*:8080 .*pid=\\([0-9]\\+\\).*/\\1/p\" | head -n 1)\"; "
+                    "if [ -n \"$new_pid\" ] && [ \"$new_pid\" != \"$old_pid\" ]; then exit 0; fi; "
+                    "sleep 0.2; done; exit 1'"
+                )
+                run(adb + ["shell", restart_by_supervisor])
             wait_for_port = (
                 "sh -lc 'for i in $(seq 1 50); do "
                 "ss -ltn 2>/dev/null | grep -q \":8080\" && exit 0; sleep 0.2; "

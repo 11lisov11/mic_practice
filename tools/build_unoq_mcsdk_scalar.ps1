@@ -1,16 +1,29 @@
 [CmdletBinding()]
 param(
-    [string]$Sketch = (Join-Path $PSScriptRoot "..\UNOQ_MOTOR"),
-    [string]$OutputDirectory = (Join-Path $PSScriptRoot "..\firmware\unoq_mcsdk_scalar")
+    [string]$Sketch = "",
+    [string]$OutputDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($Sketch)) {
+    $Sketch = Join-Path $PSScriptRoot "..\UNOQ_MOTOR"
+}
+if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
+    $OutputDirectory = Join-Path $PSScriptRoot "..\firmware\unoq_mcsdk_scalar"
+}
 
 $arduinoCli = (Get-Command arduino-cli -ErrorAction Stop).Source
 $sketchPath = (Resolve-Path -LiteralPath $Sketch).Path
 $outputDirectoryPath = [System.IO.Path]::GetFullPath($OutputDirectory)
 $sketchName = Split-Path -Leaf $sketchPath
 $artifactPrefix = "$sketchName.ino"
+$sketchSource = Get-Content -LiteralPath (Join-Path $sketchPath "$sketchName.ino") -Raw
+$firmwareBuildMatch = [regex]::Match($sketchSource, "FW_BUILD_ID\s*=\s*(\d+)U")
+$rpcSchemaMatch = [regex]::Match($sketchSource, "RPC_SCHEMA_VERSION\s*=\s*(\d+)U")
+if (-not $firmwareBuildMatch.Success -or -not $rpcSchemaMatch.Success) {
+    throw "UNO Q firmware identity or RPC schema is missing from the sketch."
+}
 $stagingDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("mic_practice_unoq_" + [Guid]::NewGuid().ToString("N"))
 $releaseArtifactNames = @(
     "$artifactPrefix.elf",
@@ -72,6 +85,8 @@ try {
         transport = "Serial1 / D0-D1, 115200 8N1, protocol v0x02"
         control_mode = "Scalar V/F only; raw DUTY, FOC, MIC and service outputs are not sent to MCSDK"
         flash_artifact = "$artifactPrefix.elf-zsk.bin"
+        firmware_build_id = [uint32]$firmwareBuildMatch.Groups[1].Value
+        rpc_schema_version = [uint32]$rpcSchemaMatch.Groups[1].Value
         artifacts = $artifacts
     }
     $manifestPath = Join-Path $outputDirectoryPath "unoq_mcsdk_scalar.build-manifest.json"

@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "revision": 1,
+  "seed": 92062,
+  "methods": [
+    "fixed",
+    "ungated",
+    "budget_payback",
+    "paired_fixed",
+    "paired_cost",
+    "active_fixed_cost",
+    "active_cost"
+  ],
+  "durations": [
+    6.0
+  ],
+  "speeds": [
+    0.7
+  ],
+  "disturbances": [
+    false
+  ],
+  "plant_substeps": [
+    2,
+    4,
+    8
+  ],
+  "dt_s": 0.0001,
+  "active_config": {
+    "hold_until_s": 6.0,
+    "gain_error_floor_w": 1.0,
+    "max_baseline_slope_w_per_s": 4.0,
+    "decision_regret_w": 2.0,
+    "prior_excess_w": 10.0,
+    "cost_floor_j": 0.1,
+    "cost_multiplier": 1.5,
+    "max_estimated_cost_j": 8.0,
+    "minimum_net_gain_j": 0.1,
+    "return_margin_s": 0.15,
+    "max_probes": 2
+  },
+  "noise_seed": 730,
+  "mode": "refinement",
+  "hardware_validated": false,
+  "novelty_established": false,
+  "neural_policy_trained": false,
+  "cases": [
+    {
+      "case": "motor0_k0",
+      "plant": {
+        "rs_ohm": 7.47319261195354,
+        "rr_ohm": 19.337444076175466,
+        "lls_h": 0.003594202646612131,
+        "llr_h": 0.0026543774206577307,
+        "lm_h": 0.4832180152202646,
+        "rc_ohm": 972.9115113549874,
+        "inertia_kg_m2": 8.223824134472835e-05,
+        "viscous_nm_s": 6.775805301627998e-05,
+        "pole_pairs": 1,
+        "coulomb_nm": 0.014830768422455393,
+        "friction_smoothing_rad_s": 0.5,
+        "saturation_kappa": 0.0,
+        "saturation_knee_wb": 0.5
+      },
+      "controller": {
+        "Rs": 5.439335642321776,
+        "Rr": 14.121393022982712,
+        "Lls": 0.003594202646612131,
+        "Llr": 0.0026543774206577307,
+        "Lm": 0.4832180152202646,
+        "J": 8.223824134472835e-05,
+        "B": 0.00015687139823603434,
+        "p": 1,
+        "i_limit": 3.1,
+        "psi_sat": 0.0,
+        "sat_exp": 2.0,
+        "lm_min_scale": 0.45,
+        "rs_temp_coeff": 0.0039,
+        "rr_temp_coeff": 0.0039,
+        "temp_ref_c": 20.0
+      }
+    }
+  ],
+  "preregistered_note_sha256": "49acfd87a1b6c67cae5784eeaa8547ffc2c5797c9de7932732e8d185e353710d"
+}

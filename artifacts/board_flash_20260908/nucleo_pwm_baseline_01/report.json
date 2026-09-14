@@ -1,0 +1,173 @@
+{
+  "host_utc": "2026-09-08T16:45:01.186187+00:00",
+  "device_id": "A7D1BB81883C0092",
+  "is_simulation": false,
+  "logic_version": "2.4.46",
+  "sample_rate_hz": 24000000,
+  "requested_duration_s": 0.2,
+  "channel_map": {
+    "0": {
+      "signal": "UH",
+      "gpio": "PA8",
+      "connector": "CN10-23"
+    },
+    "1": {
+      "signal": "UL",
+      "gpio": "PA7",
+      "connector": "CN10-15"
+    },
+    "2": {
+      "signal": "VH",
+      "gpio": "PA9",
+      "connector": "CN10-21"
+    },
+    "3": {
+      "signal": "VL",
+      "gpio": "PB0",
+      "connector": "CN7-34"
+    },
+    "4": {
+      "signal": "WH",
+      "gpio": "PA10",
+      "connector": "CN10-33"
+    },
+    "5": {
+      "signal": "WL",
+      "gpio": "PB1",
+      "connector": "CN10-24"
+    }
+  },
+  "motor_commands_sent": [],
+  "scope": "observed_pin_levels_only_not_power_stage_validation",
+  "expect_pwm": false,
+  "checks": {
+    "all_six_channels_present": true,
+    "no_overlap": true,
+    "timing_resolution": true,
+    "all_six_static_low": true
+  },
+  "pass": true,
+  "analysis": {
+    "csv": "C:\\mic_practice\\artifacts\\board_flash_20260908\\nucleo_pwm_baseline_01\\csv\\digital.csv",
+    "duration_s": 0.256,
+    "csv_row_timing": {
+      "samples": 2,
+      "intervals": 1,
+      "min_step_s": 0.256,
+      "max_step_s": 0.256,
+      "mean_step_s": 0.256,
+      "inferred_sample_rate_hz": 3.90625
+    },
+    "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+    "selected_sample_rate_hz": 24000000.0,
+    "selected_sample_period_ns": 41.666666666666664,
+    "max_sample_period_ns": 100.0,
+    "timing_resolution_pass": true,
+    "channels": {
+      "0": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      },
+      "1": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      },
+      "2": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      },
+      "3": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      },
+      "4": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      },
+      "5": {
+        "initial": 0,
+        "final": 0,
+        "edges": 0,
+        "rising_edges": 0,
+        "falling_edges": 0,
+        "high_time_s": 0.0,
+        "duty_ratio": 0.0,
+        "freq_hz_from_rising": 0.0
+      }
+    },
+    "pairs": {
+      "U": {
+        "high_channel": 0,
+        "low_channel": 1,
+        "overlap_high_s": 0.0,
+        "overlap_ratio": 0.0,
+        "both_low_s": 0.256,
+        "both_low_ratio": 1.0,
+        "both_high_seen": false,
+        "min_gap_s": null,
+        "gap_count": 0,
+        "no_overlap": true
+      },
+      "V": {
+        "high_channel": 2,
+        "low_channel": 3,
+        "overlap_high_s": 0.0,
+        "overlap_ratio": 0.0,
+        "both_low_s": 0.256,
+        "both_low_ratio": 1.0,
+        "both_high_seen": false,
+        "min_gap_s": null,
+        "gap_count": 0,
+        "no_overlap": true
+      },
+      "W": {
+        "high_channel": 4,
+        "low_channel": 5,
+        "overlap_high_s": 0.0,
+        "overlap_ratio": 0.0,
+        "both_low_s": 0.256,
+        "both_low_ratio": 1.0,
+        "both_high_seen": false,
+        "min_gap_s": null,
+        "gap_count": 0,
+        "no_overlap": true
+      }
+    },
+    "pass": true,
+    "expect_pwm": false,
+    "pass_meaning": "no_overlap_only_pwm_activity_diagnostic",
+    "overlap_analysis_pass": true,
+    "no_overlap_pass": true,
+    "pwm_activity_pass": false
+  }
+}

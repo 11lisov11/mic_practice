@@ -1,7 +1,7 @@
 ﻿{
     "schema":  "mic_ai.board_flash_package.v1",
-    "generated_at":  "2026-08-26T23:36:52.1519756Z",
-    "source_commit":  "2de459d03f6a750207730d89a7a51eeeafe86999",
+    "generated_at":  "2026-09-14T12:23:47.6331260Z",
+    "source_commit":  "d99e3af08db5b7a9f115270e670b96f6bf9f299e",
     "source_worktree_dirty":  true,
     "identity":  {
                      "nucleo_board":  "NUCLEO-G431RB",
@@ -11,7 +11,8 @@
                      "motor":  "IEK AIR56B2 0.25 kW, 1 pole pair, 50 Hz, 2720 rpm",
                      "motor_connection":  "220 V delta",
                      "protocol":  "UART v0x02, 115200 8N1",
-                     "rpc_schema":  "UNO Q get-array v2, 78 append-only elements",
+                     "rpc_schema":  "UNO Q get-array v3, 79 append-only elements",
+                     "autonomous_vbus_verification":  "persistent two-point check: discharged 0..2 V and known 250..360 V",
                      "telemetry_api":  "mc_* canonical; bp_* deprecated compatibility aliases",
                      "supported_motor_modes":  [
                                                    "VF"
@@ -21,19 +22,29 @@
                  },
     "software_verified":  true,
     "hardware_validated":  false,
+    "ipm_sd_bkin_hardware_trip_validated":  false,
+    "logic_pwm_chain_validated":  true,
+    "production_pwm_static_low_validated":  true,
+    "validation_scope":  "Logic-only without IHM09M2 J7 or high-voltage power stage",
     "active_stage":  "S1_VF_SENSORLESS_FIRST_SPIN",
     "mcu_controlled_precharge_relay":  false,
     "external_softstart":  "autonomous AC module ahead of rectifier",
     "open_release_checks":  [
                                 "external_softstart_hil_validated",
                                 "motor_profile_is_real_acim",
-                                "generated_motor_configuration_matches_profile"
+                                "generated_motor_configuration_matches_profile",
+                                "ipm_sd_bkin_hardware_trip_validated"
                             ],
     "artifacts":  [
                       {
+                          "path":  "AUTONOMOUS_VBUS_CALIBRATION_RU.md",
+                          "bytes":  6915,
+                          "sha256":  "1BC2B2B61510EB8A25495132A4EBEE5452A03A0A1B482FE85B80B1F1263198A5"
+                      },
+                      {
                           "path":  "AUTONOMOUS_WIFI_OPERATION_RU.md",
-                          "bytes":  4572,
-                          "sha256":  "7760D7BB1189584ED23844D5880E0F4DBC86A2FBD7021B406ABF465355953BD0"
+                          "bytes":  5925,
+                          "sha256":  "F3FE9FDD0CDA8F9C4C3F253C472F17EE337906CAE3ED92F01FA35573422BCCB0"
                       },
                       {
                           "path":  "firmware_stages.json",
@@ -47,13 +58,18 @@
                       },
                       {
                           "path":  "FLASHING_RU.md",
-                          "bytes":  5728,
-                          "sha256":  "BECF9690BCC3EF277422D7DBF9669B57AC0C627BFC0D6D22C9864308DFD837DF"
+                          "bytes":  8885,
+                          "sha256":  "8A85AFBD804866ED8FB3A8FE65B9FADCE143E18B6F24763E3D230B8FC5FF5097"
+                      },
+                      {
+                          "path":  "IPM_SD_BKIN_HIL_RU.md",
+                          "bytes":  6722,
+                          "sha256":  "0FFB1F2081E9A26F50680D556CB27975DEBA3B0B420DABE8D18EDF5D2C17836D"
                       },
                       {
                           "path":  "linux/tools/adb_deploy_web_hmi.py",
-                          "bytes":  20341,
-                          "sha256":  "0BC86379A750BE4C7CCE40A4C5F590D70F3DC425C7441D27E457AB68E0D4774E"
+                          "bytes":  23585,
+                          "sha256":  "F09B368BD78A4412C56B91C43951983BFAC2E11D5019BB3C76B0DC3B46F2DDB8"
                       },
                       {
                           "path":  "linux/tools/capture_as5600_teacher_dataset.py",
@@ -77,18 +93,18 @@
                       },
                       {
                           "path":  "linux/web_hmi/server.py",
-                          "bytes":  114557,
-                          "sha256":  "B3B547749A5D98DF6B57ADD84195C34F717B1E173DF0BFE2BD657D3DC1ECE96A"
+                          "bytes":  132536,
+                          "sha256":  "5F437620334701CE11CCBC1555FFA0AD107344A477EE9B9462CE21D00FB3F473"
                       },
                       {
                           "path":  "linux/web_hmi/static/app.js",
-                          "bytes":  26609,
-                          "sha256":  "0D30F9DE4C876051F9E28D7F10730F94A33B5A1A869D35DD46F61CFF157DC457"
+                          "bytes":  33425,
+                          "sha256":  "DC37F8D69F9AF0757FA3A05217F7009ADD7680EE26058B29F359209367892E9C"
                       },
                       {
                           "path":  "linux/web_hmi/static/index.html",
-                          "bytes":  8075,
-                          "sha256":  "5F5F46D63403546C9F4FDE6A418F0B7C7993B2EC81825A391E767D49F9925265"
+                          "bytes":  8314,
+                          "sha256":  "221368F5A5DAD34E0112C834623E5FB9BD0D74F03E31665E60253E8889E404D2"
                       },
                       {
                           "path":  "linux/web_hmi/static/style.css",
@@ -97,63 +113,83 @@
                       },
                       {
                           "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-                          "bytes":  39004,
-                          "sha256":  "693EEC675CE2599AD45DD608B2BAAB7C2E365DDA09AF8AFB7A1FF34544341EBE"
+                          "bytes":  39020,
+                          "sha256":  "7580682B9959BE3CD7CA805C5E28D267C597D291663D6071549B12DA2D49897B"
                       },
                       {
                           "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
-                          "bytes":  1850,
-                          "sha256":  "0FCC945255FCAB900545C2B8006AFF77AA255D7CD485AEA254118EED07E42280"
+                          "bytes":  1889,
+                          "sha256":  "91ACF95E5A966D71C488A051CC8759D36C7F12588BC1E8A6BE070185F8C3340C"
                       },
                       {
                           "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-                          "bytes":  2062168,
-                          "sha256":  "AABC5CDB0ABB0F6050B1BC689BA6E4F153ED76F4D8338D5BF880BF829B7210EF"
+                          "bytes":  2062332,
+                          "sha256":  "638B038E0975093C832A131095A5B8FBD4DF42D0F3FBF7E3570241A7B0181D70"
                       },
                       {
                           "path":  "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-                          "bytes":  109805,
-                          "sha256":  "2A0F4656E50C447F91C902D0F74AD21A4AFAFDE0F14EDB3C0D5B9D5B3AB16142"
+                          "bytes":  109850,
+                          "sha256":  "39F91B2BD3D6CA2617B7FC0143E5FE97887E7BD66E2C41796C26A653EA96F747"
                       },
                       {
                           "path":  "reports/mcsdk_release_preflight.json",
-                          "bytes":  4677,
-                          "sha256":  "FE33EB56FCA181859697BBE10E3FA8055650EA0A2F53CDB961924BBB04CA114E"
+                          "bytes":  5481,
+                          "sha256":  "E8FD4CE6FD197F88A433EB0B0558795009BEFD544E54ECF88356881C1A235960"
+                      },
+                      {
+                          "path":  "reports/production_pwm_static_low.json",
+                          "bytes":  28194,
+                          "sha256":  "F3935FFB1E27ECE4F7967324774E56FDE0F01016835A091B8F83920F6BFA80B1"
+                      },
+                      {
+                          "path":  "reports/wifi_nucleo_pwm_bench.json",
+                          "bytes":  28194,
+                          "sha256":  "F3935FFB1E27ECE4F7967324774E56FDE0F01016835A091B8F83920F6BFA80B1"
+                      },
+                      {
+                          "path":  "tools/board_bringup_readonly.py",
+                          "bytes":  5031,
+                          "sha256":  "BF2DB1BA7A557C1CD4FAB48F5DCADF9D8529407CAF7A90B3FD09DE2473860CE1"
                       },
                       {
                           "path":  "tools/flash_mic_ai_boards.ps1",
-                          "bytes":  3356,
-                          "sha256":  "940BFE1BDD4AA36B34D00D90D561D21AC150E0717FC8843E1EDDB31C7F8D477C"
+                          "bytes":  3890,
+                          "sha256":  "A69B1397CC788C8DAF5EEE42F530D93A00BBE4F8A15AFD530169A41F0D2252FA"
                       },
                       {
                           "path":  "tools/verify_board_flash_package.py",
-                          "bytes":  5801,
-                          "sha256":  "78EBB4CAEE415CC84D767ADA184FAF35F7CE919C1466E10BD9A85B2ABDA39C73"
+                          "bytes":  7774,
+                          "sha256":  "AD05FD45563F4150722E71AA2789B71AB3FD8B96BD5EC17EADDA9439CFA39381"
+                      },
+                      {
+                          "path":  "tools/verify_unoq_sketch.cfg",
+                          "bytes":  567,
+                          "sha256":  "E8C3F1C0831CF26674A4D352475398AB25ECD3F8024D988F713DE8F4567FDEB0"
                       },
                       {
                           "path":  "uno_q_mcu/unoq_mcsdk_scalar.build-manifest.json",
-                          "bytes":  1581,
-                          "sha256":  "16E237F11FAFC46ADBDD6531E4753492E82CCD63430623964B0D0345F32DF9DA"
+                          "bytes":  1651,
+                          "sha256":  "D845F0C7DDFE2A6777C8803E608977FBADFE5D710962F52FF84402AA1CCDB693"
                       },
                       {
                           "path":  "uno_q_mcu/UNOQ_MOTOR.ino.bin",
-                          "bytes":  50312,
-                          "sha256":  "EA41E501AAC17835C112384BE8858EB35E0123601F96C3F3CDA25321270DA08D"
+                          "bytes":  50304,
+                          "sha256":  "67D6C1017F71629CEBA88848346236DB803B8C9C4DEA2E502E227D09AB38285B"
                       },
                       {
                           "path":  "uno_q_mcu/UNOQ_MOTOR.ino.elf",
-                          "bytes":  122196,
-                          "sha256":  "AC910D1583358843DD8ACA9A25C7A60554B330F352D3EAF3CFE83A713E20BEB4"
+                          "bytes":  122276,
+                          "sha256":  "F05CDD6D9EAACE9179A39372C61581F0619EA3B49BEF73BC5489DDF758B5C1EB"
                       },
                       {
                           "path":  "uno_q_mcu/UNOQ_MOTOR.ino.elf-zsk.bin",
-                          "bytes":  122196,
-                          "sha256":  "54045A99F6047BA72023CFFE1E33ECCCB82E281CB9F144878FCB2EDFF62B5E63"
+                          "bytes":  122276,
+                          "sha256":  "517E03B4037C1B552ED731C5A7A0FD7D88929206D7B89310E3AE62282FAFA91F"
                       },
                       {
                           "path":  "uno_q_mcu/UNOQ_MOTOR.ino.hex",
                           "bytes":  136711,
-                          "sha256":  "B14D8017591516B7E55C3DEA52565649C7A8F2029F1C85B9EE9BB5C72A51E94A"
+                          "sha256":  "CA36EA32BB576E06C188B0E36F1DF9892DEDCAEF7A8209F2CE4F981A54BFAE4D"
                       }
                   ]
 }

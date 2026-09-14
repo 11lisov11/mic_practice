@@ -62,8 +62,12 @@ if ($targets -contains "Nucleo") {
 }
 
 if ($targets -contains "UnoQ") {
-    & $arduinoCli upload -p $UnoPort -b arduino:zephyr:unoq -i $unoImage
+    # Zephyr uses a compound extension; CLI -i alone duplicates .elf-zsk.
+    & $arduinoCli upload -p $UnoPort -b arduino:zephyr:unoq -i $unoImage --upload-property "upload.artifacts.sketch=$unoImage"
     if ($LASTEXITCODE -ne 0) { throw "Arduino UNO Q MCU upload failed." }
+    # The stock recipe verifies before writing, so compare again after programming.
+    & $arduinoCli upload -p $UnoPort -b arduino:zephyr:unoq -i $unoImage --upload-property "upload.artifacts.sketch=$unoImage" --upload-property "build.variant.path=$scriptRoot" --upload-property "openocd_cfg=verify_unoq_sketch.cfg"
+    if ($LASTEXITCODE -ne 0) { throw "Arduino UNO Q MCU readback verification failed." }
 }
 
 if ($targets -contains "Linux") {

@@ -22,6 +22,15 @@ REQUIRED_PROFILE_FIELDS = (
 REQUIRED_ARTIFACT_SUFFIXES = (".elf", ".bin", ".hex")
 REQUIRED_PROFILE_SOURCE_KIND = "nameplate_and_measurement"
 STEVAL_IPM15B_MAX_INPUT_DC_V = 400.0
+IPM_SD_BKIN_EVIDENCE_SCHEMA = "mic_ai.ipm_sd_bkin_hil.v1"
+IPM_SD_BKIN_REQUIRED_CHECKS = (
+    "sd_normal_high",
+    "sd_forced_low",
+    "all_six_pwm_inactive_on_trip",
+    "mc_fault_latched",
+    "pwm_stays_inactive_after_sd_release",
+    "explicit_clear_and_rearm_required",
+)
 PROFILE_NUMERIC_LIMITS = {
     "pole_pairs": (1.0, 32.0),
     "rated_line_voltage_v": (10.0, 1000.0),
@@ -60,6 +69,95 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest().upper()
+
+
+def ipm_sd_bkin_evidence_errors(
+    evidence_path: Path | None,
+    artifact_paths: dict[str, list[Path]],
+) -> dict[str, Any]:
+    """Validate a low-voltage physical trip report against this exact build."""
+    evidence: dict[str, Any] = {}
+    errors: list[str] = []
+    if evidence_path is None or not evidence_path.is_file():
+        return {
+            "errors": ["evidence_missing"],
+            "path": str(evidence_path) if evidence_path else "",
+        }
+    try:
+        evidence = read_json(evidence_path)
+    except (OSError, json.JSONDecodeError) as exc:
+        return {"errors": ["evidence_unreadable"], "path": str(evidence_path), "detail": str(exc)}
+
+    if evidence.get("schema") != IPM_SD_BKIN_EVIDENCE_SCHEMA:
+        errors.append("evidence_schema")
+    if evidence.get("pass") is not True:
+        errors.append("evidence_not_passing")
+    if evidence.get("power_stage") != "STEVAL-IPM15B":
+        errors.append("evidence_power_stage")
+    if evidence.get("adapter") != "X-NUCLEO-IHM09M2":
+        errors.append("evidence_adapter")
+    if evidence.get("mcu") != "STM32G431RBT6":
+        errors.append("evidence_mcu")
+    if not str(evidence.get("tested_at", "")).strip():
+        errors.append("evidence_tested_at")
+    if not str(evidence.get("operator", "")).strip():
+        errors.append("evidence_operator")
+
+    conditions = evidence.get("conditions")
+    required_conditions = (
+        "mains_disconnected",
+        "dc_bus_below_2v",
+        "j7_disconnected",
+        "motor_disconnected",
+        "auxiliary_vcc_only",
+    )
+    if not isinstance(conditions, dict):
+        errors.append("evidence_conditions")
+    else:
+        for condition in required_conditions:
+            if conditions.get(condition) is not True:
+                errors.append(f"evidence_condition_{condition}")
+
+    checks = evidence.get("checks")
+    if not isinstance(checks, dict):
+        errors.append("evidence_checks")
+    else:
+        for check in IPM_SD_BKIN_REQUIRED_CHECKS:
+            if checks.get(check) is not True:
+                errors.append(f"evidence_check_{check}")
+
+    expected_hex_hashes = {sha256(path) for path in artifact_paths.get(".hex", [])}
+    reported_hex_hash = str(evidence.get("nucleo_hex_sha256", "")).strip().upper()
+    if not reported_hex_hash or reported_hex_hash not in expected_hex_hashes:
+        errors.append("evidence_nucleo_hex_hash")
+
+    capture = evidence.get("capture")
+    capture_result: dict[str, Any] = {}
+    if not isinstance(capture, dict) or not str(capture.get("path", "")).strip():
+        errors.append("evidence_capture")
+    else:
+        capture_path = Path(str(capture["path"]))
+        if capture_path.is_absolute():
+            errors.append("evidence_capture_must_be_relative")
+        capture_root = evidence_path.parent.resolve()
+        capture_path = (capture_root / capture_path).resolve()
+        try:
+            capture_path.relative_to(capture_root)
+        except ValueError:
+            errors.append("evidence_capture_outside_report_directory")
+        reported_capture_hash = str(capture.get("sha256", "")).strip().upper()
+        capture_result = {"path": str(capture_path), "sha256": reported_capture_hash}
+        if not capture_path.is_file() or capture_path.stat().st_size == 0:
+            errors.append("evidence_capture_missing")
+        elif sha256(capture_path) != reported_capture_hash:
+            errors.append("evidence_capture_hash")
+
+    return {
+        "errors": errors,
+        "path": str(evidence_path),
+        "nucleo_hex_sha256": reported_hex_hash,
+        "capture": capture_result,
+    }
 
 
 def find_ioc(project: Path) -> list[Path]:
@@ -246,7 +344,12 @@ def generated_motor_configuration_errors(project: Path, profile: dict[str, Any])
     return {"errors": errors, "values": values, "required_dc_bus_v": required_dc_bus_v}
 
 
-def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any]:
+def inspect(
+    project: Path,
+    profile_path: Path,
+    artifacts: Path,
+    ipm_sd_bkin_evidence: Path | None = None,
+) -> dict[str, Any]:
     checks: dict[str, dict[str, Any]] = {}
 
     def record(name: str, ok: bool, evidence: Any) -> None:
@@ -281,6 +384,48 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
         "ACIM": "ACIM" in source_upper,
     }
     record("mcsdk_topology_markers", all(topology_markers.values()), topology_markers)
+
+    main_path = project / "Src" / "main.c"
+    msp_path = project / "Src" / "stm32g4xx_hal_msp.c"
+    irq_path = project / "Src" / "stm32g4xx_mc_it.c"
+    main_text = main_path.read_text(encoding="utf-8", errors="replace") if main_path.is_file() else ""
+    msp_text = msp_path.read_text(encoding="utf-8", errors="replace") if msp_path.is_file() else ""
+    irq_text = irq_path.read_text(encoding="utf-8", errors="replace") if irq_path.is_file() else ""
+    bkin_static = {
+        "pa6_is_tim1_bkin": "PA6.Signal=TIM1_BKIN" in ioc_text,
+        "break_enabled": "TIM1.BreakState=TIM_BREAK_ENABLE" in ioc_text,
+        "external_break_source_enabled": "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE" in ioc_text,
+        "external_sd_is_active_low": "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW" in ioc_text,
+        "automatic_output_disabled": (
+            "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE" in ioc_text
+            and "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;" in main_text
+        ),
+        "pa6_open_drain_pullup": (
+            "PA6.GPIO_PuPd=GPIO_PULLUP" in ioc_text
+            and "GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;" in msp_text
+            and "GPIO_InitStruct.Pull = GPIO_PULLUP;" in msp_text
+        ),
+        "break_irq_present": (
+            "void TIMx_BRK_M1_IRQHandler(void)" in irq_text
+            and "LL_TIM_IsActiveFlag_BRK(TIM1)" in irq_text
+        ),
+    }
+    record("ipm_sd_bkin_static_configuration", all(bkin_static.values()), bkin_static)
+
+    uart_separation = {
+        "uno_link_usart1_pb6_pb7": all(marker in main_text for marker in (
+            "USART1 PB6/PB7 at 115200 8N1",
+            "gpio.Pin = GPIO_PIN_6 | GPIO_PIN_7;",
+            "gpio.Alternate = GPIO_AF7_USART1;",
+            "huart1.Instance = USART1;",
+        )),
+        "mcsdk_transport_usart2_pa2_pa3": all(marker in source_text for marker in (
+            "huart2.Instance = USART2;",
+            "PA2     ------> USART2_TX",
+            "PA3     ------> USART2_RX",
+        )),
+    }
+    record("uno_and_mcsdk_uart_are_separate", all(uart_separation.values()), uart_separation)
 
     softstart_configured = bool(re.search(
         r"^\s*#define\s+MIC_EXTERNAL_SOFTSTART_CONFIGURED\s+1\b",
@@ -362,6 +507,13 @@ def inspect(project: Path, profile_path: Path, artifacts: Path) -> dict[str, Any
     release_stems = coherent_artifact_stems(artifact_paths)
     record("release_artifacts_are_one_build", bool(release_stems), release_stems)
 
+    bkin_evidence = ipm_sd_bkin_evidence_errors(ipm_sd_bkin_evidence, artifact_paths)
+    record(
+        "ipm_sd_bkin_hardware_trip_validated",
+        not bkin_evidence["errors"],
+        bkin_evidence,
+    )
+
     failures = [name for name, check in checks.items() if not check["pass"]]
     return {
         "tool": "mcsdk_release_preflight",
@@ -380,12 +532,18 @@ def main() -> int:
     parser.add_argument("--project", required=True, type=Path, help="Root of the generated STM32CubeIDE/MCSDK project")
     parser.add_argument("--motor-profile", required=True, type=Path, help="Measured/nameplate ACIM profile JSON")
     parser.add_argument("--artifacts", type=Path, help="Directory containing the generated ELF/BIN/HEX files; defaults to project root")
+    parser.add_argument(
+        "--ipm-sd-bkin-evidence",
+        type=Path,
+        help="Passing mic_ai.ipm_sd_bkin_hil.v1 report tied to this HEX and its capture file",
+    )
     parser.add_argument("--output", type=Path, help="Optional JSON report path")
     args = parser.parse_args()
 
     project = args.project.resolve()
     artifacts = (args.artifacts or args.project).resolve()
-    report = inspect(project, args.motor_profile.resolve(), artifacts)
+    evidence_path = args.ipm_sd_bkin_evidence.resolve() if args.ipm_sd_bkin_evidence else None
+    report = inspect(project, args.motor_profile.resolve(), artifacts, evidence_path)
     try:
         artifacts.relative_to(project)
         artifacts_inside_project = True

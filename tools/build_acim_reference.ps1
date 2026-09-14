@@ -5,6 +5,7 @@ param(
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Debug",
     [string]$MotorProfile,
+    [string]$IpmSdBkinEvidence,
     [switch]$RunReleaseGate
 )
 
@@ -52,6 +53,12 @@ if ([string]::IsNullOrWhiteSpace($projectName)) {
     throw "ProjectManager.ProjectName is missing from the single IOC file."
 }
 $ideProject = Join-Path $projectRoot "STM32CubeIDE"
+$mainSource = Join-Path $projectRoot "Src\main.c"
+$mainSourceText = Get-Content -LiteralPath $mainSource -Raw
+$firmwareBuildMatch = [regex]::Match($mainSourceText, "MIC_NUCLEO_FW_BUILD_ID\s+(\d+)UL")
+if (-not $firmwareBuildMatch.Success) {
+    throw "Nucleo firmware build identity is missing from $mainSource."
+}
 $buildDir = Join-Path $ideProject $Configuration
 $elf = Join-Path $buildDir "$projectName.elf"
 $bin = Join-Path $buildDir "$projectName.bin"
@@ -144,6 +151,7 @@ $manifest = [ordered]@{
     ioc_nominal_phase_voltage_v = $selectedNominalPhaseVoltage
     ioc_nominal_current_a = $selectedNominalCurrent
     ioc_pole_pairs = $selectedPolePairs
+    firmware_build_id = [uint32]$firmwareBuildMatch.Groups[1].Value
     build_log = (Split-Path -Leaf $buildLog)
     build_exit_code = $buildExitCode
     build_errors = $buildErrors
@@ -167,11 +175,17 @@ if (-not (Test-Path -LiteralPath $reportProfile -PathType Leaf)) {
 
 $gate = Join-Path $scriptRoot "mcsdk_release_preflight.py"
 $python = (Get-Command python -ErrorAction Stop).Source
-& $python $gate `
-    --project $projectRoot `
-    --motor-profile $reportProfile `
-    --artifacts $buildDir `
-    --output $releaseGateReport
+$gateArguments = @(
+    $gate,
+    "--project", $projectRoot,
+    "--motor-profile", $reportProfile,
+    "--artifacts", $buildDir,
+    "--output", $releaseGateReport
+)
+if (-not [string]::IsNullOrWhiteSpace($IpmSdBkinEvidence)) {
+    $gateArguments += @("--ipm-sd-bkin-evidence", $IpmSdBkinEvidence)
+}
+& $python @gateArguments
 $gateExitCode = $LASTEXITCODE
 if ($RunReleaseGate -and $gateExitCode -ne 0) {
     throw "Release gate rejected the package. Read mcsdk_release_preflight.json."

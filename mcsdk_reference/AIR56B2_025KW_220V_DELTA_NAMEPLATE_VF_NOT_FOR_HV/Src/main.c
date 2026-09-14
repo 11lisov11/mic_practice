@@ -108,6 +108,7 @@ enum {
   UNO_STATUS_TIMEOUT = 0x10U,
   UNO_STATUS_PWM_ACTIVE = 0x20U,
   UNO_STATUS_SHUTDOWN_RELEASED = 0x40U,
+  UNO_TELEMETRY_FW_BUILD_VALID = 0x10U,
   UNO_TELEMETRY_SOFTSTART_READY = 0x20U,
   UNO_TELEMETRY_VBUS_VALID = 0x40U,
   UNO_TELEMETRY_MCSDK_UNITS = 0x80U,
@@ -125,6 +126,8 @@ enum {
   UNO_SOFTSTART_HOLD_V = 200U,
   UNO_SOFTSTART_MAX_V = 385U,
 };
+
+#define MIC_NUCLEO_FW_BUILD_ID 2026091401UL
 
 #define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1
 #define MIC_SOFTSTART_GPIO_CONTROLLED 0
@@ -283,7 +286,15 @@ static void uno_send_reply(void) {
   reply[20] = (uint8_t)(((uint16_t)temp_deci_c) >> 8U);
   reply[21] = UNO_TEMP_VALID;
   if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
-  reply[29] = UNO_TELEMETRY_MCSDK_UNITS |
+  /* Phase-voltage samples are not implemented by this MCSDK image. Reuse
+     their reserved bytes for an explicit firmware identity. The validity
+     flag prevents older peers from interpreting the value as live ADC data. */
+  reply[23] = (uint8_t)(MIC_NUCLEO_FW_BUILD_ID & 0xFFU);
+  reply[24] = (uint8_t)((MIC_NUCLEO_FW_BUILD_ID >> 8U) & 0xFFU);
+  reply[25] = (uint8_t)((MIC_NUCLEO_FW_BUILD_ID >> 16U) & 0xFFU);
+  reply[26] = (uint8_t)((MIC_NUCLEO_FW_BUILD_ID >> 24U) & 0xFFU);
+  reply[29] = UNO_TELEMETRY_FW_BUILD_VALID |
+              UNO_TELEMETRY_MCSDK_UNITS |
               UNO_TELEMETRY_VBUS_VALID;
   if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
   reply[UNO_FRAME_LEN - 1U] = uno_crc_xor(reply);

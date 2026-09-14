@@ -37,9 +37,15 @@
 #define MOTOR_BENCH_DUTY_Q15 16384U
 #define MOTOR_BENCH_ADC_SAMPLE_MS 20U
 
-// The benchmark executes at both update points of the center-aligned timer.
-// Its result is never connected to CCR registers: physical PWM remains the
-// fixed diagnostic pattern while Saleae measures ISR duration and jitter.
+// The optional controller benchmark executes at both update points of the
+// center-aligned timer. Keep it disabled for the UART-to-PWM chain proof so
+// that this profile tests one subsystem at a time.
+#ifndef MOTOR_BENCH_CONTROL_IRQ_ENABLED
+#define MOTOR_BENCH_CONTROL_IRQ_ENABLED 0
+#endif
+#if MOTOR_BENCH_CONTROL_IRQ_ENABLED != 0 && MOTOR_BENCH_CONTROL_IRQ_ENABLED != 1
+#error "MOTOR_BENCH_CONTROL_IRQ_ENABLED must be 0 or 1"
+#endif
 #define MOTOR_BENCH_CONTROL_HZ (2U * MOTOR_BENCH_PWM_FREQ_HZ)
 #define MOTOR_BENCH_CONTROL_BUDGET_PERCENT 50U
 #define MOTOR_BENCH_MARKER_PORT GPIOC

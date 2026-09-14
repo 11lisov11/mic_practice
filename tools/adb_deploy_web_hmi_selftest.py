@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 
 def load_module(repo: Path) -> Any:
@@ -36,6 +38,78 @@ def main() -> int:
     lv = mod.autostart_script("/home/arduino/app", None, False, True)
     service = mod.systemd_service()
     privileged = mod.privileged_command("systemctl restart unoq-hmi.service")
+    check("offline_wheel_accepts_manylinux_aarch64", Path("msgpack-1.2.2-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl").match(mod.MSGPACK_WHEEL_PATTERN))
+    check("offline_wheel_rejects_host_architecture", not Path("msgpack-1.2.2-cp313-cp313-win_amd64.whl").match(mod.MSGPACK_WHEEL_PATTERN))
+    check("offline_wheel_rejects_other_python", not Path("msgpack-1.2.2-cp312-cp312-manylinux2014_aarch64.whl").match(mod.MSGPACK_WHEEL_PATTERN))
+    for name, code, output, expected_error in (
+        ("configured", 0, "Password expires: never", False),
+        ("factory", 0, "Last password change: password must be changed", True),
+        ("unavailable", 1, "", True),
+    ):
+        with patch.object(mod.subprocess, "run", return_value=subprocess.CompletedProcess([], code, output, "")):
+            caught = False
+            try:
+                mod.check_cron_account_setup(["adb", "-s", "test-device"])
+            except RuntimeError:
+                caught = True
+        check("cron_checks_account_" + name, caught == expected_error)
+
+    for exists in (False, True):
+        with patch.object(mod, "ok", return_value=exists), patch.object(mod, "run") as run:
+            mod.ensure_remote_environment(["adb", "-s", "test-device"], "/home/arduino/test app")
+            commands = [call.args[0][-1] for call in run.call_args_list]
+        check("bootstrap_creates_directories_" + str(exists), commands[0] == "mkdir -p '/home/arduino/test app/static'")
+        check("bootstrap_preserves_existing_venv_" + str(exists),
+              commands[1:] == ([] if exists else ["python3 -m venv --without-pip '/home/arduino/test app/.venv'"]))
+    with patch.object(mod, "ok", side_effect=[False, True]) as ok, patch.object(mod, "run") as run:
+        mod.ensure_remote_environment(["adb", "-s", "test-device"], "/home/arduino/app")
+        check("bootstrap_uses_ensurepip_when_available", ok.call_args_list[-1].args[0][-1] == "python3 -m venv '/home/arduino/app/.venv'")
+        check("bootstrap_skips_offline_fallback_when_venv_succeeds", run.call_count == 1)
+
+    with patch.object(
+        mod.subprocess,
+        "run",
+        return_value=subprocess.CompletedProcess([], 0, "existing-control-token\n", ""),
+    ):
+        check(
+            "existing_control_token_is_read_without_logging",
+            mod.read_remote_secret(["adb", "-s", "test-device"], "/home/arduino/control-token")
+            == "existing-control-token",
+        )
+    with patch.object(
+        mod.subprocess,
+        "run",
+        return_value=subprocess.CompletedProcess([], 0, "short\n", ""),
+    ):
+        check(
+            "short_remote_control_token_is_rejected",
+            mod.read_remote_secret(["adb", "-s", "test-device"], "/home/arduino/control-token") == "",
+        )
+
+    with (
+        patch.object(mod, "ok", side_effect=[False, True]),
+        patch.object(mod, "run") as run,
+        patch.object(mod, "check_cron_account_setup") as cron_check,
+    ):
+        installed = mod.install_autostart(
+            ["adb", "-s", "test-device"],
+            "/home/arduino/app",
+            None,
+            True,
+            False,
+            "/home/arduino/control-token",
+        )
+        commands = [call.args[0][-1] for call in run.call_args_list]
+        check("existing_active_systemd_service_is_retained", installed and not cron_check.called)
+        check(
+            "existing_systemd_service_removes_cron_fallback",
+            any(
+                "grep -v" in command
+                and "/home/arduino/bin/start_unoq_hmi.sh" in command
+                and "crontab -" in command
+                for command in commands
+            ),
+        )
 
     check("autostart_waits_for_router_socket", "while [ ! -S /var/run/arduino-router.sock ]" in low)
     check("autostart_serializes_cron_watchdogs", "flock -n 9 || exit 0" in low)
@@ -52,6 +126,15 @@ def main() -> int:
     check("systemd_restarts_hmi", "Restart=always" in service and "RestartSec=2" in service)
     check("systemd_starts_on_boot", "WantedBy=multi-user.target" in service)
     source = (repo / "tools" / "adb_deploy_web_hmi.py").read_text(encoding="utf-8")
+    check(
+        "standalone_redeploy_preserves_control_token",
+        "Preserving existing HMI control token." in source
+        and "GENERATED HMI CONTROL TOKEN:" not in source,
+    )
+    check(
+        "systemd_restart_has_unprivileged_supervisor_fallback",
+        "restart_by_supervisor" in source and "new_pid" in source,
+    )
     check(
         "systemd_install_removes_duplicate_cron_watchdog",
         "duplicate cron watchdog removed" in source

@@ -17,6 +17,19 @@
 
 ## Главные документы
 
+- `research/AIR56B2_ENERGY_VALUE_METHOD_RU.md` - энергетический выбор измерений, уравнения и ограничения; моделирование поверх FOC.
+- `research/AIR56B2_ENERGY_VALUE_PROTOCOL_RU.md` - замороженная основная проверка; воспроизведение: `tools/run_air56b2_energy_value.ps1`.
+- `research/AIR56B2_ENERGY_VALUE_LIGHT_LOAD_PROTOCOL_RU.md` - отдельная проспективная проверка при 10% нагрузки, не замена основной серии.
+- `research/AIR56B2_ACTIVE_PROBE_RESULTS_RU.md` - 224 опыта и 21 уточнение: преимущество активного выбора не подтвердилось; результаты и ограничения.
+- `research/AIR56B2_ACTIVE_PROBE_PROTOCOL_RU.md` - следующий опыт: информационный выбор парных проб и измеренная цена возврата; только моделирование.
+- `research/AIR56B2_ACTIVE_PROBE_PRIOR_ART_RU.md` - шесть близких первоисточников; сочетание известных приёмов ещё не научная новизна.
+- `research/AIR56B2_ACTIVE_PROBE_IDENTIFIABILITY_RU.md` - доказуемые свойства парного измерения и границы выводов из короткой истории.
+- `research/AIR56B2_BUDGET_RESULTS_RU.md` - проверка нового кандидата: 192 опыта; преимущество фиксированного бюджета не подтвердилось.
+- `research/AIR56B2_NOVELTY_AUDIT_20260909_RU.md` - ближайшие научные аналоги; новизна энергетического фильтра пока не установлена.
+- `research/AIR56B2_BUDGET_PROTOCOL_RU.md` - протокол бюджета проб, условные границы и сравнение с отключением отдельных ограничений.
+- `research/AIR56B2_DYNAMIC_POWER_RESULTS_RU.md` - динамическая проверка потерь, FOC и полных затрат проб (исследование на ПК).
+- `research/AIR56B2_ENERGY_CORE_THEORY_RU.md` - новая энергетически согласованная модель, уравнения и ограничения выводов.
+
 - `output/pdf/MIC_AI_NUCLEO_SYSTEM_WIRING.pdf` - семилистовая схема соединений.
 - `hardware/nucleo_system_wiring/MIC_AI_NUCLEO_CONNECTIONS.csv` - таблица всех контактов.
 - `hardware/nucleo_system_wiring/ASSEMBLY_RU.md` - порядок сборки.
@@ -60,13 +73,39 @@ python .\tools\nucleo_release_preflight.py
 
 ## Исследовательский пакет AIR56B2
 
+Следующий динамический этап: `research/AIR56B2_DYNAMIC_POWER_RESULTS_RU.md`.
+В нём потери стали включены в уравнения токов, а сравнение учитывает разгон,
+нагрузку, энергию проб и отказы адаптации. Основная сетка объекта - 50 мкс,
+регулятора - 100 мкс; дополнительно проверяется измельчение объекта.
+Это усреднённое моделирование с энкодером, без новых весов ИИ и без изменения прошивок.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/run_air56b2_dynamic_power.ps1
+```
+
+Обновление 08.09.2026: добавлен эксперимент адаптации потока по измерительному
+окну. Аудит выявил ошибки интерпретации момента и энергетического баланса в
+старой модели потерь; её прежние проценты экономии требуют пересчёта.
+В новом опыте используются исправленный расчёт, шум измерений и сопоставимые
+условия для аналитического метода и нейросети.
+
+- `research/AIR56B2_MEASUREMENT_ADAPTATION_RESULTS_RU.md` - новые результаты.
+- `research/AIR56B2_MEASUREMENT_ADAPTATION_THEORY_RU.md` - математика, гипотезы и дальнейшие работы.
+- `artifacts/measurement_adaptation_20260908_v2/` - протокол, веса и полные результаты.
+
+Воспроизведение нового этапа:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/run_air56b2_measurement_adaptation.ps1
+```
+
 Полный воспроизводимый прогон моделирования и проверок:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\run_air56b2_research_pipeline.ps1 -Full
 ```
 
-Зафиксированная контрольная точка: `220` автоматических тестов PASS и `41/41` ворот manifest v6 PASS. Результаты относятся к SIL-моделированию; `hardware_release_ready=false` до идентификации реального двигателя и прохождения стендовой программы.
+Историческая контрольная точка 28.08.2026: `220` автоматических тестов PASS и `41/41` ворот manifest v6 PASS. Она не включает новые проверки баланса потерь. Результаты относятся к SIL-моделированию; `hardware_release_ready=false` до идентификации реального двигателя и прохождения стендовой программы.
 
 - `artifacts/air56b2_research_manifest.json` - канонический manifest с SHA-256.
 - `research/AIR56B2_FINAL_RESULTS_RU.md` - итоговые численные результаты и ограничения.

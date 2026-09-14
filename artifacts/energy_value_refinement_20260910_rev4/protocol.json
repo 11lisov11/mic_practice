@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "revision": 4,
+  "stage": "refinement",
+  "seeds": [
+    92063
+  ],
+  "methods": [
+    "fixed",
+    "ungated",
+    "guarded_fit",
+    "entropy",
+    "greedy",
+    "greedy_high",
+    "greedy_menu",
+    "energy_value"
+  ],
+  "frozen_controller_seed": 92062,
+  "profiles": [
+    [
+      6.0,
+      false,
+      0.25,
+      0.5,
+      2.6
+    ],
+    [
+      12.0,
+      false,
+      0.25,
+      0.5,
+      2.6
+    ]
+  ],
+  "speeds": [
+    0.7
+  ],
+  "substeps": [
+    2,
+    4,
+    8
+  ],
+  "control_dt_s": 0.0001,
+  "recovery_tail_s": 1.0,
+  "noise_seed": 730,
+  "novelty_established": false,
+  "hardware_validated": false,
+  "planning_cost_fractions": [
+    0.25,
+    0.5,
+    1.0
+  ],
+  "cases": [
+    {
+      "case": "s92063_motor0_k0",
+      "plant": {
+        "rs_ohm": 7.505724877543049,
+        "rr_ohm": 15.851849174580982,
+        "lls_h": 0.0026438587713630206,
+        "llr_h": 0.0021336790601383317,
+        "lm_h": 0.47995566680371576,
+        "rc_ohm": 943.635260047228,
+        "inertia_kg_m2": 7.09634950579133e-05,
+        "viscous_nm_s": 0.00019739272262073426,
+        "pole_pairs": 1,
+        "coulomb_nm": 0.017536974974072608,
+        "friction_smoothing_rad_s": 0.5,
+        "saturation_kappa": 0.0,
+        "saturation_knee_wb": 0.5
+      },
+      "controller": {
+        "Rs": 5.439335642321776,
+        "Rr": 14.121393022982712,
+        "Lls": 0.003594202646612131,
+        "Llr": 0.0026543774206577307,
+        "Lm": 0.4832180152202646,
+        "J": 8.223824134472835e-05,
+        "B": 0.00015687139823603434,
+        "p": 1,
+        "i_limit": 3.1,
+        "psi_sat": 0.0,
+        "sat_exp": 2.0,
+        "lm_min_scale": 0.45,
+        "rs_temp_coeff": 0.0039,
+        "rr_temp_coeff": 0.0039,
+        "temp_ref_c": 20.0
+      }
+    }
+  ],
+  "protocol_note_sha256": "46ed0ea466ca7fbc284790d397a9227a9dddffe1a5c6b65416ed8d88985033be"
+}

@@ -18,6 +18,8 @@ const armProfileLabel = document.getElementById("armProfileLabel");
 const armProfileNote = document.getElementById("armProfileNote");
 const vbusMeterInput = document.getElementById("vbusMeterInput");
 const vbusCaptureBtn = document.getElementById("vbusCaptureBtn");
+const vbusResetBtn = document.getElementById("vbusResetBtn");
+const vbusCalibrationState = document.getElementById("vbusCalibrationState");
 const vbusCaptureResult = document.getElementById("vbusCaptureResult");
 const modeToggle = document.getElementById("modeToggle");
 const modeButtons = Array.from(modeToggle.querySelectorAll(".seg"));
@@ -101,6 +103,43 @@ function mcField(data, suffix, fallback = 0) {
   if (Object.prototype.hasOwnProperty.call(data, canonical)) return data[canonical];
   if (Object.prototype.hasOwnProperty.call(data, legacy)) return data[legacy];
   return fallback;
+}
+
+function vbusReasonRu(value) {
+  const reason = String(value || "").trim();
+  const exact = {
+    "compile-time calibration override": "используется заводское подтверждение сборки",
+    "zero-point capture is required": "требуется записать нулевую точку при разряженной шине",
+    "known-HV capture is required": "требуется записать контрольную точку известного высокого напряжения",
+    "stored calibration schema is invalid": "неверная версия файла калибровки",
+    "stored calibration points are missing": "в файле отсутствуют измерительные точки",
+    "calibration identity is missing": "в файле отсутствует идентификатор прошивок",
+    "calibration identity is incomplete": "идентификатор прошивок неполный",
+    "firmware or telemetry identity changed; recalibration is required": "состав прошивок изменился, требуется повторная проверка",
+    "calibration point values are invalid": "значения измерительных точек повреждены",
+    "calibration span is invalid": "недостаточный диапазон между нулевой и рабочей точками",
+    "two-point Vbus verification passed": "двухточечная проверка Vbus пройдена",
+    "capture a new zero point before the known-HV point": "сначала заново запишите нулевую точку",
+    "calibration capture is incomplete": "набор измерений неполный",
+    "calibration capture contains non-finite values": "в измерениях есть недопустимые значения",
+    "MCSDK Vbus telemetry is not valid": "телеметрия Vbus от MCSDK недостоверна",
+    "Nucleo firmware identity is not available": "Nucleo не передал идентификатор прошивки",
+    "MCSDK Vbus telemetry fields disagree": "поля телеметрии Vbus от MCSDK не согласованы",
+    "motor-controller UART error counter changed during capture": "во время измерения изменился счётчик ошибок UART",
+    "firmware or telemetry identity changed during capture": "во время измерения изменился состав прошивок или формат телеметрии",
+    "clear motor-controller UART error counters before known-HV capture": "перед рабочей точкой сбросьте ошибки связи с Nucleo",
+    "meter voltage must be 0..2 V for zero or 250..360 V for known HV": "введите 0...2 В для нулевой точки или 250...360 В для рабочей точки",
+  };
+  if (exact[reason]) return exact[reason];
+  if (reason.startsWith("stored calibration rejected:")) return `сохранённая калибровка отклонена: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("calibration gain mismatch:")) return `несовпадение масштаба Vbus: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("reported zero-bus voltage is too high:")) return `при разряженной шине измерено слишком высокое напряжение: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("zero-point capture is unstable:")) return `нулевая точка нестабильна: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("zero-point mismatch is too large:")) return `слишком большое расхождение нулевой точки: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("known-HV mismatch is too large:")) return `слишком большое расхождение рабочей точки: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("known-HV capture is unstable:")) return `рабочая точка нестабильна: ${reason.split(":", 2)[1].trim()}`;
+  if (reason.startsWith("calibration capture requires 20 samples; got")) return `получено недостаточно отсчётов: ${reason.split("got", 2)[1].trim()} из 20`;
+  return reason || "причина не указана";
 }
 
 function setConnection(ok) {
@@ -259,6 +298,18 @@ async function apiVbusCapture(meterVdc) {
   return data.capture;
 }
 
+async function apiVbusReset() {
+  const res = await fetch("/api/calibration/vbus", {
+    method: "POST",
+    headers: controlHeaders(true),
+    body: JSON.stringify({ action: "reset" }),
+  });
+  const data = await res.json().catch(() => ({ ok: false, error: "Некорректный ответ" }));
+  noteApiAccess(data);
+  if (!data.ok) throw new Error(data.error || "Сброс калибровки отклонён");
+  return data.calibration;
+}
+
 async function apiStatus() {
   const res = await fetch("/api/status", { cache: "no-store" });
   const data = await res.json().catch(() => ({ ok: false }));
@@ -385,7 +436,23 @@ function setHvArmUI(data) {
       : "Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.";
   }
   if (vbusCaptureBtn) vbusCaptureBtn.disabled = hvArmed || vbusCaptureBusy;
+  if (vbusResetBtn) vbusResetBtn.disabled = hvArmed || vbusCaptureBusy;
   if (vbusMeterInput) vbusMeterInput.disabled = hvArmed || vbusCaptureBusy;
+  if (vbusCalibrationState) {
+    const calibrated = Number(data.hmi_vbus_hv_calibrated || 0) === 1;
+    const zeroCaptured = Number(data.hmi_vbus_zero_captured || 0) === 1;
+    const highCaptured = Number(data.hmi_vbus_high_captured || 0) === 1;
+    const reason = vbusReasonRu(data.hmi_vbus_calibration_reason);
+    if (calibrated) {
+      const meter = Number(data.hmi_vbus_high_meter_vdc || 0).toFixed(1);
+      const measured = Number(data.hmi_vbus_high_mc_vdc || 0).toFixed(1);
+      vbusCalibrationState.textContent = `Vbus подтверждён: мультиметр ${meter} В, MCSDK ${measured} В.`;
+    } else if (zeroCaptured && !highCaptured) {
+      vbusCalibrationState.textContent = `Нулевая точка записана; рабочая HV-точка ещё не подтверждена. ${reason}`;
+    } else {
+      vbusCalibrationState.textContent = `Калибровка Vbus не подтверждена: ${reason}.`;
+    }
+  }
 }
 
 function scheduleFreqSend(value) {
@@ -470,12 +537,31 @@ if (vbusCaptureBtn) {
       vbusCaptureResult.textContent =
         `Записано: raw ${raw.mean.toFixed(1)} (${raw.min.toFixed(0)}...${raw.max.toFixed(0)}), ` +
         `Vbus ${scaled.mean.toFixed(2)} В, мультиметр ${meter}.`;
+      await refreshStatus();
     } catch (err) {
-      vbusCaptureResult.textContent = err.message || "Измерение Vbus не выполнено.";
+      vbusCaptureResult.textContent = vbusReasonRu(err.message || "Измерение Vbus не выполнено.");
     } finally {
       vbusCaptureBusy = false;
       vbusCaptureBtn.disabled = hvArmed;
       if (vbusMeterInput) vbusMeterInput.disabled = hvArmed;
+    }
+  });
+}
+
+if (vbusResetBtn) {
+  vbusResetBtn.addEventListener("click", async () => {
+    vbusCaptureBusy = true;
+    vbusResetBtn.disabled = true;
+    if (vbusCaptureResult) vbusCaptureResult.textContent = "Сбрасываю калибровку и подтверждаю STOP...";
+    try {
+      await apiVbusReset();
+      if (vbusCaptureResult) vbusCaptureResult.textContent = "Калибровка Vbus сброшена.";
+      await refreshStatus();
+    } catch (err) {
+      if (vbusCaptureResult) vbusCaptureResult.textContent = vbusReasonRu(err.message || "Сброс не выполнен.");
+    } finally {
+      vbusCaptureBusy = false;
+      vbusResetBtn.disabled = hvArmed;
     }
   });
 }

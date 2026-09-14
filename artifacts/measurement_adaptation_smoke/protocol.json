@@ -1,0 +1,140 @@
+{
+  "schema": "air56b2-measurement-adaptation-protocol-v1",
+  "split_seed": 560908,
+  "splits": {
+    "train": [
+      110,
+      119,
+      205,
+      247
+    ],
+    "validation": [
+      49,
+      66
+    ],
+    "holdout": [
+      90,
+      137
+    ],
+    "ood": [
+      39,
+      75
+    ]
+  },
+  "training_seeds": [
+    560909
+  ],
+  "protocol": {
+    "center_id_a": 0.83,
+    "low_id_a": 0.55,
+    "high_id_a": 1.11,
+    "current_limit_a": 3.1,
+    "voltage_limit_v": 170.0,
+    "rated_speed_rad_s": 284.8377339254746,
+    "repeat_power_tolerance_w": 4.0,
+    "verification_margin_w": 2.0
+  },
+  "conditions": [
+    {
+      "name": "clean",
+      "power_noise_w": 0.0,
+      "current_noise_a": 0.0,
+      "voltage_noise_v": 0.0,
+      "speed_noise_rad_s": 0.0,
+      "power_gain_error": 0.0,
+      "power_offset_w": 0.0,
+      "excitation_bias_w_per_a": 0.0,
+      "load_drift_fraction": 0.0,
+      "ood": false
+    },
+    {
+      "name": "measurement_noise",
+      "power_noise_w": 0.75,
+      "current_noise_a": 0.01,
+      "voltage_noise_v": 0.3,
+      "speed_noise_rad_s": 0.5,
+      "power_gain_error": 0.0,
+      "power_offset_w": 0.0,
+      "excitation_bias_w_per_a": 0.0,
+      "load_drift_fraction": 0.0,
+      "ood": false
+    },
+    {
+      "name": "systematic_power_bias",
+      "power_noise_w": 0.75,
+      "current_noise_a": 0.01,
+      "voltage_noise_v": 0.3,
+      "speed_noise_rad_s": 0.5,
+      "power_gain_error": 0.03,
+      "power_offset_w": 10.0,
+      "excitation_bias_w_per_a": 12.0,
+      "load_drift_fraction": 0.0,
+      "ood": false
+    },
+    {
+      "name": "load_drift",
+      "power_noise_w": 0.75,
+      "current_noise_a": 0.01,
+      "voltage_noise_v": 0.3,
+      "speed_noise_rad_s": 0.5,
+      "power_gain_error": 0.0,
+      "power_offset_w": 0.0,
+      "excitation_bias_w_per_a": 0.0,
+      "load_drift_fraction": 0.3,
+      "ood": false
+    },
+    {
+      "name": "ood_parameters",
+      "power_noise_w": 0.75,
+      "current_noise_a": 0.01,
+      "voltage_noise_v": 0.3,
+      "speed_noise_rad_s": 0.5,
+      "power_gain_error": 0.0,
+      "power_offset_w": 0.0,
+      "excitation_bias_w_per_a": 0.0,
+      "load_drift_fraction": 0.0,
+      "ood": true
+    }
+  ],
+  "feature_keys": [
+    "measured_speed_pu",
+    "center_current_peak_pu",
+    "center_voltage_peak_pu",
+    "low_minus_center_power_100w",
+    "high_minus_center_power_100w",
+    "low_current_peak_pu",
+    "high_current_peak_pu",
+    "low_voltage_peak_pu",
+    "high_voltage_peak_pu"
+  ],
+  "speeds_pu": [
+    0.25,
+    0.6,
+    0.95
+  ],
+  "torques_pu": [
+    0.2,
+    0.45,
+    0.7,
+    0.95
+  ],
+  "thermal_cases_c": [
+    [
+      30.0,
+      35.0
+    ],
+    [
+      85.0,
+      105.0
+    ]
+  ],
+  "epochs": 20,
+  "oracle_grid_points": 21,
+  "primary_comparison": "neural_context vs analytic_fit, measurement_noise, paired mean loss W",
+  "secondary_comparison": "neural_context vs neural_single, same windows and guard",
+  "inference": "exploratory; bootstrap conditional on sampled priors and fixed training seeds",
+  "power_observation": "virtual input wattmeter P_shaft + modeled_total_loss; no bench estimator implemented",
+  "time_contract": "four settled windows plus one verification; settling time is NOT simulated",
+  "mechanics_contract": "torque input denotes shaft torque; electromagnetic torque adds B*omega + Coulomb friction",
+  "hardware_release_ready": false
+}

@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "nameplate": {
+    "output_power_w": 250.0,
+    "line_voltage_v": 220.0,
+    "line_current_a": 1.24,
+    "power_factor": 0.78,
+    "efficiency": 0.68,
+    "frequency_hz": 50.0,
+    "rated_speed_rpm": 2720.0,
+    "pole_pairs": 1,
+    "connection": "D",
+    "start_current_ratio": 5.3,
+    "start_torque_ratio": 2.2,
+    "max_torque_ratio": 2.2,
+    "source_url": "https://cdn-01.iek.ru/media/original/78c31060549010eaa9a1bb1f4f6d2d8cb3155062b138bfd13478f55521c38a47.pdf"
+  },
+  "seed": 92061,
+  "dt_s": 0.0001,
+  "duration_s": 6.0,
+  "boundary": "averaged_motor_terminals_no_inverter_loss_no_switching_gateway",
+  "sensor_assumptions": {
+    "current_noise_std_a": 0.002,
+    "current_lsb_a": 0.002,
+    "current_delay_steps": 0,
+    "encoder_bits": 12,
+    "speed_window_s": 0.004
+  },
+  "observer": "current",
+  "controller_information": "one frozen cold F1 model; measured current/voltage/encoder speed; no true torque/flux/temperature",
+  "thermal_assumption": "constant hot resistances per trial; no online thermal state",
+  "core_model": "Rc=F1.core_resistance/F2.core_loss_scale; nonlinear kappa explicit prior, knee=.5Wb peak",
+  "not_validated": [
+    "hardware",
+    "sensorless",
+    "neural_dynamic_transfer",
+    "startup_nameplate_ratios",
+    "PWM_switching",
+    "whole_drive_efficiency"
+  ],
+  "cases": [
+    {
+      "case": "motor0_k0",
+      "plant": {
+        "rs_ohm": 6.538221415470497,
+        "rr_ohm": 19.510368021746856,
+        "lls_h": 0.005409661804778927,
+        "llr_h": 0.004263113140869575,
+        "lm_h": 0.48562789297571346,
+        "rc_ohm": 860.0154802214334,
+        "inertia_kg_m2": 0.000179517386592816,
+        "viscous_nm_s": 5.749203050710097e-05,
+        "pole_pairs": 1,
+        "coulomb_nm": 0.0341368510756214,
+        "friction_smoothing_rad_s": 0.5,
+        "saturation_kappa": 0.0,
+        "saturation_knee_wb": 0.5
+      },
+      "controller": {
+        "Rs": 5.445331567772515,
+        "Rr": 13.992049103332068,
+        "Lls": 0.005409661804778927,
+        "Llr": 0.004263113140869575,
+        "Lm": 0.48562789297571346,
+        "J": 0.000179517386592816,
+        "B": 0.00016176078780402497,
+        "p": 1,
+        "i_limit": 3.1,
+        "psi_sat": 0.0,
+        "sat_exp": 2.0,
+        "lm_min_scale": 0.45,
+        "rs_temp_coeff": 0.0039,
+        "rr_temp_coeff": 0.0039,
+        "temp_ref_c": 20.0
+      }
+    }
+  ],
+  "probe": {
+    "dt_s": 0.0001,
+    "baseline_id_a": 0.83,
+    "low_id_a": 0.65,
+    "high_id_a": 1.0,
+    "slew_a_per_s": 1.5,
+    "start_after_s": 1.6,
+    "minimum_settle_s": 0.15,
+    "window_s": 0.12,
+    "max_stage_s": 1.2,
+    "speed_error_limit_rad_s": 3.0,
+    "power_cv_tolerance": 0.03,
+    "power_abs_tolerance_w": 2.0,
+    "current_limit_a": 3.1,
+    "voltage_limit_v": 170.0,
+    "repeat_drift_limit_w": 4.0,
+    "improvement_margin_w": 2.0
+  },
+  "plant_substeps": 8,
+  "speeds": [
+    0.7
+  ]
+}

@@ -40,8 +40,8 @@
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026082601U;
-static const uint8_t RPC_SCHEMA_VERSION = 2U;
+static const uint32_t FW_BUILD_ID = 2026091401U;
+static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
 #define UART_ECHO_TEST 0
@@ -67,19 +67,24 @@ static const bool PWM_THREE_PWM_MODE = true;
 // External PWM bridge to Nucleo (SPI/UART) for hardware dead-time + complementary outputs.
 static const bool USE_EXTERNAL_PWM = true;
 // MCSDK owns the PWM pins and accepts only a scalar V/F setpoint over UART.
+#if defined(UNOQ_LOGIC_BENCH) && UNOQ_LOGIC_BENCH
+// Logic-only image used with the isolated Nucleo PWM bench. Never release it
+// as the production UNO Q firmware.
+static const bool NUCLEO_MCSDK_ACIM_BACKEND = false;
+#else
 static const bool NUCLEO_MCSDK_ACIM_BACKEND = true;
+#endif
 static const bool USE_NUCLEO_SPI = false;
 static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
 static const uint32_t NUCLEO_UART_BAUD = 115200;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
-// Keep the UNO Q Zephyr Serial TX path comfortably below line rate.
-// 32 bytes at 115200 baud takes ~2.78 ms on the wire. In practice RouterBridge,
-// HTTP polling and Saleae captures can starve Serial polling briefly; 10 ms gives
-// a 100 Hz command stream while leaving much more RX headroom.
-static const uint32_t NUCLEO_RUN_MIN_SEND_US = 10000;
-// Scalar V/f is generated locally by the Nucleo. A 20 Hz setpoint heartbeat
-// is enough for the frequency ramp and cuts UART activity near switching nodes.
+// Nucleo closes the fast control loops; UNO Q only sends supervisory setpoints.
+// A 20 Hz command stream survives concurrent RouterBridge status polling without
+// overflowing the small Zephyr UART receive buffer.
+static const uint32_t NUCLEO_RUN_MIN_SEND_US = 50000;
+// Scalar V/f is generated locally by the Nucleo. The same 20 Hz heartbeat is
+// enough for the frequency ramp and cuts UART activity near switching nodes.
 static const uint32_t NUCLEO_SCALAR_MIN_SEND_US = 50000;
 static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 8000;
 // Motor-controller UART protocol. BP_* identifiers are retained as wire-ABI
@@ -136,6 +141,7 @@ static const uint8_t BP_TEMP_FLAG_FAULT = 0x02;
 static const float BP_PHASE_VREF = 3.3f;
 static const uint8_t BP_PHASE_FLAG_VALID = 0x01;
 static const uint8_t BP_PHASE_FLAG_C_VIRTUAL = 0x02;
+static const uint8_t MC_TELEMETRY_FLAG_FW_BUILD_VALID = 0x10;
 static const uint8_t MC_TELEMETRY_FLAG_SOFTSTART_READY = 0x20;
 static const uint8_t MC_TELEMETRY_FLAG_VBUS_VALID = 0x40;
 static const uint8_t MC_TELEMETRY_FLAG_MCSDK_UNITS = 0x80;
@@ -343,6 +349,7 @@ static uint16_t g_bp_phase_a_raw = 0;
 static uint16_t g_bp_phase_b_raw = 0;
 static uint16_t g_bp_phase_c_raw = 2048;
 static uint8_t g_bp_phase_flags = 0;
+static uint32_t g_bp_fw_build = 0;
 static bool g_bp_mcsdk_telemetry = false;
 static bool g_bp_vbus_valid = false;
 static bool g_bp_softstart_ready = false;
@@ -927,7 +934,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(78);
+  mp_tx_array(79);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -1025,6 +1032,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int((int32_t)RPC_SCHEMA_VERSION);
   mp_tx_int(g_bp_softstart_ready ? 1 : 0);
   mp_tx_int((int32_t)MC_CAP_VF);  // Current Nucleo MCSDK image supports scalar V/f only.
+  mp_tx_int((int32_t)g_bp_fw_build);  // RPC index 78: Nucleo firmware identity.
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -2087,6 +2095,7 @@ static String rpc_get() {
   s += " bp_mcsdk_telemetry="; s += String(g_bp_mcsdk_telemetry ? 1 : 0);
   s += " bp_vbus_valid="; s += String(g_bp_vbus_valid ? 1 : 0);
   s += " bp_softstart_ready="; s += String(g_bp_softstart_ready ? 1 : 0);
+  s += " bp_fw_build="; s += String((unsigned long)g_bp_fw_build);
   s += " bp_precharge_managed=0";
   s += " bp_phase_valid="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_VALID) ? 1 : 0);
   s += " bp_phase_c_virtual="; s += String((g_bp_phase_flags & BP_PHASE_FLAG_C_VIRTUAL) ? 1 : 0);
@@ -2502,6 +2511,15 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   g_bp_mcsdk_telemetry = (g_bp_phase_flags & MC_TELEMETRY_FLAG_MCSDK_UNITS) != 0U;
   g_bp_vbus_valid = (g_bp_phase_flags & MC_TELEMETRY_FLAG_VBUS_VALID) != 0U;
   g_bp_softstart_ready = (g_bp_phase_flags & MC_TELEMETRY_FLAG_SOFTSTART_READY) != 0U;
+  if ((g_bp_phase_flags & MC_TELEMETRY_FLAG_FW_BUILD_VALID) != 0U &&
+      (g_bp_phase_flags & BP_PHASE_FLAG_VALID) == 0U) {
+    g_bp_fw_build = (uint32_t)rx[23] |
+                    ((uint32_t)rx[24] << 8U) |
+                    ((uint32_t)rx[25] << 16U) |
+                    ((uint32_t)rx[26] << 24U);
+  } else {
+    g_bp_fw_build = 0U;
+  }
   g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
   if (g_bp_mcsdk_telemetry) {
     g_bp_vdc = (float)g_bp_vbus_raw * 0.1f;
@@ -2534,9 +2552,15 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   g_bp_fan_tach_x30 = rx[BP_RSP_FAN_TACH_X30];
   g_bp_fan_duty = (float)g_bp_fan_duty_q8 / 255.0f;
   g_bp_fan_rpm = (float)g_bp_fan_tach_x30 * BP_FAN_TACH_RPM_STEP;
-  g_bp_phase_a_raw = (uint16_t)rx[23] | ((uint16_t)rx[24] << 8);
-  g_bp_phase_b_raw = (uint16_t)rx[25] | ((uint16_t)rx[26] << 8);
-  g_bp_phase_c_raw = (uint16_t)rx[27] | ((uint16_t)rx[28] << 8);
+  if ((g_bp_phase_flags & BP_PHASE_FLAG_VALID) != 0U) {
+    g_bp_phase_a_raw = (uint16_t)rx[23] | ((uint16_t)rx[24] << 8);
+    g_bp_phase_b_raw = (uint16_t)rx[25] | ((uint16_t)rx[26] << 8);
+    g_bp_phase_c_raw = (uint16_t)rx[27] | ((uint16_t)rx[28] << 8);
+  } else {
+    g_bp_phase_a_raw = 0U;
+    g_bp_phase_b_raw = 0U;
+    g_bp_phase_c_raw = 0U;
+  }
   if (g_bp_phase_a_raw > 4095U) g_bp_phase_a_raw = 4095U;
   if (g_bp_phase_b_raw > 4095U) g_bp_phase_b_raw = 4095U;
   if (g_bp_phase_c_raw > 4095U) g_bp_phase_c_raw = 4095U;
@@ -2693,7 +2717,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   if (!force && !enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
     return;
   }
-  if (!force && enable && !g_clear_fault_req && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
+  if (!force && (enable || g_clear_fault_req) && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
     nucleo_uart_poll();
     if (g_nucleo_waiting_rsp) {
       if ((uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_REPLY_GUARD_US) {
@@ -2703,7 +2727,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     }
   }
   const uint32_t min_send_us = local_scalar ? NUCLEO_SCALAR_MIN_SEND_US : NUCLEO_RUN_MIN_SEND_US;
-  if (!force && enable && !g_clear_fault_req &&
+  if (!force && (enable || g_clear_fault_req) &&
       (uint32_t)(now_us - g_nucleo_last_send_us) < min_send_us) {
     return;
   }

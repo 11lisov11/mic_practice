@@ -1,0 +1,2191 @@
+{
+  "case": "motor0_k0",
+  "speed_fraction": 0.7,
+  "disturbance": false,
+  "controller_dt_s": 0.0001,
+  "plant_dt_s": [
+    5e-05,
+    2.5e-05,
+    1.25e-05
+  ],
+  "checks": [
+    {
+      "method": "ungated",
+      "loss_savings_j": [
+        6.063879424010338,
+        6.077475654861701,
+        6.07814057276218
+      ],
+      "spread_j": 0.014261148751842256,
+      "peak_current_spread_a": 9.605946029367374e-05,
+      "outcomes": [
+        [
+          "scheduled_return",
+          true
+        ],
+        [
+          "scheduled_return",
+          true
+        ],
+        [
+          "scheduled_return",
+          true
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "method": "payback_only",
+      "loss_savings_j": [
+        0.3174022244659511,
+        0.3190137990608264,
+        0.3193746128187911
+      ],
+      "spread_j": 0.001972388352839971,
+      "peak_current_spread_a": 9.605946029367374e-05,
+      "outcomes": [
+        [
+          "payback_not_established",
+          false
+        ],
+        [
+          "payback_not_established",
+          false
+        ],
+        [
+          "payback_not_established",
+          false
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "method": "budget_payback",
+      "loss_savings_j": [
+        -0.5710024237065738,
+        -0.5657171501012215,
+        -0.5655256018386297
+      ],
+      "spread_j": 0.005476821867944182,
+      "peak_current_spread_a": 9.605946029367374e-05,
+      "outcomes": [
+        [
+          "probe_energy_budget",
+          false
+        ],
+        [
+          "probe_energy_budget",
+          false
+        ],
+        [
+          "probe_energy_budget",
+          false
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "rows": [
+    {
+      "method": "fixed",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 2,
+      "probe_complete": true,
+      "probe_reason": null,
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.42562884754403,
+        "stator_copper_j": 57.803961934831655,
+        "rotor_copper_j": 28.217216117789246,
+        "core_j": 80.42021522573697,
+        "friction_j": 51.599616988495335,
+        "shaft_work_j": 228.54328498048926,
+        "stored_change_j": 3.8413336001975353,
+        "loss_j": 218.04101026685322
+      },
+      "peak_current_a": 1.0256703943003513,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.02323088885479615,
+      "max_step_balance_error_j": 1.984089975648473e-15,
+      "sum_abs_balance_error_j": 4.4210722871540226e-11,
+      "final_id_a": 0.83,
+      "final_phase": "fixed",
+      "probe_events": [],
+      "max_power_measurement_error_after_1p6s_w": 0.8850996335611967,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": null
+    },
+    {
+      "method": "ungated",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 2,
+      "probe_complete": true,
+      "probe_reason": "scheduled_return",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 444.36155817860936,
+        "stator_copper_j": 54.42274340691437,
+        "rotor_copper_j": 34.827040725249745,
+        "core_j": 71.12772654633305,
+        "friction_j": 51.5996201643457,
+        "shaft_work_j": 228.54326734779906,
+        "stored_change_j": 3.8411599879690104,
+        "loss_j": 211.97713084284288
+      },
+      "peak_current_a": 1.129342491728857,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.09053565145859789,
+      "max_step_balance_error_j": 1.9034253340155516e-15,
+      "sum_abs_balance_error_j": 4.390938622493264e-11,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.58975167946889,
+            "current_peak_a": 1.0114089930448928,
+            "voltage_peak_v": 95.881177828681
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.8664838361136,
+            "current_peak_a": 0.9342829489801016,
+            "voltage_peak_v": 83.19429004088612
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 88.00734436797349,
+            "current_peak_a": 1.1202258412857622,
+            "voltage_peak_v": 109.0432865584825
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.63024729633933,
+            "current_peak_a": 1.0116028087346383,
+            "voltage_peak_v": 95.90080826589255
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.81126766702639,
+            "current_peak_a": 0.9339082428908942,
+            "voltage_peak_v": 83.19548344272681
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "committed",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "committed",
+          "kind": "rejected",
+          "reason": "scheduled_return",
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.7298,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.9147817940178697,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": false,
+        "spent_upper_j": 5.844070975414389,
+        "ever_committed": true,
+        "gain_lower_w": -0.14506598755749575,
+        "payback_status": "scheduled_holding_ended_conditional_only",
+        "net_gain_lower_j": -9.679151693415546,
+        "bounds_valid": true,
+        "anchor_power_w": 82.58975167946889,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_accept",
+            "spent_upper_j": 4.40333395440637,
+            "gain_lower_w": -0.14506598755749575,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.679151693415546
+          },
+          {
+            "time_s": 5.6098,
+            "reason": "scheduled_return",
+            "spent_upper_j": 4.40333395440637
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "payback_only",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 2,
+      "probe_complete": true,
+      "probe_reason": "payback_not_established",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.1076231962156,
+        "stator_copper_j": 57.46147309925638,
+        "rotor_copper_j": 29.561236818592153,
+        "core_j": 79.10128866143793,
+        "friction_j": 51.59960946310079,
+        "shaft_work_j": 228.54322630760646,
+        "stored_change_j": 3.8407888462203816,
+        "loss_j": 217.72360804238727
+      },
+      "peak_current_a": 1.129342491728857,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08979429284984523,
+      "max_step_balance_error_j": 1.9034253340155516e-15,
+      "sum_abs_balance_error_j": 4.4082348130147515e-11,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.58975167946889,
+            "current_peak_a": 1.0114089930448928,
+            "voltage_peak_v": 95.881177828681
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.8664838361136,
+            "current_peak_a": 0.9342829489801016,
+            "voltage_peak_v": 83.19429004088612
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 88.00734436797349,
+            "current_peak_a": 1.1202258412857622,
+            "voltage_peak_v": 109.0432865584825
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.63024729633933,
+            "current_peak_a": 1.0116028087346383,
+            "voltage_peak_v": 95.90080826589255
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.81126766702639,
+            "current_peak_a": 0.9339082428908942,
+            "voltage_peak_v": 83.19548344272681
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "payback_not_established",
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.657,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.8902725568158019,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": true,
+        "spent_upper_j": 5.457654521851016,
+        "ever_committed": false,
+        "gain_lower_w": -0.14506598755749575,
+        "payback_status": "declined",
+        "net_gain_lower_j": -9.679151693415546,
+        "bounds_valid": true,
+        "anchor_power_w": 82.58975167946889,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_decline",
+            "spent_upper_j": 4.40333395440637,
+            "gain_lower_w": -0.14506598755749575,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.679151693415546
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "budget_payback",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 2,
+      "probe_complete": true,
+      "probe_reason": "probe_energy_budget",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.9958761693075,
+        "stator_copper_j": 57.927896301474,
+        "rotor_copper_j": 28.768151415464445,
+        "core_j": 80.3163614288009,
+        "friction_j": 51.59960354482044,
+        "shaft_work_j": 228.54320081866786,
+        "stored_change_j": 3.8406626600811276,
+        "loss_j": 218.6120126905598
+      },
+      "peak_current_a": 1.129342491728857,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08629743310236689,
+      "max_step_balance_error_j": 1.9034253340155516e-15,
+      "sum_abs_balance_error_j": 4.398142408671953e-11,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.58975167946889,
+            "current_peak_a": 1.0114089930448928,
+            "voltage_peak_v": 95.881177828681
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.8664838361136,
+            "current_peak_a": 0.9342829489801016,
+            "voltage_peak_v": 83.19429004088612
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 88.00734436797349,
+            "current_peak_a": 1.1202258412857622,
+            "voltage_peak_v": 109.0432865584825
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.63024729633933,
+            "current_peak_a": 1.0116028087346383,
+            "voltage_peak_v": 95.90080826589255
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.2415000000000003,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "probe_energy_budget",
+          "measurement": null
+        },
+        {
+          "time_s": 3.2415000000000003,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.3360000000000003,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.9689646921907382,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": true,
+        "payback_gate": true,
+        "spent_upper_j": 5.331385283397003,
+        "ever_committed": false,
+        "gain_lower_w": null,
+        "payback_status": "not_evaluated",
+        "net_gain_lower_j": null,
+        "bounds_valid": true,
+        "anchor_power_w": 82.58975167946889,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.2415000000000003,
+            "reason": "budget_stop",
+            "spent_upper_j": 4.352869658874151,
+            "reserve_j": 3.6479999999988966
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "fixed",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 4,
+      "probe_complete": true,
+      "probe_reason": null,
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.46602688397735,
+        "stator_copper_j": 57.8215981697024,
+        "rotor_copper_j": 28.202057537578373,
+        "core_j": 80.45744729526483,
+        "friction_j": 51.59961799945572,
+        "shaft_work_j": 228.54326655784774,
+        "stored_change_j": 3.842039324123847,
+        "loss_j": 218.08072100200133
+      },
+      "peak_current_a": 1.0251598952675545,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.0232676685116975,
+      "max_step_balance_error_j": 6.755179857327598e-12,
+      "sum_abs_balance_error_j": 1.1613216911084416e-10,
+      "final_id_a": 0.83,
+      "final_phase": "fixed",
+      "probe_events": [],
+      "max_power_measurement_error_after_1p6s_w": 0.9097269432410968,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": null
+    },
+    {
+      "method": "ungated",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 4,
+      "probe_complete": true,
+      "probe_reason": "scheduled_return",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 444.3883495100442,
+        "stator_copper_j": 54.435518557508466,
+        "rotor_copper_j": 34.81028769444089,
+        "core_j": 71.15781802294563,
+        "friction_j": 51.599621072244645,
+        "shaft_work_j": 228.54324864005912,
+        "stored_change_j": 3.841855522834952,
+        "loss_j": 212.00324534713963
+      },
+      "peak_current_a": 1.1294350328923002,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.09075527647908128,
+      "max_step_balance_error_j": 6.755179857327598e-12,
+      "sum_abs_balance_error_j": 1.1586976529688879e-10,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61623128537468,
+            "current_peak_a": 1.0113333259534536,
+            "voltage_peak_v": 95.9053876667947
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83488825752744,
+            "current_peak_a": 0.9338810221811331,
+            "voltage_peak_v": 83.20453355908845
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.989645460223,
+            "current_peak_a": 1.119932111332763,
+            "voltage_peak_v": 109.07022277461958
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64554095599598,
+            "current_peak_a": 1.0114419909665027,
+            "voltage_peak_v": 95.92247982517848
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.82655880770028,
+            "current_peak_a": 0.9337713012463934,
+            "voltage_peak_v": 83.20893826496302
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "committed",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "committed",
+          "kind": "rejected",
+          "reason": "scheduled_return",
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.7298,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.9297787247004834,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": false,
+        "spent_upper_j": 5.828867495061225,
+        "ever_committed": true,
+        "gain_lower_w": -0.13387752232559944,
+        "payback_status": "scheduled_holding_ended_conditional_only",
+        "net_gain_lower_j": -9.646467726966419,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61623128537468,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_accept",
+            "spent_upper_j": 4.393841438689917,
+            "gain_lower_w": -0.13387752232559944,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.646467726966419
+          },
+          {
+            "time_s": 5.6098,
+            "reason": "scheduled_return",
+            "spent_upper_j": 4.393841438689917
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "payback_only",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 4,
+      "probe_complete": true,
+      "probe_reason": "payback_not_established",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.1461914495291,
+        "stator_copper_j": 57.47855275778943,
+        "rotor_copper_j": 29.54557195901453,
+        "core_j": 79.13797272784606,
+        "friction_j": 51.599609758290484,
+        "shaft_work_j": 228.54320531097207,
+        "stored_change_j": 3.8412789356012658,
+        "loss_j": 217.7617072029405
+      },
+      "peak_current_a": 1.1294350328923002,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08963058371674425,
+      "max_step_balance_error_j": 6.755179857327598e-12,
+      "sum_abs_balance_error_j": 1.1614081020215887e-10,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61623128537468,
+            "current_peak_a": 1.0113333259534536,
+            "voltage_peak_v": 95.9053876667947
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83488825752744,
+            "current_peak_a": 0.9338810221811331,
+            "voltage_peak_v": 83.20453355908845
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.989645460223,
+            "current_peak_a": 1.119932111332763,
+            "voltage_peak_v": 109.07022277461958
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64554095599598,
+            "current_peak_a": 1.0114419909665027,
+            "voltage_peak_v": 95.92247982517848
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.82655880770028,
+            "current_peak_a": 0.9337713012463934,
+            "voltage_peak_v": 83.20893826496302
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "payback_not_established",
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.657,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.9297787247004834,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": true,
+        "spent_upper_j": 5.444456108594088,
+        "ever_committed": false,
+        "gain_lower_w": -0.13387752232559944,
+        "payback_status": "declined",
+        "net_gain_lower_j": -9.646467726966419,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61623128537468,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_decline",
+            "spent_upper_j": 4.393841438689917,
+            "gain_lower_w": -0.13387752232559944,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.646467726966419
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "budget_payback",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 4,
+      "probe_complete": true,
+      "probe_reason": "probe_energy_budget",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 451.03138907091045,
+        "stator_copper_j": 57.94290188561629,
+        "rotor_copper_j": 28.756904603003722,
+        "core_j": 80.34700517155007,
+        "friction_j": 51.599626491932476,
+        "shaft_work_j": 228.54326684332707,
+        "stored_change_j": 3.8416840754763024,
+        "loss_j": 218.64643815210255
+      },
+      "peak_current_a": 1.1294350328923002,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08662413401446163,
+      "max_step_balance_error_j": 6.755179857327598e-12,
+      "sum_abs_balance_error_j": 1.1618663530802158e-10,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61623128537468,
+            "current_peak_a": 1.0113333259534536,
+            "voltage_peak_v": 95.9053876667947
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83488825752744,
+            "current_peak_a": 0.9338810221811331,
+            "voltage_peak_v": 83.20453355908845
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.989645460223,
+            "current_peak_a": 1.119932111332763,
+            "voltage_peak_v": 109.07022277461958
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64554095599598,
+            "current_peak_a": 1.0114419909665027,
+            "voltage_peak_v": 95.92247982517848
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.2426000000000004,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "probe_energy_budget",
+          "measurement": null
+        },
+        {
+          "time_s": 3.2426000000000004,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.3382,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.9297787247004834,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": true,
+        "payback_gate": true,
+        "spent_upper_j": 5.315781585385694,
+        "ever_committed": false,
+        "gain_lower_w": null,
+        "payback_status": "not_evaluated",
+        "net_gain_lower_j": null,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61623128537468,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.2426000000000004,
+            "reason": "budget_stop",
+            "spent_upper_j": 4.341088584659164,
+            "reserve_j": 3.6589999999988843
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "fixed",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 8,
+      "probe_complete": true,
+      "probe_reason": null,
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.467976294745,
+        "stator_copper_j": 57.82241011842004,
+        "rotor_copper_j": 28.2013057627698,
+        "core_j": 80.45929677338705,
+        "friction_j": 51.59961821161059,
+        "shaft_work_j": 228.54326704308778,
+        "stored_change_j": 3.842078384794976,
+        "loss_j": 218.0826308661875
+      },
+      "peak_current_a": 1.0253045209260612,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.023187505195275085,
+      "max_step_balance_error_j": 7.157484457551155e-12,
+      "sum_abs_balance_error_j": 4.0771171413287095e-09,
+      "final_id_a": 0.83,
+      "final_phase": "fixed",
+      "probe_events": [],
+      "max_power_measurement_error_after_1p6s_w": 0.8718713318713185,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": null
+    },
+    {
+      "method": "ungated",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 8,
+      "probe_complete": true,
+      "probe_reason": "scheduled_return",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 444.3897476395058,
+        "stator_copper_j": 54.436095775647026,
+        "rotor_copper_j": 34.809461344048025,
+        "core_j": 71.15931224132201,
+        "friction_j": 51.59962093240826,
+        "shaft_work_j": 228.54324778733516,
+        "stored_change_j": 3.842009558321036,
+        "loss_j": 212.0044902934253
+      },
+      "peak_current_a": 1.1293389734320065,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.09059502371043732,
+      "max_step_balance_error_j": 7.125725465413624e-12,
+      "sum_abs_balance_error_j": 2.273395367608183e-09,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61434353143517,
+            "current_peak_a": 1.0113500009458847,
+            "voltage_peak_v": 95.90625804783926
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83174875226517,
+            "current_peak_a": 0.9338455325612305,
+            "voltage_peak_v": 83.20569156799074
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.99194825887596,
+            "current_peak_a": 1.1199375561947709,
+            "voltage_peak_v": 109.06990146481188
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64008269454386,
+            "current_peak_a": 1.0114165174398708,
+            "voltage_peak_v": 95.9226253120517
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.82873276690098,
+            "current_peak_a": 0.9337862499746038,
+            "voltage_peak_v": 83.21055240467452
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "committed",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "committed",
+          "kind": "rejected",
+          "reason": "scheduled_return",
+          "measurement": null
+        },
+        {
+          "time_s": 5.6098,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 5.7298,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.8671806114259795,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": false,
+        "spent_upper_j": 5.830379884577121,
+        "ever_committed": true,
+        "gain_lower_w": -0.13793923546581663,
+        "payback_status": "scheduled_holding_ended_conditional_only",
+        "net_gain_lower_j": -9.65510416409395,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61434353143517,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_accept",
+            "spent_upper_j": 4.3940587568204075,
+            "gain_lower_w": -0.13793923546581663,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.65510416409395
+          },
+          {
+            "time_s": 5.6098,
+            "reason": "scheduled_return",
+            "spent_upper_j": 4.3940587568204075
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "payback_only",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 8,
+      "probe_complete": true,
+      "probe_reason": "payback_not_established",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 450.1476568932894,
+        "stator_copper_j": 57.47922699189187,
+        "rotor_copper_j": 29.544831803080445,
+        "core_j": 79.13958933331558,
+        "friction_j": 51.599608125080806,
+        "shaft_work_j": 228.54319866751723,
+        "stored_change_j": 3.8412019718215107,
+        "loss_j": 217.7632562533687
+      },
+      "peak_current_a": 1.1293389734320065,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08980438180895843,
+      "max_step_balance_error_j": 7.145031636658639e-12,
+      "sum_abs_balance_error_j": 3.6242718825328494e-09,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61434353143517,
+            "current_peak_a": 1.0113500009458847,
+            "voltage_peak_v": 95.90625804783926
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83174875226517,
+            "current_peak_a": 0.9338455325612305,
+            "voltage_peak_v": 83.20569156799074
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.99194825887596,
+            "current_peak_a": 1.1199375561947709,
+            "voltage_peak_v": 109.06990146481188
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64008269454386,
+            "current_peak_a": 1.0114165174398708,
+            "voltage_peak_v": 95.9226253120517
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.82873276690098,
+            "current_peak_a": 0.9337862499746038,
+            "voltage_peak_v": 83.21055240467452
+          }
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "payback_not_established",
+          "measurement": null
+        },
+        {
+          "time_s": 3.5370000000000004,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.657,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.8934138346164531,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": false,
+        "payback_gate": true,
+        "spent_upper_j": 5.443184703365211,
+        "ever_committed": false,
+        "gain_lower_w": -0.13793923546581663,
+        "payback_status": "declined",
+        "net_gain_lower_j": -9.65510416409395,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61434353143517,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.5370000000000004,
+            "reason": "payback_decline",
+            "spent_upper_j": 4.3940587568204075,
+            "gain_lower_w": -0.13793923546581663,
+            "hold_s": 2.0727999999999995,
+            "validation_mean_age_bound_s": 0.06010000000000021,
+            "recovery_upper_j": 3.9009999999999994,
+            "net_gain_lower_j": -9.65510416409395
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    },
+    {
+      "method": "budget_payback",
+      "observer": "current",
+      "disturbance": false,
+      "duration_s": 6.0,
+      "speed_fraction": 0.7,
+      "noise_seed": 730,
+      "plant_substeps": 8,
+      "probe_complete": true,
+      "probe_reason": "probe_energy_budget",
+      "completed_steps": 60000,
+      "dt_s": 0.0001,
+      "checks": {
+        "complete": true,
+        "observer_not_clipped": true,
+        "current_within_3p1a": true,
+        "settled_speed_mae_below_3rad_s": true,
+        "energy_balance": true
+      },
+      "status": "PASS",
+      "fault": null,
+      "energy": {
+        "input_j": 451.0331502680354,
+        "stator_copper_j": 57.94363992770212,
+        "rotor_copper_j": 28.75615983765212,
+        "core_j": 80.34872462559059,
+        "friction_j": 51.59963207708128,
+        "shaft_work_j": 228.5432880165353,
+        "stored_change_j": 3.8417057827826007,
+        "loss_j": 218.64815646802612
+      },
+      "peak_current_a": 1.1293389734320065,
+      "current_violation_steps": 0,
+      "speed_mae_rad_s": 0.08646891498241055,
+      "max_step_balance_error_j": 7.145731922841847e-12,
+      "sum_abs_balance_error_j": 3.852674064357706e-09,
+      "final_id_a": 0.83,
+      "final_phase": "rejected",
+      "probe_events": [
+        {
+          "time_s": 1.6,
+          "phase": "baseline",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 1.87,
+          "phase": "baseline",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.61434353143517,
+            "current_peak_a": 1.0113500009458847,
+            "voltage_peak_v": 95.90625804783926
+          }
+        },
+        {
+          "time_s": 1.87,
+          "phase": "low",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "low",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.65,
+            "power_w": 79.83174875226517,
+            "current_peak_a": 0.9338455325612305,
+            "voltage_peak_v": 83.20569156799074
+          }
+        },
+        {
+          "time_s": 2.2601,
+          "phase": "high",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "high",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 1.0,
+            "power_w": 87.99194825887596,
+            "current_peak_a": 1.1199375561947709,
+            "voltage_peak_v": 109.06990146481188
+          }
+        },
+        {
+          "time_s": 2.7635,
+          "phase": "baseline_repeat",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "measurement",
+          "reason": null,
+          "measurement": {
+            "id_a": 0.83,
+            "power_w": 82.64008269454386,
+            "current_peak_a": 1.0114165174398708,
+            "voltage_peak_v": 95.9226253120517
+          }
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "baseline_repeat",
+          "kind": "selection",
+          "reason": "fit_accepted_bounded",
+          "measurement": null
+        },
+        {
+          "time_s": 3.1469,
+          "phase": "candidateverify",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.2426000000000004,
+          "phase": "candidateverify",
+          "kind": "rejected",
+          "reason": "probe_energy_budget",
+          "measurement": null
+        },
+        {
+          "time_s": 3.2426000000000004,
+          "phase": "rollback",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        },
+        {
+          "time_s": 3.3382,
+          "phase": "rejected",
+          "kind": "stage_started",
+          "reason": null,
+          "measurement": null
+        }
+      ],
+      "max_power_measurement_error_after_1p6s_w": 0.886717823903254,
+      "trace_columns": [
+        "time_s",
+        "speed_ref_rad_s",
+        "speed_rad_s",
+        "measured_power_w",
+        "id_ref_a",
+        "current_peak_a",
+        "input_j",
+        "shaft_work_j",
+        "stored_j",
+        "phase",
+        "true_interval_terminal_power_w"
+      ],
+      "case": "motor0_k0",
+      "budget": {
+        "config": {
+          "max_probe_excess_j": 8.0,
+          "power_error_bound_w": 1.0,
+          "baseline_drift_w_per_s": 0.5,
+          "gain_deterioration_w_per_s": 0.5,
+          "excess_power_cap_w": 10.0,
+          "recovery_settle_s": 0.27,
+          "hold_until_s": 6.0,
+          "minimum_net_gain_j": 0.1
+        },
+        "budget_gate": true,
+        "payback_gate": true,
+        "spent_upper_j": 5.316543773386282,
+        "ever_committed": false,
+        "gain_lower_w": null,
+        "payback_status": "not_evaluated",
+        "net_gain_lower_j": null,
+        "bounds_valid": true,
+        "anchor_power_w": 82.61434353143517,
+        "anchor_time_s": 1.75,
+        "bound_failures": [],
+        "events": [
+          {
+            "time_s": 3.2426000000000004,
+            "reason": "budget_stop",
+            "spent_upper_j": 4.341435257002373,
+            "reserve_j": 3.6589999999988843
+          }
+        ],
+        "budget_scope": "positive_interval_mean_excess_probe_and_return_only",
+        "certificate": "conditional_assumptions_only_not_hardware_validated"
+      }
+    }
+  ]
+}

@@ -57,6 +57,26 @@ MIC_AI_latest.txt
 
 # Visual QA renders are reproducible and not release artifacts.
 output/documents/qa_*/
+output/qa/
+
+# Large experiment payloads are reproducible from the committed protocols,
+# manifests and runners. Keep compact reports and figures in Git.
+artifacts/**/study.json
+artifacts/**/trials.jsonl
+artifacts/**/rows.jsonl.gz
+artifacts/**/legacy_loss_audit.json
+artifacts/**/csv/
+
+# One-off hardware/build scratch runs; canonical reports live in the release
+# package or in explicitly committed validation directories.
+artifacts/board_bringup_v3_*/
+artifacts/nucleo_wifi_precheck_*/
+artifacts/production_static_*/
+artifacts/unoq_logic_bench_build/
+artifacts/wifi_nucleo_pwm_bench_20260914*/
+artifacts/wifi_pwm_precheck_*/
+artifacts/package_stale_guard/
+artifacts/package_stale_guard.zip
 
 # Incomplete upstream-port snapshots are retained locally for forensic comparison only.
 research/mic_ai_foc_ppo_incomplete_port_v*/

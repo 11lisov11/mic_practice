@@ -1,7 +1,7 @@
 {
   "schema": "mic_ai_theory_snapshot/v1",
-  "generated_utc": "2026-08-26T10:52:54.768943+00:00",
-  "file_count": 222,
+  "generated_utc": "2026-09-09T21:13:19.498590+00:00",
+  "file_count": 291,
   "files": [
     {
       "path": "articles/fig/fig_algorithm_block_ru.png",
@@ -510,8 +510,8 @@
     },
     {
       "path": "README_RU.md",
-      "bytes": 7546,
-      "sha256": "33bcdbcec69593bb19f6e788077b065bf2d15e9200293d9dae1ef691e83671ee"
+      "bytes": 10268,
+      "sha256": "ca15679e12161eef7708c2a9584080d45318588e3b854f7a946c14d3ed80af09"
     },
     {
       "path": "snh_pwm/c6_conformal_reachability/RESEARCH_RU.md",
@@ -895,8 +895,38 @@
     },
     {
       "path": "snh_pwm/source/config/env.py",
-      "bytes": 8659,
-      "sha256": "ac5bd1fa812dfff0f1bad7dcb40247b9f12d393537115d1f9d27d3bfab4ca5d4"
+      "bytes": 7736,
+      "sha256": "015705036cd71336def9b2e6733d3c24f7bb863930fccef927e49e93d41626ce"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_active_probe.py",
+      "bytes": 23696,
+      "sha256": "1dd8a5cda71e845ff993a114d9e7aaa83e26ebbb1eb082fd5d4e5b5143f976c8"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_dynamic_probe.py",
+      "bytes": 19230,
+      "sha256": "4ab02748b26a788c887e24dc837e4f25aff1e6df2bdba0aaffb0694c6bf650ec"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_energy_value_probe.py",
+      "bytes": 11817,
+      "sha256": "6a9f2f899b978a3a9c1cb41eb10c500916756203bb4d2f758e92e61de6682b8e"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_extremum_search.py",
+      "bytes": 3594,
+      "sha256": "b4161e3223647a2cc4cb4492cf94b64020b2bd54d8369ff7ec1b0b40341d36cc"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_measured_loss_fit.py",
+      "bytes": 8497,
+      "sha256": "7128ace1114132dead29e5494a4ab692be94af0ebb3c4da11bb58637c241e04e"
+    },
+    {
+      "path": "snh_pwm/source/control/air56b2_probe_budget.py",
+      "bytes": 12741,
+      "sha256": "f2055bb5d53d52d481d291f8267c808b4906c7814992d5eab85fcd9a7aad73ae"
     },
     {
       "path": "snh_pwm/source/control/cyclic_conformal_reachability.py",
@@ -930,8 +960,8 @@
     },
     {
       "path": "snh_pwm/source/control/foc_svm_key_baseline.py",
-      "bytes": 13412,
-      "sha256": "8eed24f21ae52c4889d0dadd84bb6b588c16f9f1985b2e9848508cc616f5d795"
+      "bytes": 15507,
+      "sha256": "c431899c2cbbbaf651c182787b1561ec4afd8095bd0ba1a38aefe7a10a67495f"
     },
     {
       "path": "snh_pwm/source/control/protected_ai_pwm_h1_baseline.py",
@@ -944,19 +974,74 @@
       "sha256": "b645ccd086d0660f6ae97cff6857d13e90c8b20bf7666ab540faa26392ec4d23"
     },
     {
+      "path": "snh_pwm/source/control/scalar_vf_baseline.py",
+      "bytes": 15579,
+      "sha256": "323ea14578cc21c3587e6f0c52175d08a48324602efe87110d89381eeda802b4"
+    },
+    {
       "path": "snh_pwm/source/control/sensorless_adaptive_foc_baseline.py",
       "bytes": 16370,
       "sha256": "3737dcb74bd9de25574b9dd81e2442d47bede1d62dcbc24decabf7b5d2024c39"
     },
     {
       "path": "snh_pwm/source/estimation/current_voltage_flux_observer.py",
-      "bytes": 6702,
-      "sha256": "b1bcd78e1c96fbfde5c3061354ad49b6dfad01d3f99f4f6c9eeb8a1117e5ad0a"
+      "bytes": 6701,
+      "sha256": "f663e9da283e8fe4bfd165ee18a66751eb335a79821b86fe0b6fa3d538ad3382"
+    },
+    {
+      "path": "snh_pwm/source/estimation/encoder_current_flux_observer.py",
+      "bytes": 1869,
+      "sha256": "c8a907115f2e394078ca78737c889e31df01e1df9aa786db5e25844a864c8002"
+    },
+    {
+      "path": "snh_pwm/source/estimation/sensorless_flux_slip_observer.py",
+      "bytes": 5570,
+      "sha256": "22dee7089322ce6f522ff6b42832648163485a9bd51070b8612b63a8e19517e2"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_fidelity.py",
+      "bytes": 28246,
+      "sha256": "1ec991d5ea7c42884569a82a2be05837df9eae883aa9ed932b4988b491d361c3"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_id_policy.py",
+      "bytes": 1983,
+      "sha256": "de74ca131655710d331228b7a53cf86a31bf62588a973421e3068d89556542f2"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_loss_thermal.py",
+      "bytes": 15670,
+      "sha256": "29783c4b657f5e38ca6ffe84a534761c1554a5e9f25658c5b120203212d7611c"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_measurement_context.py",
+      "bytes": 4666,
+      "sha256": "fca4435376da30e06385ccfa6f48c3b08be8752ee577f5e3ac2541a8c98e5004"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_nameplate_ensemble.py",
+      "bytes": 24366,
+      "sha256": "e4e76dc62c2e2029704f5d66e788132b72e2c657483b8e78c753bf777a1d4293"
+    },
+    {
+      "path": "snh_pwm/source/models/air56b2_starting_regime.py",
+      "bytes": 15996,
+      "sha256": "a3586f0952a25bc37f48128d1c982c5176fdc3497528bb3b1edd3d7147d03764"
     },
     {
       "path": "snh_pwm/source/models/induction_motor_alpha_beta.py",
-      "bytes": 9224,
-      "sha256": "9f3557e798e0b6b79d8500114a65383bc1b58346069746f5e30fdd96d2a71bb6"
+      "bytes": 9914,
+      "sha256": "184ce197bab8247a93eaf17c99ba4fcbb8cc9f7b33fa21a36f66de5694feafd6"
+    },
+    {
+      "path": "snh_pwm/source/models/induction_motor_current_flux_rk4.py",
+      "bytes": 7039,
+      "sha256": "943956c0d62f2f382ac25e4728b97a1a7411cf7972e1fa309778b518a47e1dfa"
+    },
+    {
+      "path": "snh_pwm/source/models/induction_motor_energy_core.py",
+      "bytes": 8060,
+      "sha256": "01b4c8da612ca4a16881210ab7b12b0cc7766ef87cddecc355f32940c6da72ae"
     },
     {
       "path": "snh_pwm/source/models/transformations.py",
@@ -972,6 +1057,151 @@
       "path": "snh_pwm/source/safety/ai_pwm_gateway.py",
       "bytes": 16235,
       "sha256": "23a08babca99c7fcc1d84d21c1e48d58da7ed656e6cf15ab8fc97f8f7f1ad611"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_accepted_refinement.py",
+      "bytes": 1328,
+      "sha256": "4817b7c22cf579d90a4f15791ebdb1a65b3c262569918be4834beb9c20233b5b"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_active_audit.py",
+      "bytes": 2352,
+      "sha256": "8cff03a74b497ae288d29cfdc3c0b8af2a4cf368a48183f1155d0c0e18d649a6"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_active_probe.py",
+      "bytes": 10230,
+      "sha256": "221d36e9d9849a733afc16fca5b7d191c3716c10d8f531471d622f12b9c0c8c2"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_active_study.py",
+      "bytes": 3329,
+      "sha256": "b2fe2158bcf515a707a38b146685b35be005af0137dfba102ddf6c4711a3efe2"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_budget_audit.py",
+      "bytes": 1963,
+      "sha256": "3d188477968e24b55ef922f7f33918b3acfe8b2aebedd0c740fd8bd51ae5ccf8"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_common_control_benchmark.py",
+      "bytes": 2795,
+      "sha256": "9628ac2c24b6872d22d494789b20f6823bce432ea7359a7d8c975f0398294ecc"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_dynamic_power.py",
+      "bytes": 17726,
+      "sha256": "773123507bbc61f441c550406662d09bbeeffc68efe029988130bdcafbf30712"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_dynamic_probe.py",
+      "bytes": 26930,
+      "sha256": "307cd89234b53edf3bc8c38516e2117cfe8ed0324506de9be5da6f0c68625013"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_encoder_foc_fidelity_study.py",
+      "bytes": 2360,
+      "sha256": "c7b5a06de84dafe46bb6b9076644f4ba13201664cc6d03d10ab66c1e0c2ae130"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_encoder_foc_tuning.py",
+      "bytes": 1359,
+      "sha256": "ad78dd3401cee58e797730716e519d939908e285bfa8c6e2fa8df7ae98efb7ed"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_energy_value_audit.py",
+      "bytes": 4238,
+      "sha256": "ed57ca6f63bef1cdae941d8d361aecdb2ddd77070256f81543dd62623d7f601a"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_energy_value_probe.py",
+      "bytes": 2575,
+      "sha256": "c95c6a236bd770ca00c151906b7dd85c7e2b8954461742c9d398dae4de8a8a69"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_energy_value_review.py",
+      "bytes": 19930,
+      "sha256": "8bde934198c781b1391aad715cd00637a53858639390a2d17ddba3cdfe824799"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_energy_value_runner.py",
+      "bytes": 3250,
+      "sha256": "0ae9d4e9708f7a19e052f0f347f49492acd88caff95dcdede770ff577e24ca1a"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_fidelity.py",
+      "bytes": 6957,
+      "sha256": "0daf5214ff565ae0d88be274d2f37fb783165f60248c4b4496b0011008ed21e1"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_fidelity_bundle.py",
+      "bytes": 908,
+      "sha256": "0a5533212354aed45c90fc1a2fcf9d1b15472da8ae3f8a20fa983cd5f8a907b2"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_id_policy.py",
+      "bytes": 719,
+      "sha256": "09e70cd9604eba8e4339abb1a994a6498a1a0a6f489782f7991e6cde62ae818e"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_loss_thermal.py",
+      "bytes": 3434,
+      "sha256": "f058f9df976989939860f72f65bdba780bdc32c76349366c6bbc0f2e9a355af4"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_measured_loss_fit.py",
+      "bytes": 14265,
+      "sha256": "53b054cd2311019ec7aa8c96c41542a39a4457f183595d9f9a25c7f62b04fc7b"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_measurement_adaptation.py",
+      "bytes": 8629,
+      "sha256": "36029a9a19327d168b94eda5db9420c138a79ff748bd4b9cfe2c3f52b42911f2"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_nameplate_ensemble.py",
+      "bytes": 10750,
+      "sha256": "c09ad0b376446d7e26e6b58e7a0dfb411c48f3b35866e25af3def2846792663c"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_probe_budget.py",
+      "bytes": 8119,
+      "sha256": "3ed2b1512d1c7c558699cdd64395f20e437943ed684ec4c8ace2cf5029f15e86"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_probe_budget_study.py",
+      "bytes": 3226,
+      "sha256": "8af5c2beeddbc4ded29375667188e96e8a4eacae01e6900541046499c2f660c0"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_protection_fault_matrix.py",
+      "bytes": 1066,
+      "sha256": "a43a70a2577fb0c78542049e53d771c2e6c156bdd58f13a3a7a88fcc8620b329"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_research_manifest.py",
+      "bytes": 15414,
+      "sha256": "aac83ca324d12c8bdd2b27275d06c9ec2272c676fd31f7c7eed989a62c0ce720"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_scalar_vf.py",
+      "bytes": 7121,
+      "sha256": "c9aeeaeb79be1b925dd33852083c9995f35273739d99d9a70ca3da4b6bad54c5"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_starting_regime.py",
+      "bytes": 4886,
+      "sha256": "9f725d490d67ec28faf430a8719a00e642ff36e7dd9fa357d88d56d8f0c495ed"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_vf_fidelity_study.py",
+      "bytes": 2213,
+      "sha256": "c016a00d5ca7377597e5150c181847b98a47792a602fcf8e1fdbec8191637a94"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_air56b2_vf_operating_matrix.py",
+      "bytes": 2555,
+      "sha256": "a6884a6f01f0fb2079056061ec69fea484316a00b3966ccb18f4da72aca83694"
     },
     {
       "path": "snh_pwm/source/tests/test_binomial_noninferiority_power.py",
@@ -994,14 +1224,29 @@
       "sha256": "4d98b7dcc194c719b3ae6dc3c3a77474cc127f8564d358f2ea9869b611778366"
     },
     {
+      "path": "snh_pwm/source/tests/test_encoder_current_flux_observer.py",
+      "bytes": 1480,
+      "sha256": "9dbdda5df91140749dd4ed602b844472826ce3b57f44ca8a60664099061eaf6a"
+    },
+    {
       "path": "snh_pwm/source/tests/test_estimator_fed_conformal_lab.py",
       "bytes": 4113,
       "sha256": "440cc3c7f8177bfc84f517e64da05420fd397b40a87120488be157ef115f6929"
     },
     {
+      "path": "snh_pwm/source/tests/test_induction_motor_energy_core.py",
+      "bytes": 5858,
+      "sha256": "7ac44c8bcd6e79c096906437a21da99269d2ccceda9269b2f6293014467b4d87"
+    },
+    {
       "path": "snh_pwm/source/tests/test_safe_neural_horizon_pwm.py",
       "bytes": 51840,
       "sha256": "0e57df25c3d2fb22b3195fa2eb45c0a905f098dc4c1186e286e28d55680c71db"
+    },
+    {
+      "path": "snh_pwm/source/tests/test_sensorless_independent_plant.py",
+      "bytes": 2232,
+      "sha256": "c5dbbead3cade0eac771799b90c0d39b083707d9fad1e6f8b910991b07d59b51"
     },
     {
       "path": "snh_pwm/source/tools/aggregate_cyclic_conformal_reachability.py",
@@ -1027,6 +1272,21 @@
       "path": "snh_pwm/source/tools/analyze_safe_neural_horizon_pwm_revalidation.py",
       "bytes": 9324,
       "sha256": "b729ec684a282bc8b57ff6f65e495d1ea9bdda4b10f065f42a0ffa367785142b"
+    },
+    {
+      "path": "snh_pwm/source/tools/audit_air56b2_loss_balance.py",
+      "bytes": 19698,
+      "sha256": "ba9a58dec25a69de6deb7fe74c95a130a093bfc39b043c13d3b84e7d3a760336"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_air56b2_fidelity_bundle.py",
+      "bytes": 4120,
+      "sha256": "c09ea1b64b3fdb29e5f9b94e2987d72a2541ae6abb0a99035dc39a84cf8da45f"
+    },
+    {
+      "path": "snh_pwm/source/tools/build_air56b2_nameplate_ensemble.py",
+      "bytes": 1341,
+      "sha256": "767b2cf171a598866962d4bfdfd088db44ecc0801796343d9be0f8bebd05d941"
     },
     {
       "path": "snh_pwm/source/tools/build_safe_neural_horizon_pwm_baseline_stress.py",
@@ -1094,6 +1354,76 @@
       "sha256": "4a5ad862baebe13258203ede7e2d4ced24bb997263097d590ca22d8479492705"
     },
     {
+      "path": "snh_pwm/source/tools/run_air56b2_active_probe.py",
+      "bytes": 9620,
+      "sha256": "16f2db3b9fb33811703d7b1dc7dfff67761750e7cca6785ffe292fe046aa11a3"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_common_control_benchmark.py",
+      "bytes": 16754,
+      "sha256": "3297768672f9dfbe3ba76740646db6511f909f887040c4d8b179dda3a922d1fc"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_dynamic_power.py",
+      "bytes": 18385,
+      "sha256": "d86a437620fb00e36a2fc9f8d006edd19d9ac208489887f8590961b4375980e6"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_encoder_foc_fidelity_study.py",
+      "bytes": 21124,
+      "sha256": "e258c68ab2f7078f2739addc72c1949edad75ec91c3e4fac2a4668e5c995642e"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_energy_value.py",
+      "bytes": 7044,
+      "sha256": "f0a49ca182348a1db15c57dca945581facc3dd43a22a00ad06a2694fd6a76338"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_loss_optimization_study.py",
+      "bytes": 10591,
+      "sha256": "df28da667942df2b2fa24489f096fa77e642590a095555cea2214bc81c607d63"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_measurement_adaptation.py",
+      "bytes": 32574,
+      "sha256": "c25b41476490ca44d70e695475b9514f4542a4e1a4539c8bc1df7346dfa59275"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_nameplate_ensemble_study.py",
+      "bytes": 7964,
+      "sha256": "d37fc98c968acdbc9e789e01bc25d939a4dde9d6307d44e23cfa921575aa90b4"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_policy_benchmark.py",
+      "bytes": 19813,
+      "sha256": "1fcd290c26060049f4411047c9d397e78a8699b3eda7d0c1bdfd91ecf54c7c9a"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_probe_budget.py",
+      "bytes": 11602,
+      "sha256": "2858527728c8f1729bd61d3a8f37761399cb72351fe48a898827a0d21f3f4c0b"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_protection_fault_matrix.py",
+      "bytes": 8919,
+      "sha256": "d183aa69800c3cf78c08883b240d0246304eabb5f3332958139d4652763fbdc6"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_sensorless_independent_plant_study.py",
+      "bytes": 14378,
+      "sha256": "61aec2c319cf11606953beace7f82f43072b9adf74aaf4a3f90d929ed1422378"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_vf_fidelity_study.py",
+      "bytes": 18021,
+      "sha256": "4caa7ca93da53066757f26877e3229a981bb278d07c005a1d102248259b718be"
+    },
+    {
+      "path": "snh_pwm/source/tools/run_air56b2_vf_operating_matrix.py",
+      "bytes": 8026,
+      "sha256": "21c4d3bea838284fbee25f3e7a1606cbaa744c11ea4ed3de2b876a0d8499739f"
+    },
+    {
       "path": "snh_pwm/source/tools/run_cyclic_conformal_reachability_lab.py",
       "bytes": 23650,
       "sha256": "e200af916361c6287b8421e3ebbbe3fb56ebb2e4a1738accae978bd667421f00"
@@ -1105,13 +1435,28 @@
     },
     {
       "path": "snh_pwm/source/tools/run_estimator_fed_conformal_lab.py",
-      "bytes": 24388,
-      "sha256": "b609f39214c4a0c739b4d139e895737d5fe612601cda301b120a536f175857ee"
+      "bytes": 24611,
+      "sha256": "c8a86360463fd37ff565185d6e30f0e486c66325fe5c64cbb4d808058c01500c"
     },
     {
       "path": "snh_pwm/source/tools/run_safe_neural_horizon_pwm_study.py",
-      "bytes": 49917,
-      "sha256": "bb4632ce583d82ad010f1ff32a080dbb65035f11873d5b6c3926396a6b0bd7a5"
+      "bytes": 51738,
+      "sha256": "b4f14d3a883da71fd3a32c03612e1d54c8ba7f1f9c0cd9cb04483f3794b56bc0"
+    },
+    {
+      "path": "snh_pwm/source/tools/tune_air56b2_encoder_foc_fidelity.py",
+      "bytes": 10701,
+      "sha256": "0c6ba185d47dcbfe59068abf58f867d86548458d445d881164bdd8ab02a0f823"
+    },
+    {
+      "path": "snh_pwm/source/tools/tune_air56b2_foc_ensemble.py",
+      "bytes": 11321,
+      "sha256": "df796bb6d0afd4935d36dacf95cd2c82513b283d11990d9dff036f21f0043b35"
+    },
+    {
+      "path": "snh_pwm/source/tools/validate_air56b2_foc_holdout.py",
+      "bytes": 4815,
+      "sha256": "af893d8945a4e0d2d374987b51de8c5355b539d3bc48290b9ecca39fc80f77a9"
     }
   ]
 }

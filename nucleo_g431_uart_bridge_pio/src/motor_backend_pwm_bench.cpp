@@ -160,8 +160,12 @@ static bool timer_init(void) {
 
   TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
   __HAL_TIM_MOE_DISABLE(&s_tim1);
+#if MOTOR_BENCH_CONTROL_IRQ_ENABLED
   HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0U, 0U);
   HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
+#else
+  HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
+#endif
   return true;
 }
 
@@ -234,8 +238,13 @@ static void adc_sample(void) {
   s_status.phase_a_raw = values[0];
   s_status.phase_b_raw = values[1];
   s_status.phase_c_raw = values[2];
-  s_status.vbus_raw = values[3];
-  s_status.temperature_raw = values[4];
+  // J7 is physically absent in this logic-only profile, so its Vbus and NTC
+  // ADC pins are not measurements. Publish explicit synthetic MCSDK-unit
+  // values for the LV HMI interlock while retaining the three phase ADC reads.
+  s_status.vbus_raw = 0U;          // 0.0 V in MCSDK decivolts.
+  s_status.temperature_raw = 250U; // 25.0 C in MCSDK deci-degrees.
+  s_status.temperature_flags = 0x01U;
+  s_status.phase_flags = 0xE0U;    // soft-start-ready, Vbus-valid, MCSDK units.
 }
 
 void motor_backend_init(void) {
@@ -325,7 +334,11 @@ bool motor_backend_apply_command(const uint8_t *cmd, uint8_t *fault_code) {
   TIM1->EGR = TIM_EGR_UG;
   pwm_gpio_config_af();
   __HAL_TIM_CLEAR_IT(&s_tim1, TIM_IT_UPDATE);
+#if MOTOR_BENCH_CONTROL_IRQ_ENABLED
   __HAL_TIM_ENABLE_IT(&s_tim1, TIM_IT_UPDATE);
+#else
+  __HAL_TIM_DISABLE_IT(&s_tim1, TIM_IT_UPDATE);
+#endif
   __HAL_TIM_ENABLE(&s_tim1);
   TIM1->CCER |= PWM_CCER_ENABLE_MASK;
   __HAL_TIM_MOE_ENABLE(&s_tim1);

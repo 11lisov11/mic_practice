@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "seed": 92061,
+  "independent_f1_models": 1,
+  "methods": [
+    "fixed",
+    "fit",
+    "ungated",
+    "budget_only",
+    "payback_only",
+    "budget_payback"
+  ],
+  "budget": {
+    "max_probe_excess_j": 8.0,
+    "power_error_bound_w": 1.0,
+    "baseline_drift_w_per_s": 0.5,
+    "gain_deterioration_w_per_s": 0.5,
+    "excess_power_cap_w": 10.0,
+    "recovery_settle_s": 0.27,
+    "hold_until_s": 6.0,
+    "minimum_net_gain_j": 0.1
+  },
+  "durations": [
+    3.0
+  ],
+  "speeds": [
+    0.7
+  ],
+  "disturbance_times_s": [
+    2.6
+  ],
+  "noise_seed": 730,
+  "controller_dt_s": 0.0001,
+  "plant_substeps": 2,
+  "novelty_established": false,
+  "hardware_validated": false,
+  "neural_policy_trained": false,
+  "cases": [
+    {
+      "case": "motor0_k0",
+      "plant": {
+        "rs_ohm": 6.538221415470497,
+        "rr_ohm": 19.510368021746856,
+        "lls_h": 0.005409661804778927,
+        "llr_h": 0.004263113140869575,
+        "lm_h": 0.48562789297571346,
+        "rc_ohm": 860.0154802214334,
+        "inertia_kg_m2": 0.000179517386592816,
+        "viscous_nm_s": 5.749203050710097e-05,
+        "pole_pairs": 1,
+        "coulomb_nm": 0.0341368510756214,
+        "friction_smoothing_rad_s": 0.5,
+        "saturation_kappa": 0.0,
+        "saturation_knee_wb": 0.5
+      },
+      "controller": {
+        "Rs": 5.445331567772515,
+        "Rr": 13.992049103332068,
+        "Lls": 0.005409661804778927,
+        "Llr": 0.004263113140869575,
+        "Lm": 0.48562789297571346,
+        "J": 0.000179517386592816,
+        "B": 0.00016176078780402497,
+        "p": 1,
+        "i_limit": 3.1,
+        "psi_sat": 0.0,
+        "sat_exp": 2.0,
+        "lm_min_scale": 0.45,
+        "rs_temp_coeff": 0.0039,
+        "rr_temp_coeff": 0.0039,
+        "temp_ref_c": 20.0
+      }
+    }
+  ]
+}

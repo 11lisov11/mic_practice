@@ -39,6 +39,11 @@ def safe_status(**overrides: Any) -> dict[str, Any]:
         "state": "SAFE",
         "state_code": 0,
         "pwm": 0,
+        "bp_status": 1,
+        "fw_build": 2026091401,
+        "mc_fw_build": 2026091401,
+        "rpc_schema_version": 3,
+        "mc_capabilities": 1,
         "estop": 0,
         "bp_fault": 0,
         "bp_bad_cnt": 0,
@@ -116,13 +121,14 @@ def main() -> int:
     )
     add_case(cases, "bench_attestation_rejects_long_window", (not ok) and "too long" in msg, msg)
 
-    ok, msg = mod.vbus_capture_precheck(safe_status())
+    capture_safe = safe_status(bp_mcsdk_telemetry=1, bp_vbus_valid=1, bp_vbus_raw=0)
+    ok, msg = mod.vbus_capture_precheck(capture_safe)
     add_case(cases, "vbus_capture_accepts_safe_outputs_off", ok, msg)
-    ok, msg = mod.vbus_capture_precheck(safe_status(pwm=1))
+    ok, msg = mod.vbus_capture_precheck(dict(capture_safe, pwm=1))
     add_case(cases, "vbus_capture_rejects_pwm", (not ok) and "PWM" in msg, msg)
-    ok, msg = mod.vbus_capture_precheck(safe_status(bp_vbus_age_ms=1500))
+    ok, msg = mod.vbus_capture_precheck(dict(capture_safe, bp_vbus_age_ms=1500))
     add_case(cases, "vbus_capture_rejects_stale_vbus", (not ok) and "stale" in msg, msg)
-    ok, msg = mod.vbus_capture_precheck(safe_status(precharge=1))
+    ok, msg = mod.vbus_capture_precheck(dict(capture_safe, precharge=1))
     add_case(cases, "vbus_capture_rejects_active_relay", (not ok) and "precharge=1" in msg, msg)
     capture = mod.vbus_capture_summary(
         [safe_status(bp_vbus_raw=100, bp_vdc=0.0), safe_status(bp_vbus_raw=104, bp_vdc=0.8)],
@@ -137,6 +143,167 @@ def main() -> int:
         and capture["bp_vdc"]["mean"] == 0.4,
         evidence=capture,
     )
+
+    zero_status = safe_status(
+        bp_mcsdk_telemetry=1,
+        bp_vbus_valid=1,
+        bp_vbus_raw=0,
+        bp_vdc=0.0,
+        vdc=0.0,
+        bp_fault=5,
+        fw_build=2026091401,
+        mc_fw_build=2026091401,
+        rpc_schema_version=3,
+    )
+    high_status = safe_status(
+        bp_mcsdk_telemetry=1,
+        bp_vbus_valid=1,
+        bp_vbus_raw=3150,
+        bp_vdc=315.0,
+        vdc=315.0,
+        fw_build=2026091401,
+        mc_fw_build=2026091401,
+        rpc_schema_version=3,
+    )
+    ok, msg = mod.vbus_capture_precheck(zero_status, 0.0)
+    add_case(cases, "vbus_zero_capture_allows_safe_mcsdk_undervoltage", ok, msg)
+    ok, msg = mod.vbus_capture_precheck(dict(zero_status, pwm=1), 0.0)
+    add_case(cases, "vbus_zero_capture_still_rejects_pwm", (not ok) and "PWM" in msg, msg)
+    ok, msg = mod.vbus_capture_precheck(dict(high_status, bp_fault=5), 315.0)
+    add_case(cases, "vbus_high_capture_rejects_fault", (not ok) and "fault" in msg, msg)
+
+    zero_capture = mod.vbus_capture_summary([zero_status for _ in range(20)], 0.0)
+    high_capture = mod.vbus_capture_summary([high_status for _ in range(20)], 315.0)
+    short_capture = mod.vbus_capture_summary([zero_status for _ in range(19)], 0.0)
+    short_store = mod.VbusCalibrationStore()
+    short_ok, short_reason, short_snapshot = short_store.record_capture(short_capture, zero_status)
+    add_case(
+        cases,
+        "vbus_store_requires_complete_sample_window",
+        (not short_ok) and "requires 20 samples" in short_reason and not short_snapshot["valid"],
+        short_reason,
+        short_snapshot,
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        calibration_path = Path(tmp) / "vbus_calibration.json"
+        calibration_store = mod.VbusCalibrationStore(str(calibration_path))
+        zero_ok, zero_reason, zero_snapshot = calibration_store.record_capture(zero_capture, zero_status)
+        add_case(
+            cases,
+            "vbus_store_accepts_zero_but_remains_locked",
+            zero_ok and not zero_snapshot["valid"] and zero_snapshot["zero_captured"],
+            zero_reason,
+            zero_snapshot,
+        )
+        high_ok, high_reason, high_snapshot = calibration_store.record_capture(high_capture, high_status)
+        add_case(
+            cases,
+            "vbus_store_unlocks_only_after_matching_high_point",
+            high_ok and high_snapshot["valid"] and calibration_store.is_valid(high_status),
+            high_reason,
+            high_snapshot,
+        )
+        reloaded = mod.VbusCalibrationStore(str(calibration_path))
+        add_case(
+            cases,
+            "vbus_store_persists_with_integrity_digest",
+            reloaded.is_valid(high_status),
+            evidence=reloaded.snapshot(high_status),
+        )
+        changed_identity = dict(high_status, mc_fw_build=2026091402)
+        add_case(
+            cases,
+            "vbus_store_invalidates_on_firmware_identity_change",
+            not reloaded.is_valid(changed_identity),
+            evidence=reloaded.snapshot(changed_identity),
+        )
+        dynamic_hv_cfg = mod.HvArmConfig(
+            enabled=True, ttl_sec=30.0, min_vdc=100.0, max_vdc=400.0
+        )
+        dynamic_arm = mod.HvArmState(dynamic_hv_cfg, reloaded.is_valid)
+        arm_ok, arm_reason = dynamic_arm.arm(mod.DEFAULT_HV_ARM_CONFIRM, high_status)
+        add_case(
+            cases,
+            "hv_arm_uses_persisted_vbus_calibration",
+            arm_ok,
+            arm_reason,
+            reloaded.snapshot(high_status),
+        )
+        dynamic_arm.disarm()
+        changed_arm_ok, changed_arm_reason = dynamic_arm.arm(
+            mod.DEFAULT_HV_ARM_CONFIRM, changed_identity
+        )
+        add_case(
+            cases,
+            "hv_arm_relocks_after_nucleo_firmware_change",
+            (not changed_arm_ok) and "calibration" in changed_arm_reason,
+            changed_arm_reason,
+            reloaded.snapshot(changed_identity),
+        )
+        rejected_store = mod.VbusCalibrationStore()
+        before_zero_ok, before_zero_reason, _ = rejected_store.record_capture(high_capture, high_status)
+        add_case(
+            cases,
+            "vbus_store_rejects_high_point_before_zero",
+            (not before_zero_ok) and "zero" in before_zero_reason,
+            before_zero_reason,
+        )
+        rejected_store.record_capture(zero_capture, zero_status)
+        mismatch_capture = mod.vbus_capture_summary([high_status for _ in range(20)], 280.0)
+        mismatch_ok, mismatch_reason, mismatch_snapshot = rejected_store.record_capture(
+            mismatch_capture, high_status
+        )
+        add_case(
+            cases,
+            "vbus_store_rejects_meter_mismatch",
+            (not mismatch_ok) and not mismatch_snapshot["valid"] and "mismatch" in mismatch_reason,
+            mismatch_reason,
+            mismatch_snapshot,
+        )
+        raw_record = json.loads(calibration_path.read_text(encoding="utf-8"))
+        raw_record["points"]["high"]["meter_vdc"] = 300.0
+        calibration_path.write_text(json.dumps(raw_record), encoding="utf-8")
+        tampered = mod.VbusCalibrationStore(str(calibration_path))
+        add_case(
+            cases,
+            "vbus_store_rejects_tampered_file",
+            not tampered.is_valid(high_status) and "integrity" in tampered.snapshot(high_status)["reason"],
+            evidence=tampered.snapshot(high_status),
+        )
+        malformed_identity_path = Path(tmp) / "vbus_calibration_bad_identity.json"
+        malformed_identity = json.loads(calibration_path.read_text(encoding="utf-8"))
+        malformed_identity["points"]["high"]["meter_vdc"] = 315.0
+        malformed_identity["identity"]["fw_build"] = "not-a-build-id"
+        malformed_identity["integrity_sha256"] = mod.VbusCalibrationStore._digest(malformed_identity)
+        malformed_identity_path.write_text(json.dumps(malformed_identity), encoding="utf-8")
+        malformed_identity_store = mod.VbusCalibrationStore(str(malformed_identity_path))
+        malformed_identity_snapshot = malformed_identity_store.snapshot(high_status)
+        add_case(
+            cases,
+            "vbus_store_rejects_digest_valid_malformed_identity",
+            not malformed_identity_snapshot["valid"] and "identity" in malformed_identity_snapshot["reason"],
+            evidence=malformed_identity_snapshot,
+        )
+        malformed_point_path = Path(tmp) / "vbus_calibration_bad_point.json"
+        malformed_point = json.loads(calibration_path.read_text(encoding="utf-8"))
+        malformed_point["points"]["high"]["meter_vdc"] = "not-a-voltage"
+        malformed_point["integrity_sha256"] = mod.VbusCalibrationStore._digest(malformed_point)
+        malformed_point_path.write_text(json.dumps(malformed_point), encoding="utf-8")
+        malformed_point_store = mod.VbusCalibrationStore(str(malformed_point_path))
+        malformed_point_snapshot = malformed_point_store.snapshot(high_status)
+        add_case(
+            cases,
+            "vbus_store_rejects_digest_valid_malformed_point",
+            not malformed_point_snapshot["valid"] and "point values" in malformed_point_snapshot["reason"],
+            evidence=malformed_point_snapshot,
+        )
+        reset_snapshot = reloaded.reset()
+        add_case(
+            cases,
+            "vbus_store_reset_fails_closed_and_removes_file",
+            not reset_snapshot["valid"] and not calibration_path.exists(),
+            evidence=reset_snapshot,
+        )
 
     lv_cfg = mod.HvArmConfig(
         enabled=True,
@@ -240,7 +407,7 @@ def main() -> int:
         getattr(bridge._serial_text, "_baud", None) == 460800,
         "serial_baud=460800",
     )
-    full_status = [0] * 78
+    full_status = [0] * 79
     full_status[0] = 0
     full_status[1] = 1
     full_status[2] = 0
@@ -311,14 +478,15 @@ def main() -> int:
     full_status[67] = 1230.0
     full_status[68] = 1
     full_status[69] = 5
-    full_status[70] = 2026082601
+    full_status[70] = 2026091401
     full_status[71] = 0
     full_status[72] = 1
     full_status[73] = 1
     full_status[74] = 0
-    full_status[75] = 2
+    full_status[75] = 3
     full_status[76] = 1
     full_status[77] = 1
+    full_status[78] = 2026091401
     bridge._call = lambda method, params, timeout=1.5, retries=1: [1, 42, None, full_status]  # type: ignore[method-assign]
     st_ok, st_data, st_err = bridge.get()
     mapping_ok = (
@@ -341,11 +509,12 @@ def main() -> int:
         and st_data.get("bp_vbus_valid") == 1
         and st_data.get("bp_softstart_ready") == 1
         and st_data.get("bp_precharge_managed") == 0
-        and st_data.get("rpc_schema_version") == 2
+        and st_data.get("rpc_schema_version") == 3
+        and st_data.get("mc_fw_build") == 2026091401
         and st_data.get("mc_supported_modes") == ["VF"]
         and st_data.get("mc_vdc") == st_data.get("bp_vdc")
     )
-    add_case(cases, "rpc_status_array_78_mapping", bool(mapping_ok), st_err or "", st_data)
+    add_case(cases, "rpc_status_array_79_mapping", bool(mapping_ok), st_err or "", st_data)
 
     transition_status = full_status[:75]
     transition_status[74] = 1
@@ -744,6 +913,25 @@ def main() -> int:
         stop_ok and stop_rpc.commands == ["ESTOP"],
         stop_msg,
         stop_rpc.commands,
+    )
+
+    active_mc_stop_rpc = FakeRpc([safe_status(bp_status=0x21)])
+    active_mc_stop_app = mod.AppState(
+        active_mc_stop_rpc,
+        FakeLogs(),
+        status_log_interval=60.0,
+    )
+    active_mc_stop_ok, active_mc_stop_msg, _ = active_mc_stop_app.stop_sequence(
+        emergency=False,
+        confirm_timeout_sec=0.0,
+        poll_sec=0.0,
+    )
+    add_case(
+        cases,
+        "wifi_stop_rejects_local_safe_while_nucleo_pwm_active",
+        (not active_mc_stop_ok) and active_mc_stop_rpc.commands == ["STOP"],
+        active_mc_stop_msg,
+        active_mc_stop_rpc.commands,
     )
 
     watchdog_arm = mod.HvArmState(hv_cfg)

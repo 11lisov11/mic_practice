@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [string]$MotorProfile,
+    [string]$IpmSdBkinEvidence,
     [switch]$RunReleaseGate,
     [string]$NucleoProjectRoot,
     [string]$NucleoWorkspace,
@@ -53,6 +54,9 @@ $acimBuildArguments = @{
 if ($RunReleaseGate) {
     $acimBuildArguments["MotorProfile"] = $MotorProfile
     $acimBuildArguments["RunReleaseGate"] = $true
+}
+if (-not [string]::IsNullOrWhiteSpace($IpmSdBkinEvidence)) {
+    $acimBuildArguments["IpmSdBkinEvidence"] = $IpmSdBkinEvidence
 }
 
 & (Join-Path $scriptRoot "build_acim_reference.ps1") @acimBuildArguments

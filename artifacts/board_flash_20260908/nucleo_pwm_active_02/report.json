@@ -1,0 +1,240 @@
+{
+  "host_utc": "2026-09-08T16:56:19.661882+00:00",
+  "stlink": "003A002C3335510933383531",
+  "logic_device": "A7D1BB81883C0092",
+  "channel_map": {
+    "0": {
+      "signal": "UH",
+      "gpio": "PA8",
+      "connector": "CN10-23"
+    },
+    "1": {
+      "signal": "UL",
+      "gpio": "PA7",
+      "connector": "CN10-15"
+    },
+    "2": {
+      "signal": "VH",
+      "gpio": "PA9",
+      "connector": "CN10-21"
+    },
+    "3": {
+      "signal": "VL",
+      "gpio": "PB0",
+      "connector": "CN7-34"
+    },
+    "4": {
+      "signal": "WH",
+      "gpio": "PA10",
+      "connector": "CN10-33"
+    },
+    "5": {
+      "signal": "WL",
+      "gpio": "PB1",
+      "connector": "CN10-24"
+    }
+  },
+  "symbols": {
+    "diag_arr": 536871124,
+    "diag_dtg": 536871128,
+    "diag_identity": 536870920,
+    "diag_request": 536871132,
+    "diag_state": 536871136,
+    "diag_timer_hz": 536871140
+  },
+  "diagnostic_sha256": "a7519bcd509e3b5a73e75dee9685f2829d446f55916f55b77fdfec51f5c06837",
+  "production_hex_sha256": "2a0f4656e50c447f91c902d0f74ad21a4afafde0f14edb3c0d5b9d5b3ab16142",
+  "restored_production": true,
+  "hardware_drive_validated": false,
+  "boot_state": {
+    "diag_arr": 5312,
+    "diag_dtg": 114,
+    "diag_identity": 1194602820,
+    "diag_request": 0,
+    "diag_state": 1,
+    "diag_timer_hz": 170000000
+  },
+  "diagnostic_boot": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_static_low": true
+    },
+    "pass": true
+  },
+  "burst": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_active": true,
+      "initial_and_final_low": true,
+      "carrier_16khz": true,
+      "deadtime_1_2_to_1_5_us": true,
+      "burst_290_to_310_ms": true,
+      "duty_identifies_phase_pairs": true
+    },
+    "pass": true,
+    "burst_duration_s": 0.299425042,
+    "active_duty": {
+      "0": 0.17844807341903582,
+      "1": 0.7786095250831621,
+      "2": 0.47852318416610046,
+      "3": 0.4785130205111924,
+      "4": 0.7784462345998889,
+      "5": 0.17863316895404677
+    },
+    "expected_active_duty": [
+      0.17854117647058826,
+      0.7785411764705883,
+      0.47854117647058825,
+      0.47854117647058825,
+      0.7785411764705883,
+      0.17854117647058826
+    ],
+    "analysis": {
+      "csv": "C:\\mic_practice\\artifacts\\board_flash_20260908\\nucleo_pwm_active_02\\burst\\csv\\digital.csv",
+      "duration_s": 1.237333333,
+      "csv_row_timing": {
+        "samples": 57610,
+        "intervals": 57609,
+        "min_step_s": 1.332999999992257e-06,
+        "max_step_s": 0.770242708,
+        "mean_step_s": 2.1478125518582168e-05,
+        "inferred_sample_rate_hz": 46558.997857370414
+      },
+      "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+      "selected_sample_rate_hz": 24000000.0,
+      "selected_sample_period_ns": 41.666666666666664,
+      "max_sample_period_ns": 100.0,
+      "timing_resolution_pass": true,
+      "channels": {
+        "0": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.05343654400000067,
+          "duty_ratio": 0.04318686208060045,
+          "freq_hz_from_rising": 16032.064128255639
+        },
+        "1": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.23313083599999915,
+          "duty_ratio": 0.1884139300076539,
+          "freq_hz_from_rising": 16032.064128255639
+        },
+        "2": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.14328409400000142,
+          "duty_ratio": 0.11580072255274917,
+          "freq_hz_from_rising": 16032.064128255639
+        },
+        "3": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.1432768880000002,
+          "duty_ratio": 0.11579489873809147,
+          "freq_hz_from_rising": 16032.064128255639
+        },
+        "4": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.23308607699999967,
+          "duty_ratio": 0.18837775624686873,
+          "freq_hz_from_rising": 16032.064128255639
+        },
+        "5": {
+          "initial": 0,
+          "final": 0,
+          "edges": 9602,
+          "rising_edges": 4801,
+          "falling_edges": 4801,
+          "high_time_s": 0.053487740000000145,
+          "duty_ratio": 0.04322823815819738,
+          "freq_hz_from_rising": 16032.064128255639
+        }
+      },
+      "pairs": {
+        "U": {
+          "high_channel": 0,
+          "low_channel": 1,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.9507659530000002,
+          "both_low_ratio": 0.7683992079117457,
+          "both_high_seen": false,
+          "min_gap_s": 1.332999999992257e-06,
+          "gap_count": 9601,
+          "no_overlap": true
+        },
+        "V": {
+          "high_channel": 2,
+          "low_channel": 3,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.9507723509999984,
+          "both_low_ratio": 0.7684043787091593,
+          "both_high_seen": false,
+          "min_gap_s": 1.332999999992257e-06,
+          "gap_count": 9601,
+          "no_overlap": true
+        },
+        "W": {
+          "high_channel": 4,
+          "low_channel": 5,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.9507595160000002,
+          "both_low_ratio": 0.7683940055949339,
+          "both_high_seen": false,
+          "min_gap_s": 1.332999999992257e-06,
+          "gap_count": 9601,
+          "no_overlap": true
+        }
+      },
+      "pass": true,
+      "expect_pwm": true,
+      "pass_meaning": "no_overlap_and_pwm_activity",
+      "overlap_analysis_pass": true,
+      "no_overlap_pass": true,
+      "pwm_activity_pass": true
+    }
+  },
+  "state_after_burst": 3,
+  "second_request_rejected": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_static_low": true
+    },
+    "pass": true
+  },
+  "production_outputs_low": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_static_low": true
+    },
+    "pass": true
+  },
+  "pass": true
+}

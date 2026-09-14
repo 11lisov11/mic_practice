@@ -172,6 +172,10 @@ def source_errors(
         (r"USE_NUCLEO_SPI\s*=\s*false", "uno_spi_must_be_disabled"),
         (r"USE_NUCLEO_UART_FALLBACK\s*=\s*true", "uno_uart_bridge_disabled"),
         (r"BP_VER\s*=\s*0x02", "uno_protocol_version_not_v2"),
+        (r"RPC_SCHEMA_VERSION\s*=\s*3U", "uno_rpc_schema_not_v3"),
+        (r"mp_tx_array\(79\)", "uno_rpc_result_length_not_79"),
+        (r"MC_TELEMETRY_FLAG_FW_BUILD_VALID\s*=\s*0x10", "uno_nucleo_build_flag_missing"),
+        (r"g_bp_fw_build\s*=\s*\(uint32_t\)rx\[23\]", "uno_nucleo_build_decode_missing"),
         (r"if\s*\(rx\[2\]\s*!=\s*BP_VER\)\s*return false", "uno_does_not_validate_reply_version"),
         (
             r"if\s*\(require_sequence\s*&&\s*rx\[4\]\s*!=\s*expected_sequence\)\s*return false",
@@ -196,6 +200,9 @@ def source_errors(
     for pattern, name in (
         (r"UNO_FRAME_LEN\s*=\s*32U", "nucleo_frame_length_not_32"),
         (r"UNO_PROTOCOL_VERSION\s*=\s*0x02U", "nucleo_protocol_version_not_v2"),
+        (r"MIC_NUCLEO_FW_BUILD_ID\s+2026091401UL", "nucleo_build_identity_missing"),
+        (r"reply\[23\].*?reply\[24\].*?reply\[25\].*?reply\[26\]", "nucleo_build_identity_reply_missing"),
+        (r"reply\[29\]\s*=\s*UNO_TELEMETRY_FW_BUILD_VALID", "nucleo_build_identity_flag_missing"),
         (r"UNO_LINK_TIMEOUT_MS\s*=\s*300U", "nucleo_timeout_not_300ms"),
         (r"UNO_SPEED_RAMP_MS\s*=\s*3000U", "nucleo_first_spin_ramp_not_3000ms"),
         (r"GPIO_PIN_6\s*\|\s*GPIO_PIN_7", "nucleo_usart1_pins_missing"),

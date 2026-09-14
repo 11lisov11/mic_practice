@@ -8,7 +8,8 @@
   "failed_checks": [
     "external_softstart_hil_validated",
     "motor_profile_is_real_acim",
-    "generated_motor_configuration_matches_profile"
+    "generated_motor_configuration_matches_profile",
+    "ipm_sd_bkin_hardware_trip_validated"
   ],
   "checks": {
     "project_directory": {
@@ -31,6 +32,25 @@
         "IHM09M2_or_NUCLEO_G431RB": true,
         "IPM15B": true,
         "ACIM": true
+      }
+    },
+    "ipm_sd_bkin_static_configuration": {
+      "pass": true,
+      "evidence": {
+        "pa6_is_tim1_bkin": true,
+        "break_enabled": true,
+        "external_break_source_enabled": true,
+        "external_sd_is_active_low": true,
+        "automatic_output_disabled": true,
+        "pa6_open_drain_pullup": true,
+        "break_irq_present": true
+      }
+    },
+    "uno_and_mcsdk_uart_are_separate": {
+      "pass": true,
+      "evidence": {
+        "uno_link_usart1_pb6_pb7": true,
+        "mcsdk_transport_usart2_pa2_pa3": true
       }
     },
     "external_softstart_configured": {
@@ -93,22 +113,22 @@
         ".elf": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
-            "bytes": 2062168,
-            "sha256": "AABC5CDB0ABB0F6050B1BC689BA6E4F153ED76F4D8338D5BF880BF829B7210EF"
+            "bytes": 2062332,
+            "sha256": "638B038E0975093C832A131095A5B8FBD4DF42D0F3FBF7E3570241A7B0181D70"
           }
         ],
         ".bin": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
-            "bytes": 39004,
-            "sha256": "693EEC675CE2599AD45DD608B2BAAB7C2E365DDA09AF8AFB7A1FF34544341EBE"
+            "bytes": 39020,
+            "sha256": "7580682B9959BE3CD7CA805C5E28D267C597D291663D6071549B12DA2D49897B"
           }
         ],
         ".hex": [
           {
             "path": "C:\\mic_practice\\mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
-            "bytes": 109805,
-            "sha256": "2A0F4656E50C447F91C902D0F74AD21A4AFAFDE0F14EDB3C0D5B9D5B3AB16142"
+            "bytes": 109850,
+            "sha256": "39F91B2BD3D6CA2617B7FC0143E5FE97887E7BD66E2C41796C26A653EA96F747"
           }
         ]
       }
@@ -118,6 +138,15 @@
       "evidence": [
         "ACIM-NUCLEOG431RB-IPM15B-VF_OL"
       ]
+    },
+    "ipm_sd_bkin_hardware_trip_validated": {
+      "pass": false,
+      "evidence": {
+        "errors": [
+          "evidence_missing"
+        ],
+        "path": ""
+      }
     },
     "artifacts_inside_project": {
       "pass": true,

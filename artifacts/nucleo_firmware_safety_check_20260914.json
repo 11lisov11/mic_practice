@@ -1,0 +1,81 @@
+{
+  "tool": "nucleo_firmware_safety_check",
+  "profile": "active-nucleo-only",
+  "pass": true,
+  "cases": [
+    {
+      "name": "active_inputs_present",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "active_backend_is_nucleo_mcsdk",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "uart_contract_matches",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "rpc_v2_is_append_only_and_vf_only",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "mcu_precharge_output_is_disabled",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "unsupported_foc_fails_closed",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "telemetry_flags_have_canonical_names",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "clear_handshake_is_uart_rate_limited",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "name": "package_identity_is_active_nucleo",
+      "ok": true,
+      "detail": {
+        "nucleo_board": "NUCLEO-G431RB",
+        "nucleo_mcu": "STM32G431RBT6",
+        "power_stage": "X-NUCLEO-IHM09M2 + STEVAL-IPM15B",
+        "uno_board": "Arduino UNO Q",
+        "motor": "IEK AIR56B2 0.25 kW, 1 pole pair, 50 Hz, 2720 rpm",
+        "motor_connection": "220 V delta",
+        "protocol": "UART v0x02, 115200 8N1",
+        "rpc_schema": "UNO Q get-array v2, 78 append-only elements",
+        "telemetry_api": "mc_* canonical; bp_* deprecated compatibility aliases",
+        "supported_motor_modes": [
+          "VF"
+        ],
+        "uart_topology": "direct 3.3 V UART; UNO Q GND and Nucleo GND are common HOT_GND = STEVAL J7 DC-",
+        "external_interface_in_hv": "Wi-Fi only; no USB/ST-Link/Ethernet/HDMI/UART cables"
+      }
+    },
+    {
+      "name": "package_has_no_bluepill_artifacts",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "hardware_validation_remains_explicit",
+      "ok": true,
+      "detail": {
+        "software_verified": true,
+        "hardware_validated": false
+      }
+    }
+  ],
+  "legacy_bluepill_sources_read": false
+}

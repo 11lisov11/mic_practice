@@ -1,0 +1,79 @@
+{
+  "input_study_sha256": "30fb94f83c2e97883af93e47cd68d511d1a8c2ebec6af0bcd0c540171205734a",
+  "refinement_inputs": {
+    "dynamic_power_adaptation_20260908": "30fb94f83c2e97883af93e47cd68d511d1a8c2ebec6af0bcd0c540171205734a",
+    "dynamic_power_dt50us": "e3f4c5dd7cb768240cfa5f1487b88254bb69ba4fc46838526a6c8cdf2c8df240",
+    "dynamic_power_dt25us": "9fcc1a31da5d5a0feba6e01ba581603a86645e9f0da3ae9b0f67ac01583c9033",
+    "dynamic_power_plant_sub2": "d64d3fc39aad5872bb4aa4435dcb0fc7cb4bc7388e3ee7034330ae797804b8bc",
+    "dynamic_power_plant_sub4": "2be63cdba598956472f5e324e56862ba9a85392f70b86ec28cd470c3bcce5c3f",
+    "dynamic_power_plant_sub8": "fbb24c3796afbe317461a78823150cce628fcba2a803a6b0272df0260bb2720c"
+  },
+  "numerical_sensitivity": {
+    "passed": true,
+    "max_loss_saving_spread_j": 0.01548715242944354,
+    "max_peak_current_spread_a": 9.605946029367374e-05,
+    "runs": [
+      {
+        "name": "dynamic_power_adaptation_20260908",
+        "eligible": true,
+        "dt_s": 0.0001,
+        "loss_saving_j": 6.919410785172744,
+        "peak_current_a": 1.129342491728857,
+        "phase": "committed",
+        "current_ok": true
+      },
+      {
+        "name": "dynamic_power_dt50us",
+        "eligible": true,
+        "dt_s": 5e-05,
+        "loss_saving_j": 7.009060350623827,
+        "peak_current_a": 1.1282265595955694,
+        "phase": "committed",
+        "current_ok": true
+      },
+      {
+        "name": "dynamic_power_dt25us",
+        "eligible": true,
+        "dt_s": 2.5e-05,
+        "loss_saving_j": 7.0105706443151234,
+        "peak_current_a": 1.1273526157322566,
+        "phase": "committed",
+        "current_ok": true
+      },
+      {
+        "name": "dynamic_power_plant_sub2",
+        "eligible": true,
+        "dt_s": 0.0001,
+        "loss_saving_j": 6.919410785172744,
+        "peak_current_a": 1.129342491728857,
+        "phase": "committed",
+        "current_ok": true
+      },
+      {
+        "name": "dynamic_power_plant_sub4",
+        "eligible": true,
+        "dt_s": 0.0001,
+        "loss_saving_j": 6.934206868290488,
+        "peak_current_a": 1.1294350328923002,
+        "phase": "committed",
+        "current_ok": true
+      },
+      {
+        "name": "dynamic_power_plant_sub8",
+        "eligible": true,
+        "dt_s": 0.0001,
+        "loss_saving_j": 6.934897937602187,
+        "peak_current_a": 1.1293389734320065,
+        "phase": "committed",
+        "current_ok": true
+      }
+    ]
+  },
+  "generator_sha256": "398d7bb9f56063dfe0efd58d385065a9eab4deb7829f65a648cb641eb7b57044",
+  "outputs": {
+    "output/figures/dynamic_power_adaptation_20260908/dynamic_probe_energy.png": "4dc131da2320c8e79ed0fc5201c47cf4538c982eaff0e3ea29af9bb45dcf33da",
+    "output/figures/dynamic_power_adaptation_20260908/dynamic_probe_energy.svg": "5eed44fe261c1e040bc4c39db48a304a370f0e0898f4825ead1a3b04e1ed426e",
+    "output/figures/dynamic_power_adaptation_20260908/dynamic_probe_energy.pdf": "2a5c65cc81448e26e20102a94019c5a6ff6005652b60ae3b5974b1e8661d9622",
+    "research/AIR56B2_DYNAMIC_POWER_RESULTS_RU.md": "23fca0a2371e7402f63a81504547816611e930555ddf69a381fb541d1e5d174e"
+  }
+}

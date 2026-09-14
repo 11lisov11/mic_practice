@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "revision": 4,
+  "stage": "light_load_refinement",
+  "seeds": [
+    92067
+  ],
+  "methods": [
+    "fixed",
+    "ungated",
+    "guarded_fit",
+    "entropy",
+    "greedy",
+    "greedy_high",
+    "greedy_menu",
+    "energy_value"
+  ],
+  "frozen_controller_seed": 92062,
+  "profiles": [
+    [
+      12.0,
+      false,
+      0.1,
+      0.1,
+      2.6
+    ]
+  ],
+  "speeds": [
+    0.7
+  ],
+  "substeps": [
+    2,
+    4,
+    8
+  ],
+  "control_dt_s": 0.0001,
+  "recovery_tail_s": 1.0,
+  "noise_seed": 730,
+  "exploratory_extension": true,
+  "novelty_established": false,
+  "hardware_validated": false,
+  "cases": [
+    {
+      "case": "s92067_motor0_k0",
+      "plant": {
+        "rs_ohm": 5.435938857224996,
+        "rr_ohm": 19.13422760478897,
+        "lls_h": 0.0029802686344876867,
+        "llr_h": 0.005233121428822549,
+        "lm_h": 0.48675705402171415,
+        "rc_ohm": 640.751582928218,
+        "inertia_kg_m2": 0.00013286913280501265,
+        "viscous_nm_s": 4.8221102713837996e-05,
+        "pole_pairs": 1,
+        "coulomb_nm": 0.021693349491481394,
+        "friction_smoothing_rad_s": 0.5,
+        "saturation_kappa": 0.0,
+        "saturation_knee_wb": 0.5
+      },
+      "controller": {
+        "Rs": 5.439335642321776,
+        "Rr": 14.121393022982712,
+        "Lls": 0.003594202646612131,
+        "Llr": 0.0026543774206577307,
+        "Lm": 0.4832180152202646,
+        "J": 8.223824134472835e-05,
+        "B": 0.00015687139823603434,
+        "p": 1,
+        "i_limit": 3.1,
+        "psi_sat": 0.0,
+        "sat_exp": 2.0,
+        "lm_min_scale": 0.45,
+        "rs_temp_coeff": 0.0039,
+        "rr_temp_coeff": 0.0039,
+        "temp_ref_c": 20.0
+      }
+    }
+  ],
+  "protocol_note_sha256": "46ed0ea466ca7fbc284790d397a9227a9dddffe1a5c6b65416ed8d88985033be",
+  "extension_note_sha256": "bb4c541fd39a87b32545623639797b1e51cb5c409b2d0544b029dc6090f92a31",
+  "runner_sha256": "449105bea602956ebdc79d824e27787e56b783f0f3800fda6b71c7e072192880"
+}

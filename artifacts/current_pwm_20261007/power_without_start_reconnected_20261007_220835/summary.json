@@ -1,0 +1,74 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": true,
+  "checks": {
+    "wifi_status_received": true,
+    "no_http_errors": true,
+    "build_identity_stable": true,
+    "uart_fresh": true,
+    "bp_good_valid": true,
+    "bp_bad_valid": true,
+    "bp_bad_cnt_valid": true,
+    "idle_outputs_off": true,
+    "no_new_uart_errors": true,
+    "uart_progress_and_error_counters": true
+  },
+  "samples": 48,
+  "http_errors": [],
+  "first_builds": {
+    "fw_build": 2026100709,
+    "mc_fw_build": 2026100708
+  },
+  "counters": {
+    "bp_good": {
+      "first": 4509,
+      "last": 4896
+    },
+    "bp_bad": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_cnt": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "detailed_uart_counters_available": true,
+  "detailed_uart_counters": {
+    "bp_bad_integrity": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_sequence": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_superseded": {
+      "first": 1,
+      "last": 1
+    },
+    "bp_clear_pending": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "log_lines": 37,
+  "max_vdc": null,
+  "host_utc": "2026-10-07T19:09:24.105800+00:00",
+  "duration_requested_s": 30,
+  "transport": "wifi_http_via_wsl_GET_only",
+  "uart_link": {
+    "controller_link_pass": true,
+    "counter_saturated": false,
+    "new_uart_messages": 387,
+    "observed_sequence_changes": 47,
+    "counter_increment_lower_bound": 387
+  },
+  "commands_sent": 0,
+  "motor_start_checked": false,
+  "powered_samples": 0,
+  "voltage_min_v": 0.0,
+  "voltage_max_v": 0.0,
+  "max_uart_age_ms": 53,
+  "scope": "read-only; no motor commands, USB, ADB or ST-Link; powered acceptance not implied"
+}

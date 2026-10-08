@@ -1,0 +1,34 @@
+{
+  "cases": 2240,
+  "starts_after_pending_error": 2240,
+  "next_poll_stops": 2240,
+  "checks": 59072,
+  "schema": "mic_ai.uart_irq_interleaving.v1",
+  "audit_completed": true,
+  "no_start_with_already_pending_uart_fault": false,
+  "hardware_validated": false,
+  "physical_NE_source_identified": false,
+  "firmware_modified": false,
+  "firmware_flashed": false,
+  "candidate": {
+    "cases": 2240,
+    "starts_after_pending_error": 0,
+    "next_poll_stops": 2240,
+    "checks": 59072
+  },
+  "candidate_regression": {
+    "pass": true,
+    "assertions": 412901,
+    "command_combinations": 262144,
+    "single_bit_corruptions": 256
+  },
+  "candidate_scheduled_cases_pass": true,
+  "candidate_release_ready": false,
+  "remaining_scope": "No exhaustive instruction-level interleavings, real ISR latency, physical noise or PWM timing validation. Candidate keeps installed build ID and is NOT a deployable release. Extra USART-only critical sections need target timing review.",
+  "scope": "Production parser/poll/IRQ copied into host mocks. Scheduling hooks only at IRQ unmask and RX pop. MC_StartMotor1 calls are NOT evidence of physical PWM pulses. No hardware access.",
+  "sources": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "de5063fdd079a8a7403a766295fba2bd9513117ab938f1a3a105495a97e7c3a2",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": true,
+  "checks": {
+    "wifi_status_received": true,
+    "no_http_errors": true,
+    "build_identity_stable": true,
+    "uart_fresh": true,
+    "bp_good_valid": true,
+    "bp_bad_valid": true,
+    "bp_bad_cnt_valid": true,
+    "idle_outputs_off": true,
+    "no_new_uart_errors": true,
+    "vdc_within_limit": true,
+    "expected_builds": true,
+    "uart_counter_progress": true,
+    "detailed_errors_zero": true,
+    "superseded_stable": true
+  },
+  "samples": 38,
+  "http_errors": [],
+  "first_builds": {
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026091401
+  },
+  "counters": {
+    "bp_good": {
+      "first": 20207,
+      "last": 20741
+    },
+    "bp_bad": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_cnt": {
+      "first": 1,
+      "last": 1
+    }
+  },
+  "detailed_uart_counters_available": true,
+  "detailed_uart_counters": {
+    "bp_bad_integrity": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_sequence": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_superseded": {
+      "first": 1,
+      "last": 1
+    },
+    "bp_clear_pending": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "log_lines": 31,
+  "max_vdc": 2,
+  "transport": "wsl_nat_wifi_http",
+  "host_utc": "2026-10-06T08:14:51.961752+00:00",
+  "duration_requested_s": 30
+}

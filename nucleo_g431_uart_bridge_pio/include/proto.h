@@ -120,6 +120,7 @@
 #define FAULT_BAD_HDR   4
 #define FAULT_INTERNAL  5
 #define FAULT_OVERTEMP  6
+#define FAULT_BREAK_SELFTEST 7
 
 uint8_t proto_crc_xor(const uint8_t *frame);
 bool proto_cmd_crc_ok(const uint8_t *frame);

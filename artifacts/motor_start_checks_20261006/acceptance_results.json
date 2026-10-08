@@ -1,0 +1,112 @@
+{
+  "schema": "mic_ai.motor_start_acceptance.v1",
+  "host_utc": "2026-10-06T09:44:03.667664+00:00",
+  "motor_start_ready": false,
+  "evidence": {
+    "software_break_live_retry2": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\software_break_live_retry2\\report.json",
+      "sha256": "ed8b1ee36cec99b5540f23a03f6f822656682f3613d63d95c9ee68ce2ca5bcac"
+    },
+    "wifi_all_scenarios_live": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\wifi_all_scenarios_live\\report.json",
+      "sha256": "44baf5364a852c070f108020ef6c0747ba4aac7bb00144abe4ee02cfa1fcf87c"
+    },
+    "production_guard_semantics_retry": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\production_guard_semantics_retry\\report.json",
+      "sha256": "86eb002233d779437956b77fdca9b787c56601e65f948d9f250938d32ed9f38b"
+    },
+    "production_final_idle_retry": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\production_final_idle_retry\\report.json",
+      "sha256": "7272630ee10ed3113a7e3188420c1550be8c8f37de94e35fd067aa1a04217181"
+    },
+    "vbus_zero_capture": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\vbus_zero_capture\\report.json",
+      "sha256": "c0ff12dee504ac1bd664a49a4b48cb2a108761edaffbd58d086e7d6201adc01f"
+    },
+    "stop_tail_persistent_halt_final": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\stop_tail_persistent_halt_final\\report.json",
+      "sha256": "f3ea86e8f3db59dfbba83e56fff9d8abc1929fef148cc72ec6036779909fffcf"
+    },
+    "production_guards_after_stop_fix": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\production_guards_after_stop_fix\\report.json",
+      "sha256": "94ab09aa667c261137291827440333d7b9583db5127a789c225fe1df14c4b22a"
+    },
+    "production_idle_after_stop_fix": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\production_idle_after_stop_fix\\report.json",
+      "sha256": "ec292d6242cc55a9de58c08a01bb8bb54dbdee4fd3a88e7765a9128847580eb9"
+    },
+    "deployment_verified": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\stop_confirmation_fix\\deployment_verified.json",
+      "sha256": "0df6e2b8f85a9172ae79d19126e30d2c7a1f5dc3e60773e1c7d8ebacc90997aa"
+    },
+    "public_stop_after_deploy": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\stop_confirmation_fix\\public_stop_after_deploy.json",
+      "sha256": "2dd3a0e2582283e1e598ff82c605c0be21458266cc3d4ec5ccc31e4ba18b0f7c"
+    },
+    "production_tim1_readonly": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\stop_confirmation_fix\\production_tim1_readonly.json",
+      "sha256": "46f8f063d2e671b252863ace904aae01e93124665af8e432adfe44a4ada5c6e0"
+    },
+    "software_checks": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\stop_confirmation_fix\\software_checks.json",
+      "sha256": "625c85f0ab9f54eb10061a9e660d70d570a59b7967fe49af9670aa806129f7ff"
+    },
+    "power_stage_readonly_audit": {
+      "pass": false,
+      "path": "C:\\mic_practice\\artifacts\\power_stage_audit_20261006\\live_readonly_retry\\report.json",
+      "sha256": "fdeae0c596e1e9727a52356b6e89c0d3c5472a1fb33ade1573ab37d996d5cd1e",
+      "runtime_registers_pass": true,
+      "source_routing_pass": false,
+      "superseded_by": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\production_readonly\\report.json"
+    }
+  },
+  "open_gates": [
+    "production_powered_protection_validation",
+    "external_softstart_HIL",
+    "working_voltage_Vbus_point",
+    "motor_current_and_connection_validation",
+    "production_STOP_latency_qualification"
+  ],
+  "external_bkin_evidence": {
+    "scope": "historical diagnostic image only; not production MCSDK validation",
+    "reanalysis_path": "C:\\mic_practice\\artifacts\\motor_start_checks_20261006\\historical_bkin_reanalysis.json",
+    "operator_reminded_prior_1kohm_test": true,
+    "diagnostic_repeat_requested": false
+  },
+  "source_hashes": {
+    "tools\\verify_production_guard_semantics.py": "21506774308e4a0b2926e3235d451bcaabcb04a79a3583226ea72f61108312b6",
+    "tools\\verify_production_guard_semantics_selftest.py": "0610cad47d49ec39bb05e6110b84603982c6b061556f0cffd3028aaea45ff39d",
+    "tools\\verify_production_wifi_idle.py": "8f52ccbd227c5de8f603a165d1f354d443e338f42ee77f724c9c56f1984fcacb",
+    "tools\\verify_production_wifi_idle_selftest.py": "759e1da1381784b7ce6e61e0c54abfc5ef1fceb0b92ebbf80c5dd6b3c7c9c59f",
+    "tools\\run_wifi_nucleo_pwm_bench.py": "edc9ffe0d874ce6a1c6ec6932c43f9492353b082e8e361cae771f2ea0c894571",
+    "tools\\run_wifi_nucleo_pwm_bench_selftest.py": "078a737c96a2c9d94c690980852794a031901234e3935003725323bb530b68d9",
+    "web_hmi\\server.py": "97ac3e61136da65b847a7615a21b27cab57354eed9b92bcb71c8c4b8ac952114",
+    "tools\\wifi_stop_tail_probe.py": "c26d159a20f82350eb415843c848b40bb96672f0d78d3ab7512f3c1065cb9baf",
+    "tools\\wifi_stop_tail_probe_selftest.py": "c8e0431d40c2241149fb980d65d19663fd903d4aed73d67a6d646e1fcc996286",
+    "tools\\web_hmi_command_guard_selftest.py": "c4a280cccc2a35f2dd98afff70137a14b8c602af8c2c7fe9535777928fa30ade",
+    "tools\\web_hmi_control_access_selftest.py": "3609eaed3586ff66c4e0fd13c3844fb02f790627b2d22ccf762be98593e71833"
+  },
+  "updated_utc": "2026-10-06T10:02:34.160475+00:00",
+  "stop_tail_finding": {
+    "observed_with_core_halted_and_GPIO_output_low": true,
+    "scope": "diagnostic image acquisition path; no HTTP latency or powered production qualification"
+  },
+  "latest_sd_fix": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\RESULTS.json",
+  "factory_configuration": {
+    "operator_reports_unchanged": true,
+    "independent_photo_review": false,
+    "photo_requested": false
+  }
+}

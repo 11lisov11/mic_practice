@@ -1,0 +1,36 @@
+{
+  "schema": "mic_ai.prepared_update_status.v1",
+  "review_date_local": "2026-10-08",
+  "latest_prepared_archive": "installed_804_801.zip",
+  "archive_sha256": "a7201efbdbf70369b9bb894f8663f7fef6325324aae5827fac8b4271a9b4ec84",
+  "prepared_builds": {
+    "uno_q": 2026100804,
+    "nucleo": 2026100801
+  },
+  "software_test_suites_passed": 27,
+  "firmware_images_changed_since_previous_review": true,
+  "flashed_during_this_review": false,
+  "hardware_acceptance": false,
+  "hv_release_approved": false,
+  "latest_observed_installed_builds": {
+    "uno_q": 2026100804,
+    "nucleo": 2026100801
+  },
+  "active_bench_overall_pass": true,
+  "active_bench_scope": "Two zero-bus fixture-899 trials; not powered production acceptance or physical IPM protection qualification",
+  "installed_decoder_update_host_test_blocked": false,
+  "prepared_709_bundle_decoder_gap": "Historical 709 archive lacks 801/899 fault decoding; current 804 snapshot includes the host-tested decoder fix.",
+  "live_report": "C:/mic_practice/artifacts/live_bench_20261008/uno_async_804/RESULT_RU.txt",
+  "superseded_archives": {
+    "uart_guard_2026100710.zip": "Missed guard-return / START-commit UART interleaving; reproduced in expanded host test and corrected in 2026100801."
+  },
+  "report": "C:/mic_practice/artifacts/live_bench_20261008/uno_async_804/RESULT_RU.txt",
+  "historical_prepared_archive": {
+    "file": "uart_guard_2026100801_r2.zip",
+    "sha256": "177b4d0a66fdf821582d8ae06d38865fa123945798ffd4e2bc1e378263206ac7",
+    "builds": {
+      "uno_q": 2026100709,
+      "nucleo": 2026100801
+    }
+  }
+}

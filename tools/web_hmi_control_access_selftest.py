@@ -25,6 +25,8 @@ def load_server(repo: Path) -> Any:
 class FakeRpc:
     def __init__(self) -> None:
         self.commands: list[str] = []
+        self.bp_status = 1
+        self.bp_rsp_age_ms = 20
 
     def cmd(self, command: str) -> tuple[bool, str]:
         self.commands.append(command)
@@ -42,6 +44,8 @@ class FakeRpc:
             "bp_fault": 0,
             "bp_bad": 0,
             "bp_bad_cnt": 0,
+            "bp_status": self.bp_status,
+            "bp_rsp_age_ms": self.bp_rsp_age_ms,
             "freq": 0.0,
             "speed": 0.0,
             "vdc": 0.0,
@@ -105,6 +109,31 @@ def main() -> int:
                 "heartbeat_accepts_valid_token": request(port, "POST", "/api/operator-heartbeat", token, {})[0] == 200,
                 "stop_remains_fail_safe_without_token": request(port, "POST", "/api/stop-sequence", body={})[0] == 200,
             }
+            rpc.bp_status = None
+            rpc.commands.clear()
+            rpc.bp_status = 1
+            with app.hv_arm._lock:
+                app.hv_arm._started = True
+                app.hv_arm._expires_at = time.time() + 30.0
+            cases["zero_frequency_uses_confirmed_stop_and_disarms"] = (
+                request(port, "POST", "/api/cmd", token, {"cmd": "SET FREQ 0"})[0] == 200
+                and rpc.commands == ["STOP"]
+                and app.hv_arm.snapshot()["hmi_hv_armed"] == 0
+            )
+            rpc.bp_status = None
+            rpc.commands.clear()
+            cases["stop_sent_but_not_confirmed_without_output_status"] = (
+                request(port, "POST", "/api/stop-sequence", body={})[0] == 500
+                and "STOP" in rpc.commands
+            )
+            rpc.bp_status = 1
+            rpc.bp_rsp_age_ms = 999999
+            rpc.commands.clear()
+            cases["stale_stop_still_sent_without_token_but_not_confirmed"] = (
+                request(port, "POST", "/api/stop-sequence", body={})[0] == 500
+                and "STOP" in rpc.commands
+            )
+            rpc.bp_rsp_age_ms = 20
         finally:
             server.shutdown()
             server.server_close()

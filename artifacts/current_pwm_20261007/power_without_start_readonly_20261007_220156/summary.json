@@ -1,0 +1,90 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": false,
+  "checks": {
+    "wifi_status_received": true,
+    "no_http_errors": false,
+    "build_identity_stable": true,
+    "uart_fresh": true,
+    "bp_good_valid": true,
+    "bp_bad_valid": true,
+    "bp_bad_cnt_valid": true,
+    "idle_outputs_off": true,
+    "no_new_uart_errors": true,
+    "uart_progress_and_error_counters": true,
+    "uno_identity_expected": true
+  },
+  "samples": 146,
+  "http_errors": [
+    "RuntimeError: WSL Wi-Fi request failed: URLError: <urlopen error timed out>",
+    "RuntimeError: WSL Wi-Fi request failed: URLError: <urlopen error timed out>",
+    "RuntimeError: WSL Wi-Fi request failed: URLError: <urlopen error timed out>",
+    "RuntimeError: WSL Wi-Fi request failed: URLError: <urlopen error timed out>",
+    "logs: RuntimeError: WSL Wi-Fi request failed: URLError: <urlopen error [Errno 113] No route to host>"
+  ],
+  "first_builds": {
+    "fw_build": 2026100709,
+    "mc_fw_build": 2026100708
+  },
+  "counters": {
+    "bp_good": {
+      "first": 65535,
+      "last": 65535
+    },
+    "bp_bad": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_cnt": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "detailed_uart_counters_available": true,
+  "detailed_uart_counters": {
+    "bp_bad_integrity": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_sequence": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_superseded": {
+      "first": 1,
+      "last": 1
+    },
+    "bp_clear_pending": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "log_lines": 0,
+  "max_vdc": null,
+  "host_utc": "2026-10-07T19:04:23.598383+00:00",
+  "duration_requested_s": 120,
+  "transport": "wifi_http_via_wsl_GET_only",
+  "commands_sent": 0,
+  "motor_start_checked": false,
+  "pwm_waveform_checked": false,
+  "uart_link": {
+    "controller_link_pass": true,
+    "counter_saturated": true,
+    "new_uart_messages": null,
+    "observed_sequence_changes": 145,
+    "counter_increment_lower_bound": 0
+  },
+  "powered_uart_link": {
+    "controller_link_pass": false,
+    "counter_saturated": false,
+    "new_uart_messages": null,
+    "observed_sequence_changes": 0
+  },
+  "voltage_min_v": 0.0,
+  "voltage_max_v": 0.0,
+  "powered_samples": 0,
+  "powered_observation_span_s": null,
+  "powered_idle_link_verified": false,
+  "power_on_transient_proven": false,
+  "scope": "GET-only observation: no commands, firmware writes, USB access or control actions. Missing mains-voltage samples cannot validate powered communication; telemetry cannot prove absence of sub-sample transients."
+}

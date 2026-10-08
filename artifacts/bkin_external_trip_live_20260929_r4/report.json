@@ -1,0 +1,1299 @@
+{
+  "schema": "mic_ai.wifi_nucleo_pwm_bench.v1",
+  "host_utc": "2026-09-29T15:00:29.620671+00:00",
+  "scope": "logic_pwm_with_unpowered_ipm_and_control_ribbon_attached",
+  "break_test_kind": "external_sd_pin",
+  "hmi_url": "http://192.168.1.138:8080",
+  "control_transport": "wsl_nat_wifi_http",
+  "credential_bootstrap": "ADB read-only token retrieval; no motor command over ADB",
+  "uart": "UNO Q D1/TX -> Nucleo PB7/RX; Nucleo PB6/TX -> UNO Q D0/RX; common GND",
+  "saleae_channel_map": {
+    "0": {
+      "signal": "UH",
+      "gpio": "PA8",
+      "connector": "CN10-23"
+    },
+    "1": {
+      "signal": "UL",
+      "gpio": "PA7",
+      "connector": "CN10-15"
+    },
+    "2": {
+      "signal": "VH",
+      "gpio": "PA9",
+      "connector": "CN10-21"
+    },
+    "3": {
+      "signal": "VL",
+      "gpio": "PB0",
+      "connector": "CN7-34"
+    },
+    "4": {
+      "signal": "WH",
+      "gpio": "PA10",
+      "connector": "CN10-33"
+    },
+    "5": {
+      "signal": "WL",
+      "gpio": "PB1",
+      "connector": "CN10-24"
+    },
+    "6": {
+      "signal": "EM_STOP",
+      "gpio": "PA6"
+    }
+  },
+  "commands": [
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:13.281958+00:00",
+      "elapsed_s": 0.029,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM PROFILE LV",
+      "path": "/api/arm-profile",
+      "body": {
+        "profile": "lv"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:43.545043+00:00",
+      "elapsed_s": 0.394,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM LV",
+      "path": "/api/hv-arm",
+      "body": {
+        "action": "arm",
+        "confirm": "ARM LV HV OFF"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:43.684716+00:00",
+      "elapsed_s": 0.14,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "DIAG ON",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "DIAG ON"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:43.712352+00:00",
+      "elapsed_s": 0.028,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:44.058734+00:00",
+      "elapsed_s": 0.194,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:44.667532+00:00",
+      "elapsed_s": 0.352,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:44.981276+00:00",
+      "elapsed_s": 0.06,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "START",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "START"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:45.030741+00:00",
+      "elapsed_s": 0.664,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "SET RUNLIMIT 15",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "SET RUNLIMIT 15"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:45.060109+00:00",
+      "elapsed_s": 0.029,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:45.255931+00:00",
+      "elapsed_s": 0.011,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:45.521542+00:00",
+      "elapsed_s": 0.011,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:45.994193+00:00",
+      "elapsed_s": 0.209,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:46.262919+00:00",
+      "elapsed_s": 0.01,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:46.552588+00:00",
+      "elapsed_s": 0.024,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:46.825837+00:00",
+      "elapsed_s": 0.02,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:47.329127+00:00",
+      "elapsed_s": 0.246,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:47.646414+00:00",
+      "elapsed_s": 0.056,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:47.953179+00:00",
+      "elapsed_s": 0.053,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:48.220876+00:00",
+      "elapsed_s": 0.01,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:48.681789+00:00",
+      "elapsed_s": 0.209,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:48.974877+00:00",
+      "elapsed_s": 0.041,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:49.282496+00:00",
+      "elapsed_s": 0.056,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:49.588489+00:00",
+      "elapsed_s": 0.053,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:50.094572+00:00",
+      "elapsed_s": 0.247,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:50.409007+00:00",
+      "elapsed_s": 0.049,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:50.715919+00:00",
+      "elapsed_s": 0.048,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:51.023575+00:00",
+      "elapsed_s": 0.042,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:51.528730+00:00",
+      "elapsed_s": 0.252,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:51.842132+00:00",
+      "elapsed_s": 0.052,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:52.149005+00:00",
+      "elapsed_s": 0.052,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:52.458060+00:00",
+      "elapsed_s": 0.054,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:52.961145+00:00",
+      "elapsed_s": 0.251,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:53.276825+00:00",
+      "elapsed_s": 0.056,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:53.582704+00:00",
+      "elapsed_s": 0.054,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:53.891478+00:00",
+      "elapsed_s": 0.055,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:54.316612+00:00",
+      "elapsed_s": 0.168,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:54.607049+00:00",
+      "elapsed_s": 0.04,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:54.914078+00:00",
+      "elapsed_s": 0.051,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:55.220495+00:00",
+      "elapsed_s": 0.046,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:55.725705+00:00",
+      "elapsed_s": 0.24,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:56.039724+00:00",
+      "elapsed_s": 0.061,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:56.301221+00:00",
+      "elapsed_s": 0.011,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:56.655398+00:00",
+      "elapsed_s": 0.103,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:57.160321+00:00",
+      "elapsed_s": 0.243,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:57.474136+00:00",
+      "elapsed_s": 0.059,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:57.781291+00:00",
+      "elapsed_s": 0.044,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:58.088543+00:00",
+      "elapsed_s": 0.057,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:58.593661+00:00",
+      "elapsed_s": 0.252,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:58.908289+00:00",
+      "elapsed_s": 0.062,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:59.215205+00:00",
+      "elapsed_s": 0.046,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:01:59.521949+00:00",
+      "elapsed_s": 0.043,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:00.026616+00:00",
+      "elapsed_s": 0.242,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:00.340568+00:00",
+      "elapsed_s": 0.05,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:00.751227+00:00",
+      "elapsed_s": 0.154,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:01.058165+00:00",
+      "elapsed_s": 0.046,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:01.562942+00:00",
+      "elapsed_s": 0.242,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:01.877161+00:00",
+      "elapsed_s": 0.063,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:02.184906+00:00",
+      "elapsed_s": 0.044,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:02.491063+00:00",
+      "elapsed_s": 0.055,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:03.918647+00:00",
+      "elapsed_s": 0.027,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM PROFILE HV RECOVERY",
+      "path": "/api/arm-profile",
+      "body": {
+        "profile": "hv"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T15:02:04.281306+00:00",
+      "elapsed_s": 0.221,
+      "transport": "wsl_nat_wifi_http"
+    }
+  ],
+  "restored": {
+    "uno_q": true,
+    "nucleo": true
+  },
+  "pass": false,
+  "images": {
+    "uno_bench": {
+      "path": "C:\\mic_practice\\artifacts\\bkin_external_trip_live_20260929_r4\\unoq_logic_bench_build\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "6d97f20aebbca8f193e1de724f1e661c4aef19be98316ae533d48bb13a4b0d33"
+    },
+    "nucleo_bench": {
+      "path": "C:\\mic_practice\\nucleo_g431_uart_bridge_pio\\.pio\\build\\nucleo_g431_pwm_bkin_external_bench\\firmware.bin",
+      "sha256": "b3e584dcb8cf7f48697ae5c3c83787daf7f88486a44ecba454b26482a8c59e75"
+    },
+    "uno_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\uno_q_mcu\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "f972c5e8a13745c9906bc74b288208afbfa387090ea94313c7c446266fa78c23"
+    },
+    "nucleo_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\nucleo\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "sha256": "39f91b2bd3d6ca2617b7fc0143e5fe97887e7bd66e2c41796c26a653ea96f747"
+    }
+  },
+  "hmi_resolved_ip": "192.168.1.138",
+  "before": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 0,
+    "bp_bad_cnt": 2,
+    "bp_age_ms": 23,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "logic_version": "2.4.46",
+  "post_flash_rpc": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 81,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "bench_safe": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 9,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "diag_ready": {
+    "state": "SAFE",
+    "mode": "DIAG",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 52,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "lv",
+    "hmi_hv_armed": 1
+  },
+  "start_response": {
+    "ok": true,
+    "message": "PWM started; external soft-start bus is stable",
+    "error": "",
+    "status": {
+      "state_code": 1,
+      "state": "VF_RUN",
+      "mode_code": 3,
+      "mode": "DIAG",
+      "pwm": 1,
+      "freq": 0.0,
+      "speed": 0.0,
+      "ia": -0.48,
+      "ib": -0.44,
+      "ic": -0.38,
+      "vdc": 0.0,
+      "id": -0.48,
+      "iq": -0.78,
+      "i_rms": 0.43,
+      "mic_active": 0,
+      "id_ref": 1.0,
+      "mic_saving_pct": 0.0,
+      "freq_cmd": 0.0,
+      "estop": 0,
+      "iotest": 0,
+      "ntc": 0,
+      "pfc": 0,
+      "precharge": 0,
+      "brake": 0,
+      "brake_duty": 0.0,
+      "fan_duty": 0.0,
+      "bp_fan_duty": 0.0,
+      "bp_fan_rpm": 0.0,
+      "enc_raw": 0,
+      "enc_ok": 0,
+      "enc_deg": 0.0,
+      "enc_rpm": 0.0,
+      "enc_mech_hz": 0.0,
+      "enc_elec_hz": 0.0,
+      "mic_gated": 0,
+      "mic_enable_ai": 0,
+      "mic_enc_used": 0,
+      "mic_freq_meas_hz": 0.0,
+      "mic_speed_err_hz": 0.0,
+      "mic_speed_tol_hz": 0.0,
+      "mic_link_flags": 0,
+      "mic_status_flags": 0,
+      "diag_mode": 1,
+      "duty_mode": 0,
+      "bp_good": 346,
+      "bp_bad": 0,
+      "bp_age_ms": 9,
+      "bp_status": 35,
+      "bp_fault": 0,
+      "bp_mode": 1,
+      "bp_cmd_mode": 1,
+      "bp_foc_backend": 0,
+      "fw_build": 2026092901,
+      "mc_fw_build": 0,
+      "matrix_test": 0,
+      "bp_seq": 90,
+      "bp_good_cnt": 347,
+      "bp_bad_cnt": 0,
+      "bp_ext": 0,
+      "bp_brake_duty": 0.0,
+      "bp_vbus_raw": 0,
+      "bp_vdc": 0.0,
+      "bp_vbus_age_ms": 9,
+      "bp_mcsdk_telemetry": 1,
+      "bp_vbus_valid": 1,
+      "bp_softstart_ready": 1,
+      "bp_precharge_managed": 0,
+      "rpc_schema_version": 3,
+      "mc_capabilities": 1,
+      "mc_supported_modes": [
+        "VF"
+      ],
+      "bp_temp_raw": 250,
+      "bp_temp_v": 0.0,
+      "bp_temp_c": 25.0,
+      "bp_temp_flags": 1,
+      "bp_temp_valid": 1,
+      "bp_temp_fault": 0,
+      "bp_temp_age_ms": 10,
+      "bp_phase_a_raw": 0,
+      "bp_phase_b_raw": 0,
+      "bp_phase_c_raw": 0,
+      "bp_phase_a_v": 0.0,
+      "bp_phase_b_v": 0.0,
+      "bp_phase_c_v": 0.0,
+      "bp_phase_flags": 224,
+      "bp_phase_valid": 0,
+      "bp_phase_c_virtual": 0,
+      "bp_phase_age_ms": 10,
+      "bp_rsp_age_ms": 10,
+      "bp_ping_pairs": 0,
+      "bp_ping_age_ms": 999999,
+      "ts": 1790694104975,
+      "bp_fw_build": 0,
+      "mc_fan_duty": 0.0,
+      "mc_fan_rpm": 0.0,
+      "mc_good": 346,
+      "mc_bad": 0,
+      "mc_age_ms": 9,
+      "mc_status": 35,
+      "mc_fault": 0,
+      "mc_mode": 1,
+      "mc_cmd_mode": 1,
+      "mc_foc_backend": 0,
+      "mc_seq": 90,
+      "mc_good_cnt": 347,
+      "mc_bad_cnt": 0,
+      "mc_ext": 0,
+      "mc_brake_duty": 0.0,
+      "mc_vbus_raw": 0,
+      "mc_vdc": 0.0,
+      "mc_vbus_age_ms": 9,
+      "mc_mcsdk_telemetry": 1,
+      "mc_vbus_valid": 1,
+      "mc_softstart_ready": 1,
+      "mc_precharge_managed": 0,
+      "mc_temp_raw": 250,
+      "mc_temp_v": 0.0,
+      "mc_temp_c": 25.0,
+      "mc_temp_flags": 1,
+      "mc_temp_valid": 1,
+      "mc_temp_fault": 0,
+      "mc_temp_age_ms": 10,
+      "mc_phase_a_raw": 0,
+      "mc_phase_b_raw": 0,
+      "mc_phase_c_raw": 0,
+      "mc_phase_a_v": 0.0,
+      "mc_phase_b_v": 0.0,
+      "mc_phase_c_v": 0.0,
+      "mc_phase_flags": 224,
+      "mc_phase_valid": 0,
+      "mc_phase_c_virtual": 0,
+      "mc_phase_age_ms": 10,
+      "mc_rsp_age_ms": 10,
+      "mc_ping_pairs": 0,
+      "mc_ping_age_ms": 999999
+    }
+  },
+  "tripped_status": {
+    "state": "SAFE",
+    "mode": "DIAG",
+    "pwm": 0,
+    "estop": 1,
+    "vdc": 0.0,
+    "bp_status": 13,
+    "bp_fault": 7,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 14,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "lv",
+    "hmi_hv_armed": 0
+  },
+  "restart_without_clear": {
+    "http_status": 409,
+    "rejected": true
+  },
+  "external_break_keepalive": {
+    "errors": [],
+    "sent": 53
+  },
+  "external_break": {
+    "pass": false,
+    "checks": {
+      "six_channel_pwm_valid": true,
+      "sd_fell_after_pwm": true,
+      "sd_released": false,
+      "all_six_low_within_100us": true,
+      "outputs_stay_low_after_sd_release": true
+    },
+    "sd_falling_s": 4.13230625,
+    "sd_rising_s": 4.138963,
+    "trip_to_all_low_us": 0.4999999996257998,
+    "pwm_analysis": {
+      "pass": true,
+      "checks": {
+        "all_six_channels_present": true,
+        "no_overlap": true,
+        "timing_resolution": true,
+        "all_six_active": true,
+        "carrier_10khz": true,
+        "deadtime_within_sample_resolution": true,
+        "pa6_em_stop_held_low_raw": false,
+        "pa6_low_during_pwm": false
+      },
+      "required_checks": [
+        "all_six_active",
+        "all_six_channels_present",
+        "carrier_10khz",
+        "deadtime_within_sample_resolution",
+        "no_overlap",
+        "timing_resolution"
+      ],
+      "em_stop_required": false,
+      "em_stop": {
+        "initial": 1,
+        "final": 1,
+        "edges": 652,
+        "rising_edges": 326,
+        "falling_edges": 326,
+        "high_time_s": 17.828090000000007,
+        "duty_ratio": 0.9869752914186511,
+        "freq_hz_from_rising": 18348.623853187986
+      },
+      "first_pwm_activity_s": 0.92262225,
+      "sample_rate_hz": 4000000,
+      "deadtime_tolerance_us": 0.25,
+      "analysis": {
+        "csv": "C:\\mic_practice\\artifacts\\bkin_external_trip_live_20260929_r4\\external_break_capture\\csv\\digital.csv",
+        "duration_s": 18.06336,
+        "csv_row_timing": {
+          "samples": 129776,
+          "intervals": 129775,
+          "min_step_s": 2.499999993688107e-07,
+          "max_step_s": 13.369632249999999,
+          "mean_step_s": 0.00013918982854941244,
+          "inferred_sample_rate_hz": 7184.4330179988665
+        },
+        "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+        "selected_sample_rate_hz": 4000000.0,
+        "selected_sample_period_ns": 250.0,
+        "max_sample_period_ns": 250.0,
+        "timing_resolution_pass": true,
+        "channels": {
+          "0": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64346,
+            "rising_edges": 32173,
+            "falling_edges": 32173,
+            "high_time_s": 1.539908999999997,
+            "duty_ratio": 0.08525041852678555,
+            "freq_hz_from_rising": 10025.062656646223
+          },
+          "1": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64344,
+            "rising_edges": 32172,
+            "falling_edges": 32172,
+            "high_time_s": 1.5397590000000363,
+            "duty_ratio": 0.08524211442389656,
+            "freq_hz_from_rising": 10025.062656646223
+          },
+          "2": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64346,
+            "rising_edges": 32173,
+            "falling_edges": 32173,
+            "high_time_s": 1.5399072499999957,
+            "duty_ratio": 0.08525032164558509,
+            "freq_hz_from_rising": 10025.062656646223
+          },
+          "3": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64344,
+            "rising_edges": 32172,
+            "falling_edges": 32172,
+            "high_time_s": 1.539751250000037,
+            "duty_ratio": 0.08524168537858057,
+            "freq_hz_from_rising": 10025.062656646223
+          },
+          "4": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64346,
+            "rising_edges": 32173,
+            "falling_edges": 32173,
+            "high_time_s": 1.5399249999999962,
+            "duty_ratio": 0.08525130429776057,
+            "freq_hz_from_rising": 10025.062656646223
+          },
+          "5": {
+            "initial": 0,
+            "final": 0,
+            "edges": 64344,
+            "rising_edges": 32172,
+            "falling_edges": 32172,
+            "high_time_s": 1.5397717500000392,
+            "duty_ratio": 0.08524282027264247,
+            "freq_hz_from_rising": 10025.062656646223
+          }
+        },
+        "pairs": {
+          "U": {
+            "high_channel": 0,
+            "low_channel": 1,
+            "overlap_high_s": 0.0,
+            "overlap_ratio": 0.0,
+            "both_low_s": 14.983691999999966,
+            "both_low_ratio": 0.8295074670493179,
+            "both_high_seen": false,
+            "min_gap_s": 1.9999999993913775e-06,
+            "gap_count": 64344,
+            "no_overlap": true
+          },
+          "V": {
+            "high_channel": 2,
+            "low_channel": 3,
+            "overlap_high_s": 0.0,
+            "overlap_ratio": 0.0,
+            "both_low_s": 14.983701499999967,
+            "both_low_ratio": 0.8295079929758343,
+            "both_high_seen": false,
+            "min_gap_s": 1.9999999993913775e-06,
+            "gap_count": 64344,
+            "no_overlap": true
+          },
+          "W": {
+            "high_channel": 4,
+            "low_channel": 5,
+            "overlap_high_s": 0.0,
+            "overlap_ratio": 0.0,
+            "both_low_s": 14.983663249999964,
+            "both_low_ratio": 0.829505875429597,
+            "both_high_seen": false,
+            "min_gap_s": 1.9999999993913775e-06,
+            "gap_count": 64344,
+            "no_overlap": true
+          }
+        },
+        "pass": true,
+        "expect_pwm": true,
+        "pass_meaning": "no_overlap_and_pwm_activity",
+        "overlap_analysis_pass": true,
+        "no_overlap_pass": true,
+        "pwm_activity_pass": true
+      }
+    }
+  },
+  "error": "RuntimeError: external SD/BKIN waveform or restart latch failed",
+  "final_stop_before_restore": {
+    "http_status": 200,
+    "ok": true
+  },
+  "after_restore": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 0,
+    "bp_bad_cnt": 1,
+    "bp_age_ms": 50,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0,
+    "zero_bus_mcsdk_fault_expected": true
+  },
+  "production_outputs": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_static_low": true
+    },
+    "pass": true,
+    "settle_s": 0.0,
+    "analysis": {
+      "csv": "C:\\mic_practice\\artifacts\\bkin_external_trip_live_20260929_r4\\production_restored\\csv\\digital.csv",
+      "duration_s": 0.149333333,
+      "csv_row_timing": {
+        "samples": 2,
+        "intervals": 1,
+        "min_step_s": 0.149333333,
+        "max_step_s": 0.149333333,
+        "mean_step_s": 0.149333333,
+        "inferred_sample_rate_hz": 6.696428586375956
+      },
+      "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+      "selected_sample_rate_hz": 24000000.0,
+      "selected_sample_period_ns": 41.666666666666664,
+      "max_sample_period_ns": 41.666666666666664,
+      "timing_resolution_pass": true,
+      "channels": {
+        "0": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "1": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "2": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "3": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "4": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "5": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        }
+      },
+      "pairs": {
+        "U": {
+          "high_channel": 0,
+          "low_channel": 1,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.149333333,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        },
+        "V": {
+          "high_channel": 2,
+          "low_channel": 3,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.149333333,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        },
+        "W": {
+          "high_channel": 4,
+          "low_channel": 5,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.149333333,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        }
+      },
+      "pass": true,
+      "expect_pwm": false,
+      "pass_meaning": "no_overlap_only_pwm_activity_diagnostic",
+      "overlap_analysis_pass": true,
+      "no_overlap_pass": true,
+      "pwm_activity_pass": false
+    }
+  }
+}

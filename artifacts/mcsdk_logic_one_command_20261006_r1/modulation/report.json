@@ -1,0 +1,93 @@
+{
+  "pass": true,
+  "results": {
+    "5": {
+      "pass": true,
+      "checks": {
+        "frequency_from_waveform_matches_command": true,
+        "positive_phase_rotation": true,
+        "V_phase_minus_120_degrees": true,
+        "W_phase_plus_120_degrees": true,
+        "balanced_phase_amplitudes": true,
+        "sinusoidal_duty_envelopes": true
+      },
+      "csv": "C:\\mic_practice\\artifacts\\mcsdk_logic_one_command_20261006_r1\\live\\pwm_5hz\\csv\\digital.csv",
+      "csv_sha256": "3d6293ecc2ac295398e1f347966cfda94387ddb7fe57877d875d54af5fe54fcd",
+      "expected_hz": 5,
+      "measured_frequency_hz": 4.999534714596586,
+      "PWM_periods": 2384,
+      "phase_relative_to_U_deg": [
+        0.0,
+        -120.0505050968254,
+        119.90935694908814
+      ],
+      "angle_fit_RMS_deg": 0.21393710787153725,
+      "duty_fits": [
+        {
+          "offset": 0.47831084924913714,
+          "amplitude": 0.06437979889513505,
+          "phase_deg": 165.71800898185774,
+          "r_squared": 0.9999596415770042
+        },
+        {
+          "offset": 0.478314055312395,
+          "amplitude": 0.06428613901189638,
+          "phase_deg": 45.66750388503233,
+          "r_squared": 0.9999233884949245
+        },
+        {
+          "offset": 0.47831741726162685,
+          "amplitude": 0.06437609557886476,
+          "phase_deg": -74.37263406905414,
+          "r_squared": 0.9999595353400829
+        }
+      ],
+      "scope": "logical PWM modulation; not rotor speed, flux or phase voltage measurement"
+    },
+    "20": {
+      "pass": true,
+      "checks": {
+        "frequency_from_waveform_matches_command": true,
+        "positive_phase_rotation": true,
+        "V_phase_minus_120_degrees": true,
+        "W_phase_plus_120_degrees": true,
+        "balanced_phase_amplitudes": true,
+        "sinusoidal_duty_envelopes": true
+      },
+      "csv": "C:\\mic_practice\\artifacts\\mcsdk_logic_one_command_20261006_r1\\live\\pwm_20hz\\csv\\digital.csv",
+      "csv_sha256": "b0cee2ee4795fb4553613c2891e10d69ad022eb0a367e69824b73d439cd2e948",
+      "expected_hz": 20,
+      "measured_frequency_hz": 19.999371765815688,
+      "PWM_periods": 2385,
+      "phase_relative_to_U_deg": [
+        0.0,
+        -120.00948424329721,
+        119.99136927544811
+      ],
+      "angle_fit_RMS_deg": 0.09564506264575469,
+      "duty_fits": [
+        {
+          "offset": 0.4783542196836138,
+          "amplitude": 0.23120208772032444,
+          "phase_deg": -135.00646077452606,
+          "r_squared": 0.9999898340965062
+        },
+        {
+          "offset": 0.4783398494519421,
+          "amplitude": 0.23120608505330142,
+          "phase_deg": 104.98405498217672,
+          "r_squared": 0.9999905496217911
+        },
+        {
+          "offset": 0.47836562453124887,
+          "amplitude": 0.23120161414417964,
+          "phase_deg": -15.015091499077935,
+          "r_squared": 0.9999898528505473
+        }
+      ],
+      "scope": "logical PWM modulation; not rotor speed, flux or phase voltage measurement"
+    }
+  },
+  "hardware_validated": false,
+  "source_report_sha256": "624e11c9f88904a4bcaf31fd6bcc2db7e2138d6dd81d1ae6dec949d00bfa99e2"
+}

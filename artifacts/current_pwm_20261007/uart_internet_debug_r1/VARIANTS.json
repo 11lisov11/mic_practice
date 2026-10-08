@@ -1,0 +1,124 @@
+{
+  "schema": "mic_ai.uart_debug_variant_matrix.v1",
+  "date": "2026-10-07",
+  "installed_baseline": {"uno_build": 2026100709, "nucleo_build": 2026100708},
+  "execution": "Planning only. No live commands, flashing or wiring changes.",
+  "invariants": [
+    "Never mask NE/FE/ORE/PE or auto-clear an error to obtain a passing result.",
+    "Preserve BKIN, voltage protections, command timeout and latched fault behavior.",
+    "No PC USB or grounded analyzer on the energized mains-referenced assembly.",
+    "Physical modifications only while de-energized and safely discharged.",
+    "Change one factor per comparison; separate host, low-voltage and powered evidence.",
+    "Exact message totals unavailable when counters saturate; do not divide errors by sequence changes as though they were total packets."
+  ],
+  "metrics": [
+    "UART NE, FE, ORE and PE occurrences with timestamp and command state",
+    "CRC/integrity errors, dropped frames, sequence errors and resets",
+    "RX queue high-water mark and overflow occurrences",
+    "Target maximum IRQ latency and main-loop duration",
+    "Maximum telemetry age, HTTP timeouts and Wi-Fi reconnects separately",
+    "Sensor I2C errors and supply/reset evidence",
+    "Target fault-to-output-disable latency: not inferred from HTTP polling",
+    "No ENABLE acceptance after a pending transport fault and no automatic restart"
+  ],
+  "variants": [
+    {
+      "id": "V00", "priority": 0, "name": "Installed baseline",
+      "change": "None; retain 709/708 and preserve comparable logs.",
+      "status": "zero_bus_observed_only_for_latest_pair",
+      "test": "Use the same observation window and build identity for each comparison."
+    },
+    {
+      "id": "V01", "priority": 1, "name": "Pending RX fault guard",
+      "change": "Service already pending RX faults before consuming queued commands and dispatching a frame.",
+      "status": "host_candidate_passed_not_deployed",
+      "evidence": "interleaving_candidate_r2/report.json",
+      "test": "2240 scheduled cases plus existing host regression; then target timing and low-voltage verification.",
+      "limit": "Not an electrical-noise fix or an exhaustive instruction-level interleaving proof."
+    },
+    {
+      "id": "V02", "priority": 2, "name": "Versioned CRC16 protocol",
+      "change": "Replace XOR checksum through an explicit peer protocol upgrade.",
+      "status": "hypothesis_not_implemented",
+      "test": "Single and paired bit flips, bursts, truncated/replayed frames and legacy-peer rejection.",
+      "limit": "Improves corruption detection, not RX electrical quality; both peers and diagnostics must change consistently."
+    },
+    {
+      "id": "V03", "priority": 4, "name": "Circular DMA RX",
+      "change": "Compare current ISR/ring reception with circular DMA and bounded parser consumption.",
+      "status": "hypothesis_not_implemented",
+      "test": "RX load, wrap boundaries, DMA errors, IRQ latency and no stale command replay.",
+      "limit": "DMA can reduce CPU servicing pressure but cannot repair an electrically corrupted bit; motor DMA resources must be audited."
+    },
+    {
+      "id": "V04", "priority": 3, "name": "Nonblocking TX",
+      "change": "Compare blocking replies with interrupt or DMA transmission, using an owned persistent TX buffer.",
+      "status": "hypothesis_not_implemented",
+      "test": "Reply ordering, buffer lifetime, busy/error handling and maximum loop duration.",
+      "limit": "Current TX is in the main loop with interrupts enabled. A benefit or a cause of NE is not established."
+    },
+    {
+      "id": "V05", "priority": 5, "name": "Baud rate sweep",
+      "change": "Compare 115200, 57600 and 38400 on both peers, retaining the same protection deadlines initially.",
+      "status": "hypothesis_not_tested",
+      "test": "Message wire time, reply timeout, traffic utilization and observed error rate.",
+      "limit": "A 32-byte 8N1 reply takes about 2.78, 5.56 and 8.33 ms respectively. The current 5 ms TX timeout is incompatible with the two lower rates; evaluate timing offline before deployment."
+    },
+    {
+      "id": "V06", "priority": 6, "name": "Diagnostic traffic load",
+      "change": "Compare reduced versus normal nonessential logging/polling; retain command heartbeat and fault recording.",
+      "status": "hypothesis_not_tested",
+      "test": "CPU load, maximum frame age and Wi-Fi loss versus UART errors measured separately.",
+      "limit": "Do not suppress fault evidence or stretch watchdog deadlines to hide failures."
+    },
+    {
+      "id": "V07", "priority": 7, "name": "Bounded parser resynchronization",
+      "change": "Define an inter-byte deadline and deterministic header recovery after a damaged/partial frame.",
+      "status": "hypothesis_not_implemented",
+      "test": "Every truncation point, header bytes inside payload, random prefixes and recovery without auto-rearming.",
+      "limit": "Improves recovery after corruption; not permission to resume drive after a latched error."
+    },
+    {
+      "id": "V08", "priority": 2, "name": "Reset and timing diagnostics",
+      "change": "Expose reset reason, boot/session identity, queue high-water and target loop/IRQ timing through a reviewed diagnostic schema.",
+      "status": "hypothesis_not_implemented",
+      "test": "Intentional low-voltage reset versus UART fault versus Wi-Fi interruption, preserving the first cause.",
+      "limit": "Better diagnosis, not a repair; do not infer brownout solely from counter rollback."
+    },
+    {
+      "id": "V09", "priority": 1, "name": "Reference and supply integrity",
+      "change": "Qualified on-site verification of UART reference path and local supply integrity; compare a reviewed correction if a defect is found.",
+      "status": "physical_hypothesis_unverified",
+      "test": "Suitable isolated measurements correlated with UART and I2C faults.",
+      "limit": "Shared powerbank does not establish the quality of the signal return. Do not remove all UART reference paths."
+    },
+    {
+      "id": "V10", "priority": 3, "name": "Signal cable geometry",
+      "change": "Compare a short controlled route with each signal accompanied by its reference return, rather than arbitrary long jumper leads.",
+      "status": "physical_hypothesis_unverified",
+      "test": "Document actual length/route and receiver waveform, keeping other variables fixed.",
+      "limit": "Distance from motor wires alone does not prove immunity; all rewiring is de-energized."
+    },
+    {
+      "id": "V11", "priority": 8, "name": "Receiver edge conditioning",
+      "change": "Evaluate source damping or an appropriate receiver buffer/filter only after measuring edge distortion and input levels.",
+      "status": "physical_hypothesis_unverified",
+      "test": "Rise/fall time, threshold margin and timing across supply/baud limits.",
+      "limit": "No blind capacitor/resistor values; an RC filter can itself damage sampling margin."
+    },
+    {
+      "id": "V12", "priority": 9, "name": "Differential or isolated UART transport",
+      "change": "Keep the UART command protocol but replace the single-ended physical link with a reviewed differential or isolated design.",
+      "status": "hardware_redesign_option",
+      "test": "Full-duplex versus half-duplex requirements, reference/common-mode limits, isolated power domains, delay and fail-safe behavior.",
+      "limit": "Requires additional hardware. RS-485 alone is not galvanic isolation and cannot be assumed safe for a mains-referenced assembly."
+    }
+  ],
+  "sources": [
+    "https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+    "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+    "https://community.st.com/stm32-mcus-60/faq-stm32-hal-uart-driver-api-and-callbacks-29",
+    "https://www.ti.com/document-viewer/lit/html/SLLA416",
+    "https://www.ti.com/document-viewer/lit/html/SLLT217B/GUID-F9F7A301-AF58-446B-A2BC-816480EB742A"
+  ]
+}

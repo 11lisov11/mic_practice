@@ -1,0 +1,110 @@
+{
+  "host_utc": "2026-10-06T08:38:17.038076+00:00",
+  "software_tests_pass": true,
+  "ready_to_start_motor": false,
+  "hardware_test_performed_by_this_runner": false,
+  "rows": [
+    {
+      "tool": "nucleo_firmware_safety_check.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.156
+    },
+    {
+      "tool": "uno_nucleo_mcsdk_contract_check.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.156
+    },
+    {
+      "tool": "web_hmi_command_guard_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.516
+    },
+    {
+      "tool": "web_hmi_control_access_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 1.688
+    },
+    {
+      "tool": "run_wifi_nucleo_pwm_bench_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.609
+    },
+    {
+      "tool": "mcsdk_release_preflight_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.328
+    },
+    {
+      "tool": "active_pwm_guard_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.094
+    },
+    {
+      "tool": "protocol_safety_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.172
+    },
+    {
+      "tool": "start_guard_static_check_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.109
+    },
+    {
+      "tool": "saleae_pwm_analyze_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.906
+    },
+    {
+      "tool": "nucleo_logic_capture_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.188
+    },
+    {
+      "tool": "nucleo_bridge_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 3.094
+    },
+    {
+      "tool": "verify_board_flash_package_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.656
+    },
+    {
+      "tool": "verify_wifi_command_path_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.234
+    },
+    {
+      "tool": "wifi_http_via_wsl_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.172
+    },
+    {
+      "tool": "verify_production_wifi_idle_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.156
+    },
+    {
+      "tool": "collect_wifi_telemetry_selftest.py",
+      "exit_code": 0,
+      "pass": true,
+      "duration_s": 0.172
+    }
+  ]
+}

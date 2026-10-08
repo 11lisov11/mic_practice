@@ -1,0 +1,21 @@
+2026-10-07 13:06:29 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 13:06:32 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 13:06:33 MC_FAULT_DIAG code=5 bad=0 cause unavailable in installed firmware
+2026-10-07 13:06:33 CMD CLEAR
+2026-10-07 13:06:34 ARM_PROFILE lv runlimit=3.0s
+2026-10-07 13:06:34 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 13:06:35 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=5910 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=0 mc_fault_reason=0
+2026-10-07 13:06:35 CMD CLEAR
+2026-10-07 13:06:35 CMD MODE VF
+2026-10-07 13:06:35 CMD SET FREQ 5
+2026-10-07 13:06:35 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-07 13:06:36 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-07 13:06:37 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.3 softstart=external-ready
+2026-10-07 13:06:38 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 13:06:39 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 13:06:39 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 13:06:40 MC_FAULT_DIAG code=5 bad=0 cause unavailable in installed firmware
+2026-10-07 13:06:40 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=7560 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=0 mc_fault_reason=0
+2026-10-07 13:06:40 CMD CLEAR
+2026-10-07 13:06:41 ARM_PROFILE hv runlimit=15.0s
+2026-10-07 13:06:43 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=30 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0

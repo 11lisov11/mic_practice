@@ -14,5 +14,7 @@
   "rated_power_w": 250.0,
   "connection": "delta",
   "catalog_source": "IEK AIR56B2 catalog data confirmed by the operator as the intended motor variant; instance nameplate photo and hash are not yet attached",
-  "measurement_note": "This profile is a provisional MCSDK ACIM V/F open-loop candidate. The physical motor is intended to be connected in Delta to a 220 V line-to-line inverter. MCSDK uses the star-equivalent 127.017 V phase-to-neutral model. Rs/Rr/Lls/Llr/Lm/inertia are intentionally absent: they must be measured before FOC/identification or any high-voltage release."
+  "source_url": "https://cdn-01.iek.ru/media/original/78c31060549010eaa9a1bb1f4f6d2d8cb3155062b138bfd13478f55521c38a47.pdf",
+  "operator_confirmed_model": true,
+  "measurement_note": "Manufacturer passport values for the operator-specified AIR56B2, for open-loop V/F only. MCSDK uses the star-equivalent 127.017 V phase-to-neutral model. Rs/Rr/Lls/Llr/Lm/inertia are intentionally absent and must be measured before FOC. Catalog confirmation does not close the separate soft-start, BKIN, or live HV gates."
 }

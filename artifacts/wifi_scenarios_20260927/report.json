@@ -1,0 +1,100 @@
+{
+  "schema": "mic_ai.wifi_nucleo_pwm_bench.v1",
+  "host_utc": "2026-09-27T16:30:41.483663+00:00",
+  "scope": "logic_only_no_power_stage",
+  "hmi_url": "http://192.168.1.138:8080",
+  "control_transport": "direct_wifi_http",
+  "credential_bootstrap": "ADB read-only token retrieval; no motor command over ADB",
+  "uart": "UNO Q D1/TX -> Nucleo PB7/RX; Nucleo PB6/TX -> UNO Q D0/RX; common GND",
+  "saleae_channel_map": {
+    "0": {
+      "signal": "UH",
+      "gpio": "PA8",
+      "connector": "CN10-23"
+    },
+    "1": {
+      "signal": "UL",
+      "gpio": "PA7",
+      "connector": "CN10-15"
+    },
+    "2": {
+      "signal": "VH",
+      "gpio": "PA9",
+      "connector": "CN10-21"
+    },
+    "3": {
+      "signal": "VL",
+      "gpio": "PB0",
+      "connector": "CN7-34"
+    },
+    "4": {
+      "signal": "WH",
+      "gpio": "PA10",
+      "connector": "CN10-33"
+    },
+    "5": {
+      "signal": "WL",
+      "gpio": "PB1",
+      "connector": "CN10-24"
+    },
+    "6": {
+      "signal": "EM_STOP",
+      "gpio": "PA6"
+    }
+  },
+  "commands": [],
+  "restored": {
+    "uno_q": false,
+    "nucleo": true
+  },
+  "pass": false,
+  "images": {
+    "uno_bench": {
+      "path": "C:\\mic_practice\\artifacts\\wifi_scenarios_20260927\\unoq_logic_bench_build\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "7b20dca59a7d0f0e2ec6f5a1e87731a23fecaae5dbf17e8008dcb9760dd34320"
+    },
+    "nucleo_bench": {
+      "path": "C:\\mic_practice\\nucleo_g431_uart_bridge_pio\\.pio\\build\\nucleo_g431_pwm_bench\\firmware.bin",
+      "sha256": "eaebf76c4a66fc89afb277db6b6b4554469db42e2624aba9c5fe379cdc371b9b"
+    },
+    "uno_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\uno_q_mcu\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "517e03b4037c1b552ed731c5a7a0fd7d88929206d7b89310e3ae62282fafa91f"
+    },
+    "nucleo_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\nucleo\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "sha256": "39f91b2bd3d6ca2617b7fc0143e5fe97887e7bd66e2c41796c26a653ea96f747"
+    }
+  },
+  "hmi_resolved_ip": "192.168.1.138",
+  "before": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 1,
+    "bp_bad_cnt": 1,
+    "bp_age_ms": 13,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026091401,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "logic_version": "2.4.46",
+  "error": "RuntimeError: command failed (1); see write_flash_unoq_bench.log",
+  "final_stop_before_restore": {
+    "http_status": 200,
+    "ok": true
+  },
+  "restore_unoq_error": "RuntimeError: command failed (1); see write_restore_unoq_production.log"
+}

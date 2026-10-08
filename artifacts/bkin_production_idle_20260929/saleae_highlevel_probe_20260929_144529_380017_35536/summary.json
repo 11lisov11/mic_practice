@@ -1,0 +1,109 @@
+{
+  "run_dir": "C:\\mic_practice\\artifacts\\bkin_production_idle_20260929\\saleae_highlevel_probe_20260929_144529_380017_35536",
+  "csv": "C:\\mic_practice\\artifacts\\bkin_production_idle_20260929\\saleae_highlevel_probe_20260929_144529_380017_35536\\capture_attempt_01_24000000Hz\\digital.csv",
+  "channels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "requested_rate": 24000000,
+  "selected_rate": 24000000,
+  "requested_sample_period_ns": 41.666666666666664,
+  "selected_sample_period_ns": 41.666666666666664,
+  "selected_rate_meets_requested": true,
+  "requested_threshold": null,
+  "selected_threshold": null,
+  "auto_rate": true,
+  "capture_errors": [],
+  "require_static_safe": false,
+  "commands": [],
+  "command_pass": true,
+  "edges": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0
+  },
+  "levels": {
+    "0": {
+      "initial": 0,
+      "final": 0
+    },
+    "1": {
+      "initial": 0,
+      "final": 0
+    },
+    "2": {
+      "initial": 0,
+      "final": 0
+    },
+    "3": {
+      "initial": 0,
+      "final": 0
+    },
+    "4": {
+      "initial": 0,
+      "final": 0
+    },
+    "5": {
+      "initial": 0,
+      "final": 0
+    },
+    "6": {
+      "initial": 1,
+      "final": 1
+    }
+  },
+  "rows": 2,
+  "pwm_static_checks": {
+    "channels_0_6_present": true,
+    "pwm_channels_present": true,
+    "no_edges": true,
+    "pwm_lines_low": true,
+    "em_stop_shutdown_asserted": false,
+    "pwm_static_safe_pass": false,
+    "pattern": "all_pwm_low_safe",
+    "high_pwm_channels": [],
+    "changed_channels": [],
+    "channel_map": {
+      "0": {
+        "stm32": "PA8",
+        "signal": "PWM-1H"
+      },
+      "1": {
+        "stm32": "PB13",
+        "signal": "PWM-1L"
+      },
+      "2": {
+        "stm32": "PA9",
+        "signal": "PWM-2H"
+      },
+      "3": {
+        "stm32": "PB14",
+        "signal": "PWM-2L"
+      },
+      "4": {
+        "stm32": "PA10",
+        "signal": "PWM-3H"
+      },
+      "5": {
+        "stm32": "PB15",
+        "signal": "PWM-3L"
+      },
+      "6": {
+        "stm32": "PB12",
+        "signal": "EM_STOP/shutdown"
+      }
+    }
+  },
+  "pwm_static_safe_pass": false,
+  "require_static_safe_pass": null,
+  "exit_code": 0
+}

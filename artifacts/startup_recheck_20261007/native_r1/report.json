@@ -1,0 +1,13 @@
+{
+  "pass": false,
+  "scope": "unchanged production control functions; mocked MCSDK/HAL, no physical PWM",
+  "hardware_validated": false,
+  "test_modifies_firmware": false,
+  "source_includes_fault_diagnostics": true,
+  "sources": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "b1b5ef77a0f5d8b20b92394bd07cd78a84888338d371b3a50797ace931c10a99",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+  },
+  "error": "RuntimeError: Host compilation failed; see compile.log"
+}

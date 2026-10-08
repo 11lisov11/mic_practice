@@ -1,0 +1,63 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": true,
+  "checks": {
+    "wifi_status_received": true,
+    "no_http_errors": true,
+    "build_identity_stable": true,
+    "uart_fresh": true,
+    "bp_good_valid": true,
+    "bp_bad_valid": true,
+    "bp_bad_cnt_valid": true,
+    "idle_outputs_off": true,
+    "no_new_uart_errors": true,
+    "vdc_within_limit": true
+  },
+  "samples": 14,
+  "http_errors": [],
+  "first_builds": {
+    "fw_build": 2026100709,
+    "mc_fw_build": 2026100708
+  },
+  "counters": {
+    "bp_good": {
+      "first": 55023,
+      "last": 55130
+    },
+    "bp_bad": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_cnt": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "detailed_uart_counters_available": true,
+  "detailed_uart_counters": {
+    "bp_bad_integrity": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_bad_sequence": {
+      "first": 0,
+      "last": 0
+    },
+    "bp_superseded": {
+      "first": 1,
+      "last": 1
+    },
+    "bp_clear_pending": {
+      "first": 0,
+      "last": 0
+    }
+  },
+  "log_lines": 66,
+  "max_vdc": 2,
+  "host_utc": "2026-10-07T18:49:57.569692+00:00",
+  "duration_requested_s": 10,
+  "transport": "wifi_http_via_wsl_GET_only",
+  "motor_start_checked": false,
+  "scope": "passive zero-bus baseline; no ARM/START/STOP or firmware writes",
+  "commands_sent": 0
+}

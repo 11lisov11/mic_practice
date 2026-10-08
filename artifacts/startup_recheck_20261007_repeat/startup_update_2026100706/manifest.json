@@ -1,0 +1,108 @@
+{
+  "schema": "mic_ai.diagnostic_update.v1",
+  "firmware_build_id": 2026100706,
+  "builds": {
+    "uno_q": 2026100706,
+    "nucleo": 2026100705
+  },
+  "scope": "single-owner bounded V/f ramp, correct current-trip ownership, bus-loss STOP; zero-frequency STOP and non-extendable run deadline; no powered motor acceptance",
+  "hardware_readback_performed_by_packager": false,
+  "readback_evidence": "RESULTS.json from the connected-stand verification",
+  "hv_release_approved": false,
+  "motor_start_validated": false,
+  "older_ready_to_flash_package_replaced": false,
+  "calibration_reuse": "audited same measurement contract; original points not rewritten",
+  "open_checks": [
+    "root cause of original HV trip not proven",
+    "repeat bounded motor trial with USB/analyzer removed",
+    "qualified Nucleo phase-current telemetry",
+    "updated loaded-mode and protection timing qualification"
+  ],
+  "files": [
+    {
+      "file": "linux/web_hmi/flash_unoq_sketch_090.cfg",
+      "bytes": 450,
+      "sha256": "d83ab25f951733f02e5bd88cbac664f32d17b16d6f3f67500b7a3c76dc05f3c6"
+    },
+    {
+      "file": "linux/web_hmi/requirements.txt",
+      "bytes": 12,
+      "sha256": "2db2172e314f86716c5c45bb731f4e77d2eb626ba9b6d053ab564e82795c9341"
+    },
+    {
+      "file": "linux/web_hmi/server.py",
+      "bytes": 141189,
+      "sha256": "ecc585a54680790ebd2a1e0be9b3a97a22ddecdbb379828914ec14b6ba85b03f"
+    },
+    {
+      "file": "linux/web_hmi/static/app.js",
+      "bytes": 35937,
+      "sha256": "59af991d972d99adb8f2ea75d41d7ea9def6c452ec873ef1e1ed1bf9234c972a"
+    },
+    {
+      "file": "linux/web_hmi/static/index.html",
+      "bytes": 8314,
+      "sha256": "221368f5a5dad34e0112c834623e5fb9bd0d74f03e31665e60253e8889e404d2"
+    },
+    {
+      "file": "linux/web_hmi/static/style.css",
+      "bytes": 8833,
+      "sha256": "de37484a049de64405d29b11f20300a16d0d589ba0d76758d8b8489cebfd03a4"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "bytes": 40516,
+      "sha256": "22b381e94598ffb9a88e6081b61b914c2469046cbcd593146e242b600c55ad12"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+      "bytes": 1889,
+      "sha256": "dae01140ba842bc2b26e66bf9a0cc75f12caf0248a938671802d1a3a3ec9ecd3"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "bytes": 2073184,
+      "sha256": "34d0e22c551e077be9d1b218b4192d27a4d27cf15716b7d830eabd99c9988962"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "bytes": 114051,
+      "sha256": "b428ec2597c52f054f08ad53c7cfaffaf90494524cefa72339321d0cc223bd0a"
+    },
+    {
+      "file": "README.txt",
+      "bytes": 869,
+      "sha256": "9459eb24807e726a9b0dc65a52dd87c7c8fc57c33706a85bca0bb3f5967a7c6e"
+    },
+    {
+      "file": "RESULTS.json",
+      "bytes": 2630,
+      "sha256": "f2eae88fdb619d54b576aee5e84d3ed999dd74937d8fc596a501b8753250d085"
+    },
+    {
+      "file": "uno_q/unoq_mcsdk_scalar.build-manifest.json",
+      "bytes": 1651,
+      "sha256": "6450e8a610a412959027361d4ff5d835c4a2fbd8510e0f8ec158db71488b4889"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.bin",
+      "bytes": 55292,
+      "sha256": "63f0781bbc6f20a2a9905d3d78cbb99c750e52962265bd1073cfa2e7e941f084"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf",
+      "bytes": 127244,
+      "sha256": "2582aabeb8ba6262b95d06944c73d9dad59f6a40244c1652877b97b2f35101df"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf-zsk.bin",
+      "bytes": 127244,
+      "sha256": "09e64a291517582a8e1052e417e4e8217efd43eec7d82deba7f3db4d958d165a"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.hex",
+      "bytes": 145449,
+      "sha256": "a1ea079bb218b9297141327497fcf92e2fd46ed923d91e9142ce5cde41c82dca"
+    }
+  ]
+}

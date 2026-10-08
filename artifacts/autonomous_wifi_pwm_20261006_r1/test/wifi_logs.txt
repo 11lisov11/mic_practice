@@ -1,0 +1,44 @@
+2026-10-06 14:05:37 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 14:07:34 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 14:13:51 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 14:13:51 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:13:51 CMD CLEAR
+2026-10-06 14:13:52 ARM_PROFILE lv runlimit=3.0s
+2026-10-06 14:13:53 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:13:53 CMD CLEAR
+2026-10-06 14:13:53 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 14:13:53 CMD MODE VF
+2026-10-06 14:13:53 CMD SET FREQ 5
+2026-10-06 14:13:53 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 14:13:54 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.3 softstart=external-ready
+2026-10-06 14:13:55 CMD SET RUNLIMIT 14
+2026-10-06 14:14:02 STAT state=VF_RUN mode=VF pwm=1 freq=5.00 speed=300.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0
+2026-10-06 14:14:02 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:03 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:03 CMD CLEAR
+2026-10-06 14:14:03 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 14:14:03 CMD MODE VF
+2026-10-06 14:14:03 CMD SET FREQ 5
+2026-10-06 14:14:04 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 14:14:04 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.6 softstart=external-ready
+2026-10-06 14:14:04 CMD SET RUNLIMIT 14
+2026-10-06 14:14:04 CMD SET FREQ 20
+2026-10-06 14:14:17 STAT state=VF_RUN mode=VF pwm=1 freq=20.00 speed=1200.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0
+2026-10-06 14:14:18 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:18 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:18 CMD CLEAR
+2026-10-06 14:14:18 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 14:14:19 CMD SET FREQ 5
+2026-10-06 14:14:20 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 14:14:20 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.6 softstart=external-ready
+2026-10-06 14:14:21 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:24 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:24 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 14:14:24 CMD CLEAR
+2026-10-06 14:14:24 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 14:14:24 CMD SET FREQ 5
+2026-10-06 14:14:26 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 14:14:26 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.3 softstart=external-ready
+2026-10-06 14:14:27 WIFI_STOP_SEQUENCE emergency=1 ok=1 ESTOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:30 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 14:14:30 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0

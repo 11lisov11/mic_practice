@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-07",
+  "scope": "offline HMI fix plus read-only Wi-Fi/SSH evidence; no ARM or START",
+  "deployed": true,
+  "transport": "Wi-Fi SSH with pinned host key; no USB",
+  "installed_server_sha256": "af6f95b0f03e921e47a775d445fc3680422327bfe87abd58027a4e3be92cb730",
+  "remote_backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/vbus_reuse_20261007_101337/server.py",
+  "install_bus_v": 2.0,
+  "post_install_calibration_valid": true,
+  "actuation_commands_sent": 0,
+  "new_zero_capture_required_for_audited_bridge_pair": false,
+  "saved_calibration_integrity_verified": true,
+  "saved_calibration_matches_candidate": true,
+  "stored_identity": {
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026100601,
+    "rpc_schema_version": 3,
+    "mc_capabilities": 1,
+    "mc_mcsdk_telemetry": 1
+  },
+  "current_bridge_build": 2026100612,
+  "stored_meter_zero_v": 0.0,
+  "stored_meter_high_v": 322.7,
+  "stored_mcsdk_high_v": 325.0,
+  "calibration_record_modified": false,
+  "offline_tests": {
+    "vbus_calibration_identity_selftest": {"pass": true, "cases": 28},
+    "web_hmi_command_guard_selftest": {"pass": true, "cases": 162},
+    "web_hmi_control_access_selftest": {"pass": true, "cases": 11},
+    "unoq_wifi_hmi_deploy_selftest": {"pass": true, "cases": 13},
+    "as5600_hmi_selftest": {"pass": true},
+    "install_vbus_hmi_fix_selftest": {"pass": true, "cases": 37},
+    "verify_production_guard_semantics_selftest": {"pass": true, "cases": 6},
+    "uno_nucleo_mcsdk_contract_check": {"pass": true},
+    "git_diff_check": {"pass": true}
+  },
+  "installation_pending": null,
+  "motor_start_validated": false
+}

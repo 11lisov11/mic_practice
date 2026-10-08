@@ -1,0 +1,39 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": true,
+  "checks": {
+    "wifi_status_received": true,
+    "no_http_errors": true,
+    "build_identity_stable": true,
+    "uart_fresh": true,
+    "bp_good_valid": true,
+    "bp_bad_valid": true,
+    "bp_bad_cnt_valid": true,
+    "idle_outputs_off": true,
+    "no_new_uart_errors": true
+  },
+  "samples": 75,
+  "http_errors": [],
+  "first_builds": {
+    "fw_build": 2026092702,
+    "mc_fw_build": 2026091401
+  },
+  "counters": {
+    "bp_good": {
+      "first": 29779,
+      "last": 30839
+    },
+    "bp_bad": {
+      "first": 2,
+      "last": 2
+    },
+    "bp_bad_cnt": {
+      "first": 1,
+      "last": 1
+    }
+  },
+  "log_lines": 19,
+  "host_utc": "2026-09-29T08:36:44.173524+00:00",
+  "duration_requested_s": 60.0,
+  "transport": "direct_wifi_http_get_only"
+}

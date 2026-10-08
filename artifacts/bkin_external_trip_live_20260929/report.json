@@ -1,0 +1,912 @@
+{
+  "schema": "mic_ai.wifi_nucleo_pwm_bench.v1",
+  "host_utc": "2026-09-29T14:43:06.135824+00:00",
+  "scope": "logic_pwm_with_unpowered_ipm_and_control_ribbon_attached",
+  "break_test_kind": "external_sd_pin",
+  "hmi_url": "http://192.168.1.138:8080",
+  "control_transport": "wsl_nat_wifi_http",
+  "credential_bootstrap": "ADB read-only token retrieval; no motor command over ADB",
+  "uart": "UNO Q D1/TX -> Nucleo PB7/RX; Nucleo PB6/TX -> UNO Q D0/RX; common GND",
+  "saleae_channel_map": {
+    "0": {
+      "signal": "UH",
+      "gpio": "PA8",
+      "connector": "CN10-23"
+    },
+    "1": {
+      "signal": "UL",
+      "gpio": "PA7",
+      "connector": "CN10-15"
+    },
+    "2": {
+      "signal": "VH",
+      "gpio": "PA9",
+      "connector": "CN10-21"
+    },
+    "3": {
+      "signal": "VL",
+      "gpio": "PB0",
+      "connector": "CN7-34"
+    },
+    "4": {
+      "signal": "WH",
+      "gpio": "PA10",
+      "connector": "CN10-33"
+    },
+    "5": {
+      "signal": "WL",
+      "gpio": "PB1",
+      "connector": "CN10-24"
+    },
+    "6": {
+      "signal": "EM_STOP",
+      "gpio": "PA6"
+    }
+  },
+  "commands": [
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:43:57.506592+00:00",
+      "elapsed_s": 0.029,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM PROFILE LV",
+      "path": "/api/arm-profile",
+      "body": {
+        "profile": "lv"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:43:57.859560+00:00",
+      "elapsed_s": 0.215,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM LV",
+      "path": "/api/hv-arm",
+      "body": {
+        "action": "arm",
+        "confirm": "ARM LV HV OFF"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:43:57.999367+00:00",
+      "elapsed_s": 0.14,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "DIAG ON",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "DIAG ON"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:43:58.027217+00:00",
+      "elapsed_s": 0.028,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:46.317786+00:00",
+      "elapsed_s": 0.418,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "START",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "START"
+      },
+      "http_status": 409,
+      "ok": false,
+      "host_utc": "2026-09-29T14:47:46.542501+00:00",
+      "elapsed_s": 0.141,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:46.588861+00:00",
+      "elapsed_s": 0.01,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:46.939383+00:00",
+      "elapsed_s": 0.095,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:47.247110+00:00",
+      "elapsed_s": 0.047,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:47.751095+00:00",
+      "elapsed_s": 0.242,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:48.065444+00:00",
+      "elapsed_s": 0.056,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:48.388657+00:00",
+      "elapsed_s": 0.067,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:48.679865+00:00",
+      "elapsed_s": 0.036,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:49.184627+00:00",
+      "elapsed_s": 0.242,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:49.499847+00:00",
+      "elapsed_s": 0.06,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:49.806428+00:00",
+      "elapsed_s": 0.056,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:50.114592+00:00",
+      "elapsed_s": 0.055,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:50.619435+00:00",
+      "elapsed_s": 0.247,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:51.035585+00:00",
+      "elapsed_s": 0.073,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:51.891050+00:00",
+      "elapsed_s": 0.571,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:52.365258+00:00",
+      "elapsed_s": 0.208,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:52.683847+00:00",
+      "elapsed_s": 0.065,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:52.980747+00:00",
+      "elapsed_s": 0.037,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:53.288013+00:00",
+      "elapsed_s": 0.052,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:53.792738+00:00",
+      "elapsed_s": 0.247,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:54.107016+00:00",
+      "elapsed_s": 0.053,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:54.415253+00:00",
+      "elapsed_s": 0.049,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:54.721864+00:00",
+      "elapsed_s": 0.046,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:55.225803+00:00",
+      "elapsed_s": 0.253,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:55.540889+00:00",
+      "elapsed_s": 0.063,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:55.847870+00:00",
+      "elapsed_s": 0.048,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:56.155150+00:00",
+      "elapsed_s": 0.049,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:56.660092+00:00",
+      "elapsed_s": 0.243,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:56.929977+00:00",
+      "elapsed_s": 0.01,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:57.206288+00:00",
+      "elapsed_s": 0.011,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:57.486603+00:00",
+      "elapsed_s": 0.029,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:57.988355+00:00",
+      "elapsed_s": 0.24,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:58.305457+00:00",
+      "elapsed_s": 0.06,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:58.612890+00:00",
+      "elapsed_s": 0.044,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:58.920746+00:00",
+      "elapsed_s": 0.046,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:59.390832+00:00",
+      "elapsed_s": 0.208,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:47:59.738982+00:00",
+      "elapsed_s": 0.083,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:00.046793+00:00",
+      "elapsed_s": 0.049,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:00.352974+00:00",
+      "elapsed_s": 0.045,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:00.858163+00:00",
+      "elapsed_s": 0.242,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:01.172829+00:00",
+      "elapsed_s": 0.05,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:01.481307+00:00",
+      "elapsed_s": 0.047,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:01.787584+00:00",
+      "elapsed_s": 0.047,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:02.291891+00:00",
+      "elapsed_s": 0.253,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:02.607746+00:00",
+      "elapsed_s": 0.055,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:02.913080+00:00",
+      "elapsed_s": 0.04,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:03.221684+00:00",
+      "elapsed_s": 0.057,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:03.726522+00:00",
+      "elapsed_s": 0.251,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:04.040303+00:00",
+      "elapsed_s": 0.053,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "isolated timer heartbeat",
+      "path": "/api/operator-heartbeat",
+      "body": {},
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:04.347159+00:00",
+      "elapsed_s": 0.047,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:05.256803+00:00",
+      "elapsed_s": 0.204,
+      "transport": "wsl_nat_wifi_http"
+    },
+    {
+      "label": "ARM PROFILE HV RECOVERY",
+      "path": "/api/arm-profile",
+      "body": {
+        "profile": "hv"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-09-29T14:48:05.614120+00:00",
+      "elapsed_s": 0.218,
+      "transport": "wsl_nat_wifi_http"
+    }
+  ],
+  "restored": {
+    "uno_q": true,
+    "nucleo": true
+  },
+  "pass": false,
+  "images": {
+    "uno_bench": {
+      "path": "C:\\mic_practice\\artifacts\\bkin_external_trip_live_20260929\\unoq_logic_bench_build\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "6d97f20aebbca8f193e1de724f1e661c4aef19be98316ae533d48bb13a4b0d33"
+    },
+    "nucleo_bench": {
+      "path": "C:\\mic_practice\\nucleo_g431_uart_bridge_pio\\.pio\\build\\nucleo_g431_pwm_bkin_external_bench\\firmware.bin",
+      "sha256": "b3e584dcb8cf7f48697ae5c3c83787daf7f88486a44ecba454b26482a8c59e75"
+    },
+    "uno_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\uno_q_mcu\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "f972c5e8a13745c9906bc74b288208afbfa387090ea94313c7c446266fa78c23"
+    },
+    "nucleo_production": {
+      "path": "C:\\mic_practice\\firmware\\ready_to_flash\\nucleo\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "sha256": "39f91b2bd3d6ca2617b7fc0143e5fe97887e7bd66e2c41796c26a653ea96f747"
+    }
+  },
+  "hmi_resolved_ip": "192.168.1.138",
+  "before": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 0,
+    "bp_bad_cnt": 25,
+    "bp_age_ms": 7,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "logic_version": "2.4.46",
+  "post_flash_rpc": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 86,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "bench_safe": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 11,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "diag_ready": {
+    "state": "SAFE",
+    "mode": "DIAG",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 1,
+    "bp_fault": 0,
+    "bp_bad": 0,
+    "bp_bad_cnt": 0,
+    "bp_age_ms": 52,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 1,
+    "bp_temp_c": 25.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 0,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "lv",
+    "hmi_hv_armed": 1
+  },
+  "error": "RuntimeError: START failed over Wi-Fi: HTTP 409: LV arm is not active",
+  "final_stop_before_restore": {
+    "http_status": 200,
+    "ok": true
+  },
+  "after_restore": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 0,
+    "bp_bad_cnt": 1,
+    "bp_age_ms": 48,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026092901,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0,
+    "zero_bus_mcsdk_fault_expected": true
+  },
+  "production_outputs": {
+    "checks": {
+      "all_six_channels_present": true,
+      "no_overlap": true,
+      "timing_resolution": true,
+      "all_six_static_low": true
+    },
+    "pass": true,
+    "settle_s": 0.0,
+    "analysis": {
+      "csv": "C:\\mic_practice\\artifacts\\bkin_external_trip_live_20260929\\production_restored\\csv\\digital.csv",
+      "duration_s": 0.170666667,
+      "csv_row_timing": {
+        "samples": 2,
+        "intervals": 1,
+        "min_step_s": 0.170666667,
+        "max_step_s": 0.170666667,
+        "mean_step_s": 0.170666667,
+        "inferred_sample_rate_hz": 5.859374988555908
+      },
+      "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+      "selected_sample_rate_hz": 24000000.0,
+      "selected_sample_period_ns": 41.666666666666664,
+      "max_sample_period_ns": 41.666666666666664,
+      "timing_resolution_pass": true,
+      "channels": {
+        "0": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "1": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "2": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "3": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "4": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        },
+        "5": {
+          "initial": 0,
+          "final": 0,
+          "edges": 0,
+          "rising_edges": 0,
+          "falling_edges": 0,
+          "high_time_s": 0.0,
+          "duty_ratio": 0.0,
+          "freq_hz_from_rising": 0.0
+        }
+      },
+      "pairs": {
+        "U": {
+          "high_channel": 0,
+          "low_channel": 1,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.170666667,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        },
+        "V": {
+          "high_channel": 2,
+          "low_channel": 3,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.170666667,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        },
+        "W": {
+          "high_channel": 4,
+          "low_channel": 5,
+          "overlap_high_s": 0.0,
+          "overlap_ratio": 0.0,
+          "both_low_s": 0.170666667,
+          "both_low_ratio": 1.0,
+          "both_high_seen": false,
+          "min_gap_s": null,
+          "gap_count": 0,
+          "no_overlap": true
+        }
+      },
+      "pass": true,
+      "expect_pwm": false,
+      "pass_meaning": "no_overlap_only_pwm_activity_diagnostic",
+      "overlap_analysis_pass": true,
+      "no_overlap_pass": true,
+      "pwm_activity_pass": false
+    }
+  }
+}

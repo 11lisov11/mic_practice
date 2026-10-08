@@ -1,0 +1,340 @@
+--- a/mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Src/main.c
++++ b/mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Src/main.c
+@@ -448,160 +448,7 @@
+   }
+ }
+ 
+-static void uno_handle_valid_frame(const uint8_t *frame) {
+-  const uint32_t now_ms = HAL_GetTick();
+-  const uint8_t flags = frame[3];
+-  const uint8_t mode = frame[4];
+-  const uint32_t frequency_millihz = uno_u32le(&frame[6]);
+-  const uint32_t max_frequency_millihz =
+-      ((uint32_t)MOTOR_MAX_SPEED_RPM * (uint32_t)POLE_PAIR_NUM * 1000U) / 60U;
+-  const uint32_t min_frequency_millihz = (1000U * POLE_PAIR_NUM + SPEED_UNIT - 1U) / SPEED_UNIT;
+-
+-  if (frame[2] != UNO_PROTOCOL_VERSION) {
+-    uno_link.last_bad_reason = UNO_DIAG_VERSION;
+-    uno_saturating_increment(&uno_link.bad_count);
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_VERSION);
+-    return;
+-  }
+-
+-  /* A frozen transmitter must not keep the motor alive by replaying the last
+-     valid ENABLE frame. Repeated CLEAR remains legal so MCSDK faults can be
+-     acknowledged until the state machine accepts the request. */
+-  if (uno_link.link_seen && flags == UNO_FLAG_ENABLE &&
+-      mode == UNO_MODE_SCALAR && frame[5] == uno_link.last_seq) {
+-    uno_link.last_bad_reason = UNO_DIAG_REPLAY;
+-    uno_saturating_increment(&uno_link.bad_count);
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_REPLAY);
+-    return;
+-  }
+-
+-  uno_link.link_seen = true;
+-  uno_link.last_valid_ms = now_ms;
+-  uno_link.last_seq = frame[5];
+-  uno_saturating_increment(&uno_link.good_count);
+-
+-  if (uno_clear_frame_is_safe(frame)) {
+-    uno_stop_motor();
+-    if (!uno_rearm_break_irq()) {
+-      uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_MCSDK);
+-      return;
+-    }
+-    (void)MC_AcknowledgeFaultMotor1();
+-    uno_link.fault_latched = false;
+-    uno_link.fault_code = UNO_FAULT_OK;
+-    uno_link.bad_count = 0U;
+-    uno_clear_diagnostics();
+-    return;
+-  }
+-
+-  if ((flags & UNO_FLAG_ESTOP) != 0U) {
+-    uno_latch_fault_reason(UNO_FAULT_ESTOP, UNO_DIAG_ESTOP);
+-    return;
+-  }
+-
+-  /* A latched transport or E-stop fault can only be released by the clean
+-     CLEAR frame handled above. STOP and ENABLE frames must never clear it. */
+-  if (uno_link.fault_latched) {
+-    uno_stop_motor();
+-    return;
+-  }
+-
+-  if (!uno_service_fields_are_zero(frame)) {
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_SERVICE);
+-    return;
+-  }
+-
+-  if (flags == 0U && mode == UNO_MODE_OFF) {
+-    uno_stop_motor();
+-    return;
+-  }
+-
+-  if (flags != UNO_FLAG_ENABLE || mode != UNO_MODE_SCALAR ||
+-      frequency_millihz < min_frequency_millihz || frequency_millihz > max_frequency_millihz ||
+-      uno_mcsdk_fault_present()) {
+-    const uint8_t reason = (flags != UNO_FLAG_ENABLE || mode != UNO_MODE_SCALAR)
+-        ? UNO_DIAG_COMMAND
+-        : ((frequency_millihz < min_frequency_millihz || frequency_millihz > max_frequency_millihz)
+-            ? UNO_DIAG_FREQUENCY : UNO_DIAG_MCSDK);
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, reason);
+-    return;
+-  }
+-
+-  const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
+-  uno_update_softstart_state(now_ms);
+-  if (vbus_v > UNO_SOFTSTART_MAX_V) {
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
+-    return;
+-  }
+-  if (!uno_link.softstart_ready) {
+-    if (uno_link.command_enabled) uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
+-    return;
+-  }
+-
+-  const uint32_t target_rpm =
+-      (frequency_millihz * 60U) / ((uint32_t)POLE_PAIR_NUM * 1000U);
+-  const int16_t target_speed_unit = RPM_2_SPEED_UNIT((int32_t)target_rpm);
+-  if (!uno_link.command_enabled || target_speed_unit != uno_link.last_speed_unit) {
+-    MC_ProgramSpeedRampMotor1(target_speed_unit, uno_speed_ramp_ms(target_speed_unit));
+-    uno_link.last_speed_unit = target_speed_unit;
+-  }
+-  if (MC_GetSTMStateMotor1() == IDLE && !MC_StartMotor1()) {
+-    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_START);
+-    return;
+-  }
+-
+-  uno_link.command_enabled = true;
+-  uno_link.last_mode = UNO_MODE_SCALAR;
+-  uno_link.fault_code = UNO_FAULT_OK;
+-}
+-
+-static void uno_consume_byte(uint8_t byte) {
+-  if (uno_link.parser_state == 0U) {
+-    if (byte == UNO_CMD_HDR0) {
+-      uno_link.frame[0] = byte;
+-      uno_link.parser_state = 1U;
+-    }
+-    return;
+-  }
+-  if (uno_link.parser_state == 1U) {
+-    if (byte == UNO_CMD_HDR1) {
+-      uno_link.frame[1] = byte;
+-      uno_link.parser_index = 2U;
+-      uno_link.parser_state = 2U;
+-    } else if (byte == UNO_CMD_HDR0) {
+-      uno_link.frame[0] = byte;
+-    } else {
+-      uno_link.parser_state = 0U;
+-    }
+-    return;
+-  }
+-
+-  uno_link.frame[uno_link.parser_index++] = byte;
+-  if (uno_link.parser_index < UNO_FRAME_LEN) {
+-    return;
+-  }
+-  uno_link.parser_state = 0U;
+-  uno_link.parser_index = 0U;
+-  if (uno_link.frame[UNO_FRAME_LEN - 1U] != uno_crc_xor(uno_link.frame)) {
+-    uno_link.last_bad_reason = UNO_DIAG_CRC;
+-    uno_saturating_increment(&uno_link.bad_count);
+-    uno_latch_fault_reason(UNO_FAULT_BAD_CRC, UNO_DIAG_CRC);
+-    return;
+-  }
+-  uno_handle_valid_frame(uno_link.frame);
+-  uno_send_reply();
+-}
+-
+-static void uno_link_init(void) {
+-  memset(&uno_link, 0, sizeof(uno_link));
+-  uno_link.fault_code = UNO_FAULT_OK;
+-  uno_link.last_mode = UNO_MODE_OFF;
+-  uno_rx_head = uno_rx_tail = 0U;
+-  uno_rx_errors = uno_rx_overflow = 0U;
+-}
+-
+-static void uno_link_poll(void) {
+-  uno_update_softstart_state(HAL_GetTick());
++static bool uno_abort_pending_rx_fault(void) {
+   /* Mask only USART1; ADC/TIM protection IRQs stay enabled. */
+   HAL_NVIC_DisableIRQ(USART1_IRQn);
+   const uint8_t errors = uno_rx_errors;
+@@ -618,10 +465,172 @@
+     uno_link.parser_index = 0U;
+     uno_saturating_increment(&uno_link.bad_count);
+     uno_latch_fault_reason(UNO_FAULT_INTERNAL, reason);
+-    return;
+-  }
++    return true;
++  }
++  return false;
++}
++
++static void uno_handle_valid_frame(const uint8_t *frame) {
++  if (uno_abort_pending_rx_fault()) return;
++  const uint32_t now_ms = HAL_GetTick();
++  const uint8_t flags = frame[3];
++  const uint8_t mode = frame[4];
++  const uint32_t frequency_millihz = uno_u32le(&frame[6]);
++  const uint32_t max_frequency_millihz =
++      ((uint32_t)MOTOR_MAX_SPEED_RPM * (uint32_t)POLE_PAIR_NUM * 1000U) / 60U;
++  const uint32_t min_frequency_millihz = (1000U * POLE_PAIR_NUM + SPEED_UNIT - 1U) / SPEED_UNIT;
++
++  if (frame[2] != UNO_PROTOCOL_VERSION) {
++    uno_link.last_bad_reason = UNO_DIAG_VERSION;
++    uno_saturating_increment(&uno_link.bad_count);
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_VERSION);
++    return;
++  }
++
++  /* A frozen transmitter must not keep the motor alive by replaying the last
++     valid ENABLE frame. Repeated CLEAR remains legal so MCSDK faults can be
++     acknowledged until the state machine accepts the request. */
++  if (uno_link.link_seen && flags == UNO_FLAG_ENABLE &&
++      mode == UNO_MODE_SCALAR && frame[5] == uno_link.last_seq) {
++    uno_link.last_bad_reason = UNO_DIAG_REPLAY;
++    uno_saturating_increment(&uno_link.bad_count);
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_REPLAY);
++    return;
++  }
++
++  uno_link.link_seen = true;
++  uno_link.last_valid_ms = now_ms;
++  uno_link.last_seq = frame[5];
++  uno_saturating_increment(&uno_link.good_count);
++
++  if (uno_clear_frame_is_safe(frame)) {
++    uno_stop_motor();
++    if (!uno_rearm_break_irq()) {
++      uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_MCSDK);
++      return;
++    }
++    (void)MC_AcknowledgeFaultMotor1();
++    uno_link.fault_latched = false;
++    uno_link.fault_code = UNO_FAULT_OK;
++    uno_link.bad_count = 0U;
++    uno_clear_diagnostics();
++    return;
++  }
++
++  if ((flags & UNO_FLAG_ESTOP) != 0U) {
++    uno_latch_fault_reason(UNO_FAULT_ESTOP, UNO_DIAG_ESTOP);
++    return;
++  }
++
++  /* A latched transport or E-stop fault can only be released by the clean
++     CLEAR frame handled above. STOP and ENABLE frames must never clear it. */
++  if (uno_link.fault_latched) {
++    uno_stop_motor();
++    return;
++  }
++
++  if (!uno_service_fields_are_zero(frame)) {
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_SERVICE);
++    return;
++  }
++
++  if (flags == 0U && mode == UNO_MODE_OFF) {
++    uno_stop_motor();
++    return;
++  }
++
++  if (flags != UNO_FLAG_ENABLE || mode != UNO_MODE_SCALAR ||
++      frequency_millihz < min_frequency_millihz || frequency_millihz > max_frequency_millihz ||
++      uno_mcsdk_fault_present()) {
++    const uint8_t reason = (flags != UNO_FLAG_ENABLE || mode != UNO_MODE_SCALAR)
++        ? UNO_DIAG_COMMAND
++        : ((frequency_millihz < min_frequency_millihz || frequency_millihz > max_frequency_millihz)
++            ? UNO_DIAG_FREQUENCY : UNO_DIAG_MCSDK);
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, reason);
++    return;
++  }
++
++  const uint16_t vbus_v = VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super);
++  uno_update_softstart_state(now_ms);
++  if (vbus_v > UNO_SOFTSTART_MAX_V) {
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
++    return;
++  }
++  if (!uno_link.softstart_ready) {
++    if (uno_link.command_enabled) uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
++    return;
++  }
++
++  const uint32_t target_rpm =
++      (frequency_millihz * 60U) / ((uint32_t)POLE_PAIR_NUM * 1000U);
++  const int16_t target_speed_unit = RPM_2_SPEED_UNIT((int32_t)target_rpm);
++  if (!uno_link.command_enabled || target_speed_unit != uno_link.last_speed_unit) {
++    MC_ProgramSpeedRampMotor1(target_speed_unit, uno_speed_ramp_ms(target_speed_unit));
++    uno_link.last_speed_unit = target_speed_unit;
++  }
++  if (MC_GetSTMStateMotor1() == IDLE && !MC_StartMotor1()) {
++    uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_START);
++    return;
++  }
++
++  uno_link.command_enabled = true;
++  uno_link.last_mode = UNO_MODE_SCALAR;
++  uno_link.fault_code = UNO_FAULT_OK;
++}
++
++static void uno_consume_byte(uint8_t byte) {
++  if (uno_link.parser_state == 0U) {
++    if (byte == UNO_CMD_HDR0) {
++      uno_link.frame[0] = byte;
++      uno_link.parser_state = 1U;
++    }
++    return;
++  }
++  if (uno_link.parser_state == 1U) {
++    if (byte == UNO_CMD_HDR1) {
++      uno_link.frame[1] = byte;
++      uno_link.parser_index = 2U;
++      uno_link.parser_state = 2U;
++    } else if (byte == UNO_CMD_HDR0) {
++      uno_link.frame[0] = byte;
++    } else {
++      uno_link.parser_state = 0U;
++    }
++    return;
++  }
++
++  uno_link.frame[uno_link.parser_index++] = byte;
++  if (uno_link.parser_index < UNO_FRAME_LEN) {
++    return;
++  }
++  uno_link.parser_state = 0U;
++  uno_link.parser_index = 0U;
++  if (uno_link.frame[UNO_FRAME_LEN - 1U] != uno_crc_xor(uno_link.frame)) {
++    uno_link.last_bad_reason = UNO_DIAG_CRC;
++    uno_saturating_increment(&uno_link.bad_count);
++    uno_latch_fault_reason(UNO_FAULT_BAD_CRC, UNO_DIAG_CRC);
++    return;
++  }
++  uno_handle_valid_frame(uno_link.frame);
++  uno_send_reply();
++}
++
++static void uno_link_init(void) {
++  memset(&uno_link, 0, sizeof(uno_link));
++  uno_link.fault_code = UNO_FAULT_OK;
++  uno_link.last_mode = UNO_MODE_OFF;
++  uno_rx_head = uno_rx_tail = 0U;
++  uno_rx_errors = uno_rx_overflow = 0U;
++}
++
++static void uno_link_poll(void) {
++  uno_update_softstart_state(HAL_GetTick());
++  if (uno_abort_pending_rx_fault()) return;
+   uint8_t byte;
+-  while (uno_rx_pop(&byte)) uno_consume_byte(byte);
++  while (uno_rx_pop(&byte)) {
++    if (uno_abort_pending_rx_fault()) return;
++    uno_consume_byte(byte);
++  }
+   if (uno_link.command_enabled && !uno_link.softstart_ready) {
+     uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
+   }

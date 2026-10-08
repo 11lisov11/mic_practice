@@ -98,6 +98,13 @@ try {
 }
 finally {
     if (Test-Path -LiteralPath $stagingDirectory) {
-        Remove-Item -LiteralPath $stagingDirectory -Recurse -Force
+        $resolvedStaging = (Resolve-Path -LiteralPath $stagingDirectory).Path
+        $resolvedTemp = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\')
+        $stagingLeaf = Split-Path -Leaf $resolvedStaging
+        if (-not $resolvedStaging.StartsWith($resolvedTemp + '\', [System.StringComparison]::OrdinalIgnoreCase) `
+                -or $stagingLeaf -notmatch '^mic_practice_unoq_[a-f0-9]{32}$') {
+            throw "Refusing cleanup outside the allocated UNO Q temporary build directory."
+        }
+        Remove-Item -LiteralPath $resolvedStaging -Recurse -Force
     }
 }

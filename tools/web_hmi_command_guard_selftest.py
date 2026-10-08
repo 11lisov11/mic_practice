@@ -407,6 +407,20 @@ def main() -> int:
         getattr(bridge._serial_text, "_baud", None) == 460800,
         "serial_baud=460800",
     )
+    text_status = mod.RpcBridge._parse_status_string(
+        "DATA state=SAFE mode=VF pwm=0 bp_bad=2 bp_bad_integrity=0 "
+        "bp_bad_sequence=2 bp_superseded=1 bp_clear_pending=0"
+    )
+    add_case(cases, "wifi_status_includes_uart_error_causes", bool(text_status) and all(
+        text_status.get(key) == value for key, value in {
+            "bp_bad_integrity": 0, "bp_bad_sequence": 2,
+            "bp_superseded": 1, "bp_clear_pending": 0,
+            "mc_bad_sequence": 2,
+        }.items()
+    ))
+    old_text_status = mod.RpcBridge._parse_status_string("DATA state=SAFE mode=VF pwm=0")
+    add_case(cases, "old_rpc_has_unknown_not_fabricated_uart_diagnostics",
+             bool(old_text_status) and old_text_status.get("bp_bad_sequence", 0) is None)
     full_status = [0] * 79
     full_status[0] = 0
     full_status[1] = 1
@@ -933,6 +947,19 @@ def main() -> int:
         active_mc_stop_msg,
         active_mc_stop_rpc.commands,
     )
+
+    for name, changes in (
+        ("stale", {"bp_rsp_age_ms": 999999}),
+        ("link_down", {"link": False}),
+        ("nucleo_link_flag_missing", {"bp_status": 0}),
+        ("nonfinite_age", {"bp_rsp_age_ms": float("nan")}),
+        ("negative_age", {"bp_rsp_age_ms": -1}),
+    ):
+        rpc = FakeRpc([safe_status(**changes)])
+        app = mod.AppState(rpc, FakeLogs(), status_log_interval=60.0)
+        ok, message, _ = app.stop_sequence(confirm_timeout_sec=0.0, poll_sec=0.0)
+        add_case(cases, "wifi_stop_does_not_confirm_" + name,
+                 not ok and rpc.commands == ["STOP"], message, rpc.commands)
 
     watchdog_arm = mod.HvArmState(hv_cfg)
     ok, msg = watchdog_arm.arm(mod.DEFAULT_HV_ARM_CONFIRM, hv_status)

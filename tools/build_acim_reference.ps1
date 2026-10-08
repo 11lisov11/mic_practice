@@ -178,6 +178,7 @@ $python = (Get-Command python -ErrorAction Stop).Source
 $gateArguments = @(
     $gate,
     "--project", $projectRoot,
+    "--control-mode", "vf",
     "--motor-profile", $reportProfile,
     "--artifacts", $buildDir,
     "--output", $releaseGateReport

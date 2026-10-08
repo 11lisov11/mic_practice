@@ -43,10 +43,10 @@ AUX_POWER,PS_15V,0V,HOT_GND,STEVAL_IPM15B,J4 negative,USED,becomes HOT in assemb
 UNOQ_POWER,PS_15V,+15V,HOT_15V,UNO_Q,VIN,USED,UNO Q VIN accepts 7-24 V; size supply for wireless peaks
 UNOQ_POWER,PS_15V,0V,HOT_GND,UNO_Q,GND,USED,UNO Q is enclosed HOT equipment
 NUCLEO_POWER,PS_15V,+15V,HOT_15V,BUCK_9V,IN+,USED,derive 7-12 V for Nucleo VIN
-NUCLEO_POWER,BUCK_9V,OUT+ 9V,NUCLEO_VIN,NUCLEO_G431RB,VIN / CN7-24,USED,JP5 1-2 per ST ACIM guide
-HV,RECTIFIER,+,DC_BUS_PLUS,STEVAL_IPM15B,J7-1 positive,USED,125-400 VDC board range
-HV,RECTIFIER,-,DC_BUS_MINUS,STEVAL_IPM15B,J7-2 negative,USED,non-isolated rectified mains is HOT
-HOT_REFERENCE,STEVAL_IPM15B,J2 GND / J4 negative,HOT_GND_EQUALS_DC_MINUS,STEVAL_IPM15B,J7-2 DC-,INTERNAL,UM2014: VDC- is the common reference ground; board circuits are not line-isolated
+NUCLEO_POWER,BUCK_9V,OUT+ 9V,NUCLEO_VIN,NUCLEO_G431RB,VIN / CN7-24,USED,JP5 3-4 for VIN per ST UM2505; 1-2 is USB power
+HV,RECTIFIER,+,DC_BUS_PLUS,STEVAL_IPM15B,J1-2 positive,USED,125-400 VDC board range; physical J1 per schematic and user board; UM2014 connector table calls it J7
+HV,RECTIFIER,-,DC_BUS_MINUS,STEVAL_IPM15B,J1-1 negative,USED,non-isolated rectified mains is HOT; physical J1 per schematic and user board
+HOT_REFERENCE,STEVAL_IPM15B,J2 GND / J4 negative,HOT_GND_EQUALS_DC_MINUS,STEVAL_IPM15B,J1-1 DC-,INTERNAL,UM2014: VDC- is the common reference ground; board circuits are not line-isolated
 MOTOR,STEVAL_IPM15B,J3-1 phase A,MOTOR_U,AIR56B2,U1,USED,delta 220 V
 MOTOR,STEVAL_IPM15B,J3-2 phase B,MOTOR_V,AIR56B2,V1,USED,delta 220 V
 MOTOR,STEVAL_IPM15B,J3-3 phase C,MOTOR_W,AIR56B2,W1,USED,delta 220 V

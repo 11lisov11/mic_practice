@@ -25,6 +25,8 @@ const modeToggle = document.getElementById("modeToggle");
 const modeButtons = Array.from(modeToggle.querySelectorAll(".seg"));
 const freqSlider = document.getElementById("freqSlider");
 const freqReadout = document.getElementById("freqReadout");
+const freqLabel = freqSlider.closest(".freq-block")?.querySelector(".label");
+if (freqLabel) freqLabel.textContent = "Задание частоты (Гц)";
 const pfcBtn = document.getElementById("pfcBtn");
 const brakeSlider = document.getElementById("brakeSlider");
 const brakeReadout = document.getElementById("brakeReadout");
@@ -162,9 +164,17 @@ function setModeUI(mode) {
 
 function setFreqUI(value, fromStatus = false) {
   const v = Number(value);
+  if (!Number.isFinite(v)) return;
   if (!fromStatus || !dragging) {
     freqSlider.value = v.toFixed(1);
+    updateTooltip(freqSlider.value);
+    if (freqLabel) freqLabel.textContent = `Задание частоты: ${Number(freqSlider.value).toFixed(1)} Гц`;
   }
+}
+
+function setFrequencyFromStatus(data) {
+  // freq is the local ramp reference, not the operator's setpoint or a measurement.
+  setFreqUI(data.freq_cmd ?? data.freq, true);
 }
 
 function updateTooltip(value) {
@@ -208,6 +218,30 @@ function mcFaultName(code) {
     6: "ТЕМПЕРАТУРА",
   };
   return names[Number(code)] || `КОД ${Number(code)}`;
+}
+
+function mcFaultSummary(data, code) {
+  if (Number(code) !== 5) return mcFaultName(code);
+  if (Number(data.mc_diag_valid || 0) !== 1) return mcFaultName(code);
+  const names = ["NONE", "CRC", "VERSION", "REPLAY", "ESTOP", "SERVICE",
+    "COMMAND", "FREQUENCY", "MCSDK", "VBUS", "START", "UART TX", "UART RX", "TIMEOUT", "RX BUFFER"];
+  const lastBad = Number(data.mc_last_bad_valid || 0) === 1
+    && Number(data.mc_bad_cnt || data.bp_bad_cnt || 0) > 0
+    && Number(data.mc_last_bad_reason || 0) > 0;
+  const reason = Number(lastBad ? data.mc_last_bad_reason : data.mc_fault_reason || 0);
+  let label = names[reason] || `REASON ${reason}`;
+  if (reason === 12) {
+    const flags = Number((lastBad ? data.mc_last_uart_error_flags : data.mc_uart_error_flags) || 0);
+    const bits = [[1, "PE"], [2, "FE"], [4, "NE"], [8, "ORE"]];
+    label += `: ${bits.filter(([bit]) => flags & bit).map(([, name]) => name).join("/") || "--"}`;
+  } else if (reason === 8) {
+    const mask = Number(data.mc_fault_current_mask || data.mc_fault_occurred_mask || 0);
+    const labels = {1: "Дедлайн цикла", 2: "Высокое Vbus", 4: "Низкое Vbus",
+      8: "Перегрев", 16: "Сбой пуска", 32: "Обратная связь", 64: "Вход аварии",
+      128: "Ошибка MCSDK", 1024: "Защита IPM"};
+    label = labels[mask] || `MCSDK 0x${mask.toString(16).padStart(4, "0")}`;
+  }
+  return label;
 }
 
 function setIoButtons() {
@@ -377,7 +411,7 @@ function setSystemStatus(data) {
   const mcBad = Number(mcField(data, "bad_cnt", mcField(data, "bad", 0)));
   if (mcFault !== 0 || mcBad !== 0) {
     sysText.textContent = mcFault !== 0
-      ? `БЛОКИРОВКА: ${mcFaultName(mcFault)}`
+      ? `БЛОКИРОВКА: ${mcFaultSummary(data, mcFault)}`
       : `ОШИБКА UART: ${mcBad}`;
     sysChip.classList.remove("run", "stop");
     sysChip.classList.add("estop");
@@ -694,7 +728,7 @@ async function refreshStatus() {
       btn.title = available ? "" : "Не поддерживается загруженной прошивкой контроллера";
     });
     setModeUI(data.mode);
-    setFreqUI(data.freq, true);
+    setFrequencyFromStatus(data);
     setSystemStatus(data);
     setHvArmUI(data);
     stateVal.textContent = data.state;
@@ -705,11 +739,14 @@ async function refreshStatus() {
       const mcFault = Number(mcField(data, "fault", 0));
       const mcBad = Number(mcField(data, "bad_cnt", mcField(data, "bad", 0)));
       const mcAge = Number(mcField(data, "rsp_age_ms", mcField(data, "age_ms", -1)));
-      const linkState = mcFault !== 0 ? mcFaultName(mcFault) : (mcBad !== 0 ? "ОШИБКА UART" : "OK");
+      const linkState = mcFault !== 0 ? mcFaultSummary(data, mcFault) : (mcBad !== 0 ? "ОШИБКА UART" : "OK");
+      linkVal.title = data.mc_fault_detail || "";
       linkVal.textContent = `${linkState} / bad=${mcBad} / ${mcAge.toFixed(0)} мс`;
     }
     pwmVal.textContent = data.pwm;
-    speedVal.textContent = `${data.speed.toFixed(0)} об/мин`;
+    speedVal.textContent = Number(data.enc_ok || 0) === 1 && Number(data.enc_speed_ok || 0) === 1
+      ? `${Number(data.enc_rpm || 0).toFixed(0)} об/мин`
+      : `Зад.: ${data.speed.toFixed(0)} об/мин`;
     vdcVal.textContent = `${data.vdc.toFixed(2)} В`;
 
     if (tempVal) {
@@ -723,7 +760,12 @@ async function refreshStatus() {
         : `-- / ${tempV.toFixed(3)} V (${tempRaw})`;
     }
 
-    currVal.textContent = `${data.ia.toFixed(2)} / ${data.ib.toFixed(2)} / ${data.ic.toFixed(2)} А`;
+    currVal.textContent = Number(mcField(data, "mcsdk_telemetry", 0)) === 1
+      ? "Нет измерения"
+      : `${data.ia.toFixed(2)} / ${data.ib.toFixed(2)} / ${data.ic.toFixed(2)} А`;
+    currVal.title = Number(mcField(data, "mcsdk_telemetry", 0)) === 1
+      ? "Фазные токи Nucleo пока не передаются; локальные ADC Uno Q не являются токами двигателя"
+      : "";
 
     if (phaseVal) {
       const phaseValid = Number(mcField(data, "phase_valid", 0)) === 1;
@@ -786,8 +828,16 @@ async function refreshStatus() {
       const encDeg = typeof data.enc_deg === "number" ? data.enc_deg : 0;
       const encRpm = typeof data.enc_rpm === "number" ? data.enc_rpm : null;
       let text = encOk ? `${encDeg.toFixed(1)} deg (${encRaw})` : `-- (${encRaw})`;
-      if (encOk && encRpm !== null) {
+      if (encOk && encRpm !== null && (data.enc_source !== "uno_q_i2c2" || Number(data.enc_speed_ok) === 1)) {
         text += ` / ${encRpm.toFixed(1)} rpm`;
+      }
+      if (data.enc_source === "uno_q_i2c2" && !encOk) {
+        const sensorStatus = Number(data.enc_status || 0);
+        text = Number(data.enc_bus_ok) !== 1 ? "AS5600: нет связи"
+          : !(sensorStatus & 0x20) ? "AS5600: нет магнита"
+          : sensorStatus & 0x10 ? "AS5600: слабое поле"
+          : sensorStatus & 0x08 ? "AS5600: сильное поле"
+          : "AS5600: угол недостоверен";
       }
       encVal.textContent = text;
     }

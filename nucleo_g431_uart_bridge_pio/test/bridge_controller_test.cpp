@@ -111,8 +111,33 @@ int main(void) {
          (STATUS_LINK_OK | STATUS_ENABLED | STATUS_PWM_ACTIVE | STATUS_SHUTDOWN_RELEASED));
   assert(reply[RSP_OFF_LAST_MODE] == MODE_SCALAR);
 
+  s_backend.fault_code = FAULT_INTERNAL;
+  bridge_controller_tick(131U);
+  status = make_reply(command, reply);
+  assert((status & STATUS_FAULT) != 0U);
+  assert((status & (STATUS_ENABLED | STATUS_PWM_ACTIVE)) == 0U);
+  assert(reply[RSP_OFF_FAULT] == FAULT_INTERNAL);
+  const uint32_t stop_count_before_rejected_start = s_force_stop_count;
+  bridge_controller_on_valid_command(command, 132U);
+  assert(s_force_stop_count > stop_count_before_rejected_start);
+  assert((make_reply(command, reply) & STATUS_PWM_ACTIVE) == 0U);
+
+  make_command(command, FLAG_ESTOP, MODE_OFF, 10U);
+  bridge_controller_on_valid_command(command, 132U);
+  status = make_reply(command, reply);
+  assert((status & STATUS_ESTOP) != 0U);
+  assert(reply[RSP_OFF_FAULT] == FAULT_INTERNAL);
+  make_command(command, FLAG_ENABLE, MODE_SCALAR, 5U);
+
+  make_command(command, FLAG_CLEAR_FAULT, MODE_OFF, 9U);
+  bridge_controller_on_valid_command(command, 133U);
+  assert(make_reply(command, reply) == STATUS_LINK_OK);
+  make_command(command, FLAG_ENABLE, MODE_SCALAR, 5U);
+  bridge_controller_on_valid_command(command, 134U);
+  assert((make_reply(command, reply) & STATUS_PWM_ACTIVE) != 0U);
+
   const uint32_t stop_count_before_timeout = s_force_stop_count;
-  bridge_controller_tick(431U);
+  bridge_controller_tick(435U);
   status = make_reply(command, reply);
   assert((status & (STATUS_FAULT | STATUS_TIMEOUT)) == (STATUS_FAULT | STATUS_TIMEOUT));
   assert((status & (STATUS_LINK_OK | STATUS_ENABLED | STATUS_PWM_ACTIVE)) == 0U);
@@ -135,7 +160,7 @@ int main(void) {
   command[CMD_OFF_VER] = 0x7FU;
   bridge_controller_on_valid_command(command, 460U);
   assert(bridge_controller_state()->bad_count == 1U);
-  assert(bridge_controller_state()->good_count == 7U);
+  assert(bridge_controller_state()->good_count == 11U);
 
   puts("NUCLEO_BRIDGE_SELFTEST PASS");
   return 0;

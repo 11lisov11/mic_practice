@@ -47,6 +47,10 @@ def make_static_safety_sources(root: Path) -> None:
         "huart2.Instance = USART2;\n"
         "PA2     ------> USART2_TX\n"
         "PA3     ------> USART2_RX\n"
+        "sBreakInputConfig.Enable = TIM_BREAKINPUTSOURCE_ENABLE;\n"
+        "sBreakInputConfig.Polarity = TIM_BREAKINPUTSOURCE_POLARITY_LOW;\n"
+        "sBreakDeadTimeConfig.BreakState = TIM_BREAK_ENABLE;\n"
+        "sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;\n"
         "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;\n",
         encoding="utf-8",
     )
@@ -57,7 +61,7 @@ def make_static_safety_sources(root: Path) -> None:
     )
     (source / "stm32g4xx_mc_it.c").write_text(
         "void TIMx_BRK_M1_IRQHandler(void) {\n"
-        "  if (LL_TIM_IsActiveFlag_BRK(TIM1)) {}\n"
+        "  if (LL_TIM_IsActiveFlag_BRK(TIM1)) { PWMC_DP_Handler(&PWM_Handle_M1._Super); }\n"
         "}\n",
         encoding="utf-8",
     )
@@ -76,6 +80,7 @@ def make_project(root: Path) -> None:
         "PA6.Signal=TIM1_BKIN\n"
         "PA6.GPIO_PuPd=GPIO_PULLUP\n"
         "TIM1.BreakState=TIM_BREAK_ENABLE\n"
+        "TIM1.BreakPolarity=TIM_BREAKPOLARITY_HIGH\n"
         "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE\n"
         "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW\n"
         "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE\n",
@@ -114,6 +119,7 @@ def make_official_style_project(root: Path) -> None:
         "PA6.Signal=TIM1_BKIN\n"
         "PA6.GPIO_PuPd=GPIO_PULLUP\n"
         "TIM1.BreakState=TIM_BREAK_ENABLE\n"
+        "TIM1.BreakPolarity=TIM_BREAKPOLARITY_HIGH\n"
         "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE\n"
         "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW\n"
         "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE\n",
@@ -143,7 +149,20 @@ def make_bkin_evidence(root: Path) -> Path:
     capture_dir = root / "captures"
     capture_dir.mkdir(exist_ok=True)
     capture_path = capture_dir / "sd_bkin_trip.csv"
-    capture_path.write_bytes(b"time,sd,pwm1h,pwm1l,pwm2h,pwm2l,pwm3h,pwm3l\n" + b"0,1,0,0,0,0,0,0\n" * 80)
+    lines = ["Time [s],Channel 0,Channel 1,Channel 2,Channel 3,Channel 4,Channel 5,Channel 6",
+             "0.000000,0,0,0,0,0,0,1"]
+    for cycle in range(5):
+        base = cycle * 0.0001
+        lines.extend((
+            f"{base + 0.000001:.6f},1,0,1,0,1,0,1",
+            f"{base + 0.000020:.6f},0,0,0,0,0,0,1",
+            f"{base + 0.000025:.6f},0,1,0,1,0,1,1",
+            f"{base + 0.000050:.6f},0,0,0,0,0,0,1",
+        ))
+    lines.extend(("0.000600,0,0,0,0,0,0,0",
+                  "0.002000,0,0,0,0,0,0,1",
+                  "0.022000,0,0,0,0,0,0,1"))
+    capture_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     evidence_path = root / "ipm_sd_bkin_hil.json"
     evidence = {
         "schema": gate.IPM_SD_BKIN_EVIDENCE_SCHEMA,
@@ -153,6 +172,7 @@ def make_bkin_evidence(root: Path) -> Path:
         "power_stage": "STEVAL-IPM15B",
         "adapter": "X-NUCLEO-IHM09M2",
         "mcu": "STM32G431RBT6",
+        "trip_source": "external_sd_pin",
         "conditions": {
             "mains_disconnected": True,
             "dc_bus_below_2v": True,
@@ -199,6 +219,58 @@ def main() -> int:
         )
         profile_is_hashed = len(accepted["motor_profile_sha256"]) == 64
 
+        vf_catalog = profile(gate.VF_CATALOG_SOURCE_KIND)
+        for field in gate.MEASURED_MODEL_FIELDS:
+            vf_catalog.pop(field)
+        vf_catalog.pop("measurement_evidence")
+        vf_catalog["source_url"] = "https://cdn-01.iek.ru/media/original/air56b2.pdf"
+        vf_catalog["operator_confirmed_model"] = True
+        profile_path.write_text(json.dumps(vf_catalog), encoding="utf-8")
+        vf_accepted = gate.inspect(root, profile_path, root / "Release", evidence_path, "vf")
+        foc_catalog_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path, "foc")
+        unconfirmed_vf = dict(vf_catalog, operator_confirmed_model=False)
+        profile_path.write_text(json.dumps(unconfirmed_vf), encoding="utf-8")
+        vf_unconfirmed_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path, "vf")
+        forged_source_vf = dict(vf_catalog, source_url="https://example.com/air56b2.pdf")
+        profile_path.write_text(json.dumps(forged_source_vf), encoding="utf-8")
+        vf_source_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path, "vf")
+        malformed_source_vf = dict(vf_catalog, source_url="https://[invalid/air56b2.pdf")
+        profile_path.write_text(json.dumps(malformed_source_vf), encoding="utf-8")
+        vf_malformed_source_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path, "vf")
+        profile_path.write_text(json.dumps(profile("nameplate_and_measurement")), encoding="utf-8")
+
+        false_capture_path = root / "captures" / "sd_bkin_trip.csv"
+        false_capture_path.write_text(
+            "Time [s]," + ",".join(f"Channel {index}" for index in range(7)) + "\n"
+            + "".join(f"{index * 0.001:.3f},0,0,0,0,0,0,1\n" for index in range(80)),
+            encoding="utf-8",
+        )
+        false_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        false_evidence["capture"]["sha256"] = gate.sha256(false_capture_path)
+        evidence_path.write_text(json.dumps(false_evidence), encoding="utf-8")
+        all_low_capture_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        evidence_path = make_bkin_evidence(root)
+
+        internal_trip_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+        internal_trip_evidence["trip_source"] = "timer_software_bg"
+        evidence_path.write_text(json.dumps(internal_trip_evidence), encoding="utf-8")
+        internal_trip_rejected = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        evidence_path = make_bkin_evidence(root)
+
+        ioc_path = root / "motor.ioc"
+        original_ioc = ioc_path.read_text(encoding="utf-8")
+        ioc_path.write_text(original_ioc.replace(
+            "TIM1.BreakPolarity=TIM_BREAKPOLARITY_HIGH",
+            "TIM1.BreakPolarity=TIM_BREAKPOLARITY_LOW"), encoding="utf-8")
+        wrong_break_polarity = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        ioc_path.write_text(original_ioc, encoding="utf-8")
+
+        irq_path = root / "Src" / "stm32g4xx_mc_it.c"
+        original_irq = irq_path.read_text(encoding="utf-8")
+        irq_path.write_text(original_irq.replace("PWMC_DP_Handler(", "PWMC_OVP_Handler("), encoding="utf-8")
+        wrong_sd_handler = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        irq_path.write_text(original_irq, encoding="utf-8")
+
         missing_bkin_evidence = gate.inspect(root, profile_path, root / "Release")
 
         capture_path = root / "captures" / "sd_bkin_trip.csv"
@@ -241,6 +313,20 @@ def main() -> int:
             accepted["pass"]
             and artifacts_are_hashed
             and profile_is_hashed
+            and vf_accepted["pass"]
+            and vf_accepted["control_mode"] == "vf"
+            and not foc_catalog_rejected["pass"]
+            and "motor_profile_is_real_acim" in foc_catalog_rejected["failed_checks"]
+            and "motor_profile_is_catalog_confirmed_acim" in vf_unconfirmed_rejected["failed_checks"]
+            and "motor_profile_is_catalog_confirmed_acim" in vf_source_rejected["failed_checks"]
+            and "motor_profile_is_catalog_confirmed_acim" in vf_malformed_source_rejected["failed_checks"]
+            and not all_low_capture_rejected["pass"]
+            and "evidence_capture_no_verified_trip" in all_low_capture_rejected["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"]
+            and not internal_trip_rejected["pass"]
+            and "evidence_trip_source" in internal_trip_rejected["checks"]["ipm_sd_bkin_hardware_trip_validated"]["evidence"]["errors"]
+            and not wrong_break_polarity["pass"]
+            and not wrong_break_polarity["checks"]["ipm_sd_bkin_static_configuration"]["evidence"]["break_output_polarity_matches_inverted_source"]
+            and not wrong_sd_handler["checks"]["ipm_sd_bkin_static_configuration"]["pass"]
             and not incoherent["pass"]
             and "release_artifacts_are_one_build" in incoherent["failed_checks"]
             and not rejected["pass"]
@@ -263,6 +349,13 @@ def main() -> int:
         "accepted_project": accepted["pass"],
         "artifacts_are_hashed": artifacts_are_hashed,
         "profile_is_hashed": profile_is_hashed,
+        "operator_confirmed_catalog_accepted_for_vf_only": vf_accepted["pass"] and not foc_catalog_rejected["pass"],
+        "unconfirmed_vf_catalog_rejected": "motor_profile_is_catalog_confirmed_acim" in vf_unconfirmed_rejected["failed_checks"],
+        "nonmanufacturer_vf_source_rejected": "motor_profile_is_catalog_confirmed_acim" in vf_source_rejected["failed_checks"],
+        "malformed_vf_source_rejected": "motor_profile_is_catalog_confirmed_acim" in vf_malformed_source_rejected["failed_checks"],
+        "all_low_capture_rejected": not all_low_capture_rejected["pass"],
+        "internal_software_trip_rejected_as_physical_evidence": not internal_trip_rejected["pass"],
+        "wrong_break_polarity_rejected": not wrong_break_polarity["pass"],
         "mixed_artifacts_rejected": "release_artifacts_are_one_build" in incoherent["failed_checks"],
         "synthetic_profile_rejected": "motor_profile_is_real_acim" in rejected["failed_checks"],
         "catalog_profile_rejected": "motor_profile_is_real_acim" in catalog_rejected["failed_checks"],

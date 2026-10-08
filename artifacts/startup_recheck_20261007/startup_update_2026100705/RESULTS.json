@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-07",
+  "scope": "startup software corrections, board programming/readback, disarmed Wi-Fi verification",
+  "installed_builds": {"uno_q": 2026100705, "nucleo": 2026100705},
+  "readback_verified": {"uno_q_loader_and_sketch": true, "nucleo_hex": true},
+  "readback_logs": ["uno_verify.log", "nucleo_flash_verify.log"],
+  "image_sha256": {
+    "uno_q_elf_zsk_bin": "009af07466846dc96617ee76f8c65918a5bcc8a6d55b493f126246d9aac5edc3",
+    "nucleo_hex": "b428ec2597c52f054f08ad53c7cfaffaf90494524cefa72339321d0cc223bd0a"
+  },
+  "fixed": [
+    "UNO Q no longer streams a second frequency ramp into the repeatedly restarted MCSDK ramp",
+    "Nucleo owns the ramp, with minimum 3000 ms and maximum 5 Hz/s for changes",
+    "heartbeat with unchanged target does not reprogram the MCSDK ramp",
+    "unwired UNO Q local ADC inputs cannot cause a false current trip in MCSDK topology; legacy local protection remains",
+    "bus below 200 V or above 385 V stops an active command without waiting for a UART frame",
+    "bus recovery alone cannot release the fault latch",
+    "sub-resolution frequency commands are rejected instead of starting at quantized zero frequency",
+    "diagnostic reason 9 now means bus out of range, not only overvoltage"
+  ],
+  "protections_not_bypassed": ["IPM shutdown/BKIN", "MCSDK fault state machine", "UART integrity/replay/timeout", "finite run limit", "HMI operator watchdog"],
+  "offline_verification": {
+    "production_assertions": 390882,
+    "ramp_and_supervisor_assertions": 250636,
+    "decoder_cases": 66055,
+    "mutation_failures_detected": 8,
+    "command_guard_cases": 162,
+    "calibration_identity_cases": 33,
+    "ipm_sd_irq_cases": 4,
+    "nucleo_build_errors": 0,
+    "nucleo_build_warnings": 0
+  },
+  "ramp_model": {
+    "report": "ramp_final/report.json",
+    "scope": "quantized ramp semantics at ideal 500 Hz task rate, not a measured motor trajectory",
+    "target_hz": 10,
+    "old_ramp_programs": 41,
+    "new_ramp_programs": 1,
+    "old_reference_at_3s_hz": 4.3,
+    "new_reference_at_3s_hz": 10.0,
+    "does_not_prove_original_HV_trip_cause": true
+  },
+  "live_final": {
+    "report": "live_final/report.json",
+    "pass": true,
+    "duration_s": 60,
+    "samples": 99,
+    "new_uart_messages": 899,
+    "new_uart_errors": 0,
+    "diagnostics_valid": true,
+    "pwm": 0,
+    "bus_v": 0,
+    "current_fault_mask": 4,
+    "fault_interpretation": "MC_UNDER_VOLT expected with physically unpowered DC link"
+  },
+  "wifi_command_check": {
+    "report": "wifi_commands/report.json",
+    "pass": true,
+    "frequency_commands_hz": [5, 20, 0],
+    "stop_http": 200,
+    "outputs_off_confirmed": true,
+    "arm_commands": 0,
+    "start_commands": 0
+  },
+  "calibration": {"valid": true, "original_file_unchanged": true, "new_zero_recorded": false},
+  "motor_start_after_update_validated": false,
+  "physical_active_pwm_of_build_2026100705_measured": false,
+  "qualified_nucleo_phase_current_telemetry": false,
+  "original_energized_trip_root_cause_proven": false,
+  "hv_release_approved": false,
+  "older_full_ready_to_flash_package_updated": false,
+  "next_step": "Operator-supervised bounded V/f trial after removing all PC/analyzer interfaces; preserve first/last diagnostic cause. No blind automatic retries."
+}

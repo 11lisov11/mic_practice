@@ -844,7 +844,8 @@ def _status_link_live(data: dict) -> bool:
             ages.append(_as_float(data, key, 999999.0))
     if data.get("last_rx_age_s") is not None:
         ages.append(_as_float(data, "last_rx_age_s", 999999.0) * 1000.0)
-    return bool(ages) and min(ages) <= CMD_GUARD_MAX_AGE_MS
+    return (bool(ages) and all(math.isfinite(age) and age >= 0 for age in ages)
+            and min(ages) <= CMD_GUARD_MAX_AGE_MS)
 
 
 def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig) -> tuple[bool, str]:
@@ -1861,6 +1862,10 @@ class RpcBridge:
                 "duty_mode": duty_mode,
                 "bp_good": int(float(kv.get("bp_good", "0"))),
                 "bp_bad": int(float(kv.get("bp_bad", "999999"))),
+                "bp_bad_integrity": int(float(kv["bp_bad_integrity"])) if "bp_bad_integrity" in kv else None,
+                "bp_bad_sequence": int(float(kv["bp_bad_sequence"])) if "bp_bad_sequence" in kv else None,
+                "bp_superseded": int(float(kv["bp_superseded"])) if "bp_superseded" in kv else None,
+                "bp_clear_pending": int(float(kv["bp_clear_pending"])) if "bp_clear_pending" in kv else None,
                 "bp_age_ms": int(float(kv.get("bp_age_ms", "999999"))),
                 "bp_status": int(float(kv.get("bp_status", "0"))),
                 "bp_fault": int(float(kv.get("bp_fault", "255"))),
@@ -1993,7 +1998,9 @@ class AppState:
             if status_ok and candidate is not None:
                 status = candidate
                 off_confirmed = bool(
-                    _as_int(candidate, "pwm", 1) == 0
+                    _status_link_live(candidate)
+                    and _as_int(candidate, "bp_status", 0) & 0x01
+                    and _as_int(candidate, "pwm", 1) == 0
                     and (_as_int(candidate, "bp_status", 0x20) & 0x20) == 0
                     and _as_int(candidate, "precharge", 1) == 0
                     and (_as_int(candidate, "bp_ext", 0x08) & 0x08) == 0

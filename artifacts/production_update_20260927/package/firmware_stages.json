@@ -1,0 +1,53 @@
+{
+  "schema": "mic_ai.firmware_stages.v1",
+  "target": {
+    "nucleo": "NUCLEO-G431RB / STM32G431RBT6",
+    "adapter": "X-NUCLEO-IHM09M2",
+    "power_stage": "STEVAL-IPM15B",
+    "motor": "IEK AIR56B2, 0.25 kW, 220 V delta, 50 Hz, 1 pole pair",
+    "uno_nucleo_uart": "direct 3.3 V UART, common HOT_GND = STEVAL J7 DC-, Wi-Fi is the only external interface in HV mode",
+    "softstart": "external autonomous AC module ahead of the rectifier",
+    "mcu_controlled_precharge_relay": false
+  },
+  "stages": [
+    {
+      "id": "S1_VF_SENSORLESS_FIRST_SPIN",
+      "control": "MCSDK ACIM V/F open loop",
+      "position_sensor": "not used",
+      "release_state": "software_build_and_static_checks_ready",
+      "nucleo_artifact": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "uno_q_artifact": "uno_q_mcu/UNOQ_MOTOR.ino.elf-zsk.bin",
+      "required_gate": "external soft-start and motor must pass the staged hardware runbook"
+    },
+    {
+      "id": "S2_LSO_FOC_SENSORLESS",
+      "control": "MCSDK ACIM LSO-FOC",
+      "position_sensor": "not used for control",
+      "release_state": "blocked_before_binary_release",
+      "generator": "tools/prepare_air56_lso_foc.ps1",
+      "required_gate": "measured Rs, Rr, Lls, Llr, Lm and inertia plus accepted S1 traces"
+    },
+    {
+      "id": "S3_AS5600_TEACHER",
+      "control": "accepted S1 or S2 controller",
+      "position_sensor": "AS5600 is label/validation only",
+      "release_state": "dataset_tooling_ready_sensor_transport_hardware_pending",
+      "dataset_tool": "tools/capture_as5600_teacher_dataset.py",
+      "required_gate": "independent AS5600 transport with valid timestamps and no shared motor-control UART"
+    },
+    {
+      "id": "S4_AI_SHADOW",
+      "control": "LSO-FOC remains authoritative",
+      "position_sensor": "AS5600 is evaluation truth only",
+      "release_state": "host_research_only",
+      "required_gate": "frozen dataset split, replay tests and bounded observer error"
+    },
+    {
+      "id": "S5_AI_HYBRID_CONTROL",
+      "control": "AI observer with deterministic LSO-FOC fallback",
+      "position_sensor": "not required during accepted runs",
+      "release_state": "blocked_before_embedded_release",
+      "required_gate": "shadow acceptance, HIL fault injection and automatic fallback proof"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "pass": true,
+  "purpose": "ISOLATED ZERO-BUS LOGIC ONLY; NOT FOR HV OR MOTOR",
+  "bench_build": 2026100799,
+  "production_build": 2026100707,
+  "project": "C:\\mic_practice\\artifacts\\current_pwm_20261007\\break_fix_707_fixture\\project",
+  "production_untouched": true,
+  "unchanged_files": 1379,
+  "changed_files": {
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": {
+      "production_sha256": "5545b54d09c831f22f10bf74043037b2e5b4b14939edf0082042040568d55728",
+      "bench_sha256": "2cb35d8c60f04b07c2b1744f2b1c2b03859003aad34823221b5e3f5ebf21ce40"
+    },
+    "Src\\main.c": {
+      "production_sha256": "dbe309bc8c95d3ffc45c86129c6a35913bfbd8ebae2b99774317e1967dd56bc2",
+      "bench_sha256": "f433a11b24ffba17cc2d984de44f1497604915ab75b91de737111b3db05bf28d"
+    },
+    "Src\\mc_tasks.c": {
+      "production_sha256": "af2aa4e3e2f260497d5b5177d720f5481313706214ce985920b3d79a793d5603",
+      "bench_sha256": "c84df32d11ab631bbeed8d479bb3a6ba15a6b7d60c9ecacdb3d255eb7caed060"
+    }
+  },
+  "critical_sources_identical": {
+    "Src\\stm32g4xx_mc_it.c": "7ef5a77a8c4ff2863fb8e588647ea4c9cdbe1702bca82438f90bccca3684c3e6",
+    "Src\\stm32g4xx_hal_msp.c": "f47f02cd58339954a61d801934f37060518043767d6de3dfca3034da0cb1afb6",
+    "Src\\pwm_curr_fdbk.c": "9db0a617a2426b10de7f0342c6c2b94fbd79b9012e06d4907bb7c68f52d40b1c",
+    "Inc\\drive_parameters.h": "fea97b06ca7fd866d6f065d43dbf0a98653802400083f503d140a09327163b51",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "c6d5c6a37ed429e37de2798d36f9ff445673a0a552c5fcd7836b3caa3d45ff3f"
+  },
+  "bench_only_changes": [
+    "separate build identity",
+    "real ADC zero-bus interlock and 15 s output cap",
+    "zero-bus ready instead of HV settle",
+    "310 V virtual modulation normalization"
+  ],
+  "hardware_validated": false,
+  "operator_measured_bus_max_v": 2,
+  "fixture_mcsdk_filtered_voltage_limit_v": 2,
+  "raw_ADC_is_diagnostic_only": true
+}

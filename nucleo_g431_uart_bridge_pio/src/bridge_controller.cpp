@@ -70,7 +70,12 @@ void bridge_controller_on_valid_command(const uint8_t *cmd, uint32_t now_ms) {
   }
 
   if ((cmd[CMD_OFF_FLAGS] & FLAG_ESTOP) != 0U) {
-    latch_fault(FAULT_ESTOP, false, true);
+    if (s_state.fault_latched) {
+      motor_backend_force_stop();
+      s_state.estop = true;
+    } else {
+      latch_fault(FAULT_ESTOP, false, true);
+    }
     return;
   }
 
@@ -109,9 +114,16 @@ void bridge_controller_note_bad_frames(uint16_t count) {
 
 void bridge_controller_tick(uint32_t now_ms) {
   motor_backend_tick();
+  motor_backend_status_t backend = {};
+  motor_backend_get_status(&backend);
+  if (!s_state.fault_latched && backend.fault_code != FAULT_OK) {
+    latch_fault(backend.fault_code, false, false);
+  }
   if (s_state.link_ok && (uint32_t)(now_ms - s_state.last_valid_ms) > LINK_TIMEOUT_MS) {
     s_state.link_ok = false;
-    latch_fault(FAULT_TIMEOUT, true, false);
+    if (!s_state.fault_latched) {
+      latch_fault(FAULT_TIMEOUT, true, false);
+    }
   }
 }
 

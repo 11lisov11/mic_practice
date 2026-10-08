@@ -1,0 +1,30 @@
+{
+  "pass": true,
+  "sources": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+  },
+  "mutations": {
+    "overflow_not_published": {
+      "detected": true,
+      "failure": "FAIL ISR publishes overflow at exact ring capacity (check 1031)"
+    },
+    "error_bytes_queued": {
+      "detected": true,
+      "failure": "FAIL error-marked FIFO bytes are drained but never queued (check 43345)"
+    },
+    "first_fault_overwritten": {
+      "detected": true,
+      "failure": "FAIL exact combined UART cause survives FIFO draining (check 43333)"
+    },
+    "watchdog_one_ms_early": {
+      "detected": true,
+      "failure": "FAIL link timeout exact boundary and tick wrap (check 81566)"
+    }
+  },
+  "scope": "Production ISR with simulated FIFO; no electrical timing or physical PWM proof",
+  "cases": 8994,
+  "assertions": 86371,
+  "hardware_commands": 0
+}

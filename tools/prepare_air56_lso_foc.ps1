@@ -56,6 +56,7 @@ try {
 
     & py -3 (Join-Path $PSScriptRoot "mcsdk_release_preflight.py") `
         --project $output `
+        --control-mode foc `
         --motor-profile $profile `
         --artifacts (Join-Path $output "STM32CubeIDE\Debug") `
         --output (Join-Path $output "STM32CubeIDE\Debug\mcsdk_release_preflight.json")

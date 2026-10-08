@@ -1,0 +1,26 @@
+{
+  "schema": "mic_ai.async_clear_diagnostics.v1",
+  "pass": true,
+  "hardware_validated": false,
+  "production_source_fix_tested": true,
+  "candidate_deployed": false,
+  "candidate_replacement": {
+    "old": "if (mcsdk_fault) uno_capture_diagnostics(UNO_DIAG_MCSDK, 0U, 0U);",
+    "new": "if (mcsdk_fault && (motor_state != FAULT_OVER ||\n      mcsdk_faults != MC_NO_FAULTS || MC_GetOccurredFaultsMotor1() != MC_NO_FAULTS)) {\n    uno_capture_diagnostics(UNO_DIAG_MCSDK, 0U, 0U);\n  }"
+  },
+  "sources": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "de5063fdd079a8a7403a766295fba2bd9513117ab938f1a3a105495a97e7c3a2",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+  },
+  "runs": {
+    "original_reproduces_bug": {
+      "pass": true,
+      "checks": 41
+    },
+    "diagnostic_candidate": {
+      "pass": true,
+      "checks": 41
+    }
+  }
+}

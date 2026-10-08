@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "scope": "unchanged production control functions; mocked MCSDK/HAL, no physical PWM",
+  "hardware_validated": false,
+  "test_modifies_firmware": false,
+  "source_includes_fault_diagnostics": true,
+  "sources": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "11b727a1e4a33c56d1aabbd3a9fcace7229098b017a6ccc047cece86a50f7705",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+  },
+  "assertions": 262522,
+  "command_combinations": 262144,
+  "single_bit_corruptions": 256,
+  "mutations": [
+    {
+      "name": "late_settle",
+      "detected": true,
+      "failure": "FAIL start after 3500 ms (check 3)"
+    },
+    {
+      "name": "early_watchdog",
+      "detected": true,
+      "failure": "FAIL watchdog accepts 300 ms (check 12)"
+    },
+    {
+      "name": "zero_frequency_start",
+      "detected": true,
+      "failure": "FAIL frequency reason (check 75)"
+    },
+    {
+      "name": "replay_allowed",
+      "detected": true,
+      "failure": "FAIL frozen ENABLE stops (check 15)"
+    },
+    {
+      "name": "STOP_leaves_enabled",
+      "detected": true,
+      "failure": "FAIL STOP (check 7)"
+    },
+    {
+      "name": "dirty_CLEAR",
+      "detected": true,
+      "failure": "FAIL dirty CLEAR cannot erase evidence (check 80)"
+    },
+    {
+      "name": "CRC_check_removed",
+      "detected": true,
+      "failure": "FAIL CRC reason (check 69)"
+    },
+    {
+      "name": "start_failure_ignored",
+      "detected": true,
+      "failure": "FAIL start after 3500 ms (check 3)"
+    }
+  ]
+}

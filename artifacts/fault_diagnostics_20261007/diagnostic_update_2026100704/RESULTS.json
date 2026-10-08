@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-07",
+  "installed_builds": {"uno_q": 2026100704, "nucleo": 2026100704},
+  "readback_verified": {"uno_q_loader_and_sketch": true, "nucleo_hex": true},
+  "image_sha256": {
+    "uno_q_elf_zsk_bin": "81851b13bec0928462a1668873d5f4ac5ff0ccfc773d8bfca1938dd4294ce006",
+    "nucleo_hex": "fe0b54cb18a2d2ed177392cf4f8250d47185bf4224bf0c169fc22a6b7732c5ba"
+  },
+  "implemented": [
+    "persistent first-observed fault snapshot until explicit CLEAR",
+    "independent last bad-count reason and UART/HAL flags",
+    "current/occurred MCSDK fault masks and state at first observation",
+    "immediate diagnostic event log separate from periodic STAT",
+    "USART1 IRQ RX, hardware FIFO, 128-byte SPSC software ring",
+    "UART priority 3 below ADC priority 2; existing ADC/TIM priorities unchanged",
+    "receive errors and software ring overflow remain fail closed",
+    "append-only RPC v3 extension to 91 fields; original Vbus fields preserved",
+    "explicit unqualified phase-current and reference-speed presentation in HMI"
+  ],
+  "new_hardware_observation_before_rx_fix": {
+    "report": "live_v2/report.json",
+    "last_bad_reason": "UART_RX_ERROR",
+    "last_uart_flags": 8,
+    "meaning": "USART ORE receive overrun",
+    "scope": "unpowered stand; does not prove the original energized trip cause"
+  },
+  "offline_verification": {
+    "production_assertions": 390877,
+    "command_combinations": 262144,
+    "mutation_failures_detected": 8,
+    "decoder_cases": 66053,
+    "hmi_guard_cases": 162,
+    "production_guard_semantics_cases": 6,
+    "first_trial_precheck_cases": 23,
+    "vbus_identity_cases": 32,
+    "api_string_and_array_roundtrip": true,
+    "fault_bit_names_match_mc_type_header": true,
+    "offline_ui_screenshots": 4,
+    "desktop_mobile_ui_no_overflow": true
+  },
+  "live_final": {
+    "report": "live_final/report.json",
+    "scope": "30 seconds read-only Wi-Fi, physically unpowered stand",
+    "pass": true,
+    "new_uart_messages": 441,
+    "new_uart_errors": 0,
+    "diagnostics_available": true,
+    "last_bad_reason": "NONE",
+    "pwm": 0,
+    "hv_armed": 0,
+    "bus_v": 0.0
+  },
+  "calibration": {"valid": true, "original_file_unchanged": true, "new_zero_recorded": false},
+  "energized_motor_runs_during_update": 0,
+  "motor_start_after_rx_fix_validated": false,
+  "original_energized_trip_root_cause_proven": false,
+  "qualified_nucleo_phase_current_telemetry": false,
+  "new_software_bkin_irq_latency_measured": false,
+  "hv_release_approved": false,
+  "older_full_ready_to_flash_package_updated": false,
+  "next_step": "One separately operator-authorized bounded V/f trial using wifi_motor_first_start.py after all PC/analyzer interfaces are removed. Preserve exact first and last fault diagnostics on failure."
+}

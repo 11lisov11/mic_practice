@@ -1,0 +1,123 @@
+{
+  "schema": "mic_ai.diagnostic_update.v1",
+  "firmware_build_id": 2026100707,
+  "builds": {
+    "uno_q": 2026100707,
+    "nucleo": 2026100707
+  },
+  "scope": "single-owner bounded V/f ramp, correct current-trip ownership, bus-loss STOP; zero-frequency STOP and non-extendable run deadline; sustained-break IRQ starvation fix with clean-CLEAR rearm; no powered motor acceptance",
+  "hardware_readback_performed_by_packager": false,
+  "readback_evidence": "RESULTS.json from the connected-stand verification",
+  "hv_release_approved": false,
+  "motor_start_validated": false,
+  "older_ready_to_flash_package_replaced": false,
+  "calibration_reuse": "audited same measurement contract; original points not rewritten",
+  "open_checks": [
+    "root cause of original HV trip not proven",
+    "repeat bounded motor trial with USB/analyzer removed",
+    "qualified Nucleo phase-current telemetry",
+    "updated loaded-mode and protection timing qualification"
+  ],
+  "files": [
+    {
+      "file": "linux/web_hmi/flash_unoq_sketch_090.cfg",
+      "bytes": 450,
+      "sha256": "d83ab25f951733f02e5bd88cbac664f32d17b16d6f3f67500b7a3c76dc05f3c6"
+    },
+    {
+      "file": "linux/web_hmi/requirements.txt",
+      "bytes": 12,
+      "sha256": "2db2172e314f86716c5c45bb731f4e77d2eb626ba9b6d053ab564e82795c9341"
+    },
+    {
+      "file": "linux/web_hmi/server.py",
+      "bytes": 141519,
+      "sha256": "19e22f683e38154c4927cc0df4eb042cdd7bd05bd1bf5afd6c684ba21f0f1c53"
+    },
+    {
+      "file": "linux/web_hmi/static/app.js",
+      "bytes": 35937,
+      "sha256": "59af991d972d99adb8f2ea75d41d7ea9def6c452ec873ef1e1ed1bf9234c972a"
+    },
+    {
+      "file": "linux/web_hmi/static/index.html",
+      "bytes": 8314,
+      "sha256": "221368f5a5dad34e0112c834623e5fb9bd0d74f03e31665e60253e8889e404d2"
+    },
+    {
+      "file": "linux/web_hmi/static/style.css",
+      "bytes": 8833,
+      "sha256": "de37484a049de64405d29b11f20300a16d0d589ba0d76758d8b8489cebfd03a4"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "bytes": 40652,
+      "sha256": "a3f0b7cad718f17e404b6dbea4f4aea924d24c4d3ec50be14741c8afe9ea2685"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+      "bytes": 1513,
+      "sha256": "707373c03d2bd413b9e9f561a895b46669df8ff24d9615e0058b106d26e6ee78"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "bytes": 2074652,
+      "sha256": "b2c5e97e845567fd6bd2776a01bae613bb0033ff715efd52a794c04c2f10bc94"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "bytes": 114440,
+      "sha256": "a729d9c74910e2c41c441ee585ad0fed84cee28014be99d8cfcc36680ab293ef"
+    },
+    {
+      "file": "nucleo/flash_verify.log",
+      "bytes": 1791,
+      "sha256": "b7b7054cf3cf1f483b2e67dfa5c6819f94a6759b436d12d3f12883c9cfa5d37d"
+    },
+    {
+      "file": "README.txt",
+      "bytes": 869,
+      "sha256": "11f8ba312f97baf270feb46898fa16d2aa7427138b3189e81ef7d7b9986f8bd1"
+    },
+    {
+      "file": "RESULTS.json",
+      "bytes": 3792,
+      "sha256": "325bebaaf1bafad8ae45ec7c98854b32801cd81ab2ceadf9d63c35789d1876f3"
+    },
+    {
+      "file": "uno_q/flash.log",
+      "bytes": 1397,
+      "sha256": "b039cec9c857ce4faab128899a1b6f4dad527fc3e468f6d288d1200bdc036f08"
+    },
+    {
+      "file": "uno_q/readback_verify.log",
+      "bytes": 1470,
+      "sha256": "6bc4b239579c3e6859532b6fd4f2e299f7fba83bacbd992599d56efc636bee86"
+    },
+    {
+      "file": "uno_q/unoq_mcsdk_scalar.build-manifest.json",
+      "bytes": 1203,
+      "sha256": "297ff65d5c7709698d38af8ccca43c52e82368dfeb5f752ea23d8ad7782e5d78"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.bin",
+      "bytes": 55300,
+      "sha256": "c4f26275bc57b03c5c01dfc04be3a8454fa33246a72e4e31fb695b426f517dc2"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf",
+      "bytes": 127236,
+      "sha256": "cf0c151153529a3b4190ca5b2689f14d272eea96f47205f7e948c433d95b4bb2"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf-zsk.bin",
+      "bytes": 127236,
+      "sha256": "e63077e1855fab367c0c7a26b2ac9c80bc289b0af4e34b2e906566cf07b5c795"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.hex",
+      "bytes": 145478,
+      "sha256": "4236d04e8886bcfc0f89a0454edb189a73251902acab6afbf70a90f428d4446e"
+    }
+  ]
+}

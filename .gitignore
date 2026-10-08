@@ -83,5 +83,14 @@ research/mic_ai_foc_ppo_incomplete_port_v*/
 
 # Local STM32CubeIDE workspaces and one-off MCSDK generation probes.
 _cubeide_ws_*/
+# Standalone bench clones and acquisition caches are reproducible from tools.
+artifacts/**/project/
+artifacts/**/.metadata/
+artifacts/**/cube_workspace/
+artifacts/**/cube_ws/
+artifacts/**/*.sal
+artifacts/**/*.exe
+artifacts/**/*.axf
+artifacts/**/*.pdom
 mcsdk_reference/_*DO_NOT_USE/
 mcsdk_reference/ACIM_IPM15B_SIEMENS_REFERENCE_NOT_AIR56/

@@ -1,0 +1,17 @@
+{
+  "tool": "web_hmi_control_access_selftest",
+  "pass": true,
+  "cases": {
+    "status_is_read_only_public": true,
+    "logs_reject_missing_token": true,
+    "logs_accept_valid_token": true,
+    "start_rejects_missing_token": true,
+    "command_rejects_bad_token": true,
+    "command_accepts_valid_token": true,
+    "heartbeat_accepts_valid_token": true,
+    "stop_remains_fail_safe_without_token": true,
+    "stop_sent_but_not_confirmed_without_output_status": true,
+    "stale_stop_still_sent_without_token_but_not_confirmed": true,
+    "lost_heartbeat_forces_stop_and_estop": true
+  }
+}

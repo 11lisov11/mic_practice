@@ -1,0 +1,56 @@
+{
+  "source": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\power\\STEVAL-IPM15B.json",
+  "sha256": "305d56bfe9f1c4113f1b0e8c72d4ec05661f6c6c768608d53bdb18742e3576c4",
+  "features": [
+    {
+      "name": "TemperatureSensing",
+      "type": "TemperatureSensing",
+      "hwVariants": [
+        {
+          "type": "NTCThermistor",
+          "help": {
+            "en": ""
+          },
+          "signals": {
+            "TEMPERATURE_NTC": [
+              {
+                "name": "MC26",
+                "help": {
+                  "en": [
+                    "SW3 jumper on 2-3"
+                  ]
+                },
+                "cost": 10
+              }
+            ]
+          },
+          "v0": 408,
+          "t0": 25,
+          "gain": 25,
+          "maxSensorTemperature": 100
+        }
+      ]
+    },
+    {
+      "name": "STGIB15CH60TS-L_Protection",
+      "type": "DriverProtection",
+      "hwVariants": [
+        {
+          "type": "SingleErrorTrigger_FixedReference",
+          "help": "",
+          "signals": {
+            "DP_TRIGGER": [
+              {
+                "name": "MC1",
+                "help": "",
+                "cost": 0
+              }
+            ]
+          },
+          "DPTriggerFilterDuration": 0,
+          "DPSignalPolarity": "Active low"
+        }
+      ]
+    }
+  ]
+}

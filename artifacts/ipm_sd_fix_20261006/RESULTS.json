@@ -1,0 +1,54 @@
+{
+  "schema": "mic_ai.sd_fix_results.v1",
+  "updated_utc": "2026-10-06T10:50:22.499502+00:00",
+  "software_fixed_and_flashed": true,
+  "motor_start_ready": false,
+  "hardware_validated": false,
+  "nucleo_build": 2026100601,
+  "evidence": {
+    "flash_live": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\flash_live\\report.json",
+      "sha256": "e0fc192b7ad997a4e3d962a8d491a66fa34bc3e553a16829d8dc915f097b295b"
+    },
+    "production_readonly": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\production_readonly\\report.json",
+      "sha256": "53ca7bac316af3ad81a98b4d36dc4ef66c78b42d63ba04cea005c55ee40905f5"
+    },
+    "production_idle": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\production_idle\\report.json",
+      "sha256": "888c8ce379860968e7f02820d89dbb455f1c1861010c5d10c21973594e18b19c"
+    },
+    "wifi_commands": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\wifi_commands\\report.json",
+      "sha256": "840f836c395845576e32e73fcf003aa64bc07a8784310921c1575a20fdacebfb"
+    },
+    "internal_break_no_pwm_retry": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\internal_break_no_pwm_retry\\report.json",
+      "sha256": "099e846fc3856365d97889bc1304c882024d998695f3002813adcb4b9018ca93"
+    },
+    "host_irq_test": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\host_irq_test\\report.json",
+      "sha256": "640d57387713838aacc537a61e9fd883e362dd4068b028a2b25a051344058662"
+    },
+    "vbus_zero_identity_refresh": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\ipm_sd_fix_20261006\\vbus_zero_identity_refresh\\report.json",
+      "sha256": "08a611c701d44f46b117be0ad11a48e51a8b9260da541282a85387efc1c892e9"
+    }
+  },
+  "operator_factory_configuration_assumed": true,
+  "repeat_photo_or_1kohm_test_requested": false,
+  "software_groups": true,
+  "readback": {
+    "pass": true,
+    "bytes": 39020,
+    "sha256": "71a3b59b1fdca9c8fd0e01326e0467c3c40da08246341204a1995b7bf6ef7c82"
+  },
+  "pass": true
+}

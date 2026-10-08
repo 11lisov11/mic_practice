@@ -1,0 +1,51 @@
+{
+  "schema": "mic_ai.production_completion.v1",
+  "updated_utc": "2026-10-06T11:02:52.848931+00:00",
+  "pass_within_scope": true,
+  "scope": "host production control functions and live zero-bus guards/static LOW only",
+  "firmware_changed": false,
+  "nucleo_build": 2026100601,
+  "hardware_validated": false,
+  "active_production_pwm_validated": false,
+  "motor_start_ready": false,
+  "evidence": {
+    "readonly": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\production_completion_20261006_r1\\readonly\\report.json",
+      "sha256": "850c4a8f1d1e21be3c294fcbe2fe8b462084671e649aacbe0154ff0cba8ef4c9"
+    },
+    "wifi_guards": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\production_completion_20261006_r1\\wifi_guards\\report.json",
+      "sha256": "0355a8fe358c45dffcdf5e0b7a6b90285ed25ef5452d9fa5600d9d3730f72f50"
+    },
+    "dynamic_source_mutation": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\production_completion_20261006_r1\\dynamic_source_mutation\\report.json",
+      "sha256": "50526501238aa6d41681e8c98c3670475ed1bbae90b8aafbbf5763ef9c4c52f7"
+    },
+    "wifi_idle": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\production_completion_20261006_r1\\wifi_idle\\report.json",
+      "sha256": "3b5065fb71f0289938c456c988b64c9ea1677bbb5753d8508d62a9f886eef989"
+    },
+    "sd_irq_host": {
+      "pass": true,
+      "path": "C:\\mic_practice\\artifacts\\production_completion_20261006_r1\\sd_irq_host\\report.json",
+      "sha256": "640d57387713838aacc537a61e9fd883e362dd4068b028a2b25a051344058662"
+    }
+  },
+  "host_assertions": 262489,
+  "mutation_failures_detected": 8,
+  "idle_duration_s": 48.73399999999947,
+  "max_uart_age_ms": 50,
+  "uart_integrity_errors": 0,
+  "uart_sequence_errors": 0,
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "open_checks": [
+    "active PWM/deadtime and external SD shutdown on exact production image",
+    "external soft-start and powered inverter qualification"
+  ],
+  "physical_constraint": "Production START requires valid DC bus; no ADC/RAM voltage substitution or disabled protections used"
+}

@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-07",
+  "scope": "Read-only Wi-Fi capture and operator multimeter readings; no START, ARM or calibration changes",
+  "meter_reference": "PA1/CN7-30 relative to Nucleo GND",
+  "operator_dc_bus_v": 0.0,
+  "configured_divider_ratio": 0.0079155672823219,
+  "operator_ground_difference_v": {
+    "reference": "Inverter J4 minus relative to Nucleo GND",
+    "j4_15v_on": 0.0,
+    "j4_15v_off": 0.0,
+    "instrument_resolution_unknown": true
+  },
+  "j4_15v_on": {
+    "operator_pa1_v": 0.0773,
+    "ideal_divider_equivalent_bus_v": 9.766,
+    "reported_bus_v": 9.0,
+    "controller_bad_count": 0,
+    "capture": "j4_vbus_discrepancy_r1/report.json"
+  },
+  "j4_15v_off": {
+    "operator_pa1_v": 0.0286,
+    "ideal_divider_equivalent_bus_v": 3.613,
+    "reported_bus_v": 2.0,
+    "controller_bad_count": 1,
+    "last_bad_reason": "RX_BUFFER_OVERFLOW",
+    "new_errors_during_capture": 0,
+    "capture": "j4_off_vbus_discrepancy_r1/report.json"
+  },
+  "limitations": [
+    "Multimeter readings and telemetry were not synchronized samples.",
+    "The powered measurement chain has a nonzero reading at reported zero DC bus; physical source is not isolated.",
+    "The off-state ideal conversion does not exactly match telemetry; do not claim full measurement-chain validation.",
+    "Two RX_BUFFER_OVERFLOW events are now present in saved logs at 15:00:44 and 15:11:27; causation by J4 switching is not proven.",
+    "A per-capture PASS means no new errors within that window, not that all previous windows were error-free.",
+    "Do not subtract a constant offset or alter stored calibration based on these two readings alone."
+  ],
+  "ground_check": "Completed by operator: displayed zero in both J4 supply conditions; do not request the same measurement again.",
+  "latest_capture": "vbus_ground_equal_readonly_r1/report.json",
+  "saved_uart_log": "vbus_ground_equal_readonly_r1/wifi_logs.txt",
+  "analog_hypotheses": [
+    "ST schematic Figure 3 places BAT48JFILM D1 between Vbus sensing and 3.3 V; diode reverse leakage is a possible contributor, not a confirmed cause.",
+    "Other contributors include ADC sampling/input leakage, adapter connections and board leakage."
+  ],
+  "sources": [
+    "https://www.st.com/resource/en/schematic_pack/steval-ipm15b_schematic.pdf",
+    "https://www.st.com/resource/en/datasheet/bat48.pdf"
+  ],
+  "release_status": "Not cleared for an energized motor attempt by this measurement. Resolve recurrent receive overflow and measurement-chain discrepancy; no calibration or firmware modified."
+}

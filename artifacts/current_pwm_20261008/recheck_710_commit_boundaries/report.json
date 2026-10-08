@@ -1,0 +1,34 @@
+{
+  "schema": "mic_ai.uart_guard_release_test.v1",
+  "pass": false,
+  "results": {
+    "baseline_queue": {
+      "cases": 2240,
+      "starts_after_pending_error": 2240,
+      "next_poll_stops": 2240,
+      "checks": 59072
+    },
+    "production_queue": {
+      "cases": 2240,
+      "starts_after_pending_error": 0,
+      "next_poll_stops": 2240,
+      "checks": 59072
+    },
+    "baseline_api": {
+      "cases": 604,
+      "starts_after_published_fault": 168,
+      "stops_verified": 604,
+      "checks": 21236
+    },
+    "production_api": {
+      "cases": 1860,
+      "starts_after_published_fault": 8,
+      "stops_verified": 1860,
+      "checks": 65196
+    }
+  },
+  "source_sha256": "2cd9f72bd020a267105ae07604a41c4fba9461c9ffd1c05f8f9699de8ad95dfd",
+  "baseline_sha256": "de5063fdd079a8a7403a766295fba2bd9513117ab938f1a3a105495a97e7c3a2",
+  "hardware_access": false,
+  "scope": "Host IRQ scheduling at queue and mocked API boundaries, ENABLE/CLEAR/STOP. Not instruction-level exhaustive or physical PWM timing validation."
+}

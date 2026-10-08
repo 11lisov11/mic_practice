@@ -39,8 +39,8 @@ README_PATH = OUT_DIR / "ASSEMBLY_RU.md"
 MANIFEST_PATH = OUT_DIR / "manifest.json"
 
 DOCUMENT_CODE = "MIC-AI.Э4.NUCLEO.001"
-REVISION = "1.0"
-REVISION_DATE = "2026-08-26"
+REVISION = "1.1"
+REVISION_DATE = "2026-09-29"
 TOTAL_PAGES = 7
 
 INK = "#111111"
@@ -161,10 +161,10 @@ def build_connections() -> list[Connection]:
             Connection("UNOQ_POWER", "PS_15V", "+15V", "HOT_15V", "UNO_Q", "VIN", "USED", "UNO Q VIN accepts 7-24 V; size supply for wireless peaks"),
             Connection("UNOQ_POWER", "PS_15V", "0V", "HOT_GND", "UNO_Q", "GND", "USED", "UNO Q is enclosed HOT equipment"),
             Connection("NUCLEO_POWER", "PS_15V", "+15V", "HOT_15V", "BUCK_9V", "IN+", "USED", "derive 7-12 V for Nucleo VIN"),
-            Connection("NUCLEO_POWER", "BUCK_9V", "OUT+ 9V", "NUCLEO_VIN", "NUCLEO_G431RB", "VIN / CN7-24", "USED", "JP5 1-2 per ST ACIM guide"),
-            Connection("HV", "RECTIFIER", "+", "DC_BUS_PLUS", "STEVAL_IPM15B", "J7-1 positive", "USED", "125-400 VDC board range"),
-            Connection("HV", "RECTIFIER", "-", "DC_BUS_MINUS", "STEVAL_IPM15B", "J7-2 negative", "USED", "non-isolated rectified mains is HOT"),
-            Connection("HOT_REFERENCE", "STEVAL_IPM15B", "J2 GND / J4 negative", "HOT_GND_EQUALS_DC_MINUS", "STEVAL_IPM15B", "J7-2 DC-", "INTERNAL", "UM2014: VDC- is the common reference ground; board circuits are not line-isolated"),
+            Connection("NUCLEO_POWER", "BUCK_9V", "OUT+ 9V", "NUCLEO_VIN", "NUCLEO_G431RB", "VIN / CN7-24", "USED", "JP5 3-4 for VIN per ST UM2505; 1-2 is USB power"),
+            Connection("HV", "RECTIFIER", "+", "DC_BUS_PLUS", "STEVAL_IPM15B", "J1-2 positive", "USED", "125-400 VDC board range; physical J1 per schematic and user board; UM2014 connector table calls it J7"),
+            Connection("HV", "RECTIFIER", "-", "DC_BUS_MINUS", "STEVAL_IPM15B", "J1-1 negative", "USED", "non-isolated rectified mains is HOT; physical J1 per schematic and user board"),
+            Connection("HOT_REFERENCE", "STEVAL_IPM15B", "J2 GND / J4 negative", "HOT_GND_EQUALS_DC_MINUS", "STEVAL_IPM15B", "J1-1 DC-", "INTERNAL", "UM2014: VDC- is the common reference ground; board circuits are not line-isolated"),
             Connection("MOTOR", "STEVAL_IPM15B", "J3-1 phase A", "MOTOR_U", "AIR56B2", "U1", "USED", "delta 220 V"),
             Connection("MOTOR", "STEVAL_IPM15B", "J3-2 phase B", "MOTOR_V", "AIR56B2", "V1", "USED", "delta 220 V"),
             Connection("MOTOR", "STEVAL_IPM15B", "J3-3 phase C", "MOTOR_W", "AIR56B2", "W1", "USED", "delta 220 V"),
@@ -326,7 +326,7 @@ def draw_page_1(p: DualPage) -> None:
     p.box(438, 390, 270, 105, "A5 — NUCLEO-G431RB", ["STM32G431RBT6", "MCSDK 6.4.2, S1 V/f", "PWM/ADC/BKIN", "PB6/PB7 — прямой UART"], fill="#ffffff", stroke=DANGER)
     p.box(438, 205, 270, 105, "A6 — X-NUCLEO-IHM09M2", ["ставится сверху на Morpho", "J1 jumper OFF", "J7 — 34 контакта", "не отдельный контроллер"], fill="#ffffff", stroke=DANGER)
 
-    p.box(814, 585, 290, 95, "A7 — STEVAL-IPM15B", ["J2 control, J4 +15V", "J7 DC 125...400 V", "J3 фазы A/B/C", "SW1/2/4, SW3, SW5...SW8"], fill="#ffffff", stroke=DANGER)
+    p.box(814, 585, 290, 95, "A7 — STEVAL-IPM15B", ["J2 control, J4 +15V", "J1 DC 125...400 V", "J3 фазы A/B/C", "SW1/2/4, SW3, SW5...SW8"], fill="#ffffff", stroke=DANGER)
     p.box(814, 430, 290, 95, "A8 — AIR56B2", ["0.25 kW; 220 V Δ; 50 Hz", "J3 A/B/C -> U1/V1/W1", "PE -> корпус двигателя", "S1: бездатчиковое V/f"], fill="#ffffff", stroke=DANGER)
     p.box(814, 250, 290, 120, "A9 — входное питание", ["2P отключение + аппаратный E-STOP", "F1 + MOV + автономный soft-start", "мост + DC-link + bleeder", "никакого провода управления к MCU"], fill="#ffffff", stroke=DANGER)
     p.box(814, 145, 290, 70, "A10 — питание управления", ["15 V -> STEVAL J4 и UNO Q VIN", "15 V -> buck 9 V -> Nucleo VIN"], fill="#ffffff", stroke=DANGER)
@@ -340,7 +340,7 @@ def draw_page_1(p: DualPage) -> None:
     p.arrow(959, 585, 959, 525, "J3")
     p.line(814, 310, 790, 310, color=DANGER, width=1.5)
     p.line(790, 310, 790, 615, color=DANGER, width=1.5)
-    p.arrow(790, 615, 814, 615, "J7 DC", color=DANGER)
+    p.arrow(790, 615, 814, 615, "J1 DC", color=DANGER)
 
     p.rect(42, 100, 1102, 22, stroke=DANGER, fill=DANGER_FILL, width=1.0)
     p.text(593, 107, "UNO Q, Nucleo, AS5600, IHM09M2, шлейф и STEVAL — HOT. В работе корпус закрыт; USB, Ethernet и измерительные провода отсутствуют.", size=8.2, color=DANGER, bold=True, anchor="middle")
@@ -379,7 +379,7 @@ def draw_page_2(p: DualPage) -> None:
 def draw_page_3(p: DualPage) -> None:
     p.frame(3, "NUCLEO-G431RB и X-NUCLEO-IHM09M2", "Переходник ставится на Morpho; отдельные провода PWM/ADC не требуются")
     p.box(45, 620, 310, 85, "Механическая сборка", ["IHM09M2 установить сверху Nucleo", "совместить CN7 и CN10 без смещения", "J1 на IHM09M2: jumper OFF", "перед включением осмотреть все ряды"], fill="#ffffff")
-    p.box(410, 620, 310, 85, "Питание E5V", ["Nucleo VIN: 7...12 VDC", "для проекта принят buck 9 V", "JP5: pins 1-2 по ST ACIM guide", "E5V выходит на J7-25"], fill=HOT_FILL)
+    p.box(410, 620, 310, 85, "Питание Nucleo", ["Nucleo VIN: 7...12 VDC", "для проекта принят buck 9 V", "JP5: pins 3-4 (VIN, ST UM2505)", "5 V к переходнику: J7-25"], fill=HOT_FILL)
     p.box(775, 620, 350, 85, "Настройки STEVAL-IPM15B", ["SW3 = 2-3 (NTC)", "SW1, SW2, SW4 = 1-2 (amplified)", "SW5, SW6 open; SW7, SW8 closed", "трёхшунтовая конфигурация"], fill=HOT_FILL)
 
     p.table(45, 585, [90, 105, 225, 90, 520], ["MCU", "Morpho", "IHM09M2 функция", "J7", "STEVAL J2"], CONTROL_ROWS, row_h=24, size=7.5)
@@ -432,7 +432,7 @@ def draw_page_5(p: DualPage) -> None:
     p.box(305, 390, 180, 105, "STEVAL J4", ["positive <- +15V", "negative <- HOT_GND", "до 20 VDC", "проверить полярность"], fill=HOT_FILL, stroke=DANGER)
     p.box(525, 390, 180, 105, "UNO Q VIN", ["VIN <- +15V", "GND <- HOT_GND", "USB-C отключён", "плата внутри корпуса"], fill=HOT_FILL, stroke=DANGER)
     p.box(745, 390, 155, 105, "Buck 9 V", ["IN: +15V/GND", "OUT: 9V/GND", "настроить без", "нагрузки"], fill=HOT_FILL, stroke=DANGER)
-    p.box(940, 390, 185, 105, "Nucleo VIN", ["VIN/CN7-24 <- 9V", "GND <- HOT_GND", "JP5 1-2", "E5V -> cable pin25"], fill=HOT_FILL, stroke=DANGER)
+    p.box(940, 390, 185, 105, "Nucleo VIN", ["VIN/CN7-24 <- 9V", "GND <- HOT_GND", "JP5 3-4", "5 V -> cable pin25"], fill=HOT_FILL, stroke=DANGER)
     p.line(265, 420, 285, 420, color=DANGER, width=1.5)
     p.line(285, 420, 285, 360, color=DANGER, width=1.5)
     p.line(285, 360, 823, 360, color=DANGER, width=1.5)
@@ -449,7 +449,7 @@ def draw_page_5(p: DualPage) -> None:
     p.rect(45, 115, 1080, 54, stroke=DANGER, fill=DANGER_FILL, width=1.0)
     p.text(58, 146, "Нет управляющей линии soft-start:", 9, color=DANGER, bold=True)
     p.text(253, 146, "PB4 = NC; PC10/J2-21 не соединять с внешним модулем. Модуль самостоятельно шунтирует свои NTC внутренним реле.", 8.2, color=DANGER)
-    p.text(58, 125, "На STEVAL: HOT_GND = J7 DC- (UM2014, общий опорный GND). PE и N с этой сетью не объединять; весь контур опасен.", 8.2, color=DANGER)
+    p.text(58, 125, "На STEVAL: HOT_GND = J1 DC- (UM2014, общий опорный GND). PE и N с этой сетью не объединять; весь контур опасен.", 8.2, color=DANGER)
     p.finish()
 
 
@@ -505,7 +505,7 @@ def draw_page_7(p: DualPage) -> None:
 
     rows = [
         ("UNO Q GND ↔ Nucleo GND", "< 1 Ω", "общая HOT_GND"),
-        ("HOT_GND (= J7 DC-) ↔ PE", "обрыв", "до подключения сети"),
+        ("HOT_GND (= J1 DC-) ↔ PE", "обрыв", "до подключения сети"),
         ("FC-34P N ↔ N", "< 1 Ω", "все 34 контакта"),
         ("FC-34P N ↔ N±1", "обрыв", "нет соседних КЗ"),
         ("PB4", "NC", "никакого реле"),
@@ -548,7 +548,7 @@ def validate(connections: list[Connection]) -> dict:
     if not any(row.section == "UART" and row.signal == "HOT_GND" for row in connections):
         errors.append("common UNO Q / Nucleo HOT_GND is missing")
     if not any(row.section == "HOT_REFERENCE" and row.signal == "HOT_GND_EQUALS_DC_MINUS" for row in connections):
-        errors.append("STEVAL HOT_GND = J7 DC- internal reference is missing")
+        errors.append("STEVAL HOT_GND = J1 DC- internal reference is missing")
     if not any(item.pin == 21 and "UNUSED" in item.state for item in CABLE_PINS):
         errors.append("J2-21 must be explicitly unused")
     if not any(row.section == "PE" for row in connections):
@@ -587,9 +587,9 @@ def write_readme() -> None:
 - Внешний soft-start автономный; управляющего провода от MCU нет.
 - `PB4` не подключён; `PC10/J2-21` физически есть в 34-жильном шлейфе, но не используется прошивкой.
 - UNO Q и Nucleo соединены прямым UART 3.3 В и общей `HOT_GND`; их шины 3.3 В не соединяются.
-- На STEVAL `HOT_GND` электрически является `J7 DC-` (общая опорная точка VDC- по UM2014); это не SELV.
+- На STEVAL `HOT_GND` электрически является `J1 DC-` (общая опорная точка VDC- по UM2014); это не SELV.
 - При сетевом выпрямителе UNO Q, Nucleo, AS5600 и STEVAL являются HOT-стороной и находятся в закрытом корпусе.
-- В силовом режиме наружу выходит только Wi-Fi. USB/ST-Link/Ethernet/HDMI разрешены только при физически снятом J7, отключённой сети и измеренно разряженном DC-link.
+- В силовом режиме наружу выходит только Wi-Fi. USB/ST-Link/Ethernet/HDMI разрешены только при физически отключённом силовом входе STEVAL J1, отключённой сети и измеренно разряженном DC-link.
 - HMI работает через существующий роутер (STA) или автономную WPA2-точку доступа UNO Q (AP); журналы хранятся на UNO Q и скачиваются через HMI.
 - Команды и скачивание логов защищены отдельным ключом; потеря операторского heartbeat более 3 секунд вызывает STOP/ESTOP.
 

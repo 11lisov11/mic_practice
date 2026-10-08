@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "scope": "production helpers + mathematical ramp semantics, no physical PWM/motor",
+  "native_assertions": 250636,
+  "old_cascaded_ramp": {
+    "ramp_programs": 41,
+    "electrical_reference_hz": {
+      "1.0": 0.0,
+      "2.0": 1.5,
+      "3.0": 4.3,
+      "4.0": 7.1,
+      "10.0": 10.0
+    }
+  },
+  "single_owner_ramp": {
+    "ramp_programs": 1,
+    "electrical_reference_hz": {
+      "1.0": 3.3,
+      "2.0": 6.6,
+      "3.0": 10.0,
+      "4.0": 10.0,
+      "10.0": 10.0
+    }
+  },
+  "motor_rotation_proven": false,
+  "current_protection_note": "legacy UNO ADC trip retained only for non-MCSDK topology; IPM/MCSDK guards untouched"
+}

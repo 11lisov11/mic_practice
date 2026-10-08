@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-07",
+  "trial_count": 1,
+  "transport": "Wi-Fi HTTP; production MCU images, no analyzer",
+  "target_frequency_hz": 10.0,
+  "start_command_accepted": true,
+  "start_response": {
+    "state": "VF_RUN",
+    "pwm": 1,
+    "controller_status": 99,
+    "controller_fault": 0,
+    "controller_bad_count": 0,
+    "reported_frequency_hz": 0.16,
+    "reported_bus_v": 316.0
+  },
+  "first_monitor": {
+    "seconds_after_start_request": 0.81,
+    "state": "SAFE",
+    "pwm": 0,
+    "controller_fault": 5,
+    "controller_bad_count": 1
+  },
+  "operator_observed_shaft_motion": false,
+  "mechanical_start_pass": false,
+  "three_second_run_completed": false,
+  "stop_confirmed": true,
+  "final_hv_armed": 0,
+  "final_estop": 1,
+  "new_zero_calibration_performed": false,
+  "calibration_valid": true,
+  "diagnosis": {
+    "established": "Nucleo accepted enable and reported RUN/PWM, then faulted with a new local bad-count increment. UNO Q reply integrity/sequence counts stayed zero.",
+    "unresolved": "Internal code 5 merges UART hardware errors, invalid/replayed commands, transmit timeout, and MCSDK faults. Exact branch and MCSDK mask are not in the installed reply ABI.",
+    "candidates_not_proven": [
+      "USART receive overrun or line error after PWM starts",
+      "command rejection or reply transmit timeout",
+      "MCSDK fault concurrent with transport failure"
+    ],
+    "current_telemetry": "ia/ib/ic originate from UNO Q local ADC in control_step; Nucleo reply does not export phase currents. These numbers do not establish motor overcurrent or qualify a current limit.",
+    "next_required_evidence": "Add first-fault branch, USART error flags and current/occurred MCSDK fault masks to diagnostic telemetry. Verify without HV before another energized trial."
+  },
+  "retry_authorized_or_performed": false,
+  "hv_ready_claimed": false
+}

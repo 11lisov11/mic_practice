@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-07",
+  "scope": "second startup audit, offline regression corrections, disarmed Wi-Fi verification",
+  "installed_builds": {"uno_q": 2026100706, "nucleo": 2026100705},
+  "readback_verified": {"uno_q_loader_and_sketch": true, "nucleo_hex": true},
+  "readback_evidence": {
+    "uno_q": "../startup_recheck_20261007/uno_706_verify.log",
+    "nucleo": "../startup_recheck_20261007/nucleo_flash_verify.log",
+    "nucleo_note": "unchanged 705 image, prior readback and current live build ID; Nucleo not reflashed in second audit"
+  },
+  "image_sha256": {
+    "uno_q_elf_zsk_bin": "09e64a291517582a8e1052e417e4e8217efd43eec7d82deba7f3db4d958d165a",
+    "nucleo_hex": "b428ec2597c52f054f08ad53c7cfaffaf90494524cefa72339321d0cc223bd0a"
+  },
+  "new_defects_fixed": [
+    "active SET FREQ 0 now issues normal STOP instead of ENABLE with zero frequency",
+    "repeated SET RUNLIMIT cannot extend the current run deadline",
+    "SET RUNLIMIT 0 during a bounded active run stops the drive instead of disabling the limit",
+    "deadline wrapping to zero cannot silently become the disabled sentinel"
+  ],
+  "regression_evidence": {
+    "before_fix": "../startup_recheck_20261007/repeat_runtime_before/failure.txt",
+    "before_fix_failure": "repeated RUNLIMIT moved the active deadline, failed case 2",
+    "after_fix": "../startup_recheck_20261007/repeat_runtime_final/report.json",
+    "runtime_cases": 20,
+    "production_assertions": 390882,
+    "ramp_assertions": 250636,
+    "decoder_cases": 66055,
+    "detected_mutations": 8,
+    "hmi_command_guard_cases": 162,
+    "calibration_identity_cases": 34,
+    "offline_pass": true
+  },
+  "live": {
+    "report": "../startup_recheck_20261007/repeat_live_706/report.json",
+    "scope": "60 seconds read-only LAN Wi-Fi, no ARM or START",
+    "pass": true,
+    "samples": 93,
+    "new_uart_messages": 859,
+    "new_uart_errors": 0,
+    "pwm": 0,
+    "hv_armed": 0,
+    "bus_v": 0,
+    "expected_current_fault": "MC_UNDER_VOLT 0x0004"
+  },
+  "wifi_commands": {
+    "report": "../startup_recheck_20261007/repeat_wifi_commands_706/report.json",
+    "pass": true,
+    "frequency_commands_hz": [5, 20, 0],
+    "final_stop_http": 200,
+    "outputs_off_confirmed": true,
+    "arm_commands": 0,
+    "start_commands": 0
+  },
+  "calibration": {"original_record_unchanged": true, "valid": true, "new_capture": false},
+  "active_pwm_of_current_pair_measured": false,
+  "motor_rotation_after_current_update_confirmed": false,
+  "qualified_nucleo_phase_current_telemetry": false,
+  "hv_release_approved": false,
+  "older_full_ready_to_flash_updated": false,
+  "git_push_performed": false
+}

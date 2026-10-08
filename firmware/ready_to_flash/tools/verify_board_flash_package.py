@@ -129,6 +129,7 @@ def main() -> int:
             "external_softstart_hil_validated",
             "ipm_sd_bkin_hardware_trip_validated",
             "motor_profile_is_real_acim",
+            "motor_profile_is_catalog_confirmed_acim",
             "generated_motor_configuration_matches_profile",
         }
         failed_checks = set(release.get("failed_checks", []))

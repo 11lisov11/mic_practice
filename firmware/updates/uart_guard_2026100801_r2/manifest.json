@@ -1,0 +1,862 @@
+{
+  "schema": "mic_ai.offline_uart_update.v1",
+  "generated_at": "2026-10-07T21:21:20.378942+00:00",
+  "builds": {
+    "uno_q": 2026100709,
+    "nucleo": 2026100801
+  },
+  "software_checks_pass": true,
+  "flashed_by_this_task": false,
+  "hardware_acceptance": false,
+  "hv_release_approved": false,
+  "uart_noise_physical_root_cause_proven": false,
+  "calibration_points_rewritten": false,
+  "older_packages_replaced": false,
+  "files": [
+    {
+      "file": "linux/web_hmi/flash_unoq_sketch_090.cfg",
+      "bytes": 450,
+      "sha256": "d83ab25f951733f02e5bd88cbac664f32d17b16d6f3f67500b7a3c76dc05f3c6"
+    },
+    {
+      "file": "linux/web_hmi/requirements.txt",
+      "bytes": 12,
+      "sha256": "2db2172e314f86716c5c45bb731f4e77d2eb626ba9b6d053ab564e82795c9341"
+    },
+    {
+      "file": "linux/web_hmi/server.py",
+      "bytes": 148178,
+      "sha256": "f4d746d3906d4b9d5482410caa3b79f43d67a671ff129114378c9aaf8087b981"
+    },
+    {
+      "file": "linux/web_hmi/static/app.js",
+      "bytes": 36464,
+      "sha256": "8ccce782140e81758f7e49681b57bfcba275e11613384404e837f582b0748373"
+    },
+    {
+      "file": "linux/web_hmi/static/index.html",
+      "bytes": 8314,
+      "sha256": "221368f5a5dad34e0112c834623e5fb9bd0d74f03e31665e60253e8889e404d2"
+    },
+    {
+      "file": "linux/web_hmi/static/style.css",
+      "bytes": 8833,
+      "sha256": "de37484a049de64405d29b11f20300a16d0d589ba0d76758d8b8489cebfd03a4"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "bytes": 40980,
+      "sha256": "b10b9cda5bc2cf7ed6329bef7c14b42527ac6c745f76a75f304bc945014b4275"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+      "bytes": 1889,
+      "sha256": "f9e0ea9bd8bd607bc1cdca5ffff128434180bed55582ad9d84e03cbc7da620c3"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "bytes": 2076668,
+      "sha256": "b83ef2e8a97cf5bca9d25d827c1e61623f70527d5ec0a47606c7bf38a25b7bc4"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "bytes": 115356,
+      "sha256": "27d8470990ea62d53c9d509e1d4d871542706f3204eb40f8ce73f95353aac0d9"
+    },
+    {
+      "file": "README_RU.txt",
+      "bytes": 4725,
+      "sha256": "80168da8e79ae575e4f06dec9b449e2f7faa06d80bb22f16948774b09d1dfec5"
+    },
+    {
+      "file": "reports/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build.log",
+      "bytes": 176912,
+      "sha256": "8eccf3e619c3adbf19c67e19294b35031b0fb2b99ae3b0d26572ce5d605d8563"
+    },
+    {
+      "file": "reports/mcsdk_release_preflight.json",
+      "bytes": 6685,
+      "sha256": "689df6d3b8b8ddf5828738d2930d80b47bd86161a1bb03d553b0ba9c9cbff842"
+    },
+    {
+      "file": "reports/regression/analyze_mcsdk_modulation_selftest.log",
+      "bytes": 108,
+      "sha256": "48c215a8729f94046927bfa306982cbb586f27f3b3eff4087b31911b8754d1e3"
+    },
+    {
+      "file": "reports/regression/as5600_hmi_selftest.log",
+      "bytes": 61,
+      "sha256": "fecce520c5eec1c5fdc713bfaf9e6604ea70a0968397e36364b08c128ae981c2"
+    },
+    {
+      "file": "reports/regression/as5600_wifi_readonly_probe_selftest.log",
+      "bytes": 60,
+      "sha256": "a388c83de23e0f37a2bd6d0e37d959ca43ac56c7b4b5a48bd7ef5dcaad4c830e"
+    },
+    {
+      "file": "reports/regression/audit_uart_noise_readonly_selftest.log",
+      "bytes": 55,
+      "sha256": "6bbb577dca975fe7c32ba3b79c7ec3bfbbffac16a11b0be839a845fed926fb59"
+    },
+    {
+      "file": "reports/regression/collect_wifi_telemetry_selftest.log",
+      "bytes": 109,
+      "sha256": "9fffdea0efcd3158e0ccb98821834c20fd1bae324487987a4e66293ade84ab8b"
+    },
+    {
+      "file": "reports/regression/fault_context_selftest.log",
+      "bytes": 126,
+      "sha256": "6aa7ea49831533491422777afa22a91ca342de9d9d7261e6edf6a047dd28e2be"
+    },
+    {
+      "file": "reports/regression/fault_diagnostics_selftest.log",
+      "bytes": 182,
+      "sha256": "86b97ae8ee8fbd017685bde73db780821daabe0b4fbf8e1181fc248f121b40e4"
+    },
+    {
+      "file": "reports/regression/install_vbus_hmi_fix_selftest.log",
+      "bytes": 54,
+      "sha256": "bde5c5fc6909282364c9dc5cc0c7480ea0a78bfb3548017f2201684041a9cbc1"
+    },
+    {
+      "file": "reports/regression/ipm_sd_irq_selftest/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/ipm_sd_irq_selftest/report.json",
+      "bytes": 631,
+      "sha256": "76609d961cab3583f41ae30ed88bbc8bcf4f96989f9c4123597853fbcd316b08"
+    },
+    {
+      "file": "reports/regression/ipm_sd_irq_selftest/run.log",
+      "bytes": 82,
+      "sha256": "5c8d891b9ff02485811489cbd6d42842a411d5d3d0408ffde29a9ab8446ed487"
+    },
+    {
+      "file": "reports/regression/ipm_sd_irq_selftest.log",
+      "bytes": 37,
+      "sha256": "c2cd59cd63eac282208c6572d26323cc4530373aeea1e2a62824432c8c1e35da"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest/diagnostic_candidate_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest/diagnostic_candidate_run.log",
+      "bytes": 27,
+      "sha256": "4cdd111bb932bfe52eacaea700c92f18ac3fd38f071864413a364f691bb1d0e3"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest/original_reproduces_bug_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest/original_reproduces_bug_run.log",
+      "bytes": 27,
+      "sha256": "4cdd111bb932bfe52eacaea700c92f18ac3fd38f071864413a364f691bb1d0e3"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest/report.json",
+      "bytes": 1196,
+      "sha256": "a61d0a8c09d6e965ec95026ba4fa2b2f42e9d1cf4c068b8afd874ece7536973e"
+    },
+    {
+      "file": "reports/regression/mcsdk_async_clear_diagnostics_selftest.log",
+      "bytes": 1196,
+      "sha256": "a61d0a8c09d6e965ec95026ba4fa2b2f42e9d1cf4c068b8afd874ece7536973e"
+    },
+    {
+      "file": "reports/regression/mcsdk_startup_ramp_selftest/report.json",
+      "bytes": 685,
+      "sha256": "49db0b6c4c0160873038ed0833df1f8be096a96a662f4b390792092d694ef007"
+    },
+    {
+      "file": "reports/regression/mcsdk_startup_ramp_selftest.log",
+      "bytes": 685,
+      "sha256": "49db0b6c4c0160873038ed0833df1f8be096a96a662f4b390792092d694ef007"
+    },
+    {
+      "file": "reports/regression/power_stage_readonly_audit_selftest.log",
+      "bytes": 107,
+      "sha256": "a8b891365bbb435bd7bed6c642219e70496046a553384837ec9931abce59a9b1"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/CRC_check_removed_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/CRC_check_removed_run.log",
+      "bytes": 31,
+      "sha256": "9212f7bcb7ae4c77a4498ac24298865b6b96c886c6be7a57230ddc502eb0956e"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/dirty_CLEAR_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/dirty_CLEAR_run.log",
+      "bytes": 54,
+      "sha256": "c5f8b838a67b4c0229a23803fcd85f8a853b59f3f7b23158ed599f188a8bb045"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/early_watchdog_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/early_watchdog_run.log",
+      "bytes": 41,
+      "sha256": "08b212e18f391858ffb88b34719d13988d4354a26955c8b877a188d4e0e0ca9f"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/late_settle_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/late_settle_run.log",
+      "bytes": 36,
+      "sha256": "e6111d732aedb47747256d6280697a8e474b2596ae4f145ee8a18aa734e8cf04"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/NE_detection_removed_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/NE_detection_removed_run.log",
+      "bytes": 43,
+      "sha256": "a2e01b335c443ff0ff8a9c644fa4e2629a7bf954bc139b1a8b193afe6220ea89"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/replay_allowed_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/replay_allowed_run.log",
+      "bytes": 37,
+      "sha256": "e0a4c0666df1d8fa38f7a1c4b99cbe263e8a1c0fdefc5b9512be3df77996ce01"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/report.json",
+      "bytes": 2213,
+      "sha256": "2f08794c17dd31b8753eff4d9d3d872aeeef75bab6bf50c3866a680f9dfc3389"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/run.log",
+      "bytes": 94,
+      "sha256": "d4090143cb9f68781b2738dff93aba29763a1d14f557962a90ae3aaa9802258c"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/start_failure_ignored_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/start_failure_ignored_run.log",
+      "bytes": 36,
+      "sha256": "e6111d732aedb47747256d6280697a8e474b2596ae4f145ee8a18aa734e8cf04"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/STOP_leaves_enabled_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/STOP_leaves_enabled_run.log",
+      "bytes": 22,
+      "sha256": "c9ca4cffd8472465083cdd43cde9f247c5b94c30aaa322385ead502d73ec297d"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/UART_error_queue_not_flushed_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/UART_error_queue_not_flushed_run.log",
+      "bytes": 68,
+      "sha256": "5cb414361780d60a230341bde235cd6b793244948bc2b4f19433db9c1b45ef3b"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/zero_frequency_start_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest/zero_frequency_start_run.log",
+      "bytes": 37,
+      "sha256": "a2f9d4798d7bd6ec10a7a528ae5b8fcc16b499f3b754c44fc80d468e38605a40"
+    },
+    {
+      "file": "reports/regression/production_mcsdk_link_dynamic_selftest.log",
+      "bytes": 2213,
+      "sha256": "2f08794c17dd31b8753eff4d9d3d872aeeef75bab6bf50c3866a680f9dfc3389"
+    },
+    {
+      "file": "reports/regression/report.json",
+      "bytes": 35415,
+      "sha256": "f18e5306ee8b31ead7e92ce3bbcb70fb8847181dc65abca927fd523db11eb7f2"
+    },
+    {
+      "file": "reports/regression/run_wifi_nucleo_pwm_bench_selftest.log",
+      "bytes": 125,
+      "sha256": "94e6907603c101e2389bbb0dc9e85bc548d685a2a7c8410789347a7a1a9bf563"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/error_bytes_queued_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/error_bytes_queued_run.log",
+      "bytes": 73,
+      "sha256": "f3c798c9d39bf3474a346990cf2268025ea1f4a77c310568333d4b096db95214"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/first_fault_overwritten_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/first_fault_overwritten_run.log",
+      "bytes": 69,
+      "sha256": "eb7d8d95f166e4f3cf9c1191e45cb93d8c1e9fbf1abeb1bbd881278dadd9c965"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/overflow_not_published_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/overflow_not_published_run.log",
+      "bytes": 65,
+      "sha256": "0cc1a3e6a5ecb5141fd7d7ec81d0dd0e1ea21b680a2a83a0f55d39f092302ac5"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/production_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/production_run.log",
+      "bytes": 69,
+      "sha256": "64b315c3f4c46b3d8ed4100acfaab267ef92b4646d3d27f14d832e22a84c5062"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/report.json",
+      "bytes": 1324,
+      "sha256": "8717c86b3ac4ee119a6a7a96e1baa52c2c4b678fe0628ab4abab62da8b9ea788"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/watchdog_one_ms_early_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest/watchdog_one_ms_early_run.log",
+      "bytes": 62,
+      "sha256": "c69457698aa2e6b24f575041e26d30e9aef1a073b22226e2f25e13c6c0e889d6"
+    },
+    {
+      "file": "reports/regression/uart_fifo_fault_stress_selftest.log",
+      "bytes": 1324,
+      "sha256": "8717c86b3ac4ee119a6a7a96e1baa52c2c4b678fe0628ab4abab62da8b9ea788"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/baseline_api_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/baseline_api_run.log",
+      "bytes": 120,
+      "sha256": "c1e764df27813d0023449939c3a8b56a36eae18ddbe857e535b42e67b7ffe39a"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/baseline_queue_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/baseline_queue_run.log",
+      "bytes": 88,
+      "sha256": "c49c88524663a78c1db6ae063f0ef61601490f81c154b71cba3cae33b074a7c4"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/commit_mask_mutation_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/commit_mask_mutation_run.log",
+      "bytes": 119,
+      "sha256": "fecd7a679403ca020eddbecea2154d90b6526ac9fa34d3be21809dc02e6add84"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/production_api_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/production_api_run.log",
+      "bytes": 118,
+      "sha256": "883dada81c69107c86163082c1f65d92a649b75fa58cd933252443abb1175332"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/production_queue_compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/production_queue_run.log",
+      "bytes": 85,
+      "sha256": "2ea6aa1c3397a9e7f8e739623deb5e3291a543fa15d7332b4c4b24d357a75209"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest/report.json",
+      "bytes": 1404,
+      "sha256": "3c78efa66adbb2f27e73dd7990a0952591c4a293996195b69fad38d8bcbf0f28"
+    },
+    {
+      "file": "reports/regression/uart_guard_release_selftest.log",
+      "bytes": 1404,
+      "sha256": "3c78efa66adbb2f27e73dd7990a0952591c4a293996195b69fad38d8bcbf0f28"
+    },
+    {
+      "file": "reports/regression/uno_matrix_renderer_selftest/compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "reports/regression/uno_matrix_renderer_selftest/report.json",
+      "bytes": 942,
+      "sha256": "f143c8b2ca1d0b57a84614af2c648629f9ca9425f060fc037d89c7764cb83459"
+    },
+    {
+      "file": "reports/regression/uno_matrix_renderer_selftest.log",
+      "bytes": 760,
+      "sha256": "543a946da7ddcff17be883dcd5449b5192edac23e7fd9feec916ccc383fa8e89"
+    },
+    {
+      "file": "reports/regression/uno_nucleo_mcsdk_contract_check.log",
+      "bytes": 476,
+      "sha256": "48c48f6e331c187aca9da6cac9208c377975ddc52c91b15f01d924d86c6f5945"
+    },
+    {
+      "file": "reports/regression/uno_supervisory_runtime_selftest/report.json",
+      "bytes": 126,
+      "sha256": "01db1ea53e1b9e64df495d8d15f01e380022f9020cfdccde49b1113ea6d0a965"
+    },
+    {
+      "file": "reports/regression/uno_supervisory_runtime_selftest.log",
+      "bytes": 114,
+      "sha256": "0a7d19aeba227b99507d41ee69b181d96b8261e2b5bf8d7bf48656c7b5a8126c"
+    },
+    {
+      "file": "reports/regression/vbus_calibration_identity_selftest.log",
+      "bytes": 91,
+      "sha256": "c30ccb83263d0a8b8f2f5cf90c8b1ed466b9d7bde9a1531ad20b9b3a0cae4b11"
+    },
+    {
+      "file": "reports/regression/verify_production_guard_semantics_selftest.log",
+      "bytes": 109,
+      "sha256": "9fffdea0efcd3158e0ccb98821834c20fd1bae324487987a4e66293ade84ab8b"
+    },
+    {
+      "file": "reports/regression/verify_production_wifi_idle_selftest.log",
+      "bytes": 108,
+      "sha256": "6ce19fe5c6e39322ca0b13f5b467573e2eeec70d41fbf64d3e414ddbe59845d6"
+    },
+    {
+      "file": "reports/regression/verify_wifi_command_path_selftest.log",
+      "bytes": 109,
+      "sha256": "ef8b6be13eafed5769f5b4675184f06f6051ede8eae5340b294b1d2938fb3569"
+    },
+    {
+      "file": "reports/regression/web_hmi_command_guard_selftest.log",
+      "bytes": 48085,
+      "sha256": "3300f6a9dc670e4cbb1986163add9c81429d9e1483a754ee1d988b1797c21a11"
+    },
+    {
+      "file": "reports/regression/web_hmi_control_access_selftest.log",
+      "bytes": 1502,
+      "sha256": "b152fb0b4dc9b8fb49c0bd49ff2a8fc4537c2df8b904a5ca1021829d7b1e4942"
+    },
+    {
+      "file": "reports/regression/wifi_http_via_wsl_selftest.log",
+      "bytes": 107,
+      "sha256": "4a203f958ef9d765ff1f89816631e1bdf553b4acf1d56449f1d10ad92bb46ff3"
+    },
+    {
+      "file": "reports/regression/wifi_motor_first_start_selftest.log",
+      "bytes": 55,
+      "sha256": "085f2e3c5048609f47df53d5140b23204d2ca0bd2fd42544846d4048cdb78ba6"
+    },
+    {
+      "file": "reports/source_audit.json",
+      "bytes": 386,
+      "sha256": "4e7758641e47ad16a2674fc3cab0c54712d9d78f7c2ba6f61d39ff14d1b2bf53"
+    },
+    {
+      "file": "source/nucleo/Inc/acim_lso_parameters.h",
+      "bytes": 3627,
+      "sha256": "705e7ba25d6fcbc73578a593d39b015497c1bc2bc98fd61467ca6253f10fea25"
+    },
+    {
+      "file": "source/nucleo/Inc/acim_motor_parameters.h",
+      "bytes": 3928,
+      "sha256": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce"
+    },
+    {
+      "file": "source/nucleo/Inc/acim_vf_parameters.h",
+      "bytes": 3581,
+      "sha256": "061dcb4b2d0f2fb88c25860ae6c520994a57924ab221c83c89fc0b280ddad326"
+    },
+    {
+      "file": "source/nucleo/Inc/aspep.h",
+      "bytes": 6321,
+      "sha256": "23cee28131c790d9b03cc5b59768f8f532ac5efbe1b84580afdabbe4c51f30ac"
+    },
+    {
+      "file": "source/nucleo/Inc/drive_parameters.h",
+      "bytes": 6143,
+      "sha256": "fea97b06ca7fd866d6f065d43dbf0a98653802400083f503d140a09327163b51"
+    },
+    {
+      "file": "source/nucleo/Inc/main.h",
+      "bytes": 3320,
+      "sha256": "a26f1845afeee97f811e6bcc48a8b241c7e3da193cf7846597429fb78f5f5585"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_api.h",
+      "bytes": 4187,
+      "sha256": "18d409ae438af9c5702368a3cde76ee9ad03dc4f22f7c365dbb57d960b4947a0"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_app_hooks.h",
+      "bytes": 1720,
+      "sha256": "d5cec4f9582c889fc5aa58c092dc9e437f1877a1e9c11478c5785a5d8aeb8376"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_config.h",
+      "bytes": 3640,
+      "sha256": "7566cf5b08780c79230c206f81446c01f15fb872859d6c5f9fe3abaa324ab8c9"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_config_common.h",
+      "bytes": 1647,
+      "sha256": "1b571407434b42e445ebcb86edde6d06e3a73fcae5cb958e20936f20af23d7ba"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_configuration_registers.h",
+      "bytes": 5139,
+      "sha256": "bc933b17c22086013c02fdbe65107f5dc024c48cb9616b8fac4a8637acc698c7"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_interface.h",
+      "bytes": 11175,
+      "sha256": "48397fd7477d525849b556e55478709f6ce6b1980347494125b61e8cb6f358a9"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_math.h",
+      "bytes": 8486,
+      "sha256": "5f234e9a489869b6d44a72897a4480e8fa22c10e6c0d92e549c7a83779dc70d3"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_parameters.h",
+      "bytes": 1275,
+      "sha256": "48d469955a484cc6c98e562efb1b76890b78d267e9636afd784153d0d72befe0"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_stm_types.h",
+      "bytes": 8016,
+      "sha256": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_tasks.h",
+      "bytes": 2374,
+      "sha256": "98e186c6efd11b94b919521cccbc016d3c64393aa2a54bf6f86a3efbfd1d5735"
+    },
+    {
+      "file": "source/nucleo/Inc/mc_type.h",
+      "bytes": 15683,
+      "sha256": "c18ca745443cf81d4823844ae74a054b4844a6db0e03b41ec212b5bceae2e4f3"
+    },
+    {
+      "file": "source/nucleo/Inc/mcp_config.h",
+      "bytes": 1899,
+      "sha256": "e74222334af85709c3a0fe658e0354d16eb1b96639e15b669a7996d203870518"
+    },
+    {
+      "file": "source/nucleo/Inc/motorcontrol.h",
+      "bytes": 1566,
+      "sha256": "09ed8670c7874c5c1c060c8d6a6406ffc39ce092d52710afa1d9ced4f0df5dcf"
+    },
+    {
+      "file": "source/nucleo/Inc/parameters_conversion.h",
+      "bytes": 9388,
+      "sha256": "cb63edc052b97d79507b6d6432cebaa5ee2e6e0b09e5c3404826b20773b52ef6"
+    },
+    {
+      "file": "source/nucleo/Inc/parameters_conversion_g4xx.h",
+      "bytes": 2158,
+      "sha256": "060a2a56d3c481519da84e8577e8e236916df5e1687ad6233989f3c4a56efe51"
+    },
+    {
+      "file": "source/nucleo/Inc/power_stage_parameters.h",
+      "bytes": 2888,
+      "sha256": "584de876b6f0446e304358af40bd6de27ee73987e1fea8dc8ab8e2631c275769"
+    },
+    {
+      "file": "source/nucleo/Inc/pwm_common.h",
+      "bytes": 2633,
+      "sha256": "a888d5de2a746084a079fa2c623422082df7bd5fac1033675bfe70754094cfc4"
+    },
+    {
+      "file": "source/nucleo/Inc/pwm_curr_fdbk.h",
+      "bytes": 20475,
+      "sha256": "53343e47f32e757f604c100ac1b4ca7b91e90ef25ebef836af553c0b93165695"
+    },
+    {
+      "file": "source/nucleo/Inc/register_interface.h",
+      "bytes": 20037,
+      "sha256": "0a88eab89467ea87b39f1bcfd4909cfe5ea2dd95251bece62282b25ac3b81366"
+    },
+    {
+      "file": "source/nucleo/Inc/regular_conversion_manager.h",
+      "bytes": 3270,
+      "sha256": "48a02361a01ed49cbf423c29c15390c967ab4e692c1f917aa33b341e38f5a765"
+    },
+    {
+      "file": "source/nucleo/Inc/speed_torq_ctrl.h",
+      "bytes": 11794,
+      "sha256": "1528c37d930544811bd4f892a540a07f34b17daa72d496f21363617b59bdcf08"
+    },
+    {
+      "file": "source/nucleo/Inc/stm32g4xx_hal_conf.h",
+      "bytes": 13309,
+      "sha256": "c5598bd7c8ece78bfbeae24b004960fa39a5eba159c77bd59699602205d1c7bf"
+    },
+    {
+      "file": "source/nucleo/Inc/stm32g4xx_it.h",
+      "bytes": 1667,
+      "sha256": "b953df8ea9e6664943b82a5130e5c42cab255b358f559cd1369da3a3da469c0e"
+    },
+    {
+      "file": "source/nucleo/Src/aspep.c",
+      "bytes": 35867,
+      "sha256": "d1457af7f18d175ba2c6f71d842565f5a60ff106ad49cefe4ed165e65422eac8"
+    },
+    {
+      "file": "source/nucleo/Src/hf_registers.c",
+      "bytes": 4041,
+      "sha256": "e37d173586cc506b108682873f793c8c8f1430414b28117df920f4644cf824ca"
+    },
+    {
+      "file": "source/nucleo/Src/main.c",
+      "bytes": 41530,
+      "sha256": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc"
+    },
+    {
+      "file": "source/nucleo/Src/mc_api.c",
+      "bytes": 12721,
+      "sha256": "900ec81e9ebfca6050102ede5c8066502619bcfc8f4a54653e1c1789f4cd5a6c"
+    },
+    {
+      "file": "source/nucleo/Src/mc_app_hooks.c",
+      "bytes": 2156,
+      "sha256": "112078bce09521dd46068946298e85f5425caf80fd09d5a74b770c9edaa1012d"
+    },
+    {
+      "file": "source/nucleo/Src/mc_config.c",
+      "bytes": 11905,
+      "sha256": "c79ec1982e7b69638cc02174bb05d5d0b9abb5ddbb4d562e24575c0cc131367e"
+    },
+    {
+      "file": "source/nucleo/Src/mc_configuration_registers.c",
+      "bytes": 3012,
+      "sha256": "f4c592764ce85fde752d4b906b1b3ab705a4c47fbc50f14ccb52c28de987bc06"
+    },
+    {
+      "file": "source/nucleo/Src/mc_interface.c",
+      "bytes": 40117,
+      "sha256": "d2c4d0638418df5842f11f52cc348993e0c4c3824899c54a7d51e3a2f9e4c85c"
+    },
+    {
+      "file": "source/nucleo/Src/mc_math.c",
+      "bytes": 23071,
+      "sha256": "9dec5a6e02cd505b5d90bb7355818f5d82ce34202438d6be959d5bdd4e9d028b"
+    },
+    {
+      "file": "source/nucleo/Src/mc_parameters.c",
+      "bytes": 5635,
+      "sha256": "2792204a3bfa35f8c8ce8b62713f208ff7cae10b6ab43a820c4ec74ae43d81cc"
+    },
+    {
+      "file": "source/nucleo/Src/mc_tasks.c",
+      "bytes": 23339,
+      "sha256": "af2aa4e3e2f260497d5b5177d720f5481313706214ce985920b3d79a793d5603"
+    },
+    {
+      "file": "source/nucleo/Src/mcp.c",
+      "bytes": 12142,
+      "sha256": "1770301be16a613444b8bd0405286e9783693b8157d8637f619466414f2b16ab"
+    },
+    {
+      "file": "source/nucleo/Src/mcp_config.c",
+      "bytes": 3603,
+      "sha256": "a08d6f36e2d7e954f05dca78eba658bb95fef036bba927b2721f4d6b204604b4"
+    },
+    {
+      "file": "source/nucleo/Src/motorcontrol.c",
+      "bytes": 2064,
+      "sha256": "e00f3d374de2ff223bc1d7ce1a8d15fabcacd2d483932d9c5c5b58abd1e42baf"
+    },
+    {
+      "file": "source/nucleo/Src/pwm_common.c",
+      "bytes": 4321,
+      "sha256": "260b90e860f2586d67da7606f7e56762db48287a69d831b2c6d3556cff7779d3"
+    },
+    {
+      "file": "source/nucleo/Src/pwm_curr_fdbk.c",
+      "bytes": 30800,
+      "sha256": "9db0a617a2426b10de7f0342c6c2b94fbd79b9012e06d4907bb7c68f52d40b1c"
+    },
+    {
+      "file": "source/nucleo/Src/regular_conversion_manager.c",
+      "bytes": 11344,
+      "sha256": "d67927c3140105adf4244c5f1e2c7e5679f301dea222e934e5838a8e376ac780"
+    },
+    {
+      "file": "source/nucleo/Src/speed_torq_ctrl.c",
+      "bytes": 22518,
+      "sha256": "2f1ea2a34f5ab11c3840c18e7d0caeccc6dd61421d60c19124606c71512a6f1c"
+    },
+    {
+      "file": "source/nucleo/Src/stm32g4xx_hal_msp.c",
+      "bytes": 15287,
+      "sha256": "f47f02cd58339954a61d801934f37060518043767d6de3dfca3034da0cb1afb6"
+    },
+    {
+      "file": "source/nucleo/Src/stm32g4xx_it.c",
+      "bytes": 2757,
+      "sha256": "f63298cec253fa04767a0d3ed5861cd8c30118107f3039eb7c0a3f016aa6c14c"
+    },
+    {
+      "file": "source/nucleo/Src/stm32g4xx_mc_it.c",
+      "bytes": 8901,
+      "sha256": "7ef5a77a8c4ff2863fb8e588647ea4c9cdbe1702bca82438f90bccca3684c3e6"
+    },
+    {
+      "file": "source/nucleo/Src/sync_registers.c",
+      "bytes": 22581,
+      "sha256": "e4c72fa23cda329a48738f12252def4e2eed3155726cbd54a4fff9a438064636"
+    },
+    {
+      "file": "source/nucleo/Src/system_stm32g4xx.c",
+      "bytes": 10446,
+      "sha256": "1de96c381d922635dabc0836d315d66c99b4e9d4a407fef6ee6f5c4e32b0791a"
+    },
+    {
+      "file": "source/nucleo/Src/usart_aspep_driver.c",
+      "bytes": 5807,
+      "sha256": "d4d1757589ab5e96e51663055d02700ae98c784c48fd7d76bfadff950716be4d"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/as5600_teacher.cpp",
+      "bytes": 2129,
+      "sha256": "cf69c6565634892c0e6dbc8417003dcea0f0bfff970a18fa786047ed3cc87155"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/as5600_teacher.h",
+      "bytes": 2836,
+      "sha256": "bb37710d535e1bc910677c8b0104f07ad983edbda263f97940249cd7b185601c"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/id_ref_lut_motor1.h",
+      "bytes": 2037,
+      "sha256": "b2a7b76a7a0ce0f04f4ff9f79ed752b4b148d4ea44b44e9d76d08f7b930efabc"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/mcsdk_supervisory.h",
+      "bytes": 1224,
+      "sha256": "20e7ecdac00f7ab7ca8a9389d329ca2ea5bb1fa2484cd59928a6f4568330d53c"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/nucleo_fault_diagnostics.h",
+      "bytes": 1689,
+      "sha256": "294c3b7eb40002889b82dd107c69a54856ee25bf584a31b41fffeb73f6a45dec"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/superseded_reply.h",
+      "bytes": 887,
+      "sha256": "a53d0c8164975def71c2ef4c7cadd7ffc6d89df9fb82eba826bf64f12eac034a"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/uno_q_control.h",
+      "bytes": 1790,
+      "sha256": "6301d872ffae4965fe9aeaae12ddabb04e79b067d998b0fbcdc310f87e3dc77b"
+    },
+    {
+      "file": "source/UNOQ_MOTOR/UNOQ_MOTOR.ino",
+      "bytes": 131748,
+      "sha256": "b9640c393957f9997cdb6b635b87bc8c8a4513824d51c5fdd4b9bf46b11098e9"
+    },
+    {
+      "file": "tools/install_vbus_hmi_fix_remote.py",
+      "bytes": 8072,
+      "sha256": "9da990e278c0f4f5099c5e61ddd52c6f8c1003fe4c4a5cc14782b8d6130a172c"
+    },
+    {
+      "file": "tools/package_uart_guard_update.py",
+      "bytes": 18375,
+      "sha256": "96aec47d6649667d7ddadd998bbae3a286b30f1ea025f2f595112a15ed28ca53"
+    },
+    {
+      "file": "tools/uart_update_regression.py",
+      "bytes": 4574,
+      "sha256": "e0dc3c8a9b7dbf270204b4d62c2513f92c8f50220bf71adbc44668b2d3d914fc"
+    },
+    {
+      "file": "tools/verify_unoq_sketch.cfg",
+      "bytes": 567,
+      "sha256": "e8c3f1c0831cf26674a4d352475398ab25ecd3f8024d988f713de8f4567fdeb0"
+    },
+    {
+      "file": "uno_q/unoq_mcsdk_scalar.build-manifest.json",
+      "bytes": 1651,
+      "sha256": "654a5a6e6e4b949f0c76a112ec13cb2c164b9a5d06a133a6f6e10790002e1a14"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.bin",
+      "bytes": 55388,
+      "sha256": "d25994468f0597fadaf3f4db1c5357f7eb3209d78e092883a96d534e940956c3"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf",
+      "bytes": 127444,
+      "sha256": "5068ebe6ff0d022cb3a861309cfebfe53258fdaf0540e361f502fa9de0d85ae1"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf-zsk.bin",
+      "bytes": 127444,
+      "sha256": "8390249e06eae200c793b8652fe37f7476ba8f67d3ac3338154ba9a97a76c06b"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.hex",
+      "bytes": 145727,
+      "sha256": "e91c63ecd919a725ee44ef59073c3af1ce0b2fd829456bdefc4952ab792ff0d7"
+    }
+  ]
+}

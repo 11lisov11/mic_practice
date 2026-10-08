@@ -173,7 +173,8 @@ def source_errors(
         (r"USE_NUCLEO_UART_FALLBACK\s*=\s*true", "uno_uart_bridge_disabled"),
         (r"BP_VER\s*=\s*0x02", "uno_protocol_version_not_v2"),
         (r"RPC_SCHEMA_VERSION\s*=\s*3U", "uno_rpc_schema_not_v3"),
-        (r"mp_tx_array\(79\)", "uno_rpc_result_length_not_79"),
+        (r"FW_BUILD_ID\s*=\s*2026100804U", "uno_build_identity_mismatch"),
+        (r"mp_tx_array\(91\)", "uno_rpc_diagnostic_extension_missing"),
         (r"MC_TELEMETRY_FLAG_FW_BUILD_VALID\s*=\s*0x10", "uno_nucleo_build_flag_missing"),
         (r"g_bp_fw_build\s*=\s*\(uint32_t\)rx\[23\]", "uno_nucleo_build_decode_missing"),
         (r"if\s*\(rx\[2\]\s*!=\s*BP_VER\)\s*return false", "uno_does_not_validate_reply_version"),
@@ -184,15 +185,19 @@ def source_errors(
         (
             r"g_nucleo_waiting_rsp\s*=\s*true;\s*"
             r"g_nucleo_waiting_seq\s*=\s*seq;\s*"
+            r"g_nucleo_waiting_clear\s*=\s*clear_eff;\s*"
+            r"(?:const uint32_t timing_tx_begin = micros\(\);\s*const size_t timing_written = )?"
             r"NUCLEO_SERIAL\.write\(pkt, sizeof\(pkt\)\)",
             "uno_does_not_arm_reply_sequence_before_uart_write",
         ),
+        (r"const bool clear_ack = unoq_clear_reply_ack", "uno_clear_missing_correlated_ack"),
+        (r"if \(clear_ack \|\| \(!require_sequence && !fault\)\)", "uno_clear_repeats_until_physical_fault_removed"),
         (
             r"g_nucleo_waiting_rsp\s*&&\s*"
             r"nucleo_check_reply\(buf, true, g_nucleo_waiting_seq\)",
             "uno_uart_parser_accepts_unsolicited_reply",
         ),
-        (r"if\s*\(g_io_test_mode\)\s*\{\s*enable_eff\s*=\s*false", "uno_io_test_can_drive_mcsdk"),
+        (r"if\s*\(g_io_test_mode \|\| unoq_mcsdk_zero_stop\(true, g_freq_cmd\)\)\s*\{\s*enable_eff\s*=\s*false", "uno_io_test_can_drive_mcsdk"),
         (r"if\s*\(USE_EXTERNAL_PWM\)\s*\{\s*g_pwm_outputs_active\s*=\s*true;\s*nucleo_send_pwm\(d_u, d_v, d_w, true\);\s*return", "uno_pwm_not_routed_only_to_nucleo"),
     ):
         require(uno, pattern, name, errors)
@@ -200,23 +205,25 @@ def source_errors(
     for pattern, name in (
         (r"UNO_FRAME_LEN\s*=\s*32U", "nucleo_frame_length_not_32"),
         (r"UNO_PROTOCOL_VERSION\s*=\s*0x02U", "nucleo_protocol_version_not_v2"),
-        (r"MIC_NUCLEO_FW_BUILD_ID\s+2026091401UL", "nucleo_build_identity_missing"),
+        (r"MIC_NUCLEO_FW_BUILD_ID\s+2026100801UL", "nucleo_build_identity_mismatch"),
         (r"reply\[23\].*?reply\[24\].*?reply\[25\].*?reply\[26\]", "nucleo_build_identity_reply_missing"),
         (r"reply\[29\]\s*=\s*UNO_TELEMETRY_FW_BUILD_VALID", "nucleo_build_identity_flag_missing"),
         (r"UNO_LINK_TIMEOUT_MS\s*=\s*300U", "nucleo_timeout_not_300ms"),
         (r"UNO_SPEED_RAMP_MS\s*=\s*3000U", "nucleo_first_spin_ramp_not_3000ms"),
         (r"GPIO_PIN_6\s*\|\s*GPIO_PIN_7", "nucleo_usart1_pins_missing"),
         (r"GPIO_AF7_USART1", "nucleo_usart1_af_missing"),
+        (r"void USART1_IRQHandler\(void\).*?uno_rx_push\(byte\)", "nucleo_irq_rx_queue_missing"),
+        (r"HAL_UARTEx_EnableFifoMode.*?HAL_NVIC_SetPriority\(USART1_IRQn, 3U, 0U\).*?UART_IT_RXNE.*?UART_IT_ERR", "nucleo_uart_fifo_or_irq_configuration_missing"),
         (
             r"UART_FLAG_ORE\s*\|\s*UART_FLAG_NE\s*\|\s*UART_FLAG_FE\s*\|\s*UART_FLAG_PE.*?"
             r"__HAL_UART_CLEAR_OREFLAG.*?__HAL_UART_CLEAR_NEFLAG.*?"
             r"__HAL_UART_CLEAR_FEFLAG.*?__HAL_UART_CLEAR_PEFLAG.*?"
             r"parser_state\s*=\s*0U.*?parser_index\s*=\s*0U.*?"
-            r"uno_latch_fault\(UNO_FAULT_INTERNAL\);\s*return;",
+            r"uno_latch_fault_reason\(UNO_FAULT_INTERNAL, reason\);\s*return true;",
             "nucleo_uart_errors_not_fail_closed",
         ),
         (
-            r"/\* USER CODE BEGIN 2 \*/\s*/\* Keep the external UNO Q transport outside generated peripheral lists\. \*/\s*MX_USART1_UART_Init\(\);\s*uno_link_init\(\);",
+            r"/\* USER CODE BEGIN 2 \*/\s*/\* Keep the external UNO Q transport outside generated peripheral lists\. \*/\s*uno_link_init\(\);\s*MX_USART1_UART_Init\(\);",
             "nucleo_usart1_init_not_regeneration_safe",
         ),
         (r"if\s*\(!uno_service_fields_are_zero\(frame\)\)", "nucleo_service_fields_not_rejected"),
@@ -229,7 +236,7 @@ def source_errors(
         ),
         (
             r"if\s*\(\(flags\s*&\s*UNO_FLAG_ESTOP\)\s*!=\s*0U\).*?"
-            r"uno_latch_fault\(UNO_FAULT_ESTOP\);\s*return;.*?"
+            r"uno_latch_fault_reason\(UNO_FAULT_ESTOP, UNO_DIAG_ESTOP\);\s*return;.*?"
             r"if\s*\(uno_link\.fault_latched\)\s*\{\s*uno_stop_motor\(\);\s*return;\s*\}",
             "nucleo_latched_fault_can_bypass_clear",
         ),
@@ -237,12 +244,17 @@ def source_errors(
             r"uno_link\.link_seen\s*&&\s*flags\s*==\s*UNO_FLAG_ENABLE\s*&&\s*"
             r"mode\s*==\s*UNO_MODE_SCALAR\s*&&\s*frame\[5\]\s*==\s*uno_link\.last_seq.*?"
             r"uno_saturating_increment\(&uno_link\.bad_count\);\s*"
-            r"uno_latch_fault\(UNO_FAULT_INTERNAL\);\s*return;",
+            r"uno_latch_fault_reason\(UNO_FAULT_INTERNAL, UNO_DIAG_REPLAY\);\s*return;",
             "nucleo_duplicate_enable_refreshes_watchdog",
         ),
         (r"flags\s*!=\s*UNO_FLAG_ENABLE\s*\|\|\s*mode\s*!=\s*UNO_MODE_SCALAR", "nucleo_legacy_modes_not_rejected"),
         (r"MC_ProgramSpeedRampMotor1", "nucleo_does_not_apply_speed_api"),
         (r"MC_StartMotor1", "nucleo_does_not_start_with_mcsdk_api"),
+        (r"uno_handle_valid_frame\(const uint8_t \*frame\)\s*\{\s*if \(uno_abort_pending_rx_fault\(\)\) return;", "nucleo_frame_dispatch_rx_fault_guard_missing"),
+        (r"start_state = MC_GetSTMStateMotor1\(\);\s*if \(uno_abort_pending_rx_fault\(\)\) return;.*?"
+         r"HAL_NVIC_DisableIRQ\(USART1_IRQn\);\s*const bool rx_fault_pending = uno_rx_errors != 0U \|\| uno_rx_overflow != 0U;.*?"
+         r"if \(!rx_fault_pending\).*?MC_ProgramSpeedRampMotor1.*?MC_StartMotor1.*?HAL_NVIC_EnableIRQ\(USART1_IRQn\);\s*"
+         r"if \(uno_abort_pending_rx_fault\(\)\) return;", "nucleo_start_rx_fault_guard_missing"),
         (r"MC_StopMotor1", "nucleo_does_not_stop_with_mcsdk_api"),
         (r"MC_AcknowledgeFaultMotor1", "nucleo_does_not_ack_mcsdk_fault"),
         (r"#define\s+MIC_EXTERNAL_SOFTSTART_CONFIGURED\s+1", "nucleo_external_softstart_missing"),
@@ -253,7 +265,7 @@ def source_errors(
         (r"reply\[14\]\s*=\s*0U", "nucleo_reserved_precharge_bit_not_forced_off"),
         (r"uno_update_softstart_state\(now_ms\).*?if\s*\(!uno_link\.softstart_ready\)", "nucleo_softstart_readiness_not_enforced"),
         (r"reply\[17\].*?reply\[18\].*?reply\[19\].*?reply\[20\].*?reply\[21\].*?reply\[29\]", "nucleo_mcsdk_telemetry_reply_missing"),
-        (r"HAL_UART_Transmit.*?uno_saturating_increment\(&uno_link\.bad_count\);\s*uno_latch_fault\(UNO_FAULT_INTERNAL\)", "nucleo_tx_failure_does_not_latch_fault"),
+        (r"HAL_UART_Transmit.*?uno_saturating_increment\(&uno_link\.bad_count\);\s*uno_latch_fault_reason\(UNO_FAULT_INTERNAL, UNO_DIAG_TX\)", "nucleo_tx_failure_does_not_latch_fault"),
     ):
         require(nucleo, pattern, name, errors)
 

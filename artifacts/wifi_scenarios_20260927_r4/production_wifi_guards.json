@@ -1,0 +1,67 @@
+{
+  "scope": "production zero-bus rejection only",
+  "before": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 1,
+    "bp_bad_cnt": 1,
+    "bp_age_ms": 14,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026091401,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "checks": [
+    {
+      "name": "start_blocked_at_zero_bus",
+      "http_status": 409,
+      "pass": true,
+      "reason": "motor-controller fault is active: mc_fault=5"
+    },
+    {
+      "name": "hv_arm_blocked_without_calibration",
+      "http_status": 409,
+      "pass": true,
+      "reason": "HV Vbus calibration is incomplete; capture a known-voltage point before arming"
+    }
+  ],
+  "watchdog_log_lines": [
+    "2026-09-27 16:36:49 OPERATOR_HEARTBEAT_LOST age=3.30s stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control"
+  ],
+  "after": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "estop": 0,
+    "vdc": 0.0,
+    "bp_status": 9,
+    "bp_fault": 5,
+    "bp_bad": 1,
+    "bp_bad_cnt": 1,
+    "bp_age_ms": 17,
+    "bp_vbus_raw": 0,
+    "bp_vbus_valid": 1,
+    "bp_softstart_ready": 0,
+    "bp_temp_c": 30.0,
+    "bp_temp_valid": 1,
+    "bp_mcsdk_telemetry": 1,
+    "fw_build": 2026091401,
+    "mc_fw_build": 2026091401,
+    "rpc_schema_version": 3,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0
+  },
+  "pass": true
+}

@@ -58,7 +58,7 @@ powershell -ExecutionPolicy Bypass -File C:\mic_practice\tools\regenerate_mcsdk_
 5. Адаптер использует прямой `USART1`: `PB6/TX -> UNO D0/RX`, `UNO D1/TX -> PB7/RX`, общая `HOT_GND`. При timeout 300 мс, E-stop или fault он обязан выполнить API-останов MCSDK и потребовать новую явную команду запуска.
 6. После повторной генерации из `.ioc` обязательно запустить `tools/uno_nucleo_mcsdk_contract_check.py` и пересобрать оба образа: USART1 добавлен как пользовательская часть приложения, а не как настройка Motor Control Workbench.
 
-Для АИР56B2, соединённого физически в `Delta` с инвертором `220 В line-to-line`, каталожное напряжение одной обмотки равно `220 В`, но в MCSDK V/F должно стоять `127 В phase-to-neutral` (`220 / sqrt(3)`). Это не смена соединения: это эквивалентное представление треугольника внутри трёхфазной модели контроллера. Подготовлен предварительный каталожный профиль: `docs/mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json`. Он не считается профилем конкретного экземпляра до приложения фото шильдика, хэша и результатов идентификации.
+Для АИР56B2, соединённого физически в `Delta` с инвертором `220 В line-to-line`, каталожное напряжение одной обмотки равно `220 В`, но в MCSDK V/F должно стоять `127 В phase-to-neutral` (`220 / sqrt(3)`). Это не смена соединения: это эквивалентное представление треугольника внутри трёхфазной модели контроллера. Паспортный профиль `docs/mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json` допустим только для V/f-этапа; он не содержит измеренной модели для FOC.
 
 ## Что положить в пакет
 
@@ -78,12 +78,13 @@ powershell -ExecutionPolicy Bypass -File C:\mic_practice\tools\regenerate_mcsdk_
 ```powershell
 py -3 C:\mic_practice\tools\mcsdk_release_preflight.py `
   --project C:\path\to\generated_mcsdk_project `
+  --control-mode foc `
   --motor-profile C:\path\to\actual_motor.json `
   --artifacts C:\path\to\generated_mcsdk_project\Debug `
   --output C:\path\to\generated_mcsdk_project\Debug\mcsdk_release_preflight.json
 ```
 
-Gate проверяет: фактический `STM32G431RB` в `.ioc`, маркеры `NUCLEO-G431RB` (либо `IHM09M2`), `IPM15B`, `ACIM`, реальный паспортный профиль двигателя и наличие согласованного набора `ELF/BIN/HEX` больше 1 KiB. Для профиля обязательны точная маркировка, соединение обмоток, линейное и фазное напряжения, ток, частота, число пар полюсов и номинальная скорость. Также обязательны измеренные `Rs`, `Rr`, `Lls`, `Llr`, `Lm`, инерция и ссылка на протокол измерения: именно эти величины сопоставляются с `M1_RS`, `RR`, `LLS`, `LLR`, `LMS`, `WB_UI_INERTIA` в `.ioc`.
+Gate проверяет: фактический `STM32G431RB` в `.ioc`, маркеры `NUCLEO-G431RB` (либо `IHM09M2`), `IPM15B`, `ACIM`, профиль двигателя и согласованный набор `ELF/BIN/HEX` больше 1 KiB. Для V/f указать `--control-mode vf`: принимается оператором подтверждённая модель по официальному паспорту IEK, но не случайный каталоговый кандидат; измеренные параметры FOC не требуются. Для FOC указать `--control-mode foc` (режим по умолчанию): обязательны измеренные `Rs`, `Rr`, `Lls`, `Llr`, `Lm`, инерция и протокол измерения, а величины сопоставляются с `.ioc`. Оба режима сохраняют обязательные аппаратные проверки soft-start и BKIN.
 
 Дополнительно gate статически проверяет, что `STEVAL J2-1 -> IHM09M2 J7-1` приходит на `PA6/TIM1_BKIN`, break активен низким уровнем и автоматическое восстановление PWM запрещено. Физическое подтверждение принимается только отдельным протоколом `mic_ai.ipm_sd_bkin_hil.v1`, привязанным SHA-256 к конкретному HEX и файлу Saleae. Порядок испытания приведён в `docs/IPM_SD_BKIN_HIL_RU.md`.
 

@@ -2,6 +2,13 @@
 
 #include <stdint.h>
 
+static inline uint8_t unoq_clear_reply_ack(
+    uint8_t sequence_matched, uint8_t sent_clear, uint8_t mode, uint8_t status) {
+  // Physical faults may persist after CLEAR; only acknowledge its delivery.
+  // MODE_OFF and both ENABLED/PWM_ACTIVE low are mandatory.
+  return sequence_matched && sent_clear && mode == 0U && (status & 0x22U) == 0U;
+}
+
 typedef struct {
   uint8_t enable_ai;
   uint8_t gated;

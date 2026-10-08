@@ -1,0 +1,76 @@
+{
+  "schema": "mic.unoq_as5600_qualification.v1",
+  "uno_q_build": 2026100612,
+  "nucleo_build": 2026100601,
+  "bus": "I2C2 PB10/D21 SCL; PB11/D20 SDA",
+  "bus_frequency_hz": 100000,
+  "physical_sensor_validated": false,
+  "powered_motor_validated": false,
+  "flash_readback_verified": true,
+  "host_decoder": {
+    "pass": true,
+    "cases": 1048589
+  },
+  "host_decoder_exit": 0,
+  "tests": [
+    {
+      "tool": "as5600_hmi_selftest.py",
+      "exit_code": 0,
+      "pass": true
+    },
+    {
+      "tool": "uno_nucleo_mcsdk_contract_check.py",
+      "exit_code": 0,
+      "pass": true
+    },
+    {
+      "tool": "web_hmi_command_guard_selftest.py",
+      "exit_code": 0,
+      "pass": true
+    },
+    {
+      "tool": "capture_as5600_teacher_dataset_selftest.py",
+      "exit_code": 0,
+      "pass": true
+    },
+    {
+      "tool": "verify_production_guard_semantics_selftest.py",
+      "exit_code": 0,
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "path": "C:\\mic_practice\\UNOQ_MOTOR\\UNOQ_MOTOR.ino",
+      "sha256": "6D7230C2F917671AC82849EAA1D2084A04F62F9AA8376C7C499DF093951C5231"
+    },
+    {
+      "path": "C:\\mic_practice\\UNOQ_MOTOR\\as5600_teacher.h",
+      "sha256": "BB37710D535E1BC910677C8B0104F07AD983EDBDA263F97940249CD7B185601C"
+    },
+    {
+      "path": "C:\\mic_practice\\UNOQ_MOTOR\\as5600_teacher.cpp",
+      "sha256": "CF69C6565634892C0E6DBC8417003DCEA0F0BFFF970A18FA786047ED3CC87155"
+    },
+    {
+      "path": "C:\\mic_practice\\web_hmi\\server.py",
+      "sha256": "FBA2299DB6882472BC100E2BD820D2911D9B7DB801DA50DE49D0A4627126B98C"
+    },
+    {
+      "path": "C:\\mic_practice\\web_hmi\\static\\app.js",
+      "sha256": "EA7DE3C3D94DB403B38FBEBDDC80E6BA9BF66868079C67570DEC3FAD13EF099C"
+    },
+    {
+      "path": "C:\\mic_practice\\artifacts\\unoq_as5600_20261006\\candidate_612\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "sha256": "3118E02357D80F2C248A7B410831B66807BDAB9F80FFD1002FBA2A4180DE305E"
+    }
+  ],
+  "live_report": "live_612_r1/report.json",
+  "known_issues": [
+    "AS5600 has not answered at 0x36; enc_init_error=0, SCL=HIGH, SDA=HIGH, enc_io_error=-5",
+    "Telemetry reports 9 V while operator confirms mains disconnected and meter within 0..2 V; discrepancy unresolved",
+    "Firmware identity change invalidates previously accepted Vbus calibration",
+    "Older generated wiring sheets show Qwiic; current reader is I2C2 header; see docs/FIRMWARE_STAGES_RU.md",
+    "Ready-to-flash release packages are not yet updated to this sensor candidate"
+  ]
+}

@@ -1,0 +1,46 @@
+--- a/mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Src/main.c
++++ b/mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV/Src/main.c
+@@ -448,7 +448,10 @@
+   }
+ }
+ 
++static bool uno_abort_pending_rx_fault(void);
++
+ static void uno_handle_valid_frame(const uint8_t *frame) {
++  if (uno_abort_pending_rx_fault()) return;
+   const uint32_t now_ms = HAL_GetTick();
+   const uint8_t flags = frame[3];
+   const uint8_t mode = frame[4];
+@@ -600,8 +603,7 @@
+   uno_rx_errors = uno_rx_overflow = 0U;
+ }
+ 
+-static void uno_link_poll(void) {
+-  uno_update_softstart_state(HAL_GetTick());
++static bool uno_abort_pending_rx_fault(void) {
+   /* Mask only USART1; ADC/TIM protection IRQs stay enabled. */
+   HAL_NVIC_DisableIRQ(USART1_IRQn);
+   const uint8_t errors = uno_rx_errors;
+@@ -618,10 +620,19 @@
+     uno_link.parser_index = 0U;
+     uno_saturating_increment(&uno_link.bad_count);
+     uno_latch_fault_reason(UNO_FAULT_INTERNAL, reason);
+-    return;
+-  }
++    return true;
++  }
++  return false;
++}
++
++static void uno_link_poll(void) {
++  uno_update_softstart_state(HAL_GetTick());
++  if (uno_abort_pending_rx_fault()) return;
+   uint8_t byte;
+-  while (uno_rx_pop(&byte)) uno_consume_byte(byte);
++  while (uno_rx_pop(&byte)) {
++    if (uno_abort_pending_rx_fault()) return;
++    uno_consume_byte(byte);
++  }
+   if (uno_link.command_enabled && !uno_link.softstart_ready) {
+     uno_latch_fault_reason(UNO_FAULT_INTERNAL, UNO_DIAG_BUS);
+   }

@@ -107,10 +107,14 @@ def main() -> int:
         and "void TIMx_BRK_M1_IRQHandler(void)" in irq
         and "LL_TIM_IsActiveFlag_BRK(TIM1)" in irq,
     )
+    break_handler = re.search(r"void TIMx_BRK_M1_IRQHandler\(void\)\s*\{(.*?)\n\}", irq, re.S)
+    check("ipm_sd_is_driver_protection_not_overvoltage",
+          break_handler is not None and "PWMC_DP_Handler(" in break_handler[1]
+          and "PWMC_OVP_Handler(" not in break_handler[1])
     check(
         "rpc_v3_is_append_only_and_vf_only",
         "static const uint8_t RPC_SCHEMA_VERSION = 3U;" in uno
-        and "mp_tx_array(79);" in uno
+        and "mp_tx_array(91);" in uno
         and "mp_tx_int(0);  // RPC index 74: legacy precharge_managed, always false." in uno
         and "mp_tx_int((int32_t)RPC_SCHEMA_VERSION);" in uno
         and "mp_tx_int((int32_t)MC_CAP_VF);" in uno
@@ -137,16 +141,18 @@ def main() -> int:
         and "#define TELEMETRY_FLAG_VBUS_VALID 0x40" in proto
         and "#define TELEMETRY_FLAG_MCSDK_UNITS 0x80" in proto
         and "#define TELEMETRY_FLAG_FW_BUILD_VALID 0x10" in proto
-        and "#define MIC_NUCLEO_FW_BUILD_ID 2026091401UL" in main_c
+        and "#define MIC_NUCLEO_FW_BUILD_ID 2026100704UL" in main_c
         and "UNO_TELEMETRY_FW_BUILD_VALID" in main_c,
     )
     check(
         "clear_handshake_is_uart_rate_limited",
         has(
             uno,
-            r"if \(!force && \(enable \|\| g_clear_fault_req\).*?"
-            r"g_nucleo_waiting_rsp.*?NUCLEO_RUN_REPLY_GUARD_US.*?"
-            r"if \(!force && \(enable \|\| g_clear_fault_req\).*?min_send_us",
+            r"static void nucleo_send_pwm\(.*?"
+            r"if \(g_nucleo_waiting_rsp\).*?NUCLEO_RUN_REPLY_GUARD_US.*?"
+            r"const uint32_t min_send_us = .*?"
+            r"if \(!force && \(enable \|\| g_clear_fault_req\) &&\s*"
+            r"\(uint32_t\)\(now_us - g_nucleo_last_send_us\) < min_send_us\)",
         ),
     )
 

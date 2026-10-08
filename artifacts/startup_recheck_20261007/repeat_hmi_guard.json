@@ -1,0 +1,1669 @@
+{
+  "tool": "web_hmi_command_guard_selftest",
+  "pass": true,
+  "passed": 162,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "bench_attestation_accepts_fresh_green",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "bench_attestation_rejects_red",
+      "ok": true,
+      "detail": "attestation is not green",
+      "evidence": null
+    },
+    {
+      "name": "bench_attestation_rejects_stale",
+      "ok": true,
+      "detail": "attestation is stale",
+      "evidence": null
+    },
+    {
+      "name": "bench_attestation_rejects_expired",
+      "ok": true,
+      "detail": "attestation has expired",
+      "evidence": null
+    },
+    {
+      "name": "bench_attestation_rejects_long_window",
+      "ok": true,
+      "detail": "attestation validity window is too long",
+      "evidence": null
+    },
+    {
+      "name": "vbus_capture_accepts_safe_outputs_off",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "vbus_capture_rejects_pwm",
+      "ok": true,
+      "detail": "PWM is not off",
+      "evidence": null
+    },
+    {
+      "name": "vbus_capture_rejects_stale_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is stale",
+      "evidence": null
+    },
+    {
+      "name": "vbus_capture_rejects_active_relay",
+      "ok": true,
+      "detail": "output must be off during Vbus capture: precharge=1",
+      "evidence": null
+    },
+    {
+      "name": "vbus_capture_summary_records_raw_scaled_and_meter",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "timestamp": 1791373988.979926,
+        "meter_vdc": 0.0,
+        "outputs_commanded": false,
+        "state": "SAFE",
+        "pwm": 0,
+        "bp_vbus_raw": {
+          "samples": 2,
+          "mean": 102.0,
+          "std": 2.0,
+          "min": 100.0,
+          "max": 104.0
+        },
+        "bp_vdc": {
+          "samples": 2,
+          "mean": 0.4,
+          "std": 0.4,
+          "min": 0.0,
+          "max": 0.8
+        },
+        "bp_temp_c": {
+          "samples": 2,
+          "mean": 25.0,
+          "std": 0.0,
+          "min": 25.0,
+          "max": 25.0
+        },
+        "bp_bad": {
+          "samples": 2,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "mc_vbus_raw": {
+          "samples": 2,
+          "mean": 102.0,
+          "std": 2.0,
+          "min": 100.0,
+          "max": 104.0
+        },
+        "mc_vdc": {
+          "samples": 2,
+          "mean": 0.4,
+          "std": 0.4,
+          "min": 0.0,
+          "max": 0.8
+        },
+        "mc_temp_c": {
+          "samples": 2,
+          "mean": 25.0,
+          "std": 0.0,
+          "min": 25.0,
+          "max": 25.0
+        },
+        "mc_bad": {
+          "samples": 2,
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "mc_fault_detail": "cause unavailable in installed firmware"
+      }
+    },
+    {
+      "name": "vbus_zero_capture_allows_safe_mcsdk_undervoltage",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "vbus_zero_capture_still_rejects_pwm",
+      "ok": true,
+      "detail": "PWM is not off",
+      "evidence": null
+    },
+    {
+      "name": "vbus_high_capture_rejects_fault",
+      "ok": true,
+      "detail": "motor-controller fault is active: mc_fault=5",
+      "evidence": null
+    },
+    {
+      "name": "vbus_store_requires_complete_sample_window",
+      "ok": true,
+      "detail": "calibration capture requires 20 samples; got 19",
+      "evidence": {
+        "valid": false,
+        "reason": "zero-point capture is required",
+        "zero_captured": false,
+        "high_captured": false,
+        "zero_meter_vdc": null,
+        "zero_mc_vdc": null,
+        "high_meter_vdc": null,
+        "high_mc_vdc": null,
+        "updated_at": null
+      }
+    },
+    {
+      "name": "vbus_store_accepts_zero_but_remains_locked",
+      "ok": true,
+      "detail": "known-HV capture is required",
+      "evidence": {
+        "valid": false,
+        "reason": "known-HV capture is required",
+        "zero_captured": true,
+        "high_captured": false,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": null,
+        "high_mc_vdc": null,
+        "updated_at": 1791373988.981932
+      }
+    },
+    {
+      "name": "vbus_store_unlocks_only_after_matching_high_point",
+      "ok": true,
+      "detail": "two-point Vbus verification passed",
+      "evidence": {
+        "valid": true,
+        "reason": "two-point Vbus verification passed",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "vbus_store_persists_with_integrity_digest",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": true,
+        "reason": "two-point Vbus verification passed",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "vbus_store_invalidates_on_firmware_identity_change",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": false,
+        "reason": "firmware or telemetry identity changed; recalibration is required",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "hv_arm_uses_persisted_vbus_calibration",
+      "ok": true,
+      "detail": "armed",
+      "evidence": {
+        "valid": true,
+        "reason": "two-point Vbus verification passed",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "hv_arm_relocks_after_nucleo_firmware_change",
+      "ok": true,
+      "detail": "HV Vbus calibration is incomplete; capture a known-voltage point before arming",
+      "evidence": {
+        "valid": false,
+        "reason": "firmware or telemetry identity changed; recalibration is required",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "vbus_store_rejects_high_point_before_zero",
+      "ok": true,
+      "detail": "capture a new zero point before the known-HV point",
+      "evidence": null
+    },
+    {
+      "name": "vbus_store_rejects_meter_mismatch",
+      "ok": true,
+      "detail": "known-HV mismatch is too large: meter=280.00 V, MCSDK=315.00 V, allowed=8.40 V",
+      "evidence": {
+        "valid": false,
+        "reason": "known-HV capture is required",
+        "zero_captured": true,
+        "high_captured": false,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": null,
+        "high_mc_vdc": null,
+        "updated_at": 1791373988.9845092
+      }
+    },
+    {
+      "name": "vbus_store_rejects_tampered_file",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": false,
+        "reason": "stored calibration rejected: calibration integrity check failed",
+        "zero_captured": false,
+        "high_captured": false,
+        "zero_meter_vdc": null,
+        "zero_mc_vdc": null,
+        "high_meter_vdc": null,
+        "high_mc_vdc": null,
+        "updated_at": null
+      }
+    },
+    {
+      "name": "vbus_store_rejects_digest_valid_malformed_identity",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": false,
+        "reason": "calibration identity is incomplete",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": 315.0,
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "vbus_store_rejects_digest_valid_malformed_point",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": false,
+        "reason": "calibration point values are invalid",
+        "zero_captured": true,
+        "high_captured": true,
+        "zero_meter_vdc": 0.0,
+        "zero_mc_vdc": 0.0,
+        "high_meter_vdc": "not-a-voltage",
+        "high_mc_vdc": 315.0,
+        "updated_at": 1791373988.982952
+      }
+    },
+    {
+      "name": "vbus_store_reset_fails_closed_and_removes_file",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "valid": false,
+        "reason": "zero-point capture is required",
+        "zero_captured": false,
+        "high_captured": false,
+        "zero_meter_vdc": null,
+        "zero_mc_vdc": null,
+        "high_meter_vdc": null,
+        "high_mc_vdc": null,
+        "updated_at": null
+      }
+    },
+    {
+      "name": "lv_arm_accepts_clean_zero_bus",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "lv_arm_rejects_high_raw_bus_with_zero_scaled",
+      "ok": true,
+      "detail": "raw DC bus is outside the calibrated zero-bus window: raw=3256 expected=1838..2038",
+      "evidence": null
+    },
+    {
+      "name": "lv_arm_rejects_raw_below_calibrated_zero",
+      "ok": true,
+      "detail": "raw DC bus is outside the calibrated zero-bus window: raw=120 expected=1838..2038",
+      "evidence": null
+    },
+    {
+      "name": "lv_arm_rejects_bus_above_10v",
+      "ok": true,
+      "detail": "DC bus is outside LV arm window: vdc=12.0 V",
+      "evidence": null
+    },
+    {
+      "name": "lv_runtime_accepts_clean_zero_bus",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "lv_runtime_rejects_hv_bus",
+      "ok": true,
+      "detail": "DC bus is outside LV runtime window: vdc=315.0 V",
+      "evidence": null
+    },
+    {
+      "name": "lv_arm_rejects_hv_confirmation_phrase",
+      "ok": true,
+      "detail": "confirmation phrase mismatch",
+      "evidence": null
+    },
+    {
+      "name": "lv_arm_snapshot_exposes_profile_and_phrase",
+      "ok": true,
+      "detail": "armed",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 1,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 30.0,
+        "hmi_hv_min_vdc": 0.0,
+        "hmi_hv_max_vdc": 10.0,
+        "hmi_arm_profile": "lv",
+        "hmi_arm_confirm": "ARM LV HV OFF"
+      }
+    },
+    {
+      "name": "manual_service_off_prevents_false_expiry_estop",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "arm_profile_switch_accepts_safe_lv_selection",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "arm_profile_switch_rejects_active_relay",
+      "ok": true,
+      "detail": "precharge relay is active",
+      "evidence": null
+    },
+    {
+      "name": "arm_profile_switch_rejects_lv_with_hv_bus",
+      "ok": true,
+      "detail": "DC bus is outside LV profile window: vdc=315.0 V",
+      "evidence": null
+    },
+    {
+      "name": "arm_profile_config_switch_disarms_and_selects_lv",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 0,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 0.0,
+        "hmi_hv_min_vdc": 0.0,
+        "hmi_hv_max_vdc": 10.0,
+        "hmi_arm_profile": "lv",
+        "hmi_arm_confirm": "ARM LV HV OFF"
+      }
+    },
+    {
+      "name": "persistent_log_strips_sparse_nul_bytes",
+      "ok": true,
+      "detail": "",
+      "evidence": [
+        "2026-08-05 11:00:00 CMD STOP"
+      ]
+    },
+    {
+      "name": "termios_baud_460800_supported",
+      "ok": true,
+      "detail": "460800",
+      "evidence": null
+    },
+    {
+      "name": "termios_baud_unsupported_fails_closed",
+      "ok": true,
+      "detail": "12345",
+      "evidence": null
+    },
+    {
+      "name": "rpc_bridge_serial_baud_propagates",
+      "ok": true,
+      "detail": "serial_baud=460800",
+      "evidence": null
+    },
+    {
+      "name": "wifi_status_includes_uart_error_causes",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "old_rpc_has_unknown_not_fabricated_uart_diagnostics",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "rpc_status_array_79_mapping",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "state_code": 0,
+        "state": "SAFE",
+        "mode_code": 1,
+        "mode": "FOC",
+        "pwm": 0,
+        "freq": 12.3,
+        "speed": 456.0,
+        "ia": 1.1,
+        "ib": 2.2,
+        "ic": -3.3,
+        "vdc": 315.0,
+        "ts": 1791373988988,
+        "id": -0.1,
+        "iq": 0.2,
+        "i_rms": 2.7,
+        "mic_active": 1,
+        "id_ref": 0.33,
+        "mic_saving_pct": 12.5,
+        "freq_cmd": 10.0,
+        "estop": 0,
+        "ntc": 1,
+        "pfc": 0,
+        "brake": 1,
+        "brake_duty": 0.25,
+        "enc_raw": 2048,
+        "enc_ok": 1,
+        "enc_deg": 180.0,
+        "bp_good": 100,
+        "bp_bad": 0,
+        "bp_age_ms": 30,
+        "bp_status": 1,
+        "bp_pwm_active": 0,
+        "bp_fault": 0,
+        "bp_mode": 5,
+        "bp_seq": 77,
+        "bp_ping_pairs": 11,
+        "bp_ping_age_ms": 22,
+        "bp_rsp_age_ms": 33,
+        "enc_rpm": 123.0,
+        "enc_mech_hz": 2.05,
+        "enc_elec_hz": 4.1,
+        "mic_gated": 0,
+        "mic_enable_ai": 1,
+        "mic_enc_used": 1,
+        "mic_freq_meas_hz": 2.0,
+        "mic_speed_err_hz": 0.1,
+        "mic_speed_tol_hz": 0.5,
+        "mic_link_flags": 3,
+        "mic_status_flags": 4,
+        "diag_mode": 0,
+        "duty_mode": 0,
+        "bp_vbus_raw": 3256,
+        "bp_vdc": 315.0,
+        "bp_vbus_age_ms": 44,
+        "bp_temp_raw": 1500,
+        "bp_temp_v": 1.21,
+        "bp_temp_c": 27.8,
+        "bp_temp_flags": 3,
+        "bp_temp_valid": 1,
+        "bp_temp_fault": 1,
+        "bp_temp_age_ms": 33,
+        "bp_phase_a_raw": 1000,
+        "bp_phase_b_raw": 1001,
+        "bp_phase_c_raw": 1002,
+        "bp_phase_a_v": 0.81,
+        "bp_phase_b_v": 0.82,
+        "bp_phase_c_v": 0.83,
+        "bp_phase_flags": 3,
+        "bp_phase_valid": 1,
+        "bp_phase_c_virtual": 1,
+        "bp_phase_age_ms": 55,
+        "bp_ext": 8,
+        "iotest": 0,
+        "precharge": 1,
+        "fan_duty": 0.42,
+        "bp_fan_duty": 0.51,
+        "bp_fan_rpm": 1230.0,
+        "bp_foc_backend": 1,
+        "bp_cmd_mode": 5,
+        "fw_build": 2026091401,
+        "matrix_test": 0,
+        "bp_mcsdk_telemetry": 1,
+        "bp_vbus_valid": 1,
+        "bp_precharge_managed": 0,
+        "rpc_schema_version": 3,
+        "bp_softstart_ready": 1,
+        "mc_capabilities": 1,
+        "mc_fw_build": 2026091401,
+        "mc_supported_modes": [
+          "VF"
+        ],
+        "mc_diag_valid": 0,
+        "mc_fault_reason": 0,
+        "mc_uart_error_flags": 0,
+        "mc_fault_motor_state": 0,
+        "mc_fault_current_mask": 0,
+        "mc_fault_occurred_mask": 0,
+        "mc_fault_sequence": 0,
+        "mc_fault_tx_status": 0,
+        "mc_last_bad_valid": 0,
+        "mc_last_bad_reason": 0,
+        "mc_last_uart_error_flags": 0,
+        "mc_last_tx_status": 0,
+        "bp_fw_build": 2026091401,
+        "bp_diag_valid": 0,
+        "bp_fault_reason": 0,
+        "bp_uart_error_flags": 0,
+        "bp_fault_motor_state": 0,
+        "bp_fault_current_mask": 0,
+        "bp_fault_occurred_mask": 0,
+        "bp_fault_sequence": 0,
+        "bp_fault_tx_status": 0,
+        "bp_last_bad_valid": 0,
+        "bp_last_bad_reason": 0,
+        "bp_last_uart_error_flags": 0,
+        "bp_last_tx_status": 0,
+        "mc_good": 100,
+        "mc_bad": 0,
+        "mc_age_ms": 30,
+        "mc_status": 1,
+        "mc_pwm_active": 0,
+        "mc_fault": 0,
+        "mc_mode": 5,
+        "mc_seq": 77,
+        "mc_ping_pairs": 11,
+        "mc_ping_age_ms": 22,
+        "mc_rsp_age_ms": 33,
+        "mc_vbus_raw": 3256,
+        "mc_vdc": 315.0,
+        "mc_vbus_age_ms": 44,
+        "mc_temp_raw": 1500,
+        "mc_temp_v": 1.21,
+        "mc_temp_c": 27.8,
+        "mc_temp_flags": 3,
+        "mc_temp_valid": 1,
+        "mc_temp_fault": 1,
+        "mc_temp_age_ms": 33,
+        "mc_phase_a_raw": 1000,
+        "mc_phase_b_raw": 1001,
+        "mc_phase_c_raw": 1002,
+        "mc_phase_a_v": 0.81,
+        "mc_phase_b_v": 0.82,
+        "mc_phase_c_v": 0.83,
+        "mc_phase_flags": 3,
+        "mc_phase_valid": 1,
+        "mc_phase_c_virtual": 1,
+        "mc_phase_age_ms": 55,
+        "mc_ext": 8,
+        "mc_fan_duty": 0.51,
+        "mc_fan_rpm": 1230.0,
+        "mc_foc_backend": 1,
+        "mc_cmd_mode": 5,
+        "mc_mcsdk_telemetry": 1,
+        "mc_vbus_valid": 1,
+        "mc_precharge_managed": 0,
+        "mc_softstart_ready": 1,
+        "mc_fault_detail": "cause unavailable in installed firmware",
+        "mc_current_telemetry_valid": 0,
+        "mc_current_telemetry_source": "uno_q_local_adc_unqualified"
+      }
+    },
+    {
+      "name": "rpc_status_array_75_transition_fails_closed",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "state_code": 0,
+        "state": "SAFE",
+        "mode_code": 1,
+        "mode": "FOC",
+        "pwm": 0,
+        "freq": 12.3,
+        "speed": 456.0,
+        "ia": 1.1,
+        "ib": 2.2,
+        "ic": -3.3,
+        "vdc": 315.0,
+        "ts": 1791373988988,
+        "id": -0.1,
+        "iq": 0.2,
+        "i_rms": 2.7,
+        "mic_active": 1,
+        "id_ref": 0.33,
+        "mic_saving_pct": 12.5,
+        "freq_cmd": 10.0,
+        "estop": 0,
+        "ntc": 1,
+        "pfc": 0,
+        "brake": 1,
+        "brake_duty": 0.25,
+        "enc_raw": 2048,
+        "enc_ok": 1,
+        "enc_deg": 180.0,
+        "bp_good": 100,
+        "bp_bad": 0,
+        "bp_age_ms": 30,
+        "bp_status": 1,
+        "bp_pwm_active": 0,
+        "bp_fault": 0,
+        "bp_mode": 5,
+        "bp_seq": 77,
+        "bp_ping_pairs": 11,
+        "bp_ping_age_ms": 22,
+        "bp_rsp_age_ms": 33,
+        "enc_rpm": 123.0,
+        "enc_mech_hz": 2.05,
+        "enc_elec_hz": 4.1,
+        "mic_gated": 0,
+        "mic_enable_ai": 1,
+        "mic_enc_used": 1,
+        "mic_freq_meas_hz": 2.0,
+        "mic_speed_err_hz": 0.1,
+        "mic_speed_tol_hz": 0.5,
+        "mic_link_flags": 3,
+        "mic_status_flags": 4,
+        "diag_mode": 0,
+        "duty_mode": 0,
+        "bp_vbus_raw": 3256,
+        "bp_vdc": 315.0,
+        "bp_vbus_age_ms": 44,
+        "bp_temp_raw": 1500,
+        "bp_temp_v": 1.21,
+        "bp_temp_c": 27.8,
+        "bp_temp_flags": 3,
+        "bp_temp_valid": 1,
+        "bp_temp_fault": 1,
+        "bp_temp_age_ms": 33,
+        "bp_phase_a_raw": 1000,
+        "bp_phase_b_raw": 1001,
+        "bp_phase_c_raw": 1002,
+        "bp_phase_a_v": 0.81,
+        "bp_phase_b_v": 0.82,
+        "bp_phase_c_v": 0.83,
+        "bp_phase_flags": 3,
+        "bp_phase_valid": 1,
+        "bp_phase_c_virtual": 1,
+        "bp_phase_age_ms": 55,
+        "bp_ext": 8,
+        "iotest": 0,
+        "precharge": 1,
+        "fan_duty": 0.42,
+        "bp_fan_duty": 0.51,
+        "bp_fan_rpm": 1230.0,
+        "bp_foc_backend": 1,
+        "bp_cmd_mode": 5,
+        "fw_build": 2026091401,
+        "matrix_test": 0,
+        "bp_mcsdk_telemetry": 1,
+        "bp_vbus_valid": 1,
+        "bp_precharge_managed": 1,
+        "rpc_schema_version": 1,
+        "bp_softstart_ready": 0,
+        "mc_capabilities": 0,
+        "mc_fw_build": 0,
+        "mc_supported_modes": [],
+        "mc_diag_valid": 0,
+        "mc_fault_reason": 0,
+        "mc_uart_error_flags": 0,
+        "mc_fault_motor_state": 0,
+        "mc_fault_current_mask": 0,
+        "mc_fault_occurred_mask": 0,
+        "mc_fault_sequence": 0,
+        "mc_fault_tx_status": 0,
+        "mc_last_bad_valid": 0,
+        "mc_last_bad_reason": 0,
+        "mc_last_uart_error_flags": 0,
+        "mc_last_tx_status": 0,
+        "bp_fw_build": 0,
+        "bp_diag_valid": 0,
+        "bp_fault_reason": 0,
+        "bp_uart_error_flags": 0,
+        "bp_fault_motor_state": 0,
+        "bp_fault_current_mask": 0,
+        "bp_fault_occurred_mask": 0,
+        "bp_fault_sequence": 0,
+        "bp_fault_tx_status": 0,
+        "bp_last_bad_valid": 0,
+        "bp_last_bad_reason": 0,
+        "bp_last_uart_error_flags": 0,
+        "bp_last_tx_status": 0,
+        "mc_good": 100,
+        "mc_bad": 0,
+        "mc_age_ms": 30,
+        "mc_status": 1,
+        "mc_pwm_active": 0,
+        "mc_fault": 0,
+        "mc_mode": 5,
+        "mc_seq": 77,
+        "mc_ping_pairs": 11,
+        "mc_ping_age_ms": 22,
+        "mc_rsp_age_ms": 33,
+        "mc_vbus_raw": 3256,
+        "mc_vdc": 315.0,
+        "mc_vbus_age_ms": 44,
+        "mc_temp_raw": 1500,
+        "mc_temp_v": 1.21,
+        "mc_temp_c": 27.8,
+        "mc_temp_flags": 3,
+        "mc_temp_valid": 1,
+        "mc_temp_fault": 1,
+        "mc_temp_age_ms": 33,
+        "mc_phase_a_raw": 1000,
+        "mc_phase_b_raw": 1001,
+        "mc_phase_c_raw": 1002,
+        "mc_phase_a_v": 0.81,
+        "mc_phase_b_v": 0.82,
+        "mc_phase_c_v": 0.83,
+        "mc_phase_flags": 3,
+        "mc_phase_valid": 1,
+        "mc_phase_c_virtual": 1,
+        "mc_phase_age_ms": 55,
+        "mc_ext": 8,
+        "mc_fan_duty": 0.51,
+        "mc_fan_rpm": 1230.0,
+        "mc_foc_backend": 1,
+        "mc_cmd_mode": 5,
+        "mc_mcsdk_telemetry": 1,
+        "mc_vbus_valid": 1,
+        "mc_precharge_managed": 1,
+        "mc_softstart_ready": 0,
+        "mc_fault_detail": "cause unavailable in installed firmware",
+        "mc_current_telemetry_valid": 0,
+        "mc_current_telemetry_source": "uno_q_local_adc_unqualified"
+      }
+    },
+    {
+      "name": "start_detected_START",
+      "ok": true,
+      "detail": "START",
+      "evidence": null
+    },
+    {
+      "name": "start_not_detected_stop",
+      "ok": true,
+      "detail": "STOP",
+      "evidence": null
+    },
+    {
+      "name": "start_not_detected_clear",
+      "ok": true,
+      "detail": "CLEAR",
+      "evidence": null
+    },
+    {
+      "name": "start_not_detected_mode_vf",
+      "ok": true,
+      "detail": "MODE VF",
+      "evidence": null
+    },
+    {
+      "name": "start_not_detected_diag_on",
+      "ok": true,
+      "detail": "DIAG ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_fan_on",
+      "ok": true,
+      "detail": "FAN ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_fan_0.25",
+      "ok": true,
+      "detail": "FAN 0.25",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_fan_pwm_0.25",
+      "ok": true,
+      "detail": "FAN PWM 0.25",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_fan_duty_0.25",
+      "ok": true,
+      "detail": "FAN DUTY 0.25",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_precharge_on",
+      "ok": true,
+      "detail": "PRECHARGE ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_pfc_on",
+      "ok": true,
+      "detail": "PFC ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_mcfoc_on",
+      "ok": true,
+      "detail": "MCFOC ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_bpfoc_on",
+      "ok": true,
+      "detail": "BPFOC ON",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_brake_0.2",
+      "ok": true,
+      "detail": "BRAKE 0.2",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_brake_pwm_0.2",
+      "ok": true,
+      "detail": "BRAKE PWM 0.2",
+      "evidence": null
+    },
+    {
+      "name": "service_detected_iotest_on",
+      "ok": true,
+      "detail": "IOTEST ON",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_fan_off",
+      "ok": true,
+      "detail": "FAN OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_fan_off",
+      "ok": true,
+      "detail": "FAN OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_fan_0",
+      "ok": true,
+      "detail": "FAN 0",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_fan_0",
+      "ok": true,
+      "detail": "FAN 0",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_fan_pwm_0",
+      "ok": true,
+      "detail": "FAN PWM 0",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_fan_pwm_0",
+      "ok": true,
+      "detail": "FAN PWM 0",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_precharge_off",
+      "ok": true,
+      "detail": "PRECHARGE OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_precharge_off",
+      "ok": true,
+      "detail": "PRECHARGE OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_pfc_off",
+      "ok": true,
+      "detail": "PFC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_pfc_off",
+      "ok": true,
+      "detail": "PFC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_mcfoc_off",
+      "ok": true,
+      "detail": "MCFOC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_mcfoc_off",
+      "ok": true,
+      "detail": "MCFOC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_bpfoc_off",
+      "ok": true,
+      "detail": "BPFOC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_bpfoc_off",
+      "ok": true,
+      "detail": "BPFOC OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_brake_off",
+      "ok": true,
+      "detail": "BRAKE OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_brake_off",
+      "ok": true,
+      "detail": "BRAKE OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_brake_0",
+      "ok": true,
+      "detail": "BRAKE 0",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_brake_0",
+      "ok": true,
+      "detail": "BRAKE 0",
+      "evidence": null
+    },
+    {
+      "name": "service_not_detected_iotest_off",
+      "ok": true,
+      "detail": "IOTEST OFF",
+      "evidence": null
+    },
+    {
+      "name": "service_release_detected_iotest_off",
+      "ok": true,
+      "detail": "IOTEST OFF",
+      "evidence": null
+    },
+    {
+      "name": "safe_status_has_no_active_outputs",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "precharge_status_has_active_output",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "pwm_status_has_active_output",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "guard_allows_safe_service",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_allows_safe_mcfoc_on",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_start_without_bench_gate",
+      "ok": true,
+      "detail": "bench gate blocked START: ERROR: START blocked by bench gate; next_actions=restore_hmi_safe_status; detail=live bench-gate URL is required for START; pass url=... or set UNOQ_BENCH_GATE_URL",
+      "evidence": null
+    },
+    {
+      "name": "guard_allows_start_with_green_bench_gate",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_start_with_red_bench_gate",
+      "ok": true,
+      "detail": "bench gate blocked START: fake bench gate red url=http://127.0.0.1:18080",
+      "evidence": null
+    },
+    {
+      "name": "guard_allows_start_with_explicit_local_gate",
+      "ok": true,
+      "detail": "standalone live safety gate",
+      "evidence": null
+    },
+    {
+      "name": "guard_ignores_off_command",
+      "ok": true,
+      "detail": "not guarded",
+      "evidence": null
+    },
+    {
+      "name": "guard_ignores_mcfoc_off_command",
+      "ok": true,
+      "detail": "not guarded",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_missing_status",
+      "ok": true,
+      "detail": "status unavailable",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_mcfoc_missing_status",
+      "ok": true,
+      "detail": "status unavailable",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_link_down",
+      "ok": true,
+      "detail": "motor-controller link is stale or down",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_stale_link",
+      "ok": true,
+      "detail": "motor-controller link is stale or down",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_not_safe",
+      "ok": true,
+      "detail": "not SAFE: state=FAULT",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_pwm_active",
+      "ok": true,
+      "detail": "PWM is not off: pwm=1",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_estop",
+      "ok": true,
+      "detail": "ESTOP is active: estop=1",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_fault",
+      "ok": true,
+      "detail": "motor-controller fault is active: mc_fault=5",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_bad_counter",
+      "ok": true,
+      "detail": "motor-controller bad-frame counter is non-zero: mc_bad=1",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_legacy_bad_counter",
+      "ok": true,
+      "detail": "motor-controller bad-frame counter is non-zero: mc_bad=1",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_missing_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is not readable",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_high_raw_vbus_with_zero_scaled",
+      "ok": true,
+      "detail": "raw DC bus is outside the calibrated low-voltage window: raw=3256 expected=1838..2275",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_missing_raw_vbus",
+      "ok": true,
+      "detail": "raw DC bus telemetry is missing",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_invalid_raw_vbus",
+      "ok": true,
+      "detail": "raw DC bus telemetry is invalid: raw=0",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_stale_raw_vbus",
+      "ok": true,
+      "detail": "raw DC bus telemetry is stale",
+      "evidence": null
+    },
+    {
+      "name": "guard_accepts_direct_mcsdk_zero_bus",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_invalid_direct_mcsdk_vbus",
+      "ok": true,
+      "detail": "MCSDK DC bus telemetry is not valid",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_disagreeing_direct_mcsdk_vbus",
+      "ok": true,
+      "detail": "MCSDK DC bus telemetry fields disagree",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_high_vdc",
+      "ok": true,
+      "detail": "DC bus too high for command: vdc=315.0 V",
+      "evidence": null
+    },
+    {
+      "name": "guard_rejects_bpfoc_high_vdc",
+      "ok": true,
+      "detail": "DC bus too high for command: vdc=315.0 V",
+      "evidence": null
+    },
+    {
+      "name": "guard_allow_hv_permits_high_vdc",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_disabled_only_permits_high_vdc",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "guard_allow_hv_still_rejects_missing_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is not readable",
+      "evidence": null
+    },
+    {
+      "name": "guard_disabled_still_rejects_missing_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is not readable",
+      "evidence": null
+    },
+    {
+      "name": "guard_disabled_still_rejects_fault",
+      "ok": true,
+      "detail": "motor-controller fault is active: mc_fault=5",
+      "evidence": null
+    },
+    {
+      "name": "guard_disabled_does_not_bypass_start_bench_gate",
+      "ok": true,
+      "detail": "bench gate blocked START: fake bench gate red url=None",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_incomplete_vbus_calibration",
+      "ok": true,
+      "detail": "HV Vbus calibration is incomplete; capture a known-voltage point before arming",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_accepts_clean_315v_status",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_low_bus",
+      "ok": true,
+      "detail": "DC bus is outside HV arm window: vdc=60.0 V",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_implausible_temperature",
+      "ok": true,
+      "detail": "heatsink temperature is implausible: temp=-38.0 C",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_temperature_fault",
+      "ok": true,
+      "detail": "heatsink temperature fault is active",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_bad_uart_counter",
+      "ok": true,
+      "detail": "motor-controller bad-frame counter is non-zero: mc_bad=1",
+      "evidence": null
+    },
+    {
+      "name": "hv_runtime_accepts_clean_315v_status",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "hv_runtime_can_delegate_bad_counter_to_burst_monitor",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "hv_runtime_rejects_stale_temperature",
+      "ok": true,
+      "detail": "heatsink temperature is stale",
+      "evidence": null
+    },
+    {
+      "name": "hv_runtime_bad_monitor_allows_isolated_errors_but_trips_burst",
+      "ok": true,
+      "detail": "motor-controller UART error burst: 3 errors/1.0s",
+      "evidence": {
+        "first": "isolated motor-controller UART errors: delta=1, window=1",
+        "second": "isolated motor-controller UART errors: delta=1, window=2",
+        "third": "motor-controller UART error burst: 3 errors/1.0s"
+      }
+    },
+    {
+      "name": "hv_runtime_bad_monitor_window_expires",
+      "ok": true,
+      "detail": "isolated motor-controller UART errors: delta=1, window=1",
+      "evidence": null
+    },
+    {
+      "name": "hv_runtime_bad_monitor_handles_counter_clear",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_rejects_wrong_phrase",
+      "ok": true,
+      "detail": "confirmation phrase mismatch",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_sets_bounded_window",
+      "ok": true,
+      "detail": "armed",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 1,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 30.0,
+        "hmi_hv_min_vdc": 100.0,
+        "hmi_hv_max_vdc": 400.0,
+        "hmi_arm_profile": "hv",
+        "hmi_arm_confirm": "ARM 310V"
+      }
+    },
+    {
+      "name": "hv_arm_rechecks_live_bus_before_output",
+      "ok": true,
+      "detail": "DC bus is outside HV arm window: vdc=0.0 V",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_allows_output_with_fresh_live_status",
+      "ok": true,
+      "detail": "ok",
+      "evidence": null
+    },
+    {
+      "name": "hv_arm_expiry_requests_safe_stop",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 0,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 0.0,
+        "hmi_hv_min_vdc": 100.0,
+        "hmi_hv_max_vdc": 400.0,
+        "hmi_arm_profile": "hv",
+        "hmi_arm_confirm": "ARM 310V"
+      }
+    },
+    {
+      "name": "hv_arm_expiry_clears_arm",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 0,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 0.0,
+        "hmi_hv_min_vdc": 100.0,
+        "hmi_hv_max_vdc": 400.0,
+        "hmi_arm_profile": "hv",
+        "hmi_arm_confirm": "ARM 310V"
+      }
+    },
+    {
+      "name": "dual_profile_switch_applies_lv_guard_and_runlimit",
+      "ok": true,
+      "detail": "profile selected",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 0,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 0.0,
+        "hmi_hv_min_vdc": 0.0,
+        "hmi_hv_max_vdc": 10.0,
+        "hmi_arm_profile": "lv",
+        "hmi_arm_confirm": "ARM LV HV OFF",
+        "hmi_arm_profiles": [
+          "hv",
+          "lv"
+        ],
+        "hmi_start_runlimit_s": 3.0,
+        "hmi_precharge_relay_present": 0,
+        "hmi_external_softstart_ready": 0,
+        "hmi_vbus_hv_calibrated": 1,
+        "hmi_vbus_calibration_reason": "compile-time calibration override",
+        "hmi_vbus_zero_captured": 0,
+        "hmi_vbus_high_captured": 0,
+        "hmi_vbus_zero_meter_vdc": null,
+        "hmi_vbus_zero_mc_vdc": null,
+        "hmi_vbus_high_meter_vdc": null,
+        "hmi_vbus_high_mc_vdc": null,
+        "hmi_arm_profile_switch_ready": 1,
+        "hmi_operator_heartbeat_age_s": null,
+        "hmi_operator_heartbeat_ok": 1,
+        "hmi_operator_heartbeat_timeout_s": 3.0
+      }
+    },
+    {
+      "name": "dual_profile_switch_restores_hv_guard_and_runlimit",
+      "ok": true,
+      "detail": "profile selected",
+      "evidence": null
+    },
+    {
+      "name": "dual_profile_switch_rejects_unknown_profile",
+      "ok": true,
+      "detail": "unsupported arm profile: invalid",
+      "evidence": null
+    },
+    {
+      "name": "wifi_start_without_k1_requires_zero_legacy_bit_then_starts_pwm",
+      "ok": true,
+      "detail": "PWM started; external soft-start bus is stable",
+      "evidence": {
+        "commands": [
+          "SET RUNLIMIT 3.000",
+          "START"
+        ],
+        "status": {
+          "link": true,
+          "state": "VF_RUN",
+          "state_code": 1,
+          "pwm": 1,
+          "bp_status": 1,
+          "fw_build": 2026091401,
+          "mc_fw_build": 2026091401,
+          "rpc_schema_version": 3,
+          "mc_capabilities": 1,
+          "estop": 0,
+          "bp_fault": 0,
+          "bp_bad_cnt": 0,
+          "bp_rsp_age_ms": 25,
+          "bp_vbus_age_ms": 25,
+          "bp_vbus_raw": 1966,
+          "bp_temp_valid": 1,
+          "bp_temp_fault": 0,
+          "bp_temp_age_ms": 25,
+          "bp_temp_c": 25.0,
+          "bp_vdc": 0.0,
+          "vdc": 0.0,
+          "precharge": 0,
+          "pfc": 0,
+          "brake": 0,
+          "brake_duty": 0.0,
+          "fan_duty": 0.0,
+          "bp_fan_duty": 0.0,
+          "bp_ext": 0
+        }
+      }
+    },
+    {
+      "name": "wifi_start_waits_for_external_softstart_and_actual_mcsdk_pwm",
+      "ok": true,
+      "detail": "PWM started; external soft-start bus is stable",
+      "evidence": {
+        "commands": [
+          "SET RUNLIMIT 3.000",
+          "START"
+        ],
+        "status": {
+          "link": true,
+          "state": "VF_RUN",
+          "state_code": 1,
+          "pwm": 1,
+          "bp_status": 33,
+          "fw_build": 2026091401,
+          "mc_fw_build": 2026091401,
+          "rpc_schema_version": 3,
+          "mc_capabilities": 1,
+          "estop": 0,
+          "bp_fault": 0,
+          "bp_bad_cnt": 0,
+          "bp_rsp_age_ms": 25,
+          "bp_vbus_age_ms": 25,
+          "bp_vbus_raw": 0,
+          "bp_temp_valid": 1,
+          "bp_temp_fault": 0,
+          "bp_temp_age_ms": 25,
+          "bp_temp_c": 25.0,
+          "bp_vdc": 0.0,
+          "vdc": 0.0,
+          "precharge": 0,
+          "pfc": 0,
+          "brake": 0,
+          "brake_duty": 0.0,
+          "fan_duty": 0.0,
+          "bp_fan_duty": 0.0,
+          "bp_ext": 0,
+          "bp_vbus_valid": 1,
+          "bp_mcsdk_telemetry": 1,
+          "bp_softstart_ready": 1
+        }
+      }
+    },
+    {
+      "name": "wifi_start_sequence_estops_when_start_rejected",
+      "ok": true,
+      "detail": "START rejected: rejected",
+      "evidence": [
+        "SET RUNLIMIT 3.000",
+        "START",
+        "ESTOP"
+      ]
+    },
+    {
+      "name": "wifi_emergency_stop_confirms_all_outputs_off",
+      "ok": true,
+      "detail": "ESTOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1",
+      "evidence": [
+        "ESTOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_rejects_local_safe_while_nucleo_pwm_active",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_does_not_confirm_stale",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_does_not_confirm_link_down",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_does_not_confirm_nucleo_link_flag_missing",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_does_not_confirm_nonfinite_age",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "wifi_stop_does_not_confirm_negative_age",
+      "ok": true,
+      "detail": "STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=0",
+      "evidence": [
+        "STOP"
+      ]
+    },
+    {
+      "name": "hv_watchdog_forces_stop_and_estop_on_runtime_fault",
+      "ok": true,
+      "detail": "armed",
+      "evidence": {
+        "commands": [
+          "STOP",
+          "ESTOP"
+        ],
+        "logs": [
+          "MC_FAULT_DIAG code=6 bad=0 cause unavailable in installed firmware",
+          "HV_RUNTIME_REJECT motor-controller fault is active: mc_fault=6 stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control"
+        ]
+      }
+    },
+    {
+      "name": "hv_watchdog_disarms_on_runtime_fault",
+      "ok": true,
+      "detail": "",
+      "evidence": {
+        "hmi_hv_enabled": 1,
+        "hmi_hv_armed": 0,
+        "hmi_hv_started": 0,
+        "hmi_hv_remaining_s": 0.0,
+        "hmi_hv_min_vdc": 100.0,
+        "hmi_hv_max_vdc": 400.0,
+        "hmi_arm_profile": "hv",
+        "hmi_arm_confirm": "ARM 310V"
+      }
+    },
+    {
+      "name": "firmware_update_allows_bp_vdc_without_legacy_vdc",
+      "ok": true,
+      "detail": "",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_missing_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is not readable for firmware update",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_invalid_vbus",
+      "ok": true,
+      "detail": "DC bus telemetry is not readable for firmware update",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_high_bp_vdc",
+      "ok": true,
+      "detail": "DC bus too high for firmware update: vdc=315.0 V",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_high_raw_vbus",
+      "ok": true,
+      "detail": "firmware update blocked: raw DC bus is outside the calibrated zero-bus window: raw=3256 expected=1838..2038",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_missing_raw_vbus",
+      "ok": true,
+      "detail": "firmware update blocked: raw DC bus telemetry is missing",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_stale_raw_vbus",
+      "ok": true,
+      "detail": "firmware update blocked: raw DC bus telemetry is stale",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_bad_counter",
+      "ok": true,
+      "detail": "motor-controller bad-frame counter is non-zero: mc_bad=1",
+      "evidence": null
+    },
+    {
+      "name": "firmware_update_rejects_stale_motor_controller_link",
+      "ok": true,
+      "detail": "motor-controller link is stale or down",
+      "evidence": null
+    }
+  ]
+}

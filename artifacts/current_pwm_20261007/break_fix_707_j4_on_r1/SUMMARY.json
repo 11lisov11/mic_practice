@@ -1,0 +1,41 @@
+{
+  "scope": "J4-only low-voltage supply check; no START, ARM, CLEAR, flash, reset or calibration commands",
+  "working_pair": {"uno_q": 2026100707, "nucleo": 2026100707},
+  "operator_action": "User switched on the requested 15 V auxiliary supply; HV input remained disconnected per preceding setup",
+  "captures": ["report.json", "../break_fix_707_j4_on_r2/report.json"],
+  "new_controller_messages_across_two_capture_windows": 728,
+  "new_controller_errors_each_window": [0, 0],
+  "first_window_bus_reading_v": [4, 6],
+  "second_window_bus_reading_v": [9, 9],
+  "physical_bus_meter_remeasured_this_turn": false,
+  "previous_operator_bus_meter_v": 0,
+  "operator_correction": {
+    "actual_bus_meter_v": 9.5,
+    "previous_zero_bus_reading_retracted": true,
+    "evidence": "../break_fix_707_vbus_meter_9p5_r1/OPERATOR_CORRECTION.json"
+  },
+  "state": "SAFE",
+  "pwm": 0,
+  "armed": 0,
+  "passive_STLink_registers": {
+    "log": "registers.log",
+    "PA6_HIGH": true,
+    "MOE_off": true,
+    "BKE_on": true,
+    "AOE_off": true,
+    "active_LOW_source_preserved": true,
+    "BIE_masked": true,
+    "break_flag_retained": true,
+    "core_not_halted": true
+  },
+  "notes": [
+    "BIE is masked following a break event; the new firmware rearms it only on clean CLEAR with the input released and outputs off.",
+    "This register snapshot does not timestamp the earlier break event or prove that J4 switching caused it.",
+    "Operator correction: actual DC bus is 9.5 V, not 0 V. The 9 V display is consistent with integer-volt telemetry. An analog offset at zero physical bus was not established.",
+    "ADC data registers were not read in this snapshot, to avoid disturbing live end-of-conversion handling.",
+    "No constant offset was subtracted, no calibration was rewritten and no powered motor attempt was made."
+  ],
+  "communication_check_pass": true,
+  "previous_Vbus_discrepancy_claim_withdrawn": true,
+  "hv_release_approved": false
+}

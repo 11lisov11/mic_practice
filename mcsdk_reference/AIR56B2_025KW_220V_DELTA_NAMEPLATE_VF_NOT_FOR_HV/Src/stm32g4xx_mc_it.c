@@ -133,15 +133,22 @@ void TIMx_BRK_M1_IRQHandler(void)
   /* USER CODE BEGIN TIMx_BRK_M1_IRQn 0 */
 
   /* USER CODE END TIMx_BRK_M1_IRQn 0 */
+  /* BIF cannot clear while the break level is active. Mask only its IRQ;
+     hardware BKE remains enabled. A clean CLEAR rearms BIE in main.c. */
+  if (LL_TIM_IsActiveFlag_BRK(TIM1) || LL_TIM_IsActiveFlag_BRK2(TIM1))
+  {
+    LL_TIM_DisableIT_BRK(TIM1);
+  }
   if (LL_TIM_IsActiveFlag_BRK(TIM1))
   {
     LL_TIM_ClearFlag_BRK(TIM1);
-    PWMC_OVP_Handler(&PWM_Handle_M1._Super, TIM1);
+    /* IPM SD reports driver protection, not DC-bus overvoltage. */
+    PWMC_DP_Handler(&PWM_Handle_M1._Super);
   }
   if (LL_TIM_IsActiveFlag_BRK2(TIM1))
   {
     LL_TIM_ClearFlag_BRK2(TIM1);
-    PWMC_OVP_Handler(&PWM_Handle_M1._Super, TIM1);
+    PWMC_DP_Handler(&PWM_Handle_M1._Super);
   }
   /* Systick is not executed due low priority so is necessary to call MC_Scheduler here.*/
   MC_Scheduler();

@@ -1,0 +1,85 @@
+{
+  "date": "2026-10-07",
+  "pass": true,
+  "scope": "Unpowered sustained-break receive-overflow regression, host control tests and production-derived zero-bus PWM capture",
+  "installed_builds": {"uno_q": 2026100707, "nucleo": 2026100707},
+  "installed_sha256": {
+    "uno_q_elf_zsk_bin": "E63077E1855FAB367C0C7A26B2AC9C80BC289B0AF4E34B2E906566CF07B5C795",
+    "nucleo_hex": "A729D9C74910E2C41C441EE585AD0FED84CEE28014BE99D8CFCC36680AB293EF",
+    "linux_server_py": "19E22F683E38154C4927CC0DF4EB042CDD7BD05BD1BF5AFD6C684BA21F0F1C53"
+  },
+  "readback": {
+    "uno_q_loader_and_sketch": true,
+    "nucleo_flash_verify": true,
+    "nucleo_bytewise_readback_after_fixture_restore": true
+  },
+  "sustained_break": {
+    "old_705_rx_overflow_reproduced": true,
+    "old_new_errors": 1,
+    "new_707_trials": 2,
+    "new_requested_holds_s": [0.35, 2.0],
+    "new_errors_each_trial": [0, 0],
+    "core_not_halted_during_stimulus": true,
+    "hardware_BKE_preserved": true,
+    "automatic_output_enable_disabled": true,
+    "outputs_remained_off": true,
+    "clean_CLEAR_rearms_BIE_without_start": true,
+    "reports": ["../sustained_break_probe_r1/report.json", "../sustained_break_707_r1/report.json", "../sustained_break_707_r2/report.json"]
+  },
+  "wifi_idle_commands": {
+    "pass": true,
+    "frequency_setpoints_hz": [5, 20, 0],
+    "arm_commands": 0,
+    "start_commands": 0,
+    "report": "../break_fix_707_wifi_commands/report.json"
+  },
+  "derived_zero_bus_pwm": {
+    "pass": true,
+    "sample_rate_hz": 24000000,
+    "all_six_carrier_hz": 16000,
+    "min_deadtime_us_each_pair": 1.333,
+    "overlap_events": 0,
+    "STOP": true, "ESTOP": true, "FREQ_ZERO": true, "RUNLIMIT": true,
+    "fault_free_zero_frequency_stop": true,
+    "report": "../break_fix_707_pwm_r1/report.json",
+    "production_source_and_critical_machine_code_equivalent_to_fixture": true,
+    "working_707_restored": true,
+    "production_active_pwm_with_real_bus_tested": false
+  },
+  "final_working_uart": {
+    "duration_requested_s": 60,
+    "samples": 99,
+    "new_correct_messages": 920,
+    "new_errors": 0,
+    "SAFE": true, "PWM": 0, "ARM": 0, "bus_v": 0,
+    "calibration_valid": true,
+    "report": "../break_fix_707_final_uart_60s/report.json"
+  },
+  "offline": {
+    "actual_control_assertions": 390885,
+    "command_combinations": 262144,
+    "detected_mutations": 8,
+    "IRQ_cases_including_sustained_level": 5,
+    "fault_decoder_cases": 66056,
+    "ramp_assertions": 250636,
+    "stop_deadline_cases": 20,
+    "HMI_guards": 162,
+    "calibration_identity_cases": 35,
+    "Vbus_constant_input_characterization_cases": 8192
+  },
+  "calibration_changed": false,
+  "measurement_and_PWM_configuration_changed": false,
+  "earlier_invalid_readonly_window": {
+    "report": "../break_fix_707_uart_120s/report.json",
+    "reason": "Read-only capture overlapped the separate active zero-bus fixture test; it correctly rejected PWM=1. Do not cite this as a stationary working-image UART test."
+  },
+  "open_items": [
+    "Operator previously measured nonzero PA1 voltage at zero DC bus, changing with J4 supply. Analog source is not isolated and was not corrected by subtracting a constant.",
+    "Integer SDK filtering/display can under-read a constant input by up to 2.6171875 V in the host characterization; this does not explain away a physically nonzero PA1 voltage.",
+    "Historical spontaneous overflow events are consistent with the reproduced sustained-break mechanism; their exact physical triggers were not recorded.",
+    "No new external physical BKIN stimulus during active PWM was performed in this turn.",
+    "Qualified Nucleo phase-current telemetry, energized inverter behavior and motor rotation remain unverified."
+  ],
+  "hv_release_approved": false,
+  "motor_rotation_validated": false
+}

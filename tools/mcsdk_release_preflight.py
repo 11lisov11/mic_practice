@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import math
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 
 REQUIRED_PROFILE_FIELDS = (
@@ -21,6 +23,7 @@ REQUIRED_PROFILE_FIELDS = (
 )
 REQUIRED_ARTIFACT_SUFFIXES = (".elf", ".bin", ".hex")
 REQUIRED_PROFILE_SOURCE_KIND = "nameplate_and_measurement"
+VF_CATALOG_SOURCE_KIND = "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
 STEVAL_IPM15B_MAX_INPUT_DC_V = 400.0
 IPM_SD_BKIN_EVIDENCE_SCHEMA = "mic_ai.ipm_sd_bkin_hil.v1"
 IPM_SD_BKIN_REQUIRED_CHECKS = (
@@ -57,6 +60,49 @@ MEASURED_MODEL_IOC_KEYS = {
     "magnetizing_inductance_h": "LMS",
     "rotor_inertia_kg_m2": "WB_UI_INERTIA",
 }
+
+
+def bkin_capture_errors(path: Path) -> list[str]:
+    """Check that a Saleae capture actually contains PWM, a trip, and a latch."""
+    try:
+        with path.open(newline="", encoding="utf-8-sig") as stream:
+            reader = csv.reader(stream)
+            header = next(reader)
+            expected = ["Time [s]", *(f"Channel {index}" for index in range(7))]
+            if header != expected:
+                return ["evidence_capture_columns"]
+            rows = [(float(row[0]), *(int(value) for value in row[1:8])) for row in reader]
+    except (OSError, ValueError, IndexError, StopIteration, csv.Error):
+        return ["evidence_capture_format"]
+    if len(rows) < 20 or any(
+        not math.isfinite(row[0]) or len(row) != 8
+        or any(value not in (0, 1) for value in row[1:])
+        or (index > 0 and row[0] <= rows[index - 1][0])
+        for index, row in enumerate(rows)
+    ):
+        return ["evidence_capture_samples"]
+
+    for index in range(1, len(rows)):
+        if rows[index - 1][7] != 1 or rows[index][7] != 0:
+            continue
+        trip_time = rows[index][0]
+        before = [row for row in rows[:index] if trip_time - 0.02 <= row[0] < trip_time]
+        if any(sum(row[channel] != before[pos - 1][channel]
+                   for pos, row in enumerate(before) if pos)
+               < 2 for channel in range(1, 7)):
+            continue
+        release = next((pos for pos in range(index + 1, len(rows))
+                        if rows[pos - 1][7] == 0 and rows[pos][7] == 1), None)
+        if release is None or rows[-1][0] - rows[release][0] < 0.01:
+            continue
+        first_all_low = next((pos for pos in range(index, release)
+                              if all(value == 0 for value in rows[pos][1:7])), None)
+        if first_all_low is None or rows[first_all_low][0] - trip_time > 0.0001:
+            continue
+        if any(any(value != 0 for value in row[1:7]) for row in rows[first_all_low:]):
+            continue
+        return []
+    return ["evidence_capture_no_verified_trip"]
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -98,6 +144,8 @@ def ipm_sd_bkin_evidence_errors(
         errors.append("evidence_adapter")
     if evidence.get("mcu") != "STM32G431RBT6":
         errors.append("evidence_mcu")
+    if evidence.get("trip_source") != "external_sd_pin":
+        errors.append("evidence_trip_source")
     if not str(evidence.get("tested_at", "")).strip():
         errors.append("evidence_tested_at")
     if not str(evidence.get("operator", "")).strip():
@@ -151,6 +199,8 @@ def ipm_sd_bkin_evidence_errors(
             errors.append("evidence_capture_missing")
         elif sha256(capture_path) != reported_capture_hash:
             errors.append("evidence_capture_hash")
+        elif not errors:
+            errors.extend(bkin_capture_errors(capture_path))
 
     return {
         "errors": errors,
@@ -173,12 +223,33 @@ def coherent_artifact_stems(artifact_map: dict[str, list[Path]]) -> list[str]:
     return sorted(set.intersection(*stem_sets)) if stem_sets else []
 
 
-def profile_errors(profile: dict[str, Any]) -> list[str]:
+def profile_errors(profile: dict[str, Any], control_mode: str = "foc") -> list[str]:
     errors: list[str] = []
+    if control_mode not in {"vf", "foc"}:
+        raise ValueError(f"unsupported control mode: {control_mode}")
     if profile.get("schema") != "mic_ai.mcsdk.acim_motor_profile.v1":
         errors.append("profile_schema")
-    if str(profile.get("source_kind", "")).lower() != REQUIRED_PROFILE_SOURCE_KIND:
+    source_kind = str(profile.get("source_kind", "")).lower()
+    accepted_sources = {REQUIRED_PROFILE_SOURCE_KIND}
+    if control_mode == "vf":
+        accepted_sources.add(VF_CATALOG_SOURCE_KIND)
+    if source_kind not in accepted_sources:
         errors.append("profile_provenance")
+    if source_kind == VF_CATALOG_SOURCE_KIND and control_mode == "vf":
+        try:
+            source_url = urlparse(str(profile.get("source_url", "")))
+            host = (source_url.hostname or "").lower()
+            source_is_official = (
+                source_url.scheme == "https"
+                and (host == "iek.ru" or host.endswith(".iek.ru"))
+                and source_url.path.lower().endswith(".pdf")
+            )
+        except ValueError:
+            source_is_official = False
+        if not source_is_official:
+            errors.append("profile_manufacturer_document_url")
+        if profile.get("operator_confirmed_model") is not True:
+            errors.append("profile_operator_confirmation")
     if str(profile.get("motor_type", "")).lower() not in {"acim", "induction", "asynchronous"}:
         errors.append("motor_type_not_acim")
     motor_label = str(profile.get("motor_label", "")).strip()
@@ -230,7 +301,7 @@ def profile_errors(profile: dict[str, Any]) -> list[str]:
             if abs(float(controller_phase_voltage) - expected_controller_phase) > max(1.0, expected_controller_phase * 0.03):
                 errors.append("profile_controller_phase_voltage_inconsistent")
 
-    if str(profile.get("source_kind", "")).lower() == REQUIRED_PROFILE_SOURCE_KIND:
+    if source_kind == REQUIRED_PROFILE_SOURCE_KIND:
         for field in MEASURED_MODEL_FIELDS:
             value = profile.get(field)
             if (
@@ -316,7 +387,9 @@ def generated_motor_configuration_errors(project: Path, profile: dict[str, Any])
         errors.append("config_pole_pairs")
     if abs(float(values["rated_phase_voltage_v"]) - profile_phase_voltage) > 1.0:
         errors.append("config_winding_voltage")
-    if float(values["max_speed_rpm"]) < profile_speed or float(values["max_speed_rpm"]) > profile_speed * 1.10:
+    synchronous_speed = 60.0 * float(profile["rated_frequency_hz"]) / profile_pole_pairs
+    speed_ceiling = max(profile_speed * 1.10, synchronous_speed * 1.05)
+    if float(values["max_speed_rpm"]) < profile_speed or float(values["max_speed_rpm"]) > speed_ceiling:
         errors.append("config_speed_limit")
     if float(values["nominal_bus_voltage_v"]) + 2.0 < required_dc_bus_v:
         errors.append("config_dc_bus_too_low")
@@ -349,7 +422,10 @@ def inspect(
     profile_path: Path,
     artifacts: Path,
     ipm_sd_bkin_evidence: Path | None = None,
+    control_mode: str = "foc",
 ) -> dict[str, Any]:
+    if control_mode not in {"vf", "foc"}:
+        raise ValueError(f"unsupported control mode: {control_mode}")
     checks: dict[str, dict[str, Any]] = {}
 
     def record(name: str, ok: bool, evidence: Any) -> None:
@@ -391,11 +467,23 @@ def inspect(
     main_text = main_path.read_text(encoding="utf-8", errors="replace") if main_path.is_file() else ""
     msp_text = msp_path.read_text(encoding="utf-8", errors="replace") if msp_path.is_file() else ""
     irq_text = irq_path.read_text(encoding="utf-8", errors="replace") if irq_path.is_file() else ""
+    sd_irq = re.search(r"void TIMx_BRK_M1_IRQHandler\(void\)\s*\{(.*?)\n\}", irq_text, re.S)
     bkin_static = {
+        "sd_uses_driver_protection_handler": sd_irq is not None
+        and "PWMC_DP_Handler(" in sd_irq[1] and "PWMC_OVP_Handler(" not in sd_irq[1],
         "pa6_is_tim1_bkin": "PA6.Signal=TIM1_BKIN" in ioc_text,
         "break_enabled": "TIM1.BreakState=TIM_BREAK_ENABLE" in ioc_text,
         "external_break_source_enabled": "TIM1.SourceBRKDigInput=TIM_BREAKINPUTSOURCE_ENABLE" in ioc_text,
         "external_sd_is_active_low": "TIM1.SourceBRKDigInputPolarity=TIM_BREAKINPUTSOURCE_POLARITY_LOW" in ioc_text,
+        "break_output_polarity_matches_inverted_source": (
+            "TIM1.BreakPolarity=TIM_BREAKPOLARITY_HIGH" in ioc_text
+            and "sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;" in main_text
+            and "sBreakInputConfig.Polarity = TIM_BREAKINPUTSOURCE_POLARITY_LOW;" in main_text
+        ),
+        "generated_break_remains_enabled": (
+            "sBreakDeadTimeConfig.BreakState = TIM_BREAK_ENABLE;" in main_text
+            and "sBreakInputConfig.Enable = TIM_BREAKINPUTSOURCE_ENABLE;" in main_text
+        ),
         "automatic_output_disabled": (
             "TIM1.AutomaticOutput=TIM_AUTOMATICOUTPUT_DISABLE" in ioc_text
             and "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;" in main_text
@@ -477,8 +565,9 @@ def inspect(
             profile = read_json(profile_path)
         except (OSError, json.JSONDecodeError) as exc:
             profile_error = str(exc)
-    errors = profile_errors(profile) if not profile_error and profile else ["profile_unreadable"]
-    record("motor_profile_is_real_acim", not errors, {"errors": errors, "source_kind": profile.get("source_kind", "") if profile else profile_error})
+    errors = profile_errors(profile, control_mode) if not profile_error and profile else ["profile_unreadable"]
+    profile_check = "motor_profile_is_real_acim" if control_mode == "foc" else "motor_profile_is_catalog_confirmed_acim"
+    record(profile_check, not errors, {"errors": errors, "source_kind": profile.get("source_kind", "") if profile else profile_error})
 
     configuration = generated_motor_configuration_errors(project, profile) if not errors else {
         "errors": ["profile_invalid"],
@@ -517,6 +606,7 @@ def inspect(
     failures = [name for name, check in checks.items() if not check["pass"]]
     return {
         "tool": "mcsdk_release_preflight",
+        "control_mode": control_mode,
         "pass": not failures,
         "project": str(project),
         "artifacts": str(artifacts),
@@ -531,6 +621,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Verify an MCSDK ACIM release before treating it as a flashable firmware package.")
     parser.add_argument("--project", required=True, type=Path, help="Root of the generated STM32CubeIDE/MCSDK project")
     parser.add_argument("--motor-profile", required=True, type=Path, help="Measured/nameplate ACIM profile JSON")
+    parser.add_argument("--control-mode", choices=("vf", "foc"), default="foc", help="VF accepts an operator-confirmed manufacturer catalog; FOC requires measured model data")
     parser.add_argument("--artifacts", type=Path, help="Directory containing the generated ELF/BIN/HEX files; defaults to project root")
     parser.add_argument(
         "--ipm-sd-bkin-evidence",
@@ -543,7 +634,7 @@ def main() -> int:
     project = args.project.resolve()
     artifacts = (args.artifacts or args.project).resolve()
     evidence_path = args.ipm_sd_bkin_evidence.resolve() if args.ipm_sd_bkin_evidence else None
-    report = inspect(project, args.motor_profile.resolve(), artifacts, evidence_path)
+    report = inspect(project, args.motor_profile.resolve(), artifacts, evidence_path, args.control_mode)
     try:
         artifacts.relative_to(project)
         artifacts_inside_project = True

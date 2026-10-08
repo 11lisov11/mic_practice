@@ -1,0 +1,151 @@
+2026-10-06 09:27:29 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:31:49 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:31:49 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:36:04 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:36:04 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:36:04 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:37:37 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:37:37 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:38:05 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:38:06 CMD CLEAR
+2026-10-06 09:38:06 ARM_PROFILE lv runlimit=3.0s
+2026-10-06 09:38:06 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:38:06 CMD DIAG ON
+2026-10-06 09:38:07 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:38:07 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:38:09 WIFI_START_REJECT guard motor-controller fault is active: mc_fault=7
+2026-10-06 09:38:09 HV_RUNTIME_REJECT motor-controller fault is active: mc_fault=7 stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control
+2026-10-06 09:38:10 CMD CLEAR
+2026-10-06 09:38:10 ARM_PROFILE hv runlimit=15.0s
+2026-10-06 09:38:10 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:38:11 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:38:37 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:39:18 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:39:18 AUTH_REJECT peer=192.168.1.145 path=/api/cmd
+2026-10-06 09:39:18 CMD MODE FOC
+2026-10-06 09:39:18 CMD SET FREQ 100000
+2026-10-06 09:39:18 CMD SET FREQ -1
+2026-10-06 09:39:18 CMD_FAIL SET FREQ nan rejected
+2026-10-06 09:39:19 CMD_FAIL SET FREQ inf rejected
+2026-10-06 09:39:19 WIFI_START_REJECT guard motor-controller fault is active: mc_fault=5
+2026-10-06 09:39:19 WIFI_START_REJECT guard motor-controller fault is active: mc_fault=5
+2026-10-06 09:39:20 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:39:45 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:39:46 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:12 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:12 CMD CLEAR
+2026-10-06 09:40:13 ARM_PROFILE lv runlimit=3.0s
+2026-10-06 09:40:13 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:13 CMD DIAG ON
+2026-10-06 09:40:13 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:14 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:15 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:16 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:16 CMD CLEAR
+2026-10-06 09:40:16 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:16 CMD DIAG ON
+2026-10-06 09:40:17 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:17 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:18 STAT state=VF_RUN mode=DIAG pwm=1 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=1 bp_foc_backend=0
+2026-10-06 09:40:19 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:19 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:21 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:22 CMD CLEAR
+2026-10-06 09:40:22 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:22 CMD DIAG ON
+2026-10-06 09:40:23 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:23 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:23 STAT state=VF_RUN mode=DIAG pwm=1 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=1 bp_foc_backend=0
+2026-10-06 09:40:24 WIFI_STOP_SEQUENCE emergency=1 ok=1 ESTOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:25 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:27 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:27 CMD CLEAR
+2026-10-06 09:40:27 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:27 CMD DIAG ON
+2026-10-06 09:40:28 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:28 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:29 STAT state=VF_RUN mode=DIAG pwm=1 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=1 bp_foc_backend=0
+2026-10-06 09:40:29 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:30 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:32 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:33 CMD CLEAR
+2026-10-06 09:40:33 AUTH_REJECT peer=192.168.1.145 path=/api/start-sequence
+2026-10-06 09:40:34 WIFI_START_REJECT arm LV arm is not active
+2026-10-06 09:40:34 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:35 HV_ARM_REJECT confirmation phrase mismatch
+2026-10-06 09:40:36 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:36 CMD CLEAR
+2026-10-06 09:40:37 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:37 CMD DIAG ON
+2026-10-06 09:40:37 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:37 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:39 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:41 WIFI_START_REJECT arm LV arm is not active
+2026-10-06 09:40:41 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:42 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:42 CMD CLEAR
+2026-10-06 09:40:42 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:42 CMD DIAG ON
+2026-10-06 09:40:42 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:43 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:44 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:46 WIFI_START_REJECT arm LV arm is not active
+2026-10-06 09:40:46 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:47 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:47 CMD CLEAR
+2026-10-06 09:40:48 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:48 CMD DIAG ON
+2026-10-06 09:40:48 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:48 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:49 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:51 WIFI_START_REJECT arm LV arm is not active
+2026-10-06 09:40:53 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:54 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:54 CMD CLEAR
+2026-10-06 09:40:54 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:40:54 CMD DIAG ON
+2026-10-06 09:40:54 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:40:55 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:40:56 WIFI_STOP_SEQUENCE emergency=1 ok=1 ESTOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:40:58 WIFI_START_REJECT guard ESTOP is active: estop=1
+2026-10-06 09:40:58 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:40:59 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:41:00 CMD CLEAR
+2026-10-06 09:41:00 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:41:00 CMD DIAG ON
+2026-10-06 09:41:00 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:41:00 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:41:03 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:41:03 HV_RUNTIME_REJECT ESTOP is active stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control
+2026-10-06 09:41:06 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:41:06 CMD CLEAR
+2026-10-06 09:41:06 ARM profile=lv ttl=30.0s vdc=0.0
+2026-10-06 09:41:06 CMD DIAG ON
+2026-10-06 09:41:06 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-06 09:41:07 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready
+2026-10-06 09:41:08 CMD SET RUNLIMIT 8
+2026-10-06 09:41:09 STAT state=VF_RUN mode=DIAG pwm=1 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=1 bp_foc_backend=0
+2026-10-06 09:41:11 OPERATOR_HEARTBEAT_LOST age=3.02s stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control
+2026-10-06 09:41:13 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:41:13 CMD CLEAR
+2026-10-06 09:41:13 CMD CLEAR
+2026-10-06 09:41:13 ARM_PROFILE hv runlimit=15.0s
+2026-10-06 09:41:14 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:41:14 STAT state=SAFE mode=DIAG pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=25.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:41:40 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:41:48 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:41:49 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:41:49 CMD CLEAR
+2026-10-06 09:41:54 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:00 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:05 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:11 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:17 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:22 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:28 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:33 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:39 WIFI_START_REJECT guard motor-controller fault is active: mc_fault=5
+2026-10-06 09:42:40 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:42:40 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-06 09:43:08 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-06 09:43:11 VBUS_CAPTURE meter_vdc=0.000 raw_mean=0.000 raw_std=0.000 raw_min=0 raw_max=0 vdc_mean=0.000 calibration_ok=1 calibration_reason=known-HV capture is required

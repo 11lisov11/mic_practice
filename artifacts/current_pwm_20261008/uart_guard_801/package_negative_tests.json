@@ -1,0 +1,21 @@
+{
+  "pass": true,
+  "cases": {
+    "valid_archive": true,
+    "damaged_nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": true,
+    "damaged_uno_q/UNOQ_MOTOR.ino.elf-zsk.bin": true,
+    "damaged_linux/web_hmi/server.py": true,
+    "damaged_source/nucleo/Src/main.c": true,
+    "missing_image": true,
+    "unexpected_file": true,
+    "wrong_build_pair": true,
+    "false_hardware_claim": true,
+    "failing_child_with_green_summary": true,
+    "failing_detail_with_green_summary": true,
+    "repeated_test_names": true,
+    "source_changed_after_tests": true,
+    "source_hash_mismatch_with_rehashed_manifest": true
+  },
+  "hardware_commands": 0,
+  "scope": "Archive integrity and false qualification claims; not cryptographic authentication"
+}

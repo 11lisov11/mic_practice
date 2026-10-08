@@ -266,7 +266,156 @@ def with_motor_controller_aliases(data: dict) -> dict:
     for key, value in list(data.items()):
         if key.startswith("bp_"):
             data.setdefault(f"mc_{key[3:]}", value)
+    data["mc_fault_detail"] = motor_fault_detail(data)
+    if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
+        data["mc_current_telemetry_valid"] = 0
+        data["mc_current_telemetry_source"] = "uno_q_local_adc_unqualified"
     return data
+
+
+MC_FAULT_REASONS = {
+    0: "NONE", 1: "CRC", 2: "PROTOCOL_VERSION", 3: "ENABLE_REPLAY",
+    4: "ESTOP", 5: "SERVICE_FIELD", 6: "COMMAND_REJECTED",
+    7: "FREQUENCY_REJECTED", 8: "MCSDK_FAULT", 9: "BUS_OUT_OF_RANGE",
+    10: "START_REJECTED", 11: "UART_TX_FAILED", 12: "UART_RX_ERROR",
+    13: "LINK_TIMEOUT", 14: "RX_BUFFER_OVERFLOW",
+}
+MCSDK_FAULT_BITS = {
+    0x0001: "MC_DURATION", 0x0002: "MC_OVER_VOLT", 0x0004: "MC_UNDER_VOLT",
+    0x0008: "MC_OVER_TEMP", 0x0010: "MC_START_UP", 0x0020: "MC_SPEED_FDBK",
+    0x0040: "MC_OVER_CURR", 0x0080: "MC_SW_ERROR", 0x0400: "MC_DP_FAULT",
+}
+
+
+def motor_fault_detail(data: dict) -> str:
+    if _as_int(data, "mc_diag_valid", 0) != 1:
+        return "cause unavailable in installed firmware"
+    reason = _as_int(data, "mc_fault_reason", -1)
+    label = MC_FAULT_REASONS.get(reason, f"UNKNOWN_REASON_{reason}")
+    uart = _as_int(data, "mc_uart_error_flags", 0)
+    uart_names = [name for bit, name in ((1, "PE"), (2, "FE"), (4, "NE"), (8, "ORE")) if uart & bit]
+    masks = []
+    for field in ("mc_fault_current_mask", "mc_fault_occurred_mask"):
+        mask = _as_int(data, field, 0)
+        names = [name for bit, name in MCSDK_FAULT_BITS.items() if mask & bit]
+        unknown = mask & ~sum(MCSDK_FAULT_BITS)
+        if unknown:
+            names.append(f"UNKNOWN_BITS_0x{unknown:04X}")
+        masks.append(f"0x{mask:04X}[{'|'.join(names) or 'NONE'}]")
+    return (f"first={label} UART={'|'.join(uart_names) or 'NONE'} "
+            f"MCSDK_current={masks[0]} MCSDK_occurred={masks[1]} "
+            f"state={_as_int(data, 'mc_fault_motor_state', -1)} "
+            f"seq={_as_int(data, 'mc_fault_sequence', -1)} "
+            f"TX_status={_as_int(data, 'mc_fault_tx_status', 0)} "
+            f"last_bad={MC_FAULT_REASONS.get(_as_int(data, 'mc_last_bad_reason', 0), 'UNKNOWN') if _as_int(data, 'mc_last_bad_valid', 0) == 1 else 'UNAVAILABLE'} "
+            f"last_UART_flags=0x{_as_int(data, 'mc_last_uart_error_flags', 0):02X} "
+            f"last_TX_status={_as_int(data, 'mc_last_tx_status', 0)}")
+
+
+class MotorFaultRecorder:
+    """Bounded, observational flight recorder; never sends control commands."""
+
+    FIELDS = (
+        "ts", "state", "mode", "pwm", "estop", "vdc", "freq", "freq_cmd",
+        "fw_build", "mc_fw_build", "mc_status", "mc_fault", "mc_age_ms",
+        "mc_seq", "mc_good_cnt", "mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence",
+        "mc_vbus_raw", "mc_vbus_age_ms", "mc_vbus_valid", "mc_softstart_ready",
+        "mc_temp_c", "mc_temp_fault", "mc_temp_age_ms", "mc_current_telemetry_valid",
+        "mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags", "mc_fault_motor_state",
+        "mc_fault_current_mask", "mc_fault_occurred_mask", "mc_fault_sequence",
+        "mc_fault_tx_status", "mc_last_bad_valid", "mc_last_bad_reason",
+        "mc_last_uart_error_flags", "mc_last_tx_status", "enc_bus_ok", "enc_ok",
+        "enc_speed_ok", "enc_reads", "enc_errors", "enc_io_error", "enc_age_ms",
+        "enc_status", "hmi_hv_armed", "hmi_operator_heartbeat_age_s",
+    )
+    KEY_FIELDS = (
+        "mc_fw_build", "mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags",
+        "mc_fault_current_mask", "mc_fault_occurred_mask", "mc_fault_motor_state",
+        "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
+        "mc_last_bad_reason", "mc_last_uart_error_flags", "mc_last_tx_status",
+    )
+
+    def __init__(self) -> None:
+        self._history = deque(maxlen=64)
+        self._key = None
+        self._event_id = ""
+        self._event_summary = ""
+        self._last_sample = -math.inf
+        self._post_until = -math.inf
+        self._lock = threading.Lock()
+
+    @staticmethod
+    def compact(data: dict, now: float) -> dict:
+        sample = {"observed_monotonic_s": round(now, 6), "observed_unix_s": _now_ts()}
+        for key in MotorFaultRecorder.FIELDS:
+            value = data.get(key)
+            if key.startswith("mc_") and value is None:
+                value = data.get("bp_" + key[3:])
+            if type(value) in (str, bool, int) or value is None:
+                sample[key] = value
+            elif type(value) is float and math.isfinite(value):
+                sample[key] = value
+            else:
+                sample[key] = None
+        return sample
+
+    def observe(self, data: dict, now: Optional[float] = None) -> list[str]:
+        now = time.monotonic() if now is None else now
+        sample = self.compact(data, now)
+        valid = _as_int(data, "mc_diag_valid", 0) == 1
+        active = _as_int(data, "bp_fault", 0)
+        first_reason = _as_int(data, "mc_fault_reason", 0)
+        has_cause = bool(first_reason or active)
+        key = tuple(sample.get(k) for k in self.KEY_FIELDS) if has_cause else None
+        if key is not None and not valid:
+            key += (active,)
+        lines = []
+        with self._lock:
+            changed = key is not None and key != self._key
+            self._key = key
+            if changed:
+                recent_bad = (_as_int(data, "mc_last_bad_valid", 0) == 1
+                              and _as_int(data, "bp_bad_cnt", 0) > 0
+                              and _as_int(data, "mc_last_bad_reason", 0) != 0)
+                reason = _as_int(data, "mc_last_bad_reason", 0) if recent_bad else first_reason
+                flags = _as_int(data, "mc_last_uart_error_flags" if recent_bad else "mc_uart_error_flags", 0)
+                uart_names = [name for bit, name in ((1, "PE"), (2, "FE"), (4, "NE"), (8, "ORE")) if flags & bit]
+                label = MC_FAULT_REASONS.get(reason, "UNKNOWN") if valid else "DIAGNOSTICS_UNAVAILABLE"
+                self._event_id = secrets.token_hex(8)
+                self._event_summary = f"{label}; UART={'|'.join(uart_names) or 'NONE'}; physical source not identified"
+                before = [s for s in self._history if 0 <= now - s["observed_monotonic_s"] <= 5]
+                payload = {
+                    "schema": "mic_ai.fault_context.v1", "event_id": self._event_id,
+                    "phase": "fault", "summary": self._event_summary,
+                    "physical_source_identified": False,
+                    "controller_masks_are_first_fault_snapshot": True,
+                    "time_basis": "Linux observation, not exact MCU interrupt timestamp",
+                    "detail": motor_fault_detail(data), "before": before, "at": sample,
+                    "history_samples": len(before), "post_window_s": 5,
+                    "sampling_note": "observed RPC snapshots; intervening transients are not measured",
+                }
+                lines.append("MC_FAULT_CONTEXT " + json.dumps(payload, separators=(",", ":"), allow_nan=False))
+                self._post_until = now + 5
+            transition = bool(self._history and any(
+                sample.get(field) != self._history[-1].get(field)
+                for field in ("state", "pwm", "mc_fault", "enc_bus_ok", "enc_errors")
+            ))
+            if changed or transition or now - self._last_sample >= .19:
+                if not changed and now <= self._post_until:
+                    lines.append("MC_FAULT_CONTEXT " + json.dumps({
+                        "schema": "mic_ai.fault_context.v1", "event_id": self._event_id,
+                        "phase": "after", "at": sample,
+                    }, separators=(",", ":"), allow_nan=False))
+                self._history.append(sample)
+                self._last_sample = now
+        return lines
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return {"hmi_fault_log_schema": "mic_ai.fault_context.v1",
+                    "hmi_last_fault_event_id": self._event_id,
+                    "hmi_last_fault_summary": self._event_summary,
+                    "hmi_fault_physical_source_identified": 0}
 
 
 def supported_modes_from_caps(capabilities: int) -> list[str]:
@@ -292,6 +441,46 @@ def _vbus_calibration_identity(data: dict) -> dict:
         "mc_capabilities": _as_int(data, "mc_capabilities", -1),
         "mc_mcsdk_telemetry": _as_int(data, "bp_mcsdk_telemetry", 0),
     }
+
+
+def _vbus_calibration_identity_matches(stored: dict, current: dict) -> bool:
+    if stored == current:
+        return True
+    # Audited diagnostic-only updates retain the same Vbus word (0.1 V/LSB).
+    # Keep the original capture identities; do not authorize unknown firmware.
+    firmware_pairs = {
+        (2026092901, 2026100601), (2026100612, 2026100601),
+        (2026100701, 2026100601), (2026100701, 2026100701),
+        (2026100702, 2026100601), (2026100702, 2026100701), (2026100702, 2026100702),
+        (2026100703, 2026100601), (2026100703, 2026100701),
+        (2026100703, 2026100702), (2026100703, 2026100703),
+        (2026100704, 2026100601), (2026100704, 2026100701),
+        (2026100704, 2026100702), (2026100704, 2026100703), (2026100704, 2026100704),
+        (2026100705, 2026100704), (2026100705, 2026100705),
+        (2026100706, 2026100705),
+        (2026100707, 2026100707),
+        (2026100708, 2026100707), (2026100708, 2026100708),
+        (2026100709, 2026100708), (2026100709, 2026100710), (2026100709, 2026100801),
+        (2026100802, 2026100801),
+        (2026100803, 2026100801),
+        (2026100804, 2026100801),
+    }
+    contract = {
+        "rpc_schema_version": 3,
+        "mc_capabilities": MC_CAP_VF,
+        "mc_mcsdk_telemetry": 1,
+    }
+    expected_keys = set(contract) | {"fw_build", "mc_fw_build"}
+    return (
+        set(stored) == expected_keys
+        and set(current) == expected_keys
+        and isinstance(stored["fw_build"], int) and isinstance(stored["mc_fw_build"], int)
+        and isinstance(current["fw_build"], int) and isinstance(current["mc_fw_build"], int)
+        and (stored["fw_build"], stored["mc_fw_build"]) in firmware_pairs
+        and (current["fw_build"], current["mc_fw_build"]) in firmware_pairs
+        and all(stored[key] == value and current[key] == value
+                for key, value in contract.items())
+    )
 
 
 class VbusCalibrationStore:
@@ -381,7 +570,9 @@ class VbusCalibrationStore:
             or _as_int(identity, "mc_mcsdk_telemetry", 0) != 1
         ):
             return False, "calibration identity is incomplete"
-        if status is not None and identity != _vbus_calibration_identity(status):
+        if status is not None and not _vbus_calibration_identity_matches(
+            identity, _vbus_calibration_identity(status)
+        ):
             return False, "firmware or telemetry identity changed; recalibration is required"
         try:
             meter_span = float(high.get("meter_vdc")) - float(zero.get("meter_vdc"))
@@ -494,7 +685,10 @@ class VbusCalibrationStore:
                 valid, reason = self._evaluate_locked(status)
             else:
                 points = self._record.get("points", {}) if isinstance(self._record, dict) else {}
-                if self._record.get("identity") != identity or not isinstance(points.get("zero"), dict):
+                stored_identity = self._record.get("identity")
+                if (not isinstance(stored_identity, dict)
+                        or not _vbus_calibration_identity_matches(stored_identity, identity)
+                        or not isinstance(points.get("zero"), dict)):
                     valid, reason = False, "capture a new zero point before the known-HV point"
                     return valid, reason, self.snapshot(status)
                 points["high"] = point
@@ -844,7 +1038,8 @@ def _status_link_live(data: dict) -> bool:
             ages.append(_as_float(data, key, 999999.0))
     if data.get("last_rx_age_s") is not None:
         ages.append(_as_float(data, "last_rx_age_s", 999999.0) * 1000.0)
-    return bool(ages) and min(ages) <= CMD_GUARD_MAX_AGE_MS
+    return (bool(ages) and all(math.isfinite(age) and age >= 0 for age in ages)
+            and min(ages) <= CMD_GUARD_MAX_AGE_MS)
 
 
 def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig) -> tuple[bool, str]:
@@ -1784,6 +1979,13 @@ class RpcBridge:
                 else 0
             )
             data["mc_supported_modes"] = supported_modes_from_caps(data["mc_capabilities"])
+            for index, field in enumerate(("mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags",
+                                           "mc_fault_motor_state", "mc_fault_current_mask",
+                                           "mc_fault_occurred_mask", "mc_fault_sequence", "mc_fault_tx_status"), 79):
+                data[field] = int(result[index]) if len(result) >= 87 else 0
+            for index, field in enumerate(("mc_last_bad_valid", "mc_last_bad_reason",
+                                           "mc_last_uart_error_flags", "mc_last_tx_status"), 87):
+                data[field] = int(result[index]) if len(result) >= 91 else 0
             return True, with_motor_controller_aliases(data), None
         if self._serial_text is not None:
             line = self._serial_text.get(timeout=1.2, retries=2)
@@ -1845,6 +2047,17 @@ class RpcBridge:
                 "bp_fan_rpm": float(kv.get("bp_fan_rpm", "0")),
                 "enc_raw": int(float(kv.get("enc_raw", "0"))),
                 "enc_ok": int(float(kv.get("enc_ok", "0"))),
+                "enc_source": kv.get("enc_source", "motor_controller_uart"),
+                "enc_bus_ok": int(float(kv.get("enc_bus_ok", "0"))),
+                "enc_status": int(float(kv.get("enc_status", "0"))),
+                "enc_speed_ok": int(float(kv.get("enc_speed_ok", "0"))),
+                "enc_reads": int(float(kv.get("enc_reads", "0"))),
+                "enc_errors": int(float(kv.get("enc_errors", "0"))),
+                "enc_io_error": int(float(kv.get("enc_io_error", "0"))),
+                "enc_init_error": int(float(kv.get("enc_init_error", "0"))),
+                "enc_scl": int(float(kv.get("enc_scl", "-1"))),
+                "enc_sda": int(float(kv.get("enc_sda", "-1"))),
+                "enc_age_ms": int(float(kv.get("enc_age_ms", "999999"))),
                 "enc_deg": float(kv.get("enc_deg", "0")),
                 "enc_rpm": float(kv.get("enc_rpm", "0")),
                 "enc_mech_hz": float(kv.get("enc_mech_hz", "0")),
@@ -1861,9 +2074,29 @@ class RpcBridge:
                 "duty_mode": duty_mode,
                 "bp_good": int(float(kv.get("bp_good", "0"))),
                 "bp_bad": int(float(kv.get("bp_bad", "999999"))),
+                "bp_bad_integrity": int(float(kv["bp_bad_integrity"])) if "bp_bad_integrity" in kv else None,
+                "bp_bad_sequence": int(float(kv["bp_bad_sequence"])) if "bp_bad_sequence" in kv else None,
+                "bp_superseded": int(float(kv["bp_superseded"])) if "bp_superseded" in kv else None,
+                "bp_clear_pending": int(float(kv["bp_clear_pending"])) if "bp_clear_pending" in kv else None,
                 "bp_age_ms": int(float(kv.get("bp_age_ms", "999999"))),
                 "bp_status": int(float(kv.get("bp_status", "0"))),
                 "bp_fault": int(float(kv.get("bp_fault", "255"))),
+                "mc_diag_valid": int(float(kv.get("mc_diag_valid", "0"))),
+                "mc_fault_reason": int(float(kv.get("mc_fault_reason", "0"))),
+                "mc_uart_error_flags": int(float(kv.get("mc_uart_error_flags", "0"))),
+                "mc_fault_motor_state": int(float(kv.get("mc_fault_motor_state", "0"))),
+                "mc_fault_current_mask": int(float(kv.get("mc_fault_current_mask", "0"))),
+                "mc_fault_occurred_mask": int(float(kv.get("mc_fault_occurred_mask", "0"))),
+                "mc_fault_sequence": int(float(kv.get("mc_fault_sequence", "0"))),
+                "mc_fault_tx_status": int(float(kv.get("mc_fault_tx_status", "0"))),
+                "mc_last_bad_valid": int(float(kv.get("mc_last_bad_valid", "0"))),
+                "mc_last_bad_reason": int(float(kv.get("mc_last_bad_reason", "0"))),
+                "mc_last_uart_error_flags": int(float(kv.get("mc_last_uart_error_flags", "0"))),
+                "mc_last_tx_status": int(float(kv.get("mc_last_tx_status", "0"))),
+                **{key: int(kv[key]) if key in kv else None for key in (
+                    "uno_loop_active_max_us", "uno_tx_active_max_gap_us", "uno_rx_active_max_gap_us",
+                    "uno_tx_call_max_us", "uno_rpc_max_us", "uno_tx_short_writes", "uno_tx_count", "uno_rx_count",
+                    "uno_log_dropped", "uno_log_pending")},
                 "bp_mode": int(float(kv.get("bp_mode", "0"))),
                 "bp_cmd_mode": int(float(kv.get("bp_cmd_mode", kv.get("bp_mode", "0")))),
                 "bp_foc_backend": int(float(kv.get("bp_foc_backend", "0"))),
@@ -1948,10 +2181,13 @@ class AppState:
         self.control_lock = threading.Lock()
         self._status_log_interval = status_log_interval
         self._last_status_log = 0.0
+        self._last_fault_diag_key = None
         self._lock = threading.Lock()
         self._watchdog_stop = threading.Event()
         self._watchdog_thread: Optional[threading.Thread] = None
         self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
+        self._fault_recorder = MotorFaultRecorder()
+        self._last_diag_idle_poll = 0.0
 
     def _precharge_off(self) -> tuple[bool, str]:
         return True, "external-autonomous-no-control"
@@ -1993,7 +2229,9 @@ class AppState:
             if status_ok and candidate is not None:
                 status = candidate
                 off_confirmed = bool(
-                    _as_int(candidate, "pwm", 1) == 0
+                    _status_link_live(candidate)
+                    and _as_int(candidate, "bp_status", 0) & 0x01
+                    and _as_int(candidate, "pwm", 1) == 0
                     and (_as_int(candidate, "bp_status", 0x20) & 0x20) == 0
                     and _as_int(candidate, "precharge", 1) == 0
                     and (_as_int(candidate, "bp_ext", 0x08) & 0x08) == 0
@@ -2084,6 +2322,7 @@ class AppState:
         while True:
             read_ok, candidate, read_err = self.rpc.get()
             if read_ok and candidate is not None:
+                self.maybe_log_fault_diagnostics(candidate)
                 run_status = candidate
                 run_ok, run_err = output_sequence_health_check(
                     candidate,
@@ -2207,6 +2446,8 @@ class AppState:
                     self.hv_arm.disarm()
                 else:
                     status_ok, status, status_err = self.rpc.get()
+                    if status_ok and status is not None:
+                        self.maybe_log_fault_diagnostics(status)
                     live_ok, live_err = hv_runtime_check(
                         status if status_ok else None,
                         self.hv_arm.cfg,
@@ -2224,6 +2465,14 @@ class AppState:
                         self.hv_arm.disarm()
             else:
                 self._runtime_bad_monitor.reset()
+                # Keep a small idle prehistory even when no browser is open.
+                # Armed operation already polls above; do not add a second poll.
+                now = time.monotonic()
+                if now - self._last_diag_idle_poll >= 1.0:
+                    self._last_diag_idle_poll = now
+                    status_ok, status, _ = self.rpc.get()
+                    if status_ok and status is not None:
+                        self.maybe_log_fault_diagnostics(status)
             if not reason:
                 continue
             stop_ok, stop_err = self.rpc.cmd("STOP")
@@ -2236,7 +2485,31 @@ class AppState:
                 f"relay_ok={int(relay_ok)} relay_err={relay_err or '-'}"
             )
 
+    def maybe_log_fault_diagnostics(self, data: dict) -> None:
+        for line in self._fault_recorder.observe(data):
+            self.logs.add(line)
+        data.update(self._fault_recorder.snapshot())
+        reason = _as_int(data, "mc_fault_reason", 0)
+        active = _as_int(data, "bp_fault", 0)
+        key = None
+        if reason or active:
+            key = tuple(data.get(k) for k in ("mc_fw_build", "mc_diag_valid", "mc_fault_reason",
+                                             "mc_uart_error_flags", "mc_fault_current_mask",
+                                             "mc_fault_occurred_mask", "mc_fault_motor_state",
+                                             "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
+                                             "mc_last_bad_reason", "mc_last_uart_error_flags", "mc_last_tx_status"))
+            if _as_int(data, "mc_diag_valid", 0) != 1:
+                key += (active,)
+        with self._lock:
+            if key == self._last_fault_diag_key:
+                return
+            self._last_fault_diag_key = key
+        if key is not None:
+            self.logs.add(f"MC_FAULT_DIAG code={active} bad={_as_int(data, 'bp_bad_cnt', 0)} "
+                          + motor_fault_detail(data))
+
     def maybe_log_status(self, data: dict) -> None:
+        self.maybe_log_fault_diagnostics(data)
         now = _now_ts()
         with self._lock:
             if (now - self._last_status_log) < self._status_log_interval:
@@ -2249,6 +2522,7 @@ class AppState:
             f"bp_phase_c_v={data.get('bp_phase_c_v', 0.0):.3f} bp_phase_c_virtual={data.get('bp_phase_c_virtual', 0)} "
             f"fan_duty={data.get('fan_duty', 0.0):.2f} bp_fan_rpm={data.get('bp_fan_rpm', 0.0):.0f} "
             f"bp_cmd_mode={data.get('bp_cmd_mode', 0)} bp_foc_backend={data.get('bp_foc_backend', 0)}"
+            f" mc_diag_valid={data.get('mc_diag_valid', 0)} mc_fault_reason={data.get('mc_fault_reason', 0)}"
         )
         self.logs.add(line)
 
@@ -2428,7 +2702,14 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
         normalized = " ".join(_cmd_tokens(cmd)).upper()
-        if normalized in ("STOP", "ESTOP"):
+        parts = _cmd_tokens(cmd)
+        frequency_stop = False
+        if len(parts) == 3 and parts[0].upper() == "SET" and parts[1].upper() == "FREQ":
+            try:
+                frequency_stop = float(parts[2]) == 0.0
+            except ValueError:
+                pass
+        if normalized in ("STOP", "ESTOP") or frequency_stop:
             ok, detail, status = app.stop_sequence(emergency=normalized == "ESTOP")
             self._send_json(
                 {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},

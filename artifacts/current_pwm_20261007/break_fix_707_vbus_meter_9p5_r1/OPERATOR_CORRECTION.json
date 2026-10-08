@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-07",
+  "scope": "Operator measurement correction and read-only verification; no actuation or calibration changes",
+  "aux_supply": "15 V on J4 only",
+  "operator_actual_DC_bus_v": 9.5,
+  "operator_retracted_prior_zero_bus_reading_as_measurement_error": true,
+  "firmware_reported_bus_v": 9,
+  "firmware_voltage_resolution_v": 1,
+  "fresh_readonly_capture": "report.json",
+  "new_correct_controller_messages": 124,
+  "new_errors": 0,
+  "state": "SAFE", "pwm": 0, "armed": 0,
+  "conclusion": "The 9 V telemetry is consistent with the corrected 9.5 V physical measurement at integer-volt resolution. The earlier claimed analog offset at zero bus is not established by those measurements.",
+  "calibration_changed": false,
+  "remaining_limitations": [
+    "This single low-voltage measurement does not certify accuracy across the whole bus range.",
+    "The physical origin of bus voltage with auxiliary supply only is not isolated by this comparison.",
+    "A charged DC bus is not a zero-bus condition, regardless of the mains input being disconnected.",
+    "No motor start or energized inverter acceptance is claimed."
+  ]
+}

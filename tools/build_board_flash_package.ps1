@@ -76,6 +76,7 @@ $copyMap = [ordered]@{
     (Join-Path $repoRoot "docs\AUTONOMOUS_WIFI_OPERATION_RU.md") = (Join-Path $output "AUTONOMOUS_WIFI_OPERATION_RU.md")
     (Join-Path $repoRoot "docs\AUTONOMOUS_VBUS_CALIBRATION_RU.md") = (Join-Path $output "AUTONOMOUS_VBUS_CALIBRATION_RU.md")
     (Join-Path $repoRoot "docs\IPM_SD_BKIN_HIL_RU.md") = (Join-Path $output "IPM_SD_BKIN_HIL_RU.md")
+    (Join-Path $repoRoot "docs\MCSDK_LOGIC_BENCH_RU.md") = (Join-Path $output "MCSDK_LOGIC_BENCH_RU.md")
     (Join-Path $repoRoot "firmware\firmware_stages.json") = (Join-Path $output "firmware_stages.json")
 }
 foreach ($entry in $copyMap.GetEnumerator()) {

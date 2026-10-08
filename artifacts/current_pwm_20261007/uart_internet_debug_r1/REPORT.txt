@@ -1,0 +1,92 @@
+UART fault investigation, 2026-10-07
+
+Outcome
+- Found a reproducible software ordering defect, independent of the physical
+  source of UART noise. The first poll takes an error snapshot only once.
+  If a UART IRQ publishes an error after that snapshot, previously queued
+  ENABLE data can still call MC_StartMotor1 before the next poll latches STOP.
+- Host scheduling audit: 2240 / 2240 original cases demonstrate this call order.
+  All 2240 stop and latch on the next poll. No automatic restart after latch.
+- Isolated candidate: check/service pending RX faults before queue consumption
+  and frame dispatch. 0 / 2240 scheduled cases call START after pending error.
+- Candidate passes the existing production host regression: 412901 assertions,
+  262144 command combinations, 256 single-bit corruption checks.
+- No firmware source was changed or flashed; no live control commands were sent.
+  Installed Uno 2026100709 and Nucleo 2026100708 remain unchanged.
+
+Evidence and limits
+- interleaving_candidate_r2/report.json contains original and candidate outcomes.
+- interleaving_candidate_r2/candidate_unflashed.patch is a proposed source patch,
+  not a release image. The installed build ID is deliberately not repurposed.
+- Tests use actual production poll/parser/IRQ functions with mocked MCSDK/HAL.
+  Scheduling hooks are at USART IRQ unmask and after each queued byte is popped.
+  Four UART flags, all partial-frame prefixes and all remaining-byte positions
+  are tested. This is not an exhaustive instruction-level concurrency proof.
+- MC_StartMotor1 in the mock does not prove physical PWM pulses on hardware.
+- Added USART-only critical sections need target timing review. ADC and timer
+  protection interrupts are not intentionally masked by the candidate helper.
+- This patch controls the response to a pending fault. It does not eliminate
+  electrical noise or explain the previous energized NE-only failure.
+
+What the captured fault means
+- Earlier powered trials 707/707 report UART_RX_ERROR, error flags 0x04 (NE).
+  They do not identify ORE as the immediate transport fault.
+- RX servicing delays normally motivate checking ORE/ring overflow/timeout;
+  they should not be substituted as an explanation of an observed NE-only flag.
+- NE means the central receive samples disagree. Possible contributors include
+  a line glitch, edge distortion, reference/power movement or timing deviation.
+  The flag alone cannot choose between these physical contributors.
+- AS5600 I2C errors also appeared near the former START. A shared disturbance
+  is a hypothesis, not a demonstrated diagnosis.
+- Static zero-bus tests do not reproduce the energized failure. The recent
+  read-only baseline records 0 V only. There is no powered-idle result yet.
+- Four HTTP timeouts and a failed log download occurred in an earlier passive
+  interval; access subsequently recovered. The later 30-second baseline has
+  387 new UART messages, maximum age 53 ms, zero UART/HTTP errors and 37 log lines.
+  Counter and encoder-read resets between intervals must not be mistaken for
+  a powered EMI test: both intervals report zero bus voltage.
+
+Configuration verified in source
+- USART1 PB6/PB7, 115200, 8N1, 16x oversampling, ONEBIT disabled, FIFO enabled.
+- ISR transfers bytes into a ring; parser and blocking reply transmission run
+  in the main loop, not in the RX ISR.
+- Reply wire time at 32 bytes / 115200 8N1 is approximately 2.78 ms.
+  HAL reply timeout is 5 ms; interrupts are not globally disabled around TX.
+- USART1 priority 3; timer update priority 0; ADC priority 2.
+- This does not prove actual interrupt execution times on target hardware.
+
+Manufacturer sources and applicability
+1. ST RM0440: NE and the three-sample majority vote, ONEBIT guidance.
+   https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
+   ONEBIT=0 is the documented choice for a noisy receive environment. Switching
+   to ONEBIT=1 to suppress a warning is not a verified repair for this bench.
+2. ST ES0431 Rev 9, sections 2.12.2 and 2.12.4.
+   https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf
+   Short RX glitches can corrupt data. The ONEBIT-specific NE limitation does
+   not explain this configuration because ONEBIT is disabled.
+3. ST Community, FOC Phase Current Noise (Low Inductance Motor), March 2024.
+   https://community.st.com/stm32-mcus-motor-control-34/foc-phase-current-noise-low-inductance-motor-129411?fid=34&tid=129411
+   The original experimenter reports control freezes associated with UART and
+   current transients. This is a related failure class, NOT proof of our cause.
+4. ST Community, Do we need to give isolation power input to the stm32 board,
+   May 2021. Original experimenter describes stopping when joining inverter
+   and USB-powered MCU grounds. Reference and supply integrity are discussed.
+   https://community.st.com/stm32-mcus-motor-control-34/do-we-need-to-give-isolation-power-input-to-the-stm32-board-27156
+   Different bench/voltage/topology. Do not infer that removing UART reference
+   is a valid repair; direct single-ended UART requires a reference path.
+5. ST AN1709 EMC design guide.
+   https://www.st.com/resource/en/application_note/an1709-emc-design-guide-for-stm8-stm32-and-legacy-mcus-stmicroelectronics.pdf
+6. TI UART isolation design considerations, ground-potential differences.
+   https://www.ti.com/document-viewer/lit/html/SLLT217B/GUID-F9F7A301-AF58-446B-A2BC-816480EB742A
+
+Next discriminating evidence
+- Read-only voltage/link/fault observation with outputs disarmed during an
+  independently conducted on-site powered-idle inspection, then compare with
+  the previous START failures. No remote ARM/START/ENABLE is needed or issued.
+- No fault without switching only narrows the search; absence of an observed
+  sampled event does not prove immunity or absence of short transients.
+- Physical line/power diagnosis requires appropriate isolated measurement and
+  qualified on-site inspection. Do not connect PC USB or grounded Saleae to
+  this mains-referenced non-isolated power/control assembly while energized.
+- Keep UART fault latch, BKIN and voltage/timeout protections intact. Do not
+  mask NE, auto-CLEAR a transport fault, or declare powered acceptance passed.

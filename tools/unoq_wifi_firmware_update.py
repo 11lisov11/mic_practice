@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import socket
@@ -122,12 +123,15 @@ def fetch_status(base_url: str, timeout: float = 3.0) -> dict:
     return data
 
 
-def post_command(base_url: str, command: str, timeout: float = 3.0) -> tuple[bool, str]:
+def post_command(base_url: str, command: str, control_token: str, timeout: float = 3.0) -> tuple[bool, str]:
+    if not control_token:
+        return False, "control token required (separate from firmware update token)"
     body = json.dumps({"cmd": command}).encode("utf-8")
     request = Request(
         base_url.rstrip("/") + "/api/cmd",
         data=body,
-        headers={"Accept": "application/json", "Content-Type": "application/json"},
+        headers={"Accept": "application/json", "Content-Type": "application/json",
+                 "X-UNOQ-Control-Token": control_token},
         method="POST",
     )
     try:
@@ -139,6 +143,13 @@ def post_command(base_url: str, command: str, timeout: float = 3.0) -> tuple[boo
 
 
 def activation_health_error(status: dict) -> str:
+    for key in ("pwm", "estop", "bp_fault", "bp_bad", "bp_bad_cnt", "bp_status", "precharge", "bp_ext"):
+        value = status.get(key)
+        if type(value) not in (int, float) or not math.isfinite(value) or value < 0 or value != int(value):
+            return f"invalid {key}"
+    age = status.get("bp_age_ms")
+    if type(age) not in (int, float) or not math.isfinite(age) or not 0 <= age <= 500:
+        return "invalid bp_age_ms"
     if str(status.get("state", "")).upper() != "SAFE":
         return f"state={status.get('state')}"
     if int(status.get("pwm", 1) or 0) != 0:
@@ -151,6 +162,8 @@ def activation_health_error(status: dict) -> str:
         return f"bp_bad={status.get('bp_bad')}/{status.get('bp_bad_cnt')}"
     if (int(status.get("bp_status", 0) or 0) & 0x01) == 0:
         return f"bp_status={status.get('bp_status')}"
+    if int(status["bp_status"]) & 0x22:
+        return "Nucleo output enabled"
     if float(status.get("bp_age_ms", 999999)) > 500.0:
         return f"bp_age_ms={status.get('bp_age_ms')}"
     if int(status.get("precharge", 1) or 0) != 0 or (int(status.get("bp_ext", 0x08) or 0) & 0x08) != 0:
@@ -175,7 +188,7 @@ def wait_for_build(base_url: str, expected: int, timeout: float) -> dict:
     raise RuntimeError(f"firmware activation not verified: expected fw_build={expected}, {last_error}")
 
 
-def wait_for_healthy_controller(base_url: str, timeout: float) -> dict:
+def wait_for_healthy_controller(base_url: str, timeout: float, control_token: str = "") -> dict:
     deadline = time.monotonic() + timeout
     last: dict = {}
     last_error = "status unavailable"
@@ -184,17 +197,15 @@ def wait_for_healthy_controller(base_url: str, timeout: float) -> dict:
         try:
             last = fetch_status(base_url)
             fault = int(last.get("bp_fault", 255) or 0)
-            link_fresh = (
-                (int(last.get("bp_status", 0) or 0) & 0x01) != 0
-                and float(last.get("bp_age_ms", 999999)) <= 500.0
-            )
-            if fault == 2 and link_fresh and not timeout_clear_attempted:
+            safe_recovery = not activation_health_error({**last, "bp_fault": 0})
+            if fault == 2 and safe_recovery and not timeout_clear_attempted:
                 timeout_clear_attempted = True
-                ok, error = post_command(base_url, "CLEAR")
+                ok, error = post_command(base_url, "CLEAR", control_token)
                 if not ok:
                     last_error = f"planned reboot timeout CLEAR failed: {error or 'rejected'}"
+                    break
                 else:
-                    log("RECOVERY_OK cleared expected Blue Pill reboot timeout")
+                    log("RECOVERY_SENT Nucleo timeout CLEAR; awaiting confirmation")
                 time.sleep(0.25)
                 continue
             last_error = activation_health_error(last)
@@ -257,6 +268,7 @@ def main() -> int:
     parser.add_argument("--source-ip", default="", help="Optional local source IP, useful when VPN routing interferes")
     parser.add_argument("--token", default="", help="Firmware update token")
     parser.add_argument("--token-file", default=".unoq_firmware_update_token", help="Local token file")
+    parser.add_argument("--control-token-file", default="", help="Separate control token file for reboot-timeout recovery")
     parser.add_argument("--sketch-dir", default="UNOQ_MOTOR")
     parser.add_argument("--build-path", default="build_unoq_motor_wifi")
     parser.add_argument("--fqbn", default=DEFAULT_FQBN)
@@ -277,6 +289,11 @@ def main() -> int:
         raise SystemExit("ERROR: --flash requires --confirm-hv-off")
 
     token = read_token(args)
+    control_token = ""
+    if args.control_token_file:
+        control_token = Path(args.control_token_file).read_text(encoding="utf-8").strip()
+        if len(control_token) < 16:
+            raise SystemExit("ERROR: control token is missing or too short")
     verify_core_version(args.expected_core_version.strip())
     expected_build = read_expected_build_id(args.sketch_dir, args.expected_build)
     artifact = compile_sketch(args)
@@ -300,7 +317,7 @@ def main() -> int:
         try:
             verify_timeout = min(max(args.timeout, 10.0), 60.0)
             wait_for_build(args.url, expected_build, verify_timeout)
-            final = wait_for_healthy_controller(args.url, verify_timeout)
+            final = wait_for_healthy_controller(args.url, verify_timeout, control_token)
         except RuntimeError as exc:
             log(f"ERROR: {exc}")
             return 1

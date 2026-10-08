@@ -1,0 +1,50 @@
+2026-10-07 10:18:59 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=320.00 bp_temp_c=49.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-07 10:19:00 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 10:19:00 CMD CLEAR
+2026-10-07 10:19:00 CMD MODE VF
+2026-10-07 10:19:00 CMD SET FREQ 10
+2026-10-07 10:19:01 ARM profile=hv ttl=30.0s vdc=320.0
+2026-10-07 10:19:01 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-07 10:19:01 WIFI_START_OK state=VF_RUN freq=0.16 speed=9.6 softstart=external-ready
+2026-10-07 10:19:01 CMD SET RUNLIMIT 3
+2026-10-07 10:19:02 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-07 10:19:02 HV_RUNTIME_REJECT motor-controller fault is active: mc_fault=5 stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control
+2026-10-07 10:35:28 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=3.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-07 10:36:11 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=2.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-07 10:37:58 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=2.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-07 10:38:29 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0
+2026-10-07 10:38:32 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=238 TX_status=0
+2026-10-07 10:38:32 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:39:58 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:40:03 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:46:07 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:47:48 MC_FAULT_DIAG code=5 bad=1 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0
+2026-10-07 10:47:48 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:47:51 MC_FAULT_DIAG code=5 bad=1 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=UART_RX_ERROR last_UART_flags=0x08 last_TX_status=0
+2026-10-07 10:47:51 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:50:34 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:50:39 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=1.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:52:18 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 10:52:22 MC_FAULT_DIAG code=5 bad=1 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=UART_RX_ERROR last_UART_flags=0x08 last_TX_status=0
+2026-10-07 10:52:22 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:04:08 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:04:57 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0
+2026-10-07 11:04:57 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:05:01 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0
+2026-10-07 11:05:01 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:07:37 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:07:42 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:07:47 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:07:53 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:07:58 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:08:03 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:13:11 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0
+2026-10-07 11:13:11 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:13:15 MC_FAULT_DIAG code=5 bad=0 first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0004[MC_UNDER_VOLT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0
+2026-10-07 11:13:15 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:28 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:34 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:39 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:44 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:49 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8
+2026-10-07 11:17:55 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=0.00 bp_temp_c=30.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8

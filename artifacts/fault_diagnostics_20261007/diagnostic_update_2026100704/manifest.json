@@ -1,0 +1,99 @@
+{
+  "schema": "mic_ai.diagnostic_update.v1",
+  "firmware_build_id": 2026100704,
+  "scope": "diagnostic and UART RX update; V/f unchanged",
+  "hardware_readback_performed_by_packager": false,
+  "readback_evidence": "RESULTS.json from the connected-stand verification",
+  "hv_release_approved": false,
+  "motor_start_validated": false,
+  "older_ready_to_flash_package_replaced": false,
+  "calibration_reuse": "audited same measurement contract; original points not rewritten",
+  "open_checks": [
+    "root cause of original HV trip not proven",
+    "repeat bounded motor trial with USB/analyzer removed",
+    "qualified Nucleo phase-current telemetry",
+    "updated loaded-mode and protection timing qualification"
+  ],
+  "files": [
+    {
+      "file": "linux/web_hmi/flash_unoq_sketch_090.cfg",
+      "bytes": 450,
+      "sha256": "d83ab25f951733f02e5bd88cbac664f32d17b16d6f3f67500b7a3c76dc05f3c6"
+    },
+    {
+      "file": "linux/web_hmi/requirements.txt",
+      "bytes": 12,
+      "sha256": "2db2172e314f86716c5c45bb731f4e77d2eb626ba9b6d053ab564e82795c9341"
+    },
+    {
+      "file": "linux/web_hmi/server.py",
+      "bytes": 141094,
+      "sha256": "3268bfd636935cb004d75b3c6d23d63634a76e862c3493b82e8d7bf36eb2c350"
+    },
+    {
+      "file": "linux/web_hmi/static/app.js",
+      "bytes": 35937,
+      "sha256": "59af991d972d99adb8f2ea75d41d7ea9def6c452ec873ef1e1ed1bf9234c972a"
+    },
+    {
+      "file": "linux/web_hmi/static/index.html",
+      "bytes": 8314,
+      "sha256": "221368f5a5dad34e0112c834623e5fb9bd0d74f03e31665e60253e8889e404d2"
+    },
+    {
+      "file": "linux/web_hmi/static/style.css",
+      "bytes": 8833,
+      "sha256": "de37484a049de64405d29b11f20300a16d0d589ba0d76758d8b8489cebfd03a4"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "bytes": 40316,
+      "sha256": "b08070c77336585c9d9e524efdb2d9877b05dfd36e077dacf9e386b7ce945b5d"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+      "bytes": 1889,
+      "sha256": "d0c0c5f52ac99de8934b776cea0565f924b671f60862cd7a481fc66a8e1b541b"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "bytes": 2071796,
+      "sha256": "49c534ea4f17eb9677e5d4afc6d875004dcf46d4bb73fe77a4a0d0a4fc3ae3d6"
+    },
+    {
+      "file": "nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "bytes": 113495,
+      "sha256": "fe0b54cb18a2d2ed177392cf4f8250d47185bf4224bf0c169fc22a6b7732c5ba"
+    },
+    {
+      "file": "nucleo/mcsdk_release_preflight.json",
+      "bytes": 6685,
+      "sha256": "eb94c521ee27a7ff31b342e97f6f932c85e7667ad97c61add42451c88ceeb4aa"
+    },
+    {
+      "file": "uno_q/unoq_mcsdk_scalar.build-manifest.json",
+      "bytes": 1651,
+      "sha256": "27dfe535cc06b285f24c50535efd47d02a4c729b590935447003cdc263fc4792"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.bin",
+      "bytes": 55308,
+      "sha256": "279f18dc1c4da9fd72d21c71277f3cc12229e4aded5382479e00805370e52876"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf",
+      "bytes": 127236,
+      "sha256": "673a813e3938794e1a03d70ec9c94c7eb2fc6af6f5076bc7754d705be7833528"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.elf-zsk.bin",
+      "bytes": 127236,
+      "sha256": "81851b13bec0928462a1668873d5f4ac5ff0ccfc773d8bfca1938dd4294ce006"
+    },
+    {
+      "file": "uno_q/UNOQ_MOTOR.ino.hex",
+      "bytes": 145494,
+      "sha256": "eb787579249363b0e639a179734b04103af28b4338c66f80ab10023e40e3fd46"
+    }
+  ]
+}

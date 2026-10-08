@@ -1,0 +1,69 @@
+USB DEBUG / BREAK IRQ UPDATE 2026100707
+
+Installed on both boards: 2026100707. Programming/readback verification passed.
+Linux HMI was updated only for the audited unchanged measurement contract.
+Saved voltage calibration and thresholds were not changed.
+
+REPRODUCED DEFECT
+On original Nucleo 705, a held active break level caused repeated break IRQs
+and one new RX_BUFFER_OVERFLOW. The core was running, MOE remained off,
+and the original input polarity was restored. See sustained_break_probe_r1.
+
+FIX
+The break IRQ now disables only its own BIE interrupt after a break event.
+Hardware BKE and immediate hardware output inhibition remain enabled;
+AOE remains disabled. Only clean CLEAR with PA6 HIGH, outputs off and both
+break flags successfully cleared rearms BIE. It does not restart PWM.
+
+Repeated the real-timer held-level probe on 707 (0.35 s and 2 s requested
+holds): no new receive errors. Clean CLEAR rearmed BIE without enabling MOE.
+This verifies a synthetic sustained break at zero bus, not a powered IPM fault.
+Historical error triggers were not recorded; their exact cause is not claimed.
+
+REPEATED PWM CAPTURE
+All motor commands went over LAN Wi-Fi. Saleae recorded all six outputs.
+A separate zero-bus-only fixture derived from 707 was used; production
+source was untouched. Critical PWM/TIM/DP code equivalence passed.
+24 MHz acquisition: all six carrier frequencies 16 kHz, minimum gap on
+all three pairs approximately 1.333 us; no overlap in the raw acquisition.
+STOP, ESTOP, SET FREQ 0 and RUNLIMIT all left six outputs LOW.
+SET FREQ 0 had fault=0. Expected emergency/deadline latches were retained.
+The 707 working image was restored and compared byte-for-byte afterward.
+Short ramps do not prove steady 5/20 Hz output or motor speed.
+
+FINAL STATE
+SAFE, PWM=0, ARM=0, bus reported 0 V, working pair 707/707, HV profile.
+60-second final capture: 920 new correct messages, no new receive errors.
+The host retained one prior sequence rejection (1 before, 1 after); this
+counter was not erased. Controller bad count stayed 0 and CRC count stayed 0.
+MC_UNDER_VOLT is expected with the power bus disconnected.
+
+VBUS MEASUREMENT
+Original operator report (later corrected): DC bus 0 V; PA1 0.0773 V with J4 supply, 0.0286 V without it;
+J4-minus versus Nucleo GND displayed zero in both supply conditions.
+After USB reconnection and boot, MCU telemetry returned to 0 V.
+SUBSEQUENT OPERATOR CORRECTION: the J4-only DC bus actually measures 9.5 V;
+the earlier zero-bus meter reading was wrong. Fresh telemetry is 9 V, which
+is consistent with the integer-volt reporting resolution. The claimed physical
+offset at zero bus is therefore not established. No offset was subtracted.
+The unchanged SDK filter was also tested on 8192 constant-input cases:
+ascending integer filtering has a 0..255-unit dead band, and filtering plus
+integer-volt display can under-read by up to 2.6171875 V. This can contribute
+to a meter-versus-display discrepancy; it does not establish a physical analog offset.
+
+NOT AN HV RELEASE
+No energized inverter or motor trial was performed. Actual Nucleo phase-current
+telemetry is not qualified. No new physical external BKIN trip during active
+PWM was tested. Disconnect all PC USB/ST-Link/Saleae wires before any powered,
+unisolated motor test. The J4-only follow-up passed with 728 new messages and
+no new controller errors across two windows. The corrected 9.5 V meter reading
+matches 9 V telemetry at integer resolution. HV input remained disconnected.
+
+EVIDENCE
+See RESULTS.json and the referenced raw logs/captures. Earlier failed captures
+are retained. The 120-second read-only window overlapped an active fixture
+capture and correctly rejected PWM=1; it is excluded from the final UART result.
+
+REFERENCE
+ST RM0440: break status cannot be cleared while its input remains active.
+https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf

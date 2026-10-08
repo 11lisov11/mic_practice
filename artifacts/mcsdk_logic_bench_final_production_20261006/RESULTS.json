@@ -1,0 +1,39 @@
+{
+  "pass_within_logic_scope": true,
+  "one_command_run_passed": true,
+  "logic_mcsdk_pwm_verified": true,
+  "production_restored": true,
+  "nucleo_build": 2026100601,
+  "hardware_validated": false,
+  "powered_motor_start_validated": false,
+  "production_image_active_PWM_tested": false,
+  "method": "production-derived isolated MCSDK fixture with matching key PWM/IRQ machine-code sections",
+  "evidence": {
+    "C:\\mic_practice\\artifacts\\mcsdk_logic_one_command_20261006_r1\\live\\report.json": "624e11c9f88904a4bcaf31fd6bcc2db7e2138d6dd81d1ae6dec949d00bfa99e2",
+    "C:\\mic_practice\\artifacts\\mcsdk_logic_one_command_20261006_r1\\modulation\\report.json": "ef7b24d16d5331fd93befd7185387beae41c68b3dd665c87fb458bbea4467c0f",
+    "C:\\mic_practice\\artifacts\\mcsdk_logic_bench_final_production_20261006\\readonly_one_command\\report.json": "7d140b6d2013815a9fe3f3be157b55371235c27276ca5172832f712e73de6ef8"
+  },
+  "production_readback_sha256": "71a3b59b1fdca9c8fd0e01326e0467c3c40da08246341204a1995b7bf6ef7c82",
+  "final_status": {
+    "state": "SAFE",
+    "mode": "VF",
+    "pwm": 0,
+    "vdc": 0.0,
+    "mc_fw_build": 2026100601,
+    "fw_build": 2026092901,
+    "hmi_arm_profile": "hv",
+    "hmi_hv_armed": 0,
+    "bp_age_ms": 29,
+    "bp_bad_integrity": 5,
+    "bp_bad_sequence": 0
+  },
+  "no_physical_SD_low_or_IPM_fault_generated": true,
+  "pending": [
+    "known-HV Vbus calibration",
+    "powered IPM and external soft-start qualification",
+    "real motor current and rotation qualification"
+  ],
+  "final_idle_pass": true,
+  "lifetime_uart_integrity_errors_before": 5,
+  "lifetime_uart_integrity_errors_after": 5
+}

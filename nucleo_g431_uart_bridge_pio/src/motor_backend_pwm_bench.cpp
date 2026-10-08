@@ -27,13 +27,16 @@ static volatile bool s_control_fault_pending;
 static volatile float s_control_sink;
 static uint32_t s_control_cycle_budget;
 static float s_control_phase;
+static uint32_t s_pwm_started_ms;
 
 static constexpr uint32_t PWM_CCER_ENABLE_MASK =
     TIM_CCER_CC1E | TIM_CCER_CC1NE | TIM_CCER_CC2E |
     TIM_CCER_CC2NE | TIM_CCER_CC3E | TIM_CCER_CC3NE;
 
 static void em_stop_assert(void) {
+#if !MOTOR_BENCH_BKIN_ENABLED
   HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, MOTOR_EM_STOP_SAFE_STATE);
+#endif
 }
 
 static void marker_set(bool active) {
@@ -145,8 +148,13 @@ static bool timer_init(void) {
       ((uint64_t)MOTOR_BENCH_DEADTIME_NS * HAL_RCC_GetPCLK2Freq() + 999999999ULL) /
       1000000000ULL;
   bd.DeadTime = motor_pwm_encode_deadtime_ticks((uint32_t)requested_ticks);
+#if MOTOR_BENCH_BKIN_ENABLED
+  bd.BreakState = TIM_BREAK_ENABLE;
+  bd.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+#else
   bd.BreakState = TIM_BREAK_DISABLE;
   bd.BreakPolarity = TIM_BREAKPOLARITY_LOW;
+#endif
   bd.BreakFilter = 0U;
   bd.BreakAFMode = TIM_BREAK_AFMODE_INPUT;
   bd.Break2State = TIM_BREAK2_DISABLE;
@@ -157,6 +165,15 @@ static bool timer_init(void) {
   if (HAL_TIMEx_ConfigBreakDeadTime(&s_tim1, &bd) != HAL_OK) {
     return false;
   }
+#if MOTOR_BENCH_BKIN_ENABLED
+  TIMEx_BreakInputConfigTypeDef break_input = {};
+  break_input.Source = TIM_BREAKINPUTSOURCE_BKIN;
+  break_input.Enable = TIM_BREAKINPUTSOURCE_ENABLE;
+  break_input.Polarity = TIM_BREAKINPUTSOURCE_POLARITY_LOW;
+  if (HAL_TIMEx_ConfigBreakInput(&s_tim1, TIM_BREAKINPUT_BRK, &break_input) != HAL_OK) {
+    return false;
+  }
+#endif
 
   TIM1->CCER &= ~PWM_CCER_ENABLE_MASK;
   __HAL_TIM_MOE_DISABLE(&s_tim1);
@@ -259,15 +276,23 @@ void motor_backend_init(void) {
   s_control_fault_pending = false;
   s_control_sink = 0.0f;
   s_control_phase = 0.0f;
+  s_pwm_started_ms = 0U;
   const uint32_t cycles_per_step = HAL_RCC_GetHCLKFreq() / MOTOR_BENCH_CONTROL_HZ;
   s_control_cycle_budget =
       (cycles_per_step * MOTOR_BENCH_CONTROL_BUDGET_PERCENT) / 100U;
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, MOTOR_EM_STOP_SAFE_STATE);
   GPIO_InitTypeDef em_stop = {};
   em_stop.Pin = MOTOR_EM_STOP_PIN;
+#if MOTOR_BENCH_BKIN_ENABLED
+  HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, GPIO_PIN_SET);
+  em_stop.Mode = GPIO_MODE_AF_OD;
+  em_stop.Pull = GPIO_PULLUP;
+  em_stop.Alternate = GPIO_AF6_TIM1;
+#else
+  HAL_GPIO_WritePin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN, MOTOR_EM_STOP_SAFE_STATE);
   em_stop.Mode = GPIO_MODE_OUTPUT_PP;
   em_stop.Pull = GPIO_PULLDOWN;
+#endif
   em_stop.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(MOTOR_EM_STOP_PORT, &em_stop);
   em_stop_assert();
@@ -281,6 +306,39 @@ void motor_backend_init(void) {
 
 void motor_backend_tick(void) {
   em_stop_assert();
+#if MOTOR_BENCH_BKIN_SOFTWARE_TRIP
+  if (s_status.pwm_active) {
+    if ((TIM1->BDTR & TIM_BDTR_MOE) == 0U) {
+      s_status.fault_code = FAULT_BREAK_SELFTEST;
+      return;
+    }
+    if ((uint32_t)(HAL_GetTick() - s_pwm_started_ms) >= MOTOR_BENCH_BKIN_TRIP_DELAY_MS) {
+      const uint32_t started_cycles = DWT->CYCCNT;
+      const uint32_t timeout_cycles = SystemCoreClock / 10000U;
+      TIM1->EGR = TIM_EGR_BG;
+      while ((TIM1->BDTR & TIM_BDTR_MOE) != 0U &&
+             (uint32_t)(DWT->CYCCNT - started_cycles) < timeout_cycles) {}
+      s_status.fault_code = ((TIM1->BDTR & TIM_BDTR_MOE) == 0U &&
+                             (TIM1->SR & TIM_SR_BIF) != 0U) ?
+                            FAULT_BREAK_SELFTEST : FAULT_INTERNAL;
+      return;
+    }
+  }
+#endif
+#if MOTOR_BENCH_BKIN_EXTERNAL_TRIP
+  if (s_status.pwm_active) {
+    if ((TIM1->BDTR & TIM_BDTR_MOE) == 0U) {
+      motor_backend_force_stop();
+      s_status.fault_code = FAULT_BREAK_SELFTEST;
+      return;
+    }
+    if ((uint32_t)(HAL_GetTick() - s_pwm_started_ms) >= 20000U) {
+      motor_backend_force_stop();
+      s_status.fault_code = FAULT_INTERNAL;
+      return;
+    }
+  }
+#endif
   if (s_control_fault_pending) {
     motor_backend_force_stop();
     s_status.fault_code = FAULT_INTERNAL;
@@ -305,6 +363,9 @@ void motor_backend_force_stop(void) {
 
 bool motor_backend_clear_fault(void) {
   motor_backend_force_stop();
+#if MOTOR_BENCH_BKIN_ENABLED
+  __HAL_TIM_CLEAR_FLAG(&s_tim1, TIM_FLAG_BREAK);
+#endif
   if (!s_status.ready) {
     s_status.fault_code = FAULT_INTERNAL;
     return false;
@@ -328,6 +389,14 @@ bool motor_backend_apply_command(const uint8_t *cmd, uint8_t *fault_code) {
   }
 
   const uint32_t compare = motor_pwm_q15_to_compare(MOTOR_BENCH_DUTY_Q15, s_pwm_arr);
+  const bool was_active = s_status.pwm_active;
+#if MOTOR_BENCH_BKIN_ENABLED
+  if (HAL_GPIO_ReadPin(MOTOR_EM_STOP_PORT, MOTOR_EM_STOP_PIN) != GPIO_PIN_SET) {
+    s_status.fault_code = FAULT_INTERNAL;
+    if (fault_code != nullptr) *fault_code = FAULT_INTERNAL;
+    return false;
+  }
+#endif
   __HAL_TIM_SET_COMPARE(&s_tim1, TIM_CHANNEL_1, compare);
   __HAL_TIM_SET_COMPARE(&s_tim1, TIM_CHANNEL_2, compare);
   __HAL_TIM_SET_COMPARE(&s_tim1, TIM_CHANNEL_3, compare);
@@ -346,6 +415,9 @@ bool motor_backend_apply_command(const uint8_t *cmd, uint8_t *fault_code) {
   em_stop_assert();
   s_status.enabled = true;
   s_status.pwm_active = true;
+  if (!was_active) {
+    s_pwm_started_ms = HAL_GetTick();
+  }
   s_status.shutdown_released = false;
   s_status.fault_code = FAULT_OK;
   if (fault_code != nullptr) *fault_code = FAULT_OK;

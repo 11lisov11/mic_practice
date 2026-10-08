@@ -16,3 +16,10 @@
 # Flash-package hashes cover exact bytes; never rewrite line endings here.
 firmware/ready_to_flash/** -text -whitespace
 firmware/ready_to_flash.zip binary -whitespace
+
+# Preserve exact bytes covered by archived build and measurement manifests.
+firmware/updates/** -text -whitespace
+firmware/ready_to_flash_sd_20261006/** -text -whitespace
+firmware/ready_to_flash_vf_air56b2_20260929/** -text -whitespace
+artifacts/*2026092[789]*/** -text -whitespace
+artifacts/*2026100[678]*/** -text -whitespace

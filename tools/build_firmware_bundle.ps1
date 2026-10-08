@@ -34,7 +34,7 @@ if (-not $polePairMatch.Success) {
 $expectedPolePairs = $polePairMatch.Groups[1].Value.Trim()
 
 if ($RunReleaseGate -and [string]::IsNullOrWhiteSpace($MotorProfile)) {
-    throw "-RunReleaseGate requires -MotorProfile with actual nameplate and measurement data."
+    throw "-RunReleaseGate requires -MotorProfile with manufacturer data confirmed for this V/F target. Hardware HIL gates remain mandatory."
 }
 
 $python = (Get-Command python -ErrorAction Stop).Source

@@ -1,0 +1,85 @@
+{
+  "pass": true,
+  "groups": [
+    {
+      "tool": "nucleo_firmware_safety_check",
+      "pass": true
+    },
+    {
+      "tool": "uno_nucleo_mcsdk_contract_check",
+      "pass": true
+    },
+    {
+      "tool": "web_hmi_command_guard_selftest",
+      "pass": true
+    },
+    {
+      "tool": "web_hmi_control_access_selftest",
+      "pass": true
+    },
+    {
+      "tool": "run_wifi_nucleo_pwm_bench_selftest",
+      "pass": true
+    },
+    {
+      "tool": "mcsdk_release_preflight_selftest",
+      "pass": true
+    },
+    {
+      "tool": "active_pwm_guard_selftest",
+      "pass": true
+    },
+    {
+      "tool": "protocol_safety_selftest",
+      "pass": true
+    },
+    {
+      "tool": "start_guard_static_check_selftest",
+      "pass": true
+    },
+    {
+      "tool": "saleae_pwm_analyze_selftest",
+      "pass": true
+    },
+    {
+      "tool": "nucleo_logic_capture_selftest",
+      "pass": true
+    },
+    {
+      "tool": "nucleo_bridge_selftest",
+      "pass": true
+    },
+    {
+      "tool": "verify_board_flash_package_selftest",
+      "pass": true
+    },
+    {
+      "tool": "verify_wifi_command_path_selftest",
+      "pass": true
+    },
+    {
+      "tool": "wifi_http_via_wsl_selftest",
+      "pass": true
+    },
+    {
+      "tool": "verify_production_wifi_idle_selftest",
+      "pass": true
+    },
+    {
+      "tool": "collect_wifi_telemetry_selftest",
+      "pass": true
+    },
+    {
+      "tool": "verify_production_guard_semantics_selftest",
+      "pass": true
+    },
+    {
+      "tool": "wifi_stop_tail_probe_selftest",
+      "pass": true
+    },
+    {
+      "tool": "power_stage_readonly_audit_selftest",
+      "pass": true
+    }
+  ]
+}

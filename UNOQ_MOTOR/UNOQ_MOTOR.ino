@@ -23,6 +23,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include "uno_q_control.h"
+#include "superseded_reply.h"
+#include "as5600_teacher.h"
+#include "nucleo_fault_diagnostics.h"
+#include "mcsdk_supervisory.h"
+#include "link_timing.h"
+static LinkTiming g_link_timing;
+#include "deferred_log.h"
+static DeferredLogQueue g_deferred_log;
 #if USE_ROUTER_BRIDGE
 #define LOG_SERIAL Monitor
 #elif USE_MSGPACK_RPC
@@ -40,7 +48,7 @@
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026091401U;
+static const uint32_t FW_BUILD_ID = 2026100804U;
 static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
@@ -257,6 +265,8 @@ static void pwm_force_off(bool force_link = false);
 static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switch);
 static void request_mode(ControlMode next_mode, bool duty_mode, bool diag_pwm);
 static void matrix_init();
+static bool matrix_test_active();
+static void matrix_start_test(uint32_t duration_ms);
 static void matrix_update();
 static void matrix_set_pixel(int x, int y);
 static void matrix_draw_digit(int x0, int y0, int digit);
@@ -321,6 +331,7 @@ static uint32_t g_nucleo_last_tx_ms = 0;
 static uint16_t g_bp_enc_raw = 0;
 static bool g_bp_enc_ok = false;
 static uint32_t g_bp_enc_ms = 0;
+static As5600Sample g_as5600;
 // Encoder speed estimate computed on UNO Q from motor-controller AS5600 samples.
 // Units: RPM is mechanical (shaft) rpm. Electrical Hz assumes POLE_PAIRS.
 static float g_enc_rpm = 0.0f;
@@ -350,6 +361,7 @@ static uint16_t g_bp_phase_b_raw = 0;
 static uint16_t g_bp_phase_c_raw = 2048;
 static uint8_t g_bp_phase_flags = 0;
 static uint32_t g_bp_fw_build = 0;
+static NucleoFaultDiagnostics g_mc_diagnostics;
 static bool g_bp_mcsdk_telemetry = false;
 static bool g_bp_vbus_valid = false;
 static bool g_bp_softstart_ready = false;
@@ -436,6 +448,11 @@ static uint8_t g_nucleo_seq = 0;
 static uint32_t g_nucleo_last_send_ms = 0;
 static uint32_t g_nucleo_last_send_us = 0;
 static bool g_nucleo_waiting_rsp = false;
+static bool g_nucleo_waiting_clear = false;
+static SupersededReplies g_nucleo_superseded;
+static uint16_t g_nucleo_rx_superseded = 0;
+static uint16_t g_nucleo_rx_bad_integrity = 0;
+static uint16_t g_nucleo_rx_bad_sequence = 0;
 static uint8_t g_nucleo_waiting_seq = 0;
 static uint32_t g_nucleo_last_ack_us = 0;
 static uint32_t g_nucleo_keepalive_ms = 0;
@@ -934,7 +951,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(79);
+  mp_tx_array(91);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -1025,7 +1042,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(g_bp_foc_backend ? 1 : 0);
   mp_tx_int((int32_t)g_bp_cmd_mode);
   mp_tx_int((int32_t)FW_BUILD_ID);
-  mp_tx_int((int32_t)(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0));
+  mp_tx_int(matrix_test_active() ? 1 : 0);
   mp_tx_int(g_bp_mcsdk_telemetry ? 1 : 0);
   mp_tx_int(g_bp_vbus_valid ? 1 : 0);
   mp_tx_int(0);  // RPC index 74: legacy precharge_managed, always false.
@@ -1033,6 +1050,18 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(g_bp_softstart_ready ? 1 : 0);
   mp_tx_int((int32_t)MC_CAP_VF);  // Current Nucleo MCSDK image supports scalar V/f only.
   mp_tx_int((int32_t)g_bp_fw_build);  // RPC index 78: Nucleo firmware identity.
+  mp_tx_int(g_mc_diagnostics.valid ? 1 : 0);
+  mp_tx_int(g_mc_diagnostics.reason);
+  mp_tx_int(g_mc_diagnostics.uart_errors);
+  mp_tx_int(g_mc_diagnostics.motor_state);
+  mp_tx_int(g_mc_diagnostics.current_faults);
+  mp_tx_int(g_mc_diagnostics.occurred_faults);
+  mp_tx_int(g_mc_diagnostics.sequence);
+  mp_tx_int(g_mc_diagnostics.tx_status);
+  mp_tx_int(g_mc_diagnostics.last_bad_valid ? 1 : 0);
+  mp_tx_int(g_mc_diagnostics.last_bad_reason);
+  mp_tx_int(g_mc_diagnostics.last_uart_errors);
+  mp_tx_int(g_mc_diagnostics.last_tx_status);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1413,7 +1442,7 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
         handled = false;
       }
     } else if (icmp(cmd, "DISPLAY TEST")) {
-      g_matrix_test_until_ms = millis() + 15000U;
+      matrix_start_test(15000U);
     } else if (starts_ci(cmd, "ESTOP")) {
       const char *p = cmd + 5;
       handle_estop_command(p);
@@ -1620,9 +1649,9 @@ static const char *mode_name(ControlMode m) {
 }
 static void bridge_notify_line(const String &line) {
 #if USE_ROUTER_BRIDGE
-  if (Monitor) {
-    Monitor.println(line);
-  }
+  const unsigned int key = irq_lock();
+  g_deferred_log.push(line.c_str(), micros());
+  irq_unlock(key);
 #elif USE_MSGPACK_RPC
   rpc_send_mon_write(line.c_str());
 #else
@@ -1904,7 +1933,7 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
       handled = false;
     }
   } else if (icmp(cmd, "DISPLAY TEST")) {
-    g_matrix_test_until_ms = millis() + 15000U;
+    matrix_start_test(15000U);
   } else if (starts_ci(cmd, "ESTOP")) {
     const char *p = cmd + 5;
     handle_estop_command(p);
@@ -2006,6 +2035,12 @@ static bool rpc_cmd(String cmd) {
 }
 
 static String rpc_get() {
+  const uint32_t timing_started = micros();
+  const unsigned int timing_key = irq_lock();
+  const LinkTiming timing = g_link_timing;
+  const uint32_t log_dropped = g_deferred_log.dropped;
+  const uint32_t log_pending = g_deferred_log.count;
+  irq_unlock(timing_key);
   float ia = g_last_ia;
   float ib = g_last_ib;
   float ic = g_last_ic;
@@ -2049,6 +2084,19 @@ static String rpc_get() {
   s += " enc_rpm="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_rpm : 0.0f, 1);
   s += " enc_mech_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_mech_hz : 0.0f, 2);
   s += " enc_elec_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_elec_hz : 0.0f, 2);
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    s += " enc_source=uno_q_i2c2";
+    s += " enc_bus_ok="; s += String(g_as5600.bus_ok ? 1 : 0);
+    s += " enc_status="; s += String((int)g_as5600.status);
+    s += " enc_speed_ok="; s += String(g_as5600.speed_ok ? 1 : 0);
+    s += " enc_reads="; s += String((unsigned long)g_as5600.reads);
+    s += " enc_errors="; s += String((unsigned long)g_as5600.errors);
+    s += " enc_io_error="; s += String((long)g_as5600.io_error);
+    s += " enc_init_error="; s += String((long)g_as5600.init_error);
+    s += " enc_scl="; s += String((long)g_as5600.scl_level);
+    s += " enc_sda="; s += String((long)g_as5600.sda_level);
+    s += " enc_age_ms="; s += String((unsigned long)(millis() - g_as5600.timestamp_ms));
+  }
   s += " mic_gated="; s += String((int)g_mic_gated);
   s += " mic_enable_ai="; s += String((int)g_mic_enable_ai);
   s += " mic_enc_used="; s += String(g_mic_enc_used ? 1 : 0);
@@ -2060,10 +2108,26 @@ static String rpc_get() {
   uint32_t bp_age = (g_nucleo_last_rx_ms == 0) ? 999999U : (uint32_t)(millis() - g_nucleo_last_rx_ms);
   s += " bp_good="; s += String((int)g_nucleo_rx_good);
   s += " bp_bad="; s += String((int)g_nucleo_rx_bad);
+  s += " bp_superseded="; s += String((int)g_nucleo_rx_superseded);
+  s += " bp_bad_integrity="; s += String((int)g_nucleo_rx_bad_integrity);
+  s += " bp_bad_sequence="; s += String((int)g_nucleo_rx_bad_sequence);
+  s += " bp_clear_pending="; s += String(g_clear_fault_req ? 1 : 0);
   s += " bp_age_ms="; s += String((int)bp_age);
   // Low-level motor-controller link observability.
   s += " bp_status="; s += String((int)g_bp_status);
   s += " bp_fault="; s += String((int)g_bp_fault_code);
+  s += " mc_diag_valid="; s += String(g_mc_diagnostics.valid ? 1 : 0);
+  s += " mc_fault_reason="; s += String((int)g_mc_diagnostics.reason);
+  s += " mc_uart_error_flags="; s += String((int)g_mc_diagnostics.uart_errors);
+  s += " mc_fault_motor_state="; s += String((int)g_mc_diagnostics.motor_state);
+  s += " mc_fault_current_mask="; s += String((int)g_mc_diagnostics.current_faults);
+  s += " mc_fault_occurred_mask="; s += String((int)g_mc_diagnostics.occurred_faults);
+  s += " mc_fault_sequence="; s += String((int)g_mc_diagnostics.sequence);
+  s += " mc_fault_tx_status="; s += String((int)g_mc_diagnostics.tx_status);
+  s += " mc_last_bad_valid="; s += String(g_mc_diagnostics.last_bad_valid ? 1 : 0);
+  s += " mc_last_bad_reason="; s += String((int)g_mc_diagnostics.last_bad_reason);
+  s += " mc_last_uart_error_flags="; s += String((int)g_mc_diagnostics.last_uart_errors);
+  s += " mc_last_tx_status="; s += String((int)g_mc_diagnostics.last_tx_status);
   s += " bp_mode="; s += String((int)g_bp_last_mode);
   s += " bp_cmd_mode="; s += String((int)g_bp_cmd_mode);
   s += " bp_foc_backend="; s += String(g_bp_foc_backend ? 1 : 0);
@@ -2110,7 +2174,20 @@ static String rpc_get() {
   s += " rpc_schema="; s += String((int)RPC_SCHEMA_VERSION);
   s += " mc_caps="; s += String((int)MC_CAP_VF);
   s += " matrix_test=";
-  s += String(((int32_t)(g_matrix_test_until_ms - millis()) > 0) ? 1 : 0);
+  s += String(matrix_test_active() ? 1 : 0);
+  s += " uno_loop_active_max_us="; s += String((unsigned long)timing.loop_active_max_us);
+  s += " uno_tx_active_max_gap_us="; s += String((unsigned long)timing.tx_active_max_gap_us);
+  s += " uno_rx_active_max_gap_us="; s += String((unsigned long)timing.rx_active_max_gap_us);
+  s += " uno_tx_call_max_us="; s += String((unsigned long)timing.tx_call_max_us);
+  s += " uno_rpc_max_us="; s += String((unsigned long)timing.rpc_max_us);
+  s += " uno_tx_short_writes="; s += String((unsigned long)timing.tx_short_writes);
+  s += " uno_tx_count="; s += String((unsigned long)timing.tx_count);
+  s += " uno_rx_count="; s += String((unsigned long)timing.rx_count);
+  s += " uno_log_dropped="; s += String((unsigned long)log_dropped);
+  s += " uno_log_pending="; s += String((unsigned long)log_pending);
+  const unsigned int timing_done_key = irq_lock();
+  g_link_timing.rpc(micros() - timing_started);
+  irq_unlock(timing_done_key);
   return s;
 }
 
@@ -2150,6 +2227,7 @@ static void serial_poll() {
 }
 #if USE_ROUTER_BRIDGE
 static void bridge_tick() {
+  if (g_pwm_enabled || g_pwm_outputs_active || (g_bp_status & BP_STATUS_PWM_ACTIVE) != 0U) return;
   uint32_t now = millis();
   if ((uint32_t)(now - g_bridge_last_ms) < 1000U) {
     return;
@@ -2177,6 +2255,33 @@ static void bridge_tick() {
     g_bridge_announced = true;
     Monitor.println("LOG BRIDGE READY");
   }
+}
+K_THREAD_STACK_DEFINE(bridge_service_stack, 4096);
+static k_thread bridge_service_thread;
+static void bridge_service_worker(void *, void *, void *) {
+  for (;;) {
+    bridge_tick();
+    if (Monitor) {
+      DeferredLogLine line;
+      const unsigned int key = irq_lock();
+      const bool available = g_deferred_log.pop(line);
+      irq_unlock(key);
+      if (available) {
+        // Deferred events are logs, never replayed as current STAT telemetry.
+        String record("LOG DEFERRED t_us=");
+        record += String((unsigned long)line.timestamp_us);
+        record += " ";
+        record += line.text;
+        Monitor.println(record);
+      }
+    }
+    k_msleep(5);
+  }
+}
+static void bridge_service_begin() {
+  k_thread_create(&bridge_service_thread, bridge_service_stack,
+                  K_THREAD_STACK_SIZEOF(bridge_service_stack), bridge_service_worker,
+                  nullptr, nullptr, nullptr, CONFIG_NUM_PREEMPT_PRIORITIES - 1, 0, K_NO_WAIT);
 }
 #endif
 static void send_telemetry() {
@@ -2494,6 +2599,9 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   uint8_t crc = nucleo_crc8(rx, BP_CRC_OFF);
   if (crc != rx[BP_CRC_OFF]) return false;
   if (require_sequence && rx[4] != expected_sequence) return false;
+  const bool clear_ack = unoq_clear_reply_ack(
+      require_sequence && g_nucleo_waiting_rsp && rx[4] == g_nucleo_waiting_seq,
+      g_nucleo_waiting_clear, rx[10], rx[3]);
   uint32_t now_ms = millis();
   g_bp_status = rx[3];
   g_bp_last_seq = rx[4];
@@ -2501,10 +2609,12 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   g_bp_bad_cnt = (uint16_t)rx[7] | ((uint16_t)rx[8] << 8);
   g_bp_fault_code = rx[9];
   g_bp_last_mode = rx[10];
-  g_bp_enc_raw = (uint16_t)rx[11] | ((uint16_t)rx[12] << 8);
-  g_bp_enc_ok = (rx[13] != 0);
-  g_bp_enc_ms = now_ms;
-  enc_speed_update(g_bp_enc_raw, g_bp_enc_ok, now_ms);
+  if (!NUCLEO_MCSDK_ACIM_BACKEND) {
+    g_bp_enc_raw = (uint16_t)rx[11] | ((uint16_t)rx[12] << 8);
+    g_bp_enc_ok = (rx[13] != 0);
+    g_bp_enc_ms = now_ms;
+    enc_speed_update(g_bp_enc_raw, g_bp_enc_ok, now_ms);
+  }
   g_bp_ext_flags = rx[14];
   g_bp_brake_q15 = (uint16_t)rx[15] | ((uint16_t)rx[16] << 8);
   g_bp_phase_flags = rx[29];
@@ -2520,6 +2630,8 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   } else {
     g_bp_fw_build = 0U;
   }
+  g_mc_diagnostics = decode_nucleo_fault_diagnostics(rx, g_bp_mcsdk_telemetry, g_bp_fw_build);
+  if (g_mc_diagnostics.valid) g_bp_brake_q15 = 0U;
   g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
   if (g_bp_mcsdk_telemetry) {
     g_bp_vdc = (float)g_bp_vbus_raw * 0.1f;
@@ -2548,8 +2660,8 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
     }
   }
   g_bp_temp_ms = now_ms;
-  g_bp_fan_duty_q8 = rx[BP_RSP_FAN_DUTY_Q8];
-  g_bp_fan_tach_x30 = rx[BP_RSP_FAN_TACH_X30];
+  g_bp_fan_duty_q8 = g_mc_diagnostics.valid ? 0U : rx[BP_RSP_FAN_DUTY_Q8];
+  g_bp_fan_tach_x30 = g_mc_diagnostics.valid ? 0U : rx[BP_RSP_FAN_TACH_X30];
   g_bp_fan_duty = (float)g_bp_fan_duty_q8 / 255.0f;
   g_bp_fan_rpm = (float)g_bp_fan_tach_x30 * BP_FAN_TACH_RPM_STEP;
   if ((g_bp_phase_flags & BP_PHASE_FLAG_VALID) != 0U) {
@@ -2569,14 +2681,18 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   g_bp_phase_c_v = bp_phase_voltage_from_raw(g_bp_phase_c_raw);
   g_bp_phase_ms = now_ms;
   g_bp_last_rsp_ms = now_ms;
+  const unsigned int timing_rx_key = irq_lock();
+  g_link_timing.rx(micros(), g_pwm_enabled || ((rx[3] & BP_STATUS_PWM_ACTIVE) != 0U));
+  irq_unlock(timing_rx_key);
   if (g_nucleo_waiting_rsp && g_bp_last_seq == g_nucleo_waiting_seq) {
     g_nucleo_waiting_rsp = false;
     g_nucleo_last_ack_us = micros();
   }
-  // Clear is held until we observe "no fault" from the motor controller.
+  // A correlated safe-off reply acknowledges delivery, not removal of a
+  // physical fault. Never keep resetting Nucleo's counters during undervoltage.
   if (g_clear_fault_req) {
     bool fault = (g_bp_fault_code != 0) || ((g_bp_status & 0x08u) != 0u);
-    if (!fault) {
+    if (clear_ack || (!require_sequence && !fault)) {
       g_clear_fault_req = false;
     }
   }
@@ -2623,13 +2739,23 @@ static void nucleo_uart_poll() {
     if (idx >= sizeof(buf)) {
       st = 0;
       idx = 0;
-      if (g_nucleo_waiting_rsp &&
+      const bool integrity_ok = buf[0] == 0x55 && buf[1] == 0xAA &&
+          buf[2] == BP_VER && nucleo_crc8(buf, BP_CRC_OFF) == buf[BP_CRC_OFF];
+      if (integrity_ok && g_nucleo_superseded.consume(
+              buf[4], micros(), BP_REPLY_TIMEOUT_MS * 1000U)) {
+        if (g_nucleo_rx_superseded < 0xFFFFu) g_nucleo_rx_superseded++;
+      } else if (g_nucleo_waiting_rsp &&
           nucleo_check_reply(buf, true, g_nucleo_waiting_seq)) {
         if (g_nucleo_rx_good < 0xFFFFu) g_nucleo_rx_good++;
         g_nucleo_last_rx_ms = millis();
         g_link_led_ms = g_nucleo_last_rx_ms;
       } else {
         if (g_nucleo_rx_bad < 0xFFFFu) g_nucleo_rx_bad++;
+        if (!integrity_ok) {
+          if (g_nucleo_rx_bad_integrity < 0xFFFFu) g_nucleo_rx_bad_integrity++;
+        } else if (g_nucleo_rx_bad_sequence < 0xFFFFu) {
+          g_nucleo_rx_bad_sequence++;
+        }
       }
     }
   }
@@ -2717,12 +2843,13 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   if (!force && !enable && !g_clear_fault_req && (uint32_t)(now - g_nucleo_last_send_ms) < NUCLEO_HEARTBEAT_MS) {
     return;
   }
-  if (!force && (enable || g_clear_fault_req) && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
+  if (!force && !g_estop_latched && USE_NUCLEO_UART_FALLBACK) {
     nucleo_uart_poll();
     if (g_nucleo_waiting_rsp) {
       if ((uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_REPLY_GUARD_US) {
         return;
       }
+      g_nucleo_superseded.retire(g_nucleo_waiting_seq, g_nucleo_last_send_us);
       g_nucleo_waiting_rsp = false;
     }
   }
@@ -2762,7 +2889,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     diag_eff = false;
     // An UNO-side I/O test has no matching MCSDK service endpoint. Keep the
     // drive stopped instead of issuing a legacy mode that Nucleo must reject.
-    if (g_io_test_mode) {
+    if (g_io_test_mode || unoq_mcsdk_zero_stop(true, g_freq_cmd)) {
       enable_eff = false;
     }
   }
@@ -2839,7 +2966,8 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     pkt[12] = (uint8_t)((bp_foc_freq_millihz >> 16) & 0xFF);
     pkt[13] = (uint8_t)((bp_foc_freq_millihz >> 24) & 0xFF);
   } else if (mode == BP_MODE_SCALAR) {
-    uint32_t scalar_freq_millihz = bp_freq_millihz(g_freq_ref);
+    uint32_t scalar_freq_millihz = bp_freq_millihz(
+        unoq_scalar_wire_frequency(mcsdk_scalar, g_freq_cmd, g_freq_ref));
     uint16_t scalar_vmag_q15 = bp_scalar_vmag_q15();
     pkt[6] = (uint8_t)(scalar_freq_millihz & 0xFF);
     pkt[7] = (uint8_t)((scalar_freq_millihz >> 8) & 0xFF);
@@ -2880,9 +3008,20 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   if (USE_NUCLEO_UART_FALLBACK) {
     // Accept only the reply that echoes this command sequence. A delayed or
     // replayed valid frame must not refresh status or acknowledge CLEAR.
+    if (force && g_nucleo_waiting_rsp) {
+      g_nucleo_superseded.retire(g_nucleo_waiting_seq, g_nucleo_last_send_us);
+    }
+    g_nucleo_superseded.forget(seq);
     g_nucleo_waiting_rsp = true;
     g_nucleo_waiting_seq = seq;
-    NUCLEO_SERIAL.write(pkt, sizeof(pkt));
+    g_nucleo_waiting_clear = clear_eff;
+    const uint32_t timing_tx_begin = micros();
+    const size_t timing_written = NUCLEO_SERIAL.write(pkt, sizeof(pkt));
+    const uint32_t timing_tx_end = micros();
+    const unsigned int timing_tx_key = irq_lock();
+    g_link_timing.tx(timing_tx_end, timing_tx_end - timing_tx_begin, timing_written,
+                     (flags & BP_FLAG_ENABLE) != 0U);
+    irq_unlock(timing_tx_key);
     nucleo_uart_poll();
   }
   g_nucleo_last_send_ms = now;
@@ -3070,6 +3209,7 @@ static void cancel_mode_switch() {
 }
 static void set_run_limit(float seconds) {
   if (seconds <= 0.0f) {
+    if (g_pwm_enabled && START_REQUIRE_RUN_LIMIT) request_normal_stop();
     g_run_limit_ms = 0;
     g_run_deadline_ms = 0;
     return;
@@ -3077,7 +3217,8 @@ static void set_run_limit(float seconds) {
   seconds = clampf(seconds, 0.1f, 600.0f);
   g_run_limit_ms = (uint32_t)(seconds * 1000.0f + 0.5f);
   if (g_pwm_enabled) {
-    g_run_deadline_ms = millis() + g_run_limit_ms;
+    g_run_deadline_ms = unoq_bounded_run_deadline(millis(), g_run_limit_ms,
+        g_run_deadline_ms, START_REQUIRE_RUN_LIMIT);
   }
 }
 static bool should_restart_after_mode_switch() {
@@ -3170,14 +3311,13 @@ static void control_step() {
   g_last_ib = ib;
   g_last_ic = ic;
   g_last_i_rms = sqrtf((ia * ia + ib * ib + ic * ic) / 3.0f);
-  if (g_offset_ready && g_pwm_enabled) {
-    if (fabsf(ia) > CURRENT_LIMIT_A || fabsf(ib) > CURRENT_LIMIT_A || fabsf(ic) > CURRENT_LIMIT_A) {
+  if (unoq_local_current_trip(NUCLEO_MCSDK_ACIM_BACKEND, g_offset_ready,
+                             g_pwm_enabled, ia, ib, ic, CURRENT_LIMIT_A)) {
       g_fault = 1;
       hard_stop(false);
       ext_brake_set(0.0f);
       pwm_write(0, 0, 0);
       return;
-    }
   }
   if (g_estop_latched) {
     brake_set(false);
@@ -3224,6 +3364,10 @@ static void control_step() {
   }
   // Auto-stop if target frequency is zero while PWM is enabled
   if (g_pwm_enabled && g_freq_cmd < 0.1f && !g_duty_mode && !g_diag_pwm) {
+    if (unoq_mcsdk_zero_stop(NUCLEO_MCSDK_ACIM_BACKEND, g_freq_cmd)) {
+      request_normal_stop();
+      return;
+    }
     g_stop_requested = true;
   }
   if (g_start_req) {
@@ -3236,7 +3380,8 @@ static void control_step() {
       g_theta = 0.0f;
       g_io_test_mode = false;
       g_pwm_enabled = true;
-      g_run_deadline_ms = (g_run_limit_ms > 0U) ? (millis() + g_run_limit_ms) : 0U;
+      g_run_deadline_ms = (g_run_limit_ms > 0U) ?
+          unoq_bounded_run_deadline(millis(), g_run_limit_ms, 0U, START_REQUIRE_RUN_LIMIT) : 0U;
       if (g_mode == MODE_VF) {
         g_state = STATE_VF_RUN;
       } else {
@@ -3481,6 +3626,19 @@ static void update_led() {
     digitalWrite(LED_PIN, g_led_on ? HIGH : LOW);
   }
 }
+static bool matrix_test_active() {
+  if (g_matrix_test_until_ms == 0U) return false;
+  if ((int32_t)(g_matrix_test_until_ms - millis()) <= 0) {
+    g_matrix_test_until_ms = 0U;
+    return false;
+  }
+  return true;
+}
+static void matrix_start_test(uint32_t duration_ms) {
+  g_matrix_test_until_ms = millis() + duration_ms;
+  // Zero is the inactive sentinel, including at the millis rollover boundary.
+  if (g_matrix_test_until_ms == 0U) g_matrix_test_until_ms = 1U;
+}
 static void matrix_init() {
   if (g_matrix_ready) {
     return;
@@ -3502,7 +3660,7 @@ static void matrix_update() {
   g_matrix_last_ms = now;
   // Keep the display self-test independent from the custom digit renderer.
   // Alternating every LED makes a stale/failed matrix update unmistakable.
-  const bool matrix_test = (int32_t)(g_matrix_test_until_ms - now) > 0;
+  const bool matrix_test = matrix_test_active();
   if (matrix_test) {
     static const uint32_t all_on[4] = {
       0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU
@@ -3763,7 +3921,7 @@ void setup() {
   analogWriteResolution(8);
 #endif
   matrix_init();
-  g_matrix_test_until_ms = millis() + 5000U;
+  matrix_start_test(5000U);
   pwm_force_off(true);
   g_vdc = VDC_NOMINAL;
   g_v_limit = 0.577f * g_vdc;
@@ -3771,12 +3929,26 @@ void setup() {
   pi_init(&g_pi_id, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   pi_init(&g_pi_iq, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   g_last_control_us = micros();
+  if (NUCLEO_MCSDK_ACIM_BACKEND) as5600_teacher_begin();
 #if USE_ROUTER_BRIDGE
-  bridge_tick();
+  bridge_service_begin();
 #endif
 }
 void loop() {
+  const unsigned int timing_loop_key = irq_lock();
+  g_link_timing.loop(micros(), g_pwm_enabled);
+  irq_unlock(timing_loop_key);
   handle_button();
+  if (NUCLEO_MCSDK_ACIM_BACKEND) {
+    g_as5600 = as5600_teacher_snapshot(millis());
+    g_bp_enc_raw = g_as5600.raw;
+    g_bp_enc_ok = g_as5600.angle_ok;
+    g_bp_enc_ms = g_as5600.timestamp_ms;
+    g_enc_speed_valid = g_as5600.speed_ok;
+    g_enc_rpm = g_as5600.speed_ok ? g_as5600.rpm : 0.0f;
+    g_enc_mech_hz = g_enc_rpm / 60.0f;
+    g_enc_elec_hz = g_enc_mech_hz * POLE_PAIRS;
+  }
   if (USE_EXTERNAL_PWM && !USE_NUCLEO_SPI && USE_NUCLEO_UART_FALLBACK) {
     nucleo_uart_poll();
   }
@@ -3855,9 +4027,6 @@ void loop() {
     if (g_scope_test) {
       scope_tick();
     }
-  #if USE_ROUTER_BRIDGE
-  bridge_tick();
-  #endif
   #if !USE_ROUTER_BRIDGE
 #if USE_MSGPACK_RPC
   rpc_poll();

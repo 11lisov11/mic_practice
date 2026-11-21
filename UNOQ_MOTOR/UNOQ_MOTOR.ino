@@ -7,11 +7,15 @@
 // the Nucleo motor-controller link.
 #define USE_ROUTER_BRIDGE 1
 #define USE_MSGPACK_RPC 0
+// Rename the vendor fallback before postvariant.h implicitly includes RouterBridge.
+#define __loopHook mic_router_compat_hook
 #include <Arduino.h>
+#undef __loopHook
 #include <Arduino_LED_Matrix.h>
 #include <SPI.h>
 #if USE_ROUTER_BRIDGE
 #include <Arduino_RouterBridge.h>
+static_assert(UPDATE_THREAD_PRIORITY == 5, "Review RouterBridge scheduling after library update");
 #endif
 #if defined(ARDUINO_ARCH_ZEPHYR)
 #include <zephyr/kernel.h>
@@ -23,14 +27,91 @@
 #include <stdlib.h>
 #include <math.h>
 #include "uno_q_control.h"
+#include "timed_run.h"
+#include "research_wire.h"
+#include "foc_experiment.h"
+#include "multi_command.h"
+#include "identify_wire.h"
+#include "noise_wire.h"
+static id_meta g_id_meta={};static id_blob g_id_blob={};
+static nd_blob g_idle_noise={};static uint8_t g_noise_view_page=0;
+static uint8_t g_id_view_page=0;static uint32_t g_id_execute_crc=0,g_id_running_crc=0;
+
+#include "foc_timing_wire.h"
+#include "boot_wire.h"
+#include "clear_recovery_wire.h"
+static uint8_t g_clear_recovery[UV3_FRAME];static bool g_clear_recovery_seen=false;
+#include "observer_trace_wire.h"
+#include "observer_start_history_wire.h"
+static nh_receiver g_start_history={};
+static bool g_history_route_ready=false;
+static od_receiver g_observer_trace={};
+static mb_receiver g_native_boot={};
+static ft_receiver g_foc_timing={};
+static xp_receiver g_research_caps={};
+static uint8_t g_ma_algorithm=1;
+static bool g_ma_pending=false;
+static uint8_t g_ma_op,g_ma_index;
+static uint32_t g_ma_value;
+
 #include "superseded_reply.h"
 #include "as5600_teacher.h"
+#include "uno_encoder_adapter.h"
+#include "fault_wire.h"
+#include "peer_epoch.h"
+static pe_records g_encoder_records={};
+static pe_history g_encoder_history={};
+#define g_i2c_fault g_encoder_records.fault
+#define g_wire_capture g_encoder_records.wire
+#include "encoder_health_wire.h"
+static eh_receiver g_encoder_health={};
+#include "bus_clear_wire.h"
+#define g_bus_clear g_encoder_records.clear
+#define g_bus_clear_seen g_encoder_records.clear_seen
+#include "release_wire.h"
+#define g_release_capture g_encoder_records.release
 #include "nucleo_fault_diagnostics.h"
 #include "mcsdk_supervisory.h"
 #include "link_timing.h"
 static LinkTiming g_link_timing;
 #include "deferred_log.h"
 static DeferredLogQueue g_deferred_log;
+#include "scoped_control_lock.h"
+#include "rpc_route_policy.h"
+static RpcRoutePolicy g_rpc_routes;
+#include "uart_v3_transport.h"
+#include "manual_scalar_control.h"
+#include "break_wire.h"
+#include "bkin_wave_wire.h"
+static bw_receiver g_break_wire;
+#include "uart_reject_wire.h"
+static bkw_receiver g_bkin_wave;
+#include "repeat_state.h"
+#include "repeat_wave_wire.h"
+static rpw_receiver g_repeat_wave;
+static uint8_t g_repeat_meta[UV3_FRAME];
+static uint32_t g_repeat_meta_ms;
+static bool g_repeat_meta_valid;
+static urw_receiver g_uart_reject;
+#include "current_wire.h"
+static ct_receiver g_current;
+#include "peak_wire.h"
+static pc_receiver g_peak;
+#include "zero_wire.h"
+static zh_receiver g_zero_history;
+static uint8_t g_rx_rejected[UV3_FRAME];
+static uint32_t g_rx_rejected_ms, g_rx_poll_ms, g_rx_poll_gap_max_ms;
+#if USE_ROUTER_BRIDGE
+// Loadable sketches cannot rely on kernel iterable-section initialization.
+static struct k_mutex g_control_mutex{};
+struct ControlMutex {
+  void lock() {
+    if (k_mutex_lock(&g_control_mutex, K_FOREVER) != 0) k_panic();
+  }
+  void unlock() { k_mutex_unlock(&g_control_mutex); }
+};
+static ControlMutex g_control_owner;
+#endif
 #if USE_ROUTER_BRIDGE
 #define LOG_SERIAL Monitor
 #elif USE_MSGPACK_RPC
@@ -42,13 +123,15 @@ static DeferredLogQueue g_deferred_log;
 // RouterBridge aliases Serial to Monitor on UNO Q. Serial1 is the physical D0/D1
 // UART used for the Nucleo link; do not also poll it as a text UI stream.
 #if USE_ROUTER_BRIDGE
-#define NUCLEO_SERIAL Serial1
+#include "nucleo_buffered_serial.h"
+static NucleoBufferedSerial g_nucleo_serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_PATH(zephyr_user), serials, 0)));
+#define NUCLEO_SERIAL g_nucleo_serial
 #else
 #define NUCLEO_SERIAL Serial
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026100804U;
+static const uint32_t FW_BUILD_ID = 2026112111U;
 static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
@@ -85,7 +168,7 @@ static const bool NUCLEO_MCSDK_ACIM_BACKEND = true;
 static const bool USE_NUCLEO_SPI = false;
 static const bool FORCE_SPI_BITBANG = false;
 static const bool USE_NUCLEO_UART_FALLBACK = true;
-static const uint32_t NUCLEO_UART_BAUD = 115200;
+static const uint32_t NUCLEO_UART_BAUD = 921600;
 static const uint32_t NUCLEO_HEARTBEAT_MS = 50;
 // Nucleo closes the fast control loops; UNO Q only sends supervisory setpoints.
 // A 20 Hz command stream survives concurrent RouterBridge status polling without
@@ -97,9 +180,9 @@ static const uint32_t NUCLEO_SCALAR_MIN_SEND_US = 50000;
 static const uint32_t NUCLEO_RUN_REPLY_GUARD_US = 8000;
 // Motor-controller UART protocol. BP_* identifiers are retained as wire-ABI
 // compatibility names; the active peer is the STM32G431RB Nucleo firmware.
-static const size_t BP_FRAME_LEN = 32;
-static const size_t BP_CRC_OFF = BP_FRAME_LEN - 1;
-static const uint8_t BP_VER = 0x02;
+static const size_t BP_FRAME_LEN = UV3_FRAME;
+static const size_t BP_CRC_OFF = UV3_PAYLOAD;
+static const uint8_t BP_VER = UV3_VERSION;
 static const uint8_t BP_FLAG_ENABLE = 0x01;
 static const uint8_t BP_FLAG_ESTOP = 0x02;
 static const uint8_t BP_FLAG_DIAG_PWM = 0x04;
@@ -292,6 +375,19 @@ static bool g_start_req = false;
 static bool g_stop_req = false;
 static bool g_toggle_req = false;
 static uint32_t g_run_limit_ms = 0;
+static TimedRun g_timed_run;
+static bool g_manual_scalar_mode = false;
+static bool g_manual_coast_down = false;
+static uint16_t g_manual_accel_centi = 500;
+static uint16_t g_manual_decel_centi = 100;
+static bool g_manual_operator_seen = false;
+static uint32_t g_manual_operator_ms = 0;
+static bool g_manual_decreasing = false;
+static float g_manual_reference_hz = 0.0f;
+static bool g_manual_reference_valid = false;
+static bool g_manual_bus_hold = false;
+static bool manual_command(const char *cmd);
+static bool manual_set_frequency(float f);
 static uint32_t g_run_deadline_ms = 0;
 static float g_vdc = VDC_NOMINAL;
 static float g_v_limit = 12.0f;
@@ -369,6 +465,11 @@ static float g_bp_phase_a_v = 0.0f;
 static float g_bp_phase_b_v = 0.0f;
 static float g_bp_phase_c_v = 0.0f;
 static uint32_t g_bp_phase_ms = 0;
+static uint16_t g_bp_ne_accepted = 0;
+static uint16_t g_bp_ne_observed = 0;
+static uint16_t g_bp_recovered_drops = 0;
+static uint8_t g_bp_ne_flags = 0;
+static uint8_t g_bp_transport_fault = 0;
 static uint16_t g_bp_good_cnt = 0;
 static uint16_t g_bp_bad_cnt = 0;
 static uint8_t g_bp_last_seq = 0;
@@ -413,6 +514,9 @@ static float g_last_i_rms = 0.0f;
 static float g_last_vd = 0.0f;
 static float g_last_vq = 0.0f;
 static uint8_t g_fault = 0;
+#include "stop_evidence.h"
+static StopEvidence g_stop_evidence;
+static uint32_t g_stop_origin;
 static bool g_mic_active = false;
 static float g_mic_id_ref = RUN_ID_REF_A;
 static float g_mic_saving_pct = 0.0f;
@@ -951,7 +1055,7 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(msgid);
   mp_tx_nil();
   // Keep this in sync with web_hmi/server.py (array result mapping).
-  mp_tx_array(91);
+  mp_tx_array(99);
   mp_tx_int((int32_t)g_state);
   mp_tx_int((int32_t)g_mode);
   mp_tx_int(g_pwm_enabled ? 1 : 0);
@@ -1062,6 +1166,14 @@ static void rpc_send_response_get(int32_t msgid) {
   mp_tx_int(g_mc_diagnostics.last_bad_reason);
   mp_tx_int(g_mc_diagnostics.last_uart_errors);
   mp_tx_int(g_mc_diagnostics.last_tx_status);
+  mp_tx_int(1); // manual scalar capability
+  mp_tx_int(g_manual_scalar_mode ? 1 : 0);
+  mp_tx_float(g_manual_accel_centi*0.01f);
+  mp_tx_float(g_manual_decel_centi*0.01f);
+  mp_tx_int(g_manual_coast_down ? 1 : 0);
+  mp_tx_float(g_manual_reference_hz);
+  mp_tx_int(g_manual_reference_valid && bp_age < 300U ? 1 : 0);
+  mp_tx_int(g_manual_bus_hold ? 1 : 0);
   mp_tx_send();
 }
 static void rpc_send_register(const char *name) {
@@ -1228,6 +1340,9 @@ static bool handle_fan_command(const char *arg) {
   fan_set(clampf(duty, 0.0f, 1.0f));
   return true;
 }
+static bool handle_encbus_command(const char *arg) {
+  (void)arg;return false; // Sensor is owned by Nucleo; no second I2C master.
+}
 static bool handle_mcfoc_command(const char *arg) {
   while (*arg == ' ' || *arg == '\t') arg++;
   if (icmp(arg, "OFF") || icmp(arg, "0")) {
@@ -1285,6 +1400,18 @@ static bool bp_fault_or_timeout(uint32_t now_ms) {
   return bp_fault || bp_stale;
 }
 static const char *start_precheck(uint32_t now_ms) {
+  if(g_ma_pending)return "algorithm configuration pending";
+  const bool native_fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now_ms-g_bp_last_rsp_ms)<300U;
+  if(!xp_fresh(&g_research_caps,native_fresh,now_ms)||g_research_caps.selected!=g_ma_algorithm)
+    return "native algorithm acknowledgement missing";
+  if(g_ma_algorithm==4){
+    if(!id_execution_allowed(&g_id_meta,now_ms,g_id_execute_crc,g_manual_scalar_mode,g_run_limit_ms))return "bounded identification authorization required";
+  }
+  if(g_ma_algorithm!=1&&g_ma_algorithm!=4&&(!g_research_caps.profile_ready||
+      !fe_start_policy(g_research_caps.qualification,g_research_caps.experiment_flags,
+        g_ma_algorithm,g_manual_scalar_mode,g_run_limit_ms,g_freq_cmd)))
+    return "FOC calculated trial requires timing ready, bounded5s and0to5Hz";
+  // Native loop owns current control; AS5600 remains disabled.
   if (g_estop_latched) {
     return "estop latched";
   }
@@ -1294,7 +1421,8 @@ static const char *start_precheck(uint32_t now_ms) {
   if (g_pwm_enabled) {
     return "pwm already enabled";
   }
-  if (START_REQUIRE_RUN_LIMIT && g_run_limit_ms == 0U) {
+  if (!msc_start_allowed(g_manual_scalar_mode, g_run_limit_ms,
+      msc_operator_alive(now_ms, g_manual_operator_seen, g_manual_operator_ms))) {
     return "runlimit required";
   }
   if (USE_EXTERNAL_PWM) {
@@ -1355,7 +1483,11 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
     const char *cmd = cmd_buf;
     while (*cmd == ' ' || *cmd == '\t') cmd++;
     bool handled = true;
-    if (icmp(cmd, "START")) {
+    if (starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
+        starts_ci(cmd, "CONTROL HEARTBEAT") || starts_ci(cmd, "SET RUNMODE") ||
+        starts_ci(cmd, "SET ACCEL") || starts_ci(cmd, "SET DECEL") || starts_ci(cmd, "SET DOWNMODE")) {
+      handled = manual_command(cmd);
+    } else if (icmp(cmd, "START")) {
       const char *start_err = start_precheck(millis());
       if (start_err != nullptr) {
         rpc_send_response_error(msgid, start_err);
@@ -1411,9 +1543,7 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       const char *p = cmd + 8;
       float f = 0.0f;
       if (parse_single_float_arg(p, &f)) {
-        f = clampf(f, 0.0f, AIR56B2_MAX_ELECTRICAL_FREQ_HZ);
-        g_freq_cmd = f;
-        if (f > 0.1f) g_last_nonzero_freq = f;
+        handled = manual_set_frequency(f);
       } else {
         handled = false;
       }
@@ -1502,6 +1632,9 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
       }
     } else if (starts_ci(cmd, "FAN")) {
       handled = handle_fan_command(cmd + 3);
+    } else if (starts_ci(cmd, "ENC BUS ")) {
+      handled = handle_encbus_command(cmd + 8);
+
     } else if (starts_ci(cmd, "MCFOC")) {
       handled = handle_mcfoc_command(cmd + 5);
     } else if (starts_ci(cmd, "BPFOC")) {
@@ -1845,7 +1978,11 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
   line += cmd;
   bridge_notify_line(line);
   bool handled = true;
-  if (icmp(cmd, "START")) {
+  if (starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
+        starts_ci(cmd, "CONTROL HEARTBEAT") || starts_ci(cmd, "SET RUNMODE") ||
+        starts_ci(cmd, "SET ACCEL") || starts_ci(cmd, "SET DECEL") || starts_ci(cmd, "SET DOWNMODE")) {
+      handled = manual_command(cmd);
+    } else if (icmp(cmd, "START")) {
     const char *start_err = start_precheck(millis());
     if (start_err != nullptr) {
       out.print("ERR ");
@@ -1902,9 +2039,7 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     const char *p = cmd + 8;
     float f = 0.0f;
     if (parse_single_float_arg(p, &f)) {
-      f = clampf(f, 0.0f, AIR56B2_MAX_ELECTRICAL_FREQ_HZ);
-      g_freq_cmd = f;
-      if (f > 0.1f) g_last_nonzero_freq = f;
+      handled = manual_set_frequency(f);
     } else {
       handled = false;
     }
@@ -1963,6 +2098,9 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     }
   } else if (starts_ci(cmd, "FAN")) {
     handled = handle_fan_command(cmd + 3);
+  } else if (starts_ci(cmd, "ENC BUS ")) {
+    handled = handle_encbus_command(cmd + 8);
+
   } else if (starts_ci(cmd, "MCFOC")) {
     handled = handle_mcfoc_command(cmd + 5);
   } else if (starts_ci(cmd, "BPFOC")) {
@@ -2031,10 +2169,79 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     return true;
 }
 static bool rpc_cmd(String cmd) {
+#if USE_ROUTER_BRIDGE
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
   return handle_command_line_stream(cmd.c_str(), g_null_stream);
 }
 
+static String manual_status_fields(uint32_t bp_age) {
+  String s;
+  s.reserve(256);
+  s += " manual_scalar_capable=1";
+  s += " manual_run_mode="; s += String(g_manual_scalar_mode ? 1 : 0);
+  s += " accel_hz_per_s="; s += format_fixed(g_manual_accel_centi*0.01f, 2);
+  s += " decel_hz_per_s="; s += format_fixed(g_manual_decel_centi*0.01f, 2);
+  s += " downmode_coast="; s += String(g_manual_coast_down ? 1 : 0);
+  s += " mc_frequency_reference_hz="; s += format_fixed(g_manual_reference_hz, 2);
+  s += " mc_frequency_reference_valid="; s += String(g_manual_reference_valid && bp_age < 300U ? 1 : 0);
+  s += " mc_decel_bus_hold="; s += String(g_manual_bus_hold ? 1 : 0);
+  return s;
+}
+
+static String rpc_capture_page(uint32_t part, uint32_t page) {
+  // Called by rpc_history while holding g_control_owner, after its RUN guard.
+  const bool adc = part == 3U;
+  if (!(adc ? g_peak.complete : g_observer_trace.complete)) return "ERR NOT_COMPLETE";
+  const uint8_t *data = adc ? g_peak.data : g_observer_trace.data;
+  const unsigned size = adc ? (unsigned)PC_WIRE_BYTES : (unsigned)OD_WIRE_BYTES;
+  const unsigned chunk = 192U;
+  if (page >= (size + chunk - 1U) / chunk) return "ERR PAGE";
+  const unsigned offset = page * chunk;
+  const unsigned count = size - offset < chunk ? size - offset : chunk;
+  String reply;
+  reply.reserve(440);
+  reply = "CP ";
+  reply += String((unsigned long)part);
+  reply += " "; reply += String((unsigned long)page);
+  reply += " "; reply += String((unsigned long)size);
+  reply += " "; reply += String((unsigned long)odw_u32(data + 8));
+  reply += " "; reply += String((unsigned long)odw_u32(data + 60));
+  reply += " ";
+  const char hex[] = "0123456789abcdef";
+  for (unsigned i = offset; i < offset + count; ++i) {
+    reply += hex[data[i] >> 4];
+    reply += hex[data[i] & 15];
+  }
+  return reply;
+}
+
+static String rpc_history(uint32_t part,uint32_t page) {
+#if USE_ROUTER_BRIDGE
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
+  if(g_pwm_enabled||g_pwm_outputs_active||(g_bp_status&BP_STATUS_PWM_ACTIVE))return "ERR RUN";
+  if (part == 3U || part == 4U) return rpc_capture_page(part, page);
+  if(!g_start_history.complete)return "ERR NOT_COMPLETE";
+  const uint8_t*data=nullptr;unsigned size=0;
+  if(part==0){data=g_start_history.meta;size=NH_META_BYTES;}
+  else if(part==1){data=(const uint8_t*)g_start_history.rows;size=g_start_history.count*NH_ROW;}
+  else if(part==2){data=(const uint8_t*)g_start_history.checkpoints;size=(g_start_history.count/16U)*4U;}
+  else return "ERR PART";
+  const unsigned chunk=192U,offset=page*chunk;
+  if(page>1024U||(size?offset>=size:page!=0U))return "ERR PAGE";
+  unsigned len=size-offset;if(len>chunk)len=chunk;
+  String out;out.reserve(480);out="NH ";out+=String((unsigned long)g_start_history.epoch);
+  out+=" ";out+=String(nhr_exact(&g_start_history)?1:0);out+=" ";out+=String((unsigned long)size);out+=" ";
+  if(!len)out+="-";
+  const char hex[]="0123456789abcdef";
+  for(unsigned i=0;i<len;++i){out+=hex[data[offset+i]>>4];out+=hex[data[offset+i]&15];}return out;
+}
 static String rpc_get() {
+#if USE_ROUTER_BRIDGE
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
+  mic_rpc_note(11);
   const uint32_t timing_started = micros();
   const unsigned int timing_key = irq_lock();
   const LinkTiming timing = g_link_timing;
@@ -2046,8 +2253,12 @@ static String rpc_get() {
   float ic = g_last_ic;
   float speed_rpm = (g_freq_ref * 60.0f) / POLE_PAIRS;
   String s;
-  s.reserve(160);
-  s += "DATA freq="; s += format_fixed(g_freq_ref, 2);
+  s.reserve(16384);
+  s+="DATA nh_complete=";s+=String(g_start_history.complete?1:0);
+  s+=" nh_exact=";s+=String(nhr_exact(&g_start_history)?1:0);
+  s+=" nh_count=";s+=String((unsigned long)g_start_history.count);
+  s+=" nh_bad=";s+=String((unsigned long)g_start_history.bad);s+=" ";
+  s += "freq="; s += format_fixed(g_freq_ref, 2);
   s += " speed="; s += format_fixed(speed_rpm, 1);
   s += " ia="; s += format_fixed(ia, 2);
   s += " ib="; s += format_fixed(ib, 2);
@@ -2085,17 +2296,149 @@ static String rpc_get() {
   s += " enc_mech_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_mech_hz : 0.0f, 2);
   s += " enc_elec_hz="; s += format_fixed((g_bp_enc_ok && enc_recent) ? g_enc_elec_hz : 0.0f, 2);
   if (NUCLEO_MCSDK_ACIM_BACKEND) {
-    s += " enc_source=uno_q_i2c2";
-    s += " enc_bus_ok="; s += String(g_as5600.bus_ok ? 1 : 0);
-    s += " enc_status="; s += String((int)g_as5600.status);
-    s += " enc_speed_ok="; s += String(g_as5600.speed_ok ? 1 : 0);
-    s += " enc_reads="; s += String((unsigned long)g_as5600.reads);
-    s += " enc_errors="; s += String((unsigned long)g_as5600.errors);
-    s += " enc_io_error="; s += String((long)g_as5600.io_error);
-    s += " enc_init_error="; s += String((long)g_as5600.init_error);
-    s += " enc_scl="; s += String((long)g_as5600.scl_level);
-    s += " enc_sda="; s += String((long)g_as5600.sda_level);
-    s += " enc_age_ms="; s += String((unsigned long)(millis() - g_as5600.timestamp_ms));
+    s += " mc_clear_recovery_hex=";
+    if(g_clear_recovery_seen){static const char cc_digits[]="0123456789abcdef";
+      for(unsigned i=0;i<UV3_FRAME;++i){s+=cc_digits[g_clear_recovery[i]>>4];s+=cc_digits[g_clear_recovery[i]&15U];}}
+    else s+="-";
+    s += " rpc_response_timeouts=";s += String((unsigned long)mic_rpc_health.response_timeouts);
+    s += " rpc_send_timeouts=";s += String((unsigned long)mic_rpc_health.send_timeouts);
+    s += " rpc_late_responses=";s += String((unsigned long)mic_rpc_health.late_responses);
+    s += " rpc_route_attempts=";s+=String((unsigned long)__atomic_load_n(&g_rpc_routes.attempts,__ATOMIC_RELAXED));
+    s += " rpc_route_failures=";s+=String((unsigned long)__atomic_load_n(&g_rpc_routes.failures,__ATOMIC_RELAXED));
+    s += " rpc_route_reply_ms=";s+=String((unsigned long)__atomic_load_n(&g_rpc_routes.last_reply,__ATOMIC_RELAXED));
+    s += " rpc_route_renewed=";s+=String((unsigned long)__atomic_load_n(&g_rpc_routes.renewed,__ATOMIC_RELAXED));
+    s += " rpc_unknown_methods=";s += String((unsigned long)mic_rpc_health.unknown_methods);
+    s += " rpc_stack_budget=";s += String((unsigned long)Bridge.micStackBudget());
+    s += " rpc_stack_free=";s += String((unsigned long)Bridge.micStackFree());
+    s += " enc_source=disabled";
+    const bool native_fresh=g_bp_mcsdk_telemetry&&(uint32_t)(millis()-g_bp_last_rsp_ms)<300U;
+    s += " mc_boot_packet_hex=";
+    if(g_native_boot.received){
+      static const char digits[]="0123456789abcdef";
+      for(unsigned i=0;i<UV3_FRAME;++i){s+=digits[g_native_boot.packet[i]>>4];s+=digits[g_native_boot.packet[i]&15U];}
+    }else s+="-";
+    s += " mc_boot_fresh=";s += String(mb_fresh(&g_native_boot,g_bp_fw_build,native_fresh,millis())?1:0);
+    s += " foc_runtime_valid=";s += String(ft_fresh(&g_foc_timing,native_fresh,millis())?1:0);
+    s += " foc_runtime_flags=";s += String((unsigned)g_foc_timing.flags);
+    s += " foc_runtime_good=";s += String((unsigned long)g_foc_timing.good);
+    s += " foc_runtime_bad=";s += String((unsigned long)g_foc_timing.bad);
+    s += " foc_runtime_w0=";s += String((unsigned long)g_foc_timing.words[0]);
+    s += " foc_runtime_w1=";s += String((unsigned long)g_foc_timing.words[1]);
+    s += " foc_runtime_w2=";s += String((unsigned long)g_foc_timing.words[2]);
+    s += " foc_runtime_w3=";s += String((unsigned long)g_foc_timing.words[3]);
+    s += " foc_runtime_w4=";s += String((unsigned long)g_foc_timing.words[4]);
+    s += " foc_runtime_w5=";s += String((unsigned long)g_foc_timing.words[5]);
+    s += " foc_runtime_w6=";s += String((unsigned long)g_foc_timing.words[6]);
+    s += " foc_runtime_w7=";s += String((unsigned long)g_foc_timing.words[7]);
+    s += " foc_runtime_w8=";s += String((unsigned long)g_foc_timing.words[8]);
+    s += " foc_runtime_w9=";s += String((unsigned long)g_foc_timing.words[9]);
+    s += " foc_runtime_w10=";s += String((unsigned long)g_foc_timing.words[10]);
+    s += " foc_runtime_w11=";s += String((unsigned long)g_foc_timing.words[11]);
+    s += " foc_runtime_w12=";s += String((unsigned long)g_foc_timing.words[12]);
+    s += " foc_runtime_w13=";s += String((unsigned long)g_foc_timing.words[13]);
+    s += " foc_runtime_w14=";s += String((unsigned long)g_foc_timing.words[14]);
+    s += " foc_runtime_w15=";s += String((unsigned long)g_foc_timing.words[15]);
+    s += " foc_runtime_w16=";s += String((unsigned long)g_foc_timing.words[16]);
+    s += " foc_runtime_w17=";s += String((unsigned long)g_foc_timing.words[17]);
+    s += " foc_runtime_w18=";s += String((unsigned long)g_foc_timing.words[18]);
+    s += " foc_runtime_w19=";s += String((unsigned long)g_foc_timing.words[19]);
+    s += " foc_runtime_w20=";s += String((unsigned long)g_foc_timing.words[20]);
+    s += " foc_runtime_w21=";s += String((unsigned long)g_foc_timing.words[21]);
+    s += " foc_runtime_w22=";s += String((unsigned long)g_foc_timing.words[22]);
+    s += " foc_runtime_w23=";s += String((unsigned long)g_foc_timing.words[23]);
+    s += " foc_runtime_w24=";s += String((unsigned long)g_foc_timing.words[24]);
+    s += " foc_runtime_w25=";s += String((unsigned long)g_foc_timing.words[25]);
+    s += " foc_runtime_w26=";s += String((unsigned long)g_foc_timing.words[26]);
+    s += " foc_runtime_w27=";s += String((unsigned long)g_foc_timing.words[27]);
+    s += " foc_runtime_w28=";s += String((unsigned long)g_foc_timing.words[28]);
+    s += " foc_runtime_w29=";s += String((unsigned long)g_foc_timing.words[29]);
+    s += " foc_runtime_w30=";s += String((unsigned long)g_foc_timing.words[30]);
+    s += " foc_runtime_w31=";s += String((unsigned long)g_foc_timing.words[31]);
+    s += " foc_runtime_w32=";s += String((unsigned long)g_foc_timing.words[32]);
+    s += " foc_runtime_w33=";s += String((unsigned long)g_foc_timing.words[33]);
+    s += " foc_runtime_w34=";s += String((unsigned long)g_foc_timing.words[34]);
+    s += " foc_runtime_w35=";s += String((unsigned long)g_foc_timing.words[35]);
+    s += " foc_runtime_w36=";s += String((unsigned long)g_foc_timing.words[36]);
+    s += " foc_runtime_w37=";s += String((unsigned long)g_foc_timing.words[37]);
+    s += " foc_runtime_w38=";s += String((unsigned long)g_foc_timing.words[38]);
+    s += " foc_runtime_w39=";s += String((unsigned long)g_foc_timing.words[39]);
+    s += " foc_runtime_w40=";s += String((unsigned long)g_foc_timing.words[40]);
+    s += " foc_runtime_w41=";s += String((unsigned long)g_foc_timing.words[41]);
+    s += " foc_runtime_w42=";s += String((unsigned long)g_foc_timing.words[42]);
+    s += " foc_runtime_w43=";s += String((unsigned long)g_foc_timing.words[43]);
+    s += " foc_runtime_w44=";s += String((unsigned long)g_foc_timing.words[44]);
+    s += " foc_runtime_w45=";s += String((unsigned long)g_foc_timing.words[45]);
+    s += " foc_runtime_w46=";s += String((unsigned long)g_foc_timing.words[46]);
+    s += " foc_runtime_w47=";s += String((unsigned long)g_foc_timing.words[47]);
+    s += " foc_runtime_w48=";s += String((unsigned long)g_foc_timing.words[48]);
+    s += " foc_runtime_w49=";s += String((unsigned long)g_foc_timing.words[49]);
+    s += " foc_runtime_w50=";s += String((unsigned long)g_foc_timing.words[50]);
+    s += " foc_runtime_w51=";s += String((unsigned long)g_foc_timing.words[51]);
+    s += " foc_runtime_w52=";s += String((unsigned long)g_foc_timing.words[52]);
+    s += " foc_runtime_w53=";s += String((unsigned long)g_foc_timing.words[53]);
+    s += " foc_runtime_w54=";s += String((unsigned long)g_foc_timing.words[54]);
+    s += " foc_runtime_w55=";s += String((unsigned long)g_foc_timing.words[55]);
+    s += " foc_runtime_w56=";s += String((unsigned long)g_foc_timing.words[56]);
+    s += " foc_runtime_w57=";s += String((unsigned long)g_foc_timing.words[57]);
+    s += " foc_runtime_w58=";s += String((unsigned long)g_foc_timing.words[58]);
+    s += " foc_runtime_w59=";s += String((unsigned long)g_foc_timing.words[59]);
+    s += " foc_runtime_w60=";s += String((unsigned long)g_foc_timing.words[60]);
+    s += " foc_runtime_w61=";s += String((unsigned long)g_foc_timing.words[61]);
+    s += " foc_runtime_w62=";s += String((unsigned long)g_foc_timing.words[62]);
+    s += " research_native_valid=";s += String(xp_fresh(&g_research_caps,native_fresh,millis())?1:0);
+    s += " research_native_caps=";s += String((unsigned)g_research_caps.caps);
+    s += " research_native_good=";s += String((unsigned long)g_research_caps.good);
+    s += " research_native_bad=";s += String((unsigned long)g_research_caps.bad);
+    s += " algorithm_selected=";s += String((unsigned)g_research_caps.selected);
+    s += " algorithm_requested=";s += String((unsigned)g_ma_algorithm);
+    s += " algorithm_qualification=";s += String((unsigned)g_research_caps.qualification);
+    s += " algorithm_profile_crc=";s += String((unsigned long)g_research_caps.profile_crc);
+    s += " foc_experiment_flags=";s += String((unsigned)g_research_caps.experiment_flags);
+    s += " foc_timing_fault=";s += String((unsigned)g_research_caps.timing_fault);
+    s += " foc_timing_cases=";s += String((unsigned)g_research_caps.timing_cases);
+    s += " algorithm_fast_cycles=";s += String((unsigned long)g_research_caps.fast_cycles);
+    s += " algorithm_observer_cycles=";s += String((unsigned long)g_research_caps.observer_cycles);
+    s += " algorithm_fault=";s += String((unsigned)g_research_caps.fault);
+    s += " rpm_est=";s += String(g_research_caps.rpm_est,2);
+    s += " rpm_est_valid=";s += String((unsigned)g_research_caps.estimate_valid);
+    const bool id_fresh=g_id_meta.seen&&(uint32_t)(millis()-g_id_meta.seen_ms)<1500U;
+    s += " id_valid=";s += String(id_fresh?1:0);
+    s += " id_timing_cycles=";s += String((unsigned long)g_id_meta.timing_cycles);
+    s += " id_flags=";s += String((unsigned)g_id_meta.flags);
+    s += " id_config_crc=";s += String((unsigned long)g_id_meta.config_crc);
+    s += " id_result_crc=";s += String((unsigned long)g_id_meta.result_crc);
+    s += " id_run_id=";s += String((unsigned long)g_id_meta.run_id);
+    s += " id_kind=";s += String((unsigned long)g_id_meta.kind);
+    s += " id_frequency=";s += String(g_id_meta.frequency,3);
+    s += " id_duration_ms=";s += String((unsigned long)g_id_meta.duration_ms);
+    s += " id_fault=";s += String((unsigned)g_id_meta.fault);
+    s += " id_wire_good=";s += String((unsigned long)g_id_blob.good);
+    s += " id_wire_bad=";s += String((unsigned long)g_id_blob.bad);
+    const bool id_complete=id_fresh&&(g_id_meta.flags&4U)&&g_id_blob.complete&&g_id_blob.crc==g_id_meta.result_crc;
+    s += " id_complete=";s += String(id_complete?1:0);
+    s += " noise_complete=";s += String(g_idle_noise.complete?1:0);
+    s += " noise_crc=";s += String((unsigned long)g_idle_noise.crc);
+    s += " noise_good=";s += String((unsigned long)g_idle_noise.good);
+    s += " noise_bad=";s += String((unsigned long)g_idle_noise.bad);
+    s += " noise_view_page=";s += String((unsigned)g_noise_view_page);
+    s += " noise_page_hex=";
+    if(g_idle_noise.complete){
+      const char digits[]="0123456789abcdef";
+      for(unsigned j=0;j<128;j++){uint8_t value=g_idle_noise.bytes[128U*g_noise_view_page+j];s+=digits[value>>4];s+=digits[value&15];}
+    }else s+="-";
+    s += " id_view_page=";s += String((unsigned)g_id_view_page);
+    s += " id_page_hex=";
+    if(id_complete){
+      const char digits[]="0123456789abcdef";
+      for(unsigned j=0;j<128;j++){uint8_t value=g_id_blob.bytes[128U*g_id_view_page+j];s+=digits[value>>4];s+=digits[value&15];}
+    }else s += "-";
+
+    s += " run_id="; s += String((unsigned long)g_timed_run.id);
+    s += " run_start_ms="; s += String((unsigned long)g_timed_run.start_ms);
+    s += " run_stop_ms="; s += String((unsigned long)g_timed_run.stop_ms);
+    s += " run_limit_ms="; s += String((unsigned long)g_timed_run.limit_ms);
+    s += " run_reason="; s += String((unsigned long)g_timed_run.reason);
+    s += " run_elapsed_ms="; s += String((unsigned long)g_timed_run.elapsed(millis()));
   }
   s += " mic_gated="; s += String((int)g_mic_gated);
   s += " mic_enable_ai="; s += String((int)g_mic_enable_ai);
@@ -2115,6 +2458,17 @@ static String rpc_get() {
   s += " bp_age_ms="; s += String((int)bp_age);
   // Low-level motor-controller link observability.
   s += " bp_status="; s += String((int)g_bp_status);
+  s += " uno_local_fault=";s += String((unsigned)g_fault);
+  s += " uno_stop_ready=";s += String((unsigned long)g_stop_evidence.ready);
+  s += " uno_stop_origin=";s += String((unsigned long)g_stop_evidence.origin);
+  s += " uno_stop_ms=";s += String((unsigned long)g_stop_evidence.at_ms);
+  s += " uno_stop_run_id=";s += String((unsigned long)g_stop_evidence.run_id);
+  s += " uno_stop_local_fault=";s += String((unsigned long)g_stop_evidence.local_fault);
+  s += " uno_stop_peer_status=";s += String((unsigned long)g_stop_evidence.peer_status);
+  s += " uno_stop_peer_fault=";s += String((unsigned long)g_stop_evidence.peer_fault);
+  s += " uno_stop_reply_age_ms=";s += String((unsigned long)g_stop_evidence.reply_age_ms);
+  s += " uno_stop_superseded=";s += String((unsigned long)g_stop_evidence.superseded);
+
   s += " bp_fault="; s += String((int)g_bp_fault_code);
   s += " mc_diag_valid="; s += String(g_mc_diagnostics.valid ? 1 : 0);
   s += " mc_fault_reason="; s += String((int)g_mc_diagnostics.reason);
@@ -2132,6 +2486,11 @@ static String rpc_get() {
   s += " bp_cmd_mode="; s += String((int)g_bp_cmd_mode);
   s += " bp_foc_backend="; s += String(g_bp_foc_backend ? 1 : 0);
   s += " bp_seq="; s += String((int)g_bp_last_seq);
+  s += " bp_ne_accepted="; s += String((int)g_bp_ne_accepted);
+  s += " bp_ne_observed="; s += String((int)g_bp_ne_observed);
+  s += " bp_recovered_drops="; s += String((int)g_bp_recovered_drops);
+  s += " bp_ne_flags="; s += String((int)g_bp_ne_flags);
+  s += " bp_transport_fault="; s += String((int)g_bp_transport_fault);
   s += " bp_good_cnt="; s += String((int)g_bp_good_cnt);
   s += " bp_bad_cnt="; s += String((int)g_bp_bad_cnt);
   s += " bp_ext="; s += String((int)g_bp_ext_flags);
@@ -2181,13 +2540,140 @@ static String rpc_get() {
   s += " uno_tx_call_max_us="; s += String((unsigned long)timing.tx_call_max_us);
   s += " uno_rpc_max_us="; s += String((unsigned long)timing.rpc_max_us);
   s += " uno_tx_short_writes="; s += String((unsigned long)timing.tx_short_writes);
+  s += " uno_bridge_service_priority="; s += String(NUCLEO_MCSDK_ACIM_BACKEND ? 4 : CONFIG_NUM_PREEMPT_PRIORITIES - 1);
+  s += " uno_control_priority="; s += String(NUCLEO_MCSDK_ACIM_BACKEND ? 4 : CONFIG_MAIN_THREAD_PRIORITY);
+  s += " uno_rpc_priority="; s += String(UPDATE_THREAD_PRIORITY);
+  s += " uno_local_adc_acquired="; s += String(NUCLEO_MCSDK_ACIM_BACKEND ? 0 : 1);
+  s += " uno_tx_all_max_gap_us="; s += String((unsigned long)timing.tx_all_max_gap_us);
+  s += " uno_tx_last_gap_us="; s += String((unsigned long)timing.tx_last_gap_us);
+  s += " uno_tx_gaps_over_watchdog="; s += String((unsigned long)timing.tx_gaps_over_watchdog);
   s += " uno_tx_count="; s += String((unsigned long)timing.tx_count);
   s += " uno_rx_count="; s += String((unsigned long)timing.rx_count);
   s += " uno_log_dropped="; s += String((unsigned long)log_dropped);
   s += " uno_log_pending="; s += String((unsigned long)log_pending);
+  // ControlMutex already protects snapshot writers. Never format strings with IRQs off.
+  s += " mc_break_rx_good="; s += String((unsigned long)g_break_wire.good_pages);
+  s += " mc_break_rx_bad="; s += String((unsigned long)g_break_wire.bad_pages);
+  static const char break_hex[] = "0123456789abcdef";
+  const auto &rejected=g_break_wire.first_reject;
+  s += " mc_break_reject_valid="; s += String((unsigned)rejected.valid);
+  s += " mc_break_reject_code="; s += String((unsigned)rejected.reason);
+  s += " mc_break_reject_ms="; s += String((unsigned long)rejected.now_ms);
+  s += " mc_break_reject_peer_fw="; s += String((unsigned long)rejected.peer_build);
+  s += " mc_break_reject_fresh_off="; s += String((unsigned)rejected.fresh_off);
+  s += " mc_break_reject_bp_status="; s += String((unsigned)rejected.bp_status);
+  s += " mc_break_reject_pwm="; s += String((unsigned)rejected.pwm_enabled);
+  s += " mc_break_reject_rsp_age_ms="; s += String((unsigned long)rejected.rsp_age_ms);
+  s += " mc_break_reject_good_before="; s += String((unsigned long)rejected.good_pages_before);
+  s += " mc_break_reject_packet_hex=";
+  if (!rejected.valid) s += "-";
+  else for (unsigned i=0;i<UV3_FRAME;++i) {
+    s += break_hex[rejected.packet[i]>>4]; s += break_hex[rejected.packet[i]&15];
+  }
+
+  s += " mc_uart_reject_hex=";
+  if(g_uart_reject.complete) {
+    for(unsigned i=0;i<URW_RECORD_BYTES;++i) {
+      const uint8_t byte=g_uart_reject.data[i];s+=break_hex[byte>>4];s+=break_hex[byte&15];
+    }
+  } else s+="-";
+  s+=" mc_uart_reject_good_pages=";s+=String((unsigned long)g_uart_reject.good_pages);
+  s+=" mc_uart_reject_bad_pages=";s+=String((unsigned long)g_uart_reject.bad_pages);
+  s += " mc_break_wave_hex=";
+  if (g_bkin_wave.complete) {
+    for (unsigned i=0;i<BKW_RECORD_BYTES;++i) {
+      const uint8_t byte=g_bkin_wave.data[i];
+      s += break_hex[byte>>4]; s += break_hex[byte&15];
+    }
+  } else s += "-";
+  s += " mc_break_wave_age_ms="; s += String((unsigned long)(g_bkin_wave.complete ?
+      (uint32_t)(millis()-g_bkin_wave.received_ms) : 999999U));
+  s += " mc_break_wave_good_pages="; s += String((unsigned long)g_bkin_wave.good_pages);
+  s += " mc_break_wave_bad_pages="; s += String((unsigned long)g_bkin_wave.bad_pages);
+
+  s += " repeat_meta_hex=";
+  if(g_repeat_meta_valid){for(unsigned i=0;i<UV3_FRAME;++i){
+    s+=break_hex[g_repeat_meta[i]>>4];s+=break_hex[g_repeat_meta[i]&15];}}
+  else s+="-";
+  s+=" repeat_meta_age_ms=";s+=String((unsigned long)(g_repeat_meta_valid?(uint32_t)(millis()-g_repeat_meta_ms):999999U));
+  s+=" mc_repeat_wave_hex=";
+  if(g_repeat_wave.complete){for(unsigned i=0;i<RPW_RECORD_BYTES;++i){
+    s+=break_hex[g_repeat_wave.data[i]>>4];s+=break_hex[g_repeat_wave.data[i]&15];}}
+  else s+="-";
+  s+=" mc_repeat_wave_age_ms=";s+=String((unsigned long)(g_repeat_wave.complete?(uint32_t)(millis()-g_repeat_wave.received_ms):999999U));
+  s+=" mc_repeat_wave_good=";s+=String((unsigned long)g_repeat_wave.good_pages);
+  s+=" mc_repeat_wave_bad=";s+=String((unsigned long)g_repeat_wave.bad_pages);
+
+  for (unsigned kind=0;kind<3;++kind) {
+    s += kind == 0 ? " mc_break0_hex=" : kind==1 ? " mc_break1_hex=" : " mc_break2_hex=";
+    if (g_break_wire.complete[kind]) {
+      for (unsigned i=0;i<BW_BYTES;++i) {
+        const uint8_t byte=g_break_wire.data[kind][i];
+        s += break_hex[byte>>4]; s += break_hex[byte&15];
+      }
+    } else s += "-";
+    s += kind == 0 ? " mc_break0_age_ms=" : kind==1 ? " mc_break1_age_ms=" : " mc_break2_age_ms=";
+    s += String((unsigned long)(g_break_wire.complete[kind] ?
+        (uint32_t)(millis()-g_break_wire.received_ms[kind]) : 999999U));
+  }
+
+  const auto rx_stats = g_nucleo_serial.stats();
+  s += " uno_rx_dropped="; s += String((unsigned long)rx_stats.dropped);
+  s += " uno_rx_rescued="; s += String((unsigned long)rx_stats.rescued);
+  s += " uno_rx_hw_errors="; s += String((unsigned long)rx_stats.errors);
+  s += " uno_rx_hw_flags="; s += String((unsigned long)rx_stats.error_flags);
+  s += " uno_rx_high_water="; s += String((unsigned long)rx_stats.high_water);
+  s += " uno_rx_pending="; s += String((unsigned long)rx_stats.pending);
+  s += " uno_uart_fifo=";s += String((unsigned long)rx_stats.fifo_enabled);
+  s += " uno_uart_rx_batch_max=";s += String((unsigned long)rx_stats.max_batch);
+  s += " uno_uart_irq_cycles_max=";s += String((unsigned long)rx_stats.max_irq_cycles);
+  s += " uno_uart_lock_cycles_max=";s += String((unsigned long)rx_stats.max_lock_cycles);
+  s += " uno_uart_tx_rejected=";s += String((unsigned long)rx_stats.tx_rejected);
+  s += " uno_rx_poll_gap_max_ms="; s += String((unsigned long)g_rx_poll_gap_max_ms);
+  s += " uno_rx_rejected_ms="; s += String((unsigned long)g_rx_rejected_ms);
+  s += " uno_rx_rejected_hex=";
+  if (!g_rx_rejected_ms) s += "-";
+  else for (unsigned i=0;i<UV3_FRAME;++i) {
+    s += break_hex[g_rx_rejected[i]>>4]; s += break_hex[g_rx_rejected[i]&15];
+  }
+  s += " mc_observer_trace_hex=-";
+  s+=" mc_observer_trace_complete=";s+=String(g_observer_trace.complete?1:0);
+  s+=" mc_observer_trace_good=";s+=String((unsigned long)g_observer_trace.good);
+  s+=" mc_observer_trace_bad=";s+=String((unsigned long)g_observer_trace.bad);
+  s += " mc_adc_peak_hex=-";
+  s+=" mc_adc_peak_good=";s+=String((unsigned long)g_peak.good);
+  s+=" mc_adc_peak_bad=";s+=String((unsigned long)g_peak.bad);
+  s+=" mc_adc_peak_complete=";s+=String(g_peak.complete?1:0);
+  s += " mc_zero_history_hex=";
+  if(g_zero_history.complete) {
+    for(unsigned page=0;page<g_zero_history.count;++page)for(unsigned i=0;i<UV3_FRAME;++i) {
+      uint8_t value=g_zero_history.frames[page][i];s+=break_hex[value>>4];s+=break_hex[value&15];
+    }
+  } else s+="-";
+  s+=" mc_zero_history_good=";s+=String((unsigned long)g_zero_history.good);
+  s+=" mc_zero_history_bad=";s+=String((unsigned long)g_zero_history.bad);
+  s += " mc_current_packet_hex=";
+  if(g_current.has_summary) for(unsigned i=0;i<UV3_FRAME;++i) {
+    s += break_hex[g_current.summary[i]>>4];s += break_hex[g_current.summary[i]&15];
+  } else s += "-";
+  s += " mc_current_detail_hex=";
+  if(g_current.has_detail) for(unsigned i=0;i<UV3_FRAME;++i) {
+    s += break_hex[g_current.detail[i]>>4];s += break_hex[g_current.detail[i]&15];
+  } else s += "-";
+  s += " mc_current_age_ms=";s += String((unsigned long)(g_current.has_summary?millis()-g_current.summary_ms:999999U));
+  s += " mc_current_detail_age_ms=";s += String((unsigned long)(g_current.has_detail?millis()-g_current.detail_ms:999999U));
+  s += " mc_current_quality_hex=";
+  if(g_current.has_quality) for(unsigned i=0;i<UV3_FRAME;++i) {
+    s += break_hex[g_current.quality[i]>>4];s += break_hex[g_current.quality[i]&15];
+  } else s += "-";
+  s += " mc_current_quality_age_ms=";s += String((unsigned long)(g_current.has_quality?millis()-g_current.quality_ms:999999U));
+  s += " mc_current_good=";s += String((unsigned long)g_current.good);
+  s += " mc_current_bad=";s += String((unsigned long)g_current.bad);
+  s += manual_status_fields(bp_age);
   const unsigned int timing_done_key = irq_lock();
   g_link_timing.rpc(micros() - timing_started);
   irq_unlock(timing_done_key);
+  mic_rpc_note(12,s.length());
   return s;
 }
 
@@ -2234,9 +2720,11 @@ static void bridge_tick() {
   }
   g_bridge_last_ms = now;
   if (!Bridge) {
+    // The local Bridge override reuses its transport and updater. Retry only
+    // here, where local and remote PWM are already required to be OFF.
     g_bridge_ready = Bridge.begin(RPC_BAUD);
     g_bridge_cmd_ready = false;
-    g_bridge_get_ready = false;
+    g_bridge_get_ready = false;g_history_route_ready=false;
     g_monitor_ready = false;
     g_bridge_announced = false;
     return;
@@ -2248,8 +2736,18 @@ static void bridge_tick() {
   if (!g_bridge_cmd_ready) {
     g_bridge_cmd_ready = Bridge.provide("cmd", rpc_cmd);
   }
+  if (!g_history_route_ready)g_history_route_ready=Bridge.provide("history", rpc_history);
   if (!g_bridge_get_ready) {
     g_bridge_get_ready = Bridge.provide("get", rpc_get);
+  }
+  // A router reconnect may forget routes while the local callbacks still exist.
+  // Renew routes only OFF, retaining dispatcher instances, buffers and motor evidence.
+  if(g_rpc_routes.due(now,g_pwm_enabled,g_pwm_outputs_active,
+      (g_bp_status & BP_STATUS_PWM_ACTIVE)!=0U,g_bridge_cmd_ready&&g_bridge_get_ready)) {
+    const uint8_t cmd_result=Bridge.refreshProvided("cmd");
+    const uint8_t get_result=Bridge.refreshProvided("get");
+    if(g_history_route_ready)(void)Bridge.refreshProvided("history");
+    g_rpc_routes.finish(millis(),cmd_result,get_result);
   }
   if (!g_bridge_announced && g_bridge_cmd_ready && g_bridge_get_ready && g_monitor_ready) {
     g_bridge_announced = true;
@@ -2281,7 +2779,7 @@ static void bridge_service_worker(void *, void *, void *) {
 static void bridge_service_begin() {
   k_thread_create(&bridge_service_thread, bridge_service_stack,
                   K_THREAD_STACK_SIZEOF(bridge_service_stack), bridge_service_worker,
-                  nullptr, nullptr, nullptr, CONFIG_NUM_PREEMPT_PRIORITIES - 1, 0, K_NO_WAIT);
+                  nullptr, nullptr, nullptr, NUCLEO_MCSDK_ACIM_BACKEND ? 4 : CONFIG_NUM_PREEMPT_PRIORITIES - 1, 0, K_NO_WAIT);
 }
 #endif
 static void send_telemetry() {
@@ -2492,13 +2990,6 @@ static void io_test_set(bool on) {
   // Service I/O test: allow the motor controller to apply ext_flags while keeping PWM off.
   nucleo_send_pwm(0.0f, 0.0f, 0.0f, true, true);
 }
-static uint8_t nucleo_crc8(const uint8_t *buf, size_t len) {
-  uint8_t c = 0;
-  for (size_t i = 0; i < len; i++) {
-    c ^= buf[i];
-  }
-  return c;
-}
 static float bp_temp_voltage_from_raw(uint16_t raw) {
   return ((float)raw * BP_TEMP_VREF) / 4095.0f;
 }
@@ -2596,13 +3087,20 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   if (!rx) return false;
   if (rx[0] != 0x55 || rx[1] != 0xAA) return false;
   if (rx[2] != BP_VER) return false;
-  uint8_t crc = nucleo_crc8(rx, BP_CRC_OFF);
-  if (crc != rx[BP_CRC_OFF]) return false;
+  if (!uv3_crc_ok(rx)) return false;
   if (require_sequence && rx[4] != expected_sequence) return false;
   const bool clear_ack = unoq_clear_reply_ack(
       require_sequence && g_nucleo_waiting_rsp && rx[4] == g_nucleo_waiting_seq,
       g_nucleo_waiting_clear, rx[10], rx[3]);
   uint32_t now_ms = millis();
+  const uint32_t previous_build = g_bp_fw_build;
+  const uint16_t previous_good = g_bp_good_cnt;
+  const uint32_t previous_age = now_ms - g_bp_last_rsp_ms;
+  g_bp_ne_accepted = (uint16_t)rx[31] | ((uint16_t)rx[32] << 8);
+  g_bp_ne_observed = (uint16_t)rx[33] | ((uint16_t)rx[34] << 8);
+  g_bp_recovered_drops = (uint16_t)rx[35] | ((uint16_t)rx[36] << 8);
+  g_bp_ne_flags = rx[37];
+  g_bp_transport_fault = rx[38];
   g_bp_status = rx[3];
   g_bp_last_seq = rx[4];
   g_bp_good_cnt = (uint16_t)rx[5] | ((uint16_t)rx[6] << 8);
@@ -2630,6 +3128,21 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
   } else {
     g_bp_fw_build = 0U;
   }
+  if (bkw_peer_reset(&g_bkin_wave,previous_build,g_bp_fw_build,previous_good,g_bp_good_cnt,previous_age))
+    {
+      memset(&g_native_boot,0,sizeof(g_native_boot));g_clear_recovery_seen=false;odw_reset(&g_observer_trace);
+      rpw_reset(&g_repeat_wave);g_repeat_meta_valid=false;
+      pe_reset(&g_encoder_history,&g_encoder_records);
+      memset(&g_encoder_health,0,sizeof(g_encoder_health));
+      bw_reset(&g_break_wire);urw_reset(&g_uart_reject);ct_reset(&g_current);pc_reset(&g_peak);zh_reset(&g_zero_history);
+    }
+  g_manual_reference_valid=g_bp_mcsdk_telemetry && g_bp_fw_build==2026112112U && (rx[11]&0xFEU)==0xA0U;
+  if (g_manual_reference_valid) {
+    const uint16_t reference=(uint16_t)(rx[12] | ((uint16_t)rx[13]<<8));
+    if (reference>5000U) return false;
+    g_manual_reference_hz=reference*0.01f;
+    g_manual_bus_hold=(rx[11]&1U)!=0;
+  } else g_manual_bus_hold=false;
   g_mc_diagnostics = decode_nucleo_fault_diagnostics(rx, g_bp_mcsdk_telemetry, g_bp_fw_build);
   if (g_mc_diagnostics.valid) g_bp_brake_q15 = 0U;
   g_bp_vbus_raw = (uint16_t)rx[17] | ((uint16_t)rx[18] << 8);
@@ -2705,6 +3218,10 @@ static void nucleo_uart_poll() {
   static uint8_t st = 0;
   static uint8_t idx = 0;
   static uint8_t buf[BP_FRAME_LEN];
+  const uint32_t poll_ms = millis();
+  if(g_pwm_enabled || (g_bp_status&0x22U) || !g_bp_mcsdk_telemetry || g_bp_fw_build!=EH_PEER || (uint32_t)(poll_ms-g_bp_last_rsp_ms)>=300U){g_encoder_health.valid=false;g_encoder_health.mask=0;}
+  if (g_rx_poll_ms) LinkTiming::maximum(g_rx_poll_gap_max_ms, poll_ms-g_rx_poll_ms);
+  g_rx_poll_ms = poll_ms;
   while (NUCLEO_SERIAL.available() > 0) {
     uint8_t b = (uint8_t)NUCLEO_SERIAL.read();
     // Detect the motor controller's boot ping (0x5A 0xA5 ...) to diagnose RX wiring/baud
@@ -2739,8 +3256,162 @@ static void nucleo_uart_poll() {
     if (idx >= sizeof(buf)) {
       st = 0;
       idx = 0;
+      if (!uv3_crc_ok(buf)) {
+        memcpy(g_rx_rejected,buf,sizeof(buf)); g_rx_rejected_ms=millis();
+      }
+      if(buf[2]==ND_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&!(g_bp_status&0x22U)&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)nd_receive(&g_idle_noise,buf,g_bp_fw_build,off);continue;
+      }
+      if(buf[2]==ID_STATUS_WIRE||buf[2]==ID_PAGE_WIRE){
+        const uint32_t now=millis();const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        if(buf[2]==ID_STATUS_WIRE)(void)id_receive_status(&g_id_meta,buf,g_bp_fw_build,fresh,now);
+        else (void)id_receive_page(&g_id_blob,buf,g_bp_fw_build,fresh);
+        continue;
+      }
+      if(buf[2]==CC_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&!(g_bp_status&0x22U)&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        if(off&&cc_valid(buf,g_bp_fw_build)){memcpy(g_clear_recovery,buf,UV3_FRAME);g_clear_recovery_seen=true;}
+        continue;
+      }
+      if(buf[2]==MB_WIRE){
+        const uint32_t now=millis();
+        const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        const bool prior=g_native_boot.received;
+        const uint32_t prior_crc=prior?mb_u32(g_native_boot.packet+30):0;
+        if(mb_receive(&g_native_boot,buf,g_bp_fw_build,fresh,now)&&prior&&
+           prior_crc!=mb_u32(g_native_boot.packet+30)){g_clear_recovery_seen=false;rpw_reset(&g_repeat_wave);g_repeat_meta_valid=false;}
+        continue;
+      }
+      if(buf[2]==FT_WIRE){
+        const uint32_t now=millis();const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)ft_receive(&g_foc_timing,buf,g_bp_fw_build,fresh,now);continue;
+      }
+      if(buf[2]==XP_WIRE){
+        const uint32_t now=millis();
+        const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)xp_receive(&g_research_caps,buf,g_bp_fw_build,fresh,now);continue;
+      }
+      if(buf[2]==WC_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&!(g_bp_status&0x22U)&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)wc_receive(&g_wire_capture,buf,g_bp_fw_build,off);continue;
+      }
+      if(buf[2]==EH_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&(g_bp_status&0x22U)==0U&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)eh_receive(&g_encoder_health,buf,g_bp_fw_build,off,now);continue;
+      }
+
+      if(buf[2]==0xde){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&!(g_bp_status&0x22U)&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        if(bc_packet_valid(buf,g_bp_fw_build,off)){memcpy(g_bus_clear,buf,UV3_FRAME);g_bus_clear_seen=true;}
+        continue;
+      }
+
+      if(buf[2]==PR_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&!(g_bp_status&0x22U)&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)pr_receive(&g_release_capture,buf,g_bp_fw_build,off);continue;
+      }
+
+      if(buf[2]==FC_WIRE) {
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry && !g_pwm_enabled && !(g_bp_status&0x22U) &&
+            (uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)fc_receive(&g_i2c_fault,buf,g_bp_fw_build,off);continue;
+      }
+      if(buf[2]==EW_VERSION) {
+        const uint32_t now=millis();
+        const bool fresh=g_bp_mcsdk_telemetry && (uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)ew_receive(&g_remote_encoder,buf,g_bp_fw_build,fresh,now);continue;
+      }
+      if(buf[2]==NH_WIRE){
+        (void)nhr_receive(&g_start_history,buf,g_bp_fw_build,2026112112U);continue;
+      }
+      if(buf[2]==OD_WIRE){
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&(g_bp_status&0x22U)==0U&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)odw_receive(&g_observer_trace,buf,g_bp_fw_build,2026112112U,off);continue;
+      }
+      if(buf[2]==PC_WIRE) {
+        const uint32_t now=millis();
+        const bool off=g_bp_mcsdk_telemetry && !g_pwm_enabled && (g_bp_status&0x22U)==0 &&
+            (uint32_t)(now-g_bp_last_rsp_ms)<300U;
+        (void)pc_receive(&g_peak,buf,g_bp_fw_build,off,now);continue;
+      }
+      if(buf[2]==ZH_WIRE) {
+        const uint32_t observed_ms=millis();
+        const bool off=!g_pwm_enabled && (g_bp_status&0x22U)==0 &&
+            g_bp_mcsdk_telemetry && (uint32_t)(observed_ms-g_bp_last_rsp_ms)<300U;
+        (void)zh_receive(&g_zero_history,buf,g_bp_fw_build,off);continue;
+      }
+      if(buf[2]==CT_SUMMARY || buf[2]==CT_DETAIL || buf[2]==CT_QUALITY) {
+        const uint32_t observed_ms=millis();
+        const bool fresh=g_bp_mcsdk_telemetry && (uint32_t)(observed_ms-g_bp_last_rsp_ms)<300U;
+        const bool old_quality=g_current.has_quality;
+        const uint32_t old_tick=old_quality?ct_u32(g_current.quality+10):0;
+        if(ct_receive(&g_current,buf,g_bp_fw_build,fresh,observed_ms) && buf[2]==CT_QUALITY && old_quality &&
+           (int32_t)(ct_u32(buf+10)-old_tick)<0){
+          memset(&g_native_boot,0,sizeof(g_native_boot));g_clear_recovery_seen=false;odw_reset(&g_observer_trace);
+      rpw_reset(&g_repeat_wave);g_repeat_meta_valid=false;
+      pe_reset(&g_encoder_history,&g_encoder_records);
+          memset(&g_encoder_health,0,sizeof(g_encoder_health));
+          zh_reset(&g_zero_history);
+        }
+        continue;
+      }
+      if(buf[2]==URW_VERSION) {
+        const uint32_t observed_ms=millis();
+        const bool fresh_off=g_bp_mcsdk_telemetry && !g_pwm_enabled &&
+            (g_bp_status&0x22U)==0U && (uint32_t)(observed_ms-g_bp_last_rsp_ms)<300U;
+        (void)urw_receive(&g_uart_reject,buf,g_bp_fw_build,fresh_off,observed_ms);continue;
+      }
+      if(buf[2]==RPW_VERSION || buf[2]==RPM_VERSION){
+        const uint32_t observed_ms=millis();
+        const bool fresh_off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&
+          !(g_bp_status&0x22U)&&(uint32_t)(observed_ms-g_bp_last_rsp_ms)<300U;
+        if(buf[2]==RPW_VERSION){
+          (void)rpw_receive(&g_repeat_wave,buf,g_bp_fw_build,fresh_off,observed_ms);
+        }else if(rpm_valid(buf,g_bp_fw_build,fresh_off)){
+          memcpy(g_repeat_meta,buf,UV3_FRAME);g_repeat_meta_ms=observed_ms;g_repeat_meta_valid=true;
+        }
+        continue;
+      }
+
+      if (buf[2] == BKW_VERSION) {
+        const uint32_t observed_ms=millis();
+        const uint32_t observed_age=(uint32_t)(observed_ms-g_bp_last_rsp_ms);
+        const bool fresh_off = g_bp_mcsdk_telemetry && !g_pwm_enabled &&
+            (g_bp_status & 0x22U) == 0U && observed_age < 300U;
+        (void)bkw_receive(&g_bkin_wave,buf,g_bp_fw_build,fresh_off,observed_ms);
+        continue;
+      }
+      if (buf[2] == BW_VERSION) {
+        const bool had_rejection=g_break_wire.first_reject.valid;
+        const uint32_t observed_ms=millis();
+        const uint32_t observed_age=(uint32_t)(observed_ms-g_bp_last_rsp_ms);
+        const bool fresh_off = g_bp_mcsdk_telemetry && !g_pwm_enabled &&
+            (g_bp_status & 0x22U) == 0U && observed_age < 300U;
+        if (!uv3_crc_ok(buf)) {
+          (void)bw_note_reject(&g_break_wire,BW_REJECT_FRAME_CRC,buf,g_bp_fw_build,fresh_off,observed_ms);
+          if (g_nucleo_rx_bad < 0xFFFFU) ++g_nucleo_rx_bad;
+          if (g_nucleo_rx_bad_integrity < 0xFFFFU) ++g_nucleo_rx_bad_integrity;
+        } else {
+          (void)bw_receive(&g_break_wire,buf,g_bp_fw_build,fresh_off,observed_ms);
+        }
+        if (!had_rejection && g_break_wire.first_reject.valid) {
+          g_break_wire.first_reject.bp_status=g_bp_status;
+          g_break_wire.first_reject.pwm_enabled=g_pwm_enabled;
+          g_break_wire.first_reject.rsp_age_ms=observed_age;
+        }
+        continue;
+      }
       const bool integrity_ok = buf[0] == 0x55 && buf[1] == 0xAA &&
-          buf[2] == BP_VER && nucleo_crc8(buf, BP_CRC_OFF) == buf[BP_CRC_OFF];
+          buf[2] == BP_VER && uv3_crc_ok(buf);
       if (integrity_ok && g_nucleo_superseded.consume(
               buf[4], micros(), BP_REPLY_TIMEOUT_MS * 1000U)) {
         if (g_nucleo_rx_superseded < 0xFFFFu) g_nucleo_rx_superseded++;
@@ -2849,8 +3520,8 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
       if ((uint32_t)(now_us - g_nucleo_last_send_us) < NUCLEO_RUN_REPLY_GUARD_US) {
         return;
       }
-      g_nucleo_superseded.retire(g_nucleo_waiting_seq, g_nucleo_last_send_us);
-      g_nucleo_waiting_rsp = false;
+      // Still the current request until an actual replacement is transmitted.
+      // The50ms cadence may return below; an8ms-old reply remains correlated.
     }
   }
   const uint32_t min_send_us = local_scalar ? NUCLEO_SCALAR_MIN_SEND_US : NUCLEO_RUN_MIN_SEND_US;
@@ -2919,7 +3590,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     dw_eff = 0.0f;
   } else if (enable_eff && !estop_eff) {
     if (mcsdk_scalar) {
-      mode = BP_MODE_SCALAR;
+      mode = ma_wire_mode(g_ma_algorithm);
     } else {
       const bool foc_backend_allowed =
           g_bp_foc_backend &&
@@ -2965,10 +3636,11 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     pkt[11] = (uint8_t)((bp_foc_freq_millihz >> 8) & 0xFF);
     pkt[12] = (uint8_t)((bp_foc_freq_millihz >> 16) & 0xFF);
     pkt[13] = (uint8_t)((bp_foc_freq_millihz >> 24) & 0xFF);
-  } else if (mode == BP_MODE_SCALAR) {
+  } else if (mode == BP_MODE_SCALAR || mode==6U || mode==7U || mode==9U) {
     uint32_t scalar_freq_millihz = bp_freq_millihz(
         unoq_scalar_wire_frequency(mcsdk_scalar, g_freq_cmd, g_freq_ref));
-    uint16_t scalar_vmag_q15 = bp_scalar_vmag_q15();
+    // MCSDK owns V/f voltage too; its receiver ignores this legacy field.
+    const uint16_t scalar_vmag_q15 = mcsdk_scalar ? 0U : bp_scalar_vmag_q15();
     pkt[6] = (uint8_t)(scalar_freq_millihz & 0xFF);
     pkt[7] = (uint8_t)((scalar_freq_millihz >> 8) & 0xFF);
     pkt[8] = (uint8_t)((scalar_freq_millihz >> 16) & 0xFF);
@@ -2987,12 +3659,22 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
     pkt[12] = 0;
     pkt[13] = 0;
   }
+  if (mcsdk_scalar && enable_eff && !clear_eff && g_manual_scalar_mode) {
+    const uint16_t rate = g_manual_decreasing ? g_manual_decel_centi : g_manual_accel_centi;
+    pkt[10] = (uint8_t)rate;
+    pkt[11] = (uint8_t)(rate >> 8);
+    pkt[12] = g_manual_coast_down ? MSC_TAG_COAST : MSC_TAG_RAMP;
+    pkt[13] = MSC_TAG_END;
+  }
   pkt[14] = ext_flags;
   pkt[15] = (uint8_t)(brake_q15 & 0xFF);
   pkt[16] = (uint8_t)((brake_q15 >> 8) & 0xFF);
   pkt[BP_CMD_FAN_DUTY_LO] = (uint8_t)(fan_q15 & 0xFF);
   pkt[BP_CMD_FAN_DUTY_HI] = (uint8_t)((fan_q15 >> 8) & 0xFF);
-  pkt[BP_CRC_OFF] = nucleo_crc8(pkt, BP_CRC_OFF);
+  if(g_ma_pending && ma_config_allowed(enable_eff,estop_eff,clear_eff,force,g_state==STATE_SAFE)){
+    ma_config_encode(pkt,g_ma_op,g_ma_index,g_ma_value);mode=8;g_ma_pending=false;
+  }
+  uv3_seal(pkt);
   g_bp_cmd_mode = mode;
   if (USE_NUCLEO_SPI) {
     uint8_t rx[BP_FRAME_LEN] = {0};
@@ -3008,7 +3690,7 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   if (USE_NUCLEO_UART_FALLBACK) {
     // Accept only the reply that echoes this command sequence. A delayed or
     // replayed valid frame must not refresh status or acknowledge CLEAR.
-    if (force && g_nucleo_waiting_rsp) {
+    if (g_nucleo_waiting_rsp) {
       g_nucleo_superseded.retire(g_nucleo_waiting_seq, g_nucleo_last_send_us);
     }
     g_nucleo_superseded.forget(seq);
@@ -3125,7 +3807,15 @@ static void pwm_write(float d_u, float d_v, float d_w) {
   pwm_write_phase(PWM_WH_PIN, PWM_WL_PIN, d_w);
 }
 static void hard_stop(bool clear_cmd, bool force_link) {
+  if(ma_config_cancel(clear_cmd,force_link,g_pwm_enabled,g_start_req,g_state==STATE_SAFE)){g_ma_pending=false;g_id_execute_crc=0;g_id_running_crc=0;} // Explicit STOP outranks configuration.
   const bool outputs_were_active = g_pwm_enabled || g_pwm_outputs_active || g_state != STATE_SAFE;
+  if(outputs_were_active && g_timed_run.active){
+    g_stop_evidence.capture(g_stop_origin,millis(),g_timed_run.id,g_fault,g_estop_latched,
+      g_bp_status,g_bp_fault_code,g_bp_last_rsp_ms,g_nucleo_last_tx_ms,g_nucleo_waiting_rsp,
+      g_nucleo_waiting_seq,g_nucleo_rx_superseded);
+  }
+  g_stop_origin=0;
+  g_timed_run.finish(millis(),TimedRun::STOP);
   g_io_test_mode = false;
   g_pwm_enabled = false;
   g_state = STATE_SAFE;
@@ -3156,7 +3846,97 @@ static void hard_stop(bool clear_cmd, bool force_link) {
   g_brake_q15 = 0;
   pwm_force_off(force_link || outputs_were_active);
 }
+
+static bool manual_set_frequency(float f) {
+  if (!msc_finite(f) || f < 0.0f || f > AIR56B2_MAX_ELECTRICAL_FREQ_HZ) return false;
+  // A coast retarget is a STOP, never an automatic restart into a spinning rotor.
+  if (g_pwm_enabled && g_manual_scalar_mode && g_manual_coast_down && f < g_freq_cmd) {
+    ext_brake_set(0.0f);
+    hard_stop(false);
+  }
+  g_freq_cmd=f;
+  g_manual_decreasing=g_pwm_enabled && f < (g_manual_reference_valid ? g_manual_reference_hz : g_freq_ref);
+  if (f > 0.1f) g_last_nonzero_freq=f;
+  return true;
+}
+static bool manual_command(const char *cmd) {
+  if(starts_ci(cmd,"NOISE PAGE ")){
+    unsigned page;char extra;
+    if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE||!g_idle_noise.complete||
+      sscanf(cmd+11,"%u %c",&page,&extra)!=1||page>=17)return false;
+    g_noise_view_page=(uint8_t)page;return true;
+  }
+  if(starts_ci(cmd,"IDENT ")){
+    if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE)return false;
+    unsigned index=0;unsigned long raw=0;char extra;
+    if(sscanf(cmd+6,"PAGE %u %c",&index,&extra)==1){
+      if(index>=13)return false;g_id_view_page=(uint8_t)index;return true;
+    }
+    if(g_ma_pending)return false;
+    if(sscanf(cmd+6,"SET %u %lx %c",&index,&raw,&extra)==2){
+      if(index>=15)return false;g_ma_op=4;g_ma_index=(uint8_t)index;g_ma_value=(uint32_t)raw;g_ma_pending=true;return true;
+    }
+    if(sscanf(cmd+6,"COMMIT %lx %c",&raw,&extra)==1){
+      g_ma_op=5;g_ma_index=0;g_ma_value=(uint32_t)raw;g_ma_pending=true;g_id_execute_crc=0;return true;
+    }
+    if(sscanf(cmd+6,"ACK %lx %c",&raw,&extra)==1){
+      g_ma_op=6;g_ma_index=0;g_ma_value=(uint32_t)raw;g_ma_pending=true;g_id_execute_crc=0;return true;
+    }
+    if(sscanf(cmd+6,"EXECUTE %lx %c",&raw,&extra)==1){
+      if(!g_id_meta.seen||!(g_id_meta.flags&1U)||(g_id_meta.flags&14U)||
+         (uint32_t)(millis()-g_id_meta.seen_ms)>1500U||raw!=g_id_meta.config_crc)return false;
+      g_id_execute_crc=(uint32_t)raw;return true;
+    }
+    return false;
+  }
+
+  if(starts_ci(cmd,"SET ALGORITHM ")){
+    if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE||g_ma_pending)return false;
+    const char*p=cmd+14;unsigned algo=icmp(p,"VF")?1:icmp(p,"FOC")?2:icmp(p,"ADAPTIVE_PWM")?3:icmp(p,"IDENT")?4:0;
+    if(!algo)return false;
+    g_ma_algorithm=(uint8_t)algo;g_ma_op=3;g_ma_index=(uint8_t)algo;g_ma_value=0;g_ma_pending=true;
+    return true;
+  }
+  if(starts_ci(cmd,"MODEL ")){
+    if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE||g_ma_pending)return false;
+    unsigned op=0,index=0;unsigned long raw=0;char tail;
+    if(sscanf(cmd+6,"%u %u %lx %c",&op,&index,&raw,&tail)!=3||op<1||op>2||(op==1?index>12:(index>7&&index!=128)))return false;
+    g_ma_op=(uint8_t)op;g_ma_index=(uint8_t)index;g_ma_value=(uint32_t)raw;g_ma_pending=true;return true;
+  }
+
+  if (icmp(cmd,"CONTROL HEARTBEAT")) {
+    g_manual_operator_ms=millis();g_manual_operator_seen=true;return true;
+  }
+  if (starts_ci(cmd,"SET RUNMODE")) {
+    if (g_pwm_enabled || g_start_req || g_state != STATE_SAFE) return false;
+    const char *p=cmd+11;while (*p==' ') ++p;
+    if (icmp(p,"MANUAL")) g_manual_scalar_mode=true;
+    else if (icmp(p,"BOUNDED")) g_manual_scalar_mode=false;
+    else return false;
+    g_run_limit_ms=0;g_run_deadline_ms=0;return true;
+  }
+  if (starts_ci(cmd,"SET DOWNMODE")) {
+    if (g_pwm_enabled || g_start_req) return false;
+    const char *p=cmd+12;while (*p==' ') ++p;
+    if (icmp(p,"COAST")) g_manual_coast_down=true;
+    else if (icmp(p,"RAMP")) g_manual_coast_down=false;
+    else return false;
+    return true;
+  }
+  const bool accel=starts_ci(cmd,"SET ACCEL");
+  if (accel || starts_ci(cmd,"SET DECEL")) {
+    float value=0;
+    if (!parse_single_float_arg(cmd+9,&value) || !msc_finite(value) || value<0.1f || value>(accel ? 50.0f : 5.0f)) return false;
+    const uint16_t rate=(uint16_t)(value*100.0f+0.5f);
+    if (!msc_rate_valid(rate)) return false;
+    if (accel) g_manual_accel_centi=rate;else g_manual_decel_centi=rate;
+    return true;
+  }
+  return false;
+}
+
 static void request_normal_stop() {
+  if(!g_stop_origin)g_stop_origin=StopEvidence::NORMAL_REQUEST;
   ext_brake_set(0.0f);
   hard_stop(true);
 }
@@ -3209,7 +3989,7 @@ static void cancel_mode_switch() {
 }
 static void set_run_limit(float seconds) {
   if (seconds <= 0.0f) {
-    if (g_pwm_enabled && START_REQUIRE_RUN_LIMIT) request_normal_stop();
+    if (g_pwm_enabled && START_REQUIRE_RUN_LIMIT && !g_manual_scalar_mode) request_normal_stop();
     g_run_limit_ms = 0;
     g_run_deadline_ms = 0;
     return;
@@ -3219,6 +3999,7 @@ static void set_run_limit(float seconds) {
   if (g_pwm_enabled) {
     g_run_deadline_ms = unoq_bounded_run_deadline(millis(), g_run_limit_ms,
         g_run_deadline_ms, START_REQUIRE_RUN_LIMIT);
+    g_timed_run.limit_ms=uint32_t(g_run_deadline_ms-g_timed_run.start_ms);
   }
 }
 static bool should_restart_after_mode_switch() {
@@ -3270,6 +4051,8 @@ static void schedule_mode_switch(ControlMode next_mode, bool restart_after_switc
   apply_mode_if_safe();
 }
 static float read_vdc() {
+  // Never block the UART owner on an unrelated local ADC. Age gates still apply.
+  if (NUCLEO_MCSDK_ACIM_BACKEND) return g_bp_vdc;
   if (USE_EXTERNAL_PWM && g_bp_vbus_ms != 0 &&
       (uint32_t)(millis() - g_bp_vbus_ms) <= BP_VBUS_STALE_MS) {
     return g_bp_vdc;
@@ -3282,7 +4065,20 @@ static float read_vdc() {
   return vdc;
 }
 // ----------------------- Control loop -----------------------
+static bool manual_watchdog_tick() {
+  // Independent of Linux/HMI lifetime and of the continuously running UART sender.
+  if (g_pwm_enabled && g_manual_scalar_mode &&
+      !msc_operator_alive(millis(), g_manual_operator_seen, g_manual_operator_ms)) {
+    request_estop_stop();
+    return true;
+  }
+  return false;
+}
 static void control_step() {
+  if (manual_watchdog_tick()) return;
+  if(g_ma_algorithm==4&&g_pwm_enabled&&g_id_meta.seen&&(uint32_t)(millis()-g_id_meta.seen_ms)<1500U&&
+     (g_id_meta.flags&8U)&&g_id_meta.config_crc==g_id_running_crc){request_normal_stop();return;}
+  if (!NUCLEO_MCSDK_ACIM_BACKEND) {
   // ADC offsets calibration in SAFE
   if (!g_offset_ready && g_state == STATE_SAFE && !g_pwm_enabled) {
     float ra = (float)analogRead(ADC_IA_PIN);
@@ -3311,6 +4107,11 @@ static void control_step() {
   g_last_ib = ib;
   g_last_ic = ic;
   g_last_i_rms = sqrtf((ia * ia + ib * ib + ic * ic) / 3.0f);
+  } else {
+    // No local current acquisition: MCSDK owns current control/protection.
+    g_last_ia = g_last_ib = g_last_ic = g_last_i_rms = 0.0f;
+  }
+  const float ia = g_last_ia, ib = g_last_ib, ic = g_last_ic;
   if (unoq_local_current_trip(NUCLEO_MCSDK_ACIM_BACKEND, g_offset_ready,
                              g_pwm_enabled, ia, ib, ic, CURRENT_LIMIT_A)) {
       g_fault = 1;
@@ -3329,6 +4130,7 @@ static void control_step() {
   }
   uint32_t now_ms = millis();
   if (bp_fault_or_timeout(now_ms)) {
+    g_stop_origin=StopEvidence::PEER_GUARD;
     g_fault = (g_bp_fault_code != 0) ? g_bp_fault_code : 3;
     brake_set(false);
     hard_stop(false);
@@ -3337,12 +4139,10 @@ static void control_step() {
     return;
   }
   if (g_pwm_enabled && g_run_deadline_ms != 0U && (int32_t)(now_ms - g_run_deadline_ms) >= 0) {
-    g_estop_latched = true;
-    g_fault = 4;
-    brake_set(false);
-    hard_stop(true);
-    ext_brake_set(0.0f);
-    pwm_write(0, 0, 0);
+    // A finite run completing is normal STOP; genuine ESTOP/SD/UART paths above remain.
+    g_stop_origin=StopEvidence::LIMIT;
+    g_timed_run.finish(now_ms,TimedRun::LIMIT);
+    request_normal_stop();
     return;
   }
   if (g_toggle_req) {
@@ -3374,14 +4174,18 @@ static void control_step() {
     g_start_req = false;
     const char *start_err = start_precheck(now_ms);
     if (start_err == nullptr) {
+      g_manual_decreasing=false;
+      g_id_running_crc=g_id_execute_crc;g_id_execute_crc=0;
       brake_set(true);
       g_stop_requested = false;
       g_freq_ref = 0.0f;
       g_theta = 0.0f;
       g_io_test_mode = false;
       g_pwm_enabled = true;
+      const uint32_t run_begin_ms=millis();
       g_run_deadline_ms = (g_run_limit_ms > 0U) ?
-          unoq_bounded_run_deadline(millis(), g_run_limit_ms, 0U, START_REQUIRE_RUN_LIMIT) : 0U;
+          unoq_bounded_run_deadline(run_begin_ms, g_run_limit_ms, 0U, START_REQUIRE_RUN_LIMIT) : 0U;
+      g_timed_run.start(run_begin_ms,g_run_limit_ms);
       if (g_mode == MODE_VF) {
         g_state = STATE_VF_RUN;
       } else {
@@ -3469,7 +4273,8 @@ static void control_step() {
     v_alpha = (vd * cos_t) - (vq * sin_t);
     v_beta = (vd * sin_t) + (vq * cos_t);
   } else if (g_state == STATE_FOC_RUN) {
-    g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd, FREQ_RAMP_STEP);
+    g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd,
+        g_manual_scalar_mode ? ((g_freq_cmd >= g_freq_ref ? g_manual_accel_centi : g_manual_decel_centi)*0.01f*CONTROL_DT) : FREQ_RAMP_STEP);
     g_omega_ref = CTRL_TWO_PI * g_freq_ref;
     if (g_stop_requested) {
       mic_diag_reset();
@@ -3561,7 +4366,8 @@ static void control_step() {
     v_beta = (vd * sin_t) + (vq * cos_t);
   } else if (g_state == STATE_VF_RUN) {
     mic_diag_reset();
-    g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd, FREQ_RAMP_STEP);
+    g_freq_ref = ramp_toward(g_freq_ref, g_freq_cmd,
+        g_manual_scalar_mode ? ((g_freq_cmd >= g_freq_ref ? g_manual_accel_centi : g_manual_decel_centi)*0.01f*CONTROL_DT) : FREQ_RAMP_STEP);
     g_omega_ref = CTRL_TWO_PI * g_freq_ref;
     g_theta += g_omega_ref * CONTROL_DT;
     if (g_theta > CTRL_TWO_PI) g_theta -= CTRL_TWO_PI;
@@ -3671,8 +4477,8 @@ static void matrix_update() {
     g_matrix.loadFrame(((now / 500U) & 1U) ? all_on : all_off);
     return;
   }
-  // SAFE shows the Wi-Fi frequency command immediately. While running, the
-  // matrix alternates each second between electrical Hz and calculated RPM.
+  // Stopped: DC bus in whole volts with a V marker, or --- if stale.
+  // Running: retain the existing alternating electrical Hz / calculated RPM.
   float freq = g_pwm_enabled ? g_freq_ref : g_freq_cmd;
   if (fabsf(freq) < 0.05f) freq = 0.0f;
   if (freq < 0.0f) freq = 0.0f;
@@ -3680,7 +4486,30 @@ static void matrix_update() {
   memset(g_matrix_pixels, 0, sizeof(g_matrix_pixels));
   int x0 = 1;
   int y0 = 1;
-  if (show_rpm) {
+  if (!g_pwm_enabled) {
+    // Display the accepted Nucleo bus measurement even at zero Hz, ESTOP
+    // or an idle fault. Never use the default/stale g_vdc as a zero indication.
+    const bool voltage_fresh = NUCLEO_MCSDK_ACIM_BACKEND && g_bp_mcsdk_telemetry &&
+      g_bp_fw_build == 2026112112U && g_bp_vbus_valid &&
+      g_bp_vbus_ms != 0U && g_bp_last_rsp_ms != 0U &&
+      (uint32_t)(now - g_bp_vbus_ms) <= BP_VBUS_STALE_MS &&
+      (uint32_t)(now - g_bp_last_rsp_ms) <= BP_REPLY_TIMEOUT_MS &&
+      isfinite(g_bp_vdc) && g_bp_vdc >= 0.0f && g_bp_vdc <= 999.0f;
+    if (voltage_fresh) {
+      const int volts = (int)(g_bp_vdc + 0.5f);
+      if (volts >= 100) matrix_draw_digit(x0, y0, volts / 100);
+      if (volts >= 10) matrix_draw_digit(x0 + 4, y0, (volts / 10) % 10);
+      matrix_draw_digit(x0 + 8, y0, volts % 10);
+    } else {
+      // Three dashes mean unavailable, never a measured zero.
+      for (int digit = 0; digit < 3; ++digit)
+        for (int x = 0; x < 3; ++x) matrix_set_pixel(x0 + 4*digit + x, y0 + 2);
+    }
+    // Small V below the digits identifies DC-bus volts, without a decimal.
+    matrix_set_pixel(0, 6);
+    matrix_set_pixel(2, 6);
+    matrix_set_pixel(1, 7);
+  } else if (show_rpm) {
     int rpm = (int)((freq * 60.0f) / POLE_PAIRS + 0.5f);
     if (rpm < 0) rpm = 0;
     if (rpm > 999) rpm = 999;
@@ -3726,9 +4555,10 @@ static void matrix_set_pixel(int x, int y) {
   if (x < 0 || x >= MATRIX_W || y < 0 || y >= MATRIX_H) {
     return;
   }
-  // UNO Q's physical matrix is wired right-to-left relative to the raw pixel
-  // buffer. Mirror X so values such as 5.0 do not appear as 0.5.
-  g_matrix_pixels[y * MATRIX_W + (MATRIX_W - 1 - x)] = 1;
+  // Compensate both axes for the inverted bench mounting. The previous
+  // Y-only mapping was physically reported as 10 -> 01. Keep the Y flip
+  // and add X compensation to the whole image, including glyphs/markers.
+  g_matrix_pixels[(MATRIX_H - 1 - y) * MATRIX_W + (MATRIX_W - 1 - x)] = 1;
 }
 static void matrix_draw_digit(int x0, int y0, int digit) {
   if (digit < 0 || digit > 9) {
@@ -3882,8 +4712,10 @@ void loop() {
 // ----------------------- Setup / Loop -----------------------
 void setup() {
 #if USE_ROUTER_BRIDGE
+    if (k_mutex_init(&g_control_mutex) != 0) k_panic();
+    if (NUCLEO_MCSDK_ACIM_BACKEND) k_thread_priority_set(k_sched_current_thread_query(), 4);
     delay(6000);
-    Bridge.begin(RPC_BAUD);
+    (void)Bridge.begin(RPC_BAUD); // Bounded failure; idle bridge_tick retries without resetting control.
     LOG_SERIAL.begin(RPC_BAUD);
     LOG_SERIAL.println("LOG BOOT");
 #else
@@ -3928,26 +4760,42 @@ void setup() {
   g_vf_v_per_hz = (g_vdc * g_vf_volt_per_hz_ratio) / VF_BASE_FREQ_HZ;
   pi_init(&g_pi_id, 2.0f, 200.0f, -g_v_limit, g_v_limit);
   pi_init(&g_pi_iq, 2.0f, 200.0f, -g_v_limit, g_v_limit);
+  // MCSDK supervision outranks bulk RPC TX, but sleeps each tick so RPC can progress.
+#if USE_ROUTER_BRIDGE
+  if (NUCLEO_MCSDK_ACIM_BACKEND) k_thread_priority_set(k_sched_current_thread_query(), 4);
+#endif
   g_last_control_us = micros();
-  if (NUCLEO_MCSDK_ACIM_BACKEND) as5600_teacher_begin();
+  // Nucleo owns AS5600. Do not start the Uno I2C worker.
 #if USE_ROUTER_BRIDGE
   bridge_service_begin();
 #endif
 }
+#if USE_ROUTER_BRIDGE
+void __loopHook() {
+  if (!NUCLEO_MCSDK_ACIM_BACKEND) mic_router_compat_hook();
+}
+#endif
 void loop() {
+#if USE_ROUTER_BRIDGE
+  // Router callbacks run on another Zephyr thread. Own state and the complete
+  // UART transaction together; IRQs and Nucleo's protection remain independent.
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
   const unsigned int timing_loop_key = irq_lock();
   g_link_timing.loop(micros(), g_pwm_enabled);
   irq_unlock(timing_loop_key);
+  // Service SAFE before optional display/control work, not only after it.
+  if (NUCLEO_MCSDK_ACIM_BACKEND && USE_EXTERNAL_PWM && !USE_NUCLEO_SPI && !g_pwm_enabled) {
+    nucleo_uart_poll();
+    nucleo_send_stop(false);
+  }
   handle_button();
   if (NUCLEO_MCSDK_ACIM_BACKEND) {
-    g_as5600 = as5600_teacher_snapshot(millis());
-    g_bp_enc_raw = g_as5600.raw;
-    g_bp_enc_ok = g_as5600.angle_ok;
-    g_bp_enc_ms = g_as5600.timestamp_ms;
-    g_enc_speed_valid = g_as5600.speed_ok;
-    g_enc_rpm = g_as5600.speed_ok ? g_as5600.rpm : 0.0f;
-    g_enc_mech_hz = g_enc_rpm / 60.0f;
-    g_enc_elec_hz = g_enc_mech_hz * POLE_PAIRS;
+    // No sensor speed is available in this profile. RPC legacy slots stay invalid.
+    g_as5600 = As5600Sample{};
+    g_bp_enc_raw = 0; g_bp_enc_ok = false; g_bp_enc_ms = 0;
+    g_enc_speed_valid = false; g_enc_rpm = 0.0f;
+    g_enc_mech_hz = 0.0f; g_enc_elec_hz = 0.0f;
   }
   if (USE_EXTERNAL_PWM && !USE_NUCLEO_SPI && USE_NUCLEO_UART_FALLBACK) {
     nucleo_uart_poll();
@@ -4015,7 +4863,8 @@ void loop() {
     matrix_update();
     if (USE_EXTERNAL_PWM) {
       uint32_t now = millis();
-      if (!g_pwm_enabled && (uint32_t)(now - g_nucleo_keepalive_ms) >= 100) {
+      if (!g_pwm_enabled && (uint32_t)(now - g_nucleo_keepalive_ms) >=
+          (NUCLEO_MCSDK_ACIM_BACKEND ? NUCLEO_HEARTBEAT_MS : 100U)) {
         g_nucleo_keepalive_ms = now;
         // Keepalive only when PWM disabled (do not spam disable while running).
         nucleo_send_pwm(0.0f, 0.0f, 0.0f, g_io_test_mode);
@@ -4037,8 +4886,12 @@ void loop() {
 #endif
   #endif
   send_telemetry();
+#if USE_ROUTER_BRIDGE
+  owner.release();
+#endif
 #if defined(ARDUINO_ARCH_ZEPHYR)
-  k_yield();
+  if (NUCLEO_MCSDK_ACIM_BACKEND) k_msleep(1);
+  else k_yield();
 #endif
 }
 #endif

@@ -94,3 +94,13 @@ artifacts/**/*.axf
 artifacts/**/*.pdom
 mcsdk_reference/_*DO_NOT_USE/
 mcsdk_reference/ACIM_IPM15B_SIEMENS_REFERENCE_NOT_AIR56/
+
+# Canonical images are distributed via GitHub Releases.
+/build/
+/firmware/ready_to_flash*/
+/firmware/ready_to_flash*.zip
+/firmware/updates/
+/firmware/unoq_mcsdk_scalar/
+/firmware/nucleo/STM32CubeIDE/Debug/
+/firmware/nucleo/STM32CubeIDE/Release/
+/artifacts/live_bench_*/

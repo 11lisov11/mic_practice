@@ -1,25 +1,97 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Управление двигателем UNOQ</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>АИР · токи · Управление двигателем UNOQ</title>
+  <link rel="stylesheet" href="style.css?ui=111403-observer-input" />
+<style>
+.simple-shell{max-width:680px;gap:14px;padding-top:20px}.simple-shell h1{font-size:24px;margin:0}
+.simple-shell .hero{gap:8px}.simple-shell .status-row{justify-content:space-between}
+.simple-titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.simple-titlebar h1{font-size:22px}.simple-titlebar .status-row{width:auto}
+.simple-controls{padding:22px;display:grid;gap:18px}.simple-mode{margin:0;color:#aeb9c9;font-size:14px}
+#simpleState{font-size:20px;font-weight:700;line-height:1.35}#simpleState[data-state=error]{color:#ff8298}
+#simpleState[data-state=running]{color:#49dcc8}.simple-controls .freq-block{margin:0;position:static}
+.simple-controls .freq-tooltip{position:static;opacity:1;transform:none;pointer-events:none;background:none;box-shadow:none;text-align:left;font-size:32px;padding:8px 0 0}
+.simple-controls .freq-row{width:100%}.simple-controls input[type=range]{width:100%;min-height:40px}
+.simple-controls .button-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0}
+.simple-controls .button-row .btn{font-size:19px;min-height:54px}.simple-controls .estop-block{margin:0}
+.simple-controls .btn.estop,.simple-controls .btn.estop.active{background:#c91d40;color:white;min-height:48px}
+.simple-readings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.simple-reading{background:#10151c;border:1px solid #27313d;border-radius:12px;padding:12px 8px}
+.simple-reading span{display:block;font-size:12px;color:#aeb9c9;margin-bottom:7px}.simple-reading strong{font-size:20px}
+.simple-note{margin:0;color:#aeb9c9;font-size:13px;line-height:1.45}.simple-details{padding:16px 20px}
+.simple-details>summary{cursor:pointer;font-weight:600;color:#bac5d4}.simple-details[open]>summary{margin-bottom:16px}
+.simple-details .grid{grid-template-columns:1fr}.simple-details .panel{box-shadow:none}
+.simple-shell .bg{display:none}[hidden]{display:none!important}
+@media(max-width:420px){.simple-shell{padding:14px 12px 32px}.simple-controls{padding:17px}.simple-readings{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<link rel="icon" href="data:," />
 </head>
 <body>
   <div class="bg"></div>
-  <main class="shell">
-    <header class="hero">
+  <main class="shell simple-shell">
+<div class="simple-titlebar"><h1>Управление АИР</h1>
+<header class="hero">
       <div class="status-row">
         <div class="status-chip" id="connChip">
           <span class="dot" id="connDot"></span>
           <span id="connText">офлайн</span>
         </div>
-        <div class="status-chip status-mode" id="sysChip">
+        
+      </div>
+    </header></div>
+<section class="panel simple-controls">
+  <label for="algorithmSelect">Алгоритм</label>
+  <select id="algorithmSelect" style="color:#f2f5fa;background:#10151c;border:1px solid #354151;border-radius:10px;padding:12px;font-size:16px;width:100%;min-height:46px" disabled aria-describedby="algorithmNote">
+    <option value="1">Скалярный V/f</option><option value="2">Векторный FOC</option>
+    <option value="3">FOC + адаптивный ШИМ</option><option value="4">Измерение параметров</option>
+  </select>
+  <p class="simple-mode" id="simpleMode">Ожидание режима</p>
+  <p class="simple-note" id="algorithmNote" role="status">Загрузка…</p>
+  <div id="simpleState" role="status" aria-live="polite">Подключение…</div>
+<div class="freq-block">
+          <div class="label">Частота (Гц)</div>
+          <div class="freq-row">
+            <input aria-label="Задание частоты поля, Гц" id="freqSlider" type="range" min="0" max="50" step="0.1" value="10" />
+          </div>
+          <div class="freq-tooltip" id="freqReadout">10.0 Гц</div>
+        </div>
+  <p class="simple-note" id="simpleField">Частота поля: —</p>
+<div class="button-row">
+          <button class="btn start" id="startBtn">Пуск</button>
+          <button class="btn stop" id="stopBtn">Стоп</button>
+        </div><div class="estop-block">
+          <button class="btn estop full" id="estopBtn">Аварийный стоп</button>
+        </div>
+  <button class="btn ghost full" id="simpleClear" hidden>Сбросить аварию</button>
+  <div class="simple-readings">
+    <div class="simple-reading"><span>Шина DC</span><strong id="simpleVdc">—</strong></div>
+    <div class="simple-reading"><span>Ток U</span><strong id="simpleI0">—</strong></div>
+    <div class="simple-reading"><span>Ток V</span><strong id="simpleI1">—</strong></div>
+    <div class="simple-reading"><span>Ток W</span><strong id="simpleI2">—</strong></div>
+  </div>
+  <p class="simple-note" id="simpleCurrentNote">Токи RMS по шунтам</p>
+</section>
+<details class="panel simple-details" id="manualSettings"><summary>Разгон и замедление</summary>
+<div class="manual-config" id="manualConfig" hidden>
+          <label><input id="manualContinuous" type="checkbox" checked /> Работа до команды «Стоп»</label>
+          <p>Частота поля: 0–50 Гц. «Стоп» и 0 Гц — свободный выбег.</p>
+          <label>Разгон, Гц/с <input id="manualAccel" type="number" min="0.1" max="50" step="0.1" value="5" /></label>
+          <label>Замедление, Гц/с <input id="manualDecel" type="number" min="0.1" max="5" step="0.1" value="1" /></label>
+          <button class="btn ghost full" id="manualApply">Применить разгон и замедление</button>
+          <label>Снижение задания <select id="manualDownmode"><option value="RAMP">Плавно, с контролем DC-шины</option><option value="COAST">Выбег, затем отдельный пуск</option></select></label>
+          <div class="hv-arm-note" id="manualState">Настройки доступны после подключения.</div>
+          <label>Задание, Гц <input id="manualFrequency" type="number" min="0" max="50" step="0.1" value="5" /></label>
+          <button class="btn ghost full" id="manualFrequencyApply">Задать частоту</button>
+        </div>
+</details>
+<details class="panel simple-details" id="diagnosticDetails"><summary>Диагностика и алгоритмы</summary>
+<div class="status-chip status-mode" id="sysChip">
           <span id="sysText">СТОП</span>
         </div>
-      </div>
-    </header>
+    
 
     <section class="grid">
       <div class="panel controls">
@@ -39,14 +111,10 @@
             <button class="seg" data-mode="MIC">MIC</button>
           </div>
         </div>
-        <div class="button-row">
-          <button class="btn start" id="startBtn">Пуск</button>
-          <button class="btn stop" id="stopBtn">Стоп</button>
-        </div>
-        <div class="estop-block">
-          <button class="btn estop full" id="estopBtn">Аварийный стоп</button>
-        </div>
+        
+        
 
+        
         <div class="hv-arm-block" id="hvArmBlock" hidden>
           <div class="arm-profile-toggle" id="armProfileToggle" aria-label="Профиль запуска">
             <button class="arm-profile-btn" type="button" data-arm-profile="hv">HV 310 В</button>
@@ -70,7 +138,7 @@
           />
           <button class="btn hv-arm full" id="hvArmBtn">Разрешить HV на 30 секунд</button>
           <p class="hv-arm-note" id="armProfileNote">Разрешение ограничено по времени. STOP, ESTOP, перезапуск, потеря контроля или тайм-аут снимают его.</p>
-          <div class="vbus-capture-block">
+          <details class="vbus-capture-block"><summary>Калибровка DC-шины</summary>
             <input
               id="vbusMeterInput"
               class="hv-arm-input"
@@ -85,7 +153,7 @@
             <div class="hv-arm-note" id="vbusCalibrationState">Калибровка Vbus не подтверждена.</div>
             <div class="hv-arm-note" id="vbusCaptureResult">Только измерение: реле и ШИМ не включаются.</div>
             <button class="btn ghost full" id="vbusResetBtn">Сбросить калибровку Vbus</button>
-          </div>
+          </details>
         </div>
 
         <div class="io-block">
@@ -103,13 +171,7 @@
           </div>
         </div>
 
-        <div class="freq-block">
-          <div class="label">Частота (Гц)</div>
-          <div class="freq-row">
-            <input id="freqSlider" type="range" min="0" max="50" step="0.1" value="10" />
-          </div>
-          <div class="freq-tooltip" id="freqReadout">10.0 Гц</div>
-        </div>
+        
       </div>
 
       <div class="panel status">
@@ -172,16 +234,19 @@
             <div class="card-value" id="fanVal">--</div>
           </div>
           <div class="card">
-            <div class="card-label">Энкодер</div>
+            <div class="card-label">Обратная связь</div>
             <div class="card-value" id="encVal">--</div>
           </div>
         </div>
         <div class="status-footer">
           <span id="lastUpdate">Нет данных</span>
+          <button id="bkinTraceLoad" class="btn ghost" type="button">Считать снимок BKIN</button>
+          <span id="bkinTraceStatus">Снимок появится после срабатывания защиты.</span>
         </div>
       </div>
     </section>
 
+    <section class="panel" id="researchPanel"><h2>Исследовательская серия</h2><div id="researchAlgorithms">Ожидание подтверждения Nucleo</div></section>
     <section class="panel logs">
       <div class="log-row">
         <span class="log-title">Логи</span>
@@ -193,8 +258,10 @@
         <button id="logDownload" class="btn ghost" type="button">Скачать</button>
       </div>
     </section>
-  </main>
+  
+</details>
+</main>
 
-  <script src="app.js"></script>
+  <script src="app.js?ui=111403-observer-input"></script>
 </body>
 </html>

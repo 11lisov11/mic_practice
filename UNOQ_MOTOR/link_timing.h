@@ -1,4 +1,5 @@
 #pragma once
+#include "uart_v3_transport.h"
 #include <stdint.h>
 
 // Passive counters only. Caller serializes updates/snapshots; no control decisions.
@@ -9,6 +10,9 @@ struct LinkTiming {
   uint32_t tx_call_max_us = 0;
   uint32_t rpc_max_us = 0;
   uint32_t tx_short_writes = 0;
+  uint32_t tx_all_max_gap_us = 0;
+  uint32_t tx_last_gap_us = 0;
+  uint32_t tx_gaps_over_watchdog = 0;
   uint32_t tx_count = 0;
   uint32_t rx_count = 0;
   uint32_t last_loop = 0, last_tx = 0, last_rx = 0;
@@ -26,9 +30,14 @@ struct LinkTiming {
     last_loop = now; loop_seen = true; loop_active = active;
   }
   void tx(uint32_t now, uint32_t duration, uint32_t written, bool active) {
+    if (tx_seen) {
+      tx_last_gap_us = now - last_tx;
+      maximum(tx_all_max_gap_us, tx_last_gap_us);
+      if (tx_last_gap_us > UV3_WATCHDOG_MS * 1000U) increment(tx_gaps_over_watchdog);
+    }
     if (tx_seen && (active || tx_active)) maximum(tx_active_max_gap_us, now - last_tx);
     maximum(tx_call_max_us, duration);
-    if (written != 32U) increment(tx_short_writes);
+    if (written != UV3_FRAME) increment(tx_short_writes);
     increment(tx_count);
     last_tx = now; tx_seen = true; tx_active = active;
   }

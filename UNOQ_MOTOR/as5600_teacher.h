@@ -15,6 +15,52 @@ struct As5600Sample {
   bool angle_ok = false;
   bool speed_ok = false;
   float rpm = 0.0f;
+  uint32_t diag_berr_count=0;
+  uint32_t diag_arlo_count=0;
+  uint32_t diag_busy_count=0;
+  uint32_t diag_graceful_cleanups=0;
+  uint32_t diag_post_reset_busy=0;
+  uint32_t diag_kernel_hz=0;
+  uint32_t diag_timingr=0;
+  uint32_t diag_cr1=0;
+  uint32_t diag_event_count=0;
+  uint32_t diag_events[4][8]={};
+  uint32_t diag_sched_sections=0;
+  uint32_t diag_sched_max_hold_us=0;
+  uint32_t diag_isr=0;
+  uint32_t diag_last_isr=0;
+  uint32_t diag_controller_resets=0;
+  uint32_t diag_timeout_count=0;
+  uint32_t diag_nack_count=0;
+  uint32_t diag_thread_priority = 0;
+  uint32_t diag_cfg_expected = 0;
+  uint32_t diag_cfg_before = 0;
+  uint32_t diag_cfg_after = 0;
+  uint32_t diag_cfg_match = 0;
+  uint32_t diag_last_cfg_before = 0;
+  uint32_t diag_last_cfg_after = 0;
+  uint32_t diag_tx_byte = 0;
+  uint32_t diag_tx_echo = 0;
+  uint32_t diag_tx_bits = 0;
+  uint32_t diag_last_tx_byte = 0;
+  uint32_t diag_last_tx_echo = 0;
+  uint32_t diag_last_tx_bits = 0;
+  uint32_t diag_mode = 0;
+  uint32_t diag_epoch = 0;
+  uint32_t diag_stage = 0;
+  uint32_t diag_cause = 0;
+  uint32_t diag_us = 0;
+  uint32_t diag_wait_us = 0;
+  uint32_t diag_first_ms = 0;
+  uint32_t diag_first_stage = 0;
+  uint32_t diag_first_cause = 0;
+  uint32_t diag_first_us = 0;
+  uint32_t diag_last_ms = 0;
+  uint32_t diag_last_mode = 0;
+  uint32_t diag_last_stage = 0;
+  uint32_t diag_last_cause = 0;
+  uint32_t diag_last_us = 0;
+
 };
 
 class As5600Teacher {
@@ -64,6 +110,10 @@ class As5600Teacher {
     }
   }
 
+  void seed_counters(uint32_t reads, uint32_t errors) {
+    sample_.reads = reads; sample_.errors = errors;
+  }
+
   As5600Sample sample() const { return sample_; }
 
   static As5600Sample fresh(As5600Sample sample, uint32_t now_ms) {
@@ -94,3 +144,6 @@ class As5600Teacher {
 
 void as5600_teacher_begin();
 As5600Sample as5600_teacher_snapshot(uint32_t now_ms);
+
+bool as5600_diag_select(uint8_t mode);
+bool as5600_diag_ready();

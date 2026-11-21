@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$Sketch = "",
-    [string]$OutputDirectory = ""
+    [string]$OutputDirectory = "",
+    [string]$LibrariesDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,8 +22,20 @@ $artifactPrefix = "$sketchName.ino"
 $sketchSource = Get-Content -LiteralPath (Join-Path $sketchPath "$sketchName.ino") -Raw
 $firmwareBuildMatch = [regex]::Match($sketchSource, "FW_BUILD_ID\s*=\s*(\d+)U")
 $rpcSchemaMatch = [regex]::Match($sketchSource, "RPC_SCHEMA_VERSION\s*=\s*(\d+)U")
-if (-not $firmwareBuildMatch.Success -or -not $rpcSchemaMatch.Success) {
-    throw "UNO Q firmware identity or RPC schema is missing from the sketch."
+$uartBaudMatch = [regex]::Match($sketchSource, "NUCLEO_UART_BAUD\s*=\s*(\d+)")
+if (-not $firmwareBuildMatch.Success -or -not $rpcSchemaMatch.Success -or -not $uartBaudMatch.Success) {
+    throw "UNO Q firmware identity, RPC schema or UART baud is missing from the sketch."
+}
+$protocolVersionMatch = [regex]::Match($sketchSource, "BP_VER\s*=\s*0x([0-9a-fA-F]+)\s*;")
+if ($protocolVersionMatch.Success) {
+    $protocolVersion = [Convert]::ToInt32($protocolVersionMatch.Groups[1].Value, 16)
+} elseif ($sketchSource -match "BP_VER\s*=\s*UV3_VERSION\s*;") {
+    $protocolHeader = Get-Content -LiteralPath (Join-Path $sketchPath "uart_v3_transport.h") -Raw
+    $protocolVersionMatch = [regex]::Match($protocolHeader, "UV3_VERSION\s*=\s*(\d+)\s*,")
+    if (-not $protocolVersionMatch.Success) { throw "Missing UART v3 protocol identity." }
+    $protocolVersion = [int]$protocolVersionMatch.Groups[1].Value
+} else {
+    throw "Unrecognized UART protocol version; refusing misleading build manifest."
 }
 $stagingDirectory = Join-Path ([System.IO.Path]::GetTempPath()) ("mic_practice_unoq_" + [Guid]::NewGuid().ToString("N"))
 $releaseArtifactNames = @(
@@ -36,12 +49,25 @@ New-Item -ItemType Directory -Force -Path $outputDirectoryPath | Out-Null
 New-Item -ItemType Directory -Force -Path $stagingDirectory | Out-Null
 
 try {
+    $libraryArgs = @()
+    if (-not [string]::IsNullOrWhiteSpace($LibrariesDirectory)) {
+        $libraryRoot = (Resolve-Path -LiteralPath $LibrariesDirectory).Path
+        $libraryArgs = @("--libraries", $libraryRoot)
+    }
     & $arduinoCli compile `
         --fqbn arduino:zephyr:unoq `
         --output-dir $stagingDirectory `
+        @libraryArgs `
         $sketchPath
     if ($LASTEXITCODE -ne 0) {
         throw "Arduino UNO Q build failed with exit code $LASTEXITCODE."
+    }
+
+    & python (Join-Path $PSScriptRoot "unoq_llext_check.py") `
+        --elf (Join-Path $stagingDirectory "$artifactPrefix.elf") `
+        --report (Join-Path $outputDirectoryPath "llext-check.json")
+    if ($LASTEXITCODE -ne 0) {
+        throw "UNO Q dynamic-loader compatibility check failed; artifacts not exported."
     }
 
     $artifacts = foreach ($artifactName in $releaseArtifactNames) {
@@ -82,12 +108,24 @@ try {
         fqbn = "arduino:zephyr:unoq"
         sketch = $sketchPath
         target = "Arduino UNO Q supervisory UART peer for NUCLEO-G431RB"
-        transport = "Serial1 / D0-D1, 115200 8N1, protocol v0x02"
-        control_mode = "Scalar V/F only; raw DUTY, FOC, MIC and service outputs are not sent to MCSDK"
+        transport = ("Serial1 / D0-D1, {0} 8N1, protocol v0x{1:X2}" -f $uartBaudMatch.Groups[1].Value, $protocolVersion)
+        control_mode = $(if ($sketchSource -match 'ma_wire_mode\(g_ma_algorithm\)') {
+            "Native algorithm selection: V/F, sensorless FOC, FOC with adaptive PWM; stopped-only configuration; no raw DUTY/service outputs"
+        } else {
+            "Scalar V/F only; raw DUTY, FOC, MIC and service outputs are not sent to MCSDK"
+        })
         flash_artifact = "$artifactPrefix.elf-zsk.bin"
         firmware_build_id = [uint32]$firmwareBuildMatch.Groups[1].Value
         rpc_schema_version = [uint32]$rpcSchemaMatch.Groups[1].Value
         artifacts = $artifacts
+    }
+    if ($libraryArgs.Count -gt 0) {
+        $manifest.library_override_root = $libraryRoot
+        $manifest.library_override_sha256 = [ordered]@{}
+        Get-ChildItem -LiteralPath $libraryRoot -Recurse -File | ForEach-Object {
+            $relative = $_.FullName.Substring($libraryRoot.Length + 1).Replace('\', '/')
+            $manifest.library_override_sha256[$relative] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+        }
     }
     $manifestPath = Join-Path $outputDirectoryPath "unoq_mcsdk_scalar.build-manifest.json"
     $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $manifestPath -Encoding utf8

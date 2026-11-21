@@ -515,3 +515,8 @@ input[type="range"] {
     grid-template-columns: 1fr;
   }
 }
+
+.manual-config {display:grid;gap:10px;padding:14px 0;} .manual-config[hidden]{display:none;} .manual-config label{display:flex;gap:10px;align-items:center;justify-content:space-between;} .manual-config input[type=number],.manual-config select{max-width:220px;background:#131922;color:#eef0f4;border:1px solid #39404b;border-radius:8px;padding:8px;}
+
+.io-block[hidden]{display:none!important;}
+.status-footer #bkinTraceStatus { flex-basis: 100%; }

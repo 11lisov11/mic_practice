@@ -19,10 +19,17 @@ struct NucleoFaultDiagnostics {
 inline NucleoFaultDiagnostics decode_nucleo_fault_diagnostics(
     const uint8_t *reply, bool mcsdk, uint32_t build) {
   NucleoFaultDiagnostics d;
-  // Caller has already checked the complete 32-byte frame CRC and sequence.
+  if (reply && mcsdk && (build==2026101504U || build==2026101506U || build==2026101702U || build==2026112112U) && (reply[11]&0xFEU)==0xA0U) {
+    d.valid=true;d.last_bad_valid=true;
+    d.current_faults=(uint16_t)(reply[15] | ((uint16_t)reply[16]<<8));
+    d.occurred_faults=(uint16_t)(reply[27] | ((uint16_t)reply[28]<<8));
+    d.sequence=reply[30];d.tx_status=reply[22]&0x0FU;d.last_bad_reason=reply[22]>>4;
+    return d;
+  }
+  // Caller has already checked the complete versioned frame CRC and sequence.
   const bool extended = build == 2026100703U || build == 2026100704U || build == 2026100705U ||
       build == 2026100707U || build == 2026100708U || build == 2026100710U ||
-      build == 2026100801U || build == 2026100899U;
+      build == 2026100801U || build == 2026100899U || build == 2026101003U || build == 2026101006U || build == 2026101102U || build == 2026101204U || build == 2026101404U || build == 2026101406U || build == 2026101408U || build == 2026101410U || build == 2026101412U || build == 2026101414U || build == 2026101504U || build == 2026101506U || build == 2026101702U || build == 2026112112U;
   if (!reply || !mcsdk || (reply[11] & 0x0fU) > (extended ? 14U : 13U)) return d;
   const bool v1 = build == 2026100701U && (reply[11] & 0xf0U) == 0x80U;
   const bool v2 = (build == 2026100702U || extended) && (reply[11] & 0xf0U) == 0x90U;

@@ -115,7 +115,8 @@ class WifiHmi:
                 raise RuntimeError(f"WSL Wi-Fi request failed: {envelope['error']}")
             return int(envelope["code"]), envelope["payload"]
 
-    def request(self, method: str, path: str, body: dict[str, Any] | None = None) -> tuple[int, dict[str, Any]]:
+    def request(self, method: str, path: str, body: dict[str, Any] | None = None,
+                *, timeout_s: float = 8.0) -> tuple[int, dict[str, Any]]:
         payload = None if body is None else json.dumps(body).encode("utf-8")
         headers = {"Accept": "application/json"}
         if payload is not None:
@@ -127,7 +128,7 @@ class WifiHmi:
         else:
             request = urllib.request.Request(self.base + path, data=payload, headers=headers, method=method)
             try:
-                with self.opener.open(request, timeout=8.0) as response:
+                with self.opener.open(request, timeout=timeout_s) as response:
                     raw = response.read()
                     code = int(response.status)
             except urllib.error.HTTPError as exc:
@@ -142,9 +143,10 @@ class WifiHmi:
             raise RuntimeError(f"Wi-Fi status failed: HTTP {code}: {payload}")
         return payload["data"]
 
-    def post(self, path: str, body: dict[str, Any], label: str) -> dict[str, Any]:
+    def post(self, path: str, body: dict[str, Any], label: str,
+             *, timeout_s: float = 8.0) -> dict[str, Any]:
         started = time.time()
-        code, payload = self.request("POST", path, body)
+        code, payload = self.request("POST", path, body, timeout_s=timeout_s)
         self.commands.append({
             "label": label,
             "path": path,
@@ -153,6 +155,7 @@ class WifiHmi:
             "ok": payload.get("ok") is True,
             "host_utc": datetime.now(timezone.utc).isoformat(),
             "elapsed_s": round(time.time() - started, 3),
+            "request_timeout_s": timeout_s,
             "transport": "wsl_nat_wifi_http" if self.via_wsl else "direct_wifi_http",
         })
         if code != 200 or payload.get("ok") is not True:

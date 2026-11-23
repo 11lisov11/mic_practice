@@ -1,0 +1,20 @@
+{
+  "pass": false,
+  "checks": {
+    "six_outputs_were_active": true,
+    "no_pwm_overlap": true,
+    "six_outputs_low_tail": true,
+    "off_tail_at_least_500ms": true,
+    "local_stop_telemetry": false,
+    "local_stop_before_3s_limit": false,
+    "zero_bus": true,
+    "no_uart_errors": true
+  },
+  "last_pwm_edge_s": 3.695338,
+  "low_tail_s": 1.3427419999999999,
+  "physical_button_edge_measured": false,
+  "exact_button_to_off_latency_measured": false,
+  "production_image_active_pwm_measured": false,
+  "hv_release_approved": false,
+  "scope": "detached 1204-derived fixture, normal Uno supervision; six PWM channels only"
+}

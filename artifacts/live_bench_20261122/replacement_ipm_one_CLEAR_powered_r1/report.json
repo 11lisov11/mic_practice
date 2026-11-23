@@ -1,0 +1,72 @@
+{
+  "CLEAR": 1,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "passed": true,
+  "before": {
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_reason": 8,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 4,
+    "bp_status": 9,
+    "vdc": 325.0,
+    "bp_vdc": 325.0,
+    "mc_transport_fault": 0,
+    "mc_uart_error_flags": 0,
+    "mc_bad_cnt": 0,
+    "pwm": 0,
+    "run_id": 0
+  },
+  "CLEAR_HTTP_acknowledged": true,
+  "after": {
+    "mc_fault": 0,
+    "bp_fault": 0,
+    "mc_fault_reason": 0,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "bp_status": 1,
+    "vdc": 324.0,
+    "bp_vdc": 324.0,
+    "mc_transport_fault": 0,
+    "mc_uart_error_flags": 0,
+    "mc_bad_cnt": 0,
+    "pwm": 0,
+    "run_id": 0
+  },
+  "samples": 16,
+  "bus_V": [
+    324.0,
+    325.0
+  ],
+  "mc_fault_state_released": true,
+  "break_ready": true,
+  "SD": "HIGH",
+  "first_CLEAR_record_preserved": true,
+  "preserved_files_verified": 1868,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "4f8768c2-e672-4809-82d3-828aa99f713a",
+      [
+        2026112112,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3332027546
+      ]
+    ],
+    "samples": 19,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 19.35999999998603,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

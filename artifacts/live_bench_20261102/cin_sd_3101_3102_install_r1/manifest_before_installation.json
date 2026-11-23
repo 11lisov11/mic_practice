@@ -1,0 +1,48 @@
+{
+  "schema": "mic_ai.cin_sd_off_diag.v1",
+  "pair": [
+    2026103101,
+    2026103102
+  ],
+  "base_pair": [
+    2026103013,
+    2026103014
+  ],
+  "built": true,
+  "installed": false,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "flash_commands": 0,
+  "thresholds_changed": false,
+  "adc_injected_changed": false,
+  "motor_starts_disabled": true,
+  "adc_input": "PB11 / CN10-18 / ADC2_IN14",
+  "SD_input": "PA6 / existing TIM1_BKIN",
+  "sampling": "OFF-only, 10Hz after zero-ready + 5s boot settling",
+  "reference_mv_nominal": 3290,
+  "voltage_is_approximate": true,
+  "current_trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_age_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "host_tests_passed": true,
+  "hardware_validated": false,
+  "artifacts": {
+    "release/nucleo_2026103102_expected_readback.bin": "75aabb5522a2b5a4e9c51976ee41f65b260ac569d6aac65c18b251f34f334b84",
+    "release/nucleo_2026103102_sd_cin.hex": "454ea5cc0e7da93d73740729cecce9a4dac28df6cb0cf93d2c1205a995935e08",
+    "release/uno_2026103101_sd_cin.elf-zsk.bin": "a4da233ca6e456dcc86f88b9a975f31c88520e7cd78128c22b88647f6d03451c",
+    "build/uno/UNOQ_MOTOR.ino.elf-zsk.bin": "a4da233ca6e456dcc86f88b9a975f31c88520e7cd78128c22b88647f6d03451c",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "454ea5cc0e7da93d73740729cecce9a4dac28df6cb0cf93d2c1205a995935e08",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "75aabb5522a2b5a4e9c51976ee41f65b260ac569d6aac65c18b251f34f334b84",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "65128d02bdf353342f2ae8b43028ed142f26312d8dd62af51421140838ec5a81"
+  },
+  "sources": 155,
+  "preserved_files_verified": 1723,
+  "native_hex_holes": [],
+  "verification_sha256": "21995ea5cc69508943cbc0b7c856d9dcd913914ca525e413b6755870bad8a1f2",
+  "native_flash_bytes": 104312,
+  "RAM_used_including_reserved_heap_stack": 28536,
+  "RAM_unallocated": 4232,
+  "live_CIN_cause_not_yet_measured": true
+}

@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "methods": [
+    "GET"
+  ],
+  "pair": [
+    2026111609,
+    2026111606
+  ],
+  "FOC_start_ready": false,
+  "autonomous_link_verified": true,
+  "zero_ready": 1,
+  "zero_stable": 3,
+  "vdc": 10.0,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 33,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "CPU_fast_cycles": 3618,
+  "native_frames_added": 158,
+  "native_tick_before": 98775,
+  "native_tick_after": 106775,
+  "saved_faults": {
+    "mc_transport_fault": 0,
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 4,
+    "uno_rx_hw_errors": 0
+  },
+  "algorithm_selected": 1,
+  "algorithm_profile_crc": 1354279011,
+  "limits": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "next": "Enable J1 only via soft-start, keep15V/powerbanks/wiring; no START/RESET. Read bus/SD before any trial.",
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "365dc016-dc82-406c-910c-d8035c860535",
+      [
+        2026111606,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        1812657868
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 7.936999999976251,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

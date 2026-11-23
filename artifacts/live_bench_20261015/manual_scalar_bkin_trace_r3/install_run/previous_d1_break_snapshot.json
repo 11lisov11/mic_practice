@@ -1,0 +1,43 @@
+{
+  "schema": "mic_ai.first_break_snapshot.pre_bkin_trace.v1",
+  "source": "live HMI /api/status read immediately before Nucleo 2026101506 was programmed",
+  "hmi_timestamp_ms": 1792059542272,
+  "snapshot_age_ms_at_read": 398,
+  "reason": "recorded",
+  "raw": {
+    "magic": 827019842,
+    "schema": 2,
+    "bytes": 92,
+    "tick_ms": 9517,
+    "tim_sr": 223,
+    "tim_dier": 128,
+    "tim_bdtr": 36911218,
+    "tim_cnt": 2265,
+    "tim_arr": 5312,
+    "tim_ccr1": 2656,
+    "tim_ccr2": 2656,
+    "tim_ccr3": 2656,
+    "gpioa_idr": 40964,
+    "context_valid": 0,
+    "context_tick_ms": 0,
+    "reference_speed_unit": 0,
+    "motor_state": 0,
+    "current_faults": 0,
+    "occurred_faults": 0,
+    "vbus_v": 0,
+    "temperature_deci_c": 0,
+    "command_sequence": 0,
+    "start_window": 0
+  },
+  "event": {
+    "bif": true,
+    "b2if": false,
+    "pa6_high_at_irq": false,
+    "bke_at_irq": true,
+    "moe_at_irq": false,
+    "during_start_request_window": false
+  },
+  "cached_context": null,
+  "high_rate_pa6_waveform_available": false,
+  "note": "This is the earlier D1 register snapshot, not the new 1 MHz PA6 waveform. The waveform recorder was installed afterward and has not yet seen a BKIN event."
+}

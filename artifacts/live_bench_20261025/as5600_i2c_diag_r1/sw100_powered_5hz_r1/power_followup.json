@@ -1,0 +1,30 @@
+{
+  "user_report": "питание 3.3 в от уно есть",
+  "reported_vcc_v": 3.3,
+  "supply_transient_measured": false,
+  "physical_cause_proven": false,
+  "static_source_audit": {
+    "local_motor_pwm_disabled": true,
+    "external_pwm_nucleo_only": true,
+    "builtin_led_pin": "PH10 from installed devicetree, distinct from PB10/PB11",
+    "spi_backend_disabled": true,
+    "intentional_sda_scl_reconfiguration_on_start_found": false,
+    "runtime_pin_register_trace_during_pwm_available": false
+  },
+  "status": {
+    "state": "SAFE",
+    "pwm": 0,
+    "hmi_hv_armed": 0,
+    "vdc": 322.0,
+    "mc_fault": 0,
+    "enc_diag_mode": 1,
+    "enc_reads": 437440,
+    "enc_errors": 68,
+    "enc_bus_ok": 1,
+    "enc_status": 51
+  },
+  "user_report_sensor_wire_length_cm_approx": 20,
+  "user_report_sensor_wires_far_from_power": true,
+  "pullup_resistors_verified": false,
+  "module_supply_topology_verified": false
+}

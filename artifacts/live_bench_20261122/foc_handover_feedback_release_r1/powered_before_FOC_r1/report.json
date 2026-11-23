@@ -1,0 +1,51 @@
+{
+  "pair": [
+    2026112201,
+    2026112202
+  ],
+  "bus_V": [
+    326.0,
+    326.0
+  ],
+  "samples": 8,
+  "conditions": {
+    "live_pair_and_outputs_off": true,
+    "power_UART_and_temperature": true,
+    "SD_and_Break": true,
+    "fresh_autozero_and_OFF64": true,
+    "active_faults_zero": true
+  },
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "b6f1bb57-7d65-4f89-8d6f-1531b305076b",
+      [
+        2026112202,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3325197394
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 7.952999999979511,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "SD_capture": false,
+  "repeat_break": "WAIT_FIRST_CLEAR",
+  "current_fault_mask": 0,
+  "stored_fault_mask": 4,
+  "local_code": 5,
+  "reason": 8,
+  "CLEAR_previous": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0
+}

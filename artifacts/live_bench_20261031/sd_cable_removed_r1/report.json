@@ -1,0 +1,54 @@
+{
+  "operator_confirmed": {
+    "J1": "OFF",
+    "J4": "OFF",
+    "34pin_cable": "removed at both ends",
+    "IHM09M2": "still on Nucleo",
+    "power": "unchanged",
+    "RESET": "not pressed"
+  },
+  "fresh_samples": 6,
+  "levels": [
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "direct_GPIO": {
+    "PA6_HIGH": false,
+    "PA6_mode": 2,
+    "PA6_pull": 1,
+    "PA6_AF": 6,
+    "PA6_locked": true,
+    "PA11_mode": 3,
+    "BKBID": false,
+    "BKE": true,
+    "MOE": false,
+    "core_halted": false
+  },
+  "firmware": [
+    2026103016
+  ],
+  "linux_boot_ids": [
+    "a59e82ff-a261-4b51-8447-925d95773b26"
+  ],
+  "native_uptime_first_ms": 1650731,
+  "native_uptime_last_ms": 1657552,
+  "native_RAM_saved_bytes": 32768,
+  "RAM_is_live_non_atomic_read": true,
+  "exact_physical_source_identified": false,
+  "conclusion": "Current PA6 LOW persists without STEVAL and without 34-pin cable. Remaining candidates are adapter, Nucleo input, and any other attached PA6/PA11 connections. Does not establish root cause of all historical events.",
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "old_captures_modified": false,
+  "next_step_requires_operator": "Power both controllers OFF, remove IHM09M2, power controllers back; Nucleo via PC USB for direct read; J1/J4 OFF. No additional probes."
+}

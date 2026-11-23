@@ -1,0 +1,36 @@
+{
+  "schema": "mic_ai.linux_fault_history.v1",
+  "pair": [
+    2026101108,
+    2026101102
+  ],
+  "source": "C:\\mic_practice\\artifacts\\live_bench_20261012\\llext_fix\\candidate_r1\\web_hmi\\server.py",
+  "previous_hmi_sha256": "2320cf02af4f09ff370354c46ec84b903fc6fb7e08182b9159b2759568ead2ec",
+  "hmi_sha256": "09fdbf9129c604c1f8fd995f94c92b98d4d90455b4a9ec95f27089210b8650a5",
+  "added_fields": [
+    "uno_tx_all_max_gap_us",
+    "uno_tx_last_gap_us",
+    "uno_tx_gaps_over_watchdog",
+    "uno_rx_poll_gap_max_ms",
+    "uno_tx_call_max_us",
+    "uno_rpc_max_us",
+    "uno_rx_dropped",
+    "uno_rx_hw_errors",
+    "uno_rx_hw_flags",
+    "uno_rx_high_water",
+    "uno_rx_pending",
+    "uno_rx_rejected_ms",
+    "uno_rx_rejected_hex",
+    "uno_tx_short_writes",
+    "uno_tx_count",
+    "uno_rx_count",
+    "mc_transport_fault",
+    "mc_break_rx_good",
+    "mc_break_rx_bad"
+  ],
+  "mcu_firmware_changed": false,
+  "control_guards_changed": false,
+  "calibration_file_modified": false,
+  "hardware_commands": 0,
+  "installed": false
+}

@@ -1,0 +1,17 @@
+{
+  "errata": "https://www.st.com/resource/en/errata_sheet/es0499-stm32u575xx-and-stm32u585xx-device-errata-stmicroelectronics.pdf",
+  "errata_revision": "ES0499 Rev12,June2026,section2.20.2 applies to U585 revisionU(0x3007)",
+  "ll_reset": "https://dev.st.com/stm32cube-docs/stm32u5-hal2/2.0.0-beta.1.1/docs/drivers/ll_drivers/i2c/api/ll_i2c_exported_functions.html",
+  "sensor": "https://cdn.sparkfun.com/assets/f/a/b/b/a/AS5600_Datasheet.pdf",
+  "confirmed_software_defect": "2517 aborted and reset on sole BERR; ST says clear BERR and continue controller transfer. This can induce secondary BUSY but its exact contribution on the bench is unproven.",
+  "other_hardening": "Wait boundedly for automatic NACK STOP/ARLO bus release before reset;PE readback+2us. NACK/ARLO/OVR/deadline remain failures;all data discarded. No bus-clear clocks or same-sample retry.",
+  "filter": "Mode5 ANF+DNF, PCLK mux verified, actual kernel rate required20..160MHz; standard timing recalculated with conservative edge assumptions. Mode4 provides unfiltered timing comparison in same image.",
+  "not_proven": [
+    "Primary physical cause of original PWM errors",
+    "That all NACK/ARLO disappear",
+    "Actual bus rise/fall times or independent sensor accuracy"
+  ],
+  "installed_unchanged": true,
+  "motor_start_commands": 0,
+  "clear_commands": 0
+}

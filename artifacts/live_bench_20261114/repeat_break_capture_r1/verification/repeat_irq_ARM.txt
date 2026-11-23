@@ -1,0 +1,106 @@
+
+C:\mic_practice\artifacts\live_bench_20261114\repeat_break_capture_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08008944 <mic_repeat_break_irq>:
+ 8008944:	4b2d      	ldr	r3, [pc, #180]	@ (80089fc <mic_repeat_break_irq+0xb8>)
+ 8008946:	4a2e      	ldr	r2, [pc, #184]	@ (8008a00 <mic_repeat_break_irq+0xbc>)
+ 8008948:	b430      	push	{r4, r5}
+ 800894a:	681c      	ldr	r4, [r3, #0]
+ 800894c:	6813      	ldr	r3, [r2, #0]
+ 800894e:	2b01      	cmp	r3, #1
+ 8008950:	d137      	bne.n	80089c2 <mic_repeat_break_irq+0x7e>
+ 8008952:	6913      	ldr	r3, [r2, #16]
+ 8008954:	2b00      	cmp	r3, #0
+ 8008956:	d134      	bne.n	80089c2 <mic_repeat_break_irq+0x7e>
+ 8008958:	4b2a      	ldr	r3, [pc, #168]	@ (8008a04 <mic_repeat_break_irq+0xc0>)
+ 800895a:	6114      	str	r4, [r2, #16]
+ 800895c:	6190      	str	r0, [r2, #24]
+ 800895e:	681d      	ldr	r5, [r3, #0]
+ 8008960:	4c29      	ldr	r4, [pc, #164]	@ (8008a08 <mic_repeat_break_irq+0xc4>)
+ 8008962:	42a5      	cmp	r5, r4
+ 8008964:	d027      	beq.n	80089b6 <mic_repeat_break_irq+0x72>
+ 8008966:	2402      	movs	r4, #2
+ 8008968:	605c      	str	r4, [r3, #4]
+ 800896a:	245c      	movs	r4, #92	@ 0x5c
+ 800896c:	609c      	str	r4, [r3, #8]
+ 800896e:	4c27      	ldr	r4, [pc, #156]	@ (8008a0c <mic_repeat_break_irq+0xc8>)
+ 8008970:	60d8      	str	r0, [r3, #12]
+ 8008972:	6119      	str	r1, [r3, #16]
+ 8008974:	68e1      	ldr	r1, [r4, #12]
+ 8008976:	6159      	str	r1, [r3, #20]
+ 8008978:	6c61      	ldr	r1, [r4, #68]	@ 0x44
+ 800897a:	6199      	str	r1, [r3, #24]
+ 800897c:	6a61      	ldr	r1, [r4, #36]	@ 0x24
+ 800897e:	61d9      	str	r1, [r3, #28]
+ 8008980:	6ae1      	ldr	r1, [r4, #44]	@ 0x2c
+ 8008982:	6219      	str	r1, [r3, #32]
+ 8008984:	6b61      	ldr	r1, [r4, #52]	@ 0x34
+ 8008986:	6259      	str	r1, [r3, #36]	@ 0x24
+ 8008988:	6ba1      	ldr	r1, [r4, #56]	@ 0x38
+ 800898a:	6299      	str	r1, [r3, #40]	@ 0x28
+ 800898c:	6be0      	ldr	r0, [r4, #60]	@ 0x3c
+ 800898e:	62d8      	str	r0, [r3, #44]	@ 0x2c
+ 8008990:	f04f 4190 	mov.w	r1, #1207959552	@ 0x48000000
+ 8008994:	481e      	ldr	r0, [pc, #120]	@ (8008a10 <mic_repeat_break_irq+0xcc>)
+ 8008996:	690c      	ldr	r4, [r1, #16]
+ 8008998:	491e      	ldr	r1, [pc, #120]	@ (8008a14 <mic_repeat_break_irq+0xd0>)
+ 800899a:	631c      	str	r4, [r3, #48]	@ 0x30
+ 800899c:	6800      	ldr	r0, [r0, #0]
+ 800899e:	6809      	ldr	r1, [r1, #0]
+ 80089a0:	f3bf 8f5f 	dmb	sy
+ 80089a4:	6358      	str	r0, [r3, #52]	@ 0x34
+ 80089a6:	b970      	cbnz	r0, 80089c6 <mic_repeat_break_irq+0x82>
+ 80089a8:	491b      	ldr	r1, [pc, #108]	@ (8008a18 <mic_repeat_break_irq+0xd4>)
+ 80089aa:	6809      	ldr	r1, [r1, #0]
+ 80089ac:	6599      	str	r1, [r3, #88]	@ 0x58
+ 80089ae:	f3bf 8f5f 	dmb	sy
+ 80089b2:	4915      	ldr	r1, [pc, #84]	@ (8008a08 <mic_repeat_break_irq+0xc4>)
+ 80089b4:	6019      	str	r1, [r3, #0]
+ 80089b6:	4b19      	ldr	r3, [pc, #100]	@ (8008a1c <mic_repeat_break_irq+0xd8>)
+ 80089b8:	681b      	ldr	r3, [r3, #0]
+ 80089ba:	2b01      	cmp	r3, #1
+ 80089bc:	d018      	beq.n	80089f0 <mic_repeat_break_irq+0xac>
+ 80089be:	2303      	movs	r3, #3
+ 80089c0:	6013      	str	r3, [r2, #0]
+ 80089c2:	bc30      	pop	{r4, r5}
+ 80089c4:	4770      	bx	lr
+ 80089c6:	4816      	ldr	r0, [pc, #88]	@ (8008a20 <mic_repeat_break_irq+0xdc>)
+ 80089c8:	014c      	lsls	r4, r1, #5
+ 80089ca:	eb00 1141 	add.w	r1, r0, r1, lsl #5
+ 80089ce:	5900      	ldr	r0, [r0, r4]
+ 80089d0:	6398      	str	r0, [r3, #56]	@ 0x38
+ 80089d2:	6848      	ldr	r0, [r1, #4]
+ 80089d4:	63d8      	str	r0, [r3, #60]	@ 0x3c
+ 80089d6:	6888      	ldr	r0, [r1, #8]
+ 80089d8:	6418      	str	r0, [r3, #64]	@ 0x40
+ 80089da:	68c8      	ldr	r0, [r1, #12]
+ 80089dc:	6458      	str	r0, [r3, #68]	@ 0x44
+ 80089de:	6908      	ldr	r0, [r1, #16]
+ 80089e0:	6498      	str	r0, [r3, #72]	@ 0x48
+ 80089e2:	6948      	ldr	r0, [r1, #20]
+ 80089e4:	64d8      	str	r0, [r3, #76]	@ 0x4c
+ 80089e6:	6988      	ldr	r0, [r1, #24]
+ 80089e8:	6518      	str	r0, [r3, #80]	@ 0x50
+ 80089ea:	69c9      	ldr	r1, [r1, #28]
+ 80089ec:	6559      	str	r1, [r3, #84]	@ 0x54
+ 80089ee:	e7db      	b.n	80089a8 <mic_repeat_break_irq+0x64>
+ 80089f0:	4b0c      	ldr	r3, [pc, #48]	@ (8008a24 <mic_repeat_break_irq+0xe0>)
+ 80089f2:	681b      	ldr	r3, [r3, #0]
+ 80089f4:	2b00      	cmp	r3, #0
+ 80089f6:	d1e4      	bne.n	80089c2 <mic_repeat_break_irq+0x7e>
+ 80089f8:	e7e1      	b.n	80089be <mic_repeat_break_irq+0x7a>
+ 80089fa:	bf00      	nop
+ 80089fc:	20001a0c 	.word	0x20001a0c
+ 8008a00:	20001d14 	.word	0x20001d14
+ 8008a04:	20001a70 	.word	0x20001a70
+ 8008a08:	314b5242 	.word	0x314b5242
+ 8008a0c:	40012c00 	.word	0x40012c00
+ 8008a10:	200019c4 	.word	0x200019c4
+ 8008a14:	200019c8 	.word	0x200019c8
+ 8008a18:	20001a10 	.word	0x20001a10
+ 8008a1c:	20001e84 	.word	0x20001e84
+ 8008a20:	200019cc 	.word	0x200019cc
+ 8008a24:	200019ac 	.word	0x200019ac

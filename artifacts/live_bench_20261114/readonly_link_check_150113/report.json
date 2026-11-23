@@ -1,0 +1,269 @@
+{
+  "source": "six USB-forwarded HTTP GET status observations and SWD HOTPLUG register reads",
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "probe_connection_unknown": true,
+  "samples": [
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4404,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 26,
+      "mc_seq": 51,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 26,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2533,
+        "valid": true,
+        "raw_adc": 1292,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4429,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 24,
+      "mc_seq": 76,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 24,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2545,
+        "valid": true,
+        "raw_adc": 1292,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4454,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 11,
+      "mc_seq": 101,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 11,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2557,
+        "valid": true,
+        "raw_adc": 1294,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4479,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 11,
+      "mc_seq": 126,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 11,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2571,
+        "valid": true,
+        "raw_adc": 1319,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4504,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 5,
+      "mc_seq": 151,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 5,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2581,
+        "valid": true,
+        "raw_adc": 1208,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "bp_fw_build": 2026103102,
+      "mc_good_cnt": 4528,
+      "mc_bad_cnt": 0,
+      "mc_bad_integrity": 0,
+      "mc_bad_sequence": 0,
+      "mc_age_ms": 48,
+      "mc_seq": 175,
+      "uno_rx_hw_errors": 0,
+      "uno_rx_dropped": 0,
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "cin_diagnostic_only": 1,
+      "sd": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 48,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "adc_diagnostic": {
+        "sequence": 2594,
+        "valid": true,
+        "raw_adc": 1304,
+        "timeouts": 0,
+        "errors": 0
+      },
+      "build_fields": {
+        "fw_build": 2026103101,
+        "mc_fw_build": 2026103102,
+        "bp_fw_build": 2026103102
+      }
+    }
+  ],
+  "swd_return_code": 0
+}

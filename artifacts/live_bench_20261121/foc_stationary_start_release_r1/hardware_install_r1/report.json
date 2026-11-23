@@ -1,0 +1,142 @@
+{
+  "passed": false,
+  "pair": [
+    2026112103,
+    2026112104
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "thresholds_changed": false,
+  "operator_confirmation": "J1 OFF explicitly confirmed; exact PCUSB identities and fresh valid low-bus ADC/SWD observed; 15V and wiring unchanged; no START/CLEAR",
+  "physical_TP23_connection_independently_verified": false,
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_18080",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_12222",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_RAM_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_flash_before",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_before",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_config.json",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_hmi.py",
+      "exit_code": 0
+    },
+    {
+      "label": "candidate_calibration_check",
+      "exit_code": 0
+    },
+    {
+      "label": "router_close",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "readback_native",
+      "exit_code": 0
+    },
+    {
+      "label": "verify_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "router_open",
+      "exit_code": 0
+    },
+    {
+      "label": "deploy_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_after",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_after",
+      "exit_code": 0
+    }
+  ],
+  "before_pair": [
+    2026112101,
+    2026112102
+  ],
+  "previous_native_image_verified": true,
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "uno_held_for_paired_baud_change": true,
+  "native_readback_verified": true,
+  "native_flash_sha256": "10c4bc2bd5010f94c2ecbfce8eff68ec8339dde24b714f9915c3d2e404527b9a",
+  "uno_readback_verified": true,
+  "hmi_deployment": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/foc_2104_20261121_120630",
+    "calibration_unchanged": true,
+    "runtime_verified": false,
+    "hmi_restarts": 1,
+    "flash_commands": 0,
+    "motor_commands": 0
+  },
+  "calibration_after": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_unchanged": true,
+  "native_BKE": true,
+  "native_MOE": false,
+  "runtime_pending": "new UART unhealthy",
+  "error": "Images verified; runtime status pending: new UART unhealthy"
+}

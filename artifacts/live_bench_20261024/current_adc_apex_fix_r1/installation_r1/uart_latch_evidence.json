@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "checks": {
+    "hardware_error_bits_clear": true,
+    "counters_stable": true,
+    "packets_progress": true,
+    "known_latch": true,
+    "safe_off": true
+  },
+  "usart1_isr": "0x631090",
+  "isr_error_bits": 0,
+  "read_only": true,
+  "counter_values": {
+    "mc_bad_cnt": 2,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 2,
+    "mc_last_uart_error_flags": 0,
+    "mc_transport_fault": 4,
+    "bp_transport_fault": 4,
+    "mc_last_bad_reason": 13
+  },
+  "clear_commands": 0
+}

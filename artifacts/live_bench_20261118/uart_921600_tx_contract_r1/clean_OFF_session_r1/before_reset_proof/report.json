@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "source": "passive ST-Link HotPlug reads",
+  "ports": [
+    "COM10",
+    "COM13"
+  ],
+  "physical_authorization_context": "J1OFF remains user-confirmed; no PWM; one reset for clean UART session after verified repair",
+  "native_image_sha256": "1b0a3a03d9ef440fc0e790fc8519e6074c54a8fb80bcacb246ee72361081bad4",
+  "image_comparison": "exact HEX with erased FF padding",
+  "hex_erased_padding_offsets": [
+    117124,
+    117125,
+    117126,
+    117127
+  ],
+  "sealed_binary_sha256": "c673ed952451b4e69b454ff3e0d3b94105f71f0dbb58c19e0d4219c6b0fef115",
+  "layout_from_actual_dwarf": {
+    "SensorType": 0,
+    "ConversionFactor": 2,
+    "LatestConv": 4,
+    "AvBusVoltage_d": 6,
+    "FaultState": 8
+  },
+  "rows": [
+    {
+      "tick_ms": 542846,
+      "bus_volts": 9.93408203125,
+      "conversion_factor": 416,
+      "digital_bus": 1565,
+      "bdtr": 37304434,
+      "moe": false
+    },
+    {
+      "tick_ms": 543295,
+      "bus_volts": 9.90869140625,
+      "conversion_factor": 416,
+      "digital_bus": 1561,
+      "bdtr": 37304434,
+      "moe": false
+    }
+  ],
+  "tick_delta_ms": 449,
+  "flash_writes": 0,
+  "reset_commands": 0,
+  "halt_commands": 0,
+  "motor_commands": 0
+}

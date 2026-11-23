@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "CLEAR": 1,
+  "START": 0,
+  "ARM": 0,
+  "software_MCU_RESET": 0,
+  "flash": 0,
+  "prior_unsent_attempts": {
+    "one_CLEAR_powered_20261117_r1": 0,
+    "one_CLEAR_deenergized_after_Uno_boot_20261117_r1": 0
+  },
+  "one_CLEAR_authorization_consumed": true,
+  "CLEAR_result": "ACK_ACCEPTED",
+  "UART_errors_after": 0,
+  "transport_latch_after": 0,
+  "active_mask_after": 0,
+  "occurred_mask_after": 0,
+  "SD": "HIGH",
+  "Break_IRQ_enabled": true,
+  "SD_configuration_ok": true,
+  "PWM": false,
+  "zero_ready": true,
+  "zero_stable_blocks": 3,
+  "OFF_fast_cycles": 3811,
+  "OFF_budget_cycles": 4000,
+  "estimate_age_limit_ms": 2,
+  "raw_trip_A": 1.35,
+  "ADC_UPDATE_limit_ticks": 2048,
+  "source_and_protections_unchanged": true,
+  "old_files_verified": 5748,
+  "old_first_SD_disk_SHA256": "980e1f0676f232a4e867362b7fb346b18b4d6bb21b8fc92a37d2fa1b9bdc7ff4",
+  "pre_CLEAR_fault_masks": [
+    0,
+    0
+  ],
+  "fault_masks_already_zero_before_command": true,
+  "previous_boot_first_SD_in_RAM": false,
+  "no_claim_previous_native_RAM_survived_power_change": true,
+  "current_boot": {
+    "identity": [
+      2026111612,
+      1,
+      201326592,
+      0,
+      4,
+      0,
+      3713711204
+    ],
+    "Linux_boot_id": "dcb72e9f-4540-4cdd-8583-e4ff551d80e4",
+    "native_tick_ms": 201085,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111612,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 3713711204,
+      "native_tick_ms": 201085,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae90101007c02c478010000000000000c00000000040000000000000064bc5add7d1103000071fd978b"
+  },
+  "J1_OFF": true,
+  "boards_on_powerbanks": true,
+  "current_bus_V": 13.0,
+  "full_powered_FOC_readiness_evaluated": false
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "hardware_validated": false,
+  "installed": false,
+  "firmware_commands": 0,
+  "motor_starts": 0,
+  "checks": [
+    "RPC diagnostics round-trip",
+    "legacy safe defaults",
+    "new/old pair real current telemetry equivalence",
+    "SD snapshot not changed by decode",
+    "manual scalar pair admitted",
+    "unknown pair rejected",
+    "malformed current record rejected",
+    "angle/rpm invalidity and stale policy unchanged",
+    "all other UNO headers/protocols unchanged",
+    "whole installed motor sketch unchanged outside declared sensor additions",
+    "disarmed diagnostic switch routed to MCU",
+    "armed and continuous-session switch rejected",
+    "switch allowed after disarm"
+  ]
+}

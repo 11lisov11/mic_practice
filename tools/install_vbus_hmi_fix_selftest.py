@@ -9,11 +9,17 @@ def main():
                        bp_mcsdk_telemetry=1, bp_vbus_valid=1, bp_vbus_raw=0,
                        mc_age_ms=20, bp_temp_age_ms=20, hmi_hv_armed=0, bp_fault=5)
     assert precheck(base)[0]
+    assert not precheck(dict(base, vdc=9, bp_vdc=9, bp_vbus_raw=90))[0]
+    assert precheck(dict(base, vdc=9, bp_vdc=9, bp_vbus_raw=90), 10)[0]
+    for key, value in (('vdc', 11), ('bp_vdc', 11), ('bp_vbus_raw', 101),
+                       ('pwm', 1), ('hmi_hv_armed', 1), ('bp_fault', 1)):
+        assert not precheck(dict(dict(base, vdc=9, bp_vdc=9, bp_vbus_raw=90), **{key: value}), 10)[0]
     cases = 1
     for left, right in ((2026100707, 2026100707), (2026100708, 2026100707),
                         (2026100708, 2026100708), (2026100709, 2026100708),
                         (2026100709, 2026100710), (2026100709, 2026100801), (2026100802, 2026100801),
-                        (2026100803, 2026100801)):
+                        (2026100803, 2026100801), (2026101008, 2026101006),
+                        (2026101507, 2026101506)):
         assert precheck(dict(base, fw_build=left, mc_fw_build=right))[0]
         cases += 1
     assert not precheck(dict(base, fw_build=2026100707, mc_fw_build=2026100708))[0]

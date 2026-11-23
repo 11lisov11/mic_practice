@@ -1,0 +1,111 @@
+{
+  "motor_trial_completed": true,
+  "raw_runner_passed": true,
+  "raw_report_preserved": true,
+  "physical_rotation_verified": true,
+  "speed_changes_verified": true,
+  "feedback_pending": false,
+  "start_commands": 1,
+  "clear_commands": 0,
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "outputs_off_confirmed": true,
+  "current_scale_qualified": false,
+  "rotor_speed_measured": false,
+  "steps": [
+    {
+      "step": 1,
+      "target_hz": 15,
+      "distinct_valid_full_windows": 3,
+      "latest_rms_a": [
+        0.652,
+        0.659,
+        0.653
+      ],
+      "latest_peak_a": [
+        1.218,
+        1.18,
+        1.142
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    },
+    {
+      "step": 2,
+      "target_hz": 20,
+      "distinct_valid_full_windows": 3,
+      "latest_rms_a": [
+        0.707,
+        0.715,
+        0.708
+      ],
+      "latest_peak_a": [
+        1.19,
+        1.209,
+        1.218
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    },
+    {
+      "step": 3,
+      "target_hz": 15,
+      "distinct_valid_full_windows": 4,
+      "latest_rms_a": [
+        0.666,
+        0.675,
+        0.668
+      ],
+      "latest_peak_a": [
+        1.257,
+        1.161,
+        1.18
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    }
+  ],
+  "backup_stop_triggered": false,
+  "sd_waveform_limit": "Retained pre-START waveform cannot record a second full wave; hardware Break remains enabled.",
+  "active_vdc_range": [
+    319.0,
+    324.0
+  ],
+  "active_temperature_channel_range_c": [
+    51.0,
+    55.0
+  ],
+  "counter_deltas": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_current_bad": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "uno_tx_short_writes": 0
+  },
+  "final_fault_masks": [
+    0,
+    0
+  ],
+  "final_vdc": 323.0,
+  "heartbeat_errors": [],
+  "collection_errors": [],
+  "final_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 9,
+    "break_irq_enabled": true,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "after_diagnostics_fault_masks": [
+    0,
+    0
+  ],
+  "user_feedback": "Да, ровно, оба изменения заметны"
+}

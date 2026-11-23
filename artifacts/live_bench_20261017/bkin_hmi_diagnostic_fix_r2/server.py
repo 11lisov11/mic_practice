@@ -1,0 +1,4328 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import os
+import select
+import secrets
+import socket
+import subprocess
+import sys
+import threading
+import time
+import urllib.request
+from collections import deque
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import Callable, Deque, List, Optional, Tuple
+from urllib.parse import parse_qs, urlparse
+
+try:
+    import termios
+except Exception:  # pragma: no cover - Windows/local dev without POSIX TTY
+    termios = None
+
+try:
+    import msgpack
+except Exception:  # pragma: no cover - allow text-only mode without msgpack
+    msgpack = None
+
+"""Pure read-only snapshot decoding; embedded into the prepared HMI server."""
+import struct as _break_struct
+
+_BREAK_FIELDS = (
+    "magic", "schema", "bytes", "tick_ms", "tim_sr", "tim_dier", "tim_bdtr",
+    "tim_cnt", "tim_arr", "tim_ccr1", "tim_ccr2", "tim_ccr3", "gpioa_idr",
+    "context_valid", "context_tick_ms", "reference_speed_unit", "motor_state",
+    "current_faults", "occurred_faults", "vbus_v", "temperature_deci_c",
+    "command_sequence", "start_window")
+
+
+def break_reject_status(kv):
+    names=("valid", "code", "ms", "peer_fw", "fresh_off", "bp_status", "pwm", "rsp_age_ms", "good_before")
+    result={}
+    try:
+        for name in names:
+            value=int(kv.get("mc_break_reject_"+name, "0"))
+            if not 0<=value<=0xffffffff: raise ValueError("reject field outside uint32")
+            result["mc_break_reject_"+name]=value
+        packet=kv.get("mc_break_reject_packet_hex", "-")
+        result["mc_break_reject_packet_hex"]=packet
+        reasons={1:"FRAME_CRC",2:"HEADER",3:"PAGE_LAYOUT",4:"PEER_BUILD",5:"NOT_FRESH_OFF",
+                 6:"RESERVED",7:"PADDING",8:"DUPLICATE",9:"RECORD_CRC",10:"RECORD_ABI",11:"WINDOW_KIND"}
+        code=result["mc_break_reject_code"]
+        record_ok=(result["mc_break_reject_valid"]==1 and code in reasons and
+            result["mc_break_reject_fresh_off"] in (0,1) and result["mc_break_reject_pwm"] in (0,1) and
+            len(packet)==86 and all(c in "0123456789abcdefABCDEF" for c in packet))
+        result["mc_break_reject_record_valid"]=int(record_ok)
+        result["mc_break_reject_reason"]=reasons[code] if record_ok else "UNAVAILABLE"
+        return result
+    except (ValueError,TypeError):
+        return {"mc_break_reject_record_valid":0,"mc_break_reject_reason":"INVALID_METADATA"}
+
+def break_wire_status(kv):
+    records = []
+    for kind in (0, 1):
+        item = {"kind": "first_since_boot" if kind == 0 else "first_start_window",
+                "available": False, "captured": False}
+        try:
+            text = kv.get(f"mc_break{kind}_hex", "")
+            age = int(kv.get(f"mc_break{kind}_age_ms", "-1"))
+            peer_age = int(kv.get("bp_age_ms", "999999"))
+            peer = int(kv.get("bp_fw_build", "0"))
+            if not text or text == "-":
+                item["reason"] = "not_received"
+            elif len(text) != 184 or any(c not in "0123456789abcdefABCDEF" for c in text):
+                item["reason"] = "invalid_hex"
+            elif peer not in (2026101102, 2026101204, 2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101410, 2026101493, 2026101412, 2026101414, 2026101502, 2026101504, 2026101506) or not 0 <= peer_age < 300 or not 0 <= age <= 0xFFFFFFFF:
+                item["reason"] = "invalid_age"
+            else:
+                data = bytes.fromhex(text)
+                raw = dict(zip(_BREAK_FIELDS, _break_struct.unpack("<23I", data)))
+                item["age_ms"] = age
+                if not any(data):
+                    item.update(available=True, reason="no_recorded_break")
+                elif (raw["magic"] != 0x314B5242 or raw["schema"] != 2 or raw["bytes"] != 92
+                      or raw["context_valid"] not in (0, 1) or raw["start_window"] not in (0, 1)
+                      or not raw["tim_sr"] & 0x180 or (kind == 1 and raw["start_window"] != 1)):
+                    item["reason"] = "invalid_record"
+                else:
+                    for field in ("reference_speed_unit", "temperature_deci_c"):
+                        if raw[field] & (1 << 31):
+                            raw[field] -= 1 << 32
+                    context = None
+                    if raw["context_valid"]:
+                        context = {k: raw[k] for k in _BREAK_FIELDS[14:22]}
+                        context["age_at_irq_ms"] = (raw["tick_ms"] - raw["context_tick_ms"]) & 0xFFFFFFFF
+                        context["reference_electrical_hz"] = raw["reference_speed_unit"] / 10.0
+                        context["temperature_c"] = raw["temperature_deci_c"] / 10.0
+                    raw_start_window = bool(raw["start_window"])
+                    context_was_running = bool(context and context["motor_state"] == 6)
+                    item.update(available=True, captured=True, reason="recorded", raw=raw,
+                        event={"bif": bool(raw["tim_sr"] & 0x80), "b2if": bool(raw["tim_sr"] & 0x100),
+                               "pa6_high_at_irq": bool(raw["gpioa_idr"] & 0x40),
+                               "bke_at_irq": bool(raw["tim_bdtr"] & 0x1000),
+                               "moe_at_irq": bool(raw["tim_bdtr"] & 0x8000),
+                               "during_start_request_window": raw_start_window and not context_was_running,
+                               "start_window_flag_raw": raw_start_window,
+                               "start_window_flag_stale_after_run": raw_start_window and context_was_running},
+                        cached_context=context)
+        except (ValueError, TypeError, OverflowError):
+            item["reason"] = "invalid_metadata"
+        records.append(item)
+    return {"mc_break_snapshots": records,
+            "mc_break_transport": "passive_off_only_v1",
+            "mc_break_limitations": ["Not live telemetry: delivery occurs only with outputs off",
+                "Reference frequency is not measured rotor speed; context is cached",
+                "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+                "J4 voltage and qualified phase current are not measured",
+                "Cannot uniquely identify overcurrent, undervoltage, or interference"]}
+
+
+def bkin_wave_status(data):
+    """Decode the frozen 1 MHz PA6 trace; never infer current or fault cause."""
+    unavailable = {"available": False, "reason": "not_received"}
+    try:
+        if _as_int(data or {}, "mc_fw_build", 0) != 2026101506:
+            return {"available": False, "reason": "wrong_peer_build"}
+        text = data.get("mc_break_wave_hex", "")
+        age = _as_int(data, "mc_break_wave_age_ms", 999999)
+        if not text or text == "-": return unavailable
+        if len(text) != 320 or any(c not in "0123456789abcdefABCDEF" for c in text):
+            return {"available": False, "reason": "invalid_hex"}
+        if not 0 <= age <= 0xFFFFFFFF:
+            return {"available": False, "reason": "invalid_age"}
+        peer_age = _as_int(data, "mc_age_ms", _as_int(data, "bp_age_ms", 999999))
+        if not 0 <= peer_age < 300:
+            return {"available": False, "reason": "stale_peer"}
+        raw = bytes.fromhex(text)
+        u32 = lambda offset: int.from_bytes(raw[offset:offset+4], "little")
+        if (u32(0) != 0x314E4B42 or u32(4) != 1 or u32(8) != 160 or
+                u32(16) != 1000 or not 1 <= u32(20) <= 1024 or
+                u32(24) != 1023 or not (u32(28) & 2) or (u32(28) & ~3)):
+            return {"available": False, "reason": "invalid_record"}
+        valid_count = u32(20)
+        valid_from = 1024 - valid_count
+        bits = raw[32:160]
+        samples = [None if i < valid_from else int(bool(bits[i // 8] & (1 << (i & 7))))
+                   for i in range(1024)]
+        low_intervals = []
+        low_start = None
+        high_intervals = []
+        high_start = None
+        high_count = 0
+        for i in range(valid_from, 1025):
+            low = i < 1024 and samples[i] == 0
+            high = i < 1024 and samples[i] == 1
+            if low and low_start is None: low_start = i
+            elif not low and low_start is not None:
+                low_intervals.append({"from_us": low_start - 1023, "to_us": i - 1023,
+                                      "includes_capture_boundary": i == 1024})
+                low_start = None
+            if high:
+                high_count += 1
+                if high_start is None: high_start = i
+            elif high_start is not None:
+                high_intervals.append({"from_us": high_start - 1023, "to_us": i - 1023,
+                                       "includes_capture_boundary": i == 1024})
+                high_start = None
+        snapshots = data.get("mc_break_snapshots", [])
+        irq_pa6_high = None
+        if isinstance(snapshots, list):
+            for snapshot in snapshots:
+                if (isinstance(snapshot, dict) and snapshot.get("kind") == "first_since_boot"
+                        and snapshot.get("captured") is True and isinstance(snapshot.get("event"), dict)):
+                    irq_pa6_high = bool(snapshot["event"].get("pa6_high_at_irq"))
+                    break
+        return {"available": True, "reason": "recorded", "age_ms": age,
+            "retained": True, "active_level": 1, "active_polarity": "HIGH",
+            "active_sample_count": high_count, "pa6_high_intervals": high_intervals,
+            "irq_pa6_high": irq_pa6_high,
+            "sample_rate_hz": 1000000, "sample_period_us": 1,
+            "sample_count": 1024, "valid_sample_count": valid_count,
+            "unknown_prefix_samples": valid_from, "trigger_index": 1023,
+            "trace_reference": "last DMA sample before BKIN interrupt handling; exact edge offset includes IRQ latency",
+            "pa6_samples": samples, "pa6_low_intervals": low_intervals,
+            "pa6_low_is_active": False,
+            "limitations": ["Digital BKIN/SD input only; no current, J4 rail, or phase voltage is measured",
+                "Sub-microsecond pulse widths are below this recorder's resolution",
+                "Trace alone cannot identify overcurrent, driver undervoltage, or interference"]}
+    except (ValueError, TypeError, OverflowError):
+        return {"available": False, "reason": "invalid_metadata"}
+
+
+STATE_NAMES = {
+    0: "SAFE",
+    1: "VF_RUN",
+    2: "FOC_ALIGN",
+    3: "FOC_RUN",
+    4: "FAULT",
+}
+MODE_NAMES = {
+    0: "VF",
+    1: "FOC",
+    2: "MIC",
+    3: "DIAG",
+    4: "DUTY",
+}
+STATE_CODES = {v: k for k, v in STATE_NAMES.items()}
+MODE_CODES = {v: k for k, v in MODE_NAMES.items()}
+MC_MODE_DIAG = 1
+MC_MODE_DUTY = 2
+MC_CAP_VF = 0x01
+MC_CAP_FOC = 0x02
+MC_CAP_MIC = 0x04
+DEFAULT_REMOTEOCD = "/home/arduino/.arduino15/packages/arduino/tools/remoteocd/0.0.4-rc.4/remoteocd"
+DEFAULT_REMOTEOCD_CFG = os.path.join(os.path.dirname(__file__), "flash_unoq_sketch_090.cfg")
+DEFAULT_CMD_GUARD_MAX_VDC = 60.0
+CMD_GUARD_MAX_AGE_MS = 1000.0
+# Independent raw-ADC gate mirrored from the motor-controller firmware. The raw check does
+# not trust the scaled Vbus field, but its calibration points must stay in sync
+# with the firmware and are enforced by firmware_config_safety_check.py.
+VBUS_RAW_MIN_VALID = 1
+VBUS_RAW_MAX_VALID = 4094
+VBUS_RAW_ZERO_CAL = 1966
+VBUS_RAW_CAL = 3459
+VBUS_RAW_CAL_V = 315.0
+# Legacy compile-time override. Production remains False; an authenticated,
+# persisted two-point verification is the normal way to unlock HV arming.
+VBUS_HV_CALIBRATION_VALID = False
+VBUS_RAW_WINDOW_MARGIN_V = 5.0
+VBUS_RAW_ZERO_LOW_MARGIN = 128
+DEFAULT_VBUS_CALIBRATION_FILE = os.path.expanduser("~/.config/mic-ai/vbus_calibration.json")
+VBUS_CAL_ZERO_MAX_METER_V = 2.0
+VBUS_CAL_ZERO_MAX_REPORTED_V = 5.0
+VBUS_CAL_HV_MIN_METER_V = 250.0
+VBUS_CAL_HV_MAX_METER_V = 360.0
+VBUS_CAL_HV_MAX_ERROR_PERCENT = 3.0
+VBUS_CAL_HV_MAX_ERROR_FLOOR_V = 5.0
+VBUS_CAL_ZERO_MAX_STD_V = 0.5
+VBUS_CAL_HV_MAX_STD_FLOOR_V = 1.0
+VBUS_CAL_HV_MAX_STD_PERCENT = 0.5
+VBUS_CAL_CAPTURE_SAMPLES = 20
+DEFAULT_START_RUNLIMIT_SEC = 15.0
+DEFAULT_HV_ARM_TTL_SEC = 30.0
+DEFAULT_HV_ARM_MIN_VDC = 100.0
+DEFAULT_HV_ARM_MAX_VDC = 400.0
+DEFAULT_HV_ARM_CONFIRM = "ARM 310V"
+DEFAULT_HV_ARM_MIN_TEMP_C = -20.0
+DEFAULT_HV_ARM_MAX_TEMP_C = 90.0
+DEFAULT_LV_ARM_TTL_SEC = 30.0
+DEFAULT_LV_ARM_MIN_VDC = 0.0
+DEFAULT_LV_ARM_MAX_VDC = 10.0
+DEFAULT_LV_ARM_CONFIRM = "ARM LV HV OFF"
+DEFAULT_LV_START_RUNLIMIT_SEC = 3.0
+DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC = 3.0
+DEFAULT_RELAY_CONFIRM_TIMEOUT_SEC = 1.5
+DEFAULT_RELAY_SETTLE_SEC = 0.35
+DEFAULT_RUN_CONFIRM_TIMEOUT_SEC = 6.0
+ARM_PROFILE_HV = "hv"
+ARM_PROFILE_LV = "lv"
+HV_RUNTIME_BAD_BURST_LIMIT = 3
+HV_RUNTIME_BAD_WINDOW_SEC = 1.0
+UART_V3_TRIAL_PAIR = (2026101007, 2026101006)
+UART_V3_TRIAL_IMAGES = {
+    "production_uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479",
+}
+UART_V3_SENDER_TRIAL_PAIR = (2026101008, 2026101006)
+UART_V3_SENDER_TRIAL_IMAGES = {
+    "production_uno": "1ebb68a6bf9180643ec471e240b4ab125c51866f8da1d69c974421bbd403708a",
+    "production_nucleo": UART_V3_TRIAL_IMAGES["production_nucleo"],
+}
+UART_V3_TRIAL_CASES = ("carrier_5", "carrier_20", "STOP", "ESTOP", "FREQ_ZERO",
+                      "RUNLIMIT", "ACTIVE_RPC", "TIM1_BREAK")
+COAST30_PROFILE = "vf_30s_50hz_coast"
+
+
+# Embedded only in the reviewed HMI for the installed 1108/1102 pair.
+BOOT_TRIAL_PAIR = (2026101205, 2026101204)
+BOOT_TRIAL_IMAGES = {'production_uno': 'afd0c72fc33c1519d9a85b6fd43356057a66048f82d20e1ebbbd56cd5e714714', 'production_nucleo': 'f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949'}
+BOOT_TRIAL_SCHEMA = "mic_ai.powered_trial.local_stop1204.v1"
+BOOT_TRIAL_EVIDENCE = {
+    "pwm", "source_audit", "uno_install", "nucleo_install", "offline",
+    "idle_wifi", "autonomous", "sd_sample", "calibration", "local_stop",
+}
+
+
+# Embedded into the HMI only with the exact reviewed retained evidence hashes.
+LOCAL_STOP_FIXTURE_SCHEMA = "mic_ai.powered_trial.local_stop_fixture_delta.v1"
+LOCAL_STOP_FIXTURE_PAIR = (2026101298, 2026101299)
+LOCAL_STOP_FIXTURE_IMAGES = {'fixture_uno': '8b2cb321a52a44af07613c04fd96aabf1a2467b7081fb859344dff8236950428', 'fixture_nucleo': 'bc0c3dbfee861c2d4f68a4d5b59f20b44bec0cd2ed062046da489d1bcb633cd9'}
+LOCAL_STOP_RETAINED_EVIDENCE = {'fixture_pwm': 'aec92987b878e8b963bb2f4c50589d4334edea9d40fc6fbf9702e93ba59e6130', 'fixture_capture': 'abade1d935e0f508bbd4d8c87d6f53f833e4c9728f8e0d3eaebe89e08be489e4', 'fixture_code': '1a1c7041f43a4367a2cc125cd2826ce0a4313b212aeb0df803142a20c287895f', 'fixture_selftest': '1f4778d569b0af7ad328b76b8e98820db86a9d12d3ca1beb41aaf7479da90ecb', 'production_idle': 'f34a87de8a052cc194b81c1b41e4c0ec30c9c076995dcbe413c87d7965b0d20b', 'production_restore_nucleo': 'f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949', 'production_restore_uno': 'ca91b8ade3b0cc3e17d8bfcbb466099e582cf9bc96cad3ca1347f082f4f186ee', 'baseline_offline': '5245d75f162c490cd8c1356256296280f295ab9c87a91ac0282a33edd368f4a4', 'calibration_contract': '6b4777039107dcfc2a3badc1d649b7c554b12b469642d0002937af1f67640464', 'sd_sample': '46929f05d7b758f1060e6fe74a93f46dd54e9f04a9809177955a01af6b6debe4', 'hmi_guards': '26e89c11c0a8861b7954e0269bcb6735f698c90e00a6a54c7493a43b78e779a8'}
+
+
+def validate_local_stop_fixture_trial(proof):
+    if not isinstance(proof, dict):
+        return False, "local STOP fixture trial proof must be an object"
+    if (proof.get("schema") != LOCAL_STOP_FIXTURE_SCHEMA
+            or proof.get("pair") != list(BOOT_TRIAL_PAIR)
+            or any(type(x) is not int for x in proof["pair"])
+            or proof.get("images") != BOOT_TRIAL_IMAGES
+            or proof.get("fixture_pair") != list(LOCAL_STOP_FIXTURE_PAIR)
+            or any(type(x) is not int for x in proof["fixture_pair"])
+            or proof.get("fixture_images") != LOCAL_STOP_FIXTURE_IMAGES
+            or proof.get("profile") != "short"
+            or proof.get("scope") != "local_stop_fixture_equivalence_one_powered_trial"):
+        return False, "local STOP fixture trial identity/scope mismatch"
+    for key in ("fixture_six_pwm_and_local_stop_pass", "fixture_stop_source_identical",
+                "fixture_ten_code_sections_identical", "production_images_restored_verified",
+                "production_idle_wifi_pass", "production_calibration_contract_pass",
+                "retained_sd_sample_operator_reported", "offline_pass"):
+        if proof.get(key) is not True:
+            return False, "local STOP fixture trial evidence missing: " + key
+    # A fixture capture must never be relabelled as an active production/HV test.
+    for key in ("new_pair_active_pwm_measured", "physical_idle_registers_current",
+                "exact_button_to_off_latency_measured", "forced_enable_hardware_validated",
+                "hv_release_approved", "current_telemetry_qualified"):
+        if proof.get(key) is not False:
+            return False, "local STOP fixture trial overclaims: " + key
+    for key, value in (("max_run_s", 3), ("max_frequency_hz", 5)):
+        if type(proof.get(key)) is not int or proof[key] != value:
+            return False, "local STOP fixture trial is limited to 5 Hz / 3 s"
+    if type(proof.get("offline_suites")) is not int or proof["offline_suites"] < 57:
+        return False, "local STOP fixture trial baseline regression missing"
+    if proof.get("evidence_sha256") != LOCAL_STOP_RETAINED_EVIDENCE:
+        return False, "local STOP fixture trial retained evidence changed"
+    sample = proof.get("sd_sample_v")
+    if type(sample) not in (int, float) or not math.isfinite(sample) or sample != 2.6:
+        return False, "local STOP fixture trial retained SD sample mismatch"
+    gap = proof.get("idle_tx_max_gap_us")
+    if type(gap) is not int or not 0 < gap < 100000:
+        return False, "local STOP fixture trial idle scheduling margin missing"
+    issued, expires = proof.get("issued_at"), proof.get("expires_at")
+    if (type(issued) not in (int, float) or type(expires) not in (int, float)
+            or not math.isfinite(issued) or not math.isfinite(expires)
+            or not 0 < expires-issued <= 600 or not issued <= time.time() < expires):
+        return False, "local STOP fixture trial proof expired"
+    return True, "one 5-Hz / 3-second trial from measured fixture and exact code equivalence"
+
+
+def validate_boot_trial(proof):
+    if not isinstance(proof, dict):
+        return False, "boot trial proof must be an object"
+    if (proof.get("schema") != BOOT_TRIAL_SCHEMA
+            or proof.get("pair") != list(BOOT_TRIAL_PAIR)
+            or any(type(x) is not int for x in proof["pair"])
+            or proof.get("images") != BOOT_TRIAL_IMAGES
+            or proof.get("profile") != "short"
+            or proof.get("scope") != "local_stop_with_hardware_pwm_validation"):
+        return False, "boot trial identity/scope mismatch"
+    for key in ("nucleo_local_stop_source_audit_pass", "local_stop_hardware_validated",
+                "new_pair_active_pwm_measured", "physical_idle_registers_current", "calibration_contract_pass",
+                "images_verified", "offline_pass", "idle_wifi_pass",
+                "autonomous_boot_pass", "prestart_break_context_pass",
+                "sd_sample_operator_reported"):
+        if proof.get(key) is not True:
+            return False, "boot trial evidence missing: " + key
+    for key in ("hv_release_approved", "current_telemetry_qualified"):
+        if proof.get(key) is not False:
+            return False, "boot trial must retain its unmeasured limits: " + key
+    for key, expected in (("max_run_s", 3), ("max_frequency_hz", 5)):
+        if type(proof.get(key)) is not int or proof[key] != expected:
+            return False, "boot trial is limited to 5 Hz / 3 seconds"
+    if type(proof.get("offline_suites")) is not int or proof["offline_suites"] < 57:
+        return False, "boot trial regression missing"
+    sample = proof.get("sd_sample_v")
+    # Static operator sample, not a claim of pulse-free SD or live GPIO readback.
+    # DS12589 Table 53: VIH=0.7*VDD; use maximum normal VDD=3.6 V.
+    if type(sample) not in (int, float) or not math.isfinite(sample) or not 2.52 < sample <= 3.6:
+        return False, "static SD sample does not meet the bounded HIGH assumption"
+    gap = proof.get("idle_tx_max_gap_us")
+    if type(gap) is not int or not 0 < gap < 100000:
+        return False, "idle supervisory scheduling margin not demonstrated"
+    evidence = proof.get("evidence_sha256")
+    if (not isinstance(evidence, dict) or set(evidence) != BOOT_TRIAL_EVIDENCE
+            or any(not isinstance(x, str) or len(x) != 64 or any(c not in "0123456789abcdef" for c in x)
+                   for x in evidence.values())):
+        return False, "boot trial evidence fingerprints missing"
+    issued, expires = proof.get("issued_at"), proof.get("expires_at")
+    if (type(issued) not in (int, float) or type(expires) not in (int, float)
+            or not math.isfinite(issued) or not math.isfinite(expires)
+            or not 0 < expires-issued <= 600 or not issued <= time.time() < expires):
+        return False, "boot trial qualification expired"
+    return True, "one conditional 5-Hz / 3-second trial; not general powered release"
+
+
+# Embedded in the prepared HMI; explicit component transfer, not a new PWM capture.
+RX_SNAPSHOT_TRIAL_PAIR = (2026101104, 2026101102)
+RX_SNAPSHOT_TRIAL_IMAGES = {
+    "production_uno": "987a869e146e115ba9f526bf991e50cd461095f0c9448263f5502071b964e15f",
+    "production_nucleo": "d17b1ed8313b7e355e66681f90beaf84e7535e22504212f79ef44ce2bad5d37c",
+}
+RX_SNAPSHOT_SCHEMA = "mic_ai.powered_trial.rx_snapshot_delta.v1"
+
+
+def validate_rx_snapshot_trial(proof):
+    if (proof.get("pair") != list(RX_SNAPSHOT_TRIAL_PAIR)
+            or any(type(x) is not int for x in proof["pair"])
+            or proof.get("images") != RX_SNAPSHOT_TRIAL_IMAGES
+            or proof.get("profile") != "short"
+            or proof.get("scope") != "pwm_component_transfer_with_rx_and_snapshot_delta"
+            or proof.get("pwm_evidence_pair") != list(UART_V3_TRIAL_PAIR)
+            or proof.get("pwm_evidence_images") != UART_V3_TRIAL_IMAGES):
+        return False, "RX snapshot component identity/scope mismatch"
+    for key in ("pwm_core_equivalence_pass", "break_irq_delta_audited", "calibration_contract_pass",
+                "images_verified", "offline_pass", "idle_wifi_pass", "physical_idle_pass"):
+        if proof.get(key) is not True:
+            return False, "RX snapshot qualification missing: " + key
+    if (proof.get("new_pair_active_pwm_measured") is not False
+            or proof.get("hv_release_approved") is not False
+            or proof.get("current_telemetry_qualified") is not False
+            or type(proof.get("max_run_s")) is not int or proof["max_run_s"] != 3
+            or type(proof.get("max_frequency_hz")) is not int or proof["max_frequency_hz"] != 5):
+        return False, "RX snapshot trial must be explicitly limited to 5 Hz / 3 s"
+    cases = proof.get("cases")
+    if (not isinstance(cases, dict) or set(cases) != set(UART_V3_TRIAL_CASES)
+            or any(x is not True for x in cases.values())):
+        return False, "retained baseline PWM scenario evidence missing"
+    if type(proof.get("offline_suites")) is not int or proof["offline_suites"] < 51:
+        return False, "RX snapshot trial regression missing"
+    hashes = proof.get("evidence_sha256")
+    required = {"pwm", "physical_idle", "delta_audit", "uno_install", "nucleo_install", "offline", "idle_wifi"}
+    if (not isinstance(hashes, dict) or set(hashes) != required
+            or any(not isinstance(x, str) or len(x) != 64 or any(c not in "0123456789abcdef" for c in x)
+                   for x in hashes.values())):
+        return False, "RX snapshot evidence fingerprints missing"
+    issued, expires = proof.get("issued_at"), proof.get("expires_at")
+    if (type(issued) not in (int, float) or type(expires) not in (int, float)
+            or not math.isfinite(issued) or not math.isfinite(expires)
+            or not 0 < expires-issued <= 600 or not issued <= time.time() < expires):
+        return False, "RX snapshot preparation expired"
+    return True, "one 5-Hz / 3-second component-transfer trial only"
+
+
+def validate_powered_trial_qualification(proof: object) -> tuple[bool, str]:
+    """Authenticated host attestation, not certification or an MCU flash reader."""
+    if not isinstance(proof, dict):
+        return False, "missing powered-trial qualification"
+    if proof.get("schema") == LOCAL_STOP_FIXTURE_SCHEMA:
+        return validate_local_stop_fixture_trial(proof)
+    if proof.get("schema") == BOOT_TRIAL_SCHEMA:
+        return validate_boot_trial(proof)
+    if proof.get("schema") == RX_SNAPSHOT_SCHEMA:
+        return validate_rx_snapshot_trial(proof)
+    coast30 = proof.get("schema") == "mic_ai.powered_trial.coast30.v1"
+    sender_delta = coast30 or proof.get("schema") == "mic_ai.powered_trial.sender_delta.v1"
+    if not sender_delta and proof.get("schema") != "mic_ai.powered_trial.v1":
+        return False, "unknown powered-trial qualification schema"
+    expected_pair = UART_V3_SENDER_TRIAL_PAIR if sender_delta else UART_V3_TRIAL_PAIR
+    expected_images = UART_V3_SENDER_TRIAL_IMAGES if sender_delta else UART_V3_TRIAL_IMAGES
+    if (proof.get("pair") != list(expected_pair)
+            or any(type(v) is not int for v in proof["pair"])
+            or proof.get("images") != expected_images):
+        return False, "qualification image/pair mismatch"
+    if sender_delta:
+        if (proof.get("scope") != "unchanged_nucleo_pwm_plus_sender_delta"
+                or proof.get("pwm_evidence_pair") != list(UART_V3_TRIAL_PAIR)
+                or proof.get("pwm_evidence_images") != UART_V3_TRIAL_IMAGES
+                or proof.get("new_pair_active_pwm_measured") is not False
+                or any(proof.get(k) is not True for k in (
+                    "sender_delta_verified", "sender_flash_verified", "fresh_idle_wifi_pass"))):
+            return False, "sender trial needs explicit component-evidence transfer"
+    if coast30:
+        if (proof.get("profile") != COAST30_PROFILE
+                or proof.get("coast_only") is not True
+                or any(proof.get(k) is not True for k in (
+                    "native_coast_profile_pass", "prior_rotation_operator_confirmed", "prior_active_health_clean"))
+                or proof.get("prior_stop_cause_uniquely_verified") is not False
+                or proof.get("current_telemetry_qualified") is not False):
+            return False, "coast trial evidence or scope missing"
+        cap = proof.get("dc_capacitance_uf")
+        if type(cap) not in (int,float) or not math.isfinite(cap) or cap <= 0:
+            return False, "confirmed capacitance required"
+    cases = proof.get("cases")
+    if (not isinstance(cases, dict) or set(cases) != set(UART_V3_TRIAL_CASES)
+            or any(v is not True for v in cases.values())):
+        return False, "eight retained zero-bus scenarios required"
+    for key in ("normal_restore_verified", "offline_pass", "idle_wifi_pass", "physical_idle_pass"):
+        if proof.get(key) is not True:
+            return False, "qualification failed: " + key
+    if type(proof.get("offline_suites")) is not int or proof["offline_suites"] < (44 if coast30 else 41 if sender_delta else 40):
+        return False, "updated trial regression required"
+    if proof.get("hv_release_approved") is not False:
+        return False, "trial attestation must not claim general HV approval"
+    digests = proof.get("evidence_sha256")
+    expected_evidence = {"pwm", "offline", "idle_wifi", "physical_idle"}
+    if sender_delta:
+        expected_evidence |= {"sender_delta", "sender_install"}
+    if coast30:
+        expected_evidence |= {"coast_profile", "powered_review"}
+    if not isinstance(digests, dict) or set(digests) != expected_evidence:
+        return False, "qualification evidence missing"
+    if any(not isinstance(v, str) or len(v) != 64 or any(c not in "0123456789abcdef" for c in v)
+           for v in digests.values()):
+        return False, "invalid evidence fingerprint"
+    issued, expires = proof.get("issued_at"), proof.get("expires_at")
+    if (type(issued) not in (int, float) or type(expires) not in (int, float)
+            or not math.isfinite(issued) or not math.isfinite(expires)
+            or not 0 < expires - issued <= 3600 or not issued <= time.time() < expires):
+        return False, "qualification attestation expired or invalid"
+    return True, "one bounded trial only"
+
+
+class PoweredTrialGate:
+    """One-use permission with fresh powered idle observations; never drives GPIO."""
+
+    def __init__(self, valid_for_sec: float = 3600, pair=UART_V3_TRIAL_PAIR, profile="short", wait_without_deadline: bool = False) -> None:
+        if type(wait_without_deadline) is not bool:
+            raise ValueError("invalid wait policy")
+        if wait_without_deadline and (pair != BOOT_TRIAL_PAIR or profile != "short"):
+            raise ValueError("unreviewed unlimited preparation wait")
+        if (type(valid_for_sec) not in (int, float) or not math.isfinite(valid_for_sec)
+                or not 0 < valid_for_sec <= 3600):
+            raise ValueError("trial preparation lifetime must be within (0,3600] seconds")
+        if pair not in (UART_V3_TRIAL_PAIR, UART_V3_SENDER_TRIAL_PAIR, RX_SNAPSHOT_TRIAL_PAIR, BOOT_TRIAL_PAIR):
+            raise ValueError("unreviewed trial pair")
+        if profile not in ("short", COAST30_PROFILE) or (profile==COAST30_PROFILE and pair!=UART_V3_SENDER_TRIAL_PAIR):
+            raise ValueError("unreviewed trial profile/pair")
+        self.profile = profile
+        self.max_run_s = 33 if profile==COAST30_PROFILE else 3
+        self.stop_after_s = 30 if profile==COAST30_PROFILE else 3
+        self.max_freq_hz = 5 if pair in (RX_SNAPSHOT_TRIAL_PAIR, BOOT_TRIAL_PAIR) else (50 if profile==COAST30_PROFILE else 10)
+        self.deadline_reason = f"powered trial independent {self.stop_after_s}-second deadline reached"
+        self.pair = pair
+        self._lock = threading.RLock()
+        self.created = time.monotonic()
+        self.expires_at = None if wait_without_deadline else self.created + valid_for_sec
+        self.invalidated_reason = None
+        self.consumed = False
+        self.started_at = None
+        self.reset_observation("awaiting fault-free powered idle telemetry")
+
+    def reset_observation(self, reason: str) -> None:
+        self.begin = None
+        self.last_seen = None
+        self.first_good = None
+        self.last_good = None
+        self.samples = 0
+        self.reason = reason
+
+    @staticmethod
+    def live_check(data: Optional[dict], idle: bool = False,
+                   pair=UART_V3_TRIAL_PAIR, allow_stopped_zero: bool = False, profile="short") -> tuple[bool, str]:
+        if not isinstance(data, dict):
+            return False, "trial telemetry unavailable"
+        if profile not in ("short",COAST30_PROFILE) or (profile==COAST30_PROFILE and pair!=UART_V3_SENDER_TRIAL_PAIR):
+            return False, "unreviewed trial profile/pair"
+        if (any(type(data.get(k)) is not int for k in ("fw_build", "mc_fw_build"))
+                or pair not in (UART_V3_TRIAL_PAIR, UART_V3_SENDER_TRIAL_PAIR, RX_SNAPSHOT_TRIAL_PAIR, BOOT_TRIAL_PAIR)
+                or (data.get("fw_build"), data.get("mc_fw_build")) != pair):
+            return False, "trial peer identity changed"
+        if pair in (RX_SNAPSHOT_TRIAL_PAIR, BOOT_TRIAL_PAIR):
+            for key in ("uno_rx_dropped", "uno_rx_hw_errors", "uno_rx_hw_flags", "mc_break_rx_bad"):
+                if type(data.get(key)) is not int or data[key] != 0:
+                    return False, "RX snapshot trial transport unhealthy: " + key
+        for key in ("mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence", "mc_uart_error_flags",
+                    "mc_last_uart_error_flags", "uno_tx_short_writes", "bp_transport_fault",
+                    "mc_last_bad_reason", "bp_bad", "bp_bad_cnt"):
+            if type(data.get(key)) is not int or data[key] != 0:
+                return False, "trial transport unhealthy: " + key
+        for key in ("mc_age_ms", "bp_age_ms", "bp_vbus_age_ms", "bp_temp_age_ms"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value < 300:
+                return False, "trial telemetry stale: " + key
+        for key in ("vdc", "bp_vdc"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 250 <= value <= 360:
+                return False, "trial bus outside 250..360 V"
+        if abs(data["vdc"] - data["bp_vdc"]) > 1:
+            return False, "trial bus readings disagree"
+        if any(data.get(k) != 1 for k in ("mc_diag_valid", "bp_vbus_valid", "bp_temp_valid",
+                                         "bp_mcsdk_telemetry", "bp_softstart_ready")):
+            return False, "trial diagnostics/measurements not ready"
+        if data.get("estop") != 0 or (idle and data.get("pwm") != 0):
+            return False, "trial observation requires outputs off"
+        temp = data.get("bp_temp_c")
+        if type(temp) not in (int, float) or not math.isfinite(temp) or not -20 <= temp <= 80:
+            return False, "trial heatsink temperature invalid"
+        raw = data.get("bp_vbus_raw")
+        if type(raw) is not int or abs(raw*.1 - data["bp_vdc"]) > 1:
+            return False, "trial bus word disagrees with scaled telemetry"
+        if any(data.get(k) != 0 for k in ("bp_fault", "bp_temp_fault", "precharge", "pfc", "brake", "bp_ext")):
+            return False, "trial fault or service output active"
+        if data.get("mode") != "VF" or data.get("mc_capabilities") != MC_CAP_VF:
+            return False, "trial requires V/f backend"
+        freq = data.get("freq_cmd")
+        stopped_zero = (allow_stopped_zero and not idle and freq == 0
+            and data.get("state") == "SAFE" and data.get("pwm") == 0
+            and not (_as_int(data, "bp_status", 0x22) & 0x22))
+        if (type(freq) not in (int, float) or not math.isfinite(freq)
+                or not ((freq==50 if profile==COAST30_PROFILE else 0 < freq <= (5 if pair in (RX_SNAPSHOT_TRIAL_PAIR, BOOT_TRIAL_PAIR) else 10)) or stopped_zero)):
+            return False, "trial frequency target must be within (0,10] Hz"
+        if idle and (data.get("state") != "SAFE" or _as_int(data, "bp_status", 0x22) & 0x22):
+            return False, "trial observation requires SAFE controller"
+        return True, "ok"
+
+    def observe(self, data: Optional[dict], calibrated: bool) -> None:
+        with self._lock:
+            self._observe(data, calibrated)
+
+    def _observe(self, data: Optional[dict], calibrated: bool) -> None:
+        now = time.monotonic()
+        if self.consumed or self.invalidated_reason:
+            return
+        if self.expires_at is None and isinstance(data, dict) and (data.get("fw_build"), data.get("mc_fw_build")) != self.pair:
+            self.invalidated_reason = "prepared peer identity changed"
+            self.reset_observation(self.invalidated_reason)
+            return
+        ok, reason = self.live_check(data, idle=True, pair=self.pair, profile=self.profile)
+        if not calibrated or not ok:
+            self.reset_observation(reason if calibrated else "trial bus calibration invalid")
+            return
+        good = data.get("bp_good")
+        if type(good) is not int or good < 0:
+            self.reset_observation("trial valid-frame counter unavailable")
+            return
+        if self.expires_at is None and self.last_good is not None and good < self.last_good:
+            self.invalidated_reason = "prepared controller restarted"
+            self.reset_observation(self.invalidated_reason)
+            return
+        if (self.last_seen is not None and (now - self.last_seen > 2
+                or good < self.last_good)):
+            self.reset_observation("observation gap or controller restart")
+        if self.begin is None:
+            self.begin, self.first_good = now, good
+        if self.last_good != good:
+            self.samples += 1
+        self.last_seen, self.last_good = now, good
+        self.reason = "powered idle observation in progress"
+
+    def ready(self, data: Optional[dict], calibrated: bool) -> tuple[bool, str]:
+        with self._lock:
+            return self._ready(data, calibrated)
+
+    def _ready(self, data: Optional[dict], calibrated: bool) -> tuple[bool, str]:
+        self.observe(data, calibrated)
+        if self.consumed:
+            return False, "one-shot powered trial already consumed"
+        if self.invalidated_reason:
+            return False, self.invalidated_reason
+        if self.expires_at is not None and time.monotonic() >= self.expires_at:
+            return False, "powered trial preparation expired"
+        if (self.begin is None or time.monotonic() - self.begin < 30 or self.samples < 20
+                or self.last_good - self.first_good < 100):
+            return False, self.reason + "; need 30 seconds and 100 new valid frames"
+        return True, f"powered idle qualified for one {self.stop_after_s}-second trial"
+
+    def consume(self) -> None:
+        with self._lock:
+            self._consume()
+
+    def _consume(self) -> None:
+        if self.consumed:
+            raise RuntimeError("powered trial already consumed")
+        self.consumed = True
+        self.started_at = time.monotonic()
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return self._snapshot()
+
+    def _snapshot(self) -> dict:
+        return {"hmi_powered_trial_enabled": 1, "hmi_powered_trial_used": int(self.consumed),
+                "hmi_powered_trial_observed_s": round(0 if self.begin is None else time.monotonic()-self.begin, 1),
+                "hmi_powered_trial_samples": self.samples, "hmi_powered_trial_reason": self.reason,
+                "hmi_powered_trial_wait_limited": int(self.expires_at is not None),
+                "hmi_powered_trial_remaining_s": None if self.expires_at is None else round(max(0, self.expires_at-time.monotonic()), 1),
+                "hmi_powered_trial_max_run_s": self.max_run_s, "hmi_powered_trial_max_freq_hz": self.max_freq_hz,
+                "hmi_powered_trial_stop_after_s": self.stop_after_s,
+                "hmi_powered_trial_profile": self.profile}
+
+TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
+if TOOLS_DIR not in sys.path:
+    sys.path.insert(0, TOOLS_DIR)
+
+try:
+    from active_pwm_guard import start_allowed_by_bench_gate
+except Exception:  # pragma: no cover - fail closed if tooling import is broken
+    start_allowed_by_bench_gate = None  # type: ignore[assignment]
+
+def effective_mode(
+    mode_code: int,
+    mc_mode: int,
+    diag_mode: Optional[int] = None,
+    duty_mode: Optional[int] = None,
+) -> tuple[int, str]:
+    if diag_mode is not None:
+        if int(diag_mode) != 0:
+            return 3, MODE_NAMES[3]
+    elif mc_mode == MC_MODE_DIAG:
+        return 3, MODE_NAMES[3]
+    if duty_mode is not None:
+        if int(duty_mode) != 0:
+            return 4, MODE_NAMES[4]
+    elif mc_mode == MC_MODE_DUTY:
+        return 4, MODE_NAMES[4]
+    return mode_code, MODE_NAMES.get(mode_code, str(mode_code))
+
+
+def _now_ts() -> float:
+    return time.time()
+
+
+def _fmt_ts(ts: float) -> str:
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
+
+
+def termios_baud_constant(baud: int) -> int:
+    if termios is None:
+        raise RuntimeError("termios not available on this platform")
+    name = f"B{int(baud)}"
+    if not hasattr(termios, name):
+        raise RuntimeError(f"termios baud {baud} is not supported by this platform")
+    return int(getattr(termios, name))
+
+
+class LogStore:
+    def __init__(self, max_bytes: int, log_path: Optional[str], file_max_bytes: int) -> None:
+        self._max_bytes = max_bytes
+        self._total_bytes = 0
+        self._items: Deque[Tuple[float, str]] = deque()
+        self._lock = threading.Lock()
+        self._log_path = log_path
+        self._file_max_bytes = file_max_bytes
+        if self._log_path:
+            log_dir = os.path.dirname(self._log_path)
+            if log_dir:
+                os.makedirs(log_dir, exist_ok=True)
+
+    def add(self, line: str) -> None:
+        ts = _now_ts()
+        entry = f"{_fmt_ts(ts)} {line}"
+        size = len(entry) + 1
+        with self._lock:
+            self._items.append((ts, entry))
+            self._total_bytes += size
+            while self._total_bytes > self._max_bytes and self._items:
+                _, old = self._items.popleft()
+                self._total_bytes -= (len(old) + 1)
+            if self._log_path:
+                self._append_to_file(entry)
+
+    def _append_to_file(self, entry: str) -> None:
+        if not self._log_path:
+            return
+        try:
+            with open(self._log_path, "a", encoding="utf-8") as f:
+                f.write(entry + "\n")
+            if self._file_max_bytes <= 0:
+                return
+            size = os.path.getsize(self._log_path)
+            if size <= self._file_max_bytes:
+                return
+            self._truncate_file_tail()
+        except Exception:
+            pass
+
+    def _truncate_file_tail(self) -> None:
+        if not self._log_path:
+            return
+        try:
+            with open(self._log_path, "rb") as f:
+                f.seek(0, os.SEEK_END)
+                size = f.tell()
+                keep = min(size, self._file_max_bytes)
+                f.seek(max(size - keep, 0))
+                data = f.read()
+            # Drop partial line at start
+            nl = data.find(b"\n")
+            if nl != -1:
+                data = data[nl + 1 :]
+            with open(self._log_path, "wb") as f:
+                f.write(data)
+        except Exception:
+            pass
+
+    @staticmethod
+    def _parse_ts(entry: str) -> Optional[float]:
+        try:
+            ts_str = entry[:19]
+            return time.mktime(time.strptime(ts_str, "%Y-%m-%d %H:%M:%S"))
+        except Exception:
+            return None
+
+    def dump_since(self, since_ts: float) -> List[str]:
+        if self._log_path and os.path.exists(self._log_path):
+            try:
+                with open(self._log_path, "r", encoding="utf-8", errors="ignore") as f:
+                    lines = f.read().splitlines()
+                out: List[str] = []
+                for raw_line in lines:
+                    # Concurrent legacy writers could leave sparse NUL bytes in
+                    # the persistent log. Never expose them through /api/logs.
+                    line = raw_line.replace("\x00", "").strip()
+                    if not line:
+                        continue
+                    ts = self._parse_ts(line)
+                    if ts is None or ts >= since_ts:
+                        out.append(line)
+                return out
+            except Exception:
+                pass
+        with self._lock:
+            return [entry for ts, entry in self._items if ts >= since_ts]
+
+
+def _tail_text(text: str, max_chars: int = 4000) -> str:
+    if len(text) <= max_chars:
+        return text
+    return text[-max_chars:]
+
+
+def _as_float(data: dict, key: str, default: float = 0.0) -> float:
+    if key.startswith("bp_") and f"mc_{key[3:]}" in data:
+        key = f"mc_{key[3:]}"
+    try:
+        return float(data.get(key, default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_int(data: dict, key: str, default: int = 0) -> int:
+    if key.startswith("bp_") and f"mc_{key[3:]}" in data:
+        key = f"mc_{key[3:]}"
+    try:
+        return int(float(data.get(key, default)))
+    except (TypeError, ValueError):
+        return default
+
+
+def local_stop_latched(data: Optional[dict]) -> int:
+    """Derive the current latch from controller telemetry, independently of first fault."""
+    return int(bool(_as_int(data or {}, "bp_status", 0) & 0x80))
+
+
+def with_motor_controller_aliases(data: dict) -> dict:
+    """Publish mc_* as the canonical API while retaining bp_* compatibility."""
+    for key, value in list(data.items()):
+        if key.startswith("mc_") and key not in ("mc_capabilities", "mc_supported_modes"):
+            data[f"bp_{key[3:]}"] = value
+    for key, value in list(data.items()):
+        if key.startswith("bp_"):
+            data.setdefault(f"mc_{key[3:]}", value)
+    data["hmi_local_stop_latched"] = local_stop_latched(data)
+    data["mc_fault_detail"] = motor_fault_detail(data)
+    if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
+        data["mc_current_telemetry_valid"] = 0
+        data["mc_current_telemetry_source"] = ("not_acquired_mcsdk_backend"
+            if data.get("uno_local_adc_acquired") == 0 else "uno_q_local_adc_unqualified")
+    return data
+
+
+MC_FAULT_REASONS = {
+    0: "NONE", 1: "CRC", 2: "PROTOCOL_VERSION", 3: "ENABLE_REPLAY",
+    4: "ESTOP", 5: "SERVICE_FIELD", 6: "COMMAND_REJECTED",
+    7: "FREQUENCY_REJECTED", 8: "MCSDK_FAULT", 9: "BUS_OUT_OF_RANGE",
+    10: "START_REJECTED", 11: "UART_TX_FAILED", 12: "UART_RX_ERROR",
+    13: "LINK_TIMEOUT", 14: "RX_BUFFER_OVERFLOW",
+}
+MCSDK_FAULT_BITS = {
+    0x0001: "MC_DURATION", 0x0002: "MC_OVER_VOLT", 0x0004: "MC_UNDER_VOLT",
+    0x0008: "MC_OVER_TEMP", 0x0010: "MC_START_UP", 0x0020: "MC_SPEED_FDBK",
+    0x0040: "MC_OVER_CURR", 0x0080: "MC_SW_ERROR", 0x0400: "MC_DP_FAULT",
+}
+
+
+def motor_fault_detail(data: dict) -> str:
+    current = "current=LOCAL_STOP_PC13; " if local_stop_latched(data) else ""
+    if _as_int(data, "mc_diag_valid", 0) != 1:
+        return current + "cause unavailable in installed firmware"
+    reason = _as_int(data, "mc_fault_reason", -1)
+    label = MC_FAULT_REASONS.get(reason, f"UNKNOWN_REASON_{reason}")
+    uart = _as_int(data, "mc_uart_error_flags", 0)
+    uart_names = [name for bit, name in ((1, "PE"), (2, "FE"), (4, "NE"), (8, "ORE")) if uart & bit]
+    masks = []
+    for field in ("mc_fault_current_mask", "mc_fault_occurred_mask"):
+        mask = _as_int(data, field, 0)
+        names = [name for bit, name in MCSDK_FAULT_BITS.items() if mask & bit]
+        unknown = mask & ~sum(MCSDK_FAULT_BITS)
+        if unknown:
+            names.append(f"UNKNOWN_BITS_0x{unknown:04X}")
+        masks.append(f"0x{mask:04X}[{'|'.join(names) or 'NONE'}]")
+    return (current + f"first={label} UART={'|'.join(uart_names) or 'NONE'} "
+            f"MCSDK_current={masks[0]} MCSDK_occurred={masks[1]} "
+            f"state={_as_int(data, 'mc_fault_motor_state', -1)} "
+            f"seq={_as_int(data, 'mc_fault_sequence', -1)} "
+            f"TX_status={_as_int(data, 'mc_fault_tx_status', 0)} "
+            f"last_bad={MC_FAULT_REASONS.get(_as_int(data, 'mc_last_bad_reason', 0), 'UNKNOWN') if _as_int(data, 'mc_last_bad_valid', 0) == 1 else 'UNAVAILABLE'} "
+            f"last_UART_flags=0x{_as_int(data, 'mc_last_uart_error_flags', 0):02X} "
+            f"last_TX_status={_as_int(data, 'mc_last_tx_status', 0)}")
+
+
+class MotorFaultRecorder:
+    """Bounded, observational flight recorder; never sends control commands."""
+
+    FIELDS = (
+        "ts", "state", "mode", "pwm", "estop", "vdc", "freq", "freq_cmd",
+        "fw_build", "mc_fw_build", "mc_status", "mc_fault", "mc_age_ms",
+        "mc_seq", "mc_good_cnt", "mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence",
+        "mc_vbus_raw", "mc_vbus_age_ms", "mc_vbus_valid", "mc_softstart_ready",
+        "mc_temp_c", "mc_temp_fault", "mc_temp_age_ms", "mc_current_telemetry_valid",
+        "mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags", "mc_fault_motor_state",
+        "mc_fault_current_mask", "mc_fault_occurred_mask", "mc_fault_sequence",
+        "mc_fault_tx_status", "mc_last_bad_valid", "mc_last_bad_reason",
+        "mc_last_uart_error_flags", "mc_last_tx_status", "enc_bus_ok", "enc_ok",
+        "enc_speed_ok", "enc_reads", "enc_errors", "enc_io_error", "enc_age_ms",
+        "enc_status", "hmi_hv_armed", "hmi_operator_heartbeat_age_s",
+        "hmi_local_stop_latched",
+        "uno_tx_all_max_gap_us",
+        "uno_tx_last_gap_us",
+        "uno_tx_gaps_over_watchdog",
+        "uno_rx_poll_gap_max_ms",
+        "uno_tx_call_max_us",
+        "uno_rpc_max_us",
+        "uno_rx_dropped",
+        "uno_rx_hw_errors",
+        "uno_rx_hw_flags",
+        "uno_rx_high_water",
+        "uno_rx_pending",
+        "uno_rx_rejected_ms",
+        "uno_rx_rejected_hex",
+        "uno_tx_short_writes",
+        "uno_tx_count",
+        "uno_rx_count",
+        "mc_transport_fault",
+        "mc_break_rx_good",
+        "mc_break_rx_bad",
+        "mc_break_reject_record_valid", "mc_break_reject_reason", "mc_break_reject_code",
+        "mc_break_reject_ms", "mc_break_reject_peer_fw", "mc_break_reject_fresh_off",
+        "mc_break_reject_bp_status", "mc_break_reject_pwm", "mc_break_reject_rsp_age_ms",
+        "mc_break_reject_good_before", "mc_break_reject_packet_hex",
+    )
+    KEY_FIELDS = (
+        "mc_fault", "hmi_local_stop_latched",
+        "mc_fw_build", "mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags",
+        "mc_fault_current_mask", "mc_fault_occurred_mask", "mc_fault_motor_state",
+        "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
+        "mc_last_bad_reason", "mc_last_uart_error_flags", "mc_last_tx_status",
+    )
+
+    def __init__(self) -> None:
+        self._history = deque(maxlen=64)
+        self._key = None
+        self._event_id = ""
+        self._event_summary = ""
+        self._last_sample = -math.inf
+        self._post_until = -math.inf
+        self._lock = threading.Lock()
+
+    @staticmethod
+    def compact(data: dict, now: float) -> dict:
+        sample = {"observed_monotonic_s": round(now, 6), "observed_unix_s": _now_ts()}
+        for key in MotorFaultRecorder.FIELDS:
+            value = data.get(key)
+            if key.startswith("mc_") and value is None:
+                value = data.get("bp_" + key[3:])
+            if type(value) in (str, bool, int) or value is None:
+                sample[key] = value
+            elif type(value) is float and math.isfinite(value):
+                sample[key] = value
+            else:
+                sample[key] = None
+        sample["hmi_local_stop_latched"] = local_stop_latched(data)
+        return sample
+
+    def observe(self, data: dict, now: Optional[float] = None) -> list[str]:
+        now = time.monotonic() if now is None else now
+        sample = self.compact(data, now)
+        valid = _as_int(data, "mc_diag_valid", 0) == 1
+        active = _as_int(data, "bp_fault", 0)
+        first_reason = _as_int(data, "mc_fault_reason", 0)
+        has_cause = bool(first_reason or active or local_stop_latched(data))
+        key = tuple(sample.get(k) for k in self.KEY_FIELDS) if has_cause else None
+        if key is not None and not valid:
+            key += (active,)
+        lines = []
+        with self._lock:
+            changed = key is not None and key != self._key
+            self._key = key
+            if changed:
+                recent_bad = (_as_int(data, "mc_last_bad_valid", 0) == 1
+                              and _as_int(data, "bp_bad_cnt", 0) > 0
+                              and _as_int(data, "mc_last_bad_reason", 0) != 0)
+                reason = _as_int(data, "mc_last_bad_reason", 0) if recent_bad else first_reason
+                flags = _as_int(data, "mc_last_uart_error_flags" if recent_bad else "mc_uart_error_flags", 0)
+                uart_names = [name for bit, name in ((1, "PE"), (2, "FE"), (4, "NE"), (8, "ORE")) if flags & bit]
+                label = MC_FAULT_REASONS.get(reason, "UNKNOWN") if valid else "DIAGNOSTICS_UNAVAILABLE"
+                self._event_id = secrets.token_hex(8)
+                current = "current=LOCAL_STOP_PC13; first=" if local_stop_latched(data) else ""
+                self._event_summary = current + f"{label}; UART={'|'.join(uart_names) or 'NONE'}; physical source not identified"
+                before = [s for s in self._history if 0 <= now - s["observed_monotonic_s"] <= 5]
+                payload = {
+                    "schema": "mic_ai.fault_context.v1", "event_id": self._event_id,
+                    "phase": "fault", "summary": self._event_summary,
+                    "physical_source_identified": False,
+                    "controller_masks_are_first_fault_snapshot": True,
+                    "time_basis": "Linux observation, not exact MCU interrupt timestamp",
+                    "detail": motor_fault_detail(data), "before": before, "at": sample,
+                    "history_samples": len(before), "post_window_s": 5,
+                    "sampling_note": "observed RPC snapshots; intervening transients are not measured",
+                }
+                lines.append("MC_FAULT_CONTEXT " + json.dumps(payload, separators=(",", ":"), allow_nan=False))
+                self._post_until = now + 5
+            transition = bool(self._history and any(
+                sample.get(field) != self._history[-1].get(field)
+                for field in ("state", "pwm", "mc_fault", "enc_bus_ok", "enc_errors",
+                              "uno_rx_dropped", "uno_rx_hw_errors", "uno_rx_hw_flags",
+                              "uno_tx_gaps_over_watchdog", "mc_transport_fault")
+            ))
+            if changed or transition or now - self._last_sample >= .19:
+                if not changed and now <= self._post_until:
+                    lines.append("MC_FAULT_CONTEXT " + json.dumps({
+                        "schema": "mic_ai.fault_context.v1", "event_id": self._event_id,
+                        "phase": "after", "at": sample,
+                    }, separators=(",", ":"), allow_nan=False))
+                self._history.append(sample)
+                self._last_sample = now
+        return lines
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return {"hmi_fault_log_schema": "mic_ai.fault_context.v1",
+                    "hmi_last_fault_event_id": self._event_id,
+                    "hmi_last_fault_summary": self._event_summary,
+                    "hmi_fault_physical_source_identified": 0}
+
+
+def supported_modes_from_caps(capabilities: int) -> list[str]:
+    modes: list[str] = []
+    if capabilities & MC_CAP_VF:
+        modes.append("VF")
+    if capabilities & MC_CAP_FOC:
+        modes.append("FOC")
+    if capabilities & MC_CAP_MIC:
+        modes.append("MIC")
+    return modes
+
+
+def _truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in ("1", "true", "yes", "on")
+
+
+def _vbus_calibration_identity(data: dict) -> dict:
+    return {
+        "fw_build": _as_int(data, "fw_build", -1),
+        "mc_fw_build": _as_int(data, "mc_fw_build", -1),
+        "rpc_schema_version": _as_int(data, "rpc_schema_version", -1),
+        "mc_capabilities": _as_int(data, "mc_capabilities", -1),
+        "mc_mcsdk_telemetry": _as_int(data, "bp_mcsdk_telemetry", 0),
+    }
+
+
+def _vbus_calibration_identity_matches(stored: dict, current: dict) -> bool:
+    if stored == current:
+        return True
+    # Audited diagnostic-only updates retain the same Vbus word (0.1 V/LSB).
+    # Keep the original capture identities; do not authorize unknown firmware.
+    firmware_pairs = {
+        (2026092901, 2026100601), (2026100612, 2026100601),
+        (2026100701, 2026100601), (2026100701, 2026100701),
+        (2026100702, 2026100601), (2026100702, 2026100701), (2026100702, 2026100702),
+        (2026100703, 2026100601), (2026100703, 2026100701),
+        (2026100703, 2026100702), (2026100703, 2026100703),
+        (2026100704, 2026100601), (2026100704, 2026100701),
+        (2026100704, 2026100702), (2026100704, 2026100703), (2026100704, 2026100704),
+        (2026100705, 2026100704), (2026100705, 2026100705),
+        (2026100706, 2026100705),
+        (2026100707, 2026100707),
+        (2026100708, 2026100707), (2026100708, 2026100708),
+        (2026100709, 2026100708), (2026100709, 2026100710), (2026100709, 2026100801),
+        (2026100802, 2026100801),
+        (2026100803, 2026100801),
+        (2026100804, 2026100801),
+        (2026101001, 2026100801),
+        (2026101002, 2026100801),
+        (2026101004, 2026101003),
+        (2026101005, 2026101003),
+        (2026101007, 2026101006),
+        (2026101008, 2026101006),
+        RX_SNAPSHOT_TRIAL_PAIR,
+        BOOT_TRIAL_PAIR,
+        (2026101108, 2026101102),
+        # Retained measurement scale/divider; corrected IIR bias was audited.
+        # Same stand: zero check0.32/0 V and working check316/319 V (20 samples).
+        # Keep original capture identities and points. Unknown/fixture pairs fail.
+        (2026101411, 2026101410),
+        (2026101413, 2026101412),
+        (2026101415, 2026101414),
+        (2026101501, 2026101502),
+        (2026101503, 2026101502),
+        (2026101505, 2026101504),
+        (2026101507, 2026101506),
+    }
+    contract = {
+        "rpc_schema_version": 3,
+        "mc_capabilities": MC_CAP_VF,
+        "mc_mcsdk_telemetry": 1,
+    }
+    expected_keys = set(contract) | {"fw_build", "mc_fw_build"}
+    return (
+        set(stored) == expected_keys
+        and set(current) == expected_keys
+        and isinstance(stored["fw_build"], int) and isinstance(stored["mc_fw_build"], int)
+        and isinstance(current["fw_build"], int) and isinstance(current["mc_fw_build"], int)
+        and (stored["fw_build"], stored["mc_fw_build"]) in firmware_pairs
+        and (current["fw_build"], current["mc_fw_build"]) in firmware_pairs
+        and all(stored[key] == value and current[key] == value
+                for key, value in contract.items())
+    )
+
+
+class VbusCalibrationStore:
+    SCHEMA = "mic_ai.vbus_calibration.v1"
+
+    def __init__(self, path: Optional[str] = None) -> None:
+        self.path = os.path.abspath(os.path.expanduser(path)) if path else None
+        self._lock = threading.RLock()
+        self._record: dict = {}
+        self._load_error = ""
+        self._load()
+
+    @staticmethod
+    def _digest(record: dict) -> str:
+        payload = dict(record)
+        payload.pop("integrity_sha256", None)
+        encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def _load(self) -> None:
+        if not self.path or not os.path.exists(self.path):
+            return
+        try:
+            with open(self.path, "r", encoding="utf-8") as source:
+                record = json.load(source)
+            if not isinstance(record, dict) or record.get("schema") != self.SCHEMA:
+                raise ValueError("unsupported calibration schema")
+            expected = str(record.get("integrity_sha256", ""))
+            if not expected or not secrets.compare_digest(expected, self._digest(record)):
+                raise ValueError("calibration integrity check failed")
+            self._record = record
+        except Exception as exc:
+            self._record = {}
+            self._load_error = str(exc)
+
+    def _save_locked(self) -> None:
+        if not self.path:
+            return
+        directory = os.path.dirname(self.path)
+        if directory:
+            os.makedirs(directory, mode=0o700, exist_ok=True)
+        self._record["integrity_sha256"] = self._digest(self._record)
+        temporary = f"{self.path}.tmp.{os.getpid()}.{threading.get_ident()}"
+        try:
+            with open(temporary, "w", encoding="utf-8", newline="\n") as target:
+                json.dump(self._record, target, indent=2, sort_keys=True, ensure_ascii=True)
+                target.write("\n")
+                target.flush()
+                os.fsync(target.fileno())
+            try:
+                os.chmod(temporary, 0o600)
+            except OSError:
+                pass
+            os.replace(temporary, self.path)
+        finally:
+            try:
+                if os.path.exists(temporary):
+                    os.remove(temporary)
+            except OSError:
+                pass
+
+    def _evaluate_locked(self, status: Optional[dict] = None) -> tuple[bool, str]:
+        if VBUS_HV_CALIBRATION_VALID:
+            return True, "compile-time calibration override"
+        if self._load_error:
+            return False, f"stored calibration rejected: {self._load_error}"
+        if not self._record:
+            return False, "zero-point capture is required"
+        if self._record.get("schema") != self.SCHEMA:
+            return False, "stored calibration schema is invalid"
+        points = self._record.get("points")
+        if not isinstance(points, dict):
+            return False, "stored calibration points are missing"
+        zero = points.get("zero")
+        high = points.get("high")
+        if not isinstance(zero, dict):
+            return False, "zero-point capture is required"
+        if not isinstance(high, dict):
+            return False, "known-HV capture is required"
+        identity = self._record.get("identity")
+        if not isinstance(identity, dict):
+            return False, "calibration identity is missing"
+        if (
+            _as_int(identity, "fw_build", -1) <= 0
+            or _as_int(identity, "mc_fw_build", -1) <= 0
+            or _as_int(identity, "rpc_schema_version", -1) < 3
+            or _as_int(identity, "mc_mcsdk_telemetry", 0) != 1
+        ):
+            return False, "calibration identity is incomplete"
+        if status is not None and not _vbus_calibration_identity_matches(
+            identity, _vbus_calibration_identity(status)
+        ):
+            return False, "firmware or telemetry identity changed; recalibration is required"
+        try:
+            meter_span = float(high.get("meter_vdc")) - float(zero.get("meter_vdc"))
+            reported_span = float(high.get("mc_vdc_mean")) - float(zero.get("mc_vdc_mean"))
+        except (TypeError, ValueError):
+            return False, "calibration point values are invalid"
+        if not (math.isfinite(meter_span) and math.isfinite(reported_span)):
+            return False, "calibration point values are invalid"
+        if meter_span < (VBUS_CAL_HV_MIN_METER_V - VBUS_CAL_ZERO_MAX_METER_V) or reported_span <= 0.0:
+            return False, "calibration span is invalid"
+        gain = meter_span / reported_span
+        if gain < 0.97 or gain > 1.03:
+            return False, f"calibration gain mismatch: {gain:.5f}"
+        return True, "two-point Vbus verification passed"
+
+    def is_valid(self, status: Optional[dict] = None) -> bool:
+        with self._lock:
+            valid, _ = self._evaluate_locked(status)
+            return valid
+
+    def snapshot(self, status: Optional[dict] = None) -> dict:
+        with self._lock:
+            valid, reason = self._evaluate_locked(status)
+            points = self._record.get("points", {}) if isinstance(self._record, dict) else {}
+            zero = points.get("zero") if isinstance(points, dict) else None
+            high = points.get("high") if isinstance(points, dict) else None
+            return {
+                "valid": bool(valid),
+                "reason": reason,
+                "zero_captured": isinstance(zero, dict),
+                "high_captured": isinstance(high, dict),
+                "zero_meter_vdc": zero.get("meter_vdc") if isinstance(zero, dict) else None,
+                "zero_mc_vdc": zero.get("mc_vdc_mean") if isinstance(zero, dict) else None,
+                "high_meter_vdc": high.get("meter_vdc") if isinstance(high, dict) else None,
+                "high_mc_vdc": high.get("mc_vdc_mean") if isinstance(high, dict) else None,
+                "updated_at": self._record.get("updated_at") if isinstance(self._record, dict) else None,
+            }
+
+    def record_capture(self, capture: dict, status: dict) -> tuple[bool, str, dict]:
+        meter_vdc = capture.get("meter_vdc")
+        try:
+            meter = float(meter_vdc)
+            reported = float(capture["mc_vdc"]["mean"])
+            reported_std = float(capture["mc_vdc"]["std"])
+            raw_mean = float(capture["mc_vbus_raw"]["mean"])
+            bad_min = int(capture["mc_bad"]["min"])
+            bad_max = int(capture["mc_bad"]["max"])
+            sample_count = int(capture["mc_vdc"]["samples"])
+        except (KeyError, TypeError, ValueError):
+            return False, "calibration capture is incomplete", self.snapshot(status)
+        if sample_count != VBUS_CAL_CAPTURE_SAMPLES:
+            return False, (
+                f"calibration capture requires {VBUS_CAL_CAPTURE_SAMPLES} samples; got {sample_count}"
+            ), self.snapshot(status)
+        if not all(math.isfinite(value) for value in (meter, reported, reported_std, raw_mean)):
+            return False, "calibration capture contains non-finite values", self.snapshot(status)
+        if _as_int(status, "bp_mcsdk_telemetry", 0) != 1 or _as_int(status, "bp_vbus_valid", 0) != 1:
+            return False, "MCSDK Vbus telemetry is not valid", self.snapshot(status)
+        if _as_int(status, "mc_fw_build", 0) <= 0:
+            return False, "Nucleo firmware identity is not available", self.snapshot(status)
+        if abs((raw_mean * 0.1) - reported) > 1.0:
+            return False, "MCSDK Vbus telemetry fields disagree", self.snapshot(status)
+        if bad_min != bad_max:
+            return False, "motor-controller UART error counter changed during capture", self.snapshot(status)
+
+        if 0.0 <= meter <= VBUS_CAL_ZERO_MAX_METER_V:
+            kind = "zero"
+            if reported < 0.0 or reported > VBUS_CAL_ZERO_MAX_REPORTED_V:
+                return False, f"reported zero-bus voltage is too high: {reported:.2f} V", self.snapshot(status)
+            if reported_std > VBUS_CAL_ZERO_MAX_STD_V:
+                return False, f"zero-point capture is unstable: std={reported_std:.3f} V", self.snapshot(status)
+            if abs(reported - meter) > VBUS_CAL_ZERO_MAX_METER_V:
+                return False, f"zero-point mismatch is too large: meter={meter:.2f} V, MCSDK={reported:.2f} V", self.snapshot(status)
+        elif VBUS_CAL_HV_MIN_METER_V <= meter <= VBUS_CAL_HV_MAX_METER_V:
+            kind = "high"
+            if bad_max != 0:
+                return False, "clear motor-controller UART error counters before known-HV capture", self.snapshot(status)
+            allowed_error = max(VBUS_CAL_HV_MAX_ERROR_FLOOR_V, meter * VBUS_CAL_HV_MAX_ERROR_PERCENT / 100.0)
+            if abs(reported - meter) > allowed_error:
+                return False, (
+                    f"known-HV mismatch is too large: meter={meter:.2f} V, "
+                    f"MCSDK={reported:.2f} V, allowed={allowed_error:.2f} V"
+                ), self.snapshot(status)
+            allowed_std = max(VBUS_CAL_HV_MAX_STD_FLOOR_V, meter * VBUS_CAL_HV_MAX_STD_PERCENT / 100.0)
+            if reported_std > allowed_std:
+                return False, f"known-HV capture is unstable: std={reported_std:.3f} V", self.snapshot(status)
+        else:
+            return False, "meter voltage must be 0..2 V for zero or 250..360 V for known HV", self.snapshot(status)
+
+        identity = _vbus_calibration_identity(status)
+        point = {
+            "kind": kind,
+            "captured_at": _now_ts(),
+            "meter_vdc": round(meter, 6),
+            "mc_vdc_mean": round(reported, 6),
+            "mc_vdc_std": round(reported_std, 6),
+            "mc_vbus_raw_mean": round(raw_mean, 6),
+            "samples": sample_count,
+        }
+        with self._lock:
+            if kind == "zero":
+                self._record = {
+                    "schema": self.SCHEMA,
+                    "updated_at": _now_ts(),
+                    "identity": identity,
+                    "points": {"zero": point},
+                }
+                self._load_error = ""
+                self._save_locked()
+                valid, reason = self._evaluate_locked(status)
+            else:
+                points = self._record.get("points", {}) if isinstance(self._record, dict) else {}
+                stored_identity = self._record.get("identity")
+                if (not isinstance(stored_identity, dict)
+                        or not _vbus_calibration_identity_matches(stored_identity, identity)
+                        or not isinstance(points.get("zero"), dict)):
+                    valid, reason = False, "capture a new zero point before the known-HV point"
+                    return valid, reason, self.snapshot(status)
+                points["high"] = point
+                self._record["points"] = points
+                self._record["updated_at"] = _now_ts()
+                self._save_locked()
+                valid, reason = self._evaluate_locked(status)
+            snapshot = self.snapshot(status)
+        return valid or kind == "zero", reason, snapshot
+
+    def reset(self) -> dict:
+        with self._lock:
+            self._record = {}
+            self._load_error = ""
+            if self.path:
+                try:
+                    os.remove(self.path)
+                except FileNotFoundError:
+                    pass
+            return self.snapshot()
+
+
+def _cmd_tokens(cmd: str) -> list[str]:
+    return cmd.strip().split()
+
+
+def _cmd_head(cmd: str) -> str:
+    parts = _cmd_tokens(cmd)
+    return parts[0].upper() if parts else ""
+
+
+def _on_off_arg(parts: list[str], index: int = 1) -> Optional[bool]:
+    if len(parts) <= index:
+        return None
+    val = parts[index].strip().upper()
+    if val in ("1", "ON", "TRUE", "YES"):
+        return True
+    if val in ("0", "OFF", "FALSE", "NO"):
+        return False
+    return None
+
+
+def _positive_arg(parts: list[str], index: int) -> bool:
+    if len(parts) <= index:
+        return False
+    try:
+        return float(parts[index]) > 0.0001
+    except (TypeError, ValueError):
+        return False
+
+
+def command_requests_start(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    return len(parts) == 1 and parts[0].upper() == "START"
+
+
+def command_requests_service_output(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    if not parts:
+        return False
+    head = parts[0].upper()
+    if head == "IOTEST":
+        return _on_off_arg(parts) is True
+    if head in ("MCFOC", "BPFOC"):
+        return _on_off_arg(parts) is True
+    if head in ("PFC", "PRECHARGE"):
+        return _on_off_arg(parts) is True
+    if head == "FAN":
+        if len(parts) == 2:
+            arg = parts[1].upper()
+            if arg == "ON":
+                return True
+            if arg == "OFF":
+                return False
+            return _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return _positive_arg(parts, 2)
+        return False
+    if head == "BRAKE":
+        if len(parts) == 2:
+            if parts[1].upper() == "OFF":
+                return False
+            return _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return _positive_arg(parts, 2)
+        return False
+    return False
+
+
+def command_releases_service_output(cmd: str) -> bool:
+    parts = _cmd_tokens(cmd)
+    if not parts:
+        return False
+    head = parts[0].upper()
+    if head in ("IOTEST", "MCFOC", "BPFOC", "PFC", "PRECHARGE"):
+        return _on_off_arg(parts) is False
+    if head == "FAN":
+        if len(parts) == 2:
+            return parts[1].upper() == "OFF" or not _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return not _positive_arg(parts, 2)
+    if head == "BRAKE":
+        if len(parts) == 2:
+            return parts[1].upper() == "OFF" or not _positive_arg(parts, 1)
+        if len(parts) == 3 and parts[1].upper() in ("PWM", "DUTY"):
+            return not _positive_arg(parts, 2)
+    return False
+
+
+def status_has_active_outputs(data: Optional[dict]) -> bool:
+    if data is None:
+        return True
+    return bool(
+        _as_int(data, "pwm", 1) != 0
+        or _as_int(data, "precharge", 1) != 0
+        or (_as_int(data, "bp_ext", 0xFF) & 0x0E) != 0
+        or _as_int(data, "pfc", 1) != 0
+        or _as_int(data, "brake", 1) != 0
+        or _as_float(data, "brake_duty", 1.0) > 0.0001
+        or _as_float(data, "fan_duty", 1.0) > 0.0001
+        or _as_float(data, "bp_fan_duty", 1.0) > 0.0001
+    )
+
+
+class CommandGuardConfig:
+    def __init__(
+        self,
+        max_vdc: float,
+        allow_hv: bool = False,
+        disabled: bool = False,
+        bench_gate_url: str = "",
+        bench_gate_runner: Optional[Callable[[Callable[[str], None], Optional[str]], bool]] = None,
+        local_bench_gate: bool = False,
+    ) -> None:
+        self.max_vdc = max_vdc
+        self.allow_hv = allow_hv
+        self.disabled = disabled
+        self.bench_gate_url = bench_gate_url
+        self.bench_gate_runner = bench_gate_runner
+        self.local_bench_gate = local_bench_gate
+
+
+def start_bench_gate_check(cfg: CommandGuardConfig) -> tuple[bool, str]:
+    if cfg.local_bench_gate:
+        return True, "standalone live safety gate"
+    logs: list[str] = []
+    if cfg.bench_gate_runner is not None:
+        ok = bool(cfg.bench_gate_runner(logs.append, cfg.bench_gate_url or None))
+    elif start_allowed_by_bench_gate is not None:
+        ok = bool(start_allowed_by_bench_gate(logs.append, url=cfg.bench_gate_url or None))
+    else:
+        ok = False
+        logs.append("active_pwm_guard import failed")
+    if ok:
+        return True, "ok"
+    detail = "; ".join(logs) if logs else "bench gate refused START"
+    return False, f"bench gate blocked START: {detail}"
+
+
+def validate_bench_gate_attestation(payload: object, now: Optional[float] = None) -> tuple[bool, str]:
+    if not isinstance(payload, dict):
+        return False, "attestation payload is not an object"
+    if payload.get("ready_for_active_pwm") is not True:
+        return False, "attestation is not green"
+    current = time.time() if now is None else float(now)
+    try:
+        issued_at = float(payload.get("issued_at"))
+        expires_at = float(payload.get("expires_at"))
+    except (TypeError, ValueError):
+        return False, "attestation timestamps are missing"
+    if not (math.isfinite(issued_at) and math.isfinite(expires_at)):
+        return False, "attestation timestamps are invalid"
+    if issued_at > current + 1.0:
+        return False, "attestation was issued in the future"
+    if current - issued_at > 10.0:
+        return False, "attestation is stale"
+    if expires_at < current:
+        return False, "attestation has expired"
+    if expires_at - issued_at > 10.0:
+        return False, "attestation validity window is too long"
+    return True, "ok"
+
+
+def attested_bench_gate_runner(log_fn: Callable[[str], None], url: Optional[str]) -> bool:
+    target = str(url or "").strip()
+    if not target:
+        log_fn("bench-gate attestation URL is missing")
+        return False
+    try:
+        request = urllib.request.Request(target, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(request, timeout=12.0) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        log_fn(f"bench-gate attestation request failed: {type(exc).__name__}: {exc}")
+        return False
+    ok, detail = validate_bench_gate_attestation(payload)
+    if not ok:
+        log_fn(f"bench-gate attestation rejected: {detail}")
+    return ok
+
+
+def _status_mc_bad(data: dict) -> int:
+    values = [
+        _as_int(data, key, 999999)
+        for key in ("mc_bad_cnt", "mc_bad", "bp_bad_cnt", "bp_bad")
+        if key in data
+    ]
+    if not values:
+        return 999999
+    return max(values)
+
+
+def _status_vdc(data: dict) -> float:
+    values: list[float] = []
+    for key in ("vdc", "mc_vdc", "bp_vdc"):
+        if key not in data:
+            continue
+        value = _as_float(data, key, float("nan"))
+        if math.isfinite(value) and value >= 0.0:
+            values.append(value)
+    return max(values) if values else float("nan")
+
+
+def _vbus_raw_for_voltage(vdc: float) -> float:
+    span = float(VBUS_RAW_CAL - VBUS_RAW_ZERO_CAL)
+    return float(VBUS_RAW_ZERO_CAL) + max(0.0, float(vdc)) * span / float(VBUS_RAW_CAL_V)
+
+
+def raw_vbus_window_check(data: dict, min_vdc: float, max_vdc: float) -> tuple[bool, str]:
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "raw DC bus telemetry is stale"
+    if "bp_vbus_raw" not in data and "mc_vbus_raw" not in data:
+        return False, "raw DC bus telemetry is missing"
+    raw = _as_int(data, "bp_vbus_raw", -1)
+    if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
+        if _as_int(data, "bp_vbus_valid", 0) != 1:
+            return False, "MCSDK DC bus telemetry is not valid"
+        if raw < 0 or raw > 5000:
+            return False, f"MCSDK DC bus telemetry is invalid: decivolts={raw}"
+        direct_vdc = float(raw) * 0.1
+        scaled_vdc = _status_vdc(data)
+        if not math.isfinite(scaled_vdc) or abs(scaled_vdc - direct_vdc) > 1.0:
+            return False, "MCSDK DC bus telemetry fields disagree"
+        if direct_vdc < min_vdc or direct_vdc > max_vdc:
+            return False, f"MCSDK DC bus is outside window: vdc={direct_vdc:.1f} V"
+        return True, "ok"
+    if raw < VBUS_RAW_MIN_VALID or raw > VBUS_RAW_MAX_VALID:
+        return False, f"raw DC bus telemetry is invalid: raw={raw}"
+
+    if max_vdc <= DEFAULT_CMD_GUARD_MAX_VDC:
+        raw_min = VBUS_RAW_ZERO_CAL - VBUS_RAW_ZERO_LOW_MARGIN
+        raw_max = math.ceil(_vbus_raw_for_voltage(max_vdc + VBUS_RAW_WINDOW_MARGIN_V))
+        if raw < raw_min or raw > raw_max:
+            label = "zero-bus" if max_vdc <= DEFAULT_LV_ARM_MAX_VDC else "low-voltage"
+            return False, f"raw DC bus is outside the calibrated {label} window: raw={raw} expected={raw_min}..{raw_max}"
+    if min_vdc >= DEFAULT_HV_ARM_MIN_VDC:
+        raw_min = math.floor(_vbus_raw_for_voltage(min_vdc - VBUS_RAW_WINDOW_MARGIN_V))
+        if raw < raw_min:
+            return False, f"raw DC bus does not confirm an energized HV bus: raw={raw} expected>={raw_min}"
+    return True, "ok"
+
+
+def vbus_capture_precheck(data: Optional[dict], meter_vdc: Optional[float] = None) -> tuple[bool, str]:
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+    if _as_float(data, "bp_vbus_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "DC bus telemetry is stale"
+    if "bp_vbus_raw" not in data and "mc_vbus_raw" not in data:
+        return False, "raw DC bus telemetry is missing"
+    raw = _as_int(data, "bp_vbus_raw", -1)
+    raw_max = 5000 if _as_int(data, "bp_mcsdk_telemetry", 0) == 1 else 4095
+    if raw < 0 or raw > raw_max:
+        return False, f"raw DC bus telemetry is invalid: raw={raw}"
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "scaled DC bus telemetry is not readable"
+    if _as_int(data, "bp_mcsdk_telemetry", 0) != 1 or _as_int(data, "bp_vbus_valid", 0) != 1:
+        return False, "MCSDK Vbus telemetry is not valid"
+    if _as_int(data, "bp_temp_valid", 0) != 1 or _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature protection is not healthy"
+    if not math.isfinite(_as_float(data, "bp_temp_c", float("nan"))):
+        return False, "heatsink temperature is not readable"
+    for key in ("precharge", "pfc", "brake", "bp_ext"):
+        if _as_int(data, key, 0) != 0:
+            return False, f"output must be off during Vbus capture: {key}={_as_int(data, key, 0)}"
+    zero_capture = meter_vdc is not None and 0.0 <= float(meter_vdc) <= VBUS_CAL_ZERO_MAX_METER_V
+    if zero_capture:
+        # MCSDK normally reports undervoltage while the bus is discharged. The
+        # zero-point path may observe that fault, but still requires SAFE,
+        # fresh telemetry, healthy temperature sensing and every output off.
+        if vdc > VBUS_CAL_ZERO_MAX_REPORTED_V:
+            return False, f"DC bus is too high for zero-point capture: vdc={vdc:.2f} V"
+    else:
+        if _as_int(data, "bp_fault", 255) != 0:
+            return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+        if _status_mc_bad(data) != 0:
+            return False, "motor-controller bad-frame counter is non-zero"
+    return True, "ok"
+
+
+def vbus_capture_summary(samples: list[dict], meter_vdc: Optional[float]) -> dict:
+    def stats(values: list[float]) -> dict:
+        count = len(values)
+        mean = sum(values) / count
+        variance = sum((value - mean) ** 2 for value in values) / count
+        return {
+            "samples": count,
+            "mean": mean,
+            "std": math.sqrt(variance),
+            "min": min(values),
+            "max": max(values),
+        }
+
+    raw_values = [float(_as_int(sample, "bp_vbus_raw", -1)) for sample in samples]
+    vdc_values = [float(_status_vdc(sample)) for sample in samples]
+    temp_values = [float(_as_float(sample, "bp_temp_c", float("nan"))) for sample in samples]
+    bad_values = [float(_status_mc_bad(sample)) for sample in samples]
+    return with_motor_controller_aliases({
+        "timestamp": _now_ts(),
+        "meter_vdc": meter_vdc,
+        "outputs_commanded": False,
+        "state": "SAFE",
+        "pwm": 0,
+        "bp_vbus_raw": stats(raw_values),
+        "bp_vdc": stats(vdc_values),
+        "bp_temp_c": stats(temp_values),
+        "bp_bad": stats(bad_values),
+    })
+
+
+def _status_link_live(data: dict) -> bool:
+    if data.get("link") is False:
+        return False
+    ages: list[float] = []
+    for key in ("mc_rsp_age_ms", "mc_age_ms", "bp_rsp_age_ms", "bp_age_ms"):
+        if key in data:
+            ages.append(_as_float(data, key, 999999.0))
+    if data.get("last_rx_age_s") is not None:
+        ages.append(_as_float(data, "last_rx_age_s", 999999.0) * 1000.0)
+    return (bool(ages) and all(math.isfinite(age) and age >= 0 for age in ages)
+            and min(ages) <= CMD_GUARD_MAX_AGE_MS)
+
+
+def command_guard_check(cmd: str, data: Optional[dict], cfg: CommandGuardConfig) -> tuple[bool, str]:
+    if not (command_requests_start(cmd) or command_requests_service_output(cmd)):
+        return True, "not guarded"
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, f"PWM is not off: pwm={_as_int(data, 'pwm', 1)}"
+    if _as_int(data, "estop", 1) != 0:
+        return False, f"ESTOP is active: estop={_as_int(data, 'estop', 1)}"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
+    if bad != 0:
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if not (cfg.allow_hv or cfg.disabled):
+        if vdc > cfg.max_vdc:
+            return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
+    if command_requests_start(cmd):
+        return start_bench_gate_check(cfg)
+    return True, "ok"
+
+
+class HvArmConfig:
+    def __init__(
+        self,
+        enabled: bool = False,
+        ttl_sec: float = DEFAULT_HV_ARM_TTL_SEC,
+        min_vdc: float = DEFAULT_HV_ARM_MIN_VDC,
+        max_vdc: float = DEFAULT_HV_ARM_MAX_VDC,
+        confirm: str = DEFAULT_HV_ARM_CONFIRM,
+        min_temp_c: float = DEFAULT_HV_ARM_MIN_TEMP_C,
+        max_temp_c: float = DEFAULT_HV_ARM_MAX_TEMP_C,
+        profile: str = "hv",
+        trial_gate: Optional[PoweredTrialGate] = None,
+    ) -> None:
+        self.enabled = bool(enabled)
+        self.ttl_sec = max(1.0, float(ttl_sec))
+        self.min_vdc = float(min_vdc)
+        self.max_vdc = float(max_vdc)
+        self.confirm = str(confirm)
+        self.min_temp_c = float(min_temp_c)
+        self.max_temp_c = float(max_temp_c)
+        self.profile = str(profile).strip().lower() or "hv"
+        self.trial_gate = trial_gate
+
+    @property
+    def profile_label(self) -> str:
+        return self.profile.upper()
+
+
+def hv_arm_precheck(
+    data: Optional[dict], cfg: HvArmConfig, vbus_calibrated: Optional[bool] = None
+) -> tuple[bool, str]:
+    if not cfg.enabled:
+        return False, "standalone arm mode is disabled"
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data or {}, "mc_fw_build", -1) in (2026101502,2026101504,2026101506) and (_as_int(data or {}, "fw_build", -1),_as_int(data or {}, "mc_fw_build", -1)) not in ((2026101505,2026101504),(2026101507,2026101506)):
+        return False, "manual scalar image requires its matching supervisory firmware"
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data or {}, "mc_fw_build", -1) == 2026101414 and _as_int(data or {}, "fw_build", -1) != 2026101415:
+        return False, "working motor-controller image requires its matching supervisory firmware"
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data or {}, "mc_fw_build", -1) == 2026101412 and _as_int(data or {}, "fw_build", -1) != 2026101413:
+        return False, "working motor-controller image requires its matching supervisory firmware"
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data or {}, "mc_fw_build", -1) == 2026101410 and _as_int(data or {}, "fw_build", -1) != 2026101411:
+        return False, "working motor-controller image requires its matching supervisory firmware"
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data or {}, "mc_fw_build", -1) in (2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101493):
+        return False, "PWM/filter update awaits new calibration and physical qualification"
+    calibration_ready = VBUS_HV_CALIBRATION_VALID if vbus_calibrated is None else bool(vbus_calibrated)
+    if cfg.profile == ARM_PROFILE_HV and not calibration_ready:
+        if cfg.trial_gate is not None:
+            cfg.trial_gate.observe(data, False)
+        return False, "HV Vbus calibration is incomplete; capture a known-voltage point before arming"
+    if data is None:
+        return False, "status unavailable"
+    if cfg.profile == ARM_PROFILE_HV and (
+        _as_int(data, "fw_build", -1), _as_int(data, "mc_fw_build", -1)
+    ) in ((2026101004, 2026101003), (2026101005, 2026101003), (2026101007, 2026101006),
+          (2026101008, 2026101006), RX_SNAPSHOT_TRIAL_PAIR, (2026101105, 2026101102), (2026101106, 2026101102), (2026101107, 2026101102), (2026101108, 2026101102)):
+        if cfg.trial_gate is None:
+            return False, "UART v3 requires an explicitly prepared bounded powered trial"
+    if cfg.trial_gate is not None:
+        ok, reason = cfg.trial_gate.ready(data, calibration_ready)
+        if not ok:
+            return False, reason
+    if cfg.profile == ARM_PROFILE_HV and _as_int(data, "mc_fw_build", -1) in (2026101201, 2026101203, 2026101204) and cfg.trial_gate is None:
+        return False, "local STOP image awaits physical qualification"
+    if _as_int(data, "bp_status", 0) & 0x80:
+        return False, "local Nucleo STOP is latched; release button and explicitly CLEAR"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
+    if bad != 0:
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+        return False, f"DC bus is outside {cfg.profile_label} arm window: vdc={vdc:.1f} V"
+    raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+    if not raw_ok:
+        return False, raw_reason
+
+    if _as_int(data, "bp_temp_valid", 0) != 1:
+        return False, "heatsink temperature is invalid"
+    if _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature fault is active"
+    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "heatsink temperature is stale"
+    temp_c = _as_float(data, "bp_temp_c", float("nan"))
+    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
+        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    return True, "ok"
+
+
+def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple[bool, str]:
+    """Allow profile changes only while every commanded power output is inactive."""
+    if data is None:
+        return False, "status unavailable"
+    state = str(data.get("state", "")).upper()
+    state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+    if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+        return False, f"not SAFE: state={data.get('state')}"
+    if _as_int(data, "pwm", 1) != 0:
+        return False, "PWM is not off"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "precharge", 1) != 0:
+        return False, "precharge relay is active"
+    if _as_int(data, "pfc", 1) != 0:
+        return False, "PFC output is active"
+    if _as_int(data, "brake", 1) != 0 or _as_float(data, "brake_duty", 1.0) > 0.0001:
+        return False, "brake output is active"
+    restoring_hv_while_discharged = (
+        cfg.profile == ARM_PROFILE_HV
+        and (_as_int(data, "fw_build", -1), _as_int(data, "mc_fw_build", -1)) == (2026101002, 2026100801)
+        and _as_int(data, "bp_fault", 255) == 5
+        and _as_int(data, "mc_diag_valid", 0) == 1
+        and _as_int(data, "mc_fault_reason", -1) == 8
+        and _as_int(data, "mc_fault_current_mask", -1) == 4
+        and _as_int(data, "mc_fault_occurred_mask", -1) == 4
+        and _as_int(data, "mc_uart_error_flags", -1) == 0
+        and _as_int(data, "mc_last_uart_error_flags", -1) == 0
+        and _as_int(data, "bp_vbus_valid", 0) == 1
+        and 0 <= _as_float(data, "bp_vbus_age_ms", 999999.0) < 300.0
+        and 0 <= _as_int(data, "bp_vbus_raw", -1) <= 20
+        and not (_as_int(data, "bp_status", 0x22) & 0x22)
+        and all(math.isfinite(_as_float(data, key, float("nan")))
+                and 0 <= _as_float(data, key, -1) <= 2 for key in ("vdc", "bp_vdc"))
+    )
+    # Selecting a disarmed profile is not ARM/START. Only the expected, measured
+    # zero-bus undervoltage may permit returning to the stricter HV profile.
+    if _as_int(data, "bp_fault", 255) != 0 and not restoring_hv_while_discharged:
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
+    if bad != 0:
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+
+    if cfg.profile == ARM_PROFILE_LV:
+        # LV selection itself is fail-closed. Arming repeats the complete check.
+        vdc = _status_vdc(data)
+        if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+            return False, f"DC bus is outside {cfg.profile_label} profile window: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
+    return True, "ok"
+
+
+def hv_runtime_check(
+    data: Optional[dict], cfg: HvArmConfig, allow_nonzero_bad: bool = False,
+    vbus_calibrated: Optional[bool] = None,
+) -> tuple[bool, str]:
+    calibration_ready = VBUS_HV_CALIBRATION_VALID if vbus_calibrated is None else bool(vbus_calibrated)
+    if cfg.profile == ARM_PROFILE_HV and not calibration_ready:
+        return False, "HV Vbus calibration is incomplete"
+    if data is None:
+        return False, "status unavailable"
+    if cfg.trial_gate is not None:
+        ok, reason = cfg.trial_gate.live_check(data, pair=cfg.trial_gate.pair,
+                                              allow_stopped_zero=cfg.trial_gate.consumed,
+                                              profile=cfg.trial_gate.profile)
+        if not ok:
+            return False, reason
+        if (cfg.trial_gate.started_at is not None
+                and time.monotonic() - cfg.trial_gate.started_at >= cfg.trial_gate.stop_after_s):
+            return False, cfg.trial_gate.deadline_reason
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
+    if bad != 0 and not allow_nonzero_bad:
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc) or vdc < cfg.min_vdc or vdc > cfg.max_vdc:
+        return False, f"DC bus is outside {cfg.profile_label} runtime window: vdc={vdc:.1f} V"
+    raw_ok, raw_reason = raw_vbus_window_check(data, cfg.min_vdc, cfg.max_vdc)
+    if not raw_ok:
+        return False, raw_reason
+
+    if _as_int(data, "bp_temp_valid", 0) != 1:
+        return False, "heatsink temperature is invalid"
+    if _as_int(data, "bp_temp_fault", 1) != 0:
+        return False, "heatsink temperature fault is active"
+    if _as_float(data, "bp_temp_age_ms", 999999.0) > CMD_GUARD_MAX_AGE_MS:
+        return False, "heatsink temperature is stale"
+    temp_c = _as_float(data, "bp_temp_c", float("nan"))
+    if not math.isfinite(temp_c) or temp_c < cfg.min_temp_c or temp_c > cfg.max_temp_c:
+        return False, f"heatsink temperature is implausible: temp={temp_c:.1f} C"
+    return True, "ok"
+
+
+def output_sequence_health_check(
+    data: Optional[dict], arm_cfg: HvArmConfig, guard_cfg: CommandGuardConfig,
+    vbus_calibrated: Optional[bool] = None,
+) -> tuple[bool, str]:
+    if arm_cfg.enabled:
+        return hv_runtime_check(data, arm_cfg, vbus_calibrated=vbus_calibrated)
+    if data is None:
+        return False, "status unavailable"
+    if _as_int(data, "estop", 1) != 0:
+        return False, "ESTOP is active"
+    if _as_int(data, "bp_fault", 255) != 0:
+        return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
+    bad = _status_mc_bad(data)
+    if bad != 0:
+        return False, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+    if not _status_link_live(data):
+        return False, "motor-controller link is stale or down"
+    vdc = _status_vdc(data)
+    if not math.isfinite(vdc):
+        return False, "DC bus telemetry is not readable"
+    if not (guard_cfg.allow_hv or guard_cfg.disabled):
+        if vdc > guard_cfg.max_vdc:
+            return False, f"DC bus too high for command: vdc={vdc:.1f} V"
+        raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, guard_cfg.max_vdc)
+        if not raw_ok:
+            return False, raw_reason
+    return True, "ok"
+
+
+class HvRuntimeBadFrameMonitor:
+    """Trip on an error burst, not on one CRC-rejected frame under PWM EMI."""
+
+    def __init__(
+        self,
+        burst_limit: int = HV_RUNTIME_BAD_BURST_LIMIT,
+        window_sec: float = HV_RUNTIME_BAD_WINDOW_SEC,
+    ) -> None:
+        self.burst_limit = max(1, int(burst_limit))
+        self.window_sec = max(0.1, float(window_sec))
+        self._previous: dict[str, int] = {}
+        self._events: Deque[tuple[float, int]] = deque()
+
+    def reset(self) -> None:
+        self._previous.clear()
+        self._events.clear()
+
+    def observe(self, data: dict, now: Optional[float] = None) -> tuple[bool, str]:
+        timestamp = _now_ts() if now is None else float(now)
+        delta = 0
+        current: dict[str, int] = {}
+        for key in ("mc_bad_cnt", "mc_bad", "bp_bad_cnt", "bp_bad"):
+            if key not in data:
+                continue
+            value = max(0, _as_int(data, key, 999999))
+            current[key] = value
+            previous = self._previous.get(key, 0)
+            if value >= previous:
+                delta += value - previous
+        self._previous = current
+
+        if delta > 0:
+            self._events.append((timestamp, delta))
+        cutoff = timestamp - self.window_sec
+        while self._events and self._events[0][0] < cutoff:
+            self._events.popleft()
+        burst = sum(count for _, count in self._events)
+        if burst >= self.burst_limit:
+            return False, f"motor-controller UART error burst: {burst} errors/{self.window_sec:.1f}s"
+        if delta > 0:
+            return True, f"isolated motor-controller UART errors: delta={delta}, window={burst}"
+        return True, "ok"
+
+
+def manual_scalar_supported(data):
+    return bool(data and (_as_int(data,"fw_build",0),_as_int(data,"mc_fw_build",0)) in ((2026101505,2026101504),(2026101507,2026101506)) and _as_int(data,"manual_scalar_capable",0)==1)
+
+def manual_status_reference(data):
+    if (manual_scalar_supported(data) and _as_int(data,"mc_frequency_reference_valid",0)==1
+            and 0 <= _as_int(data,"bp_age_ms",999999) < 300):
+        data["local_ramp_reference_hz"]=data["freq"]
+        data["freq"]=data["mc_frequency_reference_hz"]
+        data["speed"]=data["freq"]*60.0  # electrical reference, not measured rotor RPM
+    return data
+
+class HvArmState:
+    def __init__(
+        self,
+        cfg: HvArmConfig,
+        calibration_provider: Optional[Callable[[Optional[dict]], bool]] = None,
+    ) -> None:
+        self.cfg = cfg
+        self._lock = threading.Lock()
+        self._expires_at = 0.0
+        self._started = False
+        self._manual_session = False
+        self._calibration_provider = calibration_provider
+
+    def set_calibration_provider(
+        self, provider: Optional[Callable[[Optional[dict]], bool]]
+    ) -> None:
+        with self._lock:
+            self._calibration_provider = provider
+
+    def _calibration_valid(self, data: Optional[dict]) -> Optional[bool]:
+        provider = self._calibration_provider
+        return provider(data) if provider is not None else None
+
+    def arm(self, confirm: str, data: Optional[dict]) -> tuple[bool, str]:
+        if not secrets.compare_digest(str(confirm), self.cfg.confirm):
+            return False, "confirmation phrase mismatch"
+        ok, reason = hv_arm_precheck(data, self.cfg, self._calibration_valid(data))
+        if not ok:
+            return False, reason
+        with self._lock:
+            self._expires_at = _now_ts() + self.cfg.ttl_sec
+            self._started = False
+            self._manual_session = False
+        return True, "armed"
+
+    def disarm(self) -> None:
+        with self._lock:
+            self._expires_at = 0.0
+            self._started = False
+            self._manual_session = False
+
+    def set_config(self, cfg: HvArmConfig) -> None:
+        with self._lock:
+            self.cfg = cfg
+            self._expires_at = 0.0
+            self._started = False
+            self._manual_session = False
+
+    def command_allowed(self, data: Optional[dict]) -> tuple[bool, str]:
+        with self._lock:
+            remaining = self._expires_at - _now_ts()
+            if remaining <= 0.0 and not (self._started and self._manual_session):
+                if not self._started:
+                    self._expires_at = 0.0
+                return False, f"{self.cfg.profile_label} arm is not active"
+        return hv_arm_precheck(data, self.cfg, self._calibration_valid(data))
+
+    def set_manual_session(self, enabled: bool) -> None:
+        with self._lock:
+            self._manual_session = bool(enabled)
+
+    def mark_started(self) -> None:
+        with self._lock:
+            if self._expires_at > _now_ts():
+                self._started = True
+
+    def mark_stopped(self) -> None:
+        with self._lock:
+            self._started = False
+            self._manual_session = False
+
+    def take_expired_session_action(self) -> bool:
+        with self._lock:
+            if self._started and self._manual_session:
+                return False
+            if self._expires_at <= 0.0:
+                return False
+            if self._expires_at > _now_ts():
+                return False
+            must_stop = self._started
+            self._expires_at = 0.0
+            self._started = False
+            self._manual_session = False
+            return must_stop
+
+    def runtime_monitor_required(self) -> bool:
+        with self._lock:
+            return self._started and (self._manual_session or self._expires_at > _now_ts())
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            remaining = max(0.0, self._expires_at - _now_ts())
+            if remaining <= 0.0 and not self._started:
+                self._expires_at = 0.0
+            return {
+                "hmi_hv_enabled": int(self.cfg.enabled),
+                "hmi_hv_armed": int(remaining > 0.0 or (self._started and self._manual_session)),
+                "hmi_hv_started": int(self._started and (self._manual_session or remaining > 0.0)),
+                "hmi_run_continuous": int(self._started and self._manual_session),
+                "hmi_hv_remaining_s": round(remaining, 1),
+                "hmi_hv_min_vdc": self.cfg.min_vdc,
+                "hmi_hv_max_vdc": self.cfg.max_vdc,
+                "hmi_arm_profile": self.cfg.profile if self.cfg.enabled else "none",
+                "hmi_arm_confirm": self.cfg.confirm if self.cfg.enabled else "",
+            }
+
+
+class ControlAccessConfig:
+    def __init__(self, token_file: Optional[str] = None) -> None:
+        self.token_file = token_file
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.token_file)
+
+    def read_token(self) -> Optional[str]:
+        if not self.token_file:
+            return None
+        try:
+            with open(os.path.expanduser(self.token_file), "r", encoding="utf-8") as f:
+                token = f.read().strip()
+        except OSError:
+            return None
+        if len(token) < 16:
+            return None
+        return token
+
+
+class FirmwareUpdateConfig:
+    def __init__(
+        self,
+        token_file: Optional[str],
+        upload_dir: str,
+        remoteocd_bin: str,
+        remoteocd_cfg: str,
+        max_bytes: int,
+        timeout_sec: float,
+        max_vdc: float,
+    ) -> None:
+        self.token_file = token_file
+        self.upload_dir = upload_dir
+        self.remoteocd_bin = remoteocd_bin
+        self.remoteocd_cfg = remoteocd_cfg
+        self.max_bytes = max_bytes
+        self.timeout_sec = timeout_sec
+        self.max_vdc = max_vdc
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.token_file)
+
+    def read_token(self) -> Optional[str]:
+        if not self.token_file:
+            return None
+        try:
+            with open(os.path.expanduser(self.token_file), "r", encoding="utf-8") as f:
+                token = f.read().strip()
+        except OSError:
+            return None
+        if len(token) < 16:
+            return None
+        return token
+
+
+class RouterClient:
+    def __init__(self, endpoint: str) -> None:
+        if msgpack is None:
+            raise RuntimeError("msgpack not available")
+        self._endpoint = endpoint
+        self._sock: Optional[socket.socket] = None
+        self._unpacker: Optional[msgpack.Unpacker] = None
+        self._packer = msgpack.Packer(use_bin_type=False)
+        self._msgid = 1
+        self._lock = threading.Lock()
+
+    def close(self) -> None:
+        if self._sock is not None:
+            try:
+                self._sock.close()
+            except Exception:
+                pass
+        self._sock = None
+        self._unpacker = None
+
+    def _connect(self) -> None:
+        if self._sock is not None:
+            return
+        endpoint = self._endpoint
+        if endpoint.startswith("unix:"):
+            path = endpoint[5:]
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.connect(path)
+        elif "/" in endpoint or endpoint.startswith("."):
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.connect(endpoint)
+        else:
+            host, port = self._parse_tcp(endpoint)
+            sock = socket.create_connection((host, port), timeout=1.0)
+        sock.settimeout(0.2)
+        self._sock = sock
+        self._unpacker = msgpack.Unpacker(raw=False)
+
+    @staticmethod
+    def _parse_tcp(endpoint: str) -> tuple[str, int]:
+        if ":" in endpoint:
+            host, port_str = endpoint.rsplit(":", 1)
+        else:
+            host, port_str = endpoint, "7501"
+        host = host or "127.0.0.1"
+        try:
+            port = int(port_str)
+        except ValueError:
+            port = 7501
+        return host, port
+
+    def call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
+        for attempt in range(retries + 1):
+            with self._lock:
+                try:
+                    self._connect()
+                    if self._sock is None or self._unpacker is None:
+                        raise RuntimeError("no socket")
+                    msgid = self._msgid
+                    self._msgid += 1
+                    self._sock.sendall(self._packer.pack([0, msgid, method, params]))
+                    deadline = _now_ts() + timeout
+                    while _now_ts() < deadline:
+                        try:
+                            data = self._sock.recv(4096)
+                        except socket.timeout:
+                            continue
+                        if not data:
+                            raise RuntimeError("router closed")
+                        self._unpacker.feed(data)
+                        for obj in self._unpacker:
+                            if isinstance(obj, list) and len(obj) >= 4 and obj[0] == 1 and obj[1] == msgid:
+                                return obj
+                    raise RuntimeError("router timeout")
+                except Exception:
+                    self.close()
+            if attempt < retries:
+                time.sleep(0.05)
+        return None
+
+
+class SerialClient:
+    def __init__(self, device: str, baud: int = 115200) -> None:
+        if msgpack is None:
+            raise RuntimeError("msgpack not available")
+        self._device = device
+        self._baud = baud
+        self._fd: Optional[int] = None
+        self._unpacker: Optional[msgpack.Unpacker] = None
+        self._packer = msgpack.Packer(use_bin_type=False)
+        self._msgid = 1
+        self._lock = threading.Lock()
+
+    def close(self) -> None:
+        if self._fd is not None:
+            try:
+                os.close(self._fd)
+            except Exception:
+                pass
+        self._fd = None
+        self._unpacker = None
+
+    def _connect(self) -> None:
+        if termios is None:
+            raise RuntimeError("termios not available on this platform")
+        if self._fd is not None:
+            return
+        fd = os.open(self._device, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
+        attrs = termios.tcgetattr(fd)
+        attrs[0] = 0  # iflag
+        attrs[1] = 0  # oflag
+        attrs[3] = 0  # lflag
+        attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
+        baud_const = termios_baud_constant(self._baud)
+        attrs[4] = baud_const
+        attrs[5] = baud_const
+        attrs[6][termios.VMIN] = 0
+        attrs[6][termios.VTIME] = 0
+        termios.tcsetattr(fd, termios.TCSANOW, attrs)
+        self._fd = fd
+        self._unpacker = msgpack.Unpacker(raw=False)
+
+    def call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
+        for attempt in range(retries + 1):
+            with self._lock:
+                try:
+                    self._connect()
+                    if self._fd is None or self._unpacker is None:
+                        raise RuntimeError("serial not open")
+                    msgid = self._msgid
+                    self._msgid += 1
+                    os.write(self._fd, self._packer.pack([0, msgid, method, params]))
+                    deadline = _now_ts() + timeout
+                    while _now_ts() < deadline:
+                        r, _, _ = select.select([self._fd], [], [], 0.05)
+                        if not r:
+                            continue
+                        data = os.read(self._fd, 4096)
+                        if not data:
+                            raise RuntimeError("serial closed")
+                        self._unpacker.feed(data)
+                        for obj in self._unpacker:
+                            if isinstance(obj, list) and len(obj) >= 4 and obj[0] == 1 and obj[1] == msgid:
+                                return obj
+                    raise RuntimeError("serial timeout")
+                except Exception:
+                    self.close()
+            if attempt < retries:
+                time.sleep(0.05)
+        return None
+
+
+class TextSerialClient:
+    def __init__(self, device: str, baud: int = 115200) -> None:
+        self._device = device
+        self._baud = baud
+        self._fd: Optional[int] = None
+        self._lock = threading.Lock()
+        self._rx_buf = bytearray()
+
+    def close(self) -> None:
+        if self._fd is not None:
+            try:
+                os.close(self._fd)
+            except Exception:
+                pass
+        self._fd = None
+        self._rx_buf.clear()
+
+    def _connect(self) -> None:
+        if termios is None:
+            raise RuntimeError("termios not available on this platform")
+        if self._fd is not None:
+            return
+        fd = os.open(self._device, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
+        attrs = termios.tcgetattr(fd)
+        attrs[0] = 0
+        attrs[1] = 0
+        attrs[3] = 0
+        attrs[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
+        baud_const = termios_baud_constant(self._baud)
+        attrs[4] = baud_const
+        attrs[5] = baud_const
+        attrs[6][termios.VMIN] = 0
+        attrs[6][termios.VTIME] = 0
+        termios.tcsetattr(fd, termios.TCSANOW, attrs)
+        self._fd = fd
+
+    def _read_lines(self, deadline: float) -> list[str]:
+        lines: list[str] = []
+        while _now_ts() < deadline:
+            if self._fd is None:
+                break
+            r, _, _ = select.select([self._fd], [], [], 0.05)
+            if not r:
+                continue
+            data = os.read(self._fd, 4096)
+            if not data:
+                raise RuntimeError("serial closed")
+            self._rx_buf.extend(data)
+            while True:
+                nl = self._rx_buf.find(b"\n")
+                if nl == -1:
+                    break
+                line = self._rx_buf[:nl].decode("utf-8", errors="ignore").strip()
+                del self._rx_buf[: nl + 1]
+                if line:
+                    lines.append(line)
+        return lines
+
+    def _write_line(self, text: str) -> None:
+        if self._fd is None:
+            raise RuntimeError("serial not open")
+        if not text.endswith("\n"):
+            text += "\n"
+        os.write(self._fd, text.encode("utf-8"))
+
+    def cmd(self, cmd: str, timeout: float = 0.5, retries: int = 1) -> bool:
+        for attempt in range(retries + 1):
+            with self._lock:
+                try:
+                    self._connect()
+                    self._write_line(cmd)
+                    for line in self._read_lines(_now_ts() + timeout):
+                        if line == "OK" or line.startswith("OK "):
+                            return True
+                        if line.startswith("ERR") or line.startswith("ERROR"):
+                            return False
+                    raise RuntimeError("serial command not acknowledged")
+                except Exception:
+                    self.close()
+            if attempt < retries:
+                time.sleep(0.05)
+        return False
+
+    def get(self, timeout: float = 1.0, retries: int = 1) -> Optional[str]:
+        for attempt in range(retries + 1):
+            with self._lock:
+                try:
+                    self._connect()
+                    self._write_line("GET")
+                    deadline = _now_ts() + timeout
+                    while _now_ts() < deadline:
+                        lines = self._read_lines(deadline)
+                        for line in lines:
+                            if line.startswith("DATA"):
+                                return line
+                    raise RuntimeError("serial timeout")
+                except Exception:
+                    self.close()
+            if attempt < retries:
+                time.sleep(0.05)
+        return None
+
+
+class RpcBridge:
+    def __init__(self, endpoint: str, serial_baud: int = 115200) -> None:
+        self._router: Optional[RouterClient] = None
+        self._serial: Optional[SerialClient] = None
+        self._serial_text: Optional[TextSerialClient] = None
+        if endpoint.startswith("serial:"):
+            self._serial_text = TextSerialClient(endpoint.replace("serial:", "", 1), baud=serial_baud)
+        elif endpoint.startswith("/dev/"):
+            self._serial_text = TextSerialClient(endpoint, baud=serial_baud)
+        else:
+            try:
+                self._router = RouterClient(endpoint)
+            except RuntimeError:
+                self._router = None
+            # The router owns its UART. A text fallback would steal MsgPack
+            # frames and inject ASCII commands into the same byte stream.
+
+    def _call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
+        if self._router is not None:
+            resp = self._router.call(method, params, timeout=timeout, retries=retries)
+            if resp is not None:
+                return resp
+        return None
+
+    def cmd(self, cmd: str) -> Tuple[bool, Optional[str]]:
+        resp = self._call("cmd", [cmd], timeout=0.8, retries=2)
+        if resp and len(resp) >= 4:
+            err = resp[2]
+            if err is not None:
+                return False, str(err)
+            if resp[3] is False:
+                return False, "rejected"
+            return True, None
+        if self._serial_text is not None:
+            ok = self._serial_text.cmd(cmd, timeout=0.8, retries=2)
+            return (ok, None if ok else "no response")
+        return False, "no response"
+
+    def get(self) -> Tuple[bool, Optional[dict], Optional[str]]:
+        resp = self._call("get", [], timeout=2.0, retries=2)
+        if resp and len(resp) >= 4:
+            err = resp[2]
+            if err is not None:
+                return False, None, str(err)
+            result = resp[3]
+            if isinstance(result, str):
+                parsed = self._parse_status_string(result)
+                if parsed is None:
+                    return False, None, "bad result"
+                return True, parsed, None
+            if not isinstance(result, list) or len(result) < 9:
+                return False, None, "bad result"
+            state_code = int(result[0])
+            mode_code = int(result[1])
+            mc_mode = int(result[29]) if len(result) >= 31 else 0
+            diag_mode = int(result[45]) if len(result) >= 47 else None
+            duty_mode = int(result[46]) if len(result) >= 47 else None
+            mode_code_eff, mode_name_eff = effective_mode(mode_code, mc_mode, diag_mode, duty_mode)
+            data = {
+                "state_code": state_code,
+                "state": STATE_NAMES.get(state_code, str(state_code)),
+                "mode_code": mode_code_eff,
+                "mode": mode_name_eff,
+                "pwm": int(result[2]),
+                "freq": float(result[3]),
+                "speed": float(result[4]),
+                "ia": float(result[5]),
+                "ib": float(result[6]),
+                "ic": float(result[7]),
+                "vdc": float(result[8]),
+                "ts": int(_now_ts() * 1000.0),
+            }
+            if len(result) >= 12:
+                data["id"] = float(result[9])
+                data["iq"] = float(result[10])
+                data["i_rms"] = float(result[11])
+            else:
+                ia = data["ia"]
+                ib = data["ib"]
+                ic = data["ic"]
+                data["i_rms"] = float(((ia * ia + ib * ib + ic * ic) / 3.0) ** 0.5)
+            if len(result) >= 15:
+                data["mic_active"] = int(result[12])
+                data["id_ref"] = float(result[13])
+                data["mic_saving_pct"] = float(result[14])
+            else:
+                data["mic_active"] = 0
+                data["id_ref"] = 0.0
+                data["mic_saving_pct"] = 0.0
+            if len(result) >= 17:
+                data["freq_cmd"] = float(result[15])
+                data["estop"] = int(result[16])
+            else:
+                data["freq_cmd"] = data.get("freq", 0.0)
+                data["estop"] = 0
+            if len(result) >= 21:
+                data["ntc"] = int(result[17])
+                data["pfc"] = int(result[18])
+                data["brake"] = int(result[19])
+                data["brake_duty"] = float(result[20])
+            else:
+                data["ntc"] = 0
+                data["pfc"] = 0
+                data["brake"] = 0
+                data["brake_duty"] = 0.0
+
+            # Optional extended telemetry (keep in sync with UNOQ_MOTOR/UNOQ_MOTOR.ino rpc_send_response_get()).
+            if len(result) >= 24:
+                data["enc_raw"] = int(result[21])
+                data["enc_ok"] = int(result[22])
+                data["enc_deg"] = float(result[23])
+            else:
+                data["enc_raw"] = 0
+                data["enc_ok"] = 0
+                data["enc_deg"] = 0.0
+
+            if len(result) >= 27:
+                data["bp_good"] = int(result[24])
+                data["bp_bad"] = int(result[25])
+                data["bp_age_ms"] = int(result[26])
+            else:
+                data["bp_good"] = 0
+                data["bp_bad"] = 999999
+                data["bp_age_ms"] = 999999
+
+            if len(result) >= 31:
+                data["bp_status"] = int(result[27])
+                data["bp_pwm_active"] = 1 if (data["bp_status"] & 0x20) else 0
+                data["bp_fault"] = int(result[28])
+                data["bp_mode"] = mc_mode
+                data["bp_seq"] = int(result[30])
+            else:
+                data["bp_status"] = 0
+                data["bp_pwm_active"] = 0
+                data["bp_fault"] = 255
+                data["bp_mode"] = 0
+                data["bp_seq"] = 0
+
+            if len(result) >= 33:
+                data["bp_ping_pairs"] = int(result[31])
+                data["bp_ping_age_ms"] = int(result[32])
+            else:
+                data["bp_ping_pairs"] = 0
+                data["bp_ping_age_ms"] = 999999
+
+            if len(result) >= 34:
+                data["bp_rsp_age_ms"] = int(result[33])
+            else:
+                data["bp_rsp_age_ms"] = 999999
+
+            # Optional extended encoder telemetry (append-only after bp_rsp_age_ms).
+            if len(result) >= 37:
+                data["enc_rpm"] = float(result[34])
+                data["enc_mech_hz"] = float(result[35])
+                data["enc_elec_hz"] = float(result[36])
+            else:
+                data["enc_rpm"] = 0.0
+                data["enc_mech_hz"] = 0.0
+                data["enc_elec_hz"] = 0.0
+            if len(result) >= 45:
+                data["mic_gated"] = int(result[37])
+                data["mic_enable_ai"] = int(result[38])
+                data["mic_enc_used"] = int(result[39])
+                data["mic_freq_meas_hz"] = float(result[40])
+                data["mic_speed_err_hz"] = float(result[41])
+                data["mic_speed_tol_hz"] = float(result[42])
+                data["mic_link_flags"] = int(result[43])
+                data["mic_status_flags"] = int(result[44])
+            else:
+                data["mic_gated"] = 0
+                data["mic_enable_ai"] = 0
+                data["mic_enc_used"] = 0
+                data["mic_freq_meas_hz"] = 0.0
+                data["mic_speed_err_hz"] = 0.0
+                data["mic_speed_tol_hz"] = 0.0
+                data["mic_link_flags"] = 0
+                data["mic_status_flags"] = 0
+            if len(result) >= 47:
+                data["diag_mode"] = int(result[45])
+                data["duty_mode"] = int(result[46])
+            else:
+                data["diag_mode"] = 1 if mode_code_eff == 3 else 0
+                data["duty_mode"] = 1 if mode_code_eff == 4 else 0
+            if len(result) >= 50:
+                data["bp_vbus_raw"] = int(result[47])
+                data["bp_vdc"] = float(result[48])
+                data["bp_vbus_age_ms"] = int(result[49])
+                data["vdc"] = data["bp_vdc"]
+            else:
+                data["bp_vbus_raw"] = 0
+                data["bp_vdc"] = 0.0
+                data["bp_vbus_age_ms"] = 999999
+            if len(result) >= 54:
+                temp_flags = int(result[53])
+                data["bp_temp_raw"] = int(result[50])
+                data["bp_temp_v"] = float(result[51])
+                data["bp_temp_c"] = float(result[52])
+                data["bp_temp_flags"] = temp_flags
+                data["bp_temp_valid"] = 1 if (temp_flags & 0x01) else 0
+                data["bp_temp_fault"] = 1 if (temp_flags & 0x02) else 0
+                data["bp_temp_age_ms"] = data.get("bp_rsp_age_ms", 999999)
+            else:
+                data["bp_temp_raw"] = 0
+                data["bp_temp_v"] = 0.0
+                data["bp_temp_c"] = 0.0
+                data["bp_temp_flags"] = 0
+                data["bp_temp_valid"] = 0
+                data["bp_temp_fault"] = 0
+                data["bp_temp_age_ms"] = 999999
+            if len(result) >= 62:
+                phase_flags = int(result[60])
+                data["bp_phase_a_raw"] = int(result[54])
+                data["bp_phase_b_raw"] = int(result[55])
+                data["bp_phase_c_raw"] = int(result[56])
+                data["bp_phase_a_v"] = float(result[57])
+                data["bp_phase_b_v"] = float(result[58])
+                data["bp_phase_c_v"] = float(result[59])
+                data["bp_phase_flags"] = phase_flags
+                data["bp_phase_valid"] = 1 if (phase_flags & 0x01) else 0
+                data["bp_phase_c_virtual"] = 1 if (phase_flags & 0x02) else 0
+                data["bp_phase_age_ms"] = int(result[61])
+            else:
+                data["bp_phase_a_raw"] = 0
+                data["bp_phase_b_raw"] = 0
+                data["bp_phase_c_raw"] = 0
+                data["bp_phase_a_v"] = 0.0
+                data["bp_phase_b_v"] = 0.0
+                data["bp_phase_c_v"] = 0.0
+                data["bp_phase_flags"] = 0
+                data["bp_phase_valid"] = 0
+                data["bp_phase_c_virtual"] = 0
+                data["bp_phase_age_ms"] = 999999
+            if len(result) >= 63:
+                data["bp_ext"] = int(result[62])
+            else:
+                data["bp_ext"] = 0
+            if len(result) >= 64:
+                data["iotest"] = int(result[63])
+            else:
+                data["iotest"] = 0
+            if len(result) >= 65:
+                data["precharge"] = int(result[64])
+            else:
+                data["precharge"] = 0
+            if len(result) >= 68:
+                data["fan_duty"] = float(result[65])
+                data["bp_fan_duty"] = float(result[66])
+                data["bp_fan_rpm"] = float(result[67])
+            else:
+                data["fan_duty"] = 0.0
+                data["bp_fan_duty"] = 0.0
+                data["bp_fan_rpm"] = 0.0
+            if len(result) >= 70:
+                data["bp_foc_backend"] = int(result[68])
+                data["bp_cmd_mode"] = int(result[69])
+            else:
+                data["bp_foc_backend"] = 0
+                data["bp_cmd_mode"] = data.get("bp_mode", 0)
+            data["fw_build"] = int(result[70]) if len(result) >= 71 else 0
+            data["matrix_test"] = int(result[71]) if len(result) >= 72 else 0
+            data["bp_mcsdk_telemetry"] = int(result[72]) if len(result) >= 73 else 0
+            data["bp_vbus_valid"] = int(result[73]) if len(result) >= 74 else 0
+            data["bp_precharge_managed"] = int(result[74]) if len(result) >= 75 else 0
+            data["rpc_schema_version"] = int(result[75]) if len(result) >= 76 else 1
+            if data["rpc_schema_version"] >= 2 and len(result) >= 78:
+                data["bp_softstart_ready"] = int(result[76])
+                data["mc_capabilities"] = int(result[77])
+            else:
+                # Fail closed for the ambiguous 75-element transition format.
+                data["bp_softstart_ready"] = 0
+                data["mc_capabilities"] = 0
+            data["mc_fw_build"] = (
+                int(result[78])
+                if data["rpc_schema_version"] >= 3 and len(result) >= 79
+                else 0
+            )
+            data["mc_supported_modes"] = supported_modes_from_caps(data["mc_capabilities"])
+            for index, field in enumerate(("mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags",
+                                           "mc_fault_motor_state", "mc_fault_current_mask",
+                                           "mc_fault_occurred_mask", "mc_fault_sequence", "mc_fault_tx_status"), 79):
+                data[field] = int(result[index]) if len(result) >= 87 else 0
+            for index, field in enumerate(("mc_last_bad_valid", "mc_last_bad_reason",
+                                           "mc_last_uart_error_flags", "mc_last_tx_status"), 87):
+                data[field] = int(result[index]) if len(result) >= 91 else 0
+            if len(result) >= 99:
+                data.update(manual_scalar_capable=int(result[91]),manual_run_mode=int(result[92]),
+                    accel_hz_per_s=float(result[93]),decel_hz_per_s=float(result[94]),
+                    downmode_coast=int(result[95]),mc_frequency_reference_hz=float(result[96]),
+                    mc_frequency_reference_valid=int(result[97]),mc_decel_bus_hold=int(result[98]))
+                if manual_scalar_supported(data) and data["mc_frequency_reference_valid"]==1 and _as_int(data,"bp_age_ms",999999)<300:
+                    data["local_ramp_reference_hz"]=data["freq"]
+                    data["freq"]=data["mc_frequency_reference_hz"]
+                    data["speed"]=data["freq"]*60.0  # audited AIR56B2: one pole pair; reference, not rotor speed
+            return True, with_motor_controller_aliases(data), None
+        if self._serial_text is not None:
+            line = self._serial_text.get(timeout=1.2, retries=2)
+            if not line:
+                return False, None, "no response"
+            parsed = self._parse_status_string(line)
+            if parsed is None:
+                return False, None, "bad result"
+            return True, parsed, None
+        return False, None, "no response"
+
+    @staticmethod
+    def _parse_status_string(text: str) -> Optional[dict]:
+        # Expected format: DATA freq=.. speed=.. ia=.. ib=.. ic=.. vdc=.. state=.. mode=.. pwm=..
+        try:
+            parts = text.replace("DATA", "").strip().split()
+            kv = {}
+            for part in parts:
+                if "=" not in part:
+                    continue
+                k, v = part.split("=", 1)
+                kv[k.strip()] = v.strip()
+            state_s = kv.get("state", "")
+            mode_s = kv.get("mode", "")
+            state_code = STATE_CODES.get(state_s, -1)
+            mode_code = MODE_CODES.get(mode_s, -1)
+            diag_mode = int(float(kv.get("diag", "0")))
+            duty_mode = int(float(kv.get("duty", "0")))
+            mode_code_eff, mode_name_eff = effective_mode(mode_code, int(float(kv.get("bp_mode", "0"))), diag_mode, duty_mode)
+            capabilities = int(float(kv.get("mc_caps", "0")))
+            return with_motor_controller_aliases(manual_status_reference({
+                "state_code": int(state_code),
+                "state": state_s or str(state_code),
+                "mode_code": int(mode_code_eff),
+                "mode": mode_name_eff,
+                "pwm": int(float(kv.get("pwm", "0"))),
+                "freq": float(kv.get("freq", "0")),
+                "speed": float(kv.get("speed", "0")),
+                "ia": float(kv.get("ia", "0")),
+                "ib": float(kv.get("ib", "0")),
+                "ic": float(kv.get("ic", "0")),
+                "vdc": float(kv.get("vdc", "0")),
+                "id": float(kv.get("id", "0")),
+                "iq": float(kv.get("iq", "0")),
+                "i_rms": float(kv.get("irm", "0")),
+                "mic_active": int(float(kv.get("mic", "0"))),
+                "id_ref": float(kv.get("idref", "0")),
+                "mic_saving_pct": float(kv.get("save", "0")),
+                "freq_cmd": float(kv.get("freqcmd", kv.get("freq", "0"))),
+                "estop": int(float(kv.get("estop", "0"))),
+                "iotest": int(float(kv.get("iotest", "0"))),
+                "ntc": int(float(kv.get("ntc", "0"))),
+                "pfc": int(float(kv.get("pfc", "0"))),
+                "precharge": int(float(kv.get("precharge", "0"))),
+                "brake": int(float(kv.get("brake", "0"))),
+                "brake_duty": float(kv.get("brake_duty", "0")),
+                "fan_duty": float(kv.get("fan_duty", "0")),
+                "bp_fan_duty": float(kv.get("bp_fan_duty", "0")),
+                "bp_fan_rpm": float(kv.get("bp_fan_rpm", "0")),
+                "enc_raw": int(float(kv.get("enc_raw", "0"))),
+                "enc_ok": int(float(kv.get("enc_ok", "0"))),
+                "enc_source": kv.get("enc_source", "motor_controller_uart"),
+                "enc_bus_ok": int(float(kv.get("enc_bus_ok", "0"))),
+                "enc_status": int(float(kv.get("enc_status", "0"))),
+                "enc_speed_ok": int(float(kv.get("enc_speed_ok", "0"))),
+                "enc_reads": int(float(kv.get("enc_reads", "0"))),
+                "enc_errors": int(float(kv.get("enc_errors", "0"))),
+                "enc_io_error": int(float(kv.get("enc_io_error", "0"))),
+                "enc_init_error": int(float(kv.get("enc_init_error", "0"))),
+                "enc_scl": int(float(kv.get("enc_scl", "-1"))),
+                "enc_sda": int(float(kv.get("enc_sda", "-1"))),
+                "enc_age_ms": int(float(kv.get("enc_age_ms", "999999"))),
+                "enc_deg": float(kv.get("enc_deg", "0")),
+                "enc_rpm": float(kv.get("enc_rpm", "0")),
+                "enc_mech_hz": float(kv.get("enc_mech_hz", "0")),
+                "enc_elec_hz": float(kv.get("enc_elec_hz", "0")),
+                "mic_gated": int(float(kv.get("mic_gated", "0"))),
+                "mic_enable_ai": int(float(kv.get("mic_enable_ai", "0"))),
+                "mic_enc_used": int(float(kv.get("mic_enc_used", "0"))),
+                "mic_freq_meas_hz": float(kv.get("mic_fmeas", "0")),
+                "mic_speed_err_hz": float(kv.get("mic_ferr", "0")),
+                "mic_speed_tol_hz": float(kv.get("mic_ftol", "0")),
+                "mic_link_flags": int(float(kv.get("mic_lflags", "0"))),
+                "mic_status_flags": int(float(kv.get("mic_sflags", "0"))),
+                "diag_mode": diag_mode,
+                "duty_mode": duty_mode,
+                "bp_good": int(float(kv.get("bp_good", "0"))),
+                "bp_bad": int(float(kv.get("bp_bad", "999999"))),
+                **{k: int(kv[k]) for k in ("uno_rx_dropped", "uno_rx_hw_errors",
+                    "uno_rx_hw_flags", "uno_rx_high_water", "uno_rx_pending",
+                    "uno_rx_poll_gap_max_ms", "uno_rx_rejected_ms") if k in kv},
+                **{k: int(kv[k]) for k in ("uno_bridge_service_priority", "uno_control_priority", "uno_rpc_priority", "uno_local_adc_acquired", "uno_tx_all_max_gap_us",
+                    "uno_tx_last_gap_us", "uno_tx_gaps_over_watchdog") if k in kv},
+                "uno_rx_rejected_hex": kv.get("uno_rx_rejected_hex", "-"),
+                "mc_break_wave_hex": kv.get("mc_break_wave_hex", "-"),
+                "mc_break_wave_age_ms": int(kv.get("mc_break_wave_age_ms", "999999")),
+                "mc_break_wave_good_pages": int(kv.get("mc_break_wave_good_pages", "0")),
+                "mc_break_wave_bad_pages": int(kv.get("mc_break_wave_bad_pages", "0")),
+                "bp_bad_integrity": int(float(kv["bp_bad_integrity"])) if "bp_bad_integrity" in kv else None,
+                "bp_bad_sequence": int(float(kv["bp_bad_sequence"])) if "bp_bad_sequence" in kv else None,
+                **{key: int(kv[key]) if key in kv else None for key in (
+                    "bp_ne_accepted", "bp_ne_observed", "bp_ne_flags", "bp_transport_fault", "bp_recovered_drops")},
+                "bp_superseded": int(float(kv["bp_superseded"])) if "bp_superseded" in kv else None,
+                "bp_clear_pending": int(float(kv["bp_clear_pending"])) if "bp_clear_pending" in kv else None,
+                "bp_age_ms": int(float(kv.get("bp_age_ms", "999999"))),
+                "bp_status": int(float(kv.get("bp_status", "0"))),
+                "bp_fault": int(float(kv.get("bp_fault", "255"))),
+                **break_wire_status(kv),
+                **break_reject_status(kv),
+                "mc_break_rx_good": int(kv.get("mc_break_rx_good", "0")),
+                "mc_break_rx_bad": int(kv.get("mc_break_rx_bad", "0")),
+                "mc_diag_valid": int(float(kv.get("mc_diag_valid", "0"))),
+                "mc_fault_reason": int(float(kv.get("mc_fault_reason", "0"))),
+                "mc_uart_error_flags": int(float(kv.get("mc_uart_error_flags", "0"))),
+                "mc_fault_motor_state": int(float(kv.get("mc_fault_motor_state", "0"))),
+                "mc_fault_current_mask": int(float(kv.get("mc_fault_current_mask", "0"))),
+                "mc_fault_occurred_mask": int(float(kv.get("mc_fault_occurred_mask", "0"))),
+                "mc_fault_sequence": int(float(kv.get("mc_fault_sequence", "0"))),
+                "mc_fault_tx_status": int(float(kv.get("mc_fault_tx_status", "0"))),
+                "mc_last_bad_valid": int(float(kv.get("mc_last_bad_valid", "0"))),
+                "mc_last_bad_reason": int(float(kv.get("mc_last_bad_reason", "0"))),
+                "mc_last_uart_error_flags": int(float(kv.get("mc_last_uart_error_flags", "0"))),
+                "mc_last_tx_status": int(float(kv.get("mc_last_tx_status", "0"))),
+                **{key: int(kv[key]) if key in kv else None for key in (
+                    "uno_loop_active_max_us", "uno_tx_active_max_gap_us", "uno_rx_active_max_gap_us",
+                    "uno_tx_call_max_us", "uno_rpc_max_us", "uno_tx_short_writes", "uno_tx_count", "uno_rx_count",
+                    "uno_log_dropped", "uno_log_pending")},
+                "bp_mode": int(float(kv.get("bp_mode", "0"))),
+                "bp_cmd_mode": int(float(kv.get("bp_cmd_mode", kv.get("bp_mode", "0")))),
+                "bp_foc_backend": int(float(kv.get("bp_foc_backend", "0"))),
+                "fw_build": int(float(kv.get("fw_build", "0"))),
+                "mc_fw_build": int(float(kv.get("bp_fw_build", "0"))),
+                "matrix_test": int(float(kv.get("matrix_test", "0"))),
+                "bp_seq": int(float(kv.get("bp_seq", "0"))),
+                "bp_good_cnt": int(float(kv.get("bp_good_cnt", kv.get("bp_good", "0")))),
+                "bp_bad_cnt": int(float(kv.get("bp_bad_cnt", kv.get("bp_bad", "999999")))),
+                "bp_ext": int(float(kv.get("bp_ext", "0"))),
+                "bp_brake_duty": float(kv.get("bp_brake_duty", "0")),
+                "bp_vbus_raw": int(float(kv.get("bp_vbus_raw", "0"))),
+                "bp_vdc": float(kv.get("bp_vdc", kv.get("vdc", "0"))),
+                "bp_vbus_age_ms": int(float(kv.get("bp_vbus_age_ms", "999999"))),
+                "bp_mcsdk_telemetry": int(float(kv.get("bp_mcsdk_telemetry", "0"))),
+                "bp_vbus_valid": int(float(kv.get("bp_vbus_valid", "0"))),
+                "bp_softstart_ready": int(float(kv.get("bp_softstart_ready", "0"))),
+                "bp_precharge_managed": 0,
+                "rpc_schema_version": int(float(kv.get("rpc_schema", "1"))),
+                "mc_capabilities": capabilities,
+                "mc_supported_modes": supported_modes_from_caps(capabilities),
+                "bp_temp_raw": int(float(kv.get("bp_temp_raw", "0"))),
+                "bp_temp_v": float(kv.get("bp_temp_v", "0")),
+                "bp_temp_c": float(kv.get("bp_temp_c", "0")),
+                "bp_temp_flags": int(float(kv.get("bp_temp_flags", "0"))),
+                "bp_temp_valid": int(float(kv.get("bp_temp_valid", "0"))),
+                "bp_temp_fault": int(float(kv.get("bp_temp_fault", "0"))),
+                "bp_temp_age_ms": int(float(kv.get("bp_temp_age_ms", "999999"))),
+                "bp_phase_a_raw": int(float(kv.get("bp_phase_a_raw", "0"))),
+                "bp_phase_b_raw": int(float(kv.get("bp_phase_b_raw", "0"))),
+                "bp_phase_c_raw": int(float(kv.get("bp_phase_c_raw", "0"))),
+                "bp_phase_a_v": float(kv.get("bp_phase_a_v", "0")),
+                "bp_phase_b_v": float(kv.get("bp_phase_b_v", "0")),
+                "bp_phase_c_v": float(kv.get("bp_phase_c_v", "0")),
+                "bp_phase_flags": int(float(kv.get("bp_phase_flags", "0"))),
+                "bp_phase_valid": int(float(kv.get("bp_phase_valid", "0"))),
+                "bp_phase_c_virtual": int(float(kv.get("bp_phase_c_virtual", "0"))),
+                "bp_phase_age_ms": int(float(kv.get("bp_phase_age_ms", "999999"))),
+                "bp_rsp_age_ms": int(float(kv.get("bp_rsp_age_ms", "999999"))),
+                "bp_ping_pairs": int(float(kv.get("bp_ping_pairs", "0"))),
+                "bp_ping_age_ms": int(float(kv.get("bp_ping_age_ms", "999999"))),
+                **{key: int(kv[key]) for key in ("manual_scalar_capable", "manual_run_mode",
+                    "downmode_coast", "mc_frequency_reference_valid", "mc_decel_bus_hold") if key in kv},
+                **{key: float(kv[key]) for key in ("accel_hz_per_s", "decel_hz_per_s",
+                    "mc_frequency_reference_hz") if key in kv},
+                "ts": int(_now_ts() * 1000.0),
+            }))
+        except Exception:
+            return None
+
+
+class AppState:
+    def __init__(
+        self,
+        rpc: RpcBridge,
+        logs: LogStore,
+        status_log_interval: float,
+        firmware_update: Optional[FirmwareUpdateConfig] = None,
+        command_guard: Optional[CommandGuardConfig] = None,
+        hv_arm: Optional[HvArmState] = None,
+        start_runlimit_sec: float = DEFAULT_START_RUNLIMIT_SEC,
+        arm_profiles: Optional[dict[str, HvArmConfig]] = None,
+        profile_runlimits: Optional[dict[str, float]] = None,
+        guard_max_vdc: float = DEFAULT_CMD_GUARD_MAX_VDC,
+        control_access: Optional[ControlAccessConfig] = None,
+        operator_heartbeat_timeout_sec: float = DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC,
+        vbus_calibration: Optional[VbusCalibrationStore] = None,
+    ) -> None:
+        self.rpc = rpc
+        self.logs = logs
+        self.firmware_update = firmware_update
+        self.command_guard = command_guard or CommandGuardConfig(DEFAULT_CMD_GUARD_MAX_VDC)
+        self.hv_arm = hv_arm or HvArmState(HvArmConfig())
+        self.start_runlimit_sec = max(0.1, float(start_runlimit_sec))
+        self.arm_profiles = dict(arm_profiles or {})
+        self.profile_runlimits = {
+            str(name).lower(): max(0.1, float(limit))
+            for name, limit in (profile_runlimits or {}).items()
+        }
+        self.guard_max_vdc = float(guard_max_vdc)
+        self.control_access = control_access or ControlAccessConfig()
+        self.vbus_calibration = vbus_calibration or VbusCalibrationStore()
+        self.hv_arm.set_calibration_provider(self.vbus_calibration.is_valid)
+        self.operator_heartbeat_timeout_sec = max(1.0, float(operator_heartbeat_timeout_sec))
+        self._operator_heartbeat_ts = 0.0
+        self._manual_start_requested = False
+        self._manual_mcu_watchdog = False
+        self.control_lock = threading.Lock()
+        self._status_log_interval = status_log_interval
+        self._last_status_log = 0.0
+        self._last_fault_diag_key = None
+        self._lock = threading.Lock()
+        self._watchdog_stop = threading.Event()
+        self._watchdog_thread: Optional[threading.Thread] = None
+        self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
+        self._fault_recorder = MotorFaultRecorder()
+        self._last_diag_idle_poll = 0.0
+        self._trial_original_cfg = None
+        self._trial_original_runlimit = None
+        self._powered_trial_spent = False
+
+    def prepare_powered_trial(self, proof: object, confirm: str) -> tuple[bool, str]:
+        if confirm not in ("PREPARE UARTV3 TRIAL 3S","PREPARE UARTV3 COAST30 50HZ") or not self.control_access.enabled:
+            return False, "authenticated explicit trial preparation required"
+        ok, reason = validate_powered_trial_qualification(proof)
+        if not ok:
+            return False, reason
+        coast30 = proof.get("schema")=="mic_ai.powered_trial.coast30.v1"
+        if confirm != ("PREPARE UARTV3 COAST30 50HZ" if coast30 else "PREPARE UARTV3 TRIAL 3S"):
+            return False, "qualification/preparation phrase mismatch"
+        if self._powered_trial_spent or self.hv_arm.cfg.trial_gate is not None:
+            return False, "trial already prepared or consumed in this HMI session"
+        cfg = self.hv_arm.cfg
+        read_ok, data, _ = self.rpc.get()
+        if (not read_ok or data is None or cfg.profile != ARM_PROFILE_HV or not cfg.enabled
+                or self.hv_arm.snapshot()["hmi_hv_armed"] or not self.vbus_calibration.is_valid(data)):
+            return False, "trial needs disarmed calibrated HV profile"
+        if ((data.get("fw_build"), data.get("mc_fw_build")) != tuple(proof["pair"])
+                or data.get("state") != "SAFE" or data.get("pwm") != 0 or data.get("estop") != 0
+                or _as_int(data, "bp_status", 0x22) & 0x22
+                or any(data.get(k) != 0 for k in ("precharge", "pfc", "brake", "bp_ext"))):
+            return False, "trial preparation requires qualified peers with outputs off"
+        prepare_max_vdc = 10 if tuple(proof["pair"]) == BOOT_TRIAL_PAIR else 2
+        for key in ("vdc", "bp_vdc"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= prepare_max_vdc:
+                return False, "prepare only on a low-energy bus"
+        if not 0 <= _as_int(data, "bp_vbus_raw", 999999) <= prepare_max_vdc*10 or not _status_link_live(data):
+            return False, "preparation bus word/link invalid"
+        for key in ("mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence", "mc_uart_error_flags",
+                    "mc_last_uart_error_flags", "uno_tx_short_writes", "bp_transport_fault"):
+            if type(data.get(key)) is not int or data[key] != 0:
+                return False, "preparation transport unhealthy: " + key
+        for key in ("mc_age_ms", "bp_vbus_age_ms", "bp_temp_age_ms"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value < 300:
+                return False, "preparation telemetry stale: " + key
+        if (data.get("bp_fault") not in (0, 5) or data.get("mc_diag_valid") != 1
+                or data.get("bp_vbus_valid") != 1 or data.get("bp_temp_valid") != 1
+                or data.get("bp_temp_fault") != 0):
+            return False, "preparation measurements or fault state invalid"
+        if data.get("bp_fault") == 5 and (data.get("mc_fault_reason") != 8
+                or data.get("mc_fault_current_mask") != 4 or data.get("mc_fault_occurred_mask") not in (4, 0x404)):
+            return False, "preparation permits only specifically identified zero-bus undervoltage"
+        # Preparation is not ACK/ARM. Retain a recorded DP occurrence; live
+        # arming still requires fault-free powered telemetry for a full window.
+        remaining = proof["expires_at"] - time.time()
+        if not 0 < remaining <= 3600:
+            return False, "qualification expired during trial preparation"
+        self._trial_original_cfg = cfg
+        gate = PoweredTrialGate(remaining, pair=tuple(proof["pair"]),profile=COAST30_PROFILE if coast30 else "short",
+                                wait_without_deadline=tuple(proof["pair"]) == BOOT_TRIAL_PAIR)
+        self._trial_original_runlimit = self.start_runlimit_sec
+        if coast30:
+            self.start_runlimit_sec = 33
+        self.hv_arm.set_config(HvArmConfig(enabled=cfg.enabled, ttl_sec=45 if coast30 else min(cfg.ttl_sec, 10),
+            min_vdc=max(cfg.min_vdc, 250), max_vdc=min(cfg.max_vdc, 360),
+            min_temp_c=cfg.min_temp_c, max_temp_c=min(cfg.max_temp_c, 80),
+            confirm="ARM UARTV3 COAST30 50HZ" if coast30 else "ARM UARTV3 TRIAL 3S", profile=ARM_PROFILE_HV,
+            trial_gate=gate))
+        self.logs.add("POWERED_TRIAL_PREPARED pair=" + "/".join(map(str, proof["pair"]))
+                      + f" max_run={gate.max_run_s}s max_freq={gate.max_freq_hz}Hz no_START")
+        return True, "prepared, not armed; awaiting 30 seconds of fault-free powered idle observations"
+
+    def cancel_powered_trial(self) -> tuple[bool, str]:
+        ok, reason, _ = self.stop_sequence()
+        if self._trial_original_cfg is not None:
+            self.hv_arm.set_config(self._trial_original_cfg)
+            self._trial_original_cfg = None
+            self.start_runlimit_sec = self._trial_original_runlimit
+            self._trial_original_runlimit = None
+        return ok, reason
+
+    def trial_command_check(self, cmd: str) -> tuple[bool, str]:
+        if self.hv_arm.cfg.trial_gate is None:
+            return True, "ok"
+        parts = [p.upper() for p in _cmd_tokens(cmd)]
+        if parts in (["STOP"], ["ESTOP"], ["CLEAR"], ["MODE", "VF"]):
+            return True, "ok"
+        if len(parts) == 3 and parts[:2] in (["SET", "FREQ"], ["SET", "RUNLIMIT"]):
+            try:
+                value = float(parts[2])
+                gate = self.hv_arm.cfg.trial_gate
+                if gate.profile==COAST30_PROFILE:
+                    if math.isfinite(value) and ((parts[1]=="FREQ" and value in (0,50))
+                            or (parts[1]=="RUNLIMIT" and value==33 and not gate.consumed)):
+                        return True,"ok"
+                    return False,"coast profile fixes 50 Hz and 33 s backup; STOP allowed, active deceleration forbidden"
+                ceiling = gate.max_freq_hz if parts[1] == "FREQ" else gate.max_run_s
+                if math.isfinite(value) and (0 <= value <= ceiling if parts[1] == "FREQ" else .1 <= value <= ceiling):
+                    return True, "ok"
+            except ValueError:
+                pass
+        return False, "powered trial permits only V/f <=10 Hz, run limit <=3 s, CLEAR and stop commands"
+
+    def _precharge_off(self) -> tuple[bool, str]:
+        return True, "external-autonomous-no-control"
+
+    def mark_operator_heartbeat(self) -> bool:
+        if self._manual_mcu_watchdog:
+            ok, error = self.rpc.cmd("CONTROL HEARTBEAT")
+            if not ok:
+                self.logs.add("MANUAL_OPERATOR_HEARTBEAT_FAIL " + str(error))
+                return False
+        with self._lock:
+            self._operator_heartbeat_ts = time.monotonic()
+        return True
+
+    def operator_heartbeat_age(self) -> float:
+        with self._lock:
+            stamp = self._operator_heartbeat_ts
+        if stamp <= 0.0:
+            return math.inf
+        return max(0.0, time.monotonic() - stamp)
+
+    def operator_heartbeat_fresh(self) -> bool:
+        return self.operator_heartbeat_age() <= self.operator_heartbeat_timeout_sec
+
+    def stop_sequence(
+        self,
+        emergency: bool = False,
+        confirm_timeout_sec: float = 0.75,
+        poll_sec: float = 0.05,
+    ) -> tuple[bool, str, Optional[dict]]:
+        """Stop PWM and confirm that every motor-control output is off."""
+        self._manual_mcu_watchdog = False
+        primary_cmd = "ESTOP" if emergency else "STOP"
+        primary_ok, primary_err = self.rpc.cmd(primary_cmd)
+        relay_ok, relay_err = self._precharge_off()
+        self.hv_arm.disarm()
+        self._runtime_bad_monitor.reset()
+
+        deadline = time.monotonic() + max(0.0, float(confirm_timeout_sec))
+        status_ok = False
+        status: Optional[dict] = None
+        status_err = "status unavailable"
+        off_confirmed = False
+        while True:
+            status_ok, candidate, status_err = self.rpc.get()
+            if status_ok and candidate is not None:
+                status = candidate
+                off_confirmed = bool(
+                    _status_link_live(candidate)
+                    and _as_int(candidate, "bp_status", 0) & 0x01
+                    and _as_int(candidate, "pwm", 1) == 0
+                    and (_as_int(candidate, "bp_status", 0x20) & 0x20) == 0
+                    and _as_int(candidate, "precharge", 1) == 0
+                    and (_as_int(candidate, "bp_ext", 0x08) & 0x08) == 0
+                )
+                if off_confirmed:
+                    break
+            if time.monotonic() >= deadline:
+                break
+            time.sleep(max(0.0, float(poll_sec)))
+        ok = bool(primary_ok and relay_ok and off_confirmed)
+        detail = (
+            f"{primary_cmd}={primary_err or primary_ok}; "
+            f"PRECHARGE_OFF={relay_err or relay_ok}; "
+            f"outputs_off={int(off_confirmed)}"
+        )
+        if not status_ok:
+            detail += f"; status={status_err or 'unavailable'}"
+        self.logs.add(f"WIFI_STOP_SEQUENCE emergency={int(emergency)} ok={int(ok)} {detail}")
+        return ok, detail, status
+
+    def start_sequence(
+        self,
+        relay_timeout_sec: float = DEFAULT_RELAY_CONFIRM_TIMEOUT_SEC,
+        relay_settle_sec: float = DEFAULT_RELAY_SETTLE_SEC,
+        run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
+        poll_sec: float = 0.05,
+        runlimit_sec: Optional[float] = None,
+        manual_run: bool = False,
+    ) -> tuple[bool, str, Optional[dict]]:
+        """Confirm safety, then wait for the autonomous AC soft-start and PWM."""
+        if type(manual_run) is not bool or (manual_run and runlimit_sec is not None):
+            return False, "manual mode cannot be combined with a timed run limit", None
+        effective_limit = self.start_runlimit_sec
+        if self.hv_arm.cfg.trial_gate is not None:
+            gate=self.hv_arm.cfg.trial_gate
+            effective_limit = min(effective_limit, gate.max_run_s)
+            if gate.profile==COAST30_PROFILE and runlimit_sec is not None and runlimit_sec!=33:
+                return False,"coast profile requires its exact 33-second MCU backup limit",None
+            if not self.operator_heartbeat_fresh():
+                return False, "powered trial requires a fresh operator heartbeat", None
+        if runlimit_sec is not None:
+            if (type(runlimit_sec) not in (int, float) or not math.isfinite(runlimit_sec)
+                    or not 0.1 <= runlimit_sec <= effective_limit):
+                return False, "requested run limit must be finite, positive and no greater than profile limit", None
+            effective_limit = float(runlimit_sec)
+        st_ok, status, st_err = self.rpc.get()
+        if manual_run and not (manual_scalar_supported(status) and self.control_access.enabled and
+                self.hv_arm.cfg.enabled and self.hv_arm.cfg.profile==ARM_PROFILE_HV and
+                self.hv_arm.cfg.trial_gate is None and self.operator_heartbeat_fresh()):
+            return False, "manual scalar requires matching firmware, authenticated live control and normal HV profile", status
+        allowed, guard_err = command_guard_check(
+            "START", status if st_ok else None, self.command_guard
+        )
+        if not allowed:
+            detail = guard_err if st_ok else f"{guard_err}: {st_err or 'no status'}"
+            self.logs.add(f"WIFI_START_REJECT guard {detail}")
+            return False, detail, status
+
+        if self.hv_arm.cfg.enabled:
+            arm_ok, arm_err = self.hv_arm.command_allowed(status)
+            if not arm_ok:
+                self.logs.add(f"WIFI_START_REJECT arm {arm_err}")
+                return False, arm_err, status
+
+        if status is None:
+            return False, "status unavailable", None
+        if _as_int(status, "precharge", 0) != 0 or (_as_int(status, "bp_ext", 0) & 0x08) != 0:
+            self.stop_sequence(emergency=False)
+            return False, "reserved precharge bit was nonzero; outputs were forced off, retry START", status
+
+        self._manual_start_requested = manual_run
+        return self._start_without_precharge(status, run_timeout_sec, poll_sec, effective_limit)
+
+    def _start_without_precharge(
+        self,
+        initial_status: dict,
+        run_timeout_sec: float,
+        poll_sec: float,
+        effective_limit: Optional[float] = None,
+    ) -> tuple[bool, str, Optional[dict]]:
+        mcsdk_backend = _as_int(initial_status, "bp_mcsdk_telemetry", 0) == 1
+        self.logs.add(
+            "WIFI_START_STEP SOFTSTART owner=external-autonomous "
+            f"ready={_as_int(initial_status, 'bp_softstart_ready', 0)} "
+            f"mcsdk={int(mcsdk_backend)}"
+        )
+        arm_ok, arm_err = self.hv_arm.command_allowed(initial_status)
+        if self.hv_arm.cfg.enabled and not arm_ok:
+            self.stop_sequence(emergency=False)
+            self.logs.add(f"WIFI_START_FAIL arm_recheck {arm_err}")
+            return False, arm_err, initial_status
+
+        if manual_scalar_supported(initial_status):
+            mode = "MANUAL" if self._manual_start_requested else "BOUNDED"
+            setup = ["SET RUNMODE " + mode]
+            if self._manual_start_requested:
+                setup.append("CONTROL HEARTBEAT")
+                effective_limit = 0.0
+            for command in setup:
+                setup_ok, setup_error = self.rpc.cmd(command)
+                if not setup_ok:
+                    self.stop_sequence()
+                    return False, "manual setup failed: " + str(setup_error), initial_status
+            self._manual_mcu_watchdog = self._manual_start_requested
+            self.hv_arm.set_manual_session(self._manual_start_requested)
+        runlimit_cmd = f"SET RUNLIMIT {self.start_runlimit_sec if effective_limit is None else effective_limit:.3f}"
+        limit_ok, limit_err = self.rpc.cmd(runlimit_cmd)
+        if not limit_ok:
+            self.stop_sequence(emergency=False)
+            detail = f"run limit rejected: {limit_err or 'no acknowledgement'}"
+            self.logs.add(f"WIFI_START_FAIL runlimit {detail}")
+            return False, detail, initial_status
+
+        gate = self.hv_arm.cfg.trial_gate
+        if gate is not None:
+            read_ok, current, read_err = self.rpc.get()
+            allowed, reason = self.hv_arm.command_allowed(current if read_ok else None)
+            if not read_ok or not allowed or not self.operator_heartbeat_fresh():
+                self.stop_sequence()
+                return False, "trial final pre-START check failed: " + (read_err or reason), current
+            # Consume before attempting START, including a lost/rejected reply.
+            gate.consume()
+            self._powered_trial_spent = True
+            self.logs.add(f"POWERED_TRIAL_CONSUMED max_run={gate.max_run_s}s stop_after={gate.stop_after_s}s")
+        start_ok, start_err = self.rpc.cmd("START")
+        if not start_ok:
+            self.stop_sequence(emergency=True)
+            detail = f"START rejected: {start_err or 'no acknowledgement'}"
+            self.logs.add(f"WIFI_START_FAIL start_cmd {detail}")
+            return False, detail, initial_status
+
+        run_deadline = time.monotonic() + max(0.0, float(run_timeout_sec))
+        run_status: Optional[dict] = None
+        last_run_error = "PWM did not start"
+        while True:
+            read_ok, candidate, read_err = self.rpc.get()
+            if read_ok and candidate is not None:
+                self.maybe_log_fault_diagnostics(candidate)
+                run_status = candidate
+                run_ok, run_err = output_sequence_health_check(
+                    candidate,
+                    self.hv_arm.cfg,
+                    self.command_guard,
+                    vbus_calibrated=self.vbus_calibration.is_valid(candidate),
+                )
+                reserved_relay_bit = bool(
+                    _as_int(candidate, "precharge", 0) != 0
+                    or (_as_int(candidate, "bp_ext", 0) & 0x08) != 0
+                )
+                softstart_ready = (
+                    _as_int(candidate, "bp_softstart_ready", 0) == 1
+                    if mcsdk_backend
+                    else True
+                )
+                nucleo_pwm_ok = (
+                    (_as_int(candidate, "bp_status", 0) & 0x20) != 0
+                    if mcsdk_backend
+                    else True
+                )
+                running = (
+                    _as_int(candidate, "pwm", 0) == 1
+                    and str(candidate.get("state", "")).upper()
+                    in ("VF_RUN", "FOC_ALIGN", "FOC_RUN")
+                    and not reserved_relay_bit
+                    and softstart_ready
+                    and nucleo_pwm_ok
+                )
+                if run_ok and running:
+                    self.hv_arm.mark_started()
+                    self.logs.add(
+                        f"WIFI_START_OK state={candidate.get('state')} "
+                        f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
+                        f"speed={_as_float(candidate, 'speed', 0.0):.1f} "
+                        "softstart=external-ready"
+                    )
+                    return True, "PWM started; external soft-start bus is stable", candidate
+                if not softstart_ready:
+                    last_run_error = "external soft-start bus is not stable yet"
+                else:
+                    last_run_error = run_err if not run_ok else "PWM did not enter a running state"
+            else:
+                last_run_error = read_err or "status unavailable"
+            if time.monotonic() >= run_deadline:
+                self.stop_sequence(emergency=True)
+                detail = f"START confirmation failed: {last_run_error}"
+                self.logs.add(f"WIFI_START_FAIL run_feedback {detail}")
+                return False, detail, run_status
+            time.sleep(max(0.0, float(poll_sec)))
+
+    def arm_snapshot(self, status: Optional[dict] = None) -> dict:
+        snapshot = self.hv_arm.snapshot()
+        available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
+        snapshot["hmi_arm_profiles"] = available
+        snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
+        snapshot["hmi_manual_scalar_supported"] = int(manual_scalar_supported(status))
+        gate = self.hv_arm.cfg.trial_gate
+        snapshot["hmi_local_stop_latched"] = local_stop_latched(status)
+        snapshot["hmi_powered_trial_supported"] = 1
+        snapshot["hmi_powered_trial_enabled"] = 0
+        snapshot["hmi_powered_trial_ready"] = 0
+        if gate is not None:
+            ready, reason = gate.ready(status, self.vbus_calibration.is_valid(status))
+            snapshot.update(gate.snapshot())
+            snapshot["hmi_powered_trial_ready"] = int(ready)
+            snapshot["hmi_powered_trial_reason"] = reason
+            snapshot["hmi_start_runlimit_s"] = min(snapshot["hmi_start_runlimit_s"], gate.max_run_s)
+        snapshot["hmi_bounded_start_request_supported"] = 1
+        snapshot["hmi_precharge_relay_present"] = 0
+        snapshot["hmi_external_softstart_ready"] = int(
+            status is not None and _as_int(status, "bp_softstart_ready", 0) == 1
+        )
+        calibration = self.vbus_calibration.snapshot(status)
+        snapshot["hmi_vbus_hv_calibrated"] = int(calibration["valid"])
+        snapshot["hmi_vbus_calibration_reason"] = calibration["reason"]
+        snapshot["hmi_vbus_zero_captured"] = int(calibration["zero_captured"])
+        snapshot["hmi_vbus_high_captured"] = int(calibration["high_captured"])
+        snapshot["hmi_vbus_zero_meter_vdc"] = calibration["zero_meter_vdc"]
+        snapshot["hmi_vbus_zero_mc_vdc"] = calibration["zero_mc_vdc"]
+        snapshot["hmi_vbus_high_meter_vdc"] = calibration["high_meter_vdc"]
+        snapshot["hmi_vbus_high_mc_vdc"] = calibration["high_mc_vdc"]
+        current_cfg = self.hv_arm.cfg
+        switch_ok, _ = arm_profile_switch_precheck(status, current_cfg) if status is not None else (False, "")
+        snapshot["hmi_arm_profile_switch_ready"] = int(switch_ok and not snapshot["hmi_hv_armed"])
+        heartbeat_age = self.operator_heartbeat_age()
+        snapshot["hmi_operator_heartbeat_age_s"] = round(heartbeat_age, 2) if math.isfinite(heartbeat_age) else None
+        snapshot["hmi_operator_heartbeat_ok"] = int(
+            not self.control_access.enabled or heartbeat_age <= self.operator_heartbeat_timeout_sec
+        )
+        snapshot["hmi_operator_heartbeat_timeout_s"] = self.operator_heartbeat_timeout_sec
+        return snapshot
+
+    def switch_arm_profile(self, profile: str, status: Optional[dict]) -> tuple[bool, str]:
+        if self.hv_arm.cfg.trial_gate is not None:
+            return False, "cancel powered trial before changing profile"
+        target = str(profile).strip().lower()
+        cfg = self.arm_profiles.get(target)
+        if cfg is None:
+            return False, f"unsupported arm profile: {profile}"
+        ok, reason = arm_profile_switch_precheck(status, cfg)
+        if not ok:
+            return False, reason
+
+        self.hv_arm.set_config(cfg)
+        if target == ARM_PROFILE_LV:
+            self.command_guard.max_vdc = min(self.guard_max_vdc, cfg.max_vdc)
+            self.command_guard.allow_hv = False
+        else:
+            self.command_guard.max_vdc = self.guard_max_vdc
+            self.command_guard.allow_hv = True
+        self.start_runlimit_sec = self.profile_runlimits.get(target, DEFAULT_START_RUNLIMIT_SEC)
+        self._runtime_bad_monitor.reset()
+        return True, "profile selected"
+
+    def start_safety_watchdog(self) -> None:
+        if self._watchdog_thread is not None and self._watchdog_thread.is_alive():
+            return
+        self._watchdog_stop.clear()
+        self._watchdog_thread = threading.Thread(target=self._safety_watchdog_loop, daemon=True)
+        self._watchdog_thread.start()
+
+    def stop_safety_watchdog(self) -> None:
+        self._watchdog_stop.set()
+        if self._watchdog_thread is not None:
+            self._watchdog_thread.join(timeout=1.0)
+
+    def _safety_watchdog_loop(self) -> None:
+        while not self._watchdog_stop.wait(0.2):
+            reason = ""
+            if self.hv_arm.take_expired_session_action():
+                reason = "HV_ARM_EXPIRED"
+            elif self.hv_arm.runtime_monitor_required():
+                if self.control_access.enabled and not self.operator_heartbeat_fresh():
+                    reason = f"OPERATOR_HEARTBEAT_LOST age={self.operator_heartbeat_age():.2f}s"
+                    self.hv_arm.disarm()
+                else:
+                    status_ok, status, status_err = self.rpc.get()
+                    if status_ok and status is not None:
+                        self.maybe_log_fault_diagnostics(status)
+                    live_ok, live_err = hv_runtime_check(
+                        status if status_ok else None,
+                        self.hv_arm.cfg,
+                        allow_nonzero_bad=True,
+                        vbus_calibrated=self.vbus_calibration.is_valid(status if status_ok else None),
+                    )
+                    if live_ok and status is not None:
+                        live_ok, bad_err = self._runtime_bad_monitor.observe(status)
+                        if live_ok and bad_err != "ok":
+                            self.logs.add(f"HV_RUNTIME_UART_WARN {bad_err}")
+                        elif not live_ok:
+                            live_err = bad_err
+                    if not live_ok:
+                        gate=self.hv_arm.cfg.trial_gate
+                        reason = ("POWERED_TRIAL_RUNLIMIT" if gate is not None and live_err == gate.deadline_reason
+                                  else f"HV_RUNTIME_REJECT {status_err or live_err}")
+                        self.hv_arm.disarm()
+            else:
+                self._runtime_bad_monitor.reset()
+                # Keep a small idle prehistory even when no browser is open.
+                # Armed operation already polls above; do not add a second poll.
+                now = time.monotonic()
+                if now - self._last_diag_idle_poll >= 1.0:
+                    self._last_diag_idle_poll = now
+                    status_ok, status, _ = self.rpc.get()
+                    if status_ok and status is not None:
+                        self.maybe_log_fault_diagnostics(status)
+                    gate = self.hv_arm.cfg.trial_gate
+                    if gate is not None:
+                        idle = status if status_ok else None
+                        gate.observe(idle, self.vbus_calibration.is_valid(idle))
+            if not reason:
+                continue
+            stop_ok, stop_err = self.rpc.cmd("STOP")
+            normal_trial_stop = False
+            if reason == "POWERED_TRIAL_RUNLIMIT" and stop_ok:
+                read_ok, stopped, _ = self.rpc.get()
+                normal_trial_stop = bool(read_ok and stopped is not None and _status_link_live(stopped)
+                    and _as_int(stopped, "pwm", 1) == 0 and not (_as_int(stopped, "bp_status", 0x20) & 0x20)
+                    and _as_int(stopped, "bp_ext", 1) == 0)
+            # A normal deadline is not an emergency; unconfirmed STOP still escalates.
+            estop_ok, estop_err = ((True, "not-required-after-confirmed-trial-stop") if normal_trial_stop
+                                  else self.rpc.cmd("ESTOP"))
+            relay_ok, relay_err = self._precharge_off()
+            self.logs.add(
+                f"{reason} "
+                f"stop_ok={int(stop_ok)} stop_err={stop_err or '-'} "
+                f"estop_ok={int(estop_ok)} estop_err={estop_err or '-'} "
+                f"relay_ok={int(relay_ok)} relay_err={relay_err or '-'}"
+            )
+
+    def maybe_log_fault_diagnostics(self, data: dict) -> None:
+        data["hmi_local_stop_latched"] = local_stop_latched(data)
+        data["mc_fault_detail"] = motor_fault_detail(data)
+        for line in self._fault_recorder.observe(data):
+            self.logs.add(line)
+        data.update(self._fault_recorder.snapshot())
+        reason = _as_int(data, "mc_fault_reason", 0)
+        active = _as_int(data, "bp_fault", 0)
+        key = None
+        if reason or active or local_stop_latched(data):
+            key = tuple(data.get(k) for k in ("mc_fw_build", "mc_diag_valid", "mc_fault_reason",
+                                             "mc_uart_error_flags", "mc_fault_current_mask",
+                                             "mc_fault_occurred_mask", "mc_fault_motor_state",
+                                             "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
+                                             "mc_last_bad_reason", "mc_last_uart_error_flags", "mc_last_tx_status"))
+            key += (active, local_stop_latched(data))
+        with self._lock:
+            if key == self._last_fault_diag_key:
+                return
+            self._last_fault_diag_key = key
+        if key is not None:
+            self.logs.add(f"MC_FAULT_DIAG code={active} bad={_as_int(data, 'bp_bad_cnt', 0)} "
+                          + motor_fault_detail(data))
+
+    def maybe_log_status(self, data: dict) -> None:
+        self.maybe_log_fault_diagnostics(data)
+        for index, record in enumerate(data.get("mc_break_snapshots", [])):
+            if not record.get("available") or not record.get("captured"):
+                continue
+            key = json.dumps(record["raw"], sort_keys=True)
+            with self._lock:
+                if not hasattr(self, "_last_break_snapshot_keys"):
+                    self._last_break_snapshot_keys = {}
+                changed = self._last_break_snapshot_keys.get(index) != key
+                self._last_break_snapshot_keys[index] = key
+            if changed:
+                self.logs.add("IPM_BREAK_SNAPSHOT " + json.dumps(record, sort_keys=True))
+        now = _now_ts()
+        with self._lock:
+            if (now - self._last_status_log) < self._status_log_interval:
+                return
+            self._last_status_log = now
+        line = (
+            f"STAT state={data.get('state')} mode={data.get('mode')} pwm={data.get('pwm')} "
+            f"freq={data.get('freq'):.2f} speed={data.get('speed'):.1f} vdc={data.get('vdc'):.2f} "
+            f"bp_temp_c={data.get('bp_temp_c', 0.0):.1f} bp_temp_fault={data.get('bp_temp_fault', 0)} "
+            f"bp_phase_c_v={data.get('bp_phase_c_v', 0.0):.3f} bp_phase_c_virtual={data.get('bp_phase_c_virtual', 0)} "
+            f"fan_duty={data.get('fan_duty', 0.0):.2f} bp_fan_rpm={data.get('bp_fan_rpm', 0.0):.0f} "
+            f"bp_cmd_mode={data.get('bp_cmd_mode', 0)} bp_foc_backend={data.get('bp_foc_backend', 0)}"
+            f" mc_diag_valid={data.get('mc_diag_valid', 0)} mc_fault_reason={data.get('mc_fault_reason', 0)}"
+            f" hmi_local_stop_latched={local_stop_latched(data)}"
+        )
+        self.logs.add(line)
+
+
+class Handler(BaseHTTPRequestHandler):
+    server_version = "UNOQHMI/0.1"
+
+    def _send_json(self, payload: dict, code: int = 200) -> None:
+        data = json.dumps(payload).encode("utf-8")
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
+
+    def _send_text(self, text: str, code: int = 200, filename: Optional[str] = None) -> None:
+        data = text.encode("utf-8")
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            if filename:
+                self.send_header("Content-Disposition", f"attachment; filename=\"{filename}\"")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
+
+    def _send_static(self, name: str, content_type: str) -> None:
+        base = os.path.dirname(__file__)
+        path = os.path.join(base, "static", name)
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+        except OSError:
+            self.send_error(404)
+            return
+        try:
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return
+
+    def _require_control_access(self, mark_heartbeat: bool = True) -> bool:
+        cfg = self.server.app.control_access  # type: ignore[attr-defined]
+        if not cfg.enabled:
+            return True
+        expected = cfg.read_token()
+        provided = self.headers.get("X-UNOQ-Control-Token", "")
+        if expected and provided and secrets.compare_digest(provided, expected):
+            if mark_heartbeat:
+                if self.server.app.mark_operator_heartbeat() is False:  # type: ignore[attr-defined]
+                    self._send_json({"ok":False,"error":"MCU operator heartbeat was not acknowledged"},503)
+                    return False
+            return True
+        peer = self.client_address[0] if self.client_address else "unknown"
+        self.server.app.logs.add(f"AUTH_REJECT peer={peer} path={urlparse(self.path).path}")  # type: ignore[attr-defined]
+        self._send_json({"ok": False, "error": "control access key is missing or invalid"}, 401)
+        return False
+
+    def do_GET(self) -> None:
+        parsed = urlparse(self.path)
+        if parsed.path == "/":
+            self._send_static("index.html", "text/html; charset=utf-8")
+            return
+        if parsed.path == "/app.js":
+            self._send_static("app.js", "application/javascript; charset=utf-8")
+            return
+        if parsed.path == "/style.css":
+            self._send_static("style.css", "text/css; charset=utf-8")
+            return
+        if parsed.path == "/api/bkin-trace":
+            if not self._require_control_access(mark_heartbeat=False):
+                return
+            ok, data, err = self.server.app.rpc.get()
+            if not ok or data is None:
+                self._send_json({"ok": False, "error": err or "no response"}, 503)
+                return
+            self.server.app.maybe_log_status(data)
+            self._send_json({"ok": True, "data": bkin_wave_status(data)})
+            return
+        if parsed.path == "/api/break-snapshot":
+            if not self._require_control_access(mark_heartbeat=False):
+                return
+            ok, data, err = self.server.app.rpc.get()
+            if not ok or data is None:
+                self._send_json({"ok": False, "error": err or "no response"}, 503)
+                return
+            self.server.app.maybe_log_status(data)
+            fields = {k: v for k, v in data.items() if k.startswith("mc_break_")}
+            self._send_json({"ok": True, "data": fields})
+            return
+        if parsed.path == "/api/status":
+            self._handle_status()
+            return
+        if parsed.path == "/api/logs":
+            if not self._require_control_access():
+                return
+            self._handle_logs(parsed)
+            return
+        self.send_error(404)
+
+    def do_POST(self) -> None:
+        parsed = urlparse(self.path)
+        protected = {
+            "/api/cmd",
+            "/api/start-sequence",
+            "/api/hv-arm",
+            "/api/arm-profile",
+            "/api/calibration/vbus",
+            "/api/operator-heartbeat",
+            "/api/powered-trial",
+        }
+        if parsed.path in protected and not self._require_control_access():
+            return
+        if parsed.path == "/api/cmd":
+            self._handle_cmd()
+            return
+        if parsed.path == "/api/start-sequence":
+            self._handle_start_sequence()
+            return
+        if parsed.path == "/api/powered-trial":
+            self._handle_powered_trial()
+            return
+        if parsed.path == "/api/stop-sequence":
+            self._handle_stop_sequence()
+            return
+        if parsed.path == "/api/hv-arm":
+            self._handle_hv_arm()
+            return
+        if parsed.path == "/api/arm-profile":
+            self._handle_arm_profile()
+            return
+        if parsed.path == "/api/calibration/vbus":
+            self._handle_vbus_capture()
+            return
+        if parsed.path == "/api/operator-heartbeat":
+            self._send_json({"ok": True})
+            return
+        if parsed.path == "/api/firmware/update":
+            self._handle_firmware_update(parsed)
+            return
+        self.send_error(404)
+
+    def _read_json(self) -> dict:
+        length = int(self.headers.get("Content-Length", "0"))
+        if length <= 0:
+            return {}
+        raw = self.rfile.read(length)
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except Exception:
+            return {}
+
+    def _handle_cmd(self) -> None:
+        data = self._read_json()
+        cmd = str(data.get("cmd", "")).strip()
+        if not cmd:
+            self._send_json({"ok": False, "error": "missing cmd"}, 400)
+            return
+        if _cmd_head(cmd) == "NTC":
+            self._send_json({"ok": False, "error": "unsupported: STEVAL J2-21 is not connected"}, 400)
+            return
+        if _cmd_head(cmd) in ("PRECHARGE", "RELAY"):
+            self._send_json({"ok": False, "error": "unsupported: external soft-start is autonomous"}, 400)
+            return
+        with self.server.app.control_lock:  # type: ignore[attr-defined]
+            self._handle_cmd_locked(cmd)
+
+    def _handle_start_sequence(self) -> None:
+        app = self.server.app  # type: ignore[attr-defined]
+        request = self._read_json()
+        if not isinstance(request, dict) or ("runlimit_s" in request and request["runlimit_s"] is None):
+            self._send_json({"ok": False, "error": "numeric runlimit_s required"}, 400)
+            return
+        with app.control_lock:
+            if "manual" in request:
+                ok, detail, status = app.start_sequence(manual_run=request["manual"],runlimit_sec=request.get("runlimit_s"))
+            elif "runlimit_s" in request:
+                ok, detail, status = app.start_sequence(runlimit_sec=request["runlimit_s"])
+            else:
+                ok, detail, status = app.start_sequence()
+        self._send_json(
+            {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+            200 if ok else 409,
+        )
+
+    def _handle_powered_trial(self) -> None:
+        request = self._read_json()
+        if not isinstance(request, dict):
+            self._send_json({"ok": False, "error": "trial request must be an object"}, 400)
+            return
+        app = self.server.app
+        with app.control_lock:
+            if request.get("action") == "prepare":
+                ok, reason = app.prepare_powered_trial(request.get("qualification"), str(request.get("confirm", "")))
+            elif request.get("action") == "cancel":
+                ok, reason = app.cancel_powered_trial()
+            else:
+                ok, reason = False, "trial action must be prepare or cancel; use the bounded START endpoint"
+        app.logs.add(f"POWERED_TRIAL_ACTION {request.get('action')} ok={int(ok)} {reason}")
+        self._send_json({"ok": ok, "message": reason if ok else "", "error": "" if ok else reason}, 200 if ok else 409)
+
+    def _handle_stop_sequence(self) -> None:
+        request = self._read_json()
+        emergency = bool(request.get("emergency", False))
+        app = self.server.app  # type: ignore[attr-defined]
+        with app.control_lock:
+            ok, detail, status = app.stop_sequence(emergency=emergency)
+        self._send_json(
+            {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+            200 if ok else 500,
+        )
+
+    def _handle_cmd_locked(self, cmd: str) -> None:
+        app = self.server.app  # type: ignore[attr-defined]
+        if command_requests_start(cmd):
+            ok, detail, status = app.start_sequence()
+            self._send_json(
+                {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+                200 if ok else 409,
+            )
+            return
+        normalized = " ".join(_cmd_tokens(cmd)).upper()
+        parts = _cmd_tokens(cmd)
+        frequency_stop = False
+        if len(parts) == 3 and parts[0].upper() == "SET" and parts[1].upper() == "FREQ":
+            try:
+                frequency_stop = float(parts[2]) == 0.0
+            except ValueError:
+                pass
+        if normalized in ("STOP", "ESTOP") or frequency_stop:
+            ok, detail, status = app.stop_sequence(emergency=normalized == "ESTOP")
+            self._send_json(
+                {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
+                200 if ok else 500,
+            )
+            return
+        allowed, reason = app.trial_command_check(cmd)
+        if not allowed:
+            app.logs.add(f"POWERED_TRIAL_CMD_REJECT {cmd} {reason}")
+            self._send_json({"ok": False, "error": reason}, 409)
+            return
+        guard_cfg = self.server.app.command_guard  # type: ignore[attr-defined]
+        armed_output_command = False
+        if command_requests_start(cmd) or command_requests_service_output(cmd):
+            st_ok, st_data, st_err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+            allowed, guard_err = command_guard_check(cmd, st_data if st_ok else None, guard_cfg)
+            if not allowed:
+                err = guard_err if st_ok else f"{guard_err}: {st_err or 'no status'}"
+                self.server.app.logs.add(f"CMD_REJECT {cmd} {err}")  # type: ignore[attr-defined]
+                self._send_json({"ok": False, "error": err, "status": st_data}, 409)
+                return
+            armed_output_command = bool(self.server.app.hv_arm.cfg.enabled)  # type: ignore[attr-defined]
+            if armed_output_command:
+                arm_ok, arm_err = self.server.app.hv_arm.command_allowed(st_data)  # type: ignore[attr-defined]
+                if not arm_ok:
+                    self.server.app.logs.add(f"CMD_REJECT {cmd} {arm_err}")  # type: ignore[attr-defined]
+                    self._send_json({"ok": False, "error": arm_err, "status": st_data}, 409)
+                    return
+        if command_requests_start(cmd):
+            runlimit_cmd = f"SET RUNLIMIT {self.server.app.start_runlimit_sec:.3f}"  # type: ignore[attr-defined]
+            limit_ok, limit_err = self.server.app.rpc.cmd(runlimit_cmd)  # type: ignore[attr-defined]
+            if not limit_ok:
+                self.server.app.logs.add(f"CMD_FAIL {runlimit_cmd} {limit_err}")  # type: ignore[attr-defined]
+                self._send_json({"ok": False, "error": f"run limit rejected: {limit_err}"}, 500)
+                return
+            self.server.app.logs.add(f"CMD {runlimit_cmd}")  # type: ignore[attr-defined]
+        ok, err = self.server.app.rpc.cmd(cmd)  # type: ignore[attr-defined]
+        if ok:
+            if armed_output_command:
+                self.server.app.hv_arm.mark_started()  # type: ignore[attr-defined]
+            elif command_releases_service_output(cmd):
+                status_ok, status, _ = self.server.app.rpc.get()  # type: ignore[attr-defined]
+                if status_ok and not status_has_active_outputs(status):
+                    self.server.app.hv_arm.mark_stopped()  # type: ignore[attr-defined]
+            if _cmd_head(cmd) in ("STOP", "ESTOP"):
+                self.server.app.hv_arm.disarm()  # type: ignore[attr-defined]
+            self.server.app.logs.add(f"CMD {cmd}")  # type: ignore[attr-defined]
+            self._send_json({"ok": True})
+        else:
+            self.server.app.logs.add(f"CMD_FAIL {cmd} {err}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": err}, 500)
+
+    def _handle_status(self) -> None:
+        ok, data, err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+        if not ok or data is None:
+            self._send_json({"ok": False, "error": err or "no response"}, 503)
+            return
+        data.update(self.server.app.arm_snapshot(data))  # type: ignore[attr-defined]
+        data["hmi_control_auth_required"] = int(self.server.app.control_access.enabled)  # type: ignore[attr-defined]
+        self.server.app.maybe_log_status(data)  # type: ignore[attr-defined]
+        self._send_json({"ok": True, "data": data})
+
+    def _handle_hv_arm(self) -> None:
+        request = self._read_json()
+        with self.server.app.control_lock:  # type: ignore[attr-defined]
+            self._handle_hv_arm_locked(request)
+
+    def _handle_hv_arm_locked(self, request: dict) -> None:
+        action = str(request.get("action", "arm")).strip().lower()
+        arm = self.server.app.hv_arm  # type: ignore[attr-defined]
+        if action == "disarm":
+            arm.disarm()
+            stop_ok, stop_err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
+            estop_ok, estop_err = self.server.app.rpc.cmd("ESTOP")  # type: ignore[attr-defined]
+            relay_ok, relay_err = self.server.app._precharge_off()  # type: ignore[attr-defined]
+            self.server.app.logs.add("HV_DISARM")  # type: ignore[attr-defined]
+            ok = bool(stop_ok and estop_ok and relay_ok)
+            self._send_json(
+                {
+                    "ok": ok,
+                    "error": "" if ok else (
+                        f"STOP={stop_err or stop_ok}; ESTOP={estop_err or estop_ok}; "
+                        f"PRECHARGE={relay_err or relay_ok}"
+                    ),
+                    "arm": arm.snapshot(),
+                },
+                200 if ok else 500,
+            )
+            return
+        if action != "arm":
+            self._send_json({"ok": False, "error": "unsupported HV arm action"}, 400)
+            return
+        st_ok, st_data, st_err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+        if not st_ok or st_data is None:
+            self._send_json({"ok": False, "error": st_err or "status unavailable"}, 503)
+            return
+        ok, reason = arm.arm(str(request.get("confirm", "")), st_data)
+        if not ok:
+            self.server.app.logs.add(f"HV_ARM_REJECT {reason}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": reason, "status": st_data, "arm": arm.snapshot()}, 409)
+            return
+        self.server.app.logs.add(  # type: ignore[attr-defined]
+            f"ARM profile={arm.cfg.profile} ttl={arm.cfg.ttl_sec:.1f}s vdc={_status_vdc(st_data):.1f}"
+        )
+        self._send_json({"ok": True, "arm": self.server.app.arm_snapshot(st_data)})  # type: ignore[attr-defined]
+
+    def _handle_arm_profile(self) -> None:
+        request = self._read_json()
+        profile = str(request.get("profile", "")).strip().lower()
+        app = self.server.app  # type: ignore[attr-defined]
+        with app.control_lock:
+            stop_ok, stop_err = app.rpc.cmd("STOP")
+            relay_ok, relay_err = app._precharge_off()
+            app.hv_arm.disarm()
+            if not stop_ok or not relay_ok:
+                error = f"safe shutdown failed: STOP={stop_err or stop_ok}; PRECHARGE={relay_err or relay_ok}"
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {error}")
+                self._send_json({"ok": False, "error": error}, 500)
+                return
+            time.sleep(0.05)
+            st_ok, st_data, st_err = app.rpc.get()
+            if not st_ok or st_data is None:
+                error = st_err or "status unavailable"
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {error}")
+                self._send_json({"ok": False, "error": error}, 503)
+                return
+            ok, reason = app.switch_arm_profile(profile, st_data)
+            if not ok:
+                app.logs.add(f"ARM_PROFILE_REJECT {profile or '-'} {reason}")
+                self._send_json(
+                    {"ok": False, "error": reason, "status": st_data, "arm": app.arm_snapshot(st_data)},
+                    409,
+                )
+                return
+            app.logs.add(f"ARM_PROFILE {profile} runlimit={app.start_runlimit_sec:.1f}s")
+            self._send_json({"ok": True, "arm": app.arm_snapshot(st_data)})
+
+    def _handle_vbus_capture(self) -> None:
+        request = self._read_json()
+        action = str(request.get("action", "capture")).strip().lower()
+        app = self.server.app  # type: ignore[attr-defined]
+        if action == "reset":
+            with app.control_lock:
+                stop_ok, stop_err, _ = app.stop_sequence(emergency=False)
+                if not stop_ok:
+                    self._send_json({"ok": False, "error": f"safe stop failed: {stop_err}"}, 500)
+                    return
+                calibration = app.vbus_calibration.reset()
+                app.logs.add("VBUS_CALIBRATION_RESET")
+            self._send_json({"ok": True, "calibration": calibration})
+            return
+        if action != "capture":
+            self._send_json({"ok": False, "error": "unsupported Vbus calibration action"}, 400)
+            return
+        try:
+            meter_vdc = float(request["meter_vdc"]) if request.get("meter_vdc") not in (None, "") else None
+        except (TypeError, ValueError):
+            self._send_json({"ok": False, "error": "meter_vdc must be a number"}, 400)
+            return
+        if meter_vdc is not None and (not math.isfinite(meter_vdc) or meter_vdc < 0.0 or meter_vdc > 450.0):
+            self._send_json({"ok": False, "error": "meter_vdc must be within 0..450 V"}, 400)
+            return
+
+        samples: list[dict] = []
+        with app.control_lock:
+            app.hv_arm.disarm()
+            for _ in range(VBUS_CAL_CAPTURE_SAMPLES):
+                ok, data, err = app.rpc.get()
+                if not ok or data is None:
+                    self._send_json({"ok": False, "error": err or "status unavailable"}, 503)
+                    return
+                safe, reason = vbus_capture_precheck(data, meter_vdc)
+                if not safe:
+                    app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")
+                    self._send_json({"ok": False, "error": reason, "status": data}, 409)
+                    return
+                samples.append(data)
+                time.sleep(0.02)
+
+            capture_identity = _vbus_calibration_identity(samples[0])
+            if any(_vbus_calibration_identity(sample) != capture_identity for sample in samples[1:]):
+                reason = "firmware or telemetry identity changed during capture"
+                app.logs.add(f"VBUS_CAPTURE_REJECT {reason}")
+                self._send_json({"ok": False, "error": reason}, 409)
+                return
+
+            capture = vbus_capture_summary(samples, meter_vdc)
+            calibration = app.vbus_calibration.snapshot(samples[-1])
+            calibration_ok = True
+            calibration_reason = "measurement-only capture"
+            if meter_vdc is not None:
+                calibration_ok, calibration_reason, calibration = app.vbus_calibration.record_capture(
+                    capture, samples[-1]
+                )
+        raw = capture["bp_vbus_raw"]
+        scaled = capture["bp_vdc"]
+        meter_text = "none" if meter_vdc is None else f"{meter_vdc:.3f}"
+        app.logs.add(
+            "VBUS_CAPTURE "
+            f"meter_vdc={meter_text} raw_mean={raw['mean']:.3f} raw_std={raw['std']:.3f} "
+            f"raw_min={raw['min']:.0f} raw_max={raw['max']:.0f} vdc_mean={scaled['mean']:.3f} "
+            f"calibration_ok={int(calibration_ok)} calibration_reason={calibration_reason}"
+        )
+        if meter_vdc is not None and not calibration_ok:
+            self._send_json(
+                {
+                    "ok": False,
+                    "error": calibration_reason,
+                    "capture": capture,
+                    "calibration": calibration,
+                },
+                409,
+            )
+            return
+        self._send_json(
+            {
+                "ok": True,
+                "capture": capture,
+                "calibration": calibration,
+                "message": calibration_reason,
+            }
+        )
+
+    def _handle_logs(self, parsed) -> None:
+        query = parse_qs(parsed.query)
+        try:
+            hours = float(query.get("hours", ["24"])[0])
+        except ValueError:
+            hours = 24.0
+        download = query.get("download", ["0"])[0] in ("1", "true", "yes")
+        since = _now_ts() - (hours * 3600.0)
+        lines = self.server.app.logs.dump_since(since)  # type: ignore[attr-defined]
+        text = "\n".join(lines) + ("\n" if lines else "")
+        if download:
+            self._send_text(text, filename="unoq_logs.txt")
+        else:
+            self._send_text(text)
+
+    def _firmware_update_authorized(self, cfg: FirmwareUpdateConfig) -> tuple[bool, str]:
+        expected = cfg.read_token()
+        if not expected:
+            return False, "firmware update token file is missing or too short"
+        provided = self.headers.get("X-UNOQ-Update-Token", "")
+        if not provided or not secrets.compare_digest(provided, expected):
+            return False, "bad firmware update token"
+        return True, ""
+
+    def _ensure_firmware_update_safe(self, cfg: FirmwareUpdateConfig) -> tuple[bool, Optional[dict], str]:
+        ok, err = self.server.app.rpc.cmd("STOP")  # type: ignore[attr-defined]
+        if not ok:
+            return False, None, f"STOP failed: {err}"
+        relay_ok, relay_err = self.server.app._precharge_off()  # type: ignore[attr-defined]
+        if not relay_ok:
+            return False, None, f"PRECHARGE OFF failed: {relay_err}"
+        time.sleep(0.2)
+
+        last_err = "no status"
+        for _ in range(10):
+            ok, data, err = self.server.app.rpc.get()  # type: ignore[attr-defined]
+            if ok and data is not None:
+                state = str(data.get("state", "")).upper()
+                state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
+                pwm = _as_int(data, "pwm", 1)
+                estop = _as_int(data, "estop", 0)
+                bp_fault = _as_int(data, "bp_fault", 0)
+                vdc = _status_vdc(data)
+                if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
+                    return False, data, f"not SAFE: state={data.get('state')}"
+                if pwm != 0:
+                    return False, data, f"PWM is not off: pwm={pwm}"
+                if estop != 0:
+                    return False, data, f"ESTOP is active: estop={estop}"
+                if bp_fault != 0:
+                    return False, data, f"motor-controller fault is active: mc_fault={bp_fault}"
+                bad = _status_mc_bad(data)
+                if bad != 0:
+                    return False, data, f"motor-controller bad-frame counter is non-zero: mc_bad={bad}"
+                if not _status_link_live(data):
+                    return False, data, "motor-controller link is stale or down"
+                if not math.isfinite(vdc):
+                    return False, data, "DC bus telemetry is not readable for firmware update"
+                if vdc > cfg.max_vdc:
+                    return False, data, f"DC bus too high for firmware update: vdc={vdc:.1f} V"
+                raw_ok, raw_reason = raw_vbus_window_check(data, 0.0, cfg.max_vdc)
+                if not raw_ok:
+                    return False, data, f"firmware update blocked: {raw_reason}"
+                return True, data, ""
+            last_err = err or "no response"
+            time.sleep(0.1)
+        return False, None, f"status failed: {last_err}"
+
+    def _handle_firmware_update(self, parsed) -> None:
+        cfg = self.server.app.firmware_update  # type: ignore[attr-defined]
+        if cfg is None or not cfg.enabled:
+            self._send_json({"ok": False, "error": "firmware update disabled"}, 403)
+            return
+
+        ok, err = self._firmware_update_authorized(cfg)
+        if not ok:
+            self._send_json({"ok": False, "error": err}, 403)
+            return
+
+        query = parse_qs(parsed.query)
+        dry_run = query.get("dry_run", ["0"])[0].lower() in ("1", "true", "yes")
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            length = 0
+        if length <= 0:
+            self._send_json({"ok": False, "error": "empty firmware body"}, 400)
+            return
+        if length > cfg.max_bytes:
+            self._send_json({"ok": False, "error": f"firmware too large: {length} > {cfg.max_bytes}"}, 413)
+            return
+
+        safe, status, safe_err = self._ensure_firmware_update_safe(cfg)
+        if not safe:
+            self.server.app.logs.add(f"FW_UPDATE_REJECT {safe_err}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": safe_err, "status": status}, 409)
+            return
+
+        os.makedirs(cfg.upload_dir, exist_ok=True)
+        filename = f"unoq_firmware_{int(time.time())}_{threading.get_ident()}.bin"
+        path = os.path.join(cfg.upload_dir, filename)
+        sha256 = hashlib.sha256()
+        remaining = length
+        try:
+            with open(path, "wb") as f:
+                while remaining > 0:
+                    chunk = self.rfile.read(min(65536, remaining))
+                    if not chunk:
+                        raise RuntimeError("short firmware body")
+                    f.write(chunk)
+                    sha256.update(chunk)
+                    remaining -= len(chunk)
+        except Exception as exc:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+            self._send_json({"ok": False, "error": f"failed to save firmware: {exc}"}, 400)
+            return
+
+        digest = sha256.hexdigest()
+        self.server.app.logs.add(  # type: ignore[attr-defined]
+            f"FW_UPDATE_UPLOAD bytes={length} sha256={digest} dry_run={int(dry_run)}"
+        )
+        if dry_run:
+            self._send_json({"ok": True, "dry_run": True, "bytes": length, "sha256": digest, "path": path})
+            return
+
+        if not os.path.exists(cfg.remoteocd_bin):
+            self._send_json({"ok": False, "error": f"remoteocd not found: {cfg.remoteocd_bin}"}, 500)
+            return
+        if not os.path.exists(cfg.remoteocd_cfg):
+            self._send_json({"ok": False, "error": f"remoteocd cfg not found: {cfg.remoteocd_cfg}"}, 500)
+            return
+
+        cmd = [cfg.remoteocd_bin, "upload", "--verbose", "-f", cfg.remoteocd_cfg, path]
+        try:
+            result = subprocess.run(
+                cmd,
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=cfg.timeout_sec,
+            )
+        except subprocess.TimeoutExpired as exc:
+            out = _tail_text(exc.stdout or "")
+            self.server.app.logs.add(f"FW_UPDATE_TIMEOUT sha256={digest}")  # type: ignore[attr-defined]
+            self._send_json({"ok": False, "error": "remoteocd timeout", "output": out}, 504)
+            return
+        output = _tail_text(result.stdout or "")
+        if result.returncode != 0:
+            self.server.app.logs.add(f"FW_UPDATE_FAIL rc={result.returncode} sha256={digest}")  # type: ignore[attr-defined]
+            self._send_json(
+                {"ok": False, "error": f"remoteocd failed: rc={result.returncode}", "output": output},
+                500,
+            )
+            return
+        self.server.app.logs.add(f"FW_UPDATE_WRITE_OK sha256={digest}")  # type: ignore[attr-defined]
+        self._send_json(
+            {
+                "ok": True,
+                "dry_run": False,
+                "write_only": True,
+                "bytes": length,
+                "sha256": digest,
+                "output": output,
+            }
+        )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="UNOQ WiFi HMI server")
+    parser.add_argument("--bind", default="0.0.0.0", help="Bind address")
+    parser.add_argument("--port", type=int, default=8080, help="HTTP port")
+    parser.add_argument(
+        "--router",
+        default="/run/arduino-router.sock",
+        help="Router endpoint (unix:/path or host:port)",
+    )
+    parser.add_argument(
+        "--serial-baud",
+        type=int,
+        default=115200,
+        help="Baud rate for serial fallback endpoints such as serial:/dev/ttyX",
+    )
+    parser.add_argument("--log-bytes", type=int, default=2 * 1024 * 1024, help="Max in-memory log bytes")
+    parser.add_argument(
+        "--log-file",
+        default=os.path.join(os.path.dirname(__file__), "logs", "unoq.log"),
+        help="Log file path (empty to disable)",
+    )
+    parser.add_argument("--log-file-bytes", type=int, default=64 * 1024 * 1024, help="Max persistent log file bytes")
+    parser.add_argument("--status-log-sec", type=float, default=5.0, help="Status log interval")
+    parser.add_argument(
+        "--operator-heartbeat-timeout-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_OPERATOR_HEARTBEAT_TIMEOUT_SEC", DEFAULT_OPERATOR_HEARTBEAT_TIMEOUT_SEC)),
+        help="STOP/ESTOP an active autonomous run when the authenticated browser heartbeat is lost",
+    )
+    parser.add_argument(
+        "--control-token-file",
+        default=os.environ.get("UNOQ_HMI_CONTROL_TOKEN_FILE", ""),
+        help="Protect control commands and log download with a token stored in this file",
+    )
+    parser.add_argument(
+        "--vbus-calibration-file",
+        default=os.environ.get("UNOQ_VBUS_CALIBRATION_FILE", DEFAULT_VBUS_CALIBRATION_FILE),
+        help="Persistent two-point Vbus verification record used by the autonomous HV arm gate",
+    )
+    parser.add_argument(
+        "--firmware-update-token-file",
+        default=os.environ.get("UNOQ_FIRMWARE_UPDATE_TOKEN_FILE", ""),
+        help="Enable firmware update API with a token stored in this file",
+    )
+    parser.add_argument(
+        "--firmware-upload-dir",
+        default="/tmp/unoq_firmware_updates",
+        help="Directory for received firmware images",
+    )
+    parser.add_argument("--firmware-update-max-bytes", type=int, default=2 * 1024 * 1024)
+    parser.add_argument("--firmware-update-timeout-sec", type=float, default=90.0)
+    parser.add_argument("--firmware-update-max-vdc", type=float, default=10.0)
+    parser.add_argument("--cmd-guard-max-vdc", type=float, default=float(os.environ.get("UNOQ_CMD_GUARD_MAX_VDC", DEFAULT_CMD_GUARD_MAX_VDC)))
+    parser.add_argument("--cmd-guard-allow-hv", action="store_true", default=_truthy_env("UNOQ_CMD_GUARD_ALLOW_HV"))
+    standalone_group = parser.add_mutually_exclusive_group()
+    standalone_group.add_argument(
+        "--standalone-hv",
+        action="store_true",
+        default=_truthy_env("UNOQ_STANDALONE_HV"),
+        help="Enable both Wi-Fi arm profiles and start fail-closed in HV mode.",
+    )
+    standalone_group.add_argument(
+        "--standalone-lv",
+        action="store_true",
+        default=_truthy_env("UNOQ_STANDALONE_LV"),
+        help="Enable both Wi-Fi arm profiles and start in HV-disconnected LV test mode.",
+    )
+    parser.add_argument(
+        "--hv-arm-ttl-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_TTL_SEC", DEFAULT_HV_ARM_TTL_SEC)),
+    )
+    parser.add_argument(
+        "--hv-arm-min-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_MIN_VDC", DEFAULT_HV_ARM_MIN_VDC)),
+    )
+    parser.add_argument(
+        "--hv-arm-max-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_HV_ARM_MAX_VDC", DEFAULT_HV_ARM_MAX_VDC)),
+    )
+    parser.add_argument(
+        "--hv-arm-confirm",
+        default=os.environ.get("UNOQ_HV_ARM_CONFIRM", DEFAULT_HV_ARM_CONFIRM),
+    )
+    parser.add_argument(
+        "--lv-arm-ttl-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_LV_ARM_TTL_SEC", DEFAULT_LV_ARM_TTL_SEC)),
+    )
+    parser.add_argument(
+        "--lv-arm-max-vdc",
+        type=float,
+        default=float(os.environ.get("UNOQ_LV_ARM_MAX_VDC", DEFAULT_LV_ARM_MAX_VDC)),
+    )
+    parser.add_argument(
+        "--lv-arm-confirm",
+        default=os.environ.get("UNOQ_LV_ARM_CONFIRM", DEFAULT_LV_ARM_CONFIRM),
+    )
+    parser.add_argument(
+        "--start-runlimit-sec",
+        type=float,
+        default=float(os.environ.get("UNOQ_START_RUNLIMIT_SEC", DEFAULT_START_RUNLIMIT_SEC)),
+        help="Bound every accepted START command with this automatic run limit.",
+    )
+    parser.add_argument(
+        "--cmd-guard-disable",
+        action="store_true",
+        default=_truthy_env("UNOQ_CMD_GUARD_DISABLE"),
+        help="Bypass only the DC bus voltage command guard; status, link, ESTOP, fault, PWM-active and bad-counter checks stay enforced.",
+    )
+    parser.add_argument(
+        "--bench-gate-url",
+        default=os.environ.get("UNOQ_BENCH_GATE_URL", ""),
+        help="Live HMI URL used by bench_gate_report.py before accepting START. Defaults to this server on 127.0.0.1.",
+    )
+    parser.add_argument(
+        "--bench-gate-attestation-url",
+        default=os.environ.get("UNOQ_BENCH_GATE_ATTESTATION_URL", ""),
+        help="Short-lived PC bench-gate attestation URL. START fails closed if it is unavailable, red, stale or expired.",
+    )
+    parser.add_argument("--remoteocd-bin", default=DEFAULT_REMOTEOCD)
+    parser.add_argument("--remoteocd-cfg", default=DEFAULT_REMOTEOCD_CFG)
+    args = parser.parse_args()
+    if args.router == "/run/arduino-router.sock" and not os.path.exists(args.router):
+        if os.path.exists("/var/run/arduino-router.sock"):
+            args.router = "/var/run/arduino-router.sock"
+
+    rpc = RpcBridge(args.router, serial_baud=int(args.serial_baud))
+    log_path = args.log_file.strip() if isinstance(args.log_file, str) else args.log_file
+    if log_path == "":
+        log_path = None
+    logs = LogStore(max_bytes=args.log_bytes, log_path=log_path, file_max_bytes=args.log_file_bytes)
+    firmware_update = None
+    token_file = args.firmware_update_token_file.strip()
+    if token_file:
+        firmware_update = FirmwareUpdateConfig(
+            token_file=token_file,
+            upload_dir=args.firmware_upload_dir,
+            remoteocd_bin=args.remoteocd_bin,
+            remoteocd_cfg=args.remoteocd_cfg,
+            max_bytes=args.firmware_update_max_bytes,
+            timeout_sec=args.firmware_update_timeout_sec,
+            max_vdc=args.firmware_update_max_vdc,
+        )
+    attestation_url = args.bench_gate_attestation_url.strip()
+    standalone_enabled = bool(args.standalone_hv or args.standalone_lv)
+    control_token_file = args.control_token_file.strip()
+    control_access = ControlAccessConfig(control_token_file or None)
+    if standalone_enabled and not control_access.read_token():
+        parser.error("standalone operation requires --control-token-file containing at least 16 characters")
+    initial_profile = ARM_PROFILE_LV if args.standalone_lv else ARM_PROFILE_HV
+    hv_cfg = HvArmConfig(
+        enabled=standalone_enabled,
+        ttl_sec=float(args.hv_arm_ttl_sec),
+        min_vdc=float(args.hv_arm_min_vdc),
+        max_vdc=float(args.hv_arm_max_vdc),
+        confirm=str(args.hv_arm_confirm),
+        profile=ARM_PROFILE_HV,
+    )
+    lv_cfg = HvArmConfig(
+        enabled=standalone_enabled,
+        ttl_sec=float(args.lv_arm_ttl_sec),
+        min_vdc=DEFAULT_LV_ARM_MIN_VDC,
+        max_vdc=float(args.lv_arm_max_vdc),
+        confirm=str(args.lv_arm_confirm),
+        profile=ARM_PROFILE_LV,
+    )
+    arm_profiles = (
+        {ARM_PROFILE_HV: hv_cfg, ARM_PROFILE_LV: lv_cfg}
+        if standalone_enabled
+        else {}
+    )
+    hv_runlimit_sec = float(args.start_runlimit_sec)
+    lv_runlimit_sec = min(hv_runlimit_sec, DEFAULT_LV_START_RUNLIMIT_SEC)
+    profile_runlimits = {
+        ARM_PROFILE_HV: hv_runlimit_sec,
+        ARM_PROFILE_LV: lv_runlimit_sec,
+    }
+    selected_cfg = arm_profiles.get(initial_profile, hv_cfg)
+    guard_max_vdc = (
+        min(float(args.cmd_guard_max_vdc), selected_cfg.max_vdc)
+        if initial_profile == ARM_PROFILE_LV
+        else float(args.cmd_guard_max_vdc)
+    )
+    start_runlimit_sec = profile_runlimits[initial_profile]
+
+    command_guard = CommandGuardConfig(
+        max_vdc=guard_max_vdc,
+        allow_hv=bool(args.cmd_guard_allow_hv or args.standalone_hv),
+        disabled=bool(args.cmd_guard_disable),
+        bench_gate_url=attestation_url or args.bench_gate_url.strip() or f"http://127.0.0.1:{int(args.port)}",
+        bench_gate_runner=attested_bench_gate_runner if attestation_url else None,
+        local_bench_gate=standalone_enabled,
+    )
+    hv_arm = HvArmState(selected_cfg)
+    vbus_calibration_path = str(args.vbus_calibration_file).strip()
+    vbus_calibration = VbusCalibrationStore(vbus_calibration_path or None)
+    app = AppState(
+        rpc,
+        logs,
+        args.status_log_sec,
+        firmware_update=firmware_update,
+        command_guard=command_guard,
+        hv_arm=hv_arm,
+        start_runlimit_sec=start_runlimit_sec,
+        arm_profiles=arm_profiles,
+        profile_runlimits=profile_runlimits,
+        guard_max_vdc=float(args.cmd_guard_max_vdc),
+        control_access=control_access,
+        operator_heartbeat_timeout_sec=float(args.operator_heartbeat_timeout_sec),
+        vbus_calibration=vbus_calibration,
+    )
+
+    server = ThreadingHTTPServer((args.bind, args.port), Handler)
+    server.app = app  # type: ignore[attr-defined]
+    server.daemon_threads = True
+
+    print(
+        f"UNOQ HMI on http://{args.bind}:{args.port} (router: {args.router}, "
+         f"standalone_hv={int(args.standalone_hv)}, standalone_lv={int(args.standalone_lv)}, "
+         f"control_auth={int(control_access.enabled)}, softstart=external-autonomous, "
+         f"vbus_calibrated={int(vbus_calibration.is_valid())}, runlimit={start_runlimit_sec:.1f}s)"
+    )
+    app.start_safety_watchdog()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        app.stop_safety_watchdog()
+
+
+if __name__ == "__main__":
+    main()

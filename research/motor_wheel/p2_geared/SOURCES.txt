@@ -1,0 +1,35 @@
+PRIMARY SOURCES - checked 2026-11-17
+
+Ninebot Max Pro: user identification, NOT measured donor geometry.
+https://b2b.segway.com/max-pro/
+https://b2b.segway.com/blog/segway-discovery-max-series-shared-scooters/
+350W factory motor and10-inch wheels are product context, not a rating of P2.
+No internal hub cavity drawing found on these primary pages.
+
+Assembled DRV8302 board SKU71451, advertised5.5-45V,15A output,
+12.22current gain and +/-27A measurement range.15A RMS/peak not specified.
+https://www.ecbuyingbom.com/drv8302-high-power-motor-drive-module-st-foc-vector-control-bldc-product/
+Chip datasheet does not override board limits:
+https://www.ti.com/product/DRV8302
+
+Inverse-Gamma FEMM identification method and end-effects warning:
+https://www.femm.info/doku/doku.php?id=InductionMotorExample
+Original inspirational motor; P2 is new inner-rotor geometry, not a scale copy:
+https://github.com/wchan29/mini_IM
+https://wchan29.github.io/portfolio/wempec_induction_3d/
+
+Candidate blower PQ curve, not confirmed local availability:
+https://www.delta-fan.com/products/BFB0512VHD.html
+https://www.delta-fan.com/Download/Spec/BFB0512VHD-F00.pdf
+P-Q chart page5: at60Pa each fan is near2.6L/s at nominal voltage.
+Actual pressure/flow in the motor duct is unmeasured.
+
+Bambu A1 recommended materials and printer limits:
+https://cdn1.bambulab.com/documentation/quick-start-a75adcb1d5d5e/Quick%20Start%20Guide%20for%20A1.pdf
+Potential easy-print wear filament;65C continuous limit, not qualified for P2:
+https://www.igus.com/product/iglidur_I150_PF
+https://toolbox.igus.com/wp-content/uploads/2023/08/3d-printing-2021-catalog.pdf
+https://www.igus.com/industry/model-making/applications/3d-printing-application-example-mechanical-clockwork
+
+SKF needle bearing17x25x16, race requirements apply:
+https://cdn.skfmediahub.skf.com/api/public/0901d196807026e8/pdf_preview_medium/0901d196807026e8_pdf_preview_medium.pdf

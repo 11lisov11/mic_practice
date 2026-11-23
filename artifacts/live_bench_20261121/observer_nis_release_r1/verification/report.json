@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "actual_release_ARM_replay": {
+    "step": 567,
+    "reference_Hz": 0.9000000357627869,
+    "NIS": 28.04757308959961,
+    "bit_exact_ARM_words": 51,
+    "observer_speed_before_rpm": 243.7796876545912,
+    "observer_speed_after_rpm": 248.3031463623047,
+    "innovation_covariance_A2": [
+      [
+        0.000852564911439017,
+        -2.261491007558599e-06
+      ],
+      [
+        -2.261491007558599e-06,
+        0.00030822629871217916
+      ]
+    ],
+    "current_predicted_A": [
+      0.46319708228111267,
+      0.23912346363067627
+    ],
+    "current_measured_A": [
+      0.4862746000289917,
+      0.14712588489055634
+    ],
+    "conditional_NIS_terms": [
+      0.6246701048913764,
+      27.422901935809133
+    ],
+    "phase_residual_A": [
+      0.02307751774787903,
+      -0.09121099914954256,
+      0.06813348140166353
+    ],
+    "phase_standard_deviations": [
+      0.029198714208660236,
+      0.02112509078221593,
+      0.021032176378846596
+    ],
+    "phase_standardized_residual": [
+      0.7903607529757019,
+      -4.317661878467673,
+      3.239487924330538
+    ],
+    "pair_counts": [
+      0,
+      0,
+      16
+    ],
+    "measurement_epoch_cycles": 2152358095,
+    "counterfactual_ARM_NIS": {
+      "beta_voltage_minus_1V": 20.82071304321289,
+      "beta_voltage_plus_1V": 36.377838134765625,
+      "beta_current_minus_10mA": 34.337650299072266,
+      "beta_current_plus_10mA": 22.40638542175293
+    },
+    "terminal_voltage_independently_measured": false
+  },
+  "byte_identical_ARM_sections": {
+    "ma_native_fast": true,
+    "mic_observer_step": true,
+    "mic_observer_noise": true
+  },
+  "native_readback_bytes": 121752,
+  "hex_erased_padding_offsets": [
+    117468,
+    117469,
+    117470,
+    117471
+  ],
+  "stack_reserve": 4096,
+  "heap_reserve": 512,
+  "page_contract": {
+    "roundtrip_pages": 16,
+    "negative_cases": [
+      "RUN",
+      "outputs_active",
+      "peer_PWM_active",
+      "bad_page",
+      "record_not_complete",
+      "stale_firmware"
+    ],
+    "old_files_read_only": true
+  },
+  "physical_timing_measured": false,
+  "protected_files_verified": 567,
+  "hardware_commands": 0
+}

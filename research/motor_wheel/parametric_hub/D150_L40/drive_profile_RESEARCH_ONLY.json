@@ -1,0 +1,110 @@
+{
+  "status": "RESEARCH_ONLY_NOT_MCSDK_IMPORT_NOT_HARDWARE_LIMITS",
+  "MCU": "NUCLEO-G431RB / STM32G431",
+  "power_stage": "Assembled DRV8302 SKU71451, assumed user-selected; exact received revision unverified",
+  "command_interface": "6 complementary PWM from motor-control timer; enable, fault, current ADC channels to be mapped from received board",
+  "battery": {
+    "series": 10,
+    "minimum_V_assumed": 30.0,
+    "nominal_V": 36.0,
+    "full_V": 42.0
+  },
+  "connection": "star",
+  "pole_pairs": 4,
+  "phase_convention": "amplitude invariant dq; dq current and voltage are phase PEAK",
+  "winding": {
+    "turns_per_coil": 7,
+    "coils_series_per_phase": 16,
+    "turns_series_per_phase": 112,
+    "connection": "star",
+    "parallel_phase_paths": 1,
+    "winding_factor": 0.9330127018922193,
+    "coil_pitch_slots": 5,
+    "wire_strands_in_hand": 4,
+    "wire_bare_diameter_mm": 0.85,
+    "copper_area_mm2": 2.2698006922186256,
+    "bare_slot_fill": 0.4133024290746911,
+    "mean_turn_length_m_assumed": 0.17248349688936854,
+    "phase_length_one_strand_m": 19.718151651609276,
+    "total_wire_m": 236.6178198193113,
+    "order_wire_m_with_15pct_reserve": 272.110492792208,
+    "winding_copper_kg": 1.203048652326382,
+    "Rphase20_ohm": 0.14976686527550015,
+    "Rline20_ohm_star": 0.2995337305510003,
+    "not_wound_or_measured": true
+  },
+  "model_topology": "effective inverse-Gamma; NOT split T-equivalent Lm/Lls/Llr",
+  "reference20C": {
+    "Rs_phase_ohm": 0.14976686527550015,
+    "Rr_effective_ohm": 0.08791795243719405,
+    "M_effective_h": 0.008694446327899116,
+    "Lleak_effective_h": 0.0009877912095315603
+  },
+  "design_screen_only": {
+    "board": "EC BUYING / Yourcee DRV8302 SKU71451",
+    "board_voltage_limit_V_advertised": 45.0,
+    "current_peak_design_ceiling_A_assumed": 15.0,
+    "phase_current_limit_rms_A_assumed": 9.0,
+    "mosfet_Rds_hot_ohm_assumed": 0.02,
+    "shunt_ohm_inferred_not_measured": 0.005,
+    "PWM_Hz": 16000,
+    "deadtime_s_assumed": 5e-07
+  },
+  "benchmark_flat15kmh_36V": {
+    "useful_torque_Nm": 3.0528524583333336,
+    "rpm": 313.29713207066015,
+    "shaft_W": 100.1592013888889,
+    "Vdc_V": 36.0,
+    "I_phase_rms_A": 7.927025859610607,
+    "I_phase_peak_A": 11.210507479943564,
+    "Id_peak_A": 8.596993836952635,
+    "Iq_torque_peak_A": 7.06671561983256,
+    "Iq_total_peak_A": 7.194940925766451,
+    "Bg_peak_T": 0.49859427597344025,
+    "frequency_hz": 22.4693244053799,
+    "slip_hz": 1.5828489340025613,
+    "U_phase_motor_peak_V": 13.096320832487597,
+    "U_line_motor_rms_V": 16.03965177368801,
+    "U_pwm_required_phase_peak_V": 13.502550254538654,
+    "U_pwm_limit_phase_peak_V": 18.706148721743876,
+    "voltage_margin_peak_V": 5.203598467205222,
+    "Rs_hot_ohm": 0.1850818921074631,
+    "Rr_hot_ohm": 0.10519383009110267,
+    "Lm_effective_h": 0.008694446327899116,
+    "Lleak_effective_h": 0.0009877912095315603,
+    "copper_W": 34.890382877928694,
+    "cage_W": 7.879828337307855,
+    "stator_iron_W_assumed": 1.9221818737194094,
+    "rotor_iron_W_assumed": 0.10747877708681262,
+    "stray_PWM_W_assumed": 4.620585445892951,
+    "friction_W_assumed": 3.8190354158486097,
+    "motor_loss_W": 53.23949272778433,
+    "motor_input_W": 153.39869411667323,
+    "motor_efficiency_model": 0.6529338594806355,
+    "power_factor_fundamental": 0.675574418039573,
+    "power_balance_error_W": 0.0,
+    "rotor_slip_balance_error_W": -1.7763568394002505e-15,
+    "inverter_conduction_W_assumed": 3.7702643387361174,
+    "inverter_shunts_W_inferred": 0.4712830423420147,
+    "inverter_switching_W_bounds_assumed": [
+      2,
+      8
+    ],
+    "battery_W_bounds_assumed": [
+      162.64024149775136,
+      168.64024149775136
+    ],
+    "battery_current_A_bounds_assumed": [
+      4.517784486048649,
+      4.684451152715315
+    ],
+    "ripple_half_pp_A_estimate": 0.2847261620533929,
+    "current_peak_with_ripple_A_estimate": 11.495233641996956,
+    "copper_current_density_A_mm2": 3.492388510932343
+  },
+  "notes": [
+    "Does not change existing IHM/IPM bench firmware or1.35A peak trip",
+    "Requires standstill identification, ADC calibration and board-specific ACIM firmware before power testing",
+    "UNO Q remains supervisory/research computer, G431 owns fast PWM/current loop"
+  ]
+}

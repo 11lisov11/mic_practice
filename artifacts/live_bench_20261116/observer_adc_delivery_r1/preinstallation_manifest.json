@@ -1,0 +1,71 @@
+{
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "frequency_max_hz": 5,
+  "runlimit_ms": 5000,
+  "peer_reply_timeout_ms": 500,
+  "send_cadence_us": 50000,
+  "reply_guard_us": 8000,
+  "CPU_probe_budget_cycles": 4000,
+  "pair": [
+    2026111601,
+    2026111602
+  ],
+  "base_pair": [
+    2026111503,
+    2026111504
+  ],
+  "built": true,
+  "installed": false,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "observer_tuning_changed": false,
+  "controller_equations_changed": false,
+  "OFF_CPU_qualified": false,
+  "FOC_start_ready": false,
+  "target_timing_measured": false,
+  "hardware_validated": false,
+  "observer_physical_root_cause_proven": false,
+  "observer_validity_problem_solved": false,
+  "diagnostic_ADC_first_NIS_loss_trigger": true,
+  "OFF_bulk_round_robin": true,
+  "host_tests_passed": true,
+  "model_tests_passed": true,
+  "native_flash_bytes": 112936,
+  "hex_padding_offsets": [
+    108652,
+    108653,
+    108654,
+    108655
+  ],
+  "artifacts": {
+    "release/nucleo_2026111602_expected_readback.bin": "df78597cbcb2d2bbc7527401cda81cc55ec84b855085e4a90dc8ec60f353b0f0",
+    "release/nucleo_2026111602_observer_adc_delivery.hex": "638c090c124901746f4bd06b651a7a58ff72bf5b42dd7ac881801bf074019fab",
+    "release/uno_2026111601_observer_adc_delivery.elf-zsk.bin": "a737e5d02120fbb5c3741f17d68bbfcc72ba49b62953df1bc4db387cdf96e409"
+  },
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 28860,
+    ".noinit": 32,
+    "._user_heap_stack": 1540
+  },
+  "RAM_allocated": 31408,
+  "RAM_unallocated": 1360,
+  "preserved_files_verified": 3296,
+  "source_files": 162,
+  "verification_reports": {
+    "verification/report.json": "d2b9639f2e1c4dcf38d678d6ef29500949b7ea69b229d706494ac446f2aebc50",
+    "verification/ARM_scope.json": "120d9bf34bb63defe0f84a34ba4f06d5bec52b346dfe3e8625c40928daf03778",
+    "model_verification/model_report.json": "7d93d01302424645a514d3d657f387aa0eb50dc4e244a5ebc18332895bba5d09",
+    "nucleo_build_report.json": "bb128a99f6f842c10562328e0d3883984daa928d8ce880d868dfffeeec541a09",
+    "build/uno/unoq_mcsdk_scalar.build-manifest.json": "7f1d5563aa0239f2fd4296b6b2ca821f350e4869a5238260d90d42c7396b292f"
+  },
+  "qualified": false,
+  "target_timing_requalification_required": true
+}

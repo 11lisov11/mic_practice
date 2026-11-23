@@ -1,0 +1,64 @@
+{
+  "trial_passed": true,
+  "physical_rotation_verified": true,
+  "physical_rotation_user_report": "Да, ровно, ускорение заметно",
+  "start_commands": 1,
+  "outputs_off_confirmed": true,
+  "targets_hz": [
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "duration_to_stop_s": 37.84299999999985,
+  "bus_range_v": [
+    317.0,
+    321.0
+  ],
+  "observed_phase_rms_max_a": [
+    0.929,
+    0.885,
+    0.898
+  ],
+  "observed_phase_peak_max_a": [
+    6.572,
+    4.509,
+    7.195
+  ],
+  "current_scale_qualified": false,
+  "adc_capture": {
+    "crc_verified": true,
+    "record_sha256": "f10b207b4405104309508d7cc4f3a6a5998438faf94b7fe77d102b0571252223",
+    "samples": 12,
+    "pre_trigger": 5,
+    "post_trigger": 6,
+    "reference_hz": 39.6,
+    "raw_adc": [
+      1719,
+      1665
+    ],
+    "counts_uvw": [
+      348,
+      402,
+      -750
+    ],
+    "nominal_currents_a": [
+      3.338566,
+      3.85662,
+      -7.195186
+    ],
+    "reconstructed_phase": "W",
+    "all_epochs_consistent": true,
+    "queue_overflow_observed": false,
+    "compare_during_assumed_acquisition": false,
+    "excluded_leg_pretrigger_gap_ticks": 171,
+    "assumed_timer_hz": 170000000,
+    "gap_us": 1.0058823529411764,
+    "existing_selected_leg_settling_guard_ticks": 771,
+    "excluded_leg_inside_same_settling_guard": true,
+    "max_queue_publish_us": 2.4
+  },
+  "inference": "First captured nominal7.195A spike at39.6Hz is on reconstructedW, after both measured ADC channels shift together. ExcludedW compare precedes trigger by171timer ticks (~1.006us), inside the771tick settling guard used only on selected legs. Strong evidence of switching-related measurement contamination; no literal excluded-edge aperture collision in these12frames, no observed queue overflow or epoch race. Physical current magnitude and the earlier11A peaks are not independently proven.",
+  "next_step": "Prepare an ADC window change covering all3leg edges and explicit invalid-window reporting, preserving raw peak evidence, PWM1..3 and protections; no new flash/run authorized by this completed trial."
+}

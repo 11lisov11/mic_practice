@@ -1,0 +1,48 @@
+{
+  "schema": "mic_ai.standstill_commissioning.v1",
+  "pair": [
+    2026102931,
+    2026102932
+  ],
+  "base_pair": [
+    2026102921,
+    2026102922
+  ],
+  "sealed_utc": "2026-10-29T09:32:11.170897+00:00",
+  "built": true,
+  "installed": true,
+  "readback_verified": true,
+  "algorithms": [
+    "VF",
+    "FOC",
+    "ADAPTIVE_PWM",
+    "IDENT_FIXED_AXIS"
+  ],
+  "physical_qualification": false,
+  "motor_identified": false,
+  "host_test_groups": 6,
+  "analysis_tests": 33,
+  "model_dc_points": 30,
+  "model_ac_points": 12,
+  "model_passed": true,
+  "model_validation_relative_error": 0.0017632744660296762,
+  "adc_replay_checks": 853161,
+  "archived_frames_replayed": 24,
+  "old_capture_files_unchanged": 616,
+  "thresholds_changed": false,
+  "adc_guard_changed": false,
+  "archived_captures_modified": false,
+  "hardware_commands_sent": 21,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "current_scale": "unchanged nominal 3.3/(4095*0.04*2.1) A/count",
+  "foc_qualification_unchanged": true,
+  "target_wcet_measured": false,
+  "source_manifest": "source_hashes.json",
+  "artifacts": {
+    "release/nucleo_2026102932_commissioning.bin": "fd0bf4ae414c06483f85bc7a3b4d1f106ef927ca41da500bdc71a5af8c49e322",
+    "release/unoq_2026102931_commissioning.elf-zsk.bin": "a7937c716fa0f1b6fa801af14e13a0eb658c20c19f2248933d61a8474d767bdc"
+  },
+  "hardware_configuration_switch_verified": true,
+  "installation_report": "hardware_install_r1/installation_summary.json"
+}

@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "fresh": true,
+    "state": "FIRST_RECORD_PENDING",
+    "state_code": 4,
+    "flags": 0,
+    "clear_rearm_tick_ms": 2133711,
+    "armed_tick_ms": 0,
+    "irq_count_before": 0,
+    "event_irq_count": 0,
+    "first_wave_crc32c": 0,
+    "event_tick_ms": 0,
+    "boot_record_crc32c": 4017570581,
+    "epoch_matches": true,
+    "first_wave_preserved": null,
+    "summary_ru": "Повторный Break: первый снимок ещё не готов; захват не вооружён",
+    "physical_cause_identified": false,
+    "TP23_connection_verified": false,
+    "limitation": "PA4 требует отдельного подтверждённого подключения TP23. Сохранённая запись и свежесть связи различаются.",
+    "wave": null,
+    "snapshot": {
+      "kind": "first_after_CLEAR",
+      "available": true,
+      "captured": false,
+      "age_ms": 10405,
+      "reason": "no_recorded_break"
+    },
+    "records_coherent": false,
+    "complete_window": false,
+    "live_usable": false
+  },
+  "error": ""
+}

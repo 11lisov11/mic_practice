@@ -1,0 +1,65 @@
+{
+  "ok": true,
+  "data": {
+    "mc_break_snapshots": [
+      {
+        "kind": "first_since_boot",
+        "available": true,
+        "captured": true,
+        "age_ms": 1296,
+        "reason": "recorded",
+        "raw": {
+          "magic": 827019842,
+          "schema": 2,
+          "bytes": 92,
+          "tick_ms": 6384,
+          "tim_sr": 223,
+          "tim_dier": 128,
+          "tim_bdtr": 36911218,
+          "tim_cnt": 5135,
+          "tim_arr": 5312,
+          "tim_ccr1": 0,
+          "tim_ccr2": 0,
+          "tim_ccr3": 0,
+          "gpioa_idr": 40964,
+          "context_valid": 0,
+          "context_tick_ms": 0,
+          "reference_speed_unit": 0,
+          "motor_state": 0,
+          "current_faults": 0,
+          "occurred_faults": 0,
+          "vbus_v": 0,
+          "temperature_deci_c": 0,
+          "command_sequence": 0,
+          "start_window": 0
+        },
+        "event": {
+          "bif": true,
+          "b2if": false,
+          "pa6_high_at_irq": false,
+          "bke_at_irq": true,
+          "moe_at_irq": false,
+          "during_start_request_window": false
+        },
+        "cached_context": null
+      },
+      {
+        "kind": "first_start_window",
+        "available": true,
+        "captured": false,
+        "age_ms": 1498,
+        "reason": "no_recorded_break"
+      }
+    ],
+    "mc_break_transport": "passive_off_only_v1",
+    "mc_break_limitations": [
+      "Not live telemetry: delivery occurs only with outputs off",
+      "Reference frequency is not measured rotor speed; context is cached",
+      "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+      "J4 voltage and qualified phase current are not measured",
+      "Cannot uniquely identify overcurrent, undervoltage, or interference"
+    ],
+    "mc_break_rx_good": 4694,
+    "mc_break_rx_bad": 0
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "available": true,
+  "schema": 2,
+  "firmware": 2026111408,
+  "count": 2,
+  "total_observer_samples": 46,
+  "valid_samples": 0,
+  "invalid_samples": 46,
+  "first_loss": null,
+  "control_fault": 3,
+  "record_stride_steps": 455,
+  "samples": [
+    {
+      "cycles": 2313181489,
+      "steps": 1,
+      "reason_mask": 20,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "меньше 500 шагов",
+        "поток не выше половины задания"
+      ],
+      "control_sample_sequence": 74012626,
+      "control_adc_cycles": 2313039782,
+      "observer_sample_sequence": 74012626,
+      "observer_adc_cycles": 2313039782,
+      "bin_cycles": 2313039782,
+      "rpm_est": -5.518493106058953e-13,
+      "flux_alpha_wb": 0.009064322337508202,
+      "flux_beta_wb": 0.017673062160611153,
+      "flux_wb": 0.019862000543023752,
+      "nis": 2.0502676963806152,
+      "id_A": 0.009593580849468708,
+      "iq_A": 0.04984970763325691,
+      "id_ref_A": 0.0050558410584926605,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.0,
+      "observer_ia_A": 0.009593580849468708,
+      "observer_ib_A": 0.04984970763325691,
+      "input_va_V": -1.4949774742126465,
+      "input_vb_V": -0.42734044790267944,
+      "dt_s": 0.0009706999990157783,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.01902943290770054,
+        -0.005439577624201775
+      ],
+      "innovation_A": [
+        0.02862301468849182,
+        0.05528928339481354
+      ],
+      "innovation_variance_A2": [
+        0.0018905734177678823,
+        0.0018905734177678823
+      ],
+      "NIS_components": [
+        0.43334840221381254,
+        1.616919411636052
+      ],
+      "endpoint_active_CCR": [
+        2674,
+        2730,
+        2582
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2320873547,
+      "steps": 46,
+      "reason_mask": 20,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "меньше 500 шагов",
+        "поток не выше половины задания"
+      ],
+      "control_sample_sequence": 74014066,
+      "control_adc_cycles": 2320689137,
+      "observer_sample_sequence": 74014066,
+      "observer_adc_cycles": 2320689137,
+      "bin_cycles": 2320689137,
+      "rpm_est": -176.9473419189453,
+      "flux_alpha_wb": 0.07532396912574768,
+      "flux_beta_wb": -0.04991252347826958,
+      "flux_wb": 0.09036017001326083,
+      "nis": 6.305904388427734,
+      "id_A": 0.1778174638748169,
+      "iq_A": -0.012818906456232071,
+      "id_ref_A": 0.23256680369377136,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.0,
+      "observer_ia_A": 0.1439037173986435,
+      "observer_ib_A": -0.10523826628923416,
+      "input_va_V": 0.31201672554016113,
+      "input_vb_V": -1.6941969394683838,
+      "dt_s": 0.001000082353129983,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.13122911751270294,
+        -0.052953384816646576
+      ],
+      "innovation_A": [
+        0.012674599885940552,
+        -0.05271438881754875
+      ],
+      "innovation_variance_A2": [
+        0.00047341902973130345,
+        0.0004657290119212121
+      ],
+      "NIS_components": [
+        0.33933042860541784,
+        5.966574375396229
+      ],
+      "endpoint_active_CCR": [
+        2791,
+        2521,
+        2620
+      ],
+      "endpoint_bus_V": 320,
+      "endpoint_arr": 5312
+    }
+  ],
+  "summary_ru": "После достоверной оценки отказ не записан",
+  "limitation": "Ток/Id/Iq относятся к ADC-кадру входного окна; напряжение оценено по активным CCR с прежней моделью dead-time; поток/NIS — после шага наблюдателя. Это разные явно помеченные моменты. Значения по номинальному масштабу; фактическая скорость независимо не измерена."
+}

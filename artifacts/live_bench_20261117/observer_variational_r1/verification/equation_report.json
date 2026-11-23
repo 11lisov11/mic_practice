@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "cases": 120,
+  "maxima": {
+    "derivative_scaled": 1.8989630834064017e-06,
+    "jacobian_scaled": 1.7043489103714693e-07,
+    "predicted_current_A": 6.978706063032192e-08,
+    "posterior_state_scaled": 4.027649178377992e-06,
+    "posterior_covariance_scaled": 9.057599931443934e-07,
+    "NIS_scaled": 1.7490309797441872e-06,
+    "covariance_transition_difference_scaled": 4.25838827830982
+  },
+  "transitions_by_dt": [
+    {
+      "dt_s": 0.0005,
+      "max_scaled_difference_second_order_vs_RK4": 0.2142926871117642
+    },
+    {
+      "dt_s": 0.001,
+      "max_scaled_difference_second_order_vs_RK4": 0.7556978907300058
+    },
+    {
+      "dt_s": 0.002,
+      "max_scaled_difference_second_order_vs_RK4": 4.25838827830982
+    }
+  ],
+  "hardware_commands": 0,
+  "firmware_changed": false,
+  "comparison": "independent double flux model, complex-step Jacobian, batch two-channel Kalman/Joseph update",
+  "exact_physical_trace_replayed": false,
+  "target_CPU_measured": false,
+  "covariance_transition_variant": "RK4_variational",
+  "hardware_cause_proven": false
+}

@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "reason": "saved_command_reject",
+    "schema": 1,
+    "records": [
+      null,
+      {
+        "tick_ms": 2178,
+        "reason_code": 4,
+        "length": 0,
+        "speculative_prefix": 0,
+        "uart_flags": 2,
+        "last_committed_sequence": null,
+        "budget_used": 0,
+        "recoverable_losses": 0,
+        "dropped_before": 0,
+        "last_valid_ms": 0,
+        "candidate_started_ms": 0,
+        "receiver_flags": 0,
+        "raw_hex": "",
+        "marks_hex": "",
+        "full_frame_crc_matches": null,
+        "stored_crc": null,
+        "calculated_crc": null
+      }
+    ],
+    "speculative_prefix_expiries": 0,
+    "summary_ru": "UART Uno\u2192Nucleo: \u043d\u0435\u043f\u043e\u043b\u043d\u044b\u0439 \u043a\u0430\u043d\u0434\u0438\u0434\u0430\u0442/\u0441\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u044f (0 \u0431\u0430\u0439\u0442); \u043f\u0440\u0438\u0447\u0438\u043d\u0430 4, \u0431\u044e\u0434\u0436\u0435\u0442 0/2. \u0421\u044b\u0440\u044b\u0435 \u0431\u0430\u0439\u0442\u044b \u0441\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b.",
+    "physical_cause_identified": false,
+    "limitations": [
+      "Parser observation times, not electrical edge timestamps",
+      "Only the latest recovered rejection and first fatal rejection are retained until peer reset"
+    ]
+  }
+}

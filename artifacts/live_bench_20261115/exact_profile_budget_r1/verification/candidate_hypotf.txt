@@ -1,0 +1,26 @@
+080193e0 <hypotf>:
+ 80193e0:	b508      	push	{r3, lr}
+ 80193e2:	ed2d 8b04 	vpush	{d8-d9}
+ 80193e6:	eef0 8a40 	vmov.f32	s17, s0
+ 80193ea:	eeb0 9a60 	vmov.f32	s18, s1
+ 80193ee:	f7ff ff69 	bl	80192c4 <__ieee754_hypotf>
+ 80193f2:	eeb0 8a40 	vmov.f32	s16, s0
+ 80193f6:	f000 f88d 	bl	8019514 <finitef>
+ 80193fa:	b120      	cbz	r0, 8019406 <hypotf+0x26>
+ 80193fc:	eeb0 0a48 	vmov.f32	s0, s16
+ 8019400:	ecbd 8b04 	vpop	{d8-d9}
+ 8019404:	bd08      	pop	{r3, pc}
+ 8019406:	eeb0 0a68 	vmov.f32	s0, s17
+ 801940a:	f000 f883 	bl	8019514 <finitef>
+ 801940e:	2800      	cmp	r0, #0
+ 8019410:	d0f4      	beq.n	80193fc <hypotf+0x1c>
+ 8019412:	eeb0 0a49 	vmov.f32	s0, s18
+ 8019416:	f000 f87d 	bl	8019514 <finitef>
+ 801941a:	2800      	cmp	r0, #0
+ 801941c:	d0ee      	beq.n	80193fc <hypotf+0x1c>
+ 801941e:	f7ff fee3 	bl	80191e8 <__errno>
+ 8019422:	2322      	movs	r3, #34	@ 0x22
+ 8019424:	ed9f 8a01 	vldr	s16, [pc, #4]	@ 801942c <hypotf+0x4c>
+ 8019428:	6003      	str	r3, [r0, #0]
+ 801942a:	e7e7      	b.n	80193fc <hypotf+0x1c>
+ 801942c:	7f800000 	.word	0x7f800000

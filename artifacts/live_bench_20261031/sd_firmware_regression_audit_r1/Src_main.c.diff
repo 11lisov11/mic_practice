@@ -1,0 +1,39 @@
+diff --git "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\main.c" "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Src\\main.c"
+index e78f151..2ab11f7 100644
+--- "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\main.c"
++++ "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Src\\main.c"
+@@ -225,7 +225,7 @@ enum {
+   UNO_DIAG_TAG = 0x90U,
+ };
+ 
+-#define MIC_NUCLEO_FW_BUILD_ID 2026103014UL
++#define MIC_NUCLEO_FW_BUILD_ID 2026103016UL
+ 
+ #define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1
+ #define MIC_SOFTSTART_GPIO_CONTROLLED 0
+@@ -857,6 +857,16 @@ static void mic_send_boot_page(uint32_t now_ms){
+   if(uno_tx_submit(packet,UNO_TX_TAG_DIAG)==HAL_OK)last_ms=now_ms;
+ }
+ 
++static void mic_send_observer_page(uint32_t now_ms){
++  static uint32_t last_ms;static unsigned page;
++  if(LL_TIM_IsEnabledAllOutputs(TIM1)||uno_link.command_enabled||!mic_last_control_reply_safe_off||
++      (uint32_t)(now_ms-last_ms)<20U||(uint32_t)(mic_uart_tx.head-mic_uart_tx.tail)>1U||mic_uart_tx.hard_error)return;
++  uint8_t packet[UV3_FRAME];
++  if(ma_observer_trace_packet(packet,MIC_NUCLEO_FW_BUILD_ID,page)&&uno_tx_submit(packet,UNO_TX_TAG_DIAG)==HAL_OK){
++    page=(page+1U)%57U;last_ms=now_ms;
++  }
++}
++
+ static void mic_send_research_page(uint32_t now_ms) {
+   static uint32_t last_ms;
+   if((uint32_t)(now_ms-last_ms)<100U ||
+@@ -1042,7 +1052,7 @@ static void uno_send_reply(void) {
+     /* Bulk frozen records wait until OFF; sampling/capture and normal control
+      * replies continue during RUN. Do not serialize old traces ahead of FOC. */
+     if(!LL_TIM_IsEnabledAllOutputs(TIM1)){
+-      mic_send_boot_page(now_ms);
++      mic_send_boot_page(now_ms);mic_send_observer_page(now_ms);
+       mic_send_break_page(now_ms);mic_send_peak_page(now_ms);
+       mic_send_noise_page(now_ms);mic_send_identification(now_ms);
+     }

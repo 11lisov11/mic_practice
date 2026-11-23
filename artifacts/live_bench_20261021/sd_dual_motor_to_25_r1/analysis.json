@@ -1,0 +1,38 @@
+{
+  "run_passed": false,
+  "settled_commanded_field_targets_hz": [
+    5,
+    10,
+    15
+  ],
+  "abort_during_target_hz": 20,
+  "target_25_hz_commanded": false,
+  "rotor_speed_measured": false,
+  "stop_cause": "UART UV3_NOISE_REJECTED (5), NE flag (4), exhausted recovery budget",
+  "sd_break_during_run_recorded": false,
+  "uart_reject_records": [
+    {
+      "tick_ms": 65765,
+      "reason_code": 2,
+      "crc_matches": false,
+      "ne_byte_indices_zero_based": [
+        31
+      ],
+      "budget_used": 2
+    },
+    {
+      "tick_ms": 65918,
+      "reason_code": 5,
+      "crc_matches": true,
+      "ne_byte_indices_zero_based": [
+        6,
+        7
+      ],
+      "budget_used": 2
+    }
+  ],
+  "counter_interpretation_correction": "Zero public integrity counter does not prove absence of recovered CRC failures; the retained recovered rejection has an invalid CRC. The fatal full frame has a valid CRC and two NE-marked bytes.",
+  "physical_cause_identified": false,
+  "outputs_off_confirmed": true,
+  "new_start_or_clear_performed": false
+}

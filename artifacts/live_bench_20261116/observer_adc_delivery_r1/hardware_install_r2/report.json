@@ -1,0 +1,183 @@
+{
+  "passed": true,
+  "pair": [
+    2026111601,
+    2026111602
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "thresholds_changed": false,
+  "operator_confirmation": "J1 OFF, meter below20V, both boards PCUSB; 15V and wiring unchanged; no START/CLEAR",
+  "physical_TP23_connection_independently_verified": false,
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_18080",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_12222",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_RAM_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_flash_before",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_before",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_config.json",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_hmi.py",
+      "exit_code": 0
+    },
+    {
+      "label": "candidate_calibration_check",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "readback_native",
+      "exit_code": 0
+    },
+    {
+      "label": "router_close",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "verify_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "router_open",
+      "exit_code": 0
+    },
+    {
+      "label": "deploy_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_after",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_after",
+      "exit_code": 0
+    }
+  ],
+  "before_pair": [
+    2026111503,
+    2026111504
+  ],
+  "previous_native_image_verified": true,
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "native_readback_verified": true,
+  "native_flash_sha256": "df78597cbcb2d2bbc7527401cda81cc55ec84b855085e4a90dc8ec60f353b0f0",
+  "uno_readback_verified": true,
+  "hmi_deployment": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/observer_adc_1602_20261116_072122",
+    "calibration_unchanged": true,
+    "runtime_verified": false,
+    "hmi_restarts": 1,
+    "flash_commands": 0,
+    "motor_commands": 0
+  },
+  "calibration_after": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_unchanged": true,
+  "native_BKE": true,
+  "native_MOE": false,
+  "runtime_pending": "HTTP Error 503: Service Unavailable",
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 16,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "repeat_break": {
+    "available": true,
+    "fresh": true,
+    "state": "WAIT_FIRST_CLEAR",
+    "state_code": 0,
+    "flags": 0,
+    "clear_rearm_tick_ms": 0,
+    "armed_tick_ms": 0,
+    "irq_count_before": 0,
+    "event_irq_count": 0,
+    "first_wave_crc32c": 0,
+    "event_tick_ms": 0,
+    "boot_record_crc32c": 227583183,
+    "epoch_matches": true,
+    "first_wave_preserved": null,
+    "summary_ru": "Повторный Break: ожидается CLEAR после первого снимка",
+    "physical_cause_identified": false,
+    "TP23_connection_verified": false,
+    "limitation": "PA4 требует отдельного подтверждённого подключения TP23. Сохранённая запись и свежесть связи различаются.",
+    "wave": null,
+    "snapshot": {
+      "kind": "first_after_CLEAR",
+      "available": false,
+      "captured": false,
+      "reason": "not_received"
+    },
+    "records_coherent": false,
+    "complete_window": false,
+    "live_usable": false
+  },
+  "zero_ready": 1
+}

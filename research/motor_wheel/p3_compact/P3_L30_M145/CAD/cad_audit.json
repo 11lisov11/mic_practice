@@ -1,0 +1,1102 @@
+{
+  "geometry": {
+    "revision": "P3 L30 compact geared hub",
+    "geometry_status": "DESIGN_ASSUMPTION_NOT_MEASURED_NINEBOT",
+    "stator_OD_mm": 108,
+    "stator_bore_mm": 60,
+    "stack_mm": 30.0,
+    "gap_mm": 0.25,
+    "slot_shoulder_r_mm": 32,
+    "slot_bottom_r_mm": 46,
+    "slot_shoulder_w_mm": 5,
+    "slot_bottom_w_mm": 8,
+    "slot_mouth_w_mm": 2,
+    "slot_neck_r_mm": 31.1,
+    "slot_split_r_mm": 39.5,
+    "stator_slots": 24,
+    "pole_pairs": 2,
+    "coil_pitch": 5,
+    "reference_turns": 10,
+    "rotor_bars": 29,
+    "rotor_bar_inner_r_mm": 22.5,
+    "rotor_bar_outer_r_mm": 28.9,
+    "rotor_bar_w_mm": 2.5,
+    "rotor_opening_w_mm": 0.8,
+    "rotor_bore_r_mm": 16,
+    "endring_mean_r_mm": 26.2,
+    "endring_radial_mm": 7.6,
+    "endring_axial_mm": 6,
+    "cage_end_clearance_mm": 0.3,
+    "steel_fill": 0.95,
+    "lamination_mm": 0.35,
+    "shaft_d_mm": 17,
+    "wheel_rolling_d_mm": 254,
+    "vehicle_and_rider_kg": 120,
+    "battery": {
+      "minimum_V": 30,
+      "nominal_V": 36,
+      "full_V": 42,
+      "cells_series": 10
+    },
+    "inverter": {
+      "name": "Assembled DRV8302 SKU71451",
+      "advertised_max_V": 45,
+      "advertised_output_current_A": 15,
+      "current_rating_convention_unverified": true,
+      "ADC_current_fullscale_A_advertised": 27,
+      "MOS_Rds_hot_ohm_assumed": 0.02,
+      "shunt_ohm_inferred": 0.005,
+      "PWM_Hz": 16000,
+      "deadtime_s_assumed": 5e-07
+    },
+    "transmission": {
+      "kind": "planetary_inside_wheel",
+      "sun_teeth": 20,
+      "planet_teeth": 40,
+      "ring_teeth": 100,
+      "planets": 4,
+      "module_mm": 1.45,
+      "pressure_angle_deg": 20,
+      "planet_face_mm": 12,
+      "ring_face_mm": 14,
+      "sun_face_mm": 10,
+      "backlash_per_gear_mm": 0.12,
+      "ring_outer_r_mm": 82.5,
+      "ratio": 6,
+      "efficiency_assumed": 0.94,
+      "planet_pin_d_mm": 8,
+      "main_axle_d_mm": 17,
+      "output_bearing": "HK1712,17x23x12; hardened/ground shaft17mm required",
+      "plastic_gear_material": "Purchased POM or qualified printed PA. PETG is for cold fit trials until endurance/temperature qualification.",
+      "endturn_overhang_mm_assumed": 12,
+      "case_inner_r_mm": 67.5,
+      "case_outer_r_mm": 69.5,
+      "donor_rim_inner_r_mm_ASSUMED": 85.5,
+      "donor_rim_outer_r_mm_ASSUMED": 88.5,
+      "donor_fit_verified": false,
+      "planet_bearing_name": "688VV",
+      "planet_bearing_outer_r_mm": 8,
+      "planet_bearing_width_mm": 5,
+      "planet_bearing_rear_offset_mm": 1.5,
+      "planet_bearing_axial_step_mm": 6,
+      "needle_name": "HK1712",
+      "needle_width_mm": 12,
+      "needle_outer_r_mm": 11.5,
+      "needle_start_after_G0_mm": 10.5,
+      "pin_span_mm": 17.75,
+      "gear_design_torque_Nm": 9,
+      "temperature_target_for_printed_gears_C": 60,
+      "gear_material_service_qualified": false
+    },
+    "design_screens": {
+      "Bg_continuous_T": 0.65,
+      "Bg_short_T": 0.8,
+      "copper_fill_max": 0.4,
+      "winding_hot_C": 100,
+      "rotor_hot_C": 85,
+      "ambient_design_C": 35,
+      "winding_limit_C": 120,
+      "PETG_external_limit_C": 55,
+      "end_leakage_reference_H_assumed": 0.00015,
+      "stator_to_ambient_forced_K_W_assumed": 1.5,
+      "winding_to_stator_K_W_assumed": 0.45
+    }
+  },
+  "gear": {
+    "sun_teeth": 20,
+    "planet_teeth": 40,
+    "ring_teeth": 100,
+    "planets": 4,
+    "module_mm": 1.45,
+    "pressure_angle_deg": 20,
+    "planet_face_mm": 12,
+    "ring_face_mm": 14,
+    "sun_face_mm": 10,
+    "backlash_per_gear_mm": 0.12,
+    "ring_outer_r_mm": 82.5,
+    "ratio": 6,
+    "efficiency_assumed": 0.94,
+    "planet_pin_d_mm": 8,
+    "main_axle_d_mm": 17,
+    "output_bearing": "HK1712,17x23x12; hardened/ground shaft17mm required",
+    "plastic_gear_material": "Purchased POM or qualified printed PA. PETG is for cold fit trials until endurance/temperature qualification.",
+    "endturn_overhang_mm_assumed": 12,
+    "case_inner_r_mm": 67.5,
+    "case_outer_r_mm": 69.5,
+    "donor_rim_inner_r_mm_ASSUMED": 85.5,
+    "donor_rim_outer_r_mm_ASSUMED": 88.5,
+    "donor_fit_verified": false,
+    "planet_bearing_name": "688VV",
+    "planet_bearing_outer_r_mm": 8,
+    "planet_bearing_width_mm": 5,
+    "planet_bearing_rear_offset_mm": 1.5,
+    "planet_bearing_axial_step_mm": 6,
+    "needle_name": "HK1712",
+    "needle_width_mm": 12,
+    "needle_outer_r_mm": 11.5,
+    "needle_start_after_G0_mm": 10.5,
+    "pin_span_mm": 17.75,
+    "gear_design_torque_Nm": 9,
+    "temperature_target_for_printed_gears_C": 60,
+    "gear_material_service_qualified": false,
+    "keyed_reaction_collar": true
+  },
+  "parts": [
+    {
+      "part": "01_STATOR_24S",
+      "bodies": 1,
+      "bbox_mm": [
+        -54.0,
+        -54.0,
+        -15.0,
+        54.0,
+        54.0,
+        15.0
+      ],
+      "solid_volume_mm3": 120623.52235524796,
+      "material_intent": "0.35mm electrical steel laminations; actual grade to specify"
+    },
+    {
+      "part": "02_ROTOR_29B",
+      "bodies": 1,
+      "bbox_mm": [
+        -29.75,
+        -29.75,
+        -15.0,
+        29.75,
+        29.74999703993623,
+        15.0
+      ],
+      "solid_volume_mm3": 44776.767741929325,
+      "material_intent": "0.35mm electrical steel laminations; nominal open slots"
+    },
+    {
+      "part": "03_COPPER_CAGE",
+      "bodies": 1,
+      "bbox_mm": [
+        -30.0,
+        -30.0,
+        -21.3,
+        30.0,
+        30.0,
+        21.3
+      ],
+      "solid_volume_mm3": 29211.694300387146,
+      "material_intent": "Copper bars and two end rings, assembled and brazed by contractor"
+    },
+    {
+      "part": "04_ROTOR_AL_HUB",
+      "bodies": 1,
+      "bbox_mm": [
+        -22.2,
+        -22.2,
+        -16.5,
+        22.2,
+        22.2,
+        27.0
+      ],
+      "solid_volume_mm3": 24507.015901220864,
+      "material_intent": "Aluminium hollow rotor hub, bearing seats26 nominal, press fit lamination seat32 nominal"
+    },
+    {
+      "part": "05_ROTOR_STACK_WASHER",
+      "bodies": 1,
+      "bbox_mm": [
+        -22.2,
+        -22.2,
+        15.0,
+        22.2,
+        22.2,
+        16.5
+      ],
+      "solid_volume_mm3": 1116.0822061143112,
+      "material_intent": "Steel end washer, retained by DIN47132 clip"
+    },
+    {
+      "part": "06_ROTOR_CIRCLIP_ENVELOPE",
+      "bodies": 1,
+      "bbox_mm": [
+        -18.5,
+        -18.5,
+        16.5,
+        18.5,
+        18.5,
+        17.5
+      ],
+      "solid_volume_mm3": 330.1499719657516,
+      "material_intent": "Purchased DIN47132 clip; envelope, not production shape"
+    },
+    {
+      "part": "07_ROTOR_BEARING_6803",
+      "bodies": 1,
+      "bbox_mm": [
+        -13.0,
+        -13.0,
+        -15.0,
+        13.0,
+        13.0,
+        -9.999999999999998
+      ],
+      "solid_volume_mm3": 1519.7454461740622,
+      "material_intent": "Purchased6803 17x26x5 bearing envelope"
+    },
+    {
+      "part": "08_STATOR_AL_JACKET",
+      "bodies": 1,
+      "bbox_mm": [
+        -61.0,
+        -61.0,
+        -27.0,
+        61.0,
+        61.0,
+        15.000000000000004
+      ],
+      "solid_volume_mm3": 37960.88505093786,
+      "material_intent": "Aluminium heat jacket, stator OD108 nominal, clamping flanges; manufacturing fits pending"
+    },
+    {
+      "part": "09_STATOR_FRONT_CLAMP",
+      "bodies": 1,
+      "bbox_mm": [
+        -61.0,
+        -61.0,
+        15.0,
+        61.0,
+        61.0,
+        17.0
+      ],
+      "solid_volume_mm3": 8191.168773484278,
+      "material_intent": "Aluminium lamination clamping ring, leaves winding overhang envelope clear"
+    },
+    {
+      "part": "10_FIXED_HEAT_SPREADER",
+      "bodies": 1,
+      "bbox_mm": [
+        -68.5,
+        -68.5,
+        -38.50000000000001,
+        68.5,
+        68.5,
+        -26.999999999999996
+      ],
+      "solid_volume_mm3": 64134.94857996656,
+      "material_intent": "Fixed Al heat spreader,48fins, integral keyed collar28OD; nominal key5x5x12; strength/fit pending"
+    },
+    {
+      "part": "11_MAIN_AXLE_HARDENED",
+      "bodies": 1,
+      "bbox_mm": [
+        -8.5,
+        -8.5,
+        -75.0,
+        8.5,
+        8.5,
+        80.0
+      ],
+      "solid_volume_mm3": 30619.650883290964,
+      "material_intent": "Hollow steel axle17/bore6 with keyseat; HK1712 race hardening and grinding required; frame ends unknown"
+    },
+    {
+      "part": "12_METAL_SUN_20T",
+      "bodies": 1,
+      "bbox_mm": [
+        -21.0,
+        -21.0,
+        26.999999999999996,
+        21.0,
+        21.0,
+        40.00000000000001
+      ],
+      "solid_volume_mm3": 7301.234769716378,
+      "material_intent": "Contractor-made steel sun m1.45 z20, integral flange; countersunk screws"
+    },
+    {
+      "part": "13_POLYMER_RING_100T",
+      "bodies": 1,
+      "bbox_mm": [
+        -82.5,
+        -82.5,
+        27.999999999999996,
+        82.5,
+        82.5,
+        44.000000000000014
+      ],
+      "solid_volume_mm3": 90922.14780787019,
+      "material_intent": "POM purchased or qualified printed PA; PETG cold fit prototype only; root production rounding pending"
+    },
+    {
+      "part": "14_POLYMER_PLANET_40T",
+      "bodies": 1,
+      "bbox_mm": [
+        -30.449564652708233,
+        -30.449564652708233,
+        31.0,
+        30.449564652708233,
+        30.449564652708233,
+        43.0
+      ],
+      "solid_volume_mm3": 28820.428752910633,
+      "material_intent": "POM or qualified printed polymer; PETG fit trial only; bearing bore16 to calibrate after conditioning"
+    },
+    {
+      "part": "15_PLANET_BEARING_688VV",
+      "bodies": 1,
+      "bbox_mm": [
+        -8.0,
+        -8.0,
+        31.5,
+        8.0,
+        8.0,
+        36.5
+      ],
+      "solid_volume_mm3": 753.98223686155,
+      "material_intent": "Purchased 688VV, 8x16x5; two per planet"
+    },
+    {
+      "part": "16_PLANET_PIN_METAL",
+      "bodies": 1,
+      "bbox_mm": [
+        -4.0,
+        -4.0,
+        26.999999999999996,
+        4.0,
+        4.0,
+        47.0
+      ],
+      "solid_volume_mm3": 1005.309649148734,
+      "material_intent": "Hardened8mm planet pin, M4 end fixing omitted from envelope"
+    },
+    {
+      "part": "17_PLANET_SPACERS",
+      "bodies": 3,
+      "bbox_mm": [
+        -6.0,
+        -6.0,
+        29.5,
+        6.0,
+        6.0,
+        44.50000000000001
+      ],
+      "solid_volume_mm3": 301.435815111941,
+      "material_intent": "Purchased/cut metal spacers, avoid axial clamping through polymer gear"
+    },
+    {
+      "part": "18_CARRIER_REAR_AL",
+      "bodies": 1,
+      "bbox_mm": [
+        -51.5,
+        -51.5,
+        26.999999999999996,
+        51.5,
+        51.5,
+        29.5
+      ],
+      "solid_volume_mm3": 16526.740853290794,
+      "material_intent": "Aluminium rear carrier,8mm pins on87mm PCD"
+    },
+    {
+      "part": "19_CARRIER_FRONT_AL",
+      "bodies": 1,
+      "bbox_mm": [
+        -55.5,
+        -55.5,
+        44.5,
+        55.5,
+        55.5,
+        47.500000000000014
+      ],
+      "solid_volume_mm3": 25417.448062949945,
+      "material_intent": "Aluminium front carrier;6xPCD91mm output interface ASSUMED, offset15deg"
+    },
+    {
+      "part": "20_OUTPUT_NEEDLE_HOUSING",
+      "bodies": 1,
+      "bbox_mm": [
+        -17.0,
+        -17.0,
+        40.5,
+        17.0,
+        17.0,
+        52.5
+      ],
+      "solid_volume_mm3": 4241.150082346222,
+      "material_intent": "Steel HK1712 housing;23mm bore, hardened shaft17mm required"
+    },
+    {
+      "part": "21_OUTPUT_NEEDLE_HK1712",
+      "bodies": 1,
+      "bbox_mm": [
+        -11.5,
+        -11.5,
+        40.49999999999999,
+        11.5,
+        11.5,
+        52.50000000000001
+      ],
+      "solid_volume_mm3": 2261.9467105846525,
+      "material_intent": "Purchased HK1712 envelope; hardened17mm axle race required"
+    },
+    {
+      "part": "22_REAR_WHEEL_BEARING_6003",
+      "bodies": 1,
+      "bbox_mm": [
+        -17.5,
+        -17.5,
+        -42.00000000000001,
+        17.5,
+        17.5,
+        -32.0
+      ],
+      "solid_volume_mm3": 7351.32680940012,
+      "material_intent": "Purchased6003 17x35x10 envelope, rear wheel support"
+    },
+    {
+      "part": "23_TIE_ROD_TUBE_AL",
+      "bodies": 1,
+      "bbox_mm": [
+        -4.0,
+        -4.0,
+        -27.0,
+        4.0,
+        4.0,
+        28.0
+      ],
+      "solid_volume_mm3": 1889.86433067511,
+      "material_intent": "Aluminium8x4.5 tube, four; M4 studs, keep clamping load off polymer"
+    },
+    {
+      "part": "24_TIE_STUD_M4",
+      "bodies": 1,
+      "bbox_mm": [
+        -2.0,
+        -2.0,
+        -33.0,
+        2.0,
+        2.0,
+        47.0
+      ],
+      "solid_volume_mm3": 1005.309649148734,
+      "material_intent": "PurchasedM4 studs/nuts; nominal cylindrical envelope"
+    },
+    {
+      "part": "25_PRINTED_FIXED_CASE",
+      "bodies": 1,
+      "bbox_mm": [
+        -69.5,
+        -69.5,
+        -27.0,
+        69.5,
+        69.5,
+        28.0
+      ],
+      "solid_volume_mm3": 47343.80128959819,
+      "material_intent": "PETG cold case or qualified PA warm case; metal tie rods carry alignment/preload; temperature limit applies"
+    },
+    {
+      "part": "26_PRINTED_COOLING_PLENUM",
+      "bodies": 1,
+      "bbox_mm": [
+        -80.0,
+        -80.0,
+        -52.00000000000001,
+        80.0,
+        80.0,
+        -44.0
+      ],
+      "solid_volume_mm3": 38006.987923129374,
+      "material_intent": "Cold PETG external air plenum; frame mounting and fan curves to qualify,2mm clearance to rotating cover"
+    },
+    {
+      "part": "27_PRESSURE_FAN_ENVELOPE",
+      "bodies": 1,
+      "bbox_mm": [
+        -25.0,
+        -25.0,
+        -72.0,
+        25.0,
+        25.0,
+        -51.99999999999999
+      ],
+      "solid_volume_mm3": 16761.94972502,
+      "material_intent": "PURCHASED fan package placeholder50x50x20; each >=1.5L/s at60Pa, not a selected fan specification"
+    },
+    {
+      "part": "90_DONOR_REAR_COVER_REFERENCE",
+      "bodies": 1,
+      "bbox_mm": [
+        -88.5,
+        -88.5,
+        -42.00000000000001,
+        88.5,
+        88.5,
+        -32.0
+      ],
+      "solid_volume_mm3": 56393.55162734532,
+      "material_intent": "ASSUMED donor cover/reference replacement; not a verified Ninebot interface"
+    },
+    {
+      "part": "91_DONOR_RIM_REFERENCE",
+      "bodies": 1,
+      "bbox_mm": [
+        -88.5,
+        -88.5,
+        -39.5,
+        88.5,
+        88.5,
+        47.49999999999999
+      ],
+      "solid_volume_mm3": 142672.28877012624,
+      "material_intent": "ASSUMED rim envelope OD177/ID171; NOT measured Ninebot"
+    },
+    {
+      "part": "92_DONOR_FRONT_COVER_REFERENCE",
+      "bodies": 1,
+      "bbox_mm": [
+        -88.5,
+        -88.5,
+        47.5,
+        88.5,
+        88.5,
+        50.000000000000014
+      ],
+      "solid_volume_mm3": 58870.50108516001,
+      "material_intent": "ASSUMED front cover with6xPCD91mm adapter; actual interface unknown"
+    },
+    {
+      "part": "80_ENDTURN_KEEP_OUT",
+      "bodies": 2,
+      "bbox_mm": [
+        -48.5,
+        -48.5,
+        -27.0,
+        48.5,
+        48.5,
+        27.0
+      ],
+      "solid_volume_mm3": 104897.77870336322,
+      "material_intent": "KEEP OUT:12mm formed distributed end turns; wound coupon needed"
+    },
+    {
+      "part": "82_WINDING_A_ENVELOPE",
+      "bodies": 16,
+      "bbox_mm": [
+        -44.81573977867698,
+        -44.81573977867698,
+        -15.0,
+        44.81573977867697,
+        44.81573977867698,
+        15.0
+      ],
+      "solid_volume_mm3": 13322.213774747328,
+      "material_intent": "Slot copper envelope; actual conductor and end-turn mass comes from winding length calculation"
+    },
+    {
+      "part": "82_WINDING_B_ENVELOPE",
+      "bodies": 16,
+      "bbox_mm": [
+        -40.877360952948855,
+        -40.87736095294884,
+        -15.0,
+        40.87736095294885,
+        40.87736095294885,
+        15.0
+      ],
+      "solid_volume_mm3": 13322.213774747323,
+      "material_intent": "Slot copper envelope; actual conductor and end-turn mass comes from winding length calculation"
+    },
+    {
+      "part": "82_WINDING_C_ENVELOPE",
+      "bodies": 16,
+      "bbox_mm": [
+        -45.7,
+        -45.7,
+        -15.0,
+        45.7,
+        45.7,
+        15.0
+      ],
+      "solid_volume_mm3": 13322.213774747332,
+      "material_intent": "Slot copper envelope; actual conductor and end-turn mass comes from winding length calculation"
+    },
+    {
+      "part": "81_TIRE_REFERENCE",
+      "bodies": 1,
+      "bbox_mm": [
+        -127.0,
+        -127.0,
+        -35.0,
+        127.0,
+        127.0,
+        35.0
+      ],
+      "solid_volume_mm3": 1824550.6194069786,
+      "material_intent": "REFERENCE ONLY:254mm rolling diameter,70mm assumed tyre width"
+    },
+    {
+      "part": "30_PRINTED_COIL_FORMER",
+      "bodies": 1,
+      "bbox_mm": [
+        -25.0,
+        -29.0,
+        0.0,
+        25.0,
+        29.0,
+        15.0
+      ],
+      "solid_volume_mm3": 9642.477796076937,
+      "material_intent": "PETG cold forming tool, test12mm end envelope with real insulated wire"
+    },
+    {
+      "part": "31_PRINTED_BEARING_FIT_COUPON",
+      "bodies": 1,
+      "bbox_mm": [
+        -35.0,
+        -18.0,
+        0.0,
+        35.0,
+        18.0,
+        8.0
+      ],
+      "solid_volume_mm3": 14304.071293708628,
+      "material_intent": "Cold fit coupon16/26mm; only geometry/print trial"
+    },
+    {
+      "part": "28_REACTION_KEY_5X5",
+      "bodies": 1,
+      "bbox_mm": [
+        5.5,
+        -2.5,
+        -29.750000000000004,
+        10.5,
+        2.5,
+        -17.75
+      ],
+      "solid_volume_mm3": 300.0000000000001,
+      "material_intent": "Steel5x5x12 reaction key, nominal geometry; fit and end treatment pending"
+    }
+  ],
+  "placements": [
+    {
+      "name": "01_STATOR_24S",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "02_ROTOR_29B",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "03_COPPER_CAGE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "04_ROTOR_AL_HUB",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "05_ROTOR_STACK_WASHER",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "06_ROTOR_CIRCLIP_ENVELOPE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "07_ROTOR_BEARING_6803",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "07_ROTOR_BEARING_6803",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 25.0,
+      "angle_rad": 0
+    },
+    {
+      "name": "08_STATOR_AL_JACKET",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "09_STATOR_FRONT_CLAMP",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "10_FIXED_HEAT_SPREADER",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "11_MAIN_AXLE_HARDENED",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "12_METAL_SUN_20T",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "13_POLYMER_RING_100T",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "14_POLYMER_PLANET_40T",
+      "x_mm": 43.5,
+      "y_mm": 0.0,
+      "z_mm": 0,
+      "angle_rad": 0.07853981633974483
+    },
+    {
+      "name": "14_POLYMER_PLANET_40T",
+      "x_mm": 2.6636067881454934e-15,
+      "y_mm": 43.5,
+      "z_mm": 0,
+      "angle_rad": 0.07853981633974483
+    },
+    {
+      "name": "14_POLYMER_PLANET_40T",
+      "x_mm": -43.5,
+      "y_mm": 5.327213576290987e-15,
+      "z_mm": 0,
+      "angle_rad": 0.07853981633974483
+    },
+    {
+      "name": "14_POLYMER_PLANET_40T",
+      "x_mm": -7.99082036443648e-15,
+      "y_mm": -43.5,
+      "z_mm": 0,
+      "angle_rad": 0.07853981633974483
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": 43.5,
+      "y_mm": 0.0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": 43.5,
+      "y_mm": 0.0,
+      "z_mm": 6,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": 2.6636067881454934e-15,
+      "y_mm": 43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": 2.6636067881454934e-15,
+      "y_mm": 43.5,
+      "z_mm": 6,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": -43.5,
+      "y_mm": 5.327213576290987e-15,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": -43.5,
+      "y_mm": 5.327213576290987e-15,
+      "z_mm": 6,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": -7.99082036443648e-15,
+      "y_mm": -43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "15_PLANET_BEARING_688VV",
+      "x_mm": -7.99082036443648e-15,
+      "y_mm": -43.5,
+      "z_mm": 6,
+      "angle_rad": 0
+    },
+    {
+      "name": "16_PLANET_PIN_METAL",
+      "x_mm": 43.5,
+      "y_mm": 0.0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "16_PLANET_PIN_METAL",
+      "x_mm": 2.6636067881454934e-15,
+      "y_mm": 43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "16_PLANET_PIN_METAL",
+      "x_mm": -43.5,
+      "y_mm": 5.327213576290987e-15,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "16_PLANET_PIN_METAL",
+      "x_mm": -7.99082036443648e-15,
+      "y_mm": -43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "17_PLANET_SPACERS",
+      "x_mm": 43.5,
+      "y_mm": 0.0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "17_PLANET_SPACERS",
+      "x_mm": 2.6636067881454934e-15,
+      "y_mm": 43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "17_PLANET_SPACERS",
+      "x_mm": -43.5,
+      "y_mm": 5.327213576290987e-15,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "17_PLANET_SPACERS",
+      "x_mm": -7.99082036443648e-15,
+      "y_mm": -43.5,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "18_CARRIER_REAR_AL",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "19_CARRIER_FRONT_AL",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "20_OUTPUT_NEEDLE_HOUSING",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "21_OUTPUT_NEEDLE_HK1712",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "22_REAR_WHEEL_BEARING_6003",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "23_TIE_ROD_TUBE_AL",
+      "x_mm": 55.50788232314398,
+      "y_mm": 55.50788232314398,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "23_TIE_ROD_TUBE_AL",
+      "x_mm": -55.507882323143974,
+      "y_mm": 55.50788232314398,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "23_TIE_ROD_TUBE_AL",
+      "x_mm": -55.507882323143996,
+      "y_mm": -55.507882323143974,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "23_TIE_ROD_TUBE_AL",
+      "x_mm": 55.50788232314397,
+      "y_mm": -55.507882323143996,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "24_TIE_STUD_M4",
+      "x_mm": 55.50788232314398,
+      "y_mm": 55.50788232314398,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "24_TIE_STUD_M4",
+      "x_mm": -55.507882323143974,
+      "y_mm": 55.50788232314398,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "24_TIE_STUD_M4",
+      "x_mm": -55.507882323143996,
+      "y_mm": -55.507882323143974,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "24_TIE_STUD_M4",
+      "x_mm": 55.50788232314397,
+      "y_mm": -55.507882323143996,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "25_PRINTED_FIXED_CASE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "26_PRINTED_COOLING_PLENUM",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "27_PRESSURE_FAN_ENVELOPE",
+      "x_mm": -48,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "27_PRESSURE_FAN_ENVELOPE",
+      "x_mm": 48,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "90_DONOR_REAR_COVER_REFERENCE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "91_DONOR_RIM_REFERENCE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "92_DONOR_FRONT_COVER_REFERENCE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "80_ENDTURN_KEEP_OUT",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "82_WINDING_A_ENVELOPE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "82_WINDING_B_ENVELOPE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "82_WINDING_C_ENVELOPE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "81_TIRE_REFERENCE",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    },
+    {
+      "name": "28_REACTION_KEY_5X5",
+      "x_mm": 0,
+      "y_mm": 0,
+      "z_mm": 0,
+      "angle_rad": 0
+    }
+  ],
+  "assembly_components": 60,
+  "status": "NOMINAL_INSERT; donor interfaces and12mm end-turn target not verified"
+}

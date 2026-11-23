@@ -1,0 +1,55 @@
+{
+  "schema": "mic_ai.powered_trial.rx_snapshot_delta.v1",
+  "pair": [
+    2026101104,
+    2026101102
+  ],
+  "images": {
+    "production_uno": "987a869e146e115ba9f526bf991e50cd461095f0c9448263f5502071b964e15f",
+    "production_nucleo": "d17b1ed8313b7e355e66681f90beaf84e7535e22504212f79ef44ce2bad5d37c"
+  },
+  "profile": "short",
+  "scope": "pwm_component_transfer_with_rx_and_snapshot_delta",
+  "pwm_evidence_pair": [
+    2026101007,
+    2026101006
+  ],
+  "pwm_evidence_images": {
+    "production_uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479"
+  },
+  "pwm_core_equivalence_pass": true,
+  "break_irq_delta_audited": true,
+  "calibration_contract_pass": true,
+  "images_verified": true,
+  "offline_pass": true,
+  "idle_wifi_pass": true,
+  "physical_idle_pass": true,
+  "new_pair_active_pwm_measured": false,
+  "hv_release_approved": false,
+  "current_telemetry_qualified": false,
+  "max_run_s": 3,
+  "max_frequency_hz": 5,
+  "cases": {
+    "carrier_5": true,
+    "carrier_20": true,
+    "STOP": true,
+    "ESTOP": true,
+    "FREQ_ZERO": true,
+    "RUNLIMIT": true,
+    "ACTIVE_RPC": true,
+    "TIM1_BREAK": true
+  },
+  "offline_suites": 51,
+  "evidence_sha256": {
+    "pwm": "9d9db2573654d0d17b05c9a9b26bdecbe5897ef4cc43f47f806a3e71eae5949b",
+    "physical_idle": "ebbceb42c363c2d2442d6a9d29f5d17e44361aeff836480b6c0838d6e3cc1055",
+    "delta_audit": "c906aaf2004cd35ac23b6e471b62e021605169ffeb3b1df971b791d6bc6653dd",
+    "uno_install": "f75bac39a2d4b0fb5941725cd4a2b50f338e1b39c8d4285db8f19b98e887a439",
+    "nucleo_install": "d36b5a02a74b013fa8588242ff8f9ed9a29cb2cef42526f4b84d3f787a6ba80f",
+    "offline": "8cc9cd75a65ba89accd38fc7e0be00b312b37e27e445230a9adef3a318b3e76d",
+    "idle_wifi": "cf3781f8c0fdf9d12650550627491350fc309c5c4ce644f181848785bf56ed61"
+  },
+  "issued_at": 1791702739.5796554,
+  "expires_at": 1791703339.5796554
+}

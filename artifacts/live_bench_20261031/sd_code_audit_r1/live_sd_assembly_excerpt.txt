@@ -1,0 +1,264 @@
+ 80064ba:	f88d 204e 	strb.w	r2, [sp, #78]	@ 0x4e
+  reply[11] = UNO_DIAG_TAG | uno_link.first_reason;
+ 80064be:	f063 026f 	orn	r2, r3, #111	@ 0x6f
+ 80064c2:	f88d 2057 	strb.w	r2, [sp, #87]	@ 0x57
+      ((GPIOA->MODER >> 12U) & 3U) == 2U &&
+ 80064c6:	f04f 4190 	mov.w	r1, #1207959552	@ 0x48000000
+  reply[21] = UNO_TEMP_VALID;
+ 80064ca:	2201      	movs	r2, #1
+ 80064cc:	f88d 2061 	strb.w	r2, [sp, #97]	@ 0x61
+      ((GPIOA->MODER >> 12U) & 3U) == 2U &&
+ 80064d0:	680a      	ldr	r2, [r1, #0]
+      (TIM1->CR1 & TIM_CR1_CKD) == TIM_CLOCKDIVISION_DIV2 &&
+ 80064d2:	f402 5240 	and.w	r2, r2, #12288	@ 0x3000
+ 80064d6:	f5b2 5f00 	cmp.w	r2, #8192	@ 0x2000
+ 80064da:	f000 81f1 	beq.w	80068c0 <uno_transport_result+0x7b8>
+ 80064de:	2000      	movs	r0, #0
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 80064e0:	f04f 4290 	mov.w	r2, #1207959552	@ 0x48000000
+ 80064e4:	f8df a098 	ldr.w	sl, [pc, #152]	@ 8006580 <uno_transport_result+0x478>
+ 80064e8:	6912      	ldr	r2, [r2, #16]
+ 80064ea:	f8df b098 	ldr.w	fp, [pc, #152]	@ 8006584 <uno_transport_result+0x47c>
+/* This is observation only. Bits 0/1 retain temperature validity/fault. */
+enum { SD_LIVE_VALID=4, SD_LIVE_HIGH=8, SD_LIVE_BIE=16,
+       SD_LIVE_CAPTURING=32, SD_LIVE_RECORD_READY=64, SD_LIVE_CONFIG_OK=128 };
+static inline uint8_t sd_live_encode(bool high, bool bie, bool capturing,
+                                    bool ready, bool config_ok) {
+  return (uint8_t)(SD_LIVE_VALID | (high ? SD_LIVE_HIGH : 0) |
+ 80064ee:	f012 0f40 	tst.w	r2, #64	@ 0x40
+      (TIM1->DIER & TIM_DIER_BIE) != 0U,
+ 80064f2:	4a20      	ldr	r2, [pc, #128]	@ (8006574 <uno_transport_result+0x46c>)
+ 80064f4:	68d2      	ldr	r2, [r2, #12]
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 80064f6:	f8da e000 	ldr.w	lr, [sl]
+ 80064fa:	f3c2 1cc0 	ubfx	ip, r2, #7, #1
+ 80064fe:	f8db 2000 	ldr.w	r2, [fp]
+ 8006502:	bf0c      	ite	eq
+ 8006504:	2104      	moveq	r1, #4
+ 8006506:	210c      	movne	r1, #12
+      (bie ? SD_LIVE_BIE : 0) | (capturing ? SD_LIVE_CAPTURING : 0) |
+ 8006508:	f1ae 0e01 	sub.w	lr, lr, #1
+ 800650c:	3a00      	subs	r2, #0
+ 800650e:	bf18      	it	ne
+ 8006510:	2201      	movne	r2, #1
+ 8006512:	fabe fe8e 	clz	lr, lr
+ 8006516:	ea4f 1e5e 	mov.w	lr, lr, lsr #5
+ 800651a:	0192      	lsls	r2, r2, #6
+      (ready ? SD_LIVE_RECORD_READY : 0) | (config_ok ? SD_LIVE_CONFIG_OK : 0));
+ 800651c:	ea42 124e 	orr.w	r2, r2, lr, lsl #5
+ 8006520:	ea42 120c 	orr.w	r2, r2, ip, lsl #4
+ 8006524:	4310      	orrs	r0, r2
+ 8006526:	ea41 0200 	orr.w	r2, r1, r0
+  if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
+ 800652a:	9903      	ldr	r1, [sp, #12]
+ 800652c:	b252      	sxtb	r2, r2
+ 800652e:	0709      	lsls	r1, r1, #28
+ 8006530:	bf54      	ite	pl
+ 8006532:	f042 0201 	orrpl.w	r2, r2, #1
+ 8006536:	f042 0203 	orrmi.w	r2, r2, #3
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 800653a:	f88d 2061 	strb.w	r2, [sp, #97]	@ 0x61
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 800653e:	9a00      	ldr	r2, [sp, #0]
+ 8006540:	f892 2050 	ldrb.w	r2, [r2, #80]	@ 0x50
+ 8006544:	2a00      	cmp	r2, #0
+  reply[23] = (uint8_t)(MIC_NUCLEO_FW_BUILD_ID & 0xFFU);
+ 8006546:	4a0c      	ldr	r2, [pc, #48]	@ (8006578 <uno_transport_result+0x470>)
+ 80064d0:	680a      	ldr	r2, [r1, #0]
+      (TIM1->CR1 & TIM_CR1_CKD) == TIM_CLOCKDIVISION_DIV2 &&
+ 80064d2:	f402 5240 	and.w	r2, r2, #12288	@ 0x3000
+ 80064d6:	f5b2 5f00 	cmp.w	r2, #8192	@ 0x2000
+ 80064da:	f000 81f1 	beq.w	80068c0 <uno_transport_result+0x7b8>
+ 80064de:	2000      	movs	r0, #0
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 80064e0:	f04f 4290 	mov.w	r2, #1207959552	@ 0x48000000
+ 80064e4:	f8df a098 	ldr.w	sl, [pc, #152]	@ 8006580 <uno_transport_result+0x478>
+ 80064e8:	6912      	ldr	r2, [r2, #16]
+ 80064ea:	f8df b098 	ldr.w	fp, [pc, #152]	@ 8006584 <uno_transport_result+0x47c>
+/* This is observation only. Bits 0/1 retain temperature validity/fault. */
+enum { SD_LIVE_VALID=4, SD_LIVE_HIGH=8, SD_LIVE_BIE=16,
+       SD_LIVE_CAPTURING=32, SD_LIVE_RECORD_READY=64, SD_LIVE_CONFIG_OK=128 };
+static inline uint8_t sd_live_encode(bool high, bool bie, bool capturing,
+                                    bool ready, bool config_ok) {
+  return (uint8_t)(SD_LIVE_VALID | (high ? SD_LIVE_HIGH : 0) |
+ 80064ee:	f012 0f40 	tst.w	r2, #64	@ 0x40
+      (TIM1->DIER & TIM_DIER_BIE) != 0U,
+ 80064f2:	4a20      	ldr	r2, [pc, #128]	@ (8006574 <uno_transport_result+0x46c>)
+ 80064f4:	68d2      	ldr	r2, [r2, #12]
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 80064f6:	f8da e000 	ldr.w	lr, [sl]
+ 80064fa:	f3c2 1cc0 	ubfx	ip, r2, #7, #1
+ 80064fe:	f8db 2000 	ldr.w	r2, [fp]
+ 8006502:	bf0c      	ite	eq
+ 8006504:	2104      	moveq	r1, #4
+ 8006506:	210c      	movne	r1, #12
+      (bie ? SD_LIVE_BIE : 0) | (capturing ? SD_LIVE_CAPTURING : 0) |
+ 8006508:	f1ae 0e01 	sub.w	lr, lr, #1
+ 800650c:	3a00      	subs	r2, #0
+ 800650e:	bf18      	it	ne
+ 8006510:	2201      	movne	r2, #1
+ 8006512:	fabe fe8e 	clz	lr, lr
+ 8006516:	ea4f 1e5e 	mov.w	lr, lr, lsr #5
+ 800651a:	0192      	lsls	r2, r2, #6
+      (ready ? SD_LIVE_RECORD_READY : 0) | (config_ok ? SD_LIVE_CONFIG_OK : 0));
+ 800651c:	ea42 124e 	orr.w	r2, r2, lr, lsl #5
+ 8006520:	ea42 120c 	orr.w	r2, r2, ip, lsl #4
+ 8006524:	4310      	orrs	r0, r2
+ 8006526:	ea41 0200 	orr.w	r2, r1, r0
+  if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
+ 800652a:	9903      	ldr	r1, [sp, #12]
+ 800652c:	b252      	sxtb	r2, r2
+ 800652e:	0709      	lsls	r1, r1, #28
+ 8006530:	bf54      	ite	pl
+ 8006532:	f042 0201 	orrpl.w	r2, r2, #1
+ 8006536:	f042 0203 	orrmi.w	r2, r2, #3
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 800653a:	f88d 2061 	strb.w	r2, [sp, #97]	@ 0x61
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 800653e:	9a00      	ldr	r2, [sp, #0]
+ 8006540:	f892 2050 	ldrb.w	r2, [r2, #80]	@ 0x50
+ 8006544:	2a00      	cmp	r2, #0
+  reply[23] = (uint8_t)(MIC_NUCLEO_FW_BUILD_ID & 0xFFU);
+ 8006546:	4a0c      	ldr	r2, [pc, #48]	@ (8006578 <uno_transport_result+0x470>)
+ 8006548:	f8cd 2063 	str.w	r2, [sp, #99]	@ 0x63
+ 800654c:	e01c      	b.n	8006588 <uno_transport_result+0x480>
+ 800654e:	bf00      	nop
+ 8006550:	20001840 	.word	0x20001840
+ 8006554:	20001650 	.word	0x20001650
+ 8006558:	48000800 	.word	0x48000800
+ 800655c:	40010400 	.word	0x40010400
+ 8006560:	20000154 	.word	0x20000154
+ 8006564:	2000017c 	.word	0x2000017c
+ 8006568:	200019c8 	.word	0x200019c8
+                                    bool ready, bool config_ok) {
+  return (uint8_t)(SD_LIVE_VALID | (high ? SD_LIVE_HIGH : 0) |
+ 80064ee:	f012 0f40 	tst.w	r2, #64	@ 0x40
+      (TIM1->DIER & TIM_DIER_BIE) != 0U,
+ 80064f2:	4a20      	ldr	r2, [pc, #128]	@ (8006574 <uno_transport_result+0x46c>)
+ 80064f4:	68d2      	ldr	r2, [r2, #12]
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 80064f6:	f8da e000 	ldr.w	lr, [sl]
+ 80064fa:	f3c2 1cc0 	ubfx	ip, r2, #7, #1
+ 80064fe:	f8db 2000 	ldr.w	r2, [fp]
+ 8006502:	bf0c      	ite	eq
+ 8006504:	2104      	moveq	r1, #4
+ 8006506:	210c      	movne	r1, #12
+      (bie ? SD_LIVE_BIE : 0) | (capturing ? SD_LIVE_CAPTURING : 0) |
+ 8006508:	f1ae 0e01 	sub.w	lr, lr, #1
+ 800650c:	3a00      	subs	r2, #0
+ 800650e:	bf18      	it	ne
+ 8006510:	2201      	movne	r2, #1
+ 8006512:	fabe fe8e 	clz	lr, lr
+ 8006516:	ea4f 1e5e 	mov.w	lr, lr, lsr #5
+ 800651a:	0192      	lsls	r2, r2, #6
+      (ready ? SD_LIVE_RECORD_READY : 0) | (config_ok ? SD_LIVE_CONFIG_OK : 0));
+ 800651c:	ea42 124e 	orr.w	r2, r2, lr, lsl #5
+ 8006520:	ea42 120c 	orr.w	r2, r2, ip, lsl #4
+ 8006524:	4310      	orrs	r0, r2
+ 8006526:	ea41 0200 	orr.w	r2, r1, r0
+  if ((mcsdk_faults & MC_OVER_TEMP) != 0U) reply[21] |= UNO_TEMP_FAULT;
+ 800652a:	9903      	ldr	r1, [sp, #12]
+ 800652c:	b252      	sxtb	r2, r2
+ 800652e:	0709      	lsls	r1, r1, #28
+ 8006530:	bf54      	ite	pl
+ 8006532:	f042 0201 	orrpl.w	r2, r2, #1
+ 8006536:	f042 0203 	orrmi.w	r2, r2, #3
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 800653a:	f88d 2061 	strb.w	r2, [sp, #97]	@ 0x61
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 800653e:	9a00      	ldr	r2, [sp, #0]
+ 8006540:	f892 2050 	ldrb.w	r2, [r2, #80]	@ 0x50
+ 8006544:	2a00      	cmp	r2, #0
+  reply[23] = (uint8_t)(MIC_NUCLEO_FW_BUILD_ID & 0xFFU);
+ 8006546:	4a0c      	ldr	r2, [pc, #48]	@ (8006578 <uno_transport_result+0x470>)
+ 8006548:	f8cd 2063 	str.w	r2, [sp, #99]	@ 0x63
+ 800654c:	e01c      	b.n	8006588 <uno_transport_result+0x480>
+ 800654e:	bf00      	nop
+ 8006550:	20001840 	.word	0x20001840
+ 8006554:	20001650 	.word	0x20001650
+ 8006558:	48000800 	.word	0x48000800
+ 800655c:	40010400 	.word	0x40010400
+ 8006560:	20000154 	.word	0x20000154
+ 8006564:	2000017c 	.word	0x2000017c
+ 8006568:	200019c8 	.word	0x200019c8
+ 800656c:	200019cc 	.word	0x200019cc
+ 8006570:	200019c4 	.word	0x200019c4
+ 8006574:	40012c00 	.word	0x40012c00
+ 8006578:	78c3e0e8 	.word	0x78c3e0e8
+ 800657c:	20001ad4 	.word	0x20001ad4
+ 8006580:	20001cc0 	.word	0x20001cc0
+ 8006584:	20001cb0 	.word	0x20001cb0
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 8006588:	bf0c      	ite	eq
+ 800658a:	22d0      	moveq	r2, #208	@ 0xd0
+ 800658c:	22f0      	movne	r2, #240	@ 0xf0
+ 800658e:	f88d 2069 	strb.w	r2, [sp, #105]	@ 0x69
+  if (uno_link.first_reason==UNO_DIAG_NONE && !fault) {
+ 8006592:	b91b      	cbnz	r3, 800659c <uno_transport_result+0x494>
+ 8006594:	9b08      	ldr	r3, [sp, #32]
+ 800652a:	9903      	ldr	r1, [sp, #12]
+ 800652c:	b252      	sxtb	r2, r2
+ 800652e:	0709      	lsls	r1, r1, #28
+ 8006530:	bf54      	ite	pl
+ 8006532:	f042 0201 	orrpl.w	r2, r2, #1
+ 8006536:	f042 0203 	orrmi.w	r2, r2, #3
+  reply[21] |= sd_live_encode((GPIOA->IDR & GPIO_PIN_6) != 0U,
+ 800653a:	f88d 2061 	strb.w	r2, [sp, #97]	@ 0x61
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 800653e:	9a00      	ldr	r2, [sp, #0]
+ 8006540:	f892 2050 	ldrb.w	r2, [r2, #80]	@ 0x50
+ 8006544:	2a00      	cmp	r2, #0
+  reply[23] = (uint8_t)(MIC_NUCLEO_FW_BUILD_ID & 0xFFU);
+ 8006546:	4a0c      	ldr	r2, [pc, #48]	@ (8006578 <uno_transport_result+0x470>)
+ 8006548:	f8cd 2063 	str.w	r2, [sp, #99]	@ 0x63
+ 800654c:	e01c      	b.n	8006588 <uno_transport_result+0x480>
+ 800654e:	bf00      	nop
+ 8006550:	20001840 	.word	0x20001840
+ 8006554:	20001650 	.word	0x20001650
+ 8006558:	48000800 	.word	0x48000800
+ 800655c:	40010400 	.word	0x40010400
+ 8006560:	20000154 	.word	0x20000154
+ 8006564:	2000017c 	.word	0x2000017c
+ 8006568:	200019c8 	.word	0x200019c8
+ 800656c:	200019cc 	.word	0x200019cc
+ 8006570:	200019c4 	.word	0x200019c4
+ 8006574:	40012c00 	.word	0x40012c00
+ 8006578:	78c3e0e8 	.word	0x78c3e0e8
+ 800657c:	20001ad4 	.word	0x20001ad4
+ 8006580:	20001cc0 	.word	0x20001cc0
+ 8006584:	20001cb0 	.word	0x20001cb0
+  if (uno_link.softstart_ready) reply[29] |= UNO_TELEMETRY_SOFTSTART_READY;
+ 8006588:	bf0c      	ite	eq
+ 800658a:	22d0      	moveq	r2, #208	@ 0xd0
+ 800658c:	22f0      	movne	r2, #240	@ 0xf0
+ 800658e:	f88d 2069 	strb.w	r2, [sp, #105]	@ 0x69
+  if (uno_link.first_reason==UNO_DIAG_NONE && !fault) {
+ 8006592:	b91b      	cbnz	r3, 800659c <uno_transport_result+0x494>
+ 8006594:	9b08      	ldr	r3, [sp, #32]
+ 8006596:	2b00      	cmp	r3, #0
+ 8006598:	f000 858e 	beq.w	80070b8 <uno_transport_result+0xfb0>
+  return value > UINT16_MAX ? UINT16_MAX : (uint16_t)value;
+ 800659c:	f8d7 21e4 	ldr.w	r2, [r7, #484]	@ 0x1e4
+ 80065a0:	f8df 8314 	ldr.w	r8, [pc, #788]	@ 80068b8 <uno_transport_result+0x7b0>
+ 80065a4:	f64f 73ff 	movw	r3, #65535	@ 0xffff
+ 80065a8:	429a      	cmp	r2, r3
+ 80065aa:	bf28      	it	cs
+ 80065ac:	461a      	movcs	r2, r3
+ 80065ae:	4610      	mov	r0, r2
+ 80065b0:	f8d7 21e8 	ldr.w	r2, [r7, #488]	@ 0x1e8
+ 80065b4:	429a      	cmp	r2, r3
+ 80065b6:	bf28      	it	cs
+ 80065b8:	461a      	movcs	r2, r3
+ 80065ba:	4611      	mov	r1, r2
+  reply[31] = (uint8_t)accepted;
+ 80065bc:	2200      	movs	r2, #0
+ 80065be:	f360 0207 	bfi	r2, r0, #0, #8
+  reply[32] = (uint8_t)(accepted >> 8);
+ 80065c2:	f3c0 2007 	ubfx	r0, r0, #8, #8
+  reply[31] = (uint8_t)accepted;
+ 80065c6:	f360 220f 	bfi	r2, r0, #8, #8
+ 80065ca:	f361 4217 	bfi	r2, r1, #16, #8
+  reply[34] = (uint8_t)(observed >> 8);
+ 80065ce:	f3c1 2107 	ubfx	r1, r1, #8, #8
+  reply[31] = (uint8_t)accepted;
+ 80065d2:	f361 621f 	bfi	r2, r1, #24, #8

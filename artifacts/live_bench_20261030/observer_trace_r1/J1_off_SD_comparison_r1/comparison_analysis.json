@@ -1,0 +1,43 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "J1_confirmed_OFF": true,
+  "J4_15V_current_state": "uncertain_after_user_power_off_message",
+  "user_latest_text": "я выключил питание че дальеш",
+  "initial_after_off_samples": 10,
+  "initial_Vbus": [
+    301.0,
+    297.0,
+    294.0,
+    290.0,
+    287.0,
+    283.0,
+    280.0,
+    276.0,
+    273.0,
+    270.0
+  ],
+  "decay_samples": 76,
+  "decay_elapsed_s": 241.89100000000326,
+  "last_Vbus": [
+    27.0,
+    27.0,
+    26.0
+  ],
+  "SD_last": [
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "all_after_off_samples_LOW": true,
+  "below20_not_confirmed": true,
+  "same_native_boot": true,
+  "same_Linux_boot": true,
+  "SD_first_record_preserved": true,
+  "old_files_verified": 1848,
+  "conclusion": "SD did not release in recorded discharge; cannot interpret as fixed15V experiment until current J4 state clarified",
+  "next_required_input": "Only J1 OFF,15V ON OR J1+15V OFF; no switching until answer"
+}

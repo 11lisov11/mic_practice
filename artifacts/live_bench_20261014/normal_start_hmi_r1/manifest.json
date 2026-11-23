@@ -1,0 +1,24 @@
+{
+  "schema": "mic_ai.normal_start_hmi.v1",
+  "pair": [
+    2026101411,
+    2026101410
+  ],
+  "base_hmi_sha256": "93d21c9381dc0e93613f3a638497ccb6b6525c4051f7c117068382a82ebcf0c4",
+  "hmi_sha256": "8de308a5a818f6c490e7ccf34cfecdeeac4a04175e1413ca39e8a5a842a253f6",
+  "changed_functions": [
+    "_vbus_calibration_identity_matches",
+    "hv_arm_precheck"
+  ],
+  "ordinary_repeatable_start": true,
+  "mcu_images_unchanged": true,
+  "calibration_points_unchanged": true,
+  "one_shot_required": false,
+  "safety_checks_preserved": true,
+  "arm_start_stop_runtime_and_auth_functions_unchanged": true,
+  "qualification_evidence_sha256": {
+    "artifacts\\live_bench_20261014\\snapshot_stop_sync_hil_r1\\working_bus_on_1791997952551152700\\independent_comparison\\report.json": "8a0fe345313c3092b64b720d5d4e3944bfca37f04200c842de110d17e3293195",
+    "artifacts\\live_bench_20261014\\snapshot_stop_sync_hil_r1\\vbus_preservation_review_1791995033559009700\\report.json": "d71205bcbcda943dca04ec9843bcf3de044d6e809ebec425e455084fba9bb3b6",
+    "artifacts\\live_bench_20261014\\snapshot_stop_sync_hil_r1\\FINAL_RESULT.json": "042dbdbafbf53a73ce858020afcd69a93218b4b16762274fb4c909ad336be17b"
+  }
+}

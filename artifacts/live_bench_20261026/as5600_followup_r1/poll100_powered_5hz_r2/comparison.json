@@ -1,0 +1,75 @@
+{
+  "firmware_pair": [
+    2026102518,
+    2026102510
+  ],
+  "mode": "POLL100",
+  "start_commands": 1,
+  "clear_commands": 0,
+  "mcu_limit_ms": 5000,
+  "observed_run_elapsed_ms": 4956,
+  "mcu_reason": 2,
+  "stop_trigger": "Host backup from HTTP request; early44ms",
+  "full_mcu_autostop_pass": false,
+  "outputs_off_confirmed": true,
+  "physical_rotation_verified": false,
+  "operator_observation": "Did not rotate or did not have time to notice",
+  "sensor_error_delta": {
+    "enc_errors": 0,
+    "enc_diag_nack_count": 0,
+    "enc_diag_arlo_count": 0,
+    "enc_diag_busy_count": 0,
+    "enc_diag_berr_count": 0,
+    "enc_diag_timeout_count": 0,
+    "enc_diag_controller_resets": 0
+  },
+  "old_filter100_error_delta": 48,
+  "active_observations": [
+    {
+      "run_elapsed_ms": 1258,
+      "enc_raw": 1058,
+      "enc_status": 51,
+      "enc_errors": 0,
+      "mc_frequency_reference_hz": 2.0,
+      "mc_current_rms_a": [
+        0.072,
+        0.065,
+        0.047
+      ],
+      "mc_current_coverage_pct": 100
+    },
+    {
+      "run_elapsed_ms": 2490,
+      "enc_raw": 1058,
+      "enc_status": 51,
+      "enc_errors": 0,
+      "mc_frequency_reference_hz": 4.0,
+      "mc_current_rms_a": [
+        0.057,
+        0.071,
+        0.056
+      ],
+      "mc_current_coverage_pct": 100
+    },
+    {
+      "run_elapsed_ms": 3722,
+      "enc_raw": 1058,
+      "enc_status": 51,
+      "enc_errors": 0,
+      "mc_frequency_reference_hz": 5.0,
+      "mc_current_rms_a": [
+        0.06,
+        0.065,
+        0.061
+      ],
+      "mc_current_coverage_pct": 100
+    }
+  ],
+  "limitations": [
+    "Current/rotation conditions do not match the prior FILTER100 run; cannot claim a causal filter fix.",
+    "Rotor rotation unconfirmed, nominal RMS now about0.06A vs about0.43A in prior confirmed rotation.",
+    "AS5600 MD+ML weak field persists and angle/speed validity remains false.",
+    "MCU stopped by normal host STOP at4956ms, not MCU expiry.",
+    "Host script deadline fix tested offline only; no extra START/CLEAR issued."
+  ]
+}

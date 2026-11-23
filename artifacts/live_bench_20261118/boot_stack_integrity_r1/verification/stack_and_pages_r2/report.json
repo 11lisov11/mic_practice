@@ -1,0 +1,109 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "layout": {
+    "stack_limit": 536899584,
+    "stack_top": 536903680,
+    "retained": 536898796,
+    "heap_end": 536899344,
+    "preserved_heap_reserve": 512,
+    "stack_reserve": 4096,
+    "old_captured_SP": 536901824,
+    "old_ADC_write": 536901868,
+    "old_corruption_reproduced": true,
+    "new_record_outside_captured_stack": true
+  },
+  "ARM_object_sections_unchanged": [
+    ".text.ma_native_fast",
+    ".text.mic_observer_step",
+    ".text.mic_observer_noise"
+  ],
+  "page_sender_and_scheduler_actual": true,
+  "other_record_payloads_and_DMA_timing_simulated": true,
+  "cases": [
+    {
+      "passed": true,
+      "boot_pages": 59,
+      "repeat_pages": 59,
+      "max_boot_gap_us": 500000.0,
+      "max_repeat_gap_us": 500000.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 59,
+      "repeat_pages": 59,
+      "max_boot_gap_us": 505400.0,
+      "max_repeat_gap_us": 505400.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 60,
+      "repeat_pages": 60,
+      "max_boot_gap_us": 500000.0,
+      "max_repeat_gap_us": 500466.6,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 60,
+      "repeat_pages": 60,
+      "max_boot_gap_us": 507300.0,
+      "max_repeat_gap_us": 507300.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 57,
+      "repeat_pages": 57,
+      "max_boot_gap_us": 530000.0,
+      "max_repeat_gap_us": 530000.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 57,
+      "repeat_pages": 57,
+      "max_boot_gap_us": 532000.0,
+      "max_repeat_gap_us": 532000.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 58,
+      "repeat_pages": 58,
+      "max_boot_gap_us": 530866.3,
+      "max_repeat_gap_us": 530866.3,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    },
+    {
+      "passed": true,
+      "boot_pages": 58,
+      "repeat_pages": 58,
+      "max_boot_gap_us": 532000.0,
+      "max_repeat_gap_us": 532000.0,
+      "queue_full": 0,
+      "TTL_unchanged": true,
+      "old_corruption_negative_control": true
+    }
+  ],
+  "limits": [
+    4000,
+    2
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "checks": [
+    "PASS: 44 hardware-reader fault/deadline and timed-run cases",
+    "Actual MCU deadline branch: no HTTP dependence, wrap, no extension, normal STOP once",
+    "All protection code preceding deadline unchanged",
+    "UART, ADC, SD, physical fault and hard STOP bodies retained",
+    "Polling ISR masks match pinned STM32U585 CMSIS definitions",
+    "Actual HMI start with late completed5s response: no restart or emergency escalation",
+    "No RPC replay of START/CLEAR on lost reply",
+    "Real recorded ADC/zero telemetry decoded for new pair; unknown pair rejected"
+  ],
+  "scheduler_delay_limitation": "3ms deadline is checked while scheduled; this is not a hard wall-clock guarantee under arbitrary preemption",
+  "stop_scope": "MCU dispatch timestamps; actual Nucleo PWM-off latency must be verified after installation"
+}

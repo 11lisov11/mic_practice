@@ -1,0 +1,45 @@
+{
+  "prepared": true,
+  "pair": [
+    2026111803,
+    2026111804
+  ],
+  "installed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "flash": 0,
+  "current_USB_boards": [
+    "Nucleo ST-LINK COM13",
+    "Uno Q COM10"
+  ],
+  "current_readings": {
+    "bus_SWD_V": 10.11181640625,
+    "bus_HMI_V": 10.0,
+    "MOE": false,
+    "BKE": true,
+    "SD": "HIGH",
+    "HMI_pair": [
+      2026111801,
+      2026111802
+    ],
+    "UART_error_flags": 0
+  },
+  "physical_J1_OFF_confirmation_pending": true,
+  "physical_meter_reading_NOT_claimed": true,
+  "next_required_change": "J1 OFF only; keep existing PCUSB, 15V and wiring",
+  "installer": "tools/install_start_history_release.py",
+  "verifier": "tools/verify_start_history_idle.py",
+  "verification_plan": [
+    "fresh USB + SAFE/MOE0 + valid bus<20V",
+    "archive RAM, old flash, calibration and old records",
+    "program/verify Uno1803 and leave core halted",
+    "program native1804 and compare independent full flash readback",
+    "independently verify Uno image and restart",
+    "verify unchanged calibration and new pair/RPC",
+    "read actual UART BRR184/Init921600 and fresh bidirectional counters",
+    "read native64-case OFF DWT timing, 4000 unchanged, no PWM"
+  ],
+  "standalone_verify_only_passed": true,
+  "no_automatic_reflash_after_partial_install": true
+}

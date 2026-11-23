@@ -1,0 +1,2049 @@
+{
+  "state_code": 0,
+  "state": "SAFE",
+  "mode_code": 0,
+  "mode": "VF",
+  "pwm": 0,
+  "freq": 0.0,
+  "speed": 0.0,
+  "ia": 0.0,
+  "ib": 0.0,
+  "ic": 0.0,
+  "vdc": 323.0,
+  "id": 0.0,
+  "iq": 0.0,
+  "i_rms": 0.0,
+  "mic_active": 0,
+  "id_ref": 1.0,
+  "mic_saving_pct": 0.0,
+  "freq_cmd": 0.0,
+  "estop": 0,
+  "iotest": 0,
+  "ntc": 0,
+  "pfc": 0,
+  "precharge": 0,
+  "brake": 0,
+  "brake_duty": 0.0,
+  "fan_duty": 0.0,
+  "bp_fan_duty": 0.0,
+  "bp_fan_rpm": 0.0,
+  "enc_raw": 3865,
+  "enc_ok": 1,
+  "rpc_response_timeouts": 0,
+  "rpc_send_timeouts": 0,
+  "rpc_late_responses": 0,
+  "rpc_unknown_methods": 0,
+  "enc_source": "nucleo_g431_i2c1",
+  "enc_health_nack": 97,
+  "enc_health_deadline": 1,
+  "enc_health_busy": 13,
+  "enc_health_arlo": 137,
+  "enc_health_ovr": 0,
+  "enc_health_short": 0,
+  "enc_health_setup": 0,
+  "enc_health_berr_clears": 14,
+  "enc_health_clean_stops": 90,
+  "enc_health_forced_resets": 21,
+  "enc_health_stop_requests": 7,
+  "enc_health_cleanup_expired": 8,
+  "enc_health_normal_parks": 0,
+  "enc_health_cleanup_flags": 1,
+  "enc_wire_state": 3,
+  "enc_wire_valid": 1,
+  "enc_wire_good": 486,
+  "enc_wire_bad": 1,
+  "enc_peer_epoch": 1,
+  "enc_previous_epoch": 0,
+  "enc_previous_records_retained": 0,
+  "enc_wire_hex": "4943573101000000300400001ce0c3788c30601a80fe210a1400000000100000d8b5885cdcae885cd303000009000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5f5555ff0000005455f5ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5755d53f0000005455fdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5755d50f0000005555d5ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5555f503000040555555ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f5555d503000050555555ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5f5555f500000050555555f5ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5f555555555555555555150000000000000000000000000000000040555555555555555555555500000000000080aaaaaaaaaaaaaaaaaaaaffffffffffffffffffffffafaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafeffffffffffffffffffffafaa0a000000000000000000000000000050555555555555555555555500000000000080aaaaaaaaaaaaaaaaaa0255fd0f000000555555f5ffffffffffffffffffffffffffffffffffffff",
+  "enc_wire_crc": "fc26d70c",
+  "enc_previous_record_crcs": "-",
+  "enc_bus_clear_hex": "-",
+  "enc_release_first_hex": "535052311ce0c3788c30601a010301005bc8885cd003000080fe210adff71900c6d3885c01000000000200006c000100d003000000d9885c010000000002000000000000d301000081f0885c010000000002000000000000d0030000b7d3885c607f7258",
+  "enc_release_pwm_hex": "535052311ce0c3788c30601a010301005bc8885cd003000080fe210adff71900c6d3885c01000000000200006c000100d003000000d9885c010000000002000000000000d301000081f0885c010000000002000000000000d0030000b7d3885c607f7258",
+  "enc_release_good": 162,
+  "enc_release_bad": 1,
+  "enc_fault_first_hex": "494643311ce0c378dff71900dcae885c090401100102000001020000d303000001020000010200006c00010017135230baaefaff00030000440000000020001072bc39028a0e000021010000c01400005f0a00005f0a00005f0a0000da0c0000a24b0000b93c00000000000092310500018000006c200100d000000002a2885c80fe210a0f000000edb0885c01020000010200006c000100d00300005bc8885c",
+  "enc_fault_pwm_hex": "494643311ce0c378dff71900dcae885c090401100102000001020000d303000001020000010200006c00010017135230baaefaff00030000440000000020001072bc39028a0e000021010000c01400005f0a00005f0a00005f0a0000da0c0000a24b0000b93c00000000000092310500018000006c200100d000000002a2885c80fe210a0f000000edb0885c01020000010200006c000100d00300005bc8885c",
+  "enc_fault_good": 243,
+  "enc_fault_bad": 1,
+  "enc_peer_good": 84365,
+  "enc_peer_bad": 0,
+  "enc_diag_category_counts_available": 1,
+  "enc_bus_ok": 1,
+  "enc_status": 103,
+  "enc_speed_ok": 1,
+  "enc_reads": 345237,
+  "enc_errors": 248,
+  "enc_io_error": 0,
+  "enc_init_error": 0,
+  "enc_diag_mode": 6,
+  "enc_diag_berr_count": 14,
+  "enc_diag_arlo_count": 137,
+  "enc_diag_busy_count": 13,
+  "enc_diag_graceful_cleanups": 90,
+  "enc_diag_post_reset_busy": 0,
+  "enc_diag_kernel_hz": 0,
+  "enc_diag_timingr": 0,
+  "enc_diag_cr1": 0,
+  "enc_diag_event_count": 0,
+  "enc_diag_events_hex": "-",
+  "enc_diag_sched_sections": 0,
+  "enc_diag_sched_max_hold_us": 0,
+  "enc_diag_isr": 32785,
+  "enc_diag_last_isr": 32785,
+  "enc_diag_controller_resets": 21,
+  "enc_diag_timeout_count": 1,
+  "enc_diag_nack_count": 97,
+  "run_id": 1,
+  "run_start_ms": 1702124,
+  "run_stop_ms": 1707124,
+  "run_limit_ms": 5000,
+  "run_reason": 1,
+  "run_elapsed_ms": 5000,
+  "enc_diag_thread_priority": 0,
+  "enc_diag_cfg_expected": 0,
+  "enc_diag_cfg_before": 0,
+  "enc_diag_cfg_after": 0,
+  "enc_diag_cfg_match": 1,
+  "enc_diag_last_cfg_before": 0,
+  "enc_diag_last_cfg_after": 0,
+  "enc_diag_tx_byte": 0,
+  "enc_diag_tx_echo": 0,
+  "enc_diag_tx_bits": 0,
+  "enc_diag_last_tx_byte": 0,
+  "enc_diag_last_tx_echo": 0,
+  "enc_diag_last_tx_bits": 0,
+  "enc_diag_epoch": 1,
+  "enc_diag_stage": 0,
+  "enc_diag_cause": 0,
+  "enc_diag_us": 726,
+  "enc_diag_wait_us": 0,
+  "enc_diag_first_ms": 0,
+  "enc_diag_first_stage": 0,
+  "enc_diag_first_cause": 0,
+  "enc_diag_first_us": 0,
+  "enc_diag_last_ms": 0,
+  "enc_diag_last_mode": 0,
+  "enc_diag_last_stage": 0,
+  "enc_diag_last_cause": 0,
+  "enc_diag_last_us": 0,
+  "enc_scl": 1,
+  "enc_sda": 1,
+  "enc_age_ms": 23,
+  "enc_deg": 339.7,
+  "enc_rpm": 0.0,
+  "enc_mech_hz": 0.0,
+  "enc_elec_hz": 0.0,
+  "mic_gated": 0,
+  "mic_enable_ai": 0,
+  "mic_enc_used": 0,
+  "mic_freq_meas_hz": 0.0,
+  "mic_speed_err_hz": 0.0,
+  "mic_speed_tol_hz": 0.0,
+  "mic_link_flags": 0,
+  "mic_status_flags": 0,
+  "diag_mode": 0,
+  "duty_mode": 0,
+  "bp_good": 33723,
+  "bp_bad": 0,
+  "uno_rx_rescued": 82,
+  "uno_rx_dropped": 0,
+  "uno_rx_hw_errors": 0,
+  "uno_rx_hw_flags": 0,
+  "uno_rx_high_water": 111,
+  "uno_rx_pending": 43,
+  "uno_rx_poll_gap_max_ms": 10,
+  "uno_rx_rejected_ms": 0,
+  "uno_bridge_service_priority": 4,
+  "uno_control_priority": 4,
+  "uno_rpc_priority": 5,
+  "uno_local_adc_acquired": 0,
+  "uno_tx_all_max_gap_us": 58335,
+  "uno_tx_last_gap_us": 49991,
+  "uno_tx_gaps_over_watchdog": 0,
+  "uno_rx_rejected_hex": "-",
+  "mc_current_packet_hex": "55aad507ec641ce0c378310b1a00ac019001d6013903c9030304d300a4fd890107009a0000000190874c5c",
+  "mc_current_detail_hex": "55aad607ed041ce0c3781d6a1a001b081608110814081208120811081408000100010001000101c769348e",
+  "mc_current_quality_hex": "55aad707eb031ce0c378c2671a00ef070208e90705082c082e082a0834080300030800020302014a8f62f2",
+  "mc_adc_peak_hex": "41504331010050001ce0c378010000000c000c000100ffff72020600a935010000000000a9350100310b1a000400000080fe210aa07f88022d0300001e7123f96760a68ea93501005cdc9a005cdc9a006b0000006f0000000000000000000000330b1c09ce0a4014330b1c09ce0a4013ef13c01410001108f10712081208110814082e021e1132003f01670002002101ef97a48e9e35010051dc9a0051dc9a006b0000006f00000000000000000000002c0b1a09d30a40142e0b1a09d30a4014e713c01410004c08df0712081208110814086f02061132003f016a000202210163c1a48e9f35010052dc9a0052dc9a006b0000006f00000000000000000000002e0b1a09d30a40142e0b1b09d30a4014f313c01410004d08df0712081208110814086f02111132003f01690002022101e3eaa48ea035010053dc9a0053dc9a006b0000006f00000000000000000000002e0b1b09d30a40142e0b1b09d20a4014f313c01410004408e10712081208110814086f02121132003f016a00020221016414a58ea135010054dc9a0054dc9a006b0000006f00000000000000000000002e0b1b09d20a4014300b1b09d20a4014f213c01410005008dd0712081208110814086f02101132003f016b0002022101e63da58ea235010055dc9a0055dc9a006b0000006f0000000000000000000000300b1b09d20a4014300b1b09d20a4014f013c01410005008e70712081208110814086f020f1132003f016700020221016367a58ea335010056dc9a0056dc9a006b0000006f0000000000000000000000300b1b09d20a4014300b1b09d00a4014f313c01410004808e20712081208110814086f02121132003f01690002022101e490a58ea435010057dc9a0057dc9a006b0000006f0000000000000000000000300b1b09d00a4014310b1b09d00a4014f213c01410004808d90712081208110814086f02111132003f0167000202210167baa58ea535010058dc9a0058dc9a006b0000006f0000000000000000000000310b1b09d00a4014310b1b09d00a4014ef13c01410004608d70712081208110814086f020d1132003f01680002022101e6e3a58ea635010059dc9a0059dc9a006b0000006f0000000000000000000000310b1b09d00a4014310b1b09ce0a4014f013c01410004e08d90712081208110814086f020f1132003f016900020221016c0da68ea73501005adc9a005adc9a006b0000006f0000000000000000000000310b1b09ce0a4014330b1b09ce0a4014ea13c01410004f08e50712081208110814086f02081132003f01690002022101e936a68ea83501005bdc9a005bdc9a006b0000006f0000000000000000000000330b1b09ce0a4014330b1c09ce0a4014ed13c01410005108eb0712081208110814086f020c1132003f016c0002022101",
+  "mc_zero_history_hex": "55aad90100031ce0c37812081208110814081e1e19220110000000000000030203080280000f0129a26b5755aad90101031ce0c37812081208110814083521512e0221000000000000030203080280000f01021f106d55aad90102031ce0c37812081208120815083d2c412f0314000000000000030203080280000f018be035d9",
+  "mc_current_age_ms": 468,
+  "mc_current_detail_age_ms": 67,
+  "mc_current_quality_age_ms": 669,
+  "mc_current_good": 6380,
+  "mc_current_bad": 0,
+  "mc_adc_peak_good": 35,
+  "mc_adc_peak_bad": 0,
+  "mc_adc_peak_complete": 1,
+  "mc_zero_history_good": 3,
+  "mc_zero_history_bad": 1,
+  "mc_uart_reject_hex": "-",
+  "mc_uart_reject_good_pages": 0,
+  "mc_uart_reject_bad_pages": 0,
+  "mc_break_wave_hex": "-",
+  "mc_break_wave_age_ms": 999999,
+  "mc_break_wave_good_pages": 0,
+  "mc_break_wave_bad_pages": 0,
+  "bp_bad_integrity": 0,
+  "bp_bad_sequence": 0,
+  "bp_ne_accepted": 0,
+  "bp_ne_observed": 0,
+  "bp_ne_flags": 0,
+  "bp_transport_fault": 0,
+  "bp_recovered_drops": 0,
+  "bp_superseded": 10,
+  "bp_clear_pending": 0,
+  "bp_age_ms": 17,
+  "bp_status": 1,
+  "bp_fault": 0,
+  "mc_break_snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": false,
+      "age_ms": 2418,
+      "reason": "no_recorded_break"
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 1618,
+      "reason": "no_recorded_break"
+    }
+  ],
+  "mc_break_transport": "passive_off_only_v1",
+  "mc_break_limitations": [
+    "Not live telemetry: delivery occurs only with outputs off",
+    "Reference frequency is not measured rotor speed; context is cached",
+    "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+    "J4 voltage and qualified phase current are not measured",
+    "Cannot uniquely identify overcurrent, undervoltage, or interference"
+  ],
+  "mc_break_reject_valid": 0,
+  "mc_break_reject_code": 0,
+  "mc_break_reject_ms": 0,
+  "mc_break_reject_peer_fw": 0,
+  "mc_break_reject_fresh_off": 0,
+  "mc_break_reject_bp_status": 0,
+  "mc_break_reject_pwm": 0,
+  "mc_break_reject_rsp_age_ms": 0,
+  "mc_break_reject_good_before": 0,
+  "mc_break_reject_packet_hex": "-",
+  "mc_break_reject_record_valid": 0,
+  "mc_break_reject_reason": "UNAVAILABLE",
+  "mc_break_rx_good": 1848,
+  "mc_break_rx_bad": 0,
+  "mc_diag_valid": 1,
+  "mc_fault_reason": 0,
+  "mc_uart_error_flags": 0,
+  "mc_fault_motor_state": 0,
+  "mc_fault_current_mask": 0,
+  "mc_fault_occurred_mask": 0,
+  "mc_fault_sequence": 0,
+  "mc_fault_tx_status": 0,
+  "mc_last_bad_valid": 1,
+  "mc_last_bad_reason": 0,
+  "mc_last_uart_error_flags": 0,
+  "mc_last_tx_status": 0,
+  "uno_loop_active_max_us": 6416,
+  "uno_tx_active_max_gap_us": 51151,
+  "uno_rx_active_max_gap_us": 101603,
+  "uno_tx_call_max_us": 1880,
+  "uno_rpc_max_us": 9117,
+  "uno_tx_short_writes": 0,
+  "uno_tx_count": 33733,
+  "uno_rx_count": 33723,
+  "uno_log_dropped": 0,
+  "uno_log_pending": 0,
+  "bp_mode": 0,
+  "bp_cmd_mode": 0,
+  "bp_foc_backend": 0,
+  "fw_build": 2026102813,
+  "mc_fw_build": 2026102812,
+  "matrix_test": 0,
+  "bp_seq": 196,
+  "bp_good_cnt": 33733,
+  "bp_bad_cnt": 0,
+  "bp_ext": 0,
+  "bp_brake_duty": 0.0,
+  "bp_vbus_raw": 3230,
+  "bp_vdc": 323.0,
+  "bp_vbus_age_ms": 17,
+  "bp_mcsdk_telemetry": 1,
+  "bp_vbus_valid": 1,
+  "bp_softstart_ready": 1,
+  "bp_precharge_managed": 0,
+  "rpc_schema_version": 3,
+  "mc_capabilities": 1,
+  "mc_supported_modes": [
+    "VF"
+  ],
+  "bp_temp_raw": 490,
+  "bp_temp_v": 0.0,
+  "bp_temp_c": 49.0,
+  "bp_temp_flags": 189,
+  "bp_temp_valid": 1,
+  "bp_temp_fault": 0,
+  "bp_temp_age_ms": 17,
+  "bp_phase_a_raw": 0,
+  "bp_phase_b_raw": 0,
+  "bp_phase_c_raw": 0,
+  "bp_phase_a_v": 0.0,
+  "bp_phase_b_v": 0.0,
+  "bp_phase_c_v": 0.0,
+  "bp_phase_flags": 240,
+  "bp_phase_valid": 0,
+  "bp_phase_c_virtual": 0,
+  "bp_phase_age_ms": 17,
+  "bp_rsp_age_ms": 17,
+  "bp_ping_pairs": 8,
+  "bp_ping_age_ms": 291199,
+  "manual_scalar_capable": 1,
+  "manual_run_mode": 0,
+  "downmode_coast": 0,
+  "mc_frequency_reference_valid": 1,
+  "mc_decel_bus_hold": 0,
+  "accel_hz_per_s": 5.0,
+  "decel_hz_per_s": 1.0,
+  "mc_frequency_reference_hz": 0.0,
+  "ts": 1793210334145,
+  "local_ramp_reference_hz": 0.0,
+  "bp_current_packet_hex": "55aad507ec641ce0c378310b1a00ac019001d6013903c9030304d300a4fd890107009a0000000190874c5c",
+  "bp_current_detail_hex": "55aad607ed041ce0c3781d6a1a001b081608110814081208120811081408000100010001000101c769348e",
+  "bp_current_quality_hex": "55aad707eb031ce0c378c2671a00ef070208e90705082c082e082a0834080300030800020302014a8f62f2",
+  "bp_adc_peak_hex": "41504331010050001ce0c378010000000c000c000100ffff72020600a935010000000000a9350100310b1a000400000080fe210aa07f88022d0300001e7123f96760a68ea93501005cdc9a005cdc9a006b0000006f0000000000000000000000330b1c09ce0a4014330b1c09ce0a4013ef13c01410001108f10712081208110814082e021e1132003f01670002002101ef97a48e9e35010051dc9a0051dc9a006b0000006f00000000000000000000002c0b1a09d30a40142e0b1a09d30a4014e713c01410004c08df0712081208110814086f02061132003f016a000202210163c1a48e9f35010052dc9a0052dc9a006b0000006f00000000000000000000002e0b1a09d30a40142e0b1b09d30a4014f313c01410004d08df0712081208110814086f02111132003f01690002022101e3eaa48ea035010053dc9a0053dc9a006b0000006f00000000000000000000002e0b1b09d30a40142e0b1b09d20a4014f313c01410004408e10712081208110814086f02121132003f016a00020221016414a58ea135010054dc9a0054dc9a006b0000006f00000000000000000000002e0b1b09d20a4014300b1b09d20a4014f213c01410005008dd0712081208110814086f02101132003f016b0002022101e63da58ea235010055dc9a0055dc9a006b0000006f0000000000000000000000300b1b09d20a4014300b1b09d20a4014f013c01410005008e70712081208110814086f020f1132003f016700020221016367a58ea335010056dc9a0056dc9a006b0000006f0000000000000000000000300b1b09d20a4014300b1b09d00a4014f313c01410004808e20712081208110814086f02121132003f01690002022101e490a58ea435010057dc9a0057dc9a006b0000006f0000000000000000000000300b1b09d00a4014310b1b09d00a4014f213c01410004808d90712081208110814086f02111132003f0167000202210167baa58ea535010058dc9a0058dc9a006b0000006f0000000000000000000000310b1b09d00a4014310b1b09d00a4014ef13c01410004608d70712081208110814086f020d1132003f01680002022101e6e3a58ea635010059dc9a0059dc9a006b0000006f0000000000000000000000310b1b09d00a4014310b1b09ce0a4014f013c01410004e08d90712081208110814086f020f1132003f016900020221016c0da68ea73501005adc9a005adc9a006b0000006f0000000000000000000000310b1b09ce0a4014330b1b09ce0a4014ea13c01410004f08e50712081208110814086f02081132003f01690002022101e936a68ea83501005bdc9a005bdc9a006b0000006f0000000000000000000000330b1b09ce0a4014330b1c09ce0a4014ed13c01410005108eb0712081208110814086f020c1132003f016c0002022101",
+  "bp_zero_history_hex": "55aad90100031ce0c37812081208110814081e1e19220110000000000000030203080280000f0129a26b5755aad90101031ce0c37812081208110814083521512e0221000000000000030203080280000f01021f106d55aad90102031ce0c37812081208120815083d2c412f0314000000000000030203080280000f018be035d9",
+  "bp_current_age_ms": 468,
+  "bp_current_detail_age_ms": 67,
+  "bp_current_quality_age_ms": 669,
+  "bp_current_good": 6380,
+  "bp_current_bad": 0,
+  "bp_adc_peak_good": 35,
+  "bp_adc_peak_bad": 0,
+  "bp_adc_peak_complete": 1,
+  "bp_zero_history_good": 3,
+  "bp_zero_history_bad": 1,
+  "bp_uart_reject_hex": "-",
+  "bp_uart_reject_good_pages": 0,
+  "bp_uart_reject_bad_pages": 0,
+  "bp_break_wave_hex": "-",
+  "bp_break_wave_age_ms": 999999,
+  "bp_break_wave_good_pages": 0,
+  "bp_break_wave_bad_pages": 0,
+  "bp_break_snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": false,
+      "age_ms": 2418,
+      "reason": "no_recorded_break"
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 1618,
+      "reason": "no_recorded_break"
+    }
+  ],
+  "bp_break_transport": "passive_off_only_v1",
+  "bp_break_limitations": [
+    "Not live telemetry: delivery occurs only with outputs off",
+    "Reference frequency is not measured rotor speed; context is cached",
+    "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+    "J4 voltage and qualified phase current are not measured",
+    "Cannot uniquely identify overcurrent, undervoltage, or interference"
+  ],
+  "bp_break_reject_valid": 0,
+  "bp_break_reject_code": 0,
+  "bp_break_reject_ms": 0,
+  "bp_break_reject_peer_fw": 0,
+  "bp_break_reject_fresh_off": 0,
+  "bp_break_reject_bp_status": 0,
+  "bp_break_reject_pwm": 0,
+  "bp_break_reject_rsp_age_ms": 0,
+  "bp_break_reject_good_before": 0,
+  "bp_break_reject_packet_hex": "-",
+  "bp_break_reject_record_valid": 0,
+  "bp_break_reject_reason": "UNAVAILABLE",
+  "bp_break_rx_good": 1848,
+  "bp_break_rx_bad": 0,
+  "bp_diag_valid": 1,
+  "bp_fault_reason": 0,
+  "bp_uart_error_flags": 0,
+  "bp_fault_motor_state": 0,
+  "bp_fault_current_mask": 0,
+  "bp_fault_occurred_mask": 0,
+  "bp_fault_sequence": 0,
+  "bp_fault_tx_status": 0,
+  "bp_last_bad_valid": 1,
+  "bp_last_bad_reason": 0,
+  "bp_last_uart_error_flags": 0,
+  "bp_last_tx_status": 0,
+  "bp_fw_build": 2026102812,
+  "bp_frequency_reference_valid": 1,
+  "bp_decel_bus_hold": 0,
+  "bp_frequency_reference_hz": 0.0,
+  "mc_fan_duty": 0.0,
+  "mc_fan_rpm": 0.0,
+  "mc_good": 33723,
+  "mc_bad": 0,
+  "mc_bad_integrity": 0,
+  "mc_bad_sequence": 0,
+  "mc_ne_accepted": 0,
+  "mc_ne_observed": 0,
+  "mc_ne_flags": 0,
+  "mc_transport_fault": 0,
+  "mc_recovered_drops": 0,
+  "mc_superseded": 10,
+  "mc_clear_pending": 0,
+  "mc_age_ms": 17,
+  "mc_status": 1,
+  "mc_fault": 0,
+  "mc_mode": 0,
+  "mc_cmd_mode": 0,
+  "mc_foc_backend": 0,
+  "mc_seq": 196,
+  "mc_good_cnt": 33733,
+  "mc_bad_cnt": 0,
+  "mc_ext": 0,
+  "mc_brake_duty": 0.0,
+  "mc_vbus_raw": 3230,
+  "mc_vdc": 323.0,
+  "mc_vbus_age_ms": 17,
+  "mc_mcsdk_telemetry": 1,
+  "mc_vbus_valid": 1,
+  "mc_softstart_ready": 1,
+  "mc_precharge_managed": 0,
+  "mc_temp_raw": 490,
+  "mc_temp_v": 0.0,
+  "mc_temp_c": 49.0,
+  "mc_temp_flags": 189,
+  "mc_temp_valid": 1,
+  "mc_temp_fault": 0,
+  "mc_temp_age_ms": 17,
+  "mc_phase_a_raw": 0,
+  "mc_phase_b_raw": 0,
+  "mc_phase_c_raw": 0,
+  "mc_phase_a_v": 0.0,
+  "mc_phase_b_v": 0.0,
+  "mc_phase_c_v": 0.0,
+  "mc_phase_flags": 240,
+  "mc_phase_valid": 0,
+  "mc_phase_c_virtual": 0,
+  "mc_phase_age_ms": 17,
+  "mc_rsp_age_ms": 17,
+  "mc_ping_pairs": 8,
+  "mc_ping_age_ms": 291199,
+  "hmi_local_stop_latched": 0,
+  "mc_fault_detail": "first=NONE UART=NONE MCSDK_current=0x0000[NONE] MCSDK_occurred=0x0000[NONE] state=0 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+  "mc_current_telemetry_valid": 1,
+  "mc_current_telemetry_source": "nucleo_three_shunt_nominal_scale",
+  "mc_current_scale_qualified": 0,
+  "mc_current_status": "\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0435 \u043e\u043a\u043d\u043e \u043f\u0435\u0440\u0435\u0434 \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u043e\u043c; \u043d\u043e\u043c\u0438\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u043c\u0430\u0441\u0448\u0442\u0430\u0431, \u0435\u0449\u0451 \u043d\u0435 \u043f\u0440\u043e\u0432\u0435\u0440\u0435\u043d \u044d\u0442\u0430\u043b\u043e\u043d\u043e\u043c",
+  "mc_current_rms_a": [
+    0.428,
+    0.4,
+    0.47
+  ],
+  "mc_current_peak_a": [
+    0.825,
+    0.969,
+    1.027
+  ],
+  "mc_current_instant_a": [
+    0.211,
+    -0.604,
+    0.393
+  ],
+  "mc_current_zero_ready": 1,
+  "mc_current_frozen": 1,
+  "mc_current_raw_adc": [
+    2075,
+    2070,
+    2065,
+    2068
+  ],
+  "mc_current_offsets_adc": [
+    2066,
+    2066,
+    2065,
+    2068
+  ],
+  "mc_current_zero_samples": [
+    256,
+    256,
+    256,
+    256
+  ],
+  "mc_current_zero_spans": [
+    61,
+    44,
+    65,
+    47
+  ],
+  "mc_current_zero_attempts": 3,
+  "mc_current_zero_stable": 3,
+  "mc_current_flags": 7,
+  "mc_current_coverage_pct": 100,
+  "mc_current_reconstructed_mask": 7,
+  "mc_current_window_ms": 154,
+  "mc_current_rejected_samples": 0,
+  "mc_current_zero_last_reject": 0,
+  "mc_current_window_tick_ms": 1706801,
+  "mc_adc_peak_valid": 1,
+  "mc_adc_peak": {
+    "schema": 1,
+    "firmware": 2026102812,
+    "capture_id": 1,
+    "sample_count": 12,
+    "threshold_counts": 626,
+    "threshold_nominal_a": 6.005582,
+    "total_samples": 79273,
+    "trigger_sequence": 0,
+    "frozen_sequence": 79273,
+    "frozen_ms": 1706801,
+    "peak_seen": false,
+    "post_short": false,
+    "no_peak": true,
+    "trigger_reference_hz": null,
+    "cpu_hz": 170000000,
+    "adc_hz": 42500000,
+    "max_queue_publish_cycles": 813,
+    "max_queue_publish_us": 4.7823529411764705,
+    "samples": [
+      {
+        "index": 0,
+        "slot": 1,
+        "cycles": 2393151471,
+        "sequence": 79262,
+        "epoch_before": 10148945,
+        "epoch_after": 10148945,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2860,
+          2330,
+          2771,
+          5184
+        ],
+        "ccr_preload": [
+          2862,
+          2330,
+          2771,
+          5184
+        ],
+        "timer_cnt_entry": 5095,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2124,
+          2015
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4358,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 106,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5529,
+        "counts_uvw": [
+          5,
+          -58,
+          53
+        ],
+        "nominal_currents_a": [
+          0.047968,
+          -0.556428,
+          0.50846
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 1,
+        "slot": 2,
+        "cycles": 2393162083,
+        "sequence": 79263,
+        "epoch_before": 10148946,
+        "epoch_after": 10148946,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2862,
+          2330,
+          2771,
+          5184
+        ],
+        "ccr_preload": [
+          2862,
+          2331,
+          2771,
+          5184
+        ],
+        "timer_cnt_entry": 5107,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2125,
+          2015
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4369,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 105,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5517,
+        "counts_uvw": [
+          6,
+          -59,
+          53
+        ],
+        "nominal_currents_a": [
+          0.057561,
+          -0.566021,
+          0.50846
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 2,
+        "slot": 3,
+        "cycles": 2393172707,
+        "sequence": 79264,
+        "epoch_before": 10148947,
+        "epoch_after": 10148947,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2862,
+          2331,
+          2771,
+          5184
+        ],
+        "ccr_preload": [
+          2862,
+          2331,
+          2770,
+          5184
+        ],
+        "timer_cnt_entry": 5107,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2116,
+          2017
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4370,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 106,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5517,
+        "counts_uvw": [
+          -1,
+          -50,
+          51
+        ],
+        "nominal_currents_a": [
+          -0.009594,
+          -0.479679,
+          0.489273
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 3,
+        "slot": 4,
+        "cycles": 2393183332,
+        "sequence": 79265,
+        "epoch_before": 10148948,
+        "epoch_after": 10148948,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2862,
+          2331,
+          2770,
+          5184
+        ],
+        "ccr_preload": [
+          2864,
+          2331,
+          2770,
+          5184
+        ],
+        "timer_cnt_entry": 5106,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2128,
+          2013
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4368,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 107,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5518,
+        "counts_uvw": [
+          7,
+          -62,
+          55
+        ],
+        "nominal_currents_a": [
+          0.067155,
+          -0.594802,
+          0.527647
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 4,
+        "slot": 5,
+        "cycles": 2393193958,
+        "sequence": 79266,
+        "epoch_before": 10148949,
+        "epoch_after": 10148949,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2864,
+          2331,
+          2770,
+          5184
+        ],
+        "ccr_preload": [
+          2864,
+          2331,
+          2770,
+          5184
+        ],
+        "timer_cnt_entry": 5104,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2128,
+          2023
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4367,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 103,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5520,
+        "counts_uvw": [
+          17,
+          -62,
+          45
+        ],
+        "nominal_currents_a": [
+          0.163091,
+          -0.594802,
+          0.431711
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 5,
+        "slot": 6,
+        "cycles": 2393204579,
+        "sequence": 79267,
+        "epoch_before": 10148950,
+        "epoch_after": 10148950,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2864,
+          2331,
+          2770,
+          5184
+        ],
+        "ccr_preload": [
+          2864,
+          2331,
+          2768,
+          5184
+        ],
+        "timer_cnt_entry": 5107,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2120,
+          2018
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4370,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 105,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5517,
+        "counts_uvw": [
+          4,
+          -54,
+          50
+        ],
+        "nominal_currents_a": [
+          0.038374,
+          -0.518053,
+          0.479679
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 6,
+        "slot": 7,
+        "cycles": 2393215204,
+        "sequence": 79268,
+        "epoch_before": 10148951,
+        "epoch_after": 10148951,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2864,
+          2331,
+          2768,
+          5184
+        ],
+        "ccr_preload": [
+          2865,
+          2331,
+          2768,
+          5184
+        ],
+        "timer_cnt_entry": 5106,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2120,
+          2009
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4369,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 103,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5518,
+        "counts_uvw": [
+          -5,
+          -54,
+          59
+        ],
+        "nominal_currents_a": [
+          -0.047968,
+          -0.518053,
+          0.566021
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 7,
+        "slot": 8,
+        "cycles": 2393225831,
+        "sequence": 79269,
+        "epoch_before": 10148952,
+        "epoch_after": 10148952,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2865,
+          2331,
+          2768,
+          5184
+        ],
+        "ccr_preload": [
+          2865,
+          2331,
+          2768,
+          5184
+        ],
+        "timer_cnt_entry": 5103,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2118,
+          2007
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4365,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 104,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5521,
+        "counts_uvw": [
+          -9,
+          -52,
+          61
+        ],
+        "nominal_currents_a": [
+          -0.086342,
+          -0.498866,
+          0.585208
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 8,
+        "slot": 9,
+        "cycles": 2393236454,
+        "sequence": 79270,
+        "epoch_before": 10148953,
+        "epoch_after": 10148953,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2865,
+          2331,
+          2768,
+          5184
+        ],
+        "ccr_preload": [
+          2865,
+          2331,
+          2766,
+          5184
+        ],
+        "timer_cnt_entry": 5104,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2126,
+          2009
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4367,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 105,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5520,
+        "counts_uvw": [
+          1,
+          -60,
+          59
+        ],
+        "nominal_currents_a": [
+          0.009594,
+          -0.575615,
+          0.566021
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 9,
+        "slot": 10,
+        "cycles": 2393247084,
+        "sequence": 79271,
+        "epoch_before": 10148954,
+        "epoch_after": 10148954,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2865,
+          2331,
+          2766,
+          5184
+        ],
+        "ccr_preload": [
+          2867,
+          2331,
+          2766,
+          5184
+        ],
+        "timer_cnt_entry": 5098,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2127,
+          2021
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4360,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 105,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5526,
+        "counts_uvw": [
+          14,
+          -61,
+          47
+        ],
+        "nominal_currents_a": [
+          0.13431,
+          -0.585208,
+          0.450898
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 10,
+        "slot": 11,
+        "cycles": 2393257705,
+        "sequence": 79272,
+        "epoch_before": 10148955,
+        "epoch_after": 10148955,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2867,
+          2331,
+          2766,
+          5184
+        ],
+        "ccr_preload": [
+          2867,
+          2332,
+          2766,
+          5184
+        ],
+        "timer_cnt_entry": 5101,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2129,
+          2027
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 623,
+        "timer_cnt_after_queue": 4364,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 108,
+        "pair": 2,
+        "next_pair": 2,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": true,
+        "accepted_by_monitor": true,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5523,
+        "counts_uvw": [
+          22,
+          -63,
+          41
+        ],
+        "nominal_currents_a": [
+          0.211059,
+          -0.604396,
+          0.393337
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      },
+      {
+        "index": 11,
+        "slot": 0,
+        "cycles": 2393268327,
+        "sequence": 79273,
+        "epoch_before": 10148956,
+        "epoch_after": 10148956,
+        "epoch_consistent": true,
+        "adc_isr": [
+          107,
+          111
+        ],
+        "adc_jsqr_after_conversion": [
+          0,
+          0
+        ],
+        "ccr_at_update": [
+          2867,
+          2332,
+          2766,
+          5184
+        ],
+        "ccr_preload": [
+          2867,
+          2332,
+          2766,
+          4928
+        ],
+        "timer_cnt_entry": 5103,
+        "timer_arr": 5312,
+        "timer_dir_entry": 1,
+        "raw_adc": [
+          2065,
+          2033
+        ],
+        "offsets_adc": [
+          2066,
+          2066,
+          2065,
+          2068
+        ],
+        "flags": 558,
+        "timer_cnt_after_queue": 4382,
+        "timer_dir_after_queue": 1,
+        "reference_hz": 5.0,
+        "bus_v": 319,
+        "timer_cnt_at_update": 103,
+        "pair": 2,
+        "next_pair": 0,
+        "timer_dir_at_update": 0,
+        "accepted_by_existing_monitor": false,
+        "accepted_by_monitor": false,
+        "three_leg_window_rejected": false,
+        "queue_overflow_observed": false,
+        "publish_deadline_missed": false,
+        "pending_epoch_mismatch": false,
+        "injected_queue_not_empty": false,
+        "timer_phase_entry_ticks": 5521,
+        "counts_uvw": [
+          -36,
+          1,
+          35
+        ],
+        "nominal_currents_a": [
+          -0.345369,
+          0.009594,
+          0.335775
+        ],
+        "excluded_compare_inside_assumed_acquisition": false,
+        "is_trigger": false
+      }
+    ],
+    "scale_qualified": false,
+    "limitation": "CCR-at-update is a software latch at the update IRQ, not direct active-register readback; epoch races are explicit. Raw ADC alone cannot certify actual motor current."
+  },
+  "mc_adc_peak_status": "\u0421\u043e\u0445\u0440\u0430\u043d\u0435\u043d\u044b \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 \u043e\u0442\u0441\u0447\u0451\u0442\u044b: \u043f\u043e\u0440\u043e\u0433 \u043f\u0438\u043a\u0430 \u043d\u0435 \u0434\u043e\u0441\u0442\u0438\u0433\u043d\u0443\u0442",
+  "mc_zero_history_valid": 1,
+  "mc_zero_history": [
+    {
+      "block": 1,
+      "means_adc": [
+        2066,
+        2066,
+        2065,
+        2068
+      ],
+      "raw_spans_adc": [
+        30,
+        30,
+        25,
+        34
+      ],
+      "stable": 1,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.061,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    },
+    {
+      "block": 2,
+      "means_adc": [
+        2066,
+        2066,
+        2065,
+        2068
+      ],
+      "raw_spans_adc": [
+        53,
+        33,
+        81,
+        46
+      ],
+      "stable": 2,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.523,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    },
+    {
+      "block": 3,
+      "means_adc": [
+        2066,
+        2066,
+        2066,
+        2069
+      ],
+      "raw_spans_adc": [
+        61,
+        44,
+        65,
+        47
+      ],
+      "stable": 3,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.186,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    }
+  ],
+  "mc_zero_history_status": "\u0411\u043b\u043e\u043a\u0438 \u043d\u0443\u043b\u044f: 1: \u0441\u0442\u0430\u0431\u0438\u043b\u0435\u043d 1/3 | 2: \u0441\u0442\u0430\u0431\u0438\u043b\u0435\u043d 2/3 | 3: \u0441\u0442\u0430\u0431\u0438\u043b\u0435\u043d 3/3",
+  "enc_fault_records": [
+    {
+      "tick_ms": 1701855,
+      "cycles": 1552461532,
+      "decision_isr": 513,
+      "isr_before_gpio": 513,
+      "gpiob_idr": 979,
+      "isr_after_gpio": 513,
+      "cr1": 513,
+      "cr2": 65644,
+      "timingr": 810685207,
+      "gpiob_moder": 4294618810,
+      "gpiob_otyper": 768,
+      "gpiob_afrh": 68,
+      "rcc_ccipr": 268443648,
+      "tim1_bdtr": 37338226,
+      "tim1_cnt": 3722,
+      "tim1_cr1": 289,
+      "tim1_arr": 5312,
+      "tim1_ccr1": 2655,
+      "tim1_ccr2": 2655,
+      "tim1_ccr3": 2655,
+      "poll_gap_cycles": 3290,
+      "max_poll_gap_cycles": 19362,
+      "attempt_age_cycles": 15545,
+      "errors_before": 0,
+      "reads_before": 340370,
+      "previous_isr": 32769,
+      "previous_cr2": 73836,
+      "previous_gpio": 208,
+      "previous_cycles": 1552458242,
+      "sysclk_hz": 170000000,
+      "rcc_cfgr": 15,
+      "gpio_sample_cycles": 1552462061,
+      "kind": "first_since_boot",
+      "cause": "ARLO",
+      "cause_code": 9,
+      "stage": 4,
+      "driver_state": 1,
+      "received_bytes": 0,
+      "scl": true,
+      "sda": true,
+      "pwm_moe": true,
+      "poll_gap_us": 19.352941176470587,
+      "attempt_age_us": 91.44117647058823,
+      "registers_changed_during_gpio_sample": false,
+      "record_crc32c": "1a60308c",
+      "limitation": "Sequential MMIO snapshot before PE/reset; not an analog waveform or a simultaneous sample of all registers",
+      "cleanup_terminal_isr": 513,
+      "cleanup_terminal_cr1": 513,
+      "cleanup_terminal_cr2": 65644,
+      "cleanup_terminal_gpio": 976,
+      "cleanup_terminal_cycles": 1552468059,
+      "cleanup_flags": 4,
+      "cleanup_stop_seen": false,
+      "cleanup_forced": false,
+      "cleanup_arlo": true,
+      "cleanup_stop_requested": false,
+      "cleanup_expired": false,
+      "cleanup_no_transfer": false,
+      "cleanup_duration_us": 38.39411764705882
+    },
+    {
+      "tick_ms": 1701855,
+      "cycles": 1552461532,
+      "decision_isr": 513,
+      "isr_before_gpio": 513,
+      "gpiob_idr": 979,
+      "isr_after_gpio": 513,
+      "cr1": 513,
+      "cr2": 65644,
+      "timingr": 810685207,
+      "gpiob_moder": 4294618810,
+      "gpiob_otyper": 768,
+      "gpiob_afrh": 68,
+      "rcc_ccipr": 268443648,
+      "tim1_bdtr": 37338226,
+      "tim1_cnt": 3722,
+      "tim1_cr1": 289,
+      "tim1_arr": 5312,
+      "tim1_ccr1": 2655,
+      "tim1_ccr2": 2655,
+      "tim1_ccr3": 2655,
+      "poll_gap_cycles": 3290,
+      "max_poll_gap_cycles": 19362,
+      "attempt_age_cycles": 15545,
+      "errors_before": 0,
+      "reads_before": 340370,
+      "previous_isr": 32769,
+      "previous_cr2": 73836,
+      "previous_gpio": 208,
+      "previous_cycles": 1552458242,
+      "sysclk_hz": 170000000,
+      "rcc_cfgr": 15,
+      "gpio_sample_cycles": 1552462061,
+      "kind": "first_with_pwm",
+      "cause": "ARLO",
+      "cause_code": 9,
+      "stage": 4,
+      "driver_state": 1,
+      "received_bytes": 0,
+      "scl": true,
+      "sda": true,
+      "pwm_moe": true,
+      "poll_gap_us": 19.352941176470587,
+      "attempt_age_us": 91.44117647058823,
+      "registers_changed_during_gpio_sample": false,
+      "record_crc32c": "1a60308c",
+      "limitation": "Sequential MMIO snapshot before PE/reset; not an analog waveform or a simultaneous sample of all registers",
+      "cleanup_terminal_isr": 513,
+      "cleanup_terminal_cr1": 513,
+      "cleanup_terminal_cr2": 65644,
+      "cleanup_terminal_gpio": 976,
+      "cleanup_terminal_cycles": 1552468059,
+      "cleanup_flags": 4,
+      "cleanup_stop_seen": false,
+      "cleanup_forced": false,
+      "cleanup_arlo": true,
+      "cleanup_stop_requested": false,
+      "cleanup_expired": false,
+      "cleanup_no_transfer": false,
+      "cleanup_duration_us": 38.39411764705882
+    }
+  ],
+  "enc_fault_decode_valid": 1,
+  "enc_fault_capture_status": "\u0421\u043d\u0438\u043c\u043e\u043a \u043f\u0435\u0440\u0432\u043e\u0433\u043e \u0441\u0431\u043e\u044f \u0441\u043e\u0445\u0440\u0430\u043d\u0451\u043d",
+  "enc_release_decode_valid": 1,
+  "enc_release_records": [
+    {
+      "kind": "first_since_boot",
+      "result": 1,
+      "summary_ru": "\u041f\u043e\u0441\u043b\u0435 PE=0: SCL HIGH",
+      "flags": 1,
+      "count": 3,
+      "complete": true,
+      "late_poll": false,
+      "cancelled": false,
+      "timeout": false,
+      "parent_crc32c": "1a60308c",
+      "record_crc32c": "58727f60",
+      "wire_crc32c_residue": "48674bc7",
+      "terminal_cycles": 1552468059,
+      "terminal_gpio": 976,
+      "pe_off_cycles": 1552470967,
+      "samples": [
+        {
+          "index": 0,
+          "cycles": 1552470982,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 65644,
+          "gpiob_idr": 976,
+          "scl": true,
+          "sda": true,
+          "pe": false,
+          "after_PE0_us": 0.08823529411764706
+        },
+        {
+          "index": 1,
+          "cycles": 1552472320,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 0,
+          "gpiob_idr": 467,
+          "scl": true,
+          "sda": false,
+          "pe": false,
+          "after_PE0_us": 7.958823529411765
+        },
+        {
+          "index": 2,
+          "cycles": 1552478337,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 0,
+          "gpiob_idr": 976,
+          "scl": true,
+          "sda": true,
+          "pe": false,
+          "after_PE0_us": 43.35294117647059
+        }
+      ],
+      "pe_was_enabled_before_disable": true,
+      "scl_at_terminal": true,
+      "sda_at_terminal": true,
+      "immediate_delay_us": 0.08823529411764706,
+      "source_attribution_proven": false,
+      "limitation": "Sequential digital samples with actual times; neither an analog waveform nor proof of which device caused LOW"
+    },
+    {
+      "kind": "first_with_pwm",
+      "result": 1,
+      "summary_ru": "\u041f\u043e\u0441\u043b\u0435 PE=0: SCL HIGH",
+      "flags": 1,
+      "count": 3,
+      "complete": true,
+      "late_poll": false,
+      "cancelled": false,
+      "timeout": false,
+      "parent_crc32c": "1a60308c",
+      "record_crc32c": "58727f60",
+      "wire_crc32c_residue": "48674bc7",
+      "terminal_cycles": 1552468059,
+      "terminal_gpio": 976,
+      "pe_off_cycles": 1552470967,
+      "samples": [
+        {
+          "index": 0,
+          "cycles": 1552470982,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 65644,
+          "gpiob_idr": 976,
+          "scl": true,
+          "sda": true,
+          "pe": false,
+          "after_PE0_us": 0.08823529411764706
+        },
+        {
+          "index": 1,
+          "cycles": 1552472320,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 0,
+          "gpiob_idr": 467,
+          "scl": true,
+          "sda": false,
+          "pe": false,
+          "after_PE0_us": 7.958823529411765
+        },
+        {
+          "index": 2,
+          "cycles": 1552478337,
+          "isr": 1,
+          "cr1": 512,
+          "cr2": 0,
+          "gpiob_idr": 976,
+          "scl": true,
+          "sda": true,
+          "pe": false,
+          "after_PE0_us": 43.35294117647059
+        }
+      ],
+      "pe_was_enabled_before_disable": true,
+      "scl_at_terminal": true,
+      "sda_at_terminal": true,
+      "immediate_delay_us": 0.08823529411764706,
+      "source_attribution_proven": false,
+      "limitation": "Sequential digital samples with actual times; neither an analog waveform nor proof of which device caused LOW"
+    }
+  ],
+  "enc_release_status": "\u041f\u043e\u0441\u043b\u0435 PE=0: SCL HIGH",
+  "enc_bus_clear_record": null,
+  "enc_bus_clear_decode_valid": 1,
+  "enc_wire_decode_valid": 1,
+  "enc_wire_record": {
+    "peer_build": 2026102812,
+    "parent_crc32c": "1a60308c",
+    "record_crc32c": "fc26d70c",
+    "manual": false,
+    "dma_error": false,
+    "full_history": true,
+    "samples": 4096,
+    "nominal_sample_hz": 8500000.0,
+    "nominal_history_us": 481.88235294117646,
+    "freeze_lag_us": 10.51764705882353,
+    "freeze_gpio": 979,
+    "freeze_cycles": 1552463320,
+    "request_cycles": 1552461532,
+    "starts": [
+      258,
+      789,
+      1321,
+      1852,
+      2383,
+      2914,
+      3418
+    ],
+    "stops": [
+      268,
+      294,
+      799,
+      825,
+      1331,
+      1359,
+      1862,
+      1892,
+      2395,
+      2424,
+      2926,
+      2958,
+      3985,
+      4018
+    ],
+    "bytes": [],
+    "transitions": [
+      {
+        "sample": 258,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 268,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 272,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 285,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 294,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 789,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 799,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 803,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 817,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 825,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 1321,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 1331,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 1334,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 1348,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 1359,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 1852,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 1862,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 1865,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 1879,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 1892,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 2383,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 2395,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 2397,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 2410,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 2424,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 2914,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 2926,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 2928,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 2942,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 2958,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 3418,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 3459,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 3527,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 3572,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 3599,
+        "scl": false,
+        "sda": true
+      },
+      {
+        "sample": 3640,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 3686,
+        "scl": false,
+        "sda": true
+      },
+      {
+        "sample": 3753,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 3798,
+        "scl": false,
+        "sda": true
+      },
+      {
+        "sample": 3806,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 3866,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 3912,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 3939,
+        "scl": false,
+        "sda": true
+      },
+      {
+        "sample": 3977,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 3980,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 3985,
+        "scl": true,
+        "sda": true
+      },
+      {
+        "sample": 3990,
+        "scl": false,
+        "sda": false
+      },
+      {
+        "sample": 4004,
+        "scl": true,
+        "sda": false
+      },
+      {
+        "sample": 4018,
+        "scl": true,
+        "sda": true
+      }
+    ],
+    "digital_record_valid": true,
+    "hardware_timing_qualified": false,
+    "limitation": "Digital GPIO samples at nominal timer cadence. DMA latency/jitter and analog voltage/rise time are not measured; sub-sample glitches may be missed."
+  },
+  "hmi_hv_enabled": 1,
+  "hmi_hv_armed": 0,
+  "hmi_hv_started": 0,
+  "hmi_run_continuous": 0,
+  "hmi_hv_remaining_s": 0.0,
+  "hmi_hv_min_vdc": 100.0,
+  "hmi_hv_max_vdc": 400.0,
+  "hmi_arm_profile": "hv",
+  "hmi_arm_confirm": "ARM 310V",
+  "hmi_arm_profiles": [
+    "hv",
+    "lv"
+  ],
+  "hmi_start_runlimit_s": 15.0,
+  "hmi_manual_scalar_supported": 1,
+  "hmi_powered_trial_supported": 1,
+  "hmi_powered_trial_enabled": 0,
+  "hmi_powered_trial_ready": 0,
+  "hmi_bounded_start_request_supported": 1,
+  "hmi_precharge_relay_present": 0,
+  "hmi_external_softstart_ready": 1,
+  "hmi_vbus_hv_calibrated": 1,
+  "hmi_vbus_calibration_reason": "two-point Vbus verification passed",
+  "hmi_vbus_zero_captured": 1,
+  "hmi_vbus_high_captured": 1,
+  "hmi_vbus_zero_meter_vdc": 0.0,
+  "hmi_vbus_zero_mc_vdc": 0.0,
+  "hmi_vbus_high_meter_vdc": 322.7,
+  "hmi_vbus_high_mc_vdc": 325.0,
+  "hmi_arm_profile_switch_ready": 1,
+  "hmi_operator_heartbeat_age_s": 18.99,
+  "hmi_operator_heartbeat_ok": 0,
+  "hmi_operator_heartbeat_timeout_s": 3.0,
+  "hmi_control_auth_required": 1,
+  "mc_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 17,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "hmi_fault_log_schema": "mic_ai.fault_context.v1",
+  "hmi_last_fault_event_id": "79dd1c560a296a18",
+  "hmi_last_fault_summary": "NONE; UART=NONE; physical source not identified",
+  "hmi_fault_physical_source_identified": 0
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "mic_ai.uart_rx_handoff_completion.v1",
+  "passed": true,
+  "installation_readback_verified": true,
+  "rpc_restored": true,
+  "runtime_pair_verified": true,
+  "pair": [
+    2026102603,
+    2026102602
+  ],
+  "sensor_source": "nucleo_g431_i2c1",
+  "test_requested_duration_s": 60,
+  "concurrent_status_clients": 3,
+  "transport": "http://192.168.1.138:8080",
+  "read_delta": 12302,
+  "accepted_packet_delta": 3068,
+  "peer_bad_delta": 0,
+  "i2c_error_delta": 0,
+  "rescued_bytes_during_test": 2,
+  "rescued_total_before": 3,
+  "rescued_total_after": 5,
+  "max_sensor_age_ms": 27,
+  "web_errors": [],
+  "state": "SAFE",
+  "pwm": 0,
+  "vbus_v": 10.0,
+  "protection_latches_before": {
+    "mc_transport_fault": 7,
+    "bp_transport_fault": 7,
+    "mc_fault": 2,
+    "bp_fault": 2,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "estop": 0
+  },
+  "protection_latches_preserved": true,
+  "adc_zero_ready": 1,
+  "zero_history_valid": 1,
+  "calibration_valid": 1,
+  "sensor_under_pwm_qualified": false,
+  "motor_start_qualified": false,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "firmware_writes_this_verification": 0,
+  "limitation": "Confirms idle RX handoff repair and error-free telemetry during this test; does not establish powered PWM sensor operation. Known reset watchdog retained.",
+  "reports": {
+    "original_installation": "installation_r1/report.json",
+    "early_boot": "boot_verify_r1/report.json",
+    "runtime_ready_status": "boot_verify_r1/status_ready.json",
+    "strict_idle_preflight": "runtime_idle_r1/report.json",
+    "telemetry_stress": "runtime_telemetry_r2/report.json"
+  }
+}

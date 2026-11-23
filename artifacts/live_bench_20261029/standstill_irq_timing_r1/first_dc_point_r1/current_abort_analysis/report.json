@@ -1,0 +1,158 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "physical_parameter_measurement_valid": false,
+  "physical_current_scale_qualified": false,
+  "inductance_identified": false,
+  "result_crc": 3089571603,
+  "raw_trace_sha256": "de134aad3f4afa3601f14b302dbeb0ced20840b7c10c8bb3f563febda55e1cb4",
+  "raw_result_sha256": "a5246c2d475efa856706ad4a26cc2f3b309cdb15e330e7c7cd93d33ad45392f9",
+  "pair": [
+    2026102937,
+    2026102938
+  ],
+  "c_kernel_replay": {
+    "fault": 2,
+    "calls": 11,
+    "done": 1,
+    "active": 0
+  },
+  "accepted_raw_frames": 11,
+  "trip_frame": {
+    "index": 10,
+    "cycles": 2308760523,
+    "epoch": 3043698,
+    "accepted": true,
+    "current_u_a": 0.6043956043956044,
+    "current_v_a": -0.29740101168672595,
+    "current_w_a": -0.3069945927088784,
+    "current_beta_a": 0.00553885658563221,
+    "vector_a": 0.6044209837067241,
+    "ideal_alpha_v": 1.6867469879518073,
+    "raw_adc": [
+      2099,
+      2101
+    ],
+    "ccr": [
+      2677,
+      2635,
+      2635,
+      5184
+    ],
+    "elapsed_s": 0.37308989411764704
+  },
+  "next_post_stop_frame": {
+    "index": 11,
+    "cycles": 2308771145,
+    "epoch": 3043699,
+    "accepted": false,
+    "current_u_a": -0.06715506715506715,
+    "current_v_a": 0.04796790511076225,
+    "current_w_a": 0.0191871620443049,
+    "current_beta_a": 0.01661656975689661,
+    "vector_a": 0.06918029658137778,
+    "ideal_alpha_v": 2.0883534136546187,
+    "raw_adc": [
+      2063,
+      2067
+    ],
+    "ccr": [
+      2682,
+      2630,
+      2630,
+      5184
+    ],
+    "elapsed_s": 0.37315237647058824
+  },
+  "native_cpu_qualification_cycles": 3720,
+  "physical_fast_adapter_max_cycles": 1923,
+  "original_fast_deadline_cycles": 5312,
+  "additional_raw_current_limit_a": 0.45,
+  "adc_counts_per_target_alpha": 6.254181818181818,
+  "adc_counts_per_target_v_w": 3.127090909090909,
+  "nominal_a_per_adc_count": 0.00959358102215245,
+  "off_zero_history": [
+    {
+      "block": 1,
+      "means_adc": [
+        2069,
+        2067,
+        2067,
+        2069
+      ],
+      "raw_spans_adc": [
+        29,
+        39,
+        32,
+        31
+      ],
+      "stable": 1,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.837,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    },
+    {
+      "block": 2,
+      "means_adc": [
+        2068,
+        2068,
+        2066,
+        2069
+      ],
+      "raw_spans_adc": [
+        27,
+        33,
+        38,
+        26
+      ],
+      "stable": 2,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.156,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    },
+    {
+      "block": 3,
+      "means_adc": [
+        2069,
+        2068,
+        2066,
+        2069
+      ],
+      "raw_spans_adc": [
+        27,
+        32,
+        31,
+        28
+      ],
+      "stable": 3,
+      "reject_flags": 0,
+      "failed_paths_mask": 0,
+      "failed_paths": [],
+      "estimated_3sigma_mean_counts": 1.428,
+      "uncertainty_quantized": true,
+      "uncertainty_lower_bound": false,
+      "raw_spans_lower_bound_mask": 0,
+      "variance_method": "max(raw-sample mean variance, four64-sample-group mean variance)",
+      "reasons": []
+    }
+  ],
+  "all_recorded_epochs_consistent": true,
+  "recorded_window_or_deadline_failures": 0,
+  "inference": "An isolated raw excursion stopped the point. This capture does not establish whether it was physical current or analog measurement interference. Correct window geometry is necessary but does not certify analog accuracy.",
+  "measurement_plan_limitation": "The 0.06 A target is only 6.25 ADC counts in alpha and 3.13 counts in the two measured phases; recorded OFF noise spans are larger. Synthetic noiseless plant validation did not qualify that hardware signal-to-noise ratio.",
+  "protection_thresholds_changed": false
+}

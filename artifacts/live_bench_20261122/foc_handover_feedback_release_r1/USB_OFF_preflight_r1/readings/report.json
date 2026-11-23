@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "source": "passive ST-Link HotPlug reads",
+  "ports": [
+    "COM10",
+    "COM13"
+  ],
+  "physical_authorization_context": "User completed requested J1OFF/discharge/PCUSB preparation; observed valid low bus and OFF, no invented meter number",
+  "native_image_sha256": "ce662e54a65f8593a2301fdb279a4817d180f34087eb0cc48834d6b59ef35495",
+  "image_comparison": "exact BIN",
+  "hex_erased_padding_offsets": [],
+  "sealed_binary_sha256": "ce662e54a65f8593a2301fdb279a4817d180f34087eb0cc48834d6b59ef35495",
+  "layout_from_actual_dwarf": {
+    "SensorType": 0,
+    "ConversionFactor": 2,
+    "LatestConv": 4,
+    "AvBusVoltage_d": 6,
+    "FaultState": 8
+  },
+  "rows": [
+    {
+      "tick_ms": 105567,
+      "bus_volts": 10.17529296875,
+      "conversion_factor": 416,
+      "digital_bus": 1603,
+      "bdtr": 37304434,
+      "moe": false
+    },
+    {
+      "tick_ms": 106022,
+      "bus_volts": 10.1435546875,
+      "conversion_factor": 416,
+      "digital_bus": 1598,
+      "bdtr": 37304434,
+      "moe": false
+    }
+  ],
+  "tick_delta_ms": 455,
+  "flash_writes": 0,
+  "reset_commands": 0,
+  "halt_commands": 0,
+  "motor_commands": 0
+}

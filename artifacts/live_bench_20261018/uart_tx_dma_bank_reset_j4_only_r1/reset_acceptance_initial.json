@@ -1,0 +1,34 @@
+{
+  "pass": false,
+  "checks": {
+    "exact_pair": true,
+    "off_low_bus": true,
+    "sd_high_rearmed": true,
+    "no_fault": true,
+    "capture_empty": false,
+    "uart_fresh_clean": true,
+    "good_replies_grow": true
+  },
+  "samples": 7,
+  "vdc_v": 12.0,
+  "reported_temp_c": 48.0,
+  "live_sd": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 3,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "agent_reset_commands": 0,
+  "flash_commands": 0,
+  "user_reported_nucleo_reset": true,
+  "calibration_writes": 0,
+  "old_boot_event_physical_cause_identified": false
+}

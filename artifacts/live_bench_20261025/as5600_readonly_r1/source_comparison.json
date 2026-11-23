@@ -1,0 +1,20 @@
+{
+  "as5600_teacher.cpp": {
+    "sha256": "ff7ffe8a46aeb8c959a2681adfdaa467ec0ffe9ac440f54d0896efc2652df586",
+    "same_as_previously_working_source": false
+  },
+  "as5600_teacher.h": {
+    "sha256": "bb37710d535e1bc910677c8b0104f07ad983edbda263f97940249cd7b185601c",
+    "same_as_previously_working_source": true
+  },
+  "behavioral_diff": {
+    "sensor_address_unchanged": "0x36",
+    "bus_unchanged": "Uno Q I2C2 D20/PB11 SDA, D21/PB10 SCL",
+    "register_read_unchanged": "burst 0x0b, 3 bytes",
+    "worker_priority_changed_from": "CONFIG_NUM_PREEMPT_PRIORITIES-1",
+    "worker_priority_changed_to": 4,
+    "historical_success": "artifacts/unoq_as5600_20261007/check_r1/report.json",
+    "current_read_attempts_progress_but_no_success": true
+  },
+  "cpp_diff": "--- successful_sensor_source\n+++ installed_candidate_source\n@@ -50,10 +50,10 @@\n void as5600_teacher_begin() {\n   if (started) return;\n   started = true;\n-  // Lowest preemptible priority; I2C waits leave UART/RPC runnable.\n+  // I2C blocks outside control ownership; sampling is not starved by bulk RPC TX.\n   k_thread_create(&sensor_thread, sensor_stack, K_THREAD_STACK_SIZEOF(sensor_stack),\n                   sensor_worker, nullptr, nullptr, nullptr,\n-                  CONFIG_NUM_PREEMPT_PRIORITIES - 1, 0, K_NO_WAIT);\n+                  4, 0, K_NO_WAIT);\n }\n \n As5600Sample as5600_teacher_snapshot(uint32_t now_ms) {\n"
+}

@@ -1,0 +1,13 @@
+{
+  "operator_update": "C20 desoldered; short remains on PCB",
+  "exact_post_removal_resistance_not_yet_supplied": true,
+  "removed_C20_individual_resistance_not_supplied": true,
+  "interpretation": "C20 is not the sole source if it is electrically isolated and the low-ohm SD-to-GND path remains. This does not yet distinguish IPM SD internal path from PCB/solder bridge.",
+  "required_state": "STEVAL remains unpowered, ribbon and TP23 diagnostic lead disconnected; do not energize with C20 missing",
+  "next_separation": "If clear visual inspection finds no bridge, disconnect only IPM pin14SD from its PCB pad while unpowered. Separately compare free pin14-to-pin16GND against PCB TP23-to-TP21. Do not infer chip failure from an in-circuit reading alone.",
+  "MCU_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "flash_commands": 0,
+  "old_captures_modified": false
+}

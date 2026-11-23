@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "source": "saved_trial_files",
+  "before": {
+    "identity": [
+      2026111604,
+      1,
+      201326592,
+      0,
+      4,
+      0,
+      494470433
+    ],
+    "Linux_boot_id": "6a52a709-7523-4580-bc28-9f747f9e57a5",
+    "native_tick_ms": 1650014,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111604,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 494470433,
+      "native_tick_ms": 1650014,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae90101007402c478010000000000000c0000000004000000000000002105791d5e2d190000331eb76c"
+  },
+  "after": {
+    "identity": [
+      2026111604,
+      1,
+      201326592,
+      0,
+      4,
+      0,
+      494470433
+    ],
+    "Linux_boot_id": "6a52a709-7523-4580-bc28-9f747f9e57a5",
+    "native_tick_ms": 1659014,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111604,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 494470433,
+      "native_tick_ms": 1659014,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae90101007402c478010000000000000c0000000004000000000000002105791d86501900007fc9c5ba"
+  },
+  "native_identity_unchanged": true,
+  "Linux_identity_unchanged": true
+}

@@ -1,0 +1,59 @@
+{
+  "host_reproduction_passed": true,
+  "hardware_commands": 0,
+  "proposed_planner": {
+    "safe_windows": 5410800,
+    "no_safe_window": 0,
+    "geometry_failures": 0,
+    "installed": false
+  },
+  "first_aperture_collision_hz_at_bus318_320_323": [
+    37.9,
+    38.2,
+    38.5
+  ],
+  "example": {
+    "field_hz": 37.9,
+    "angle_deg": 88.3,
+    "ccr": [
+      4928,
+      1463,
+      1584
+    ],
+    "pair": 2,
+    "bus_v": 318
+  },
+  "synthetic_outlier_demo": {
+    "assumed_true_u_a": 0.748299,
+    "published_rms_u_a": 0.889854,
+    "published_peak_u_a": 11.147741,
+    "valid": true,
+    "bad": 0,
+    "samples": 3201
+  },
+  "physical_cause_proven": false,
+  "source_package": "C:\\mic_practice\\artifacts\\live_bench_20261024\\current_adc_apex_fix_r1",
+  "source_sha256": {
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "51f0b0ac889afb64b93861f8546923d385cbe61eb9db86deb607bc5d421cf23a",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": "02e24bbe11747a23da031977a4bf03735a90e90ff0fd7a18e11a9a8da7441c0d",
+    "Src\\mc_math.c": "6e0a90cacc81ab6d3a1a85af68b79e71776b7e92a84254c6b486e4e3712690c8",
+    "Inc\\current_core.h": "4afbad7fad28faf47c1636f1c821a9fadae14c0eda007213c95a6818712c8480",
+    "Src\\current_shunt.c": "57651b91d42f5ce55d5bcf89923e3058a4b657493b569a8ce7e4511c0a3575a2",
+    "Src\\main.c": "b2afaa30ddca478a8a956e3867cf9d511aefc8c4c2c71434e1f70206ab751ca8",
+    "proposed_planner": "6312075430eb46efd0d14fc2409a98db0604b0585fe4e3db06569d327437f79a"
+  },
+  "source_unchanged": true,
+  "timer_mhz": 170,
+  "adc_mhz": 42.5,
+  "adc_sample_cycles": 24.5,
+  "adc_assumed_trigger_latency_cycles": 3.5,
+  "trigger_ticks": 4928,
+  "selected_pair_settle_ticks": 771,
+  "acquisition_end_after_trigger_ticks": 112,
+  "planner_latest_trigger_ticks": 5184,
+  "limitations": [
+    "Timer compare geometry only; not an analog interference or motor simulation.",
+    "Synthetic ADC outliers are deliberately injected; their occurrence in hardware is not proven.",
+    "No new motor run, firmware update or live register access performed."
+  ]
+}

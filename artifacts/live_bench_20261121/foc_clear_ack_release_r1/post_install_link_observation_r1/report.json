@@ -1,0 +1,51 @@
+{
+  "samples": 7,
+  "UART_latched": 4,
+  "new_bad_frames": 0,
+  "good_frames_added": 138,
+  "SD": "HIGH",
+  "Break_IRQ": true,
+  "RPC_stable": true,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "e9786844-b787-4b74-b057-9c3fb8940519",
+      [
+        2026112112,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        1172767043
+      ]
+    ],
+    "samples": 7,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 6.9539999999979045,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "state": {
+    "vdc": 10.0,
+    "mc_good_cnt": 1186,
+    "mc_bad_cnt": 182,
+    "mc_transport_fault": 4,
+    "mc_uart_error_flags": 2,
+    "mc_last_uart_error_flags": 2,
+    "mc_age_ms": 34,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "mc_current_zero_ready": 1,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "foc_timing_cases": 64,
+    "foc_timing_fault": 0,
+    "algorithm_fast_cycles": 3822
+  },
+  "START": 0,
+  "CLEAR": 0
+}

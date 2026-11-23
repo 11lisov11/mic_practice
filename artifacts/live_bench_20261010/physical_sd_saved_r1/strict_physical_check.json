@@ -1,0 +1,19 @@
+{
+  "pass": false,
+  "checks": {
+    "seven_channels_valid": true,
+    "SD_initially_high": true,
+    "one_clean_SD_pulse": false,
+    "PWM_running_immediately_before_trip": true,
+    "SD_held_low_at_least_20ms": false,
+    "all_outputs_LOW_within_100us": true,
+    "SD_release_stable_100ms": false,
+    "no_PWM_restart_after_release": true
+  },
+  "sd_edges": 9070,
+  "sd_falling_s": 65.0079225,
+  "sd_release_s": 65.00793025,
+  "last_pwm_edge_s": 65.0079225,
+  "trip_to_last_pwm_edge_upper_bound_us": 0.0,
+  "scope": "external SD waveform and PWM cessation; not intrinsic IPM OC/UVLO qualification"
+}

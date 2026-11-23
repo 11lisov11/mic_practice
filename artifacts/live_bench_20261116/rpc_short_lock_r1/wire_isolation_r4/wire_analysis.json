@@ -1,0 +1,71 @@
+{
+  "raw_harness_passed": false,
+  "GET_calls": 411,
+  "GET_requests_on_wire": 413,
+  "unanswered_GET_ids": [
+    413
+  ],
+  "MCU_bytes": 3386399,
+  "Linux_bytes_logged": 8998,
+  "startup_invalid_objects": 1,
+  "post_first_RPC_invalid_objects": [
+    {
+      "start": 3380255,
+      "end": 3386399,
+      "object": "Unframed/rejected byte range"
+    }
+  ],
+  "Linux_invalid_objects": [],
+  "proxy_errors": [
+    {
+      "where": "wire decode",
+      "byte_at": 2048,
+      "error": "3510058288 exceeds max_array_len(4194304)"
+    }
+  ],
+  "harness_error": null,
+  "post_handshake_transport_passed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "MCU_reset": 0,
+  "scope": "GET-only transport test. Not motor qualification.",
+  "investigator_stop": {
+    "reason": "Stopped with SIGINT after411 completed GETs to compare original Go physical serial path without proxy.",
+    "requested_duration_s": 720,
+    "completed_full_duration": false,
+    "main_serial_restored": true,
+    "START": 0,
+    "CLEAR": 0,
+    "MCU_reset": 0
+  },
+  "baseline_serial": {
+    "tx": {
+      "put": [
+        17094,
+        17094,
+        17088
+      ],
+      "get": [
+        17094,
+        17094,
+        17088
+      ],
+      "pending": 0,
+      "last64_hex": "72656e63655f687a3d302e3030206d635f6672657175656e63795f7265666572656e63655f76616c69643d30206d635f646563656c5f6275735f686f6c643d30"
+    },
+    "rx": {
+      "put": [
+        50779,
+        50779,
+        50752
+      ],
+      "get": [
+        50779,
+        50779,
+        50752
+      ],
+      "pending": 0,
+      "last64_hex": "7265616479206578697374733a20676574c094000ea36765749094000fa367657490940010a3676574909401cd046ec0c39401cd046fc0c3940001a367657490"
+    }
+  }
+}

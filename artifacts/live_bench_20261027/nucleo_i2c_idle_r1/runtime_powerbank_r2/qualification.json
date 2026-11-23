@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "scope": "One cold autonomous boot2701/2702 with J1OFF;40seconds/3simultaneous web clients",
+  "initial_network_attempt": "runtime_powerbank_r1/report.json timeout retained; fresh reply and Linux uptime43.08sec obtained without recovery",
+  "autonomous_coldboot_verified_once": true,
+  "read_delta": 8318,
+  "counter_deltas": {
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_late_responses": 0,
+    "rpc_unknown_methods": 0,
+    "mc_bad_cnt": 0,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "enc_errors": 0,
+    "enc_peer_bad": 0,
+    "uno_rx_dropped": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_tx_short_writes": 0,
+    "enc_diag_controller_resets": 0
+  },
+  "max_http_s": 2.8589999999967404,
+  "sensor_errors_since_boot": 0,
+  "zero_quality_ready": true,
+  "sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 47,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "first_pwm_capture_ready": true,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_unchanged": true,
+  "known_startup_under_voltage_latch_retained": true,
+  "fault_state": {
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_reason": 8,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 4,
+    "mc_transport_fault": 0,
+    "estop": 0
+  },
+  "commands": {
+    "start": 0,
+    "arm": 0,
+    "clear": 0,
+    "flash": 0,
+    "reset": 0,
+    "serial_reopen": 0,
+    "service_restart": 0
+  },
+  "physical_state": "Both boards on powerbanks, PC/Saleae disconnected;15V ON,J1OFF, no operatorRESET",
+  "sensor_under_pwm_qualified": false,
+  "next_stage": "For previously agreed5Hz/5s first-I2C-fault test: only J1 through soft-start ON, then fresh powered state read. Preserve snapshots. No automatic START/CLEAR from this report."
+}

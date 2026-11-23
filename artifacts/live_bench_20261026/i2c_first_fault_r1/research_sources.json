@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-26",
+  "purpose": "Explain I2C BUSY under PWM without losing the first event",
+  "sources": [
+    {
+      "url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+      "type": "manufacturer errata",
+      "revision": "Rev9 June2024",
+      "relevant_sections": [
+        "2.11.1",
+        "2.11.2",
+        "2.11.5"
+      ],
+      "finding": "Spurious master BERR does not abort the transfer; ST specifies clearing BERR and continuing. Existing ec_poll instead calls ec_finish/reset for BERR. This is a concrete policy mismatch, not proof that BERR was the initial PWM event.",
+      "clock_check": "Current I2C kernelHSI16 and APB170MHz make ratio10.625; outside the1.5..3 first-byte-stall condition. Standard-mode I2CCLK16MHz exceeds the4MHz minimum."
+    },
+    {
+      "url": "https://github.com/STMicroelectronics/stm32g4xx-hal-driver/blob/master/Src/stm32g4xx_hal_i2c.c",
+      "type": "manufacturer source",
+      "finding": "Separate BUSY/STOP/RXNE waits, error flag processing and abort sequencing are explicit; HAL_BUSY software state must not be confused with the hardware BUSY flag. Our capture records raw ISR and pre-reset state."
+    },
+    {
+      "url": "https://github.com/STMicroelectronics/STM32CubeG4",
+      "type": "manufacturer examples",
+      "finding": "Official board examples include I2C_TwoBoards_ComIT/RestartComIT/AdvComIT. A bus-driver example does not by itself qualify EMI immunity in a motor inverter."
+    },
+    {
+      "url": "https://stackoverflow.com/questions/73183788/cmsis-driver-i2c-problem-status-stuck-in-busy",
+      "type": "community debugging report",
+      "finding": "Example concerns F407/CMSIS busy state and address/IRQ questions; not the same peripheral/driver. Do not copy its busy wait or address convention to G431."
+    },
+    {
+      "url": "https://stackoverflow.com/questions/51504229/in-stm32f101-controller-i2c-busy-flag-is-set-due-to-communication-interrupted-d",
+      "type": "community debugging report",
+      "finding": "Held-low SDA can be the target retaining an interrupted byte. That explanation needs simultaneous pre-reset pin evidence; late HIGH/HIGH GPIO snapshots do not establish it."
+    },
+    {
+      "url": "https://github.com/libopencm3/libopencm3/issues/1613",
+      "type": "community issue",
+      "finding": "F1/F4 analog-filter BUSY workaround is often suggested. It must not be treated as a documented G431 erratum or automatically copied."
+    }
+  ],
+  "evidence_from_our_run": {
+    "i2c_errors": 245,
+    "observed_cause": "EC_BUSY11",
+    "last_ISR": "0x8001",
+    "sampled_GPIO": "HIGH/HIGH",
+    "encoder_UART_rejects": 0,
+    "after_STOP": "I2C recovered"
+  },
+  "root_cause_proven": false,
+  "new_firmware_policy": "Capture first boot and first PWM fault before reset; preserve current recovery for diagnostic attribution",
+  "no_hardware_actions": true
+}

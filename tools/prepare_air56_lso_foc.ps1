@@ -28,6 +28,11 @@ if ([string]::IsNullOrWhiteSpace($Workspace)) {
     $Workspace = Join-Path $repoRoot "_cubeide_ws_air56b2_lso_foc"
 }
 
+# Reject incomplete motor models before duplicating a large generated project.
+& py -3 (Join-Path $PSScriptRoot "prepare_air56_lso_profile.py") `
+    --project $source --motor-profile $profile --lso-template $lsoTemplate --validate-only
+if ($LASTEXITCODE -ne 0) { throw "FOC motor model is incomplete; no project copied or generated." }
+
 try {
     Copy-Item -LiteralPath $source -Destination $seed -Recurse
     $seedResolved = (Resolve-Path -LiteralPath $seed).Path

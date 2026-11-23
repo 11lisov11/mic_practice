@@ -1,0 +1,72 @@
+{
+  "prepared": true,
+  "profile": {
+    "duration_s": 30,
+    "maximum_electrical_hz": 50,
+    "phases": [
+      {
+        "at_s": 0,
+        "command": "START",
+        "target_hz": 50
+      },
+      {
+        "at_s": 18,
+        "command": "SET FREQ",
+        "target_hz": 0.1
+      },
+      {
+        "at_s": 30,
+        "command": "STOP",
+        "target_hz": 0
+      }
+    ],
+    "independent_safety_limit_s": 33,
+    "emergency_heartbeat_timeout_s": 3,
+    "ramp_owner": "Nucleo MCSDK",
+    "ramp_rate_ceiling_hz_per_s": 5,
+    "note": "Nonzero deceleration target avoids immediate zero-frequency PWM shutdown"
+  },
+  "native_ramp": {
+    "checks": {
+      "samples_15000": true,
+      "maximum_reached": true,
+      "acceleration_monotone": true,
+      "deceleration_monotone": true,
+      "range_valid": true,
+      "near_zero_before_stop": true,
+      "quantized_steps_bounded": true
+    },
+    "first_maximum_s": 10.0,
+    "near_zero_s": 27.962,
+    "execution_scope": "actual MCSDK ramp library and receiver ramp helper with host hardware stubs",
+    "rotor_speed_verified": false,
+    "motor_dynamics_simulated": false,
+    "source_sha256": {
+      "artifacts/live_bench_20261010/uart_v3_candidate/firmware_r6/nucleo/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Src/ramp_ext_mngr.c": "1b66b091e4f1b537b8e8078d4f2f7d673fedc19ca2a8183b6ac8223a91bc8373",
+      "artifacts/live_bench_20261010/uart_v3_candidate/firmware_r6/nucleo/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Inc/ramp_ext_mngr.h": "15fcf6afb53247aa537c51b7e910e6ffefc9681b0324736a5ab6bca5d0bbc2c3",
+      "artifacts/live_bench_20261010/uart_v3_candidate/firmware_r6/nucleo/Src/main.c": "e777c24683cac440a67f5294b3e6f1e1cb13bc659ff5639694fb95dc44dbb34c"
+    }
+  },
+  "regeneration_envelope": {
+    "model": "lossless full rotor-energy transfer to DC capacitors",
+    "identified_inertia": false,
+    "attached_load_inertia_included": false,
+    "assumed_inertia_upper_kg_m2": 0.0004,
+    "kinetic_energy_j": 19.73920880217872,
+    "initial_vdc": 325.0,
+    "comparison_ceiling_vdc": 360,
+    "minimum_capacitance_uf_without_margin": 1646.6493265633967,
+    "entered_capacitance_uf": null,
+    "projected_vdc": null,
+    "scope": "conditional energy envelope, not motor simulation or hardware approval"
+  },
+  "hardware_commands": 0,
+  "live_execution_available": false,
+  "hv_release_approved": false,
+  "blockers": [
+    "Installed gate still permits only 3 s / 10 Hz",
+    "Actual DC capacitance and braking/load configuration need confirmation",
+    "Ramp reference is not measured rotor speed; current telemetry remains unqualified"
+  ],
+  "pass": true
+}

@@ -1,0 +1,98 @@
+{
+  "pair": [
+    2026112305,
+    2026112306
+  ],
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash": 1,
+  "nucleo_flash": 1,
+  "before_SWD": {
+    "tick": 69033,
+    "bus_V": 8.90576171875,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "saved_previous_native_and_uno_memory": true,
+  "web_preflight": {
+    "server_verified": true,
+    "calibration_valid_for_pair": true
+  },
+  "nucleo_hex_readback_sha256": "79b3d6b0dc305f524198d3ad688acd92202ab506d93dbc9e5f8ca19fc36debff",
+  "after_SWD": {
+    "tick": 624,
+    "bus_V": 11.375,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "DWT": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "max_cycles": 2567,
+    "max_lso_cycles": 1724,
+    "failures": 0,
+    "passed": true
+  },
+  "uno_flash_readback_sha256": "bb6d496672bd478892ed78773dc7bb31b4bc10a60d7aad74d7462384f6ffc814",
+  "hmi": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/lso_2306_00cd37ece68d4ad2a332d8ab3ff43172",
+    "server_sha256": "5ec96d59906e981e098b1b310b056c9b7998c738d167a7029f1635cea82ee478",
+    "calibration_unchanged": true,
+    "calibration_valid_for_pair": true
+  },
+  "runtime_pending": "RemoteDisconnected('Remote end closed connection without response')",
+  "cold_uart": {
+    "qualified": true,
+    "clean_off_frames": 3,
+    "samples": 5,
+    "new_uart_frames": 71,
+    "max_age_ms": 47,
+    "diagnostic": {
+      "available": true,
+      "qualified": true,
+      "waiting_for_quiet": false,
+      "first_in_cold_start": true,
+      "fault_latched": false,
+      "first_causes": [
+        "USART"
+      ],
+      "first_latched_causes": [],
+      "last_causes": [
+        "RX_BATCH"
+      ],
+      "first_pending_bytes": 3,
+      "clean_off_frames": 3,
+      "first_tick_ms": 3181,
+      "first_elapsed_cycles": 85063,
+      "first_usart_isr": 149033170,
+      "first_dma_isr": 0,
+      "first_dma_remaining": 508,
+      "cold_resyncs": 23,
+      "first_parser_index": 0,
+      "first_parser_result": 4
+    }
+  },
+  "uno_live": true,
+  "final_SWD": {
+    "tick": 27285,
+    "bus_V": 9.1533203125,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "preserved_files_verified": 273
+}

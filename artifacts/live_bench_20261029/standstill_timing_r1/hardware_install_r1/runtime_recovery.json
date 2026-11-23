@@ -1,0 +1,23 @@
+{
+  "passed": false,
+  "additional_flash_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "arm_commands": 0,
+  "commands": [
+    {
+      "label": "rpc_recovery_native_halt",
+      "exit_code": 0
+    },
+    {
+      "label": "rpc_recovery_verified_uno_restart",
+      "exit_code": 0
+    },
+    {
+      "label": "rpc_recovery_native_boot",
+      "exit_code": 0
+    }
+  ],
+  "verified_uno_restart_commands": 1,
+  "error": "Verified restart did not restore RPC: timed out"
+}

@@ -1,0 +1,49 @@
+{
+  "pass": false,
+  "targets_requested_hz": [
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "targets_settled_hz": [
+    5,
+    10
+  ],
+  "active_bus_min_v": 319.0,
+  "active_bus_max_v": 322.0,
+  "active_temperature_min_c": 48.0,
+  "active_temperature_max_c": 50.0,
+  "uno_noise_advisory_before": 0,
+  "uno_noise_advisory_after": 1,
+  "new_uno_noise_advisories": 1,
+  "fatal_telemetry_max": {
+    "mc_bad_cnt": 0,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_transport_fault": 0,
+    "uno_rx_dropped": 0
+  },
+  "all_samples_diagnostics_max": {
+    "mc_bad_cnt": 1,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_transport_fault": 2,
+    "uno_rx_dropped": 0
+  },
+  "break_recorded": false,
+  "active_observed_span_s": 11.295999999998457,
+  "active_samples": 23,
+  "outputs_off_confirmed": true,
+  "physical_rotation_confirmed": true,
+  "speed_changes_confirmed": true,
+  "decel_bus_hold_samples": 0
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "mic_ai.powered_trial.local_stop_fixture_delta.v1",
+  "pair": [
+    2026101205,
+    2026101204
+  ],
+  "images": {
+    "production_uno": "afd0c72fc33c1519d9a85b6fd43356057a66048f82d20e1ebbbd56cd5e714714",
+    "production_nucleo": "f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949"
+  },
+  "fixture_pair": [
+    2026101298,
+    2026101299
+  ],
+  "fixture_images": {
+    "fixture_uno": "8b2cb321a52a44af07613c04fd96aabf1a2467b7081fb859344dff8236950428",
+    "fixture_nucleo": "bc0c3dbfee861c2d4f68a4d5b59f20b44bec0cd2ed062046da489d1bcb633cd9"
+  },
+  "profile": "short",
+  "scope": "local_stop_fixture_equivalence_one_powered_trial",
+  "max_run_s": 3,
+  "max_frequency_hz": 5,
+  "offline_suites": 57,
+  "evidence_sha256": {
+    "fixture_pwm": "aec92987b878e8b963bb2f4c50589d4334edea9d40fc6fbf9702e93ba59e6130",
+    "fixture_capture": "abade1d935e0f508bbd4d8c87d6f53f833e4c9728f8e0d3eaebe89e08be489e4",
+    "fixture_code": "1a1c7041f43a4367a2cc125cd2826ce0a4313b212aeb0df803142a20c287895f",
+    "fixture_selftest": "1f4778d569b0af7ad328b76b8e98820db86a9d12d3ca1beb41aaf7479da90ecb",
+    "production_idle": "f34a87de8a052cc194b81c1b41e4c0ec30c9c076995dcbe413c87d7965b0d20b",
+    "production_restore_nucleo": "f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949",
+    "production_restore_uno": "ca91b8ade3b0cc3e17d8bfcbb466099e582cf9bc96cad3ca1347f082f4f186ee",
+    "baseline_offline": "5245d75f162c490cd8c1356256296280f295ab9c87a91ac0282a33edd368f4a4",
+    "calibration_contract": "6b4777039107dcfc2a3badc1d649b7c554b12b469642d0002937af1f67640464",
+    "sd_sample": "46929f05d7b758f1060e6fe74a93f46dd54e9f04a9809177955a01af6b6debe4",
+    "hmi_guards": "26e89c11c0a8861b7954e0269bcb6735f698c90e00a6a54c7493a43b78e779a8"
+  },
+  "sd_sample_v": 2.6,
+  "idle_tx_max_gap_us": 53065,
+  "issued_at": 1791825534.6625435,
+  "expires_at": 1791826134.6625435,
+  "fixture_six_pwm_and_local_stop_pass": true,
+  "fixture_stop_source_identical": true,
+  "fixture_ten_code_sections_identical": true,
+  "production_images_restored_verified": true,
+  "production_idle_wifi_pass": true,
+  "production_calibration_contract_pass": true,
+  "retained_sd_sample_operator_reported": true,
+  "offline_pass": true,
+  "new_pair_active_pwm_measured": false,
+  "physical_idle_registers_current": false,
+  "exact_button_to_off_latency_measured": false,
+  "forced_enable_hardware_validated": false,
+  "hv_release_approved": false,
+  "current_telemetry_qualified": false
+}

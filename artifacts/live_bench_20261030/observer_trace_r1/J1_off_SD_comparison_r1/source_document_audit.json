@@ -1,0 +1,27 @@
+{
+  "source_audit": {
+    "native_source": "nucleo/Src/main.c:1018",
+    "live_SD_reads": "GPIOA->IDR & GPIO_PIN_6",
+    "hardware_register_write_performed": false,
+    "mode_check": "BKBID=0 input-only, AF6, PA6 pull-up/open-drain config verified by native status",
+    "first_waveform_is_separate_from_live_GPIO": true
+  },
+  "documentation": [
+    {
+      "title": "STM32G4 RM0440, TIM1 BDTR BKBID",
+      "url": "https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+      "finding": "Bidirectional output requires BKBID=1; expected and live-checked mode is input BKBID=0"
+    },
+    {
+      "title": "STGIB15CH60TS-L DS10424 Rev10, sections3.2/4",
+      "url": "https://www.st.com/resource/en/datasheet/stgib15ch60ts-l.pdf",
+      "finding": "SD is open-drain fault signal; UVLO and overcurrent possible; UVLO keeps SD low until VCCL recovers. Voltage at driver is not measured by existing telemetry."
+    }
+  ],
+  "conclusion": "No physical cause established. Latest user power-off statement leaves15V state uncertain; do not interpret this sequence as a controlled constant15V comparison until clarified.",
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0
+}

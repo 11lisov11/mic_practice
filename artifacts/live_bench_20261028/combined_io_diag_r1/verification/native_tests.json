@@ -1,0 +1,32 @@
+{
+  "guard": {
+    "passed": true,
+    "checks": 192050,
+    "actual_hardware_calls": 0
+  },
+  "adc": {
+    "passed": true,
+    "checks": 240008,
+    "adc_calls": 80000,
+    "accepted": 79999,
+    "actual_target_irq_body": true,
+    "physical_MOE": 0
+  },
+  "uart_dma": {
+    "pass": true,
+    "checks": 292520,
+    "old_prefix_bytes": 39,
+    "dma_stress_frames": 2048
+  },
+  "uart_parser": {
+    "pass": true,
+    "checks": 271,
+    "hardware_commands": 0
+  },
+  "passed": true,
+  "checks": 192050,
+  "hardware_calls": 0,
+  "original_BKIN_ADC_UART_initializers_unchanged": true,
+  "UART_motor_dispatch_impossible": true,
+  "archives_verified": true
+}

@@ -1,0 +1,31 @@
+{
+  "operator_report": "Supply, common ground and pullups reported OK; no new physical measurement requested in this step",
+  "hardware_commands": 0,
+  "clear_commands": 0,
+  "start_commands": 0,
+  "firmware_writes": 0,
+  "inspected": [
+    "Installed2518 sketch and AS5600 worker/readers",
+    "Arduino Zephyr0.90.0 UnoQ overlay",
+    "Arduino_LED_Matrix wrapper",
+    "Recorded SW25 active pin configuration and address echo"
+  ],
+  "findings": [
+    "Installed backend uses external Nucleo PWM; local analogWrite PWM branch is bypassed",
+    "AS5600 PB10/PB11 configured by sensor worker; no second pin owner found in inspected sketch paths",
+    "Matrix mapping GPIOF; serial supervisory D0/D1 mappedPB7/PB6",
+    "Core timer2 pinctrl lists PB10/PB11 as a potential conflict, but no active pin-mux switch is demonstrated; SW25 cfg stayed1114485",
+    "Software NACK is sampled at the ninth clock; recorded address echoes match0x6c in three active snapshots"
+  ],
+  "limits": [
+    "No continuous SCL/SDA waveform or per-edge timestamp was recorded",
+    "Matching8sampled data bits does not prove the slave observed valid START/clock edges",
+    "Static supply/wiring checks do not measure their PWM transients; operator report retained without claiming transient qualification",
+    "No component defect or software-only root cause established"
+  ],
+  "next_instrumentation": [
+    "Timestamp START, each SCL transition and data/ACK sample around one failing software transaction",
+    "Compare that frame with idle success using same timing and pin configuration",
+    "Keep UART/drive deadlines/SD protections unchanged; record missing/invalid sensor samples as invalid"
+  ]
+}

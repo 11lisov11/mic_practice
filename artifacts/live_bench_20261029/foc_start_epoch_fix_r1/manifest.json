@@ -1,0 +1,55 @@
+{
+  "schema": "mic_ai.foc_start_epoch_fix.v1",
+  "pair": [
+    2026102961,
+    2026102962
+  ],
+  "base_pair": [
+    2026102951,
+    2026102952
+  ],
+  "built": true,
+  "installed": true,
+  "changed_logic": "Reset completed voltage bin epoch and accumulation at first real FOC call",
+  "current_age_limits_changed": false,
+  "observer_deadline_changed": false,
+  "current_protection_changed": false,
+  "raw_adc_or_windows_changed": false,
+  "current_model_changed": false,
+  "native_autostop_seconds": 5,
+  "experimental_max_hz": 5,
+  "start_commands": 1,
+  "clear_commands": 1,
+  "selftests_passed": true,
+  "old_captures_verified": 636,
+  "all_preserved_files": 682,
+  "target_timing_measured": true,
+  "physical_trial_after_fix": true,
+  "predecessor_sources_unchanged": true,
+  "reused_model_evidence": {
+    "report": "artifacts\\live_bench_20261029\\estimated_foc_trial_r5\\model_verification_final\\report.json",
+    "report_sha256": "36a0d9777fabc3013e693bfae93a001d27b022b65256a973bade1041e8280aa2",
+    "candidate_kernel_sha256": "7922192e23e3abffa704fa3e873506f51867cc4252dad8f6c0261cd00cb0dfc5",
+    "reused_not_rerun": true,
+    "central_passed": 4,
+    "sensitivity_passed": 54,
+    "sensitivity_total": 60,
+    "physical_parameters_and_control_kernel_unchanged": true,
+    "hardware_validation": false
+  },
+  "native_flash_bytes": 99376,
+  "artifacts": {
+    "release/nucleo_2026102962_foc_start_epoch.bin": "f1a29effb3a51f0bc84136c091a349ced74af1b99cb77831aa9e04d0867694e7",
+    "release/unoq_2026102961_foc_start_epoch.elf-zsk.bin": "9cf639b9de295cb7eafc8249ad3e8ad8fb4e9b6915860ed6c6000dcfbb1df17b"
+  },
+  "installation_report": "hardware_install_r3\\install_report.json",
+  "idle_verification_report": "idle_verification_r1\\report.json",
+  "post_install_report": "post_install_readback_r1\\report.json",
+  "installed_without_start_or_clear": true,
+  "readback_verified": true,
+  "calibration_unchanged": true,
+  "autonomous_off_report": "autonomous_before_FOC_r2/autonomous_summary.json",
+  "physical_trial_completed_5s": false,
+  "physical_trial_report": "powered_FOC_5Hz_5s_r1/analysis.json",
+  "arm_commands": 1
+}

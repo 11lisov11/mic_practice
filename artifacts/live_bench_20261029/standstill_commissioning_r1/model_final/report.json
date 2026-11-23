@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "dc_points": 30,
+  "ac_points": 12,
+  "source_kind": "synthetic",
+  "hardware_commands": 0,
+  "inferred": {
+    "RS": 12.229999542236328,
+    "RR": 8.97817349304177,
+    "LLS": 0.011975325009104587,
+    "LLR": 0.011975325009104587,
+    "LMS": 0.3005376967627708
+  },
+  "truth": {
+    "RS": 12.23,
+    "RR": 9,
+    "LLS": 0.012,
+    "LLR": 0.012,
+    "LMS": 0.3
+  },
+  "independent_inverter_non_linearity": true,
+  "voltage_calibration_holdout_rms_v": 0.006259437920295998,
+  "fit_error": 0.000870021548642763,
+  "validation_error": 0.0017632744660296762,
+  "eligible_for_foc_start": false,
+  "source_sha256": {
+    "identify_core.h": "2bd2e9984f36d36ba19511c11d6c0232f66444abc8bb06fbc734ec231912bc2d",
+    "model.cpp": "be97bc9401fc2adf9b129669da8e83df8b2443f4983370a051063ce69941485c"
+  }
+}

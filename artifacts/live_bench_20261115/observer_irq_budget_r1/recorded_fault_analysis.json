@@ -1,0 +1,22 @@
+{
+  "recorded_fault": "MA_STALE/FT_ESTIMATE_AGE while observer is in compute",
+  "age_us": 2028.4411764705883,
+  "unchanged_limit_us": 2000,
+  "previous_observer_wall_us": 874.8588235294118,
+  "previous_IRQ_lower_us": 769.3176470588236,
+  "previous_CPU_upper_us": 105.54117647058824,
+  "exact_IRQ_dominance_identified": false,
+  "reason": "Old recording contains only aggregate IRQ time, not per-vector counters.",
+  "frequent_vectors_from_code": {
+    "TIM1_UPDATE": 16000,
+    "ADC1_2": 16000
+  },
+  "software_defect_reproduced": "UART TCIE enabled while DMA still has bytes; an inter-byte TC can reenter the old IRQ indefinitely until progress.",
+  "fix": "DMA TC now enables UART TCIE after CNDTR reaches0; completion still requires the final UART stop bit. A spurious early TC disables TCIE without clearing a possibly final TC.",
+  "controller_optimization": "Same exact FE model after unchanged per-frame exact-model guard; always-inline permits constant propagation; startup speed-loop work whose result was overwritten is skipped.",
+  "observer_optimization": "Jacobian workspace reused only after transition matrix is complete; same operation order, smaller stack.",
+  "evidence_preserved": 2841,
+  "thresholds_changed": false,
+  "hardware_commands": 0,
+  "full5s_hardware_success_proven": false
+}

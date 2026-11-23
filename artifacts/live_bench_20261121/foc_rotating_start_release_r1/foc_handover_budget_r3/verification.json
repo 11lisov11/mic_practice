@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "checks": {
+    "nominal_completes_5s_at_5Hz": true,
+    "without_admitted_speed": true,
+    "NIS_25_stop": true,
+    "NIS_just_below_25_allowed": true,
+    "raw_current_trip": true,
+    "estimate_age_trip": true,
+    "field_rate_guard": true
+  },
+  "nominal": {
+    "completed_5s": true,
+    "PWM_duration_s": 5.00002936,
+    "frames": 80009,
+    "observer_calls": 5000,
+    "fault": 0,
+    "reason": 0,
+    "peak_plant_A": 0.510722666,
+    "rpm_true_end": 300.271263,
+    "rpm_est_end": 299.959341,
+    "speed_RMSE_after1s_rpm": 0.345002674,
+    "native_valid_fraction_after1s": 1,
+    "peak_NIS": 0.468332946,
+    "prequalification_Iq_ref_max_A": 0,
+    "first_torque_step": 643,
+    "maximum_reference_Hz": 5,
+    "peak_hold_speed_error_rpm": 6.55450703,
+    "handover_step": 642,
+    "maximum_plant_rpm": 306.554507
+  },
+  "CCR_rounding_equivalence_cases": 1393216,
+  "recorded_DWT_cycles_before": 4076,
+  "instruction_count_replay_before_after": [
+    1640,
+    1625
+  ],
+  "floating_divisions_replay_before_after": [
+    25,
+    20
+  ],
+  "max_OFF_instructions_before_after": [
+    1643,
+    1628
+  ],
+  "nested_IRQ_or_wait_states_emulated": false,
+  "target_DWT_after_measured": false,
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        8320,
+        8568
+      ],
+      "ma_native_service": [
+        8380,
+        8380
+      ],
+      "ma_native_profile_tick": [
+        3568,
+        3920
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2
+  },
+  "hardware_commands": 0
+}

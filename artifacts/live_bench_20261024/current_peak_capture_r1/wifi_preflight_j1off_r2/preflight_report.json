@@ -1,0 +1,54 @@
+{
+  "passed": false,
+  "read_only": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "reset_commands": 0,
+  "clear_commands": 0,
+  "flash_commands": 0,
+  "configuration_operator_confirmed": "Both boards on powerbanks; PC/Saleae disconnected; J4 15V ON; J1 OFF; no operator RESET",
+  "wifi_collection_pass": true,
+  "live_pair": [
+    2026102501,
+    2026102502
+  ],
+  "samples": 9,
+  "outputs_off": true,
+  "uart_crc_errors": 0,
+  "uart_sequence_errors": 0,
+  "uart_active_flags": 0,
+  "transport_fault": 0,
+  "vdc": 10.0,
+  "sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 33,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "adc_peak_hex": "-",
+  "zero_ready": 0,
+  "zero_stable": 2,
+  "zero_attempts": 8,
+  "zero_last_reject": 0,
+  "zero_spans": [
+    31,
+    32,
+    40,
+    24
+  ],
+  "zero_offsets": [
+    2066,
+    2066,
+    2067,
+    2070
+  ],
+  "zero_meets_existing_contract": false,
+  "error": "Autonull exhausted8attempts with2consecutive stable blocks; noSTART/CLEAR/RESET sent",
+  "next_step": "Preserve evidence; request one Nucleo RESET with J1OFF and stable15V; no power or wiring changes"
+}

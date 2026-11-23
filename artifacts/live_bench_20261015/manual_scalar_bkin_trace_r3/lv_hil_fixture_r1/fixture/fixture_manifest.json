@@ -1,0 +1,56 @@
+{
+  "pass": true,
+  "purpose": "ISOLATED LOGIC ONLY; NOT FOR HV OR MOTOR",
+  "fixture_variant": "auxiliary_only_10v_auto_sd_pc8",
+  "external_stimulus": {
+    "gpio": "PC8",
+    "connector": "CN10-2",
+    "type": "open_drain",
+    "resistor_ohm": 1000,
+    "destination": "STEVAL TP23",
+    "after_pwm_ms": 800,
+    "hold_ms": 250,
+    "once_per_boot": true
+  },
+  "identity_note": "899 identifies the reviewed UART layout; use variant and image hashes for binary identity",
+  "bench_build": 2026101506,
+  "production_build": 2026101506,
+  "project": "C:\\mic_practice\\artifacts\\live_bench_20261015\\manual_scalar_bkin_trace_r3\\lv_hil_fixture_r1\\fixture\\project",
+  "production_untouched": true,
+  "unchanged_files": 1383,
+  "changed_files": {
+    "Inc\\aux_sd_pulse.h": {
+      "production_sha256": null,
+      "bench_sha256": "92ea97038a9dff14a0a26e112f98ab6cd9648fedd3e714768c09aec8bf23697b"
+    },
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": {
+      "production_sha256": "159f8efcbaaecf0b85c1023c2e6c942c65eca138efd51c54e58994abf4470686",
+      "bench_sha256": "313d305e4d5264ae0db71e71682765d4ff1b71d9aa5c2173446e755de39b8f6d"
+    },
+    "Src\\main.c": {
+      "production_sha256": "2448738536cf0d37ebe7543cbc522955f0ae7845de787428f848361281789a54",
+      "bench_sha256": "d1d3b0cf284be156db763ebbe10a32cda56bbd58decfeed8db929216d1624df0"
+    },
+    "Src\\mc_tasks.c": {
+      "production_sha256": "5846c8202dbfd75d98d5e105cdff0529e231d70e751b0f1bd5d63e7bf92cccf5",
+      "bench_sha256": "c69d874b228cddff0aeae785c36cb7a3602555ce910e0d5edf3a06c24482cae0"
+    }
+  },
+  "critical_sources_identical": {
+    "Src\\stm32g4xx_mc_it.c": "4fe332195281e0834e7a95f5eeecab1f3df7562723b0ee6fb42fdf803d733d01",
+    "Src\\stm32g4xx_hal_msp.c": "f47f02cd58339954a61d801934f37060518043767d6de3dfca3034da0cb1afb6",
+    "Src\\pwm_curr_fdbk.c": "9db0a617a2426b10de7f0342c6c2b94fbd79b9012e06d4907bb7c68f52d40b1c",
+    "Inc\\drive_parameters.h": "fea97b06ca7fd866d6f065d43dbf0a98653802400083f503d140a09327163b51",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "51f0b0ac889afb64b93861f8546923d385cbe61eb9db86deb607bc5d421cf23a"
+  },
+  "bench_only_changes": [
+    "separate test identity",
+    "real ADC <= 10 V interlock and 15 s output cap",
+    "isolated low-voltage ready instead of HV settle",
+    "310 V virtual modulation normalization"
+  ],
+  "hardware_validated": false,
+  "operator_measured_bus_max_v": null,
+  "fixture_mcsdk_filtered_voltage_limit_v": 10,
+  "raw_ADC_is_diagnostic_only": true
+}

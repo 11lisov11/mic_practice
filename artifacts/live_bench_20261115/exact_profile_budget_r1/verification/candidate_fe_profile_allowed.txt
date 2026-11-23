@@ -1,0 +1,97 @@
+0800a954 <fe_profile_allowed>:
+ 800a954:	4b31      	ldr	r3, [pc, #196]	@ (800aa1c <fe_profile_allowed+0xc8>)
+ 800a956:	781a      	ldrb	r2, [r3, #0]
+ 800a958:	4603      	mov	r3, r0
+ 800a95a:	f002 00ff 	and.w	r0, r2, #255	@ 0xff
+ 800a95e:	b142      	cbz	r2, 800a972 <fe_profile_allowed+0x1e>
+ 800a960:	4a2f      	ldr	r2, [pc, #188]	@ (800aa20 <fe_profile_allowed+0xcc>)
+ 800a962:	7811      	ldrb	r1, [r2, #0]
+ 800a964:	2907      	cmp	r1, #7
+ 800a966:	d005      	beq.n	800a974 <fe_profile_allowed+0x20>
+ 800a968:	7812      	ldrb	r2, [r2, #0]
+ 800a96a:	2a80      	cmp	r2, #128	@ 0x80
+ 800a96c:	d004      	beq.n	800a978 <fe_profile_allowed+0x24>
+ 800a96e:	2000      	movs	r0, #0
+ 800a970:	4770      	bx	lr
+ 800a972:	4770      	bx	lr
+ 800a974:	2001      	movs	r0, #1
+ 800a976:	4770      	bx	lr
+ 800a978:	2b02      	cmp	r3, #2
+ 800a97a:	d1f8      	bne.n	800a96e <fe_profile_allowed+0x1a>
+ 800a97c:	b410      	push	{r4}
+ 800a97e:	4b29      	ldr	r3, [pc, #164]	@ (800aa24 <fe_profile_allowed+0xd0>)
+ 800a980:	4829      	ldr	r0, [pc, #164]	@ (800aa28 <fe_profile_allowed+0xd4>)
+ 800a982:	4c2a      	ldr	r4, [pc, #168]	@ (800aa2c <fe_profile_allowed+0xd8>)
+ 800a984:	e9d3 1200 	ldrd	r1, r2, [r3]
+ 800a988:	4054      	eors	r4, r2
+ 800a98a:	4048      	eors	r0, r1
+ 800a98c:	4a28      	ldr	r2, [pc, #160]	@ (800aa30 <fe_profile_allowed+0xdc>)
+ 800a98e:	6899      	ldr	r1, [r3, #8]
+ 800a990:	4320      	orrs	r0, r4
+ 800a992:	4051      	eors	r1, r2
+ 800a994:	4301      	orrs	r1, r0
+ 800a996:	e9d3 0403 	ldrd	r0, r4, [r3, #12]
+ 800a99a:	4042      	eors	r2, r0
+ 800a99c:	430a      	orrs	r2, r1
+ 800a99e:	4925      	ldr	r1, [pc, #148]	@ (800aa34 <fe_profile_allowed+0xe0>)
+ 800a9a0:	4825      	ldr	r0, [pc, #148]	@ (800aa38 <fe_profile_allowed+0xe4>)
+ 800a9a2:	4061      	eors	r1, r4
+ 800a9a4:	4311      	orrs	r1, r2
+ 800a9a6:	e9d3 2405 	ldrd	r2, r4, [r3, #20]
+ 800a9aa:	4050      	eors	r0, r2
+ 800a9ac:	4a23      	ldr	r2, [pc, #140]	@ (800aa3c <fe_profile_allowed+0xe8>)
+ 800a9ae:	4308      	orrs	r0, r1
+ 800a9b0:	4062      	eors	r2, r4
+ 800a9b2:	ea42 0c00 	orr.w	ip, r2, r0
+ 800a9b6:	69d9      	ldr	r1, [r3, #28]
+ 800a9b8:	6a9c      	ldr	r4, [r3, #40]	@ 0x28
+ 800a9ba:	e9d3 2008 	ldrd	r2, r0, [r3, #32]
+ 800a9be:	f081 0101 	eor.w	r1, r1, #1
+ 800a9c2:	ea41 010c 	orr.w	r1, r1, ip
+ 800a9c6:	f082 527a 	eor.w	r2, r2, #1048576000	@ 0x3e800000
+ 800a9ca:	4311      	orrs	r1, r2
+ 800a9cc:	4a1c      	ldr	r2, [pc, #112]	@ (800aa40 <fe_profile_allowed+0xec>)
+ 800a9ce:	4042      	eors	r2, r0
+ 800a9d0:	ea42 0c01 	orr.w	ip, r2, r1
+ 800a9d4:	e9d3 210b 	ldrd	r2, r1, [r3, #44]	@ 0x2c
+ 800a9d8:	481a      	ldr	r0, [pc, #104]	@ (800aa44 <fe_profile_allowed+0xf0>)
+ 800a9da:	f082 4387 	eor.w	r3, r2, #1132462080	@ 0x43800000
+ 800a9de:	4060      	eors	r0, r4
+ 800a9e0:	ea40 000c 	orr.w	r0, r0, ip
+ 800a9e4:	f483 0390 	eor.w	r3, r3, #4718592	@ 0x480000
+ 800a9e8:	f081 4282 	eor.w	r2, r1, #1090519040	@ 0x41000000
+ 800a9ec:	4303      	orrs	r3, r0
+ 800a9ee:	f482 0280 	eor.w	r2, r2, #4194304	@ 0x400000
+ 800a9f2:	431a      	orrs	r2, r3
+ 800a9f4:	d003      	beq.n	800a9fe <fe_profile_allowed+0xaa>
+ 800a9f6:	2000      	movs	r0, #0
+ 800a9f8:	f85d 4b04 	ldr.w	r4, [sp], #4
+ 800a9fc:	4770      	bx	lr
+ 800a9fe:	4b12      	ldr	r3, [pc, #72]	@ (800aa48 <fe_profile_allowed+0xf4>)
+ 800aa00:	7818      	ldrb	r0, [r3, #0]
+ 800aa02:	b138      	cbz	r0, 800aa14 <fe_profile_allowed+0xc0>
+ 800aa04:	4a11      	ldr	r2, [pc, #68]	@ (800aa4c <fe_profile_allowed+0xf8>)
+ 800aa06:	4b12      	ldr	r3, [pc, #72]	@ (800aa50 <fe_profile_allowed+0xfc>)
+ 800aa08:	7810      	ldrb	r0, [r2, #0]
+ 800aa0a:	781b      	ldrb	r3, [r3, #0]
+ 800aa0c:	fab0 f080 	clz	r0, r0
+ 800aa10:	0940      	lsrs	r0, r0, #5
+ 800aa12:	e7f1      	b.n	800a9f8 <fe_profile_allowed+0xa4>
+ 800aa14:	4b0e      	ldr	r3, [pc, #56]	@ (800aa50 <fe_profile_allowed+0xfc>)
+ 800aa16:	781b      	ldrb	r3, [r3, #0]
+ 800aa18:	e7ee      	b.n	800a9f8 <fe_profile_allowed+0xa4>
+ 800aa1a:	bf00      	nop
+ 800aa1c:	2000033a 	.word	0x2000033a
+ 800aa20:	20000339 	.word	0x20000339
+ 800aa24:	2000033c 	.word	0x2000033c
+ 800aa28:	4143ae14 	.word	0x4143ae14
+ 800aa2c:	4130121d 	.word	0x4130121d
+ 800aa30:	3f073129 	.word	0x3f073129
+ 800aa34:	3efd2c2b 	.word	0x3efd2c2b
+ 800aa38:	3951b717 	.word	0x3951b717
+ 800aa3c:	391b1741 	.word	0x391b1741
+ 800aa40:	3f4ccccd 	.word	0x3f4ccccd
+ 800aa44:	3faccccd 	.word	0x3faccccd
+ 800aa48:	20005385 	.word	0x20005385
+ 800aa4c:	20005f5e 	.word	0x20005f5e
+ 800aa50:	20005f5c 	.word	0x20005f5c

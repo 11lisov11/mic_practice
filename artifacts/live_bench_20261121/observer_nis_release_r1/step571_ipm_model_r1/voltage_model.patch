@@ -1,0 +1,97 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -76,6 +76,52 @@
+  if((x&0x7fffffffU)<=0x58800000U&&(y&0x7fffffffU)<=0x58800000U)
+   return MIC_CONTROL_HYPOT_CORE(a,b);
+  return hypotf(a,b);
++}
++
++
++/* Inferred voltage affects the model and PWM feed-forward only. Neither
++ * the programmed TIM1 dead time nor the ADC aperture uses these offsets.
++ * Zero values are the uncalibrated board default. Characterization inputs
++ * for another inverter must come from its own measurements. */
++#ifndef MA_IPM_DEVICE_DROP_MV
++#define MA_IPM_DEVICE_DROP_MV 0
++#endif
++#ifndef MA_IPM_ON_MILLIOHMS
++#define MA_IPM_ON_MILLIOHMS 0
++#endif
++#ifndef MA_IPM_EDGE_ADJUST_HALF_TICKS
++#define MA_IPM_EDGE_ADJUST_HALF_TICKS 0
++#endif
++#if MA_IPM_DEVICE_DROP_MV < 0 || MA_IPM_ON_MILLIOHMS < 0
++#error Inverter conduction losses must be nonnegative
++#endif
++
++static inline void ma_voltage_loss_ab(const ma_geometry*g,float bus,float ia,float ib,
++                                      float*loss_a,float*loss_b){
++#if MA_IPM_EDGE_ADJUST_HALF_TICKS != 0
++  const float edge_adjust=(float)MA_IPM_EDGE_ADJUST_HALF_TICKS*.5f;
++  /* With a calibrated, signed edge correction, zero effective time is the
++   * lower bound of this term. Conduction loss is independent. */
++  const float ticks=ma_max2(0.f,(float)g->deadtime_ticks+edge_adjust);
++#else
++  const uint32_t ticks=g->deadtime_ticks;
++#endif
++  const float switching=bus*ticks/(2.f*g->arr);
++#if MA_IPM_DEVICE_DROP_MV != 0
++  const float threshold=switching+(float)MA_IPM_DEVICE_DROP_MV*.001f;
++#else
++  const float threshold=switching;
++#endif
++  const float u=threshold*ma_current_polarity(ia);
++  const float v=threshold*ma_current_polarity(-.5f*ia+.8660254038f*ib);
++  const float w=threshold*ma_current_polarity(-.5f*ia-.8660254038f*ib);
++  *loss_a=(2.f*u-v-w)/3.f;
++  *loss_b=(v-w)*.5773502692f;
++#if MA_IPM_ON_MILLIOHMS != 0
++  const float r=(float)MA_IPM_ON_MILLIOHMS*.001f;
++  *loss_a+=r*ia;
++  *loss_b+=r*ib;
++#endif
+ }
+ 
+ static inline int ma_motor_valid(const ma_motor*m){
+@@ -330,12 +376,7 @@
+   out->id_ref=idref;out->iq_ref=iqref;out->omega_est=x[4];out->flux=flux;
+   out->id_measured=id;out->iq_measured=iq;
+   const float requested_a=c0*dq[0]-s*dq[1],requested_b=s*dq[0]+c0*dq[1];
+-  const float loss=bus*g->deadtime_ticks/(2.f*g->arr);
+-  const float loss_phase[3]={loss*ma_current_polarity(ia),
+-    loss*ma_current_polarity((-.5f*ia+.8660254038f*ib)),
+-    loss*ma_current_polarity((-.5f*ia-.8660254038f*ib))};
+-  const float loss_a=(2*loss_phase[0]-loss_phase[1]-loss_phase[2])/3;
+-  const float loss_b=(loss_phase[1]-loss_phase[2])*.5773502692f;
++  float loss_a,loss_b;ma_voltage_loss_ab(g,bus,ia,ib,&loss_a,&loss_b);
+   float aperture_scale=1;
+   /* Project voltage into the measurable set, rather than counting edge samples
+    * as current. Search is bounded, and failure still stops the actuator. */
+--- a/nucleo/Inc/observer_applied_voltage.h
++++ b/nucleo/Inc/observer_applied_voltage.h
+@@ -2,7 +2,7 @@
+ #define MIC_OBSERVER_APPLIED_VOLTAGE_H
+ #include "motor_control.h"
+ /* Average-voltage MODEL of the ADC's active PWM epoch. No voltage measurement
+- * or motor identification is claimed. The existing dead-time model is retained. */
++ * or motor identification is claimed. Loss parameters are explicit. */
+ static inline int ma_applied_voltage(const ma_geometry*g,const uint16_t*ccr,
+  uint16_t arr,uint16_t bus,float ia,float ib,float*va,float*vb){
+  *va=*vb=0;
+@@ -10,12 +10,10 @@
+  for(unsigned i=0;i<3;++i)if(ccr[i]>arr)return MA_WINDOW;
+  const float factor=(float)bus/(float)arr;
+  const float average=((float)ccr[0]+ccr[1]+ccr[2])/3.f;
+- const float loss=(float)bus*g->deadtime_ticks/(2.f*arr);
+- const float p[3]={loss*ma_current_polarity(ia),
+-  loss*ma_current_polarity((-.5f*ia+.8660254038f*ib)),
+-  loss*ma_current_polarity((-.5f*ia-.8660254038f*ib))};
+- *va=((float)ccr[0]-average)*factor-(2*p[0]-p[1]-p[2])/3.f;
+- *vb=((float)ccr[1]-ccr[2])*factor*.5773502692f-(p[1]-p[2])*.5773502692f;
++ float loss_a,loss_b;
++ ma_voltage_loss_ab(g,(float)bus,ia,ib,&loss_a,&loss_b);
++ *va=((float)ccr[0]-average)*factor-loss_a;
++ *vb=((float)ccr[1]-ccr[2])*factor*.5773502692f-loss_b;
+  return MA_OK;
+ }
+ #endif

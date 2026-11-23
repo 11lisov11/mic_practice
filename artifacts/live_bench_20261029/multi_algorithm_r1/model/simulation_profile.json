@@ -1,0 +1,21 @@
+{
+  "schema": "mic_ai.runtime_motor.v1",
+  "purpose": "simulation_only",
+  "motor": {
+    "rs": 12.23,
+    "rr": 10,
+    "ls": 0.9,
+    "lr": 0.9,
+    "lm": 0.84,
+    "j": 0.0003,
+    "b": 0.00015,
+    "poles": 1,
+    "flux": 0.35,
+    "current_limit": 1.1,
+    "trip_current": 1.35,
+    "current_bw": 400,
+    "speed_bw": 12
+  },
+  "evidence": {},
+  "note": "Only Rs has a preliminary operator-derived estimate; all other dynamic constants are simulation priors."
+}

@@ -1,0 +1,32 @@
+{
+  "pass": true,
+  "current": {
+    "pass": true,
+    "sha256": "45ca5b80251781d9b1a9cf374a073b1abdc9dd8c21835952ce2d383e326874b5",
+    "kernel_mutex_sections": [],
+    "control_mutex_symbols": [
+      {
+        "name": "_ZL15g_control_mutex",
+        "bytes": 20,
+        "section": ".bss"
+      }
+    ]
+  },
+  "negative": {
+    "pass": false,
+    "sha256": "773252d44af9be4759bfd900813c6f7e079061e9f738657217d4d8af86a59424",
+    "kernel_mutex_sections": [
+      "._k_mutex.static.g_control_mutex_"
+    ],
+    "control_mutex_symbols": [
+      {
+        "name": "g_control_mutex",
+        "bytes": 20,
+        "section": "._k_mutex.static.g_control_mutex_"
+      }
+    ]
+  },
+  "old_kernel_section_detected": true,
+  "hardware_commands": 0,
+  "scope": "compiled ELF storage layout; not live restart qualification"
+}

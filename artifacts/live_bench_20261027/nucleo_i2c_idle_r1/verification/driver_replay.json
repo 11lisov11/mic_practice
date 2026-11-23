@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "record_sha256": "599d4843c958a8ba649fe52a2502a81d7576faf8017cd8a27954703d49f231b0",
+  "results": [
+    {
+      "kind": "original",
+      "result": {
+        "passed": true,
+        "original_immediate_reset_replayed": true,
+        "checks": 1
+      }
+    },
+    {
+      "kind": "candidate",
+      "result": {
+        "passed": true,
+        "checks": 2928,
+        "recorded_busy_replayed": true,
+        "normal_samples": 200,
+        "physical_pwm_qualified": false
+      }
+    }
+  ],
+  "limitation": "Only the recorded first entry is replayed exactly. Later flag/line sequences are fault-injection models, not a recorded analog waveform or proof of immunity under real PWM.",
+  "platform_test": {
+    "passed": true,
+    "actual_platform_driver_compiled": true,
+    "parked_PE0_packet_validated": true,
+    "configuration_mismatch_rejected": true
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-18",
+  "installed": true,
+  "pair": [
+    2026111715,
+    2026111716
+  ],
+  "native_readback_verified": true,
+  "uno_readback_verified": true,
+  "calibration_unchanged": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "additional_reset_after_programming": 0,
+  "manual_RESET": 0,
+  "OFF_target_timing_qualified": true,
+  "OFF_cases": 64,
+  "OFF_fast_cycles": 3827,
+  "OFF_fast_limit": 4000,
+  "OFF_observer_cycles": 25018,
+  "OFF_observer_limit": 85000,
+  "estimate_age_guard_ms": 2,
+  "hardware_under_PWM_tested": false,
+  "NIS_capture_free": true,
+  "actual_published_pair_field_valid": true,
+  "current_trip_A": 1.35,
+  "ADC_UPDATE_ticks": 2048,
+  "NIS_original_and_corrected_stop_retained": true,
+  "final_SAFE": true,
+  "final_PWM": 0,
+  "final_HV_arm": 0,
+  "SD_HIGH": true,
+  "BKE": true,
+  "BIE": true,
+  "live_RPC_counter_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "80423b7c-060e-42b5-ad94-3bf85e471b75",
+      [
+        2026111716,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        558255263
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 7.73499999998603,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "zero_ready": true,
+  "zero_good_blocks": 3,
+  "zero_bad_blocks": 0,
+  "residual_blockers": {
+    "local_fault": 2,
+    "reason": 8,
+    "current_MCSDK_mask": 4,
+    "transport_latch": 7,
+    "interpretation": "Low bus with J1 OFF and startup link latch preserved; no CLEAR was authorized or sent"
+  },
+  "note": "Prepared manifest is an immutable pre-install snapshot; this receipt is the current installation state"
+}

@@ -1,0 +1,71 @@
+{
+  "pair": [
+    2026111605,
+    2026111606
+  ],
+  "programming_passed": true,
+  "OFF_CPU_qualification_passed": true,
+  "complete_idle_check_passed": false,
+  "UART_clean": false,
+  "RPC_stable": true,
+  "full_protection_readiness_confirmed": false,
+  "motor_start_readiness_evaluated": false,
+  "native_readback_SHA256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+  "uno_readback_verified": true,
+  "fast_cycles": 3618,
+  "budget_cycles": 4000,
+  "margin_cycles": 382,
+  "observer_cycles": 19860,
+  "cases": 64,
+  "repetitions_per_case": 8,
+  "ordinary_telemetry_fresh": true,
+  "telemetry_samples": 20,
+  "telemetry_max_age_ms": {
+    "mc_current_age_ms": 599,
+    "mc_current_detail_age_ms": 995,
+    "mc_current_quality_age_ms": 986
+  },
+  "saved_transport_latch": 7,
+  "bad_frame_count": 1,
+  "bad_frame_count_unchanged": true,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "5c2139ea-1460-411e-9d24-27bed254cb67",
+      [
+        2026111606,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        4017570581
+      ]
+    ],
+    "samples": 20,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 28.046999999991385,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "BKE": true,
+  "MOE": false,
+  "CLEAR_record_empty": true,
+  "observer_record_empty": true,
+  "calibration_unchanged": true,
+  "calibration_SHA256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "motor_START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "manual_RESET": 0,
+  "programming_resets_per_recipe": true,
+  "thresholds_changed": false,
+  "powered_FOC_verified": false,
+  "physical_CLEAR_recovery_verified": false,
+  "preserved_files_verified": 3581,
+  "strict_idle_report_SHA256": "2d8f4ca74f6ae00a87ade046a42034f20bd4fec2796d23bc321d0a3e35b52ff1",
+  "limitation": "Programming and OFF timing passed. Saved transport fault remains; no CLEAR or motor readiness approval."
+}

@@ -1,0 +1,61 @@
+{
+  "pass": false,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "flash_ready": false,
+  "installed_firmware_modified": false,
+  "scope": "candidate transport with unchanged production semantic handlers and mocked HAL/MCSDK",
+  "hypothesis": "isolated intact NE on unchanged RUN heartbeat can be accepted within a bounded budget",
+  "limitations": [
+    "No evidence that the recorded physical NE accompanied an intact byte",
+    "ISR per-byte flag association and peer codec are not yet integrated",
+    "8-bit sequence cannot protect against long-delayed replay across wrap",
+    "CRC is not authentication or a safety certification",
+    "Finite corruption sweep, not every possible multi-bit error"
+  ],
+  "source_sha256": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116",
+    "research\\uart_v3\\uart_v3_transport.h": "97a5471657f0fe4d4797ee49fe6b131d37a283199f62e6bdee92f7128cea35ae",
+    "research\\uart_v3\\host_scenarios.cpp": "d16645834505bcbd49bf221b418e662c29503f36267a3e0bf09020deecbfcfe9",
+    "tools\\uart_v3_candidate_selftest.py": "60b5cccf8491b320233edfe95d6b643b1c659cde58c17f532cfd639cca07f7aa"
+  },
+  "cases": 102737,
+  "assertions": 205364,
+  "intact_isolated_NE_accepted": 8960,
+  "strict_baseline_NE_rejected": 8960,
+  "mutations": [
+    {
+      "name": "CRC_guard_removed",
+      "detected": false,
+      "failure": ""
+    },
+    {
+      "name": "hard_error_guard_removed",
+      "detected": true,
+      "failure": "FAIL all hard UART/unknown flag combinations rejected at every byte (check 137797)"
+    },
+    {
+      "name": "NE_budget_unbounded",
+      "detected": true,
+      "failure": "FAIL third NE inside sliding second rejected including tick wrap (check 178200)"
+    },
+    {
+      "name": "changed_command_allowed",
+      "detected": true,
+      "failure": "FAIL NE cannot authorize any changed command field (check 138921)"
+    },
+    {
+      "name": "clean_recovery_removed",
+      "detected": true,
+      "failure": "FAIL adjacent noise frames forbidden until three clean commands (check 178187)"
+    },
+    {
+      "name": "frame_deadline_removed",
+      "detected": true,
+      "failure": "FAIL partial frame stopped at 16 ms without refreshing watchdog (check 178211)"
+    }
+  ],
+  "sources_unchanged_during_tests": true
+}

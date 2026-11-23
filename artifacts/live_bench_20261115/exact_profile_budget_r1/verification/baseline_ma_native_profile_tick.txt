@@ -1,0 +1,864 @@
+0801129c <ma_native_profile_tick>:
+ 801129c:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+ 80112a0:	ed2d 8b0e 	vpush	{d8-d14}
+ 80112a4:	4d89      	ldr	r5, [pc, #548]	@ (80114cc <ma_native_profile_tick+0x230>)
+ 80112a6:	782b      	ldrb	r3, [r5, #0]
+ 80112a8:	b096      	sub	sp, #88	@ 0x58
+ 80112aa:	2b00      	cmp	r3, #0
+ 80112ac:	f000 80d3 	beq.w	8011456 <ma_native_profile_tick+0x1ba>
+ 80112b0:	4b87      	ldr	r3, [pc, #540]	@ (80114d0 <ma_native_profile_tick+0x234>)
+ 80112b2:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 80112b4:	041b      	lsls	r3, r3, #16
+ 80112b6:	f100 80ce 	bmi.w	8011456 <ma_native_profile_tick+0x1ba>
+ 80112ba:	4a86      	ldr	r2, [pc, #536]	@ (80114d4 <ma_native_profile_tick+0x238>)
+ 80112bc:	4e86      	ldr	r6, [pc, #536]	@ (80114d8 <ma_native_profile_tick+0x23c>)
+ 80112be:	ed92 8a00 	vldr	s16, [r2]
+ 80112c2:	4a86      	ldr	r2, [pc, #536]	@ (80114dc <ma_native_profile_tick+0x240>)
+ 80112c4:	4b86      	ldr	r3, [pc, #536]	@ (80114e0 <ma_native_profile_tick+0x244>)
+ 80112c6:	f8d6 8000 	ldr.w	r8, [r6]
+ 80112ca:	ed92 9a00 	vldr	s18, [r2]
+ 80112ce:	4a85      	ldr	r2, [pc, #532]	@ (80114e4 <ma_native_profile_tick+0x248>)
+ 80112d0:	685f      	ldr	r7, [r3, #4]
+ 80112d2:	edd2 8a00 	vldr	s17, [r2]
+ 80112d6:	fa1f f388 	uxth.w	r3, r8
+ 80112da:	2b00      	cmp	r3, #0
+ 80112dc:	f000 8122 	beq.w	8011524 <ma_native_profile_tick+0x288>
+ 80112e0:	f5b8 3f80 	cmp.w	r8, #65536	@ 0x10000
+ 80112e4:	f080 811e 	bcs.w	8011524 <ma_native_profile_tick+0x288>
+ 80112e8:	eefc 7ac8 	vcvt.u32.f32	s15, s16
+ 80112ec:	ee17 2a90 	vmov	r2, s15
+ 80112f0:	b292      	uxth	r2, r2
+ 80112f2:	f1a2 011e 	sub.w	r1, r2, #30
+ 80112f6:	f5b1 7fa0 	cmp.w	r1, #320	@ 0x140
+ 80112fa:	f200 8113 	bhi.w	8011524 <ma_native_profile_tick+0x288>
+ 80112fe:	eddf 7a7a 	vldr	s15, [pc, #488]	@ 80114e8 <ma_native_profile_tick+0x24c>
+ 8011302:	eeb0 7ac9 	vabs.f32	s14, s18
+ 8011306:	eeb4 7a67 	vcmp.f32	s14, s15
+ 801130a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801130e:	f200 8109 	bhi.w	8011524 <ma_native_profile_tick+0x288>
+ 8011312:	eeb0 7ae8 	vabs.f32	s14, s17
+ 8011316:	eeb4 7a67 	vcmp.f32	s14, s15
+ 801131a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801131e:	f200 8101 	bhi.w	8011524 <ma_native_profile_tick+0x288>
+ 8011322:	f3c8 014f 	ubfx	r1, r8, #1, #16
+ 8011326:	4299      	cmp	r1, r3
+ 8011328:	ea4f 0058 	mov.w	r0, r8, lsr #1
+ 801132c:	f200 8574 	bhi.w	8011e18 <ma_native_profile_tick+0xb7c>
+ 8011330:	ee07 0a90 	vmov	s15, r0
+ 8011334:	edd6 5a05 	vldr	s11, [r6, #20]
+ 8011338:	ed9f 6a6c 	vldr	s12, [pc, #432]	@ 80114ec <ma_native_profile_tick+0x250>
+ 801133c:	ed9f 2a6c 	vldr	s4, [pc, #432]	@ 80114f0 <ma_native_profile_tick+0x254>
+ 8011340:	eef8 6ae7 	vcvt.f32.s32	s13, s15
+ 8011344:	ee07 1a90 	vmov	s15, r1
+ 8011348:	eeb8 5a65 	vcvt.f32.u32	s10, s11
+ 801134c:	eef8 3a67 	vcvt.f32.u32	s7, s15
+ 8011350:	ee05 8a90 	vmov	s11, r8
+ 8011354:	ee07 2a90 	vmov	s15, r2
+ 8011358:	eef8 5ae5 	vcvt.f32.s32	s11, s11
+ 801135c:	eeb8 7a67 	vcvt.f32.u32	s14, s15
+ 8011360:	ee07 3a90 	vmov	s15, r3
+ 8011364:	ee73 4aa6 	vadd.f32	s9, s7, s13
+ 8011368:	ee28 6a86 	vmul.f32	s12, s17, s12
+ 801136c:	ee75 5aa5 	vadd.f32	s11, s11, s11
+ 8011370:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 8011374:	ee25 5a07 	vmul.f32	s10, s10, s14
+ 8011378:	ee74 4aa6 	vadd.f32	s9, s9, s13
+ 801137c:	eeb4 9ac2 	vcmpe.f32	s18, s4
+ 8011380:	eebe 4a00 	vmov.f32	s8, #224	@ 0xbf000000 -0.5
+ 8011384:	ee87 3a27 	vdiv.f32	s6, s14, s15
+ 8011388:	eef0 1a08 	vmov.f32	s3, #8	@ 0x40400000  3.0
+ 801138c:	ee85 7a25 	vdiv.f32	s14, s10, s11
+ 8011390:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011394:	eef0 5a46 	vmov.f32	s11, s12
+ 8011398:	eec4 2aa1 	vdiv.f32	s5, s9, s3
+ 801139c:	eee9 5a04 	vfma.f32	s11, s18, s8
+ 80113a0:	ee99 6a04 	vfnms.f32	s12, s18, s8
+ 80113a4:	f280 8422 	bge.w	8011bec <ma_native_profile_tick+0x950>
+ 80113a8:	eddf 7a52 	vldr	s15, [pc, #328]	@ 80114f4 <ma_native_profile_tick+0x258>
+ 80113ac:	eeb4 9ae7 	vcmpe.f32	s18, s15
+ 80113b0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80113b4:	f240 851b 	bls.w	8011dee <ma_native_profile_tick+0xb52>
+ 80113b8:	eddf 7a4d 	vldr	s15, [pc, #308]	@ 80114f0 <ma_native_profile_tick+0x254>
+ 80113bc:	ee89 5a27 	vdiv.f32	s10, s18, s15
+ 80113c0:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 80113c4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80113c8:	ee25 5a07 	vmul.f32	s10, s10, s14
+ 80113cc:	f280 8515 	bge.w	8011dfa <ma_native_profile_tick+0xb5e>
+ 80113d0:	eddf 7a48 	vldr	s15, [pc, #288]	@ 80114f4 <ma_native_profile_tick+0x258>
+ 80113d4:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 80113d8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80113dc:	bf85      	ittet	hi
+ 80113de:	eddf 4a44 	vldrhi	s9, [pc, #272]	@ 80114f0 <ma_native_profile_tick+0x254>
+ 80113e2:	eec5 7aa4 	vdivhi.f32	s15, s11, s9
+ 80113e6:	eef1 7a47 	vnegls.f32	s15, s14
+ 80113ea:	ee67 7a87 	vmulhi.f32	s15, s15, s14
+ 80113ee:	eddf 5a40 	vldr	s11, [pc, #256]	@ 80114f0 <ma_native_profile_tick+0x254>
+ 80113f2:	eeb4 6ae5 	vcmpe.f32	s12, s11
+ 80113f6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80113fa:	da0e      	bge.n	801141a <ma_native_profile_tick+0x17e>
+ 80113fc:	eddf 5a3d 	vldr	s11, [pc, #244]	@ 80114f4 <ma_native_profile_tick+0x258>
+ 8011400:	eeb4 6ae5 	vcmpe.f32	s12, s11
+ 8011404:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011408:	bf85      	ittet	hi
+ 801140a:	eddf 4a39 	vldrhi	s9, [pc, #228]	@ 80114f0 <ma_native_profile_tick+0x254>
+ 801140e:	eec6 5a24 	vdivhi.f32	s11, s12, s9
+ 8011412:	eeb1 7a47 	vnegls.f32	s14, s14
+ 8011416:	ee27 7a25 	vmulhi.f32	s14, s14, s11
+ 801141a:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 801141e:	eef0 5a67 	vmov.f32	s11, s15
+ 8011422:	eed5 5a06 	vfnms.f32	s11, s10, s12
+ 8011426:	2400      	movs	r4, #0
+ 8011428:	eeb0 6a08 	vmov.f32	s12, #8	@ 0x40400000  3.0
+ 801142c:	ee75 5ac7 	vsub.f32	s11, s11, s14
+ 8011430:	ee77 7ac7 	vsub.f32	s15, s15, s14
+ 8011434:	ee85 7a86 	vdiv.f32	s14, s11, s12
+ 8011438:	ed9f 5a2f 	vldr	s10, [pc, #188]	@ 80114f8 <ma_native_profile_tick+0x25c>
+ 801143c:	ee73 6ae6 	vsub.f32	s13, s7, s13
+ 8011440:	ee33 6ae2 	vsub.f32	s12, s7, s5
+ 8011444:	ee66 6a83 	vmul.f32	s13, s13, s6
+ 8011448:	ee65 7a67 	vnmul.f32	s15, s10, s15
+ 801144c:	ee93 7a06 	vfnms.f32	s14, s6, s12
+ 8011450:	eee6 7a85 	vfma.f32	s15, s13, s10
+ 8011454:	e06b      	b.n	801152e <ma_native_profile_tick+0x292>
+ 8011456:	4b29      	ldr	r3, [pc, #164]	@ (80114fc <ma_native_profile_tick+0x260>)
+ 8011458:	781b      	ldrb	r3, [r3, #0]
+ 801145a:	2b00      	cmp	r3, #0
+ 801145c:	d030      	beq.n	80114c0 <ma_native_profile_tick+0x224>
+ 801145e:	4c28      	ldr	r4, [pc, #160]	@ (8011500 <ma_native_profile_tick+0x264>)
+ 8011460:	7823      	ldrb	r3, [r4, #0]
+ 8011462:	2b00      	cmp	r3, #0
+ 8011464:	d02c      	beq.n	80114c0 <ma_native_profile_tick+0x224>
+ 8011466:	4b1a      	ldr	r3, [pc, #104]	@ (80114d0 <ma_native_profile_tick+0x234>)
+ 8011468:	6c59      	ldr	r1, [r3, #68]	@ 0x44
+ 801146a:	f411 4100 	ands.w	r1, r1, #32768	@ 0x8000
+ 801146e:	d127      	bne.n	80114c0 <ma_native_profile_tick+0x224>
+ 8011470:	4b1b      	ldr	r3, [pc, #108]	@ (80114e0 <ma_native_profile_tick+0x244>)
+ 8011472:	4e24      	ldr	r6, [pc, #144]	@ (8011504 <ma_native_profile_tick+0x268>)
+ 8011474:	685d      	ldr	r5, [r3, #4]
+ 8011476:	4b24      	ldr	r3, [pc, #144]	@ (8011508 <ma_native_profile_tick+0x26c>)
+ 8011478:	6837      	ldr	r7, [r6, #0]
+ 801147a:	f8d3 8000 	ldr.w	r8, [r3]
+ 801147e:	2244      	movs	r2, #68	@ 0x44
+ 8011480:	a805      	add	r0, sp, #20
+ 8011482:	f007 fec4 	bl	801920e <memset>
+ 8011486:	4b21      	ldr	r3, [pc, #132]	@ (801150c <ma_native_profile_tick+0x270>)
+ 8011488:	f893 213c 	ldrb.w	r2, [r3, #316]	@ 0x13c
+ 801148c:	2a00      	cmp	r2, #0
+ 801148e:	f000 83bd 	beq.w	8011c0c <ma_native_profile_tick+0x970>
+ 8011492:	ab05      	add	r3, sp, #20
+ 8011494:	9300      	str	r3, [sp, #0]
+ 8011496:	481e      	ldr	r0, [pc, #120]	@ (8011510 <ma_native_profile_tick+0x274>)
+ 8011498:	4643      	mov	r3, r8
+ 801149a:	f107 0220 	add.w	r2, r7, #32
+ 801149e:	4631      	mov	r1, r6
+ 80114a0:	f7f9 ff84 	bl	800b3ac <mi_step.part.0.constprop.0>
+ 80114a4:	4b0e      	ldr	r3, [pc, #56]	@ (80114e0 <ma_native_profile_tick+0x244>)
+ 80114a6:	4a1b      	ldr	r2, [pc, #108]	@ (8011514 <ma_native_profile_tick+0x278>)
+ 80114a8:	685b      	ldr	r3, [r3, #4]
+ 80114aa:	491b      	ldr	r1, [pc, #108]	@ (8011518 <ma_native_profile_tick+0x27c>)
+ 80114ac:	1b5b      	subs	r3, r3, r5
+ 80114ae:	6013      	str	r3, [r2, #0]
+ 80114b0:	4b1a      	ldr	r3, [pc, #104]	@ (801151c <ma_native_profile_tick+0x280>)
+ 80114b2:	6008      	str	r0, [r1, #0]
+ 80114b4:	2201      	movs	r2, #1
+ 80114b6:	701a      	strb	r2, [r3, #0]
+ 80114b8:	f3bf 8f5f 	dmb	sy
+ 80114bc:	2300      	movs	r3, #0
+ 80114be:	7023      	strb	r3, [r4, #0]
+ 80114c0:	b016      	add	sp, #88	@ 0x58
+ 80114c2:	ecbd 8b0e 	vpop	{d8-d14}
+ 80114c6:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 80114ca:	bf00      	nop
+ 80114cc:	20005399 	.word	0x20005399
+ 80114d0:	40012c00 	.word	0x40012c00
+ 80114d4:	200053e4 	.word	0x200053e4
+ 80114d8:	20005408 	.word	0x20005408
+ 80114dc:	200053ec 	.word	0x200053ec
+ 80114e0:	e0001000 	.word	0xe0001000
+ 80114e4:	200053e8 	.word	0x200053e8
+ 80114e8:	7f7fffff 	.word	0x7f7fffff
+ 80114ec:	3f5db3d7 	.word	0x3f5db3d7
+ 80114f0:	3d4ccccd 	.word	0x3d4ccccd
+ 80114f4:	bd4ccccd 	.word	0xbd4ccccd
+ 80114f8:	3f13cd3a 	.word	0x3f13cd3a
+ 80114fc:	2000614c 	.word	0x2000614c
+ 8011500:	20005555 	.word	0x20005555
+ 8011504:	20005528 	.word	0x20005528
+ 8011508:	20000374 	.word	0x20000374
+ 801150c:	200071d4 	.word	0x200071d4
+ 8011510:	20005510 	.word	0x20005510
+ 8011514:	20005550 	.word	0x20005550
+ 8011518:	2000554c 	.word	0x2000554c
+ 801151c:	20005554 	.word	0x20005554
+ 8011520:	00000000 	.word	0x00000000
+ 8011524:	ed5f 7a02 	vldr	s15, [pc, #-8]	@ 8011520 <ma_native_profile_tick+0x284>
+ 8011528:	2404      	movs	r4, #4
+ 801152a:	eeb0 7a67 	vmov.f32	s14, s15
+ 801152e:	4b7d      	ldr	r3, [pc, #500]	@ (8011724 <ma_native_profile_tick+0x488>)
+ 8011530:	4a7d      	ldr	r2, [pc, #500]	@ (8011728 <ma_native_profile_tick+0x48c>)
+ 8011532:	ed83 7a00 	vstr	s14, [r3]
+ 8011536:	4b7d      	ldr	r3, [pc, #500]	@ (801172c <ma_native_profile_tick+0x490>)
+ 8011538:	ed92 6a02 	vldr	s12, [r2, #8]
+ 801153c:	edc3 7a00 	vstr	s15, [r3]
+ 8011540:	6813      	ldr	r3, [r2, #0]
+ 8011542:	edd2 4a03 	vldr	s9, [r2, #12]
+ 8011546:	edd2 5a04 	vldr	s11, [r2, #16]
+ 801154a:	edd2 2a08 	vldr	s5, [r2, #32]
+ 801154e:	ed92 5a09 	vldr	s10, [r2, #36]	@ 0x24
+ 8011552:	ed92 4a0a 	vldr	s8, [r2, #40]	@ 0x28
+ 8011556:	ed92 3a0b 	vldr	s6, [r2, #44]	@ 0x2c
+ 801155a:	edd2 3a0c 	vldr	s7, [r2, #48]	@ 0x30
+ 801155e:	9305      	str	r3, [sp, #20]
+ 8011560:	6853      	ldr	r3, [r2, #4]
+ 8011562:	9306      	str	r3, [sp, #24]
+ 8011564:	eddf 6a72 	vldr	s13, [pc, #456]	@ 8011730 <ma_native_profile_tick+0x494>
+ 8011568:	6953      	ldr	r3, [r2, #20]
+ 801156a:	930a      	str	r3, [sp, #40]	@ 0x28
+ 801156c:	ed8d 6a07 	vstr	s12, [sp, #28]
+ 8011570:	edcd 4a08 	vstr	s9, [sp, #32]
+ 8011574:	edcd 5a09 	vstr	s11, [sp, #36]	@ 0x24
+ 8011578:	edcd 2a0b 	vstr	s5, [sp, #44]	@ 0x2c
+ 801157c:	ed8d 5a0c 	vstr	s10, [sp, #48]	@ 0x30
+ 8011580:	ed8d 4a0d 	vstr	s8, [sp, #52]	@ 0x34
+ 8011584:	ed8d 3a0e 	vstr	s6, [sp, #56]	@ 0x38
+ 8011588:	edcd 3a0f 	vstr	s7, [sp, #60]	@ 0x3c
+ 801158c:	ab05      	add	r3, sp, #20
+ 801158e:	a910      	add	r1, sp, #64	@ 0x40
+ 8011590:	ecf3 7a01 	vldmia	r3!, {s15}
+ 8011594:	eeb0 7ae7 	vabs.f32	s14, s15
+ 8011598:	eeb4 7a66 	vcmp.f32	s14, s13
+ 801159c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80115a0:	f200 80aa 	bhi.w	80116f8 <ma_native_profile_tick+0x45c>
+ 80115a4:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 80115a8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80115ac:	f240 80a4 	bls.w	80116f8 <ma_native_profile_tick+0x45c>
+ 80115b0:	4299      	cmp	r1, r3
+ 80115b2:	d1ed      	bne.n	8011590 <ma_native_profile_tick+0x2f4>
+ 80115b4:	edd2 7a06 	vldr	s15, [r2, #24]
+ 80115b8:	eeb0 7ae7 	vabs.f32	s14, s15
+ 80115bc:	eeb4 7a66 	vcmp.f32	s14, s13
+ 80115c0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80115c4:	f200 8098 	bhi.w	80116f8 <ma_native_profile_tick+0x45c>
+ 80115c8:	eef5 7ac0 	vcmpe.f32	s15, #0.0
+ 80115cc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80115d0:	f2c0 8092 	blt.w	80116f8 <ma_native_profile_tick+0x45c>
+ 80115d4:	69d3      	ldr	r3, [r2, #28]
+ 80115d6:	3b01      	subs	r3, #1
+ 80115d8:	2b07      	cmp	r3, #7
+ 80115da:	f200 808d 	bhi.w	80116f8 <ma_native_profile_tick+0x45c>
+ 80115de:	eddf 7a55 	vldr	s15, [pc, #340]	@ 8011734 <ma_native_profile_tick+0x498>
+ 80115e2:	ee65 7aa7 	vmul.f32	s15, s11, s15
+ 80115e6:	ee26 6a24 	vmul.f32	s12, s12, s9
+ 80115ea:	ee67 7aa5 	vmul.f32	s15, s15, s11
+ 80115ee:	eeb4 6ae7 	vcmpe.f32	s12, s15
+ 80115f2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80115f6:	dd7f      	ble.n	80116f8 <ma_native_profile_tick+0x45c>
+ 80115f8:	eeb4 5ac4 	vcmpe.f32	s10, s8
+ 80115fc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011600:	d57a      	bpl.n	80116f8 <ma_native_profile_tick+0x45c>
+ 8011602:	eec2 7aa5 	vdiv.f32	s15, s5, s11
+ 8011606:	ed9f 7a4c 	vldr	s14, [pc, #304]	@ 8011738 <ma_native_profile_tick+0x49c>
+ 801160a:	ee25 5a07 	vmul.f32	s10, s10, s14
+ 801160e:	eef4 7ac5 	vcmpe.f32	s15, s10
+ 8011612:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011616:	d56f      	bpl.n	80116f8 <ma_native_profile_tick+0x45c>
+ 8011618:	eddf 7a48 	vldr	s15, [pc, #288]	@ 801173c <ma_native_profile_tick+0x4a0>
+ 801161c:	eeb4 3ae7 	vcmpe.f32	s6, s15
+ 8011620:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011624:	d568      	bpl.n	80116f8 <ma_native_profile_tick+0x45c>
+ 8011626:	eddf 7a46 	vldr	s15, [pc, #280]	@ 8011740 <ma_native_profile_tick+0x4a4>
+ 801162a:	eef4 3ae7 	vcmpe.f32	s7, s15
+ 801162e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011632:	d561      	bpl.n	80116f8 <ma_native_profile_tick+0x45c>
+ 8011634:	4943      	ldr	r1, [pc, #268]	@ (8011744 <ma_native_profile_tick+0x4a8>)
+ 8011636:	483c      	ldr	r0, [pc, #240]	@ (8011728 <ma_native_profile_tick+0x48c>)
+ 8011638:	2234      	movs	r2, #52	@ 0x34
+ 801163a:	f007 fdbf 	bl	80191bc <memcmp>
+ 801163e:	2800      	cmp	r0, #0
+ 8011640:	d15a      	bne.n	80116f8 <ma_native_profile_tick+0x45c>
+ 8011642:	2c00      	cmp	r4, #0
+ 8011644:	d15a      	bne.n	80116fc <ma_native_profile_tick+0x460>
+ 8011646:	4b40      	ldr	r3, [pc, #256]	@ (8011748 <ma_native_profile_tick+0x4ac>)
+ 8011648:	4840      	ldr	r0, [pc, #256]	@ (801174c <ma_native_profile_tick+0x4b0>)
+ 801164a:	ed93 ba00 	vldr	s22, [r3]
+ 801164e:	4621      	mov	r1, r4
+ 8011650:	2244      	movs	r2, #68	@ 0x44
+ 8011652:	f007 fddc 	bl	801920e <memset>
+ 8011656:	eddf 7a36 	vldr	s15, [pc, #216]	@ 8011730 <ma_native_profile_tick+0x494>
+ 801165a:	eeb0 7ac9 	vabs.f32	s14, s18
+ 801165e:	eeb4 7a67 	vcmp.f32	s14, s15
+ 8011662:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011666:	f200 82cf 	bhi.w	8011c08 <ma_native_profile_tick+0x96c>
+ 801166a:	eeb0 7ae8 	vabs.f32	s14, s17
+ 801166e:	eeb4 7a67 	vcmp.f32	s14, s15
+ 8011672:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011676:	f200 82c7 	bhi.w	8011c08 <ma_native_profile_tick+0x96c>
+ 801167a:	eeb0 7acb 	vabs.f32	s14, s22
+ 801167e:	eeb4 7a67 	vcmp.f32	s14, s15
+ 8011682:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011686:	f200 82bf 	bhi.w	8011c08 <ma_native_profile_tick+0x96c>
+ 801168a:	eeb5 bac0 	vcmpe.f32	s22, #0.0
+ 801168e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011692:	f100 82b9 	bmi.w	8011c08 <ma_native_profile_tick+0x96c>
+ 8011696:	ed9f 7a2e 	vldr	s14, [pc, #184]	@ 8011750 <ma_native_profile_tick+0x4b4>
+ 801169a:	eeb4 bac7 	vcmpe.f32	s22, s14
+ 801169e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80116a2:	f300 82b1 	bgt.w	8011c08 <ma_native_profile_tick+0x96c>
+ 80116a6:	eeb0 7ac8 	vabs.f32	s14, s16
+ 80116aa:	eeb4 7a67 	vcmp.f32	s14, s15
+ 80116ae:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80116b2:	f200 83bb 	bhi.w	8011e2c <ma_native_profile_tick+0xb90>
+ 80116b6:	eef3 7a0e 	vmov.f32	s15, #62	@ 0x41f00000  30.0
+ 80116ba:	eeb4 8ae7 	vcmpe.f32	s16, s15
+ 80116be:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80116c2:	f100 83b3 	bmi.w	8011e2c <ma_native_profile_tick+0xb90>
+ 80116c6:	eddf 7a23 	vldr	s15, [pc, #140]	@ 8011754 <ma_native_profile_tick+0x4b8>
+ 80116ca:	eeb4 8ae7 	vcmpe.f32	s16, s15
+ 80116ce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80116d2:	f300 83ab 	bgt.w	8011e2c <ma_native_profile_tick+0xb90>
+ 80116d6:	eef0 0a68 	vmov.f32	s1, s17
+ 80116da:	eeb0 0a49 	vmov.f32	s0, s18
+ 80116de:	f007 fe0d 	bl	80192fc <hypotf>
+ 80116e2:	eddf 7a1d 	vldr	s15, [pc, #116]	@ 8011758 <ma_native_profile_tick+0x4bc>
+ 80116e6:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 80116ea:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80116ee:	bfcc      	ite	gt
+ 80116f0:	2401      	movgt	r4, #1
+ 80116f2:	2400      	movle	r4, #0
+ 80116f4:	0064      	lsls	r4, r4, #1
+ 80116f6:	e042      	b.n	801177e <ma_native_profile_tick+0x4e2>
+ 80116f8:	2c00      	cmp	r4, #0
+ 80116fa:	d037      	beq.n	801176c <ma_native_profile_tick+0x4d0>
+ 80116fc:	4a17      	ldr	r2, [pc, #92]	@ (801175c <ma_native_profile_tick+0x4c0>)
+ 80116fe:	4b18      	ldr	r3, [pc, #96]	@ (8011760 <ma_native_profile_tick+0x4c4>)
+ 8011700:	6014      	str	r4, [r2, #0]
+ 8011702:	685b      	ldr	r3, [r3, #4]
+ 8011704:	4a17      	ldr	r2, [pc, #92]	@ (8011764 <ma_native_profile_tick+0x4c8>)
+ 8011706:	1bdb      	subs	r3, r3, r7
+ 8011708:	6013      	str	r3, [r2, #0]
+ 801170a:	f3bf 8f5f 	dmb	sy
+ 801170e:	4a16      	ldr	r2, [pc, #88]	@ (8011768 <ma_native_profile_tick+0x4cc>)
+ 8011710:	2101      	movs	r1, #1
+ 8011712:	2300      	movs	r3, #0
+ 8011714:	7011      	strb	r1, [r2, #0]
+ 8011716:	702b      	strb	r3, [r5, #0]
+ 8011718:	b016      	add	sp, #88	@ 0x58
+ 801171a:	ecbd 8b0e 	vpop	{d8-d14}
+ 801171e:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 8011722:	bf00      	nop
+ 8011724:	20005390 	.word	0x20005390
+ 8011728:	2000033c 	.word	0x2000033c
+ 801172c:	2000538c 	.word	0x2000538c
+ 8011730:	7f7fffff 	.word	0x7f7fffff
+ 8011734:	3f800347 	.word	0x3f800347
+ 8011738:	3f733333 	.word	0x3f733333
+ 801173c:	44fa0000 	.word	0x44fa0000
+ 8011740:	42c80000 	.word	0x42c80000
+ 8011744:	0801ae40 	.word	0x0801ae40
+ 8011748:	200053e0 	.word	0x200053e0
+ 801174c:	2000539c 	.word	0x2000539c
+ 8011750:	42480000 	.word	0x42480000
+ 8011754:	43af0000 	.word	0x43af0000
+ 8011758:	3faccccd 	.word	0x3faccccd
+ 801175c:	20005388 	.word	0x20005388
+ 8011760:	e0001000 	.word	0xe0001000
+ 8011764:	20005394 	.word	0x20005394
+ 8011768:	20005398 	.word	0x20005398
+ 801176c:	4beb      	ldr	r3, [pc, #940]	@ (8011b1c <ma_native_profile_tick+0x880>)
+ 801176e:	48ec      	ldr	r0, [pc, #944]	@ (8011b20 <ma_native_profile_tick+0x884>)
+ 8011770:	ed93 ba00 	vldr	s22, [r3]
+ 8011774:	4621      	mov	r1, r4
+ 8011776:	2244      	movs	r2, #68	@ 0x44
+ 8011778:	f007 fd49 	bl	801920e <memset>
+ 801177c:	2401      	movs	r4, #1
+ 801177e:	f8df a410 	ldr.w	sl, [pc, #1040]	@ 8011b90 <ma_native_profile_tick+0x8f4>
+ 8011782:	ed9f 7ae8 	vldr	s14, [pc, #928]	@ 8011b24 <ma_native_profile_tick+0x888>
+ 8011786:	4653      	mov	r3, sl
+ 8011788:	f10a 0218 	add.w	r2, sl, #24
+ 801178c:	ecf3 7a01 	vldmia	r3!, {s15}
+ 8011790:	eef0 7ae7 	vabs.f32	s15, s15
+ 8011794:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 8011798:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801179c:	bfb8      	it	lt
+ 801179e:	2405      	movlt	r4, #5
+ 80117a0:	429a      	cmp	r2, r3
+ 80117a2:	d1f3      	bne.n	801178c <ma_native_profile_tick+0x4f0>
+ 80117a4:	2c00      	cmp	r4, #0
+ 80117a6:	f040 8269 	bne.w	8011c7c <ma_native_profile_tick+0x9e0>
+ 80117aa:	f8df 93d0 	ldr.w	r9, [pc, #976]	@ 8011b7c <ma_native_profile_tick+0x8e0>
+ 80117ae:	eddf 7ade 	vldr	s15, [pc, #888]	@ 8011b28 <ma_native_profile_tick+0x88c>
+ 80117b2:	edd9 ea03 	vldr	s29, [r9, #12]
+ 80117b6:	edda 9a02 	vldr	s19, [sl, #8]
+ 80117ba:	edda aa03 	vldr	s21, [sl, #12]
+ 80117be:	ee7e eaa7 	vadd.f32	s29, s29, s15
+ 80117c2:	eeb0 0a69 	vmov.f32	s0, s19
+ 80117c6:	eef0 0a6a 	vmov.f32	s1, s21
+ 80117ca:	edc9 ea03 	vstr	s29, [r9, #12]
+ 80117ce:	f007 fd95 	bl	80192fc <hypotf>
+ 80117d2:	eddf 7ad6 	vldr	s15, [pc, #856]	@ 8011b2c <ma_native_profile_tick+0x890>
+ 80117d6:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 80117da:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80117de:	eef0 ba40 	vmov.f32	s23, s0
+ 80117e2:	f300 81f8 	bgt.w	8011bd6 <ma_native_profile_tick+0x93a>
+ 80117e6:	eddf aad2 	vldr	s21, [pc, #840]	@ 8011b30 <ma_native_profile_tick+0x894>
+ 80117ea:	eddf 9ad2 	vldr	s19, [pc, #840]	@ 8011b34 <ma_native_profile_tick+0x898>
+ 80117ee:	eef0 ca68 	vmov.f32	s25, s17
+ 80117f2:	eeb0 da49 	vmov.f32	s26, s18
+ 80117f6:	eeb7 aa00 	vmov.f32	s20, #112	@ 0x3f800000  1.0
+ 80117fa:	ed9f 7acf 	vldr	s14, [pc, #828]	@ 8011b38 <ma_native_profile_tick+0x89c>
+ 80117fe:	eece 7a87 	vdiv.f32	s15, s29, s14
+ 8011802:	eea8 daa9 	vfma.f32	s26, s17, s19
+ 8011806:	eef4 7a67 	vcmp.f32	s15, s15
+ 801180a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801180e:	eee9 ca2a 	vfma.f32	s25, s18, s21
+ 8011812:	f180 82fe 	bvs.w	8011e12 <ma_native_profile_tick+0xb76>
+ 8011816:	eeb7 ca00 	vmov.f32	s24, #112	@ 0x3f800000  1.0
+ 801181a:	eef4 7acc 	vcmpe.f32	s15, s24
+ 801181e:	ed9f 7ac7 	vldr	s14, [pc, #796]	@ 8011b3c <ma_native_profile_tick+0x8a0>
+ 8011822:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011826:	bfd8      	it	le
+ 8011828:	eeb0 ca67 	vmovle.f32	s24, s15
+ 801182c:	ee2c ca07 	vmul.f32	s24, s24, s14
+ 8011830:	eddf 7ac3 	vldr	s15, [pc, #780]	@ 8011b40 <ma_native_profile_tick+0x8a4>
+ 8011834:	ed9a ea04 	vldr	s28, [sl, #16]
+ 8011838:	eef4 eae7 	vcmpe.f32	s29, s15
+ 801183c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011840:	f140 8224 	bpl.w	8011c8c <ma_native_profile_tick+0x9f0>
+ 8011844:	eddf 7abb 	vldr	s15, [pc, #748]	@ 8011b34 <ma_native_profile_tick+0x898>
+ 8011848:	eef0 da67 	vmov.f32	s27, s15
+ 801184c:	edc9 7a02 	vstr	s15, [r9, #8]
+ 8011850:	ee3c 6a4d 	vsub.f32	s12, s24, s26
+ 8011854:	ee7d 6aec 	vsub.f32	s13, s27, s25
+ 8011858:	eddf 5aba 	vldr	s11, [pc, #744]	@ 8011b44 <ma_native_profile_tick+0x8a8>
+ 801185c:	eddf 7aba 	vldr	s15, [pc, #744]	@ 8011b48 <ma_native_profile_tick+0x8ac>
+ 8011860:	ed8d 6a03 	vstr	s12, [sp, #12]
+ 8011864:	eef4 ba6b 	vcmp.f32	s23, s23
+ 8011868:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801186c:	ee6c 5aa5 	vmul.f32	s11, s25, s11
+ 8011870:	edcd 6a04 	vstr	s13, [sp, #16]
+ 8011874:	d606      	bvs.n	8011884 <ma_native_profile_tick+0x5e8>
+ 8011876:	eef4 bae7 	vcmpe.f32	s23, s15
+ 801187a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801187e:	bfc8      	it	gt
+ 8011880:	eef0 7a6b 	vmovgt.f32	s15, s23
+ 8011884:	ee85 7aa7 	vdiv.f32	s14, s11, s15
+ 8011888:	eddf 7ab0 	vldr	s15, [pc, #704]	@ 8011b4c <ma_native_profile_tick+0x8b0>
+ 801188c:	ee37 7a0e 	vadd.f32	s14, s14, s28
+ 8011890:	eeb4 7a47 	vcmp.f32	s14, s14
+ 8011894:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011898:	f180 82b9 	bvs.w	8011e0e <ma_native_profile_tick+0xb72>
+ 801189c:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 80118a0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80118a4:	bfd8      	it	le
+ 80118a6:	eef0 7a47 	vmovle.f32	s15, s14
+ 80118aa:	ed9f 7aa9 	vldr	s14, [pc, #676]	@ 8011b50 <ma_native_profile_tick+0x8b4>
+ 80118ae:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 80118b2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80118b6:	bfcc      	ite	gt
+ 80118b8:	2301      	movgt	r3, #1
+ 80118ba:	2300      	movle	r3, #0
+ 80118bc:	eddf 0aa5 	vldr	s1, [pc, #660]	@ 8011b54 <ma_native_profile_tick+0x8b8>
+ 80118c0:	ed9f 7aa3 	vldr	s14, [pc, #652]	@ 8011b50 <ma_native_profile_tick+0x8b4>
+ 80118c4:	ed9f 0aa4 	vldr	s0, [pc, #656]	@ 8011b58 <ma_native_profile_tick+0x8bc>
+ 80118c8:	ed9f baa4 	vldr	s22, [pc, #656]	@ 8011b5c <ma_native_profile_tick+0x8c0>
+ 80118cc:	ee6e 0a20 	vmul.f32	s1, s28, s1
+ 80118d0:	2b00      	cmp	r3, #0
+ 80118d2:	bf18      	it	ne
+ 80118d4:	eef0 7a47 	vmovne.f32	s15, s14
+ 80118d8:	ee20 0a6b 	vnmul.f32	s0, s0, s23
+ 80118dc:	ed9f 7aa0 	vldr	s14, [pc, #640]	@ 8011b60 <ma_native_profile_tick+0x8c4>
+ 80118e0:	ee60 0aab 	vmul.f32	s1, s1, s23
+ 80118e4:	eead 0a07 	vfma.f32	s0, s26, s14
+ 80118e8:	eeec 0a87 	vfma.f32	s1, s25, s14
+ 80118ec:	ed9f 7a9d 	vldr	s14, [pc, #628]	@ 8011b64 <ma_native_profile_tick+0x8c8>
+ 80118f0:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 80118f4:	ee28 ba0b 	vmul.f32	s22, s16, s22
+ 80118f8:	eeed 0a27 	vfma.f32	s1, s26, s15
+ 80118fc:	eeac 0ae7 	vfms.f32	s0, s25, s15
+ 8011900:	eddf 7a99 	vldr	s15, [pc, #612]	@ 8011b68 <ma_native_profile_tick+0x8cc>
+ 8011904:	eee6 0aa7 	vfma.f32	s1, s13, s15
+ 8011908:	eea6 0a27 	vfma.f32	s0, s12, s15
+ 801190c:	edd9 7a01 	vldr	s15, [r9, #4]
+ 8011910:	ee70 0aa7 	vadd.f32	s1, s1, s15
+ 8011914:	edd9 7a00 	vldr	s15, [r9]
+ 8011918:	edcd 0a06 	vstr	s1, [sp, #24]
+ 801191c:	ee30 0a27 	vadd.f32	s0, s0, s15
+ 8011920:	eddf 7a92 	vldr	s15, [pc, #584]	@ 8011b6c <ma_native_profile_tick+0x8d0>
+ 8011924:	ed8d 0a05 	vstr	s0, [sp, #20]
+ 8011928:	ee2b ba27 	vmul.f32	s22, s22, s15
+ 801192c:	f007 fce6 	bl	80192fc <hypotf>
+ 8011930:	eeb4 0a40 	vcmp.f32	s0, s0
+ 8011934:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011938:	f180 8266 	bvs.w	8011e08 <ma_native_profile_tick+0xb6c>
+ 801193c:	eddf 7a8c 	vldr	s15, [pc, #560]	@ 8011b70 <ma_native_profile_tick+0x8d4>
+ 8011940:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 8011944:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011948:	bfd8      	it	le
+ 801194a:	eeb0 0a67 	vmovle.f32	s0, s15
+ 801194e:	eecb 7a00 	vdiv.f32	s15, s22, s0
+ 8011952:	eeb7 6a00 	vmov.f32	s12, #112	@ 0x3f800000  1.0
+ 8011956:	eef4 7a67 	vcmp.f32	s15, s15
+ 801195a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 801195e:	d606      	bvs.n	801196e <ma_native_profile_tick+0x6d2>
+ 8011960:	eef4 7ac6 	vcmpe.f32	s15, s12
+ 8011964:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011968:	bfd8      	it	le
+ 801196a:	eeb0 6a67 	vmovle.f32	s12, s15
+ 801196e:	eddf 3a81 	vldr	s7, [pc, #516]	@ 8011b74 <ma_native_profile_tick+0x8d8>
+ 8011972:	ed9f 4a81 	vldr	s8, [pc, #516]	@ 8011b78 <ma_native_profile_tick+0x8dc>
+ 8011976:	4a81      	ldr	r2, [pc, #516]	@ (8011b7c <ma_native_profile_tick+0x8e0>)
+ 8011978:	eddf 4a6b 	vldr	s9, [pc, #428]	@ 8011b28 <ma_native_profile_tick+0x88c>
+ 801197c:	eef1 5a4b 	vneg.f32	s11, s22
+ 8011980:	ab05      	add	r3, sp, #20
+ 8011982:	a903      	add	r1, sp, #12
+ 8011984:	a807      	add	r0, sp, #28
+ 8011986:	ecb3 7a01 	vldmia	r3!, {s14}
+ 801198a:	ecb1 5a01 	vldmia	r1!, {s10}
+ 801198e:	ecf2 7a01 	vldmia	r2!, {s15}
+ 8011992:	ee67 6a06 	vmul.f32	s13, s14, s12
+ 8011996:	eeb4 ba4b 	vcmp.f32	s22, s22
+ 801199a:	ee36 7ac7 	vsub.f32	s14, s13, s14
+ 801199e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80119a2:	ee27 7a23 	vmul.f32	s14, s14, s7
+ 80119a6:	eea5 7a04 	vfma.f32	s14, s10, s8
+ 80119aa:	eee7 7a24 	vfma.f32	s15, s14, s9
+ 80119ae:	d613      	bvs.n	80119d8 <ma_native_profile_tick+0x73c>
+ 80119b0:	eef4 7a67 	vcmp.f32	s15, s15
+ 80119b4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80119b8:	f180 8223 	bvs.w	8011e02 <ma_native_profile_tick+0xb66>
+ 80119bc:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 80119c0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80119c4:	bfc8      	it	gt
+ 80119c6:	eef0 7a65 	vmovgt.f32	s15, s11
+ 80119ca:	eef4 7acb 	vcmpe.f32	s15, s22
+ 80119ce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80119d2:	bfc8      	it	gt
+ 80119d4:	eef0 7a4b 	vmovgt.f32	s15, s22
+ 80119d8:	4283      	cmp	r3, r0
+ 80119da:	ed42 7a01 	vstr	s15, [r2, #-4]
+ 80119de:	ed43 6a01 	vstr	s13, [r3, #-4]
+ 80119e2:	d1d0      	bne.n	8011986 <ma_native_profile_tick+0x6ea>
+ 80119e4:	ee07 8a90 	vmov	s15, r8
+ 80119e8:	ed96 7a05 	vldr	s14, [r6, #20]
+ 80119ec:	eddd 6a06 	vldr	s13, [sp, #24]
+ 80119f0:	ed9d 6a05 	vldr	s12, [sp, #20]
+ 80119f4:	eddf 5a62 	vldr	s11, [pc, #392]	@ 8011b80 <ma_native_profile_tick+0x8e4>
+ 80119f8:	ed9f 5a62 	vldr	s10, [pc, #392]	@ 8011b84 <ma_native_profile_tick+0x8e8>
+ 80119fc:	f8df 8120 	ldr.w	r8, [pc, #288]	@ 8011b20 <ma_native_profile_tick+0x884>
+ 8011a00:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 8011a04:	eeb8 7a47 	vcvt.f32.u32	s14, s14
+ 8011a08:	ee77 7aa7 	vadd.f32	s15, s15, s15
+ 8011a0c:	ee27 7a08 	vmul.f32	s14, s14, s16
+ 8011a10:	ee26 bae9 	vnmul.f32	s22, s13, s19
+ 8011a14:	eec7 4a27 	vdiv.f32	s9, s14, s15
+ 8011a18:	eefe 7a00 	vmov.f32	s15, #224	@ 0xbf000000 -0.5
+ 8011a1c:	ee69 7a27 	vmul.f32	s15, s18, s15
+ 8011a20:	ee6a 1a26 	vmul.f32	s3, s20, s13
+ 8011a24:	eeaa ba06 	vfma.f32	s22, s20, s12
+ 8011a28:	eee9 1a86 	vfma.f32	s3, s19, s12
+ 8011a2c:	eeb0 6a67 	vmov.f32	s12, s15
+ 8011a30:	eee8 7ae5 	vfms.f32	s15, s17, s11
+ 8011a34:	eeb4 9ac5 	vcmpe.f32	s18, s10
+ 8011a38:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011a3c:	eea8 6aa5 	vfma.f32	s12, s17, s11
+ 8011a40:	ed88 ca05 	vstr	s24, [r8, #20]
+ 8011a44:	edc8 da06 	vstr	s27, [r8, #24]
+ 8011a48:	ed88 ea07 	vstr	s28, [r8, #28]
+ 8011a4c:	edc8 ba08 	vstr	s23, [r8, #32]
+ 8011a50:	ed88 da0f 	vstr	s26, [r8, #60]	@ 0x3c
+ 8011a54:	edc8 ca10 	vstr	s25, [r8, #64]	@ 0x40
+ 8011a58:	eeb0 7a67 	vmov.f32	s14, s15
+ 8011a5c:	f280 81b1 	bge.w	8011dc2 <ma_native_profile_tick+0xb26>
+ 8011a60:	eddf 7a49 	vldr	s15, [pc, #292]	@ 8011b88 <ma_native_profile_tick+0x8ec>
+ 8011a64:	eeb4 9ae7 	vcmpe.f32	s18, s15
+ 8011a68:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011a6c:	f240 81b9 	bls.w	8011de2 <ma_native_profile_tick+0xb46>
+ 8011a70:	eec9 6a05 	vdiv.f32	s13, s18, s10
+ 8011a74:	eef4 6a66 	vcmp.f32	s13, s13
+ 8011a78:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011a7c:	f180 81b1 	bvs.w	8011de2 <ma_native_profile_tick+0xb46>
+ 8011a80:	eeb4 6ac5 	vcmpe.f32	s12, s10
+ 8011a84:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011a88:	ee64 6aa6 	vmul.f32	s13, s9, s13
+ 8011a8c:	f280 81b2 	bge.w	8011df4 <ma_native_profile_tick+0xb58>
+ 8011a90:	eddf 7a3d 	vldr	s15, [pc, #244]	@ 8011b88 <ma_native_profile_tick+0x8ec>
+ 8011a94:	eeb4 6ae7 	vcmpe.f32	s12, s15
+ 8011a98:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011a9c:	f240 81a4 	bls.w	8011de8 <ma_native_profile_tick+0xb4c>
+ 8011aa0:	eddf 5a38 	vldr	s11, [pc, #224]	@ 8011b84 <ma_native_profile_tick+0x8e8>
+ 8011aa4:	eec6 7a25 	vdiv.f32	s15, s12, s11
+ 8011aa8:	eef4 7a67 	vcmp.f32	s15, s15
+ 8011aac:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011ab0:	f180 819a 	bvs.w	8011de8 <ma_native_profile_tick+0xb4c>
+ 8011ab4:	ee64 7aa7 	vmul.f32	s15, s9, s15
+ 8011ab8:	ed9f 6a32 	vldr	s12, [pc, #200]	@ 8011b84 <ma_native_profile_tick+0x8e8>
+ 8011abc:	eeb4 7ac6 	vcmpe.f32	s14, s12
+ 8011ac0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011ac4:	da13      	bge.n	8011aee <ma_native_profile_tick+0x852>
+ 8011ac6:	ed9f 6a30 	vldr	s12, [pc, #192]	@ 8011b88 <ma_native_profile_tick+0x8ec>
+ 8011aca:	eeb4 7ac6 	vcmpe.f32	s14, s12
+ 8011ace:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011ad2:	f240 8183 	bls.w	8011ddc <ma_native_profile_tick+0xb40>
+ 8011ad6:	eddf 5a2b 	vldr	s11, [pc, #172]	@ 8011b84 <ma_native_profile_tick+0x8e8>
+ 8011ada:	ee87 6a25 	vdiv.f32	s12, s14, s11
+ 8011ade:	eeb4 6a46 	vcmp.f32	s12, s12
+ 8011ae2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011ae6:	f180 8179 	bvs.w	8011ddc <ma_native_profile_tick+0xb40>
+ 8011aea:	ee64 4a86 	vmul.f32	s9, s9, s12
+ 8011aee:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 8011af2:	eeb0 7a67 	vmov.f32	s14, s15
+ 8011af6:	ee96 7a86 	vfnms.f32	s14, s13, s12
+ 8011afa:	2605      	movs	r6, #5
+ 8011afc:	eef0 6a08 	vmov.f32	s13, #8	@ 0x40400000  3.0
+ 8011b00:	ee37 7a64 	vsub.f32	s14, s14, s9
+ 8011b04:	ee77 7ae4 	vsub.f32	s15, s15, s9
+ 8011b08:	ee87 ca26 	vdiv.f32	s24, s14, s13
+ 8011b0c:	ed9f 6a17 	vldr	s12, [pc, #92]	@ 8011b6c <ma_native_profile_tick+0x8d0>
+ 8011b10:	eddf ba1e 	vldr	s23, [pc, #120]	@ 8011b8c <ma_native_profile_tick+0x8f0>
+ 8011b14:	ee27 2a86 	vmul.f32	s4, s15, s12
+ 8011b18:	e03c      	b.n	8011b94 <ma_native_profile_tick+0x8f8>
+ 8011b1a:	bf00      	nop
+ 8011b1c:	200053e0 	.word	0x200053e0
+ 8011b20:	2000539c 	.word	0x2000539c
+ 8011b24:	7f7fffff 	.word	0x7f7fffff
+ 8011b28:	3883126f 	.word	0x3883126f
+ 8011b2c:	38d1b717 	.word	0x38d1b717
+ 8011b30:	80000000 	.word	0x80000000
+ 8011b34:	00000000 	.word	0x00000000
+ 8011b38:	3dcccccd 	.word	0x3dcccccd
+ 8011b3c:	3f016df5 	.word	0x3f016df5
+ 8011b40:	3eb33333 	.word	0x3eb33333
+ 8011b44:	4124dce1 	.word	0x4124dce1
+ 8011b48:	3ccccccd 	.word	0x3ccccccd
+ 8011b4c:	c4160000 	.word	0xc4160000
+ 8011b50:	44160000 	.word	0x44160000
+ 8011b54:	3f6fb440 	.word	0x3f6fb440
+ 8011b58:	419c17a3 	.word	0x419c17a3
+ 8011b5c:	3f666666 	.word	0x3f666666
+ 8011b60:	41af062f 	.word	0x41af062f
+ 8011b64:	3d854f50 	.word	0x3d854f50
+ 8011b68:	41d04bed 	.word	0x41d04bed
+ 8011b6c:	3f13cd3a 	.word	0x3f13cd3a
+ 8011b70:	3089705f 	.word	0x3089705f
+ 8011b74:	43c80000 	.word	0x43c80000
+ 8011b78:	4598e000 	.word	0x4598e000
+ 8011b7c:	200054ec 	.word	0x200054ec
+ 8011b80:	3f5db3d7 	.word	0x3f5db3d7
+ 8011b84:	3d4ccccd 	.word	0x3d4ccccd
+ 8011b88:	bd4ccccd 	.word	0xbd4ccccd
+ 8011b8c:	3f59999a 	.word	0x3f59999a
+ 8011b90:	200053f0 	.word	0x200053f0
+ 8011b94:	ee7b 8a0c 	vadd.f32	s17, s22, s24
+ 8011b98:	ee31 9a82 	vadd.f32	s18, s3, s4
+ 8011b9c:	eef7 2a00 	vmov.f32	s5, #112	@ 0x3f800000  1.0
+ 8011ba0:	ee62 0a89 	vmul.f32	s1, s5, s18
+ 8011ba4:	ee22 0aa8 	vmul.f32	s0, s5, s17
+ 8011ba8:	4ba2      	ldr	r3, [pc, #648]	@ (8011e34 <ma_native_profile_tick+0xb98>)
+ 8011baa:	48a3      	ldr	r0, [pc, #652]	@ (8011e38 <ma_native_profile_tick+0xb9c>)
+ 8011bac:	49a3      	ldr	r1, [pc, #652]	@ (8011e3c <ma_native_profile_tick+0xba0>)
+ 8011bae:	eeb0 1a48 	vmov.f32	s2, s16
+ 8011bb2:	2202      	movs	r2, #2
+ 8011bb4:	f7fa fa50 	bl	800c058 <ma_modulate>
+ 8011bb8:	2806      	cmp	r0, #6
+ 8011bba:	4604      	mov	r4, r0
+ 8011bbc:	d12d      	bne.n	8011c1a <ma_native_profile_tick+0x97e>
+ 8011bbe:	3e01      	subs	r6, #1
+ 8011bc0:	ee62 2aab 	vmul.f32	s5, s5, s23
+ 8011bc4:	d1ec      	bne.n	8011ba0 <ma_native_profile_tick+0x904>
+ 8011bc6:	f8d9 301c 	ldr.w	r3, [r9, #28]
+ 8011bca:	f888 403a 	strb.w	r4, [r8, #58]	@ 0x3a
+ 8011bce:	3301      	adds	r3, #1
+ 8011bd0:	f8c9 301c 	str.w	r3, [r9, #28]
+ 8011bd4:	e592      	b.n	80116fc <ma_native_profile_tick+0x460>
+ 8011bd6:	ee89 aa80 	vdiv.f32	s20, s19, s0
+ 8011bda:	eeca 9a80 	vdiv.f32	s19, s21, s0
+ 8011bde:	ee29 da0a 	vmul.f32	s26, s18, s20
+ 8011be2:	ee68 ca8a 	vmul.f32	s25, s17, s20
+ 8011be6:	eef1 aa69 	vneg.f32	s21, s19
+ 8011bea:	e606      	b.n	80117fa <ma_native_profile_tick+0x55e>
+ 8011bec:	eeb0 5a47 	vmov.f32	s10, s14
+ 8011bf0:	eddf 7a93 	vldr	s15, [pc, #588]	@ 8011e40 <ma_native_profile_tick+0xba4>
+ 8011bf4:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 8011bf8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011bfc:	f6ff abe8 	blt.w	80113d0 <ma_native_profile_tick+0x134>
+ 8011c00:	eef0 7a47 	vmov.f32	s15, s14
+ 8011c04:	f7ff bbf3 	b.w	80113ee <ma_native_profile_tick+0x152>
+ 8011c08:	2401      	movs	r4, #1
+ 8011c0a:	e5b8      	b.n	801177e <ma_native_profile_tick+0x4e2>
+ 8011c0c:	f893 313d 	ldrb.w	r3, [r3, #317]	@ 0x13d
+ 8011c10:	2b00      	cmp	r3, #0
+ 8011c12:	bf0c      	ite	eq
+ 8011c14:	2007      	moveq	r0, #7
+ 8011c16:	2001      	movne	r0, #1
+ 8011c18:	e444      	b.n	80114a4 <ma_native_profile_tick+0x208>
+ 8011c1a:	2800      	cmp	r0, #0
+ 8011c1c:	f040 8108 	bne.w	8011e30 <ma_native_profile_tick+0xb94>
+ 8011c20:	edd8 7a01 	vldr	s15, [r8, #4]
+ 8011c24:	ed98 7a00 	vldr	s14, [r8]
+ 8011c28:	ed99 6a00 	vldr	s12, [r9]
+ 8011c2c:	eddf 5a85 	vldr	s11, [pc, #532]	@ 8011e44 <ma_native_profile_tick+0xba8>
+ 8011c30:	edd9 6a01 	vldr	s13, [r9, #4]
+ 8011c34:	ee77 7ac2 	vsub.f32	s15, s15, s4
+ 8011c38:	ee37 7a4c 	vsub.f32	s14, s14, s24
+ 8011c3c:	ee77 1ae1 	vsub.f32	s3, s15, s3
+ 8011c40:	ee37 ba4b 	vsub.f32	s22, s14, s22
+ 8011c44:	ee69 9aa1 	vmul.f32	s19, s19, s3
+ 8011c48:	ee6a 1a21 	vmul.f32	s3, s20, s3
+ 8011c4c:	eeea 9a0b 	vfma.f32	s19, s20, s22
+ 8011c50:	2301      	movs	r3, #1
+ 8011c52:	f888 3039 	strb.w	r3, [r8, #57]	@ 0x39
+ 8011c56:	eeeb 1a2a 	vfma.f32	s3, s22, s21
+ 8011c5a:	eea9 6aa5 	vfma.f32	s12, s19, s11
+ 8011c5e:	eee1 6aa5 	vfma.f32	s13, s3, s11
+ 8011c62:	ed88 7a00 	vstr	s14, [r8]
+ 8011c66:	edc8 7a01 	vstr	s15, [r8, #4]
+ 8011c6a:	ed89 6a00 	vstr	s12, [r9]
+ 8011c6e:	edc9 6a01 	vstr	s13, [r9, #4]
+ 8011c72:	ed89 7a05 	vstr	s14, [r9, #20]
+ 8011c76:	edc9 7a06 	vstr	s15, [r9, #24]
+ 8011c7a:	e53f      	b.n	80116fc <ma_native_profile_tick+0x460>
+ 8011c7c:	4a6e      	ldr	r2, [pc, #440]	@ (8011e38 <ma_native_profile_tick+0xb9c>)
+ 8011c7e:	69d3      	ldr	r3, [r2, #28]
+ 8011c80:	3301      	adds	r3, #1
+ 8011c82:	61d3      	str	r3, [r2, #28]
+ 8011c84:	4b6b      	ldr	r3, [pc, #428]	@ (8011e34 <ma_native_profile_tick+0xb98>)
+ 8011c86:	f883 403a 	strb.w	r4, [r3, #58]	@ 0x3a
+ 8011c8a:	e537      	b.n	80116fc <ma_native_profile_tick+0x460>
+ 8011c8c:	ed9f 7a6e 	vldr	s14, [pc, #440]	@ 8011e48 <ma_native_profile_tick+0xbac>
+ 8011c90:	eddf 7a6e 	vldr	s15, [pc, #440]	@ 8011e4c <ma_native_profile_tick+0xbb0>
+ 8011c94:	eddf 6a6e 	vldr	s13, [pc, #440]	@ 8011e50 <ma_native_profile_tick+0xbb4>
+ 8011c98:	eeac 7a4c 	vfms.f32	s14, s24, s24
+ 8011c9c:	eeb0 5a4e 	vmov.f32	s10, s28
+ 8011ca0:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 8011ca4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011ca8:	eef4 ba6b 	vcmp.f32	s23, s23
+ 8011cac:	bfd8      	it	le
+ 8011cae:	eef0 7a47 	vmovle.f32	s15, s14
+ 8011cb2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011cb6:	eeb1 7ae7 	vsqrt.f32	s14, s15
+ 8011cba:	ee9b 5a26 	vfnms.f32	s10, s22, s13
+ 8011cbe:	f180 80b2 	bvs.w	8011e26 <ma_native_profile_tick+0xb8a>
+ 8011cc2:	eddf 7a60 	vldr	s15, [pc, #384]	@ 8011e44 <ma_native_profile_tick+0xba8>
+ 8011cc6:	eddf 6a63 	vldr	s13, [pc, #396]	@ 8011e54 <ma_native_profile_tick+0xbb8>
+ 8011cca:	eef4 bae7 	vcmpe.f32	s23, s15
+ 8011cce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011cd2:	bfc8      	it	gt
+ 8011cd4:	eef0 7a6b 	vmovgt.f32	s15, s23
+ 8011cd8:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 8011cdc:	edd9 6a02 	vldr	s13, [r9, #8]
+ 8011ce0:	eddf 5a5d 	vldr	s11, [pc, #372]	@ 8011e58 <ma_native_profile_tick+0xbbc>
+ 8011ce4:	eeb0 6a66 	vmov.f32	s12, s13
+ 8011ce8:	eea5 6a25 	vfma.f32	s12, s10, s11
+ 8011cec:	eeb4 7a47 	vcmp.f32	s14, s14
+ 8011cf0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011cf4:	eec6 da27 	vdiv.f32	s27, s12, s15
+ 8011cf8:	eef1 5a47 	vneg.f32	s11, s14
+ 8011cfc:	d614      	bvs.n	8011d28 <ma_native_profile_tick+0xa8c>
+ 8011cfe:	eef4 da6d 	vcmp.f32	s27, s27
+ 8011d02:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d06:	d606      	bvs.n	8011d16 <ma_native_profile_tick+0xa7a>
+ 8011d08:	eef4 5aed 	vcmpe.f32	s11, s27
+ 8011d0c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d10:	bfd8      	it	le
+ 8011d12:	eef0 5a6d 	vmovle.f32	s11, s27
+ 8011d16:	eef4 5ac7 	vcmpe.f32	s11, s14
+ 8011d1a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d1e:	bfd4      	ite	le
+ 8011d20:	eef0 da65 	vmovle.f32	s27, s11
+ 8011d24:	eef0 da47 	vmovgt.f32	s27, s14
+ 8011d28:	ed9f 7a48 	vldr	s14, [pc, #288]	@ 8011e4c <ma_native_profile_tick+0xbb0>
+ 8011d2c:	eeb4 eac7 	vcmpe.f32	s28, s14
+ 8011d30:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d34:	dd06      	ble.n	8011d44 <ma_native_profile_tick+0xaa8>
+ 8011d36:	eeb4 7aed 	vcmpe.f32	s14, s27
+ 8011d3a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d3e:	bfc8      	it	gt
+ 8011d40:	eef0 da47 	vmovgt.f32	s27, s14
+ 8011d44:	ed9f 7a45 	vldr	s14, [pc, #276]	@ 8011e5c <ma_native_profile_tick+0xbc0>
+ 8011d48:	eef4 eac7 	vcmpe.f32	s29, s14
+ 8011d4c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d50:	f6ff ad7e 	blt.w	8011850 <ma_native_profile_tick+0x5b4>
+ 8011d54:	ee9d 6aa7 	vfnms.f32	s12, s27, s15
+ 8011d58:	eeb2 7a08 	vmov.f32	s14, #40	@ 0x41400000  12.0
+ 8011d5c:	ee26 6a07 	vmul.f32	s12, s12, s14
+ 8011d60:	ed9f 7a3f 	vldr	s14, [pc, #252]	@ 8011e60 <ma_native_profile_tick+0xbc4>
+ 8011d64:	eddf 5a3f 	vldr	s11, [pc, #252]	@ 8011e64 <ma_native_profile_tick+0xbc8>
+ 8011d68:	eea5 6a07 	vfma.f32	s12, s10, s14
+ 8011d6c:	eeb0 7a66 	vmov.f32	s14, s13
+ 8011d70:	eef8 6a00 	vmov.f32	s13, #128	@ 0xc0000000 -2.0
+ 8011d74:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 8011d78:	eddf 6a3b 	vldr	s13, [pc, #236]	@ 8011e68 <ma_native_profile_tick+0xbcc>
+ 8011d7c:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 8011d80:	eea6 7a25 	vfma.f32	s14, s12, s11
+ 8011d84:	eef4 7a67 	vcmp.f32	s15, s15
+ 8011d88:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d8c:	eef1 6a67 	vneg.f32	s13, s15
+ 8011d90:	d614      	bvs.n	8011dbc <ma_native_profile_tick+0xb20>
+ 8011d92:	eeb4 7a47 	vcmp.f32	s14, s14
+ 8011d96:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011d9a:	d606      	bvs.n	8011daa <ma_native_profile_tick+0xb0e>
+ 8011d9c:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 8011da0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011da4:	bfd8      	it	le
+ 8011da6:	eef0 7a47 	vmovle.f32	s15, s14
+ 8011daa:	eef4 7ae6 	vcmpe.f32	s15, s13
+ 8011dae:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011db2:	bfd4      	ite	le
+ 8011db4:	eeb0 7a67 	vmovle.f32	s14, s15
+ 8011db8:	eeb0 7a66 	vmovgt.f32	s14, s13
+ 8011dbc:	ed89 7a02 	vstr	s14, [r9, #8]
+ 8011dc0:	e546      	b.n	8011850 <ma_native_profile_tick+0x5b4>
+ 8011dc2:	eef0 6a64 	vmov.f32	s13, s9
+ 8011dc6:	eddf 7a1e 	vldr	s15, [pc, #120]	@ 8011e40 <ma_native_profile_tick+0xba4>
+ 8011dca:	eeb4 6ae7 	vcmpe.f32	s12, s15
+ 8011dce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8011dd2:	f6ff ae5d 	blt.w	8011a90 <ma_native_profile_tick+0x7f4>
+ 8011dd6:	eef0 7a64 	vmov.f32	s15, s9
+ 8011dda:	e66d      	b.n	8011ab8 <ma_native_profile_tick+0x81c>
+ 8011ddc:	eef1 4a64 	vneg.f32	s9, s9
+ 8011de0:	e685      	b.n	8011aee <ma_native_profile_tick+0x852>
+ 8011de2:	eef1 6a64 	vneg.f32	s13, s9
+ 8011de6:	e7ee      	b.n	8011dc6 <ma_native_profile_tick+0xb2a>
+ 8011de8:	eef1 7a64 	vneg.f32	s15, s9
+ 8011dec:	e664      	b.n	8011ab8 <ma_native_profile_tick+0x81c>
+ 8011dee:	eeb1 5a47 	vneg.f32	s10, s14
+ 8011df2:	e6fd      	b.n	8011bf0 <ma_native_profile_tick+0x954>
+ 8011df4:	eef0 7a64 	vmov.f32	s15, s9
+ 8011df8:	e665      	b.n	8011ac6 <ma_native_profile_tick+0x82a>
+ 8011dfa:	eef0 7a47 	vmov.f32	s15, s14
+ 8011dfe:	f7ff bafd 	b.w	80113fc <ma_native_profile_tick+0x160>
+ 8011e02:	eef0 7a65 	vmov.f32	s15, s11
+ 8011e06:	e5e0      	b.n	80119ca <ma_native_profile_tick+0x72e>
+ 8011e08:	ed9f 0a18 	vldr	s0, [pc, #96]	@ 8011e6c <ma_native_profile_tick+0xbd0>
+ 8011e0c:	e59f      	b.n	801194e <ma_native_profile_tick+0x6b2>
+ 8011e0e:	2300      	movs	r3, #0
+ 8011e10:	e554      	b.n	80118bc <ma_native_profile_tick+0x620>
+ 8011e12:	ed9f ca17 	vldr	s24, [pc, #92]	@ 8011e70 <ma_native_profile_tick+0xbd4>
+ 8011e16:	e50b      	b.n	8011830 <ma_native_profile_tick+0x594>
+ 8011e18:	eddf 7a0c 	vldr	s15, [pc, #48]	@ 8011e4c <ma_native_profile_tick+0xbb0>
+ 8011e1c:	2406      	movs	r4, #6
+ 8011e1e:	eeb0 7a67 	vmov.f32	s14, s15
+ 8011e22:	f7ff bb84 	b.w	801152e <ma_native_profile_tick+0x292>
+ 8011e26:	eddf 7a13 	vldr	s15, [pc, #76]	@ 8011e74 <ma_native_profile_tick+0xbd8>
+ 8011e2a:	e757      	b.n	8011cdc <ma_native_profile_tick+0xa40>
+ 8011e2c:	2404      	movs	r4, #4
+ 8011e2e:	e4a6      	b.n	801177e <ma_native_profile_tick+0x4e2>
+ 8011e30:	2404      	movs	r4, #4
+ 8011e32:	e6c8      	b.n	8011bc6 <ma_native_profile_tick+0x92a>
+ 8011e34:	2000539c 	.word	0x2000539c
+ 8011e38:	200054ec 	.word	0x200054ec
+ 8011e3c:	20005408 	.word	0x20005408
+ 8011e40:	3d4ccccd 	.word	0x3d4ccccd
+ 8011e44:	3ccccccd 	.word	0x3ccccccd
+ 8011e48:	3f23d70b 	.word	0x3f23d70b
+ 8011e4c:	00000000 	.word	0x00000000
+ 8011e50:	40c90fdb 	.word	0x40c90fdb
+ 8011e54:	3fb3c730 	.word	0x3fb3c730
+ 8011e58:	3b9d4951 	.word	0x3b9d4951
+ 8011e5c:	3eb33333 	.word	0x3eb33333
+ 8011e60:	3cebedfa 	.word	0x3cebedfa
+ 8011e64:	3883126f 	.word	0x3883126f
+ 8011e68:	3f4ccccd 	.word	0x3f4ccccd
+ 8011e6c:	3089705f 	.word	0x3089705f
+ 8011e70:	3f016df5 	.word	0x3f016df5
+ 8011e74:	3d0fd28d 	.word	0x3d0fd28d

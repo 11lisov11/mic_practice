@@ -1,0 +1,50 @@
+{
+  "parameters": {
+    "project": "ACIM hub research prototype P1",
+    "status": "CALCULATION_GEOMETRY_NOT_MEASURED_NINEBOT",
+    "stator_diameter_mm": 150.0,
+    "stack_length_mm": 40.0,
+    "radial_airgap_mm": 0.4,
+    "wheel_rolling_diameter_mm_assumed": 254.0,
+    "total_vehicle_and_rider_mass_kg_assumed": 120.0,
+    "battery": {
+      "series": 10,
+      "minimum_V_assumed": 30.0,
+      "nominal_V": 36.0,
+      "full_V": 42.0
+    },
+    "inverter": {
+      "board": "EC BUYING / Yourcee DRV8302 SKU71451",
+      "board_voltage_limit_V_advertised": 45.0,
+      "current_peak_design_ceiling_A_assumed": 15.0,
+      "phase_current_limit_rms_A_assumed": 9.0,
+      "mosfet_Rds_hot_ohm_assumed": 0.02,
+      "shunt_ohm_inferred_not_measured": 0.005,
+      "PWM_Hz": 16000,
+      "deadtime_s_assumed": 5e-07
+    },
+    "mechanical": {
+      "shaft_diameter_mm": 20.0,
+      "bearing_bore_mm": 20.0,
+      "bearing_OD_mm": 47.0,
+      "bearing_width_mm": 14.0,
+      "cover_web_thickness_mm": 5.0,
+      "housing_wall_mm": 3.0,
+      "endwinding_overhang_mm_assumed": 18.0,
+      "cover_clearance_mm": 2.0,
+      "shaft_total_length_mm": 145.0
+    },
+    "thermal": {
+      "ambient_C": 25.0,
+      "winding_limit_C_screen": 90.0,
+      "winding_to_stator_K_W_assumed": 0.7,
+      "stator_to_ambient_K_W_assumed": 1.2,
+      "rotor_to_ambient_K_W_assumed": 0.9,
+      "winding_heat_capacity_J_kgK": 385.0,
+      "steel_heat_capacity_J_kgK": 460.0
+    }
+  },
+  "elapsed_s": 1.4109578132629395,
+  "CAD_only": false,
+  "no_CAD": true
+}

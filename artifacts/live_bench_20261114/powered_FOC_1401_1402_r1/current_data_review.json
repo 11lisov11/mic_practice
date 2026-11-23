@@ -1,0 +1,47 @@
+{
+  "actual_ADC_records_checked": 12,
+  "all_epoch_consistent": true,
+  "all_accepted": false,
+  "any_queue_overflow": false,
+  "any_publication_deadline_missed": false,
+  "any_three_leg_window_rejected": false,
+  "UPDATE_count_max": 139,
+  "UPDATE_limit_unchanged": 2048,
+  "RMS_phase_spread_percent_of_mean": 1.0978956999085097,
+  "RMS_last_window_ms": 184,
+  "RMS_last_window_coverage_percent": 100,
+  "third_phase_reconstructed": true,
+  "absolute_amp_scale_qualified": false,
+  "limitations": [
+    "Twelve raw records describe the frozen end window, not a continuous full-run ADC trace.",
+    "RMS and peaks use nominal shunt scale.",
+    "Algebraic phase sum is not an independent validation when one phase is reconstructed."
+  ],
+  "accepted_samples": 11,
+  "rejected_tail_sample_has_PWM_inactive": true,
+  "interpretation": "Eleven captured samples taken with PWM active were accepted. The final sample has active flag0 at STOP and was excluded. No queue overflow, epoch mismatch, three-leg exclusion or publication deadline failure in these twelve records.",
+  "nominal_RMS_phase_spread_percent": 1.0978956999085097,
+  "speed_observer_valid_during_samples": [
+    {
+      "elapsed_ms": 17,
+      "estimated_rpm": 0.0,
+      "internal_valid": 0
+    },
+    {
+      "elapsed_ms": 1874,
+      "estimated_rpm": 354.41,
+      "internal_valid": 1
+    },
+    {
+      "elapsed_ms": 3107,
+      "estimated_rpm": 344.05,
+      "internal_valid": 1
+    },
+    {
+      "elapsed_ms": 4342,
+      "estimated_rpm": 359.31,
+      "internal_valid": 1
+    }
+  ],
+  "observer_speed_is_not_independently_measured": true
+}

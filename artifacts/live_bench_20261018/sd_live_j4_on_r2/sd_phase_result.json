@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "purpose": "Distinguish startup SD pulse from persistent LOW after reset at stable J4-only power",
+  "j4_start_pulse_width_us": 18123.8,
+  "full_pulse_recorded": true,
+  "reset_at_stable_j4_current_SD": "HIGH",
+  "reset_first_wave_empty": true,
+  "independent_gpio_verification": true,
+  "motor_commands": 0,
+  "flash_commands": 0,
+  "reset_commands": 1,
+  "clear_commands": 0,
+  "physical_SD_fault_source_identified": false,
+  "uart_tx_truncation_requires_fix": true,
+  "cumulative_uno_reply_integrity_errors_retained": 1,
+  "next_physical_state": "Leave both boards on PC USB, J4 15 V on, J1 off; no motor start."
+}

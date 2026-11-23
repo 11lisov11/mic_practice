@@ -1,0 +1,84 @@
+{
+  "available": true,
+  "observer_measured": true,
+  "source": "runtime_observer",
+  "observer_wall_us": 106.02941176470588,
+  "irq_body_lower_us": 11.964705882352941,
+  "cpu_upper_us": 94.06470588235294,
+  "irq_root_count": 4,
+  "max_wall_us": 135.44117647058823,
+  "max_irq_body_lower_us": 35.62352941176471,
+  "max_cpu_upper_us": 99.81764705882352,
+  "window_queue_us": 0.0,
+  "input_age_us": 0.0,
+  "result_age_us": 0.0,
+  "max_window_queue_us": 0.0,
+  "max_result_age_us": 0.0,
+  "observer_steps": 5000,
+  "meter_errors": 0,
+  "first_fault": null,
+  "IRQ_breakdown": {
+    "available": false,
+    "scope": "last_completed_observer_window",
+    "window_us": 0.0,
+    "valid_mask": 0,
+    "handlers": [
+      {
+        "name": "DMA2_BKIN",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "DMA1_UART_TX",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "USART1_CONTROL",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "ADC1_2",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "TIM1_UPDATE",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "TIM1_BREAK",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "USART2_MCSDK",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "SysTick",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "EXTI_STOP",
+        "valid": false,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      }
+    ],
+    "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+  },
+  "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+}

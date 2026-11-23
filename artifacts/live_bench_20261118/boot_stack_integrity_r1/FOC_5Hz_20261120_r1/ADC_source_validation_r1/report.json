@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "source": "offline diagnostic decoding bound to bit-exact ARM full history; deployed decoder unchanged",
+  "source_observer_step": 19,
+  "first_cycles": 2963491988,
+  "end_cycles": 2963651341,
+  "center": 2963571664,
+  "matched_journal_inputs_A": [
+    0.017987964674830437,
+    0.17655102908611298
+  ],
+  "ADC_derived_mean_A": [
+    0.017987964416535843,
+    0.17655105366702645
+  ],
+  "pair_counts": [
+    0,
+    10,
+    6
+  ],
+  "source_samples": 16,
+  "voltage_samples": 25,
+  "original_HMI_rejection": "Exact ADC source identity",
+  "obsolete_assumption": "step>=500",
+  "new_witness": "exact journal terminal/event step19 and same end/center/pairs/current inputs",
+  "negative_controls": 3,
+  "protection_thresholds_changed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0
+}

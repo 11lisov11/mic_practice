@@ -1,0 +1,35 @@
+{
+  "prepared": true,
+  "pair": [
+    2026111715,
+    2026111716
+  ],
+  "predecessor_pair": [
+    2026111713,
+    2026111714
+  ],
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "package_file_validation_passed": true,
+  "required_state": "J1 OFF, bus below20V before attaching USB PC; both boards on PC USB;15V may remainON;Saleae detached;wiring unchanged",
+  "observe_instead_of_reasking": "After user switches, identify both USB boards and read fresh HMI/native voltage and MOE; do not infer J1 switch position from ADC alone",
+  "before_write": "Archive available current RAM/flash/records and calibration hash; verify predecessor flash",
+  "write": "Install nativeHEX and Unoelf-zsk once with matching schema5 HMI; no motor command",
+  "readback": "Read native flash to exact independently derived HEX expected image; verify Uno image with installed OpenOCD recipe",
+  "timing": "Wait for64 OFF-only qualification cases; fast<=4000, observer<=85000, no timing fault; verify freshness and autozero",
+  "estimate_age_limit_ms": 2,
+  "current_trip_A": 1.35,
+  "ADC_UPDATE_limit_ticks": 2048,
+  "original_and_corrected_NIS_stop_retained": true,
+  "under_PWM_test_authorized": false,
+  "preserved_physical_trial": "C:\\mic_practice\\artifacts\\live_bench_20261117\\observer_nis_replay_r1\\FOC_5Hz_r1",
+  "prepared_installer": "tools/install_observer_pair_noise.py",
+  "artifacts": {
+    "artifacts\\live_bench_20261117\\observer_pair_noise_r1\\release\\nucleo_2026111716_pair_noise.hex": "9818919da95e9831137f96411e5d2867494bb97b6e795b82a2656ab4d6e04a97",
+    "artifacts\\live_bench_20261117\\observer_pair_noise_r1\\release\\nucleo_2026111716_expected_readback.bin": "c7eae983173451b0e0c16cd49b4edfa67acbed10fb3f05b5e416f30c3819d5b2",
+    "artifacts\\live_bench_20261117\\observer_pair_noise_r1\\release\\uno_2026111715_schema5.elf-zsk.bin": "0d317adc9b2a3444055db2f703d299145f7e13de3bfaf490bf51b50726c4d425",
+    "artifacts\\live_bench_20261117\\observer_nis_replay_r1\\release\\nucleo_2026111714_expected_readback.bin": "2fcd3216146d0f729ab50f7dcefa4e44a3892a0d23d54815b88f75d7165ec594"
+  }
+}

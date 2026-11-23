@@ -1,0 +1,67 @@
+{
+  "schema": "mic_ai.inverter_dc_calibration.v1",
+  "accepted": true,
+  "source_kind": "synthetic",
+  "gain": 0.9873955845832825,
+  "drop_v": [
+    6.971977233886719,
+    7.364065647125244,
+    6.673688888549805
+  ],
+  "knee_a": 0.02490004524588585,
+  "offset_ab_v": [
+    0.09854137897491455,
+    -0.05958480387926102
+  ],
+  "coefficient_bytes_hex": "f5c57c3f701adf406da6eb40dc8ed5402efbcb3c10d0c93d320f74bd",
+  "coefficient_crc32c": 778304638,
+  "fit_rms_error_v": 0.00607186055110489,
+  "validation_rms_error_v": 0.006243997047213953,
+  "matrix_condition": 159.44563775704341,
+  "fit_run_ids": [
+    1,
+    10,
+    11,
+    12,
+    14,
+    15,
+    16,
+    17,
+    19,
+    2,
+    20,
+    21,
+    22,
+    24,
+    25,
+    26,
+    27,
+    29,
+    30,
+    4,
+    5,
+    6,
+    7,
+    9
+  ],
+  "validation_run_ids": [
+    13,
+    18,
+    23,
+    28,
+    3,
+    8
+  ],
+  "physical_amp_scale_qualified": false,
+  "eligible_for_foc_start": false,
+  "assumptions": [
+    "known cold star-equivalent Rs",
+    "bounded rational current-clamping model",
+    "nominal shunt scale"
+  ],
+  "not_identified": [
+    "independent absolute current scale",
+    "mechanics",
+    "magnetic saturation"
+  ]
+}

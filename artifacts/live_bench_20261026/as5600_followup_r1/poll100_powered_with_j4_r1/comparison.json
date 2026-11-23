@@ -1,0 +1,106 @@
+{
+  "mcu_5s_stop_verified": true,
+  "mcu_record": {
+    "run_id": 3,
+    "run_start_ms": 1795738,
+    "run_stop_ms": 1800738,
+    "run_elapsed_ms": 5000,
+    "run_reason": 1
+  },
+  "host_backup_stop": null,
+  "start_commands": 1,
+  "clear_commands_total": 1,
+  "drive_health_off_confirmed": true,
+  "original_report_passed": false,
+  "current_window_limit": "Only one distinct valid5Hz RMS window delivered to host; retain failed coverage qualification",
+  "sensor_bus_pass": false,
+  "physical_rotation_verified": false,
+  "error_counter_deltas": {
+    "enc_errors": 43,
+    "enc_diag_nack_count": 22,
+    "enc_diag_arlo_count": 5,
+    "enc_diag_busy_count": 14,
+    "enc_diag_berr_count": 11,
+    "enc_diag_timeout_count": 2,
+    "enc_diag_controller_resets": 18,
+    "enc_diag_graceful_cleanups": 25,
+    "enc_diag_post_reset_busy": 0
+  },
+  "first_events": [
+    {
+      "tick_ms": 1795852,
+      "mode_flags": 4,
+      "stage": 11,
+      "cause": 9,
+      "isr_before": 513,
+      "cr2_before": 33752172,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 114
+    },
+    {
+      "tick_ms": 1795961,
+      "mode_flags": 4,
+      "stage": 11,
+      "cause": 9,
+      "isr_before": 33281,
+      "cr2_before": 33752172,
+      "gpio_before": 1,
+      "isr_after": 1,
+      "ms_from_mcu_start": 223
+    },
+    {
+      "tick_ms": 1796061,
+      "mode_flags": 4,
+      "stage": 7,
+      "cause": 2,
+      "isr_before": 32785,
+      "cr2_before": 33752172,
+      "gpio_before": 2,
+      "isr_after": 1,
+      "ms_from_mcu_start": 323
+    },
+    {
+      "tick_ms": 1796182,
+      "mode_flags": 4,
+      "stage": 4,
+      "cause": 2,
+      "isr_before": 32785,
+      "cr2_before": 73836,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 444
+    }
+  ],
+  "comparison": [
+    {
+      "mode": "FILTER100",
+      "j4_15v": "on as confirmed for prior run",
+      "duration_ms": 5000,
+      "sensor_errors": 48,
+      "rotation_confirmed": true
+    },
+    {
+      "mode": "POLL100",
+      "j4_15v": "OFF; user subsequently reported forgotten15V",
+      "duration_ms": 4956,
+      "sensor_errors": 0,
+      "rotation_confirmed": false
+    },
+    {
+      "mode": "POLL100",
+      "j4_15v": "ON; user reports ready after restoring15V",
+      "duration_ms": 5000,
+      "sensor_errors": 43,
+      "rotation_confirmed": false
+    }
+  ],
+  "inference": "Errors recur with gate-driver supply and switched power operation in both polling timing modes. Not resolved by FILTER100/POLL100 selection. Physical source and possible software contribution still unproven.",
+  "limitations": [
+    "BERR advisory counts are not additional failed samples.",
+    "First stored SD waveform occupied by pre-START event; do not call it a capture of this new run.",
+    "Nominal current scale, no independent ampere reference.",
+    "Weak magnetic field and invalid angle/speed remain; sensor not qualified for FOC.",
+    "Counter deltas include setup/stop edges; not an exact per-byte electrical error rate."
+  ]
+}

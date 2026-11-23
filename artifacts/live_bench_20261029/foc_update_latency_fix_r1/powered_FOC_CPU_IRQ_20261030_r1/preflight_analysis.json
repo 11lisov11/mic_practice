@@ -1,0 +1,29 @@
+{
+  "pair": [
+    2026103003,
+    2026103004
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "PWM": 0,
+  "vbus_V": 325.0,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 51,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "current_mask": 4,
+  "occurred_mask": 4,
+  "reason": "MC_UNDER_VOLT persisted after low-bus OFF state; no CLEAR authorized yet",
+  "new_SD_record": false,
+  "prior_files_verified": 1007,
+  "pending_user_approval": "One CLEAR then one FOC5Hz5s only if all protections recover"
+}

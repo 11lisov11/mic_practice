@@ -1,0 +1,73 @@
+{
+  "schema": "mic_ai.vbus_preservation_review.v1",
+  "meter_vdc": 0.32,
+  "reference_use": "Independent discharged-bus check; not a replacement calibration point",
+  "samples": 20,
+  "reported_mean_v": 0.0,
+  "reported_std_v": 0.0,
+  "zero_check_pass": true,
+  "original_calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "original_calibration_unchanged": true,
+  "saved_points": {
+    "high": {
+      "captured_at": 1791299304.1909575,
+      "kind": "high",
+      "mc_vbus_raw_mean": 3250.0,
+      "mc_vdc_mean": 325.0,
+      "mc_vdc_std": 0.0,
+      "meter_vdc": 322.7,
+      "samples": 20
+    },
+    "zero": {
+      "captured_at": 1791283104.6604245,
+      "kind": "zero",
+      "mc_vbus_raw_mean": 0.0,
+      "mc_vdc_mean": 0.0,
+      "mc_vdc_std": 0.0,
+      "meter_vdc": 0.0,
+      "samples": 20
+    }
+  },
+  "original_identity": {
+    "fw_build": 2026092901,
+    "mc_capabilities": 1,
+    "mc_fw_build": 2026100601,
+    "mc_mcsdk_telemetry": 1,
+    "rpc_schema_version": 3
+  },
+  "current_identity": {
+    "fw_build": 2026101411,
+    "mc_fw_build": 2026101410,
+    "rpc_schema_version": 3,
+    "mc_capabilities": 1,
+    "mc_mcsdk_telemetry": 1
+  },
+  "original_points_integrity_and_span_valid": true,
+  "current_pair_calibration": {
+    "valid": false,
+    "reason": "firmware or telemetry identity changed; recalibration is required",
+    "zero_captured": true,
+    "high_captured": true,
+    "zero_meter_vdc": 0.0,
+    "zero_mc_vdc": 0.0,
+    "high_meter_vdc": 322.7,
+    "high_mc_vdc": 325.0,
+    "updated_at": 1791299304.1911108
+  },
+  "measurement_change": {
+    "change": "IIR fractional remainder is retained; prior constant-input lag removed",
+    "conversion_factor": 416,
+    "prior_max_constant_input_lag_u16": 255,
+    "prior_lag_voltage_bound_v": 1.61865234375,
+    "qualification": "Source and host characterization; not a new powered measurement"
+  },
+  "calibration_api_calls": 0,
+  "calibration_writes": 0,
+  "firmware_writes": 0,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "hv_release_approved": false,
+  "policy": "Do not repeat calibration for each diagnostic firmware update. Preserve original points. Review actual measurement changes separately; do not relabel old measurements as current captures.",
+  "pass": true
+}

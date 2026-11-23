@@ -1,0 +1,121 @@
+{
+  "saved_decimated_rows": [
+    {
+      "step": 701,
+      "NIS": 4.688267230987549,
+      "flux_Wb": 0.07823891484096107,
+      "estimated_speed_rpm": 578.428466796875,
+      "measured_current_alpha_beta_A": [
+        0.49826663732528687,
+        -0.005192676559090605
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.08015334414141422,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 1401,
+      "NIS": 2.606485366821289,
+      "flux_Wb": 0.056945142522534985,
+      "estimated_speed_rpm": 785.3598022460938,
+      "measured_current_alpha_beta_A": [
+        0.48747384548187256,
+        0.005885035265237087
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.059207580199557096,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 2101,
+      "NIS": 3.627145290374756,
+      "flux_Wb": 0.04954127485884491,
+      "estimated_speed_rpm": 894.371826171875,
+      "measured_current_alpha_beta_A": [
+        0.49047183990478516,
+        0.00346178794279695
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.052673158586905605,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 2801,
+      "NIS": 6.479278087615967,
+      "flux_Wb": 0.045650741632666816,
+      "estimated_speed_rpm": 983.2291870117188,
+      "measured_current_alpha_beta_A": [
+        0.5096590518951416,
+        -0.0013847122900187672
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.04999009538623609,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 3501,
+      "NIS": 4.1053853034973145,
+      "flux_Wb": 0.042153523417085684,
+      "estimated_speed_rpm": 1050.841552734375,
+      "measured_current_alpha_beta_A": [
+        0.49526864290237427,
+        0.017308926209807403
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.04559243201719431,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 4201,
+      "NIS": 7.265576362609863,
+      "flux_Wb": 0.04022440139314658,
+      "estimated_speed_rpm": 1076.744140625,
+      "measured_current_alpha_beta_A": [
+        0.506661057472229,
+        -0.0017308907117694421
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.04552911878639843,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 4901,
+      "NIS": 2.532099485397339,
+      "flux_Wb": 0.039497838817660606,
+      "estimated_speed_rpm": 1114.2650146484375,
+      "measured_current_alpha_beta_A": [
+        0.4718843102455139,
+        -0.0031156106851994883
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.04102169132497527,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    },
+    {
+      "step": 4999,
+      "NIS": 3.8993399143218994,
+      "flux_Wb": 0.03892026221145613,
+      "estimated_speed_rpm": 1117.59130859375,
+      "measured_current_alpha_beta_A": [
+        0.4868742525577545,
+        0.0006923549808561702
+      ],
+      "steady_flux_from_estimated_speed_Wb": 0.04220181979645989,
+      "iq_reference_A": 0.0,
+      "reason_mask": 16
+    }
+  ],
+  "full_history_before_first_crossing": {
+    "passed": true,
+    "rows": 12,
+    "checkpoints": 0,
+    "all_states_reconstructed": true,
+    "first_NIS_ge25": 12,
+    "peak_NIS": 31.595359802246094,
+    "terminal_51_words_bit_exact": true,
+    "hardware_commands": 0,
+    "target_timing_measured": false,
+    "elf_sha256": "977f01826b254fc33e5464fa2eefce17eb3a41c062820f49d38c1b20da2d86de"
+  },
+  "observability": "The constant-axis current and the biased estimated omega are compatible with a small inferred rotor flux; this does not measure rotor motion or terminal voltage."
+}

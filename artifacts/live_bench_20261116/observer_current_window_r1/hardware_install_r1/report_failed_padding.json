@@ -1,0 +1,96 @@
+{
+  "passed": false,
+  "pair": [
+    2026111611,
+    2026111612
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 0,
+  "nucleo_flash_commands": 1,
+  "thresholds_changed": false,
+  "operator_confirmation": "J1 OFF, meter below20V, both boards PCUSB; 15V and wiring unchanged; no START/CLEAR",
+  "physical_TP23_connection_independently_verified": false,
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_18080",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_12222",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_RAM_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_flash_before",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_before",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_config.json",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_hmi.py",
+      "exit_code": 0
+    },
+    {
+      "label": "candidate_calibration_check",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "readback_native",
+      "exit_code": 0
+    }
+  ],
+  "before_pair": [
+    2026111609,
+    2026111606
+  ],
+  "previous_native_image_verified": true,
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "error": ""
+}

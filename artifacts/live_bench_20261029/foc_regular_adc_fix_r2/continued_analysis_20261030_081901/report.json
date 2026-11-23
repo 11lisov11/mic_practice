@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "pair": [
+    2026103005,
+    2026103006
+  ],
+  "old_files_verified": 1098,
+  "hardware_commands": 0,
+  "fresh_hardware_status_obtained": false,
+  "physical_5s_trial_not_yet_verified": true,
+  "mocked_HTTP_only": true,
+  "runner": "tools/run_foc_regular_adc_trial.py",
+  "scenarios": {
+    "success": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 1
+    },
+    "failed_clear": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 1
+    },
+    "runtime_fault": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 1
+    },
+    "success_without_clear": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0
+    },
+    "denied_clear": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0
+    },
+    "current_trip": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0
+    },
+    "wrong_pair": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0
+    },
+    "SD_low": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0
+    },
+    "UART_error": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0
+    },
+    "low_bus": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0
+    }
+  },
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "no_change_to_installed_sources": true
+}

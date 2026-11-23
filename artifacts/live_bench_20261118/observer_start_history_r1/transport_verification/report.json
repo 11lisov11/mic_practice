@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "bounded_page_bytes": 192,
+  "read_only_RPC_method": "history",
+  "whole_download_bit_exact": true,
+  "empty_checkpoints_supported": true,
+  "rejections": [
+    {
+      "case": "RUN",
+      "error": "History RPC: ERR RUN"
+    },
+    {
+      "case": "wrong_epoch",
+      "error": "Epoch/size changed"
+    },
+    {
+      "case": "short_page",
+      "error": "Short page"
+    }
+  ],
+  "throughput_models": [
+    {
+      "baud": 921600,
+      "generated_rows": 5000,
+      "dropped": 0,
+      "max_local_queue": 1,
+      "queued_bytes": 223600,
+      "assumed_poll_gap_us": 500,
+      "hardware_qualification": false
+    },
+    {
+      "baud": 115200,
+      "generated_rows": 5000,
+      "dropped": 3854,
+      "max_local_queue": 4,
+      "queued_bytes": 57878,
+      "assumed_poll_gap_us": 500,
+      "hardware_qualification": false
+    }
+  ],
+  "hardware_commands": 0,
+  "UART_rate_NOT_hardware_qualified": true
+}

@@ -1,0 +1,123 @@
+{
+  "csv": "C:\\mic_practice\\artifacts\\live_bench_20261014\\snapshot_reject_hil_r2\\run_1791992054652665000\\csv\\digital.csv",
+  "duration_s": 8.00768,
+  "csv_row_timing": {
+    "samples": 547135,
+    "intervals": 547134,
+    "min_step_s": 2.499999993688107e-07,
+    "max_step_s": 3.5733017500000006,
+    "mean_step_s": 1.4635683397485809e-05,
+    "inferred_sample_rate_hz": 68326.15688938618
+  },
+  "csv_row_timing_note": "Saleae CSV rows may be transition-compressed; use selected_sample_rate_hz for timing proof.",
+  "selected_sample_rate_hz": 4000000.0,
+  "selected_sample_period_ns": 250.0,
+  "max_sample_period_ns": 250.0,
+  "timing_resolution_pass": true,
+  "channels": {
+    "0": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.4474310000000528,
+      "duty_ratio": 0.18075534986413702,
+      "freq_hz_from_rising": 16000.00000003729
+    },
+    "1": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.4126724999999833,
+      "duty_ratio": 0.17641470438378948,
+      "freq_hz_from_rising": 16000.00000003729
+    },
+    "2": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.4013377499999704,
+      "duty_ratio": 0.174999219499277,
+      "freq_hz_from_rising": 16000.00000003729
+    },
+    "3": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.4584354999999989,
+      "duty_ratio": 0.18212959309063284,
+      "freq_hz_from_rising": 16000.00000003729
+    },
+    "4": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.439192750000004,
+      "duty_ratio": 0.1797265562559947,
+      "freq_hz_from_rising": 16000.00000003729
+    },
+    "5": {
+      "initial": 0,
+      "final": 0,
+      "edges": 95626,
+      "rising_edges": 47813,
+      "falling_edges": 47813,
+      "high_time_s": 1.4207872499999776,
+      "duty_ratio": 0.1774280752977114,
+      "freq_hz_from_rising": 16000.00000003729
+    }
+  },
+  "pairs": {
+    "U": {
+      "high_channel": 0,
+      "low_channel": 1,
+      "overlap_high_s": 0.0,
+      "overlap_ratio": 0.0,
+      "both_low_s": 5.147576499999964,
+      "both_low_ratio": 0.6428299457520734,
+      "both_high_seen": false,
+      "min_gap_s": 1.2499999995085886e-06,
+      "gap_count": 95625,
+      "no_overlap": true
+    },
+    "V": {
+      "high_channel": 2,
+      "low_channel": 3,
+      "overlap_high_s": 0.0,
+      "overlap_ratio": 0.0,
+      "both_low_s": 5.147906750000031,
+      "both_low_ratio": 0.6428711874100901,
+      "both_high_seen": false,
+      "min_gap_s": 1.2499999995085886e-06,
+      "gap_count": 95625,
+      "no_overlap": true
+    },
+    "W": {
+      "high_channel": 4,
+      "low_channel": 5,
+      "overlap_high_s": 0.0,
+      "overlap_ratio": 0.0,
+      "both_low_s": 5.147700000000019,
+      "both_low_ratio": 0.6428453684462939,
+      "both_high_seen": false,
+      "min_gap_s": 1.2499999995085886e-06,
+      "gap_count": 95625,
+      "no_overlap": true
+    }
+  },
+  "pass": true,
+  "expect_pwm": true,
+  "pass_meaning": "no_overlap_and_pwm_activity",
+  "overlap_analysis_pass": true,
+  "no_overlap_pass": true,
+  "pwm_activity_pass": true
+}

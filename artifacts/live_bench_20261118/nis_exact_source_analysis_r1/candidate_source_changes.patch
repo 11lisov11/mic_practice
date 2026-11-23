@@ -1,0 +1,20 @@
+--- C:\mic_practice\artifacts\live_bench_20261118\exact_nis_input_release_r1\nucleo\Src\multi_native.c
++++ C:\mic_practice\artifacts\live_bench_20261118\nis_exact_source_analysis_r1\candidate\nucleo\Src\multi_native.c
+@@ -312,6 +312,17 @@
+   od_replay_commit(&observer_trace,&observer,fault,replay_staged);
+   if(!replay_was_latched&&observer_trace.replay_latched)
+     mic_current_request_observer_capture(window.first,window.end,observer.steps);
++  /* A successful numerical update is not a qualified speed estimate.
++   * Preserve the first NIS/raw snapshot above, then fail through the existing
++   * observer path instead of publishing an estimate already declared invalid.
++   * Same 500-step warmup and NIS<25 predicate as the recorded validity flag.
++   * The independent legacy/corrected >50/20-step watchdogs remain unchanged. */
++  if(!fault && (!isfinite(observer.nis) ||
++      (observer.steps>=500U && !(observer.nis<25.f)))) {
++    ma_observer_record(&sample,stamp,trace_seq,trace_adc,trace_id,trace_iq,
++      trace_idref,trace_iqref,trace_ref,va,vb,dt,MA_OBSERVER,0,&window);
++    fault=MA_OBSERVER;
++  }
+   float endpoint_estimate[6];
+   if(!fault)fault=ow_forecast(&model,observer.x,window.tail_va,window.tail_vb,
+     (float)(stamp-window.center)/SystemCoreClock,endpoint_estimate);

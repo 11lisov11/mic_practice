@@ -1,0 +1,82 @@
+{
+  "schema": "mic_ai.multi_algorithm.v1",
+  "pair": [
+    2026102921,
+    2026102922
+  ],
+  "base_pair": [
+    2026102911,
+    2026102912
+  ],
+  "sealed_utc": "2026-10-28T23:10:45.933243+00:00",
+  "built": true,
+  "host_tests_passed": 5,
+  "model_scenarios_passed": 8,
+  "compiled_algorithms": [
+    "VF_FIXED",
+    "FOC_FIXED",
+    "ADAPTIVE_PWM"
+  ],
+  "online_algorithm_selection": true,
+  "selection_requires_pwm_off": true,
+  "automatic_restart": false,
+  "as5600_enabled": false,
+  "installed": true,
+  "readback_verified": true,
+  "hardware_algorithm_switch_verified": true,
+  "physical_qualification": false,
+  "motor_identified": false,
+  "current_scale": "unchanged nominal 3.3/(4095*0.04*2.1) A/count",
+  "target_wcet_measured": false,
+  "simulation_profile_is_not_identification": true,
+  "runtime_profile_volatile": true,
+  "thresholds_changed": false,
+  "adc_guard_changed": false,
+  "archived_captures_modified": false,
+  "hardware_commands_sent": 4,
+  "model_samples": 1792000,
+  "model_peak_a": 1.23889,
+  "maximum_scenario_mean_estimator_error_rad_s": 0.332869,
+  "maximum_scenario_mean_tracking_error_rad_s": 1.191293,
+  "adc_replay_checks": 853161,
+  "archived_frames_replayed": 24,
+  "source_manifest": "source_hashes.json",
+  "artifacts": {
+    "release/nucleo_2026102922_multi.bin": "3c69f23530c72d768e3ad5892f46ffd9fc95c67f8698806f923d86ded86ff4d1",
+    "release/unoq_2026102921_multi.elf-zsk.bin": "4de605cbbaaa8fd4e5711027c1b6c17d34e42a35b6936d06b444bd82730f24a9"
+  },
+  "ui_verification_passed": true,
+  "tooling_sha256": {
+    "tools\\build_unoq_mcsdk_scalar.ps1": "a045840ecd891d4f8e1d44147095f352051d999a79ac08ab69a74f01e27b0bd9",
+    "tools\\multi_algorithm\\model_test.cpp": "f87419114a387e11da9432869a32aa25ff1e8030b3984ef0d182022984fc9db7",
+    "tools\\multi_algorithm\\motor_control.h": "51333a4be772932e9fde9e0a104390419df46dd5fa723fee646282f3ba46746e",
+    "tools\\multi_algorithm\\multi_command.h": "17483bc6561dae290e64a34a4b6720da8e3fee93fcd9b1391b43e4c0d13fe7e6",
+    "tools\\multi_algorithm\\native.c": "c88aec43a0e7954f490813437e57694cc975779ea4c7655f939006c19891aa7b",
+    "tools\\multi_algorithm\\native.h": "dfec6dac6aa18b7dacec23407b89b03a060af47ade8cec531509a21e1a7242b4",
+    "tools\\multi_algorithm\\panel.js": "5f02ad2a4ee499c05b19611e28d90b702a007fd98f875d9e86e29401bc15f1aa",
+    "tools\\multi_algorithm\\research_wire.h": "4e26de3b675a1d0c3983584ebd81ae7d8f9555a4174f9890dc67554ff62fe8e6",
+    "tools\\prepare_multi_algorithm.py": "c3568c6c185beeca7da91bfaebac159e347acc72cb294ecf7e4122ce2e98e070",
+    "tools\\finish_multi_algorithm_sources.py": "1175b3f62d71d77c1930237e959cf1c8645065c5dafb89d06dca2891831580a2",
+    "tools\\test_multi_algorithm.py": "97ab7157f636dd28181ae5f711fc09f5595dea384b34a8cded8ab853601b1c28",
+    "tools\\build_multi_native.py": "3f82c88a43687f811e95030f8378481183bf0c0d2dc2aba02f7891ec4a282749",
+    "tools\\configure_multi_algorithm.py": "0979895a6a9d7ce5c63c2a727c1897d894e4a6b3d3b5c0c4f27ad3dd773fecad",
+    "tools\\seal_multi_algorithm.py": "f5d1a4ea8296c8dc3a10b156b5616cc7e4436e4a47030868fe0e0a65b7387bca",
+    "tools\\install_multi_algorithm.py": "1871547ca85cfa189d1e8e8a4e17bc5cbb1b0019ed1de1d0306d40f56b6126c1",
+    "tools\\verify_multi_algorithm_idle.py": "d2f6425f7a3a74963016190c708ac77fa9b937e3f687c82d66e5a4dcc436a27d"
+  },
+  "live_verified": true,
+  "runtime_mode_sequence": [
+    "VF",
+    "FOC",
+    "ADAPTIVE_PWM",
+    "VF"
+  ],
+  "hardware_mode_commands": 4,
+  "start_commands_sent": 0,
+  "clear_commands_sent": 0,
+  "powered_trial_performed": false,
+  "calibration_unchanged": true,
+  "archived_capture_files_verified": 616,
+  "installed_report": "hardware_install_r1/install_report.json",
+  "mode_verification_report": "hardware_install_r1/mode_verification_r1/report.json"
+}

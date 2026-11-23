@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "ramp_0_to_5_over_3s": true,
+    "V_minus_120": true,
+    "W_plus_120": true,
+    "balanced": true,
+    "sinusoidal": true,
+    "angle_quadratic_residual_under_3deg": true
+  },
+  "csv_sha256": "3d7644d77366af8df4de6378617b96067ebce6379f31475962c0d27045019455",
+  "expected_ramp_hz_s": 1.6666666666666667,
+  "measured_ramp_hz_s": 1.6664354074568268,
+  "initial_frequency_hz": -0.053417379997237606,
+  "final_frequency_hz": 4.926460288566555,
+  "phase_relative_to_U_deg": [
+    0.0,
+    -119.91394213004043,
+    120.12588977473627
+  ],
+  "angle_fit_RMS_deg": 1.1099217142380224,
+  "span_s": 2.98834125,
+  "PWM_periods": 46932,
+  "duty_fits": [
+    {
+      "offset": 0.4783692524244645,
+      "amplitude": 0.06428447382188636,
+      "phase_deg": -0.06801601487358891,
+      "r_squared": 0.9985427717000839
+    },
+    {
+      "offset": 0.47825479056626624,
+      "amplitude": 0.06432332437368768,
+      "phase_deg": -119.98195814491402,
+      "r_squared": 0.9987389871629129
+    },
+    {
+      "offset": 0.478320861255885,
+      "amplitude": 0.06439626552881547,
+      "phase_deg": 120.05787375986266,
+      "r_squared": 0.9986257627395498
+    }
+  ],
+  "limitations": "Logical duty waveform, not phase voltage or measured rotor speed; 4 MHz timing quantization.",
+  "pass": true
+}

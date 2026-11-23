@@ -1,0 +1,16 @@
+
+C:\mic_practice\artifacts\live_bench_20261030\boot_reset_capture_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08012fd0 <SystemInit>:
+ 8012fd0:	4a06      	ldr	r2, [pc, #24]	@ (8012fec <SystemInit+0x1c>)
+ 8012fd2:	f8d2 3088 	ldr.w	r3, [r2, #136]	@ 0x88
+ 8012fd6:	f443 0370 	orr.w	r3, r3, #15728640	@ 0xf00000
+ 8012fda:	f8c2 3088 	str.w	r3, [r2, #136]	@ 0x88
+ 8012fde:	f3bf 8f4f 	dsb	sy
+ 8012fe2:	f3bf 8f6f 	isb	sy
+ 8012fe6:	f7ff b97b 	b.w	80122e0 <mic_boot_capture_early>
+ 8012fea:	bf00      	nop
+ 8012fec:	e000ed00 	.word	0xe000ed00

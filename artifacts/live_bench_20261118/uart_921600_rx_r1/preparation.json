@@ -1,0 +1,22 @@
+{
+  "prepared": true,
+  "pair": [
+    2026111805,
+    2026111806
+  ],
+  "built": false,
+  "installed": false,
+  "hardware_commands": 0,
+  "uart_baud": 921600,
+  "native_RX": "DMA1ch2 ring128 + FIFO8 + IDLE/HT/TC",
+  "Uno_RX": "FIFO8 + dedicated bounded ISR; no vendor semaphore RX/TX callbacks",
+  "no_motor_priority_or_IRQ_enable_changes": true,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "receive_error_handling": "G431 DMA cannot attribute NE per byte: any NE/PE/FE/ORE trips existing UART fault; Uno losses latch until boot",
+  "DMA_async_API_NOT_enabled_in_Uno_kernel": true,
+  "existing_native_TX_DMA_and_TC_wait_unchanged": true,
+  "old_records_preserved": 2057,
+  "target_timing_measured": false,
+  "UART_hardware_qualified": false
+}

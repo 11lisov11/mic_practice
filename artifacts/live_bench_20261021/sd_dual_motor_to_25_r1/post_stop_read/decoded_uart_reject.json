@@ -1,0 +1,52 @@
+{
+  "available": true,
+  "reason": "saved_command_reject",
+  "schema": 1,
+  "records": [
+    {
+      "tick_ms": 65765,
+      "reason_code": 2,
+      "length": 43,
+      "speculative_prefix": 0,
+      "uart_flags": 4,
+      "last_committed_sequence": 209,
+      "budget_used": 2,
+      "recoverable_losses": 0,
+      "dropped_before": 4,
+      "last_valid_ms": 65714,
+      "candidate_started_ms": 65762,
+      "receiver_flags": 1,
+      "raw_hex": "aa55030103d2204e0000f401c25a0000000000000000000000000080000000000000000000000098136f54",
+      "marks_hex": "00000000000000000000000000000000000000000000000000000000000000040000000000000000000000",
+      "full_frame_crc_matches": false,
+      "stored_crc": 1416565656,
+      "calculated_crc": 2636239616
+    },
+    {
+      "tick_ms": 65918,
+      "reason_code": 5,
+      "length": 43,
+      "speculative_prefix": 0,
+      "uart_flags": 4,
+      "last_committed_sequence": 212,
+      "budget_used": 2,
+      "recoverable_losses": 0,
+      "dropped_before": 5,
+      "last_valid_ms": 65867,
+      "candidate_started_ms": 65914,
+      "receiver_flags": 1,
+      "raw_hex": "aa55030103d5204e0000f401c25a000000000000000000000000000000000000000000000000005ed64c29",
+      "marks_hex": "00000000000004040000000000000000000000000000000000000000000000000000000000000000000000",
+      "full_frame_crc_matches": true,
+      "stored_crc": 692901470,
+      "calculated_crc": 692901470
+    }
+  ],
+  "speculative_prefix_expiries": 0,
+  "summary_ru": "UART Uno→Nucleo: CRC полного кадра совпал; причина 5, бюджет 2/2. Сырые байты сохранены.",
+  "physical_cause_identified": false,
+  "limitations": [
+    "Parser observation times, not electrical edge timestamps",
+    "Only the latest recovered rejection and first fatal rejection are retained until peer reset"
+  ]
+}

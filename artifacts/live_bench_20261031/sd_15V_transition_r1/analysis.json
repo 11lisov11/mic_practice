@@ -1,0 +1,72 @@
+{
+  "operator_confirmed": "Ribbon connected,15V ON,J1 OFF; controllers not intentionally restarted. Reply готовов.",
+  "GET_only_recording_samples": 58,
+  "SD_changes": [
+    {
+      "elapsed_s": 0.0,
+      "SD": "HIGH",
+      "native_uptime_ms": 156581,
+      "PWM": 0
+    },
+    {
+      "elapsed_s": 77.438,
+      "SD": "LOW",
+      "native_uptime_ms": 234634,
+      "PWM": 0
+    }
+  ],
+  "native_reset_observations": [
+    {
+      "elapsed_before_s": 77.438,
+      "elapsed_after_s": 79.36,
+      "uptime_before_ms": 234634,
+      "uptime_after_ms": 514,
+      "boot_CSR": 67108864,
+      "CRC_before": 1155563050,
+      "CRC_after": 1940097431,
+      "Linux_boot_same": true
+    }
+  ],
+  "native_boot_causes_after": [
+    "NRST_FLAG"
+  ],
+  "native_retained_sequence_after": 9,
+  "post_confirmation_levels": [
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "direct_registers": {
+    "PA6_HIGH": false,
+    "mode": 2,
+    "pull": 1,
+    "AF": 6,
+    "locked": true,
+    "BKBID": false,
+    "BKE": true,
+    "MOE": false,
+    "BIF": true,
+    "BIE": false,
+    "core_halted": false
+  },
+  "all_observed_PWM_OFF": true,
+  "conclusion": "With cable alone HIGH; connected STEVAL setup changes PA6 to LOW before native reset. After a reset with NRST flag, PA6 remains LOW. The low level predates reset and PWM START. Specific STEVAL-side SD source is not identified.",
+  "limits": [
+    "The cable-connect and15V-enable instants are operator actions without separate timestamps.",
+    "NRST flag does not identify who or what asserted reset.",
+    "Raw first-event waveform before the spontaneous/reset observation was not retrieved in this compact watch; its status metadata was recorded. Prior full captures remain saved.",
+    "No measurement of driver internal VCCL or CIN voltage; no proof of intrinsic IPM defect."
+  ],
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "protection_changes": false,
+  "old_captures_modified": false
+}

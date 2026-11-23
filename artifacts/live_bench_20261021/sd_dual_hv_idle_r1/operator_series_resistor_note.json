@@ -1,0 +1,9 @@
+{
+  "operator_statement": "В подключении к TP23 есть последовательный резистор 1 кОм, как раньше",
+  "resistor_ohm": 1000,
+  "resistor_exact_branch_confirmed": false,
+  "required_clarification": "Is the resistor in the added TP23-to-PA4 branch, or in the existing TP23-to-PA6/BKIN path?",
+  "corrected_continuity_expectation": "If added TP23-to-PA4 branch contains 1k series resistor, expect about 1k ohm, not near zero. Existing TP23-to-PA6 path depends on actual resistor location. Do not treat expected 1k as an open circuit.",
+  "hardware_commands": 0,
+  "power_state_changed_by_operator_not_confirmed": true
+}

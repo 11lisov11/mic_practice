@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "status_bytes_before": 14330,
+  "status_bytes_after": 8508,
+  "capture_pages": 16,
+  "max_page_text_bytes": 418,
+  "roundtrip_sha256": {
+    "ADC_peak.bin": "bdd38b93f60e3842d2cc197dd63eb409993e30907752d6e9cee7f1f0493f364b",
+    "observer_trace.bin": "c0cd4c9d59a0308a685defdc44fb1a7ef6291dabfdef9925a4297621f18d5f7a"
+  },
+  "preserved_originals": 21,
+  "negative_cases": [
+    "out_of_range",
+    "RUN",
+    "outputs_active",
+    "peer_PWM_active",
+    "record_changed",
+    "page_reordered",
+    "short_page",
+    "bad_CRC",
+    "unauthorized_HTTP"
+  ],
+  "authenticated_HTTP_route_verified": true,
+  "stand_commands": 0
+}

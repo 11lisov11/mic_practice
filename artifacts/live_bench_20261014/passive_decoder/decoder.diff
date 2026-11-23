@@ -1,0 +1,11 @@
+--- installed-before/server.py
++++ installed-after/server.py
+@@ -54,7 +54,7 @@
+                 item["reason"] = "not_received"
+             elif len(text) != 184 or any(c not in "0123456789abcdefABCDEF" for c in text):
+                 item["reason"] = "invalid_hex"
+-            elif peer != 2026101102 or not 0 <= peer_age < 300 or not 0 <= age <= 5000:
++            elif peer not in (2026101102, 2026101204) or not 0 <= peer_age < 300 or not 0 <= age <= 5000:
+                 item["reason"] = "stale_or_wrong_peer"
+             else:
+                 data = bytes.fromhex(text)

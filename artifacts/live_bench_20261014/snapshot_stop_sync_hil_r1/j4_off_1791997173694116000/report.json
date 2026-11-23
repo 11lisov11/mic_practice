@@ -1,0 +1,23 @@
+{
+  "schema": "mic_ai.j4_off_observation.v1",
+  "operator_confirmed_j4_off": true,
+  "checks": {
+    "expected_pair": true,
+    "safe_off": true,
+    "link_healthy": true,
+    "no_errors": true,
+    "controller_bus_low": false
+  },
+  "reported_vbus_range_v": [
+    5.0,
+    5.0
+  ],
+  "independent_meter_after_j4_off_not_yet_supplied": true,
+  "controller_reading_is_not_physical_discharge_confirmation": true,
+  "firmware_writes": 0,
+  "calibration_writes": 0,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "hv_release_approved": false
+}

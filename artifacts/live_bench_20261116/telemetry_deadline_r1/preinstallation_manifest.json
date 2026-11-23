@@ -1,0 +1,76 @@
+{
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "frequency_max_hz": 5,
+  "runlimit_ms": 5000,
+  "peer_reply_timeout_ms": 500,
+  "send_cadence_us": 50000,
+  "reply_guard_us": 8000,
+  "CPU_probe_budget_cycles": 4000,
+  "diagnostic_ADC_first_NIS_loss_trigger": true,
+  "OFF_bulk_round_robin": true,
+  "pair": [
+    2026111603,
+    2026111604
+  ],
+  "base_pair": [
+    2026111601,
+    2026111602
+  ],
+  "built": true,
+  "installed": false,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "observer_tuning_changed": false,
+  "controller_equations_changed": false,
+  "OFF_CPU_qualified": false,
+  "FOC_start_ready": false,
+  "target_timing_measured": false,
+  "hardware_validated": false,
+  "ordinary_freshness_guards_changed": false,
+  "ordinary_OFF_foreground_priority": true,
+  "OFF_bulk_max_fps": 100,
+  "observer_validity_problem_solved": false,
+  "target_timing_requalification_required": true,
+  "host_tests_passed": true,
+  "model_tests_passed": true,
+  "native_flash_bytes": 112952,
+  "hex_padding_offsets": [
+    108668,
+    108669,
+    108670,
+    108671
+  ],
+  "artifacts": {
+    "release/nucleo_2026111604_expected_readback.bin": "59a9418fa1ed8853d0eb09eb30fd916ba78ec2826c4ec738f779d277e13556d6",
+    "release/nucleo_2026111604_telemetry_deadline.hex": "4ff3bed054364d96486e89d1f95aea1cfdbddd576a80f78ebf37e6c7dce96c97",
+    "release/uno_2026111603_telemetry_deadline.elf-zsk.bin": "926bc747e582ded8691a6b02715256fb3b49f5388863747e8d01db5095fc9eb5"
+  },
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 28868,
+    ".noinit": 32,
+    "._user_heap_stack": 1540
+  },
+  "RAM_allocated": 31416,
+  "RAM_unallocated": 1352,
+  "preserved_files_verified": 3523,
+  "source_files": 162,
+  "verification_reports": {
+    "verification/report.json": "0c1d1ae7a915deebd299759d021f1b3ef58425433ddddc082af72f65f42d5a37",
+    "verification/ARM_scope.json": "2031588882cb339ea64d70653f39e0da63edccef248acc0a66897bbfbec41055",
+    "verification/NIS_capture_regression.json": "1eb0094938898e6e5e42ec3e2d93ba3a63dbd491b9600bbe134d07db105c76c9",
+    "model_verification/model_report.json": "7d93d01302424645a514d3d657f387aa0eb50dc4e244a5ebc18332895bba5d09",
+    "nucleo_build_report.json": "6db04d8168f146e7f6db53bbe8274fb7044b7f30773bfa357ebd56e23a56caf7",
+    "build/uno/unoq_mcsdk_scalar.build-manifest.json": "14814165a81c98a318b252fa6fbcce3eed96c0751d55bb48bfcf6e5537ca8238"
+  },
+  "qualified": false,
+  "previous_measured_OFF_cycles": 3618,
+  "previous_measurement_is_candidate_measurement": false
+}

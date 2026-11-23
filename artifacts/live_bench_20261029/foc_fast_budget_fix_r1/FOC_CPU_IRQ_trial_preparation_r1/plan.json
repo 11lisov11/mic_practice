@@ -1,0 +1,41 @@
+{
+  "prepared": true,
+  "pair": [
+    2026103001,
+    2026103002
+  ],
+  "start_commands": 0,
+  "clear_commands": 0,
+  "arm_commands": 0,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "current_state": "USB both boards; J1 OFF;15V ON; SAFE/PWM0",
+  "trial": {
+    "algorithm": "FOC",
+    "frequency_hz": 5,
+    "limit_ms": 5000,
+    "host_retries": 0
+  },
+  "autonomous_preflight_pending": true,
+  "powered_preflight_pending": true,
+  "protected_refusal_predicates_checked": [
+    "old_pair",
+    "stale_link",
+    "algorithm_fault",
+    "not_zeroed",
+    "active_Break",
+    "UART_integrity",
+    "UART_hw",
+    "UART_transport",
+    "SD_level",
+    "SD_break_irq_enabled",
+    "SD_config_ok"
+  ],
+  "preservation_verified": 908,
+  "next_step": "Both boards to powerbanks; PC USB and Saleae including GND disconnected;15V unchanged;J1 still OFF; no START or RESET.",
+  "final_step": "After autonomous checks only: J1 through soft-start; fresh power/SD/protection checks; oneSTART with local5s autostop.",
+  "CLEAR_not_authorized": true,
+  "runner": "tools/run_foc_fast_budget_trial.py",
+  "native_stop_and_Uno_local_stop_5s": true,
+  "limitation": "OFF kernel timing is not full powered-adapter timing; this trial will measure the latter."
+}

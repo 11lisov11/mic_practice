@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "rows": 659,
+  "received_bytes": 29240,
+  "full_duplex_OFF_frames": 14,
+  "hardware_RX_errors": 0,
+  "software_RX_drops": 0,
+  "actual_recorder_and_Uno_adapter": true,
+  "simulated_FIFO": true,
+  "hardware_commands": 0,
+  "rows_and_checkpoints_bit_exact": true,
+  "initial_terminal_state_model_bit_exact": true,
+  "real_saved_NIS_step_replay": {
+    "passed": true,
+    "bit_exact": true,
+    "result_equal": true,
+    "compared_words": 51,
+    "different_words": [],
+    "counts": [
+      0,
+      0,
+      16
+    ],
+    "R_ARM_A2": [
+      0.0007999999797903001,
+      0.0,
+      0.00026666666963137686
+    ],
+    "NIS": 29.307125091552734,
+    "hardware_commands": 0,
+    "target_timing_measured": false,
+    "emulator": "Actual ARM/FMA, stable pointer ABI, exact ARM R constructor"
+  }
+}

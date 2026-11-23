@@ -1,0 +1,144 @@
+{
+  "operator_confirmed": {
+    "J1": "OFF",
+    "J4_15V": "ON",
+    "ribbon": "both ends connected",
+    "Nucleo": "PC USB"
+  },
+  "fresh_samples": 5,
+  "SD_levels": [
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "SD_direct": {
+    "PA6_HIGH": false,
+    "PA6_mode": 2,
+    "PA6_open_drain": true,
+    "PA6_pull": 1,
+    "PA6_AF": 6,
+    "PA6_locked": true,
+    "BKBID": false,
+    "BKE": true,
+    "BKP": true,
+    "MOE": false,
+    "AOE": false,
+    "BIE": false,
+    "BIF": true,
+    "BKINE": true,
+    "BKINP": true,
+    "core_halted": false
+  },
+  "zero_ready_all": true,
+  "active_MC_masks": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "occurred_MC_masks": [
+    1024,
+    1024,
+    1024,
+    1024,
+    1024
+  ],
+  "transport_samples": [
+    {
+      "mc_bad_cnt": 28,
+      "mc_good_cnt": 44515,
+      "mc_last_uart_error_flags": 0,
+      "mc_uart_error_flags": 8,
+      "mc_bad_integrity": 0,
+      "mc_last_bad_reason": 1,
+      "mc_transport_fault": 4
+    },
+    {
+      "mc_bad_cnt": 28,
+      "mc_good_cnt": 44544,
+      "mc_last_uart_error_flags": 0,
+      "mc_uart_error_flags": 8,
+      "mc_bad_integrity": 0,
+      "mc_last_bad_reason": 1,
+      "mc_transport_fault": 4
+    },
+    {
+      "mc_bad_cnt": 28,
+      "mc_good_cnt": 44572,
+      "mc_last_uart_error_flags": 0,
+      "mc_uart_error_flags": 8,
+      "mc_bad_integrity": 0,
+      "mc_last_bad_reason": 1,
+      "mc_transport_fault": 4
+    },
+    {
+      "mc_bad_cnt": 28,
+      "mc_good_cnt": 44603,
+      "mc_last_uart_error_flags": 0,
+      "mc_uart_error_flags": 8,
+      "mc_bad_integrity": 0,
+      "mc_last_bad_reason": 1,
+      "mc_transport_fault": 4
+    },
+    {
+      "mc_bad_cnt": 28,
+      "mc_good_cnt": 44633,
+      "mc_last_uart_error_flags": 0,
+      "mc_uart_error_flags": 8,
+      "mc_bad_integrity": 0,
+      "mc_last_bad_reason": 1,
+      "mc_transport_fault": 4
+    }
+  ],
+  "prior_adapter_without_cable": "HIGH",
+  "latest_status_read_fresh": true,
+  "supply_missing_hypothesis_resolved": false,
+  "reason": "Despite operator confirmation of15V ON, live PA6 remains LOW. No direct VCCL measurement or diagnosis inferred.",
+  "wave": {
+    "tick": 7432,
+    "reason": "timeout_incomplete",
+    "post_complete": false,
+    "run_overflow": false,
+    "PA6_intervals": [
+      {
+        "fall_sample": 2040,
+        "rise_sample": 2059,
+        "from_us": -1.6,
+        "to_us": 2.2,
+        "left_censored": false,
+        "right_censored": false,
+        "pulse_complete": true,
+        "width_samples": 19,
+        "width_us": 3.8000000000000003
+      },
+      {
+        "fall_sample": 2084,
+        "rise_sample": null,
+        "from_us": 7.2,
+        "to_us": null,
+        "left_censored": false,
+        "right_censored": true,
+        "pulse_complete": false,
+        "width_samples": null,
+        "width_us": null
+      }
+    ],
+    "PA4_TP23_probe_connected": false,
+    "limitation": "Frozen first event since boot; not a fresh dedicated capture of the entire present hold. Timeout means the second LOW duration is not fully known."
+  },
+  "next_control_requested": "J1 stays OFF, J4 OFF, disconnect only STEVAL end, leave cable on IHM09M2; controllers unchanged, no RESET.",
+  "ready_for_START": false,
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "old_capture_files_modified": false
+}

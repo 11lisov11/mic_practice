@@ -1,0 +1,55 @@
+{
+  "exact_epoch_matches": true,
+  "baseline_NIS": 26.485742568969727,
+  "NIS_after_offline_voltage_epoch_shift": {
+    "-1.0": {
+      "voltage_alpha_beta_V": [
+        -1.360015869140625,
+        5.806023597717285
+      ],
+      "NIS": 26.485742568969727
+    },
+    "0.0": {
+      "voltage_alpha_beta_V": [
+        -1.311495065689087,
+        5.739986896514893
+      ],
+      "NIS": 26.135486602783203
+    },
+    "0.25": {
+      "voltage_alpha_beta_V": [
+        -1.3236254453659058,
+        5.756496429443359
+      ],
+      "NIS": 26.222789764404297
+    },
+    "0.5": {
+      "voltage_alpha_beta_V": [
+        -1.335755467414856,
+        5.773005485534668
+      ],
+      "NIS": 26.310264587402344
+    },
+    "0.75": {
+      "voltage_alpha_beta_V": [
+        -1.3478856086730957,
+        5.789514064788818
+      ],
+      "NIS": 26.397924423217773
+    },
+    "1.0": {
+      "voltage_alpha_beta_V": [
+        -1.360015869140625,
+        5.806023597717285
+      ],
+      "NIS": 26.485742568969727
+    }
+  },
+  "single_sample_removal_NIS_min_max": [
+    23.609994888305664,
+    29.998294830322266
+  ],
+  "under_threshold_if_replacing_one_of_16": 5,
+  "voltage_and_current_observations_are_unchanged_in_candidate_guards": true,
+  "scope": "Sensitivity only. Removals and timing shifts are not firmware changes or permission to mask an ADC sample."
+}

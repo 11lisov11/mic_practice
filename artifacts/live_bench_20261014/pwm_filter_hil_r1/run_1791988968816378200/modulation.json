@@ -1,0 +1,43 @@
+{
+  "pass": false,
+  "checks": {
+    "frequency_from_waveform_matches_command": false,
+    "positive_phase_rotation": true,
+    "V_phase_minus_120_degrees": false,
+    "W_phase_plus_120_degrees": false,
+    "balanced_phase_amplitudes": false,
+    "sinusoidal_duty_envelopes": false
+  },
+  "csv": "C:\\mic_practice\\artifacts\\live_bench_20261014\\pwm_filter_hil_r1\\run_1791988968816378200\\csv\\digital.csv",
+  "csv_sha256": "3f1130a6b4ac40a1c28cee19b5ab96f9b0798627d9da9a4d5b478035fddab180",
+  "expected_hz": 5,
+  "measured_frequency_hz": 2.4298474323861936,
+  "PWM_periods": 47685,
+  "phase_relative_to_U_deg": [
+    0.0,
+    -126.54800170982688,
+    126.16048040756755
+  ],
+  "angle_fit_RMS_deg": 198.61990020735325,
+  "duty_fits": [
+    {
+      "offset": 0.48389797670404194,
+      "amplitude": 0.015878652595473674,
+      "phase_deg": 12.721390247229696,
+      "r_squared": 0.06610269195730933
+    },
+    {
+      "offset": 0.4689303091404122,
+      "amplitude": 0.013301553443016879,
+      "phase_deg": -113.82661146259719,
+      "r_squared": 0.039579003094661336
+    },
+    {
+      "offset": 0.4821600992289749,
+      "amplitude": 0.013396363648416463,
+      "phase_deg": 138.8818706547972,
+      "r_squared": 0.045272382873371764
+    }
+  ],
+  "scope": "logical PWM modulation; not rotor speed, flux or phase voltage measurement"
+}

@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "clear_acknowledged": "ACK_ACCEPTED",
+  "run_elapsed_ms": 623,
+  "requested_hz": 5,
+  "reference_at_fault_hz": 0.9000000357627869,
+  "stopped_on_observer_gate": true,
+  "publication_rejected": true,
+  "NIS": 27.091480255126953,
+  "threshold": 25,
+  "step": 571,
+  "ADC_exact_identity": true,
+  "ADC_sample_count": 16,
+  "voltage_history_rows": 25,
+  "ADC_reconstructed_ia_ib_va_vb": [
+    -0.2596262991428375,
+    -0.7377064824104309,
+    0.3550594449043274,
+    -10.282690048217773
+  ],
+  "differences_to_observer_inputs": [
+    0.0,
+    0.0,
+    0.0,
+    -1.9073486328125e-06
+  ],
+  "ARM_replay": {
+    "step": 571,
+    "reference_Hz": 0.9000000357627869,
+    "NIS": 27.091480255126953,
+    "bit_exact_ARM_words": 51,
+    "observer_speed_before_rpm": -134.6520978260589,
+    "observer_speed_after_rpm": -132.85304260253906,
+    "innovation_covariance_A2": [
+      [
+        0.0004386823776692391,
+        0.00023127035955547432
+      ],
+      [
+        0.00023127035955547432,
+        0.0007148151095665305
+      ]
+    ],
+    "current_predicted_A": [
+      -0.1508634388446808,
+      -0.6717303395271301
+    ],
+    "current_measured_A": [
+      -0.2596262991428375,
+      -0.7377064824104309
+    ],
+    "conditional_NIS_terms": [
+      26.965659359248388,
+      0.12582244547805924
+    ],
+    "phase_residual_A": [
+      -0.10876286029815674,
+      -0.002755585631572008,
+      0.11151844592972875
+    ],
+    "phase_standard_deviations": [
+      0.02094474582488981,
+      0.021106774269764806,
+      0.029087246915265277
+    ],
+    "phase_standardized_residual": [
+      -5.19284698928682,
+      -0.1305545601783097,
+      3.833929221785605
+    ],
+    "pair_counts": [
+      16,
+      0,
+      0
+    ],
+    "measurement_epoch_cycles": 1110445255,
+    "counterfactual_ARM_NIS": {
+      "beta_voltage_minus_1V": 26.998680114746094,
+      "beta_voltage_plus_1V": 27.758180618286133,
+      "beta_current_minus_10mA": 27.55150032043457,
+      "beta_current_plus_10mA": 26.968791961669922
+    },
+    "terminal_voltage_independently_measured": false
+  },
+  "max_published_result_age_us": 651.1058823529412,
+  "fault_age_us": 1528.3117647058823,
+  "limits_unchanged": true,
+  "motor_commands_during_analysis": 0
+}

@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "read_only": true,
+  "physical_current_scale_qualified": false,
+  "transport": "direct ST-Link HOTPLUG RAM, no Uno RPC",
+  "zero_ready": 1,
+  "zero_bad": 0,
+  "attempts": 3,
+  "stable": 3,
+  "offsets_adc": [
+    2067,
+    2068,
+    2067,
+    2070
+  ],
+  "blocks": [
+    {
+      "block": 1,
+      "means_adc": [
+        2067,
+        2067,
+        2067,
+        2069
+      ],
+      "raw_spans_adc": [
+        30,
+        35,
+        34,
+        30
+      ],
+      "stable": 1,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.9304306514350627,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    },
+    {
+      "block": 2,
+      "means_adc": [
+        2067,
+        2068,
+        2067,
+        2070
+      ],
+      "raw_spans_adc": [
+        30,
+        35,
+        40,
+        28
+      ],
+      "stable": 2,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.5687375497513916,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    },
+    {
+      "block": 3,
+      "means_adc": [
+        2068,
+        2068,
+        2068,
+        2070
+      ],
+      "raw_spans_adc": [
+        36,
+        38,
+        36,
+        30
+      ],
+      "stable": 3,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.299038105676658,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    }
+  ],
+  "rpc_verified": false
+}

@@ -9,6 +9,13 @@ import time
 from run_wifi_nucleo_pwm_bench import WifiHmi, wait_status
 from verify_wifi_command_path import get_wifi_logs
 from wifi_bench_scenarios import operator_keepalive
+from collect_wifi_telemetry import read_token
+
+
+def trial_transport_clean(s):
+    return all(type(s.get(k)) is int and s[k] == 0 for k in (
+        'mc_bad_cnt', 'mc_bad_integrity', 'mc_bad_sequence',
+        'mc_uart_error_flags', 'mc_last_uart_error_flags', 'uno_tx_short_writes'))
 
 
 def ready(s, faults_allowed=False):
@@ -17,8 +24,10 @@ def ready(s, faults_allowed=False):
             s['state'] == 'SAFE' and s['pwm'] == 0 and s['estop'] == 0
             and s['hmi_hv_armed'] == 0 and s['hmi_arm_profile'] == 'hv'
             and s['hmi_vbus_hv_calibrated'] == 1
+            and s.get('hmi_bounded_start_request_supported') == 1
             and (s['fw_build'], s['mc_fw_build']) in (
-                (2026100707, 2026100707), (2026100708, 2026100708), (2026100709, 2026100708))
+                (2026100707, 2026100707), (2026100708, 2026100708), (2026100709, 2026100708),
+                (2026100804, 2026100801), (2026101002, 2026100801))
             and s.get('mc_diag_valid') == 1
             and s.get('mc_last_bad_valid') == 1
             and s['mode'] == 'VF' and s['mc_capabilities'] == 1
@@ -31,6 +40,14 @@ def ready(s, faults_allowed=False):
             and math.isfinite(float(s['bp_temp_c'])) and s['bp_temp_c'] < 80
             and not (int(s['bp_status']) & 0x22)
             and all(s[k] == 0 for k in ('precharge', 'pfc', 'brake', 'bp_ext'))
+            and (s['fw_build'] != 2026101002 or (
+                trial_transport_clean(s) and s.get('mc_last_bad_reason') == 0
+                and s.get('mc_fault_reason') in (0, 8)
+                and s.get('mc_fault_current_mask') in (0, 4)
+                and (s.get('mc_fault_occurred_mask') in (0, 4)
+                     or (s.get('mc_fault_reason') == 8 and s.get('mc_fault_current_mask') == 4
+                         and s.get('mc_fault_occurred_mask') == 0x404))
+                and s['bp_fault'] in ((0, 5) if faults_allowed else (0,))))
             and (faults_allowed or (s['bp_fault'] == 0 and s['bp_bad'] == 0 and s['bp_bad_cnt'] == 0))
         )
     except (KeyError, TypeError, ValueError, OverflowError):
@@ -47,12 +64,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--confirm-operator-ready', action='store_true')
     parser.add_argument('--outdir', type=Path, required=True)
+    parser.add_argument('--token-file', type=Path,
+                        help='Private local credential, never read over USB during powered testing')
     args = parser.parse_args()
     if not args.confirm_operator_ready:
         parser.error('operator readiness and external wired interfaces removed are required')
     out = args.outdir.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    token = getpass.getpass('Control credential (not echoed): ').strip()
+    token = (read_token(str(args.token_file)) if args.token_file else
+             getpass.getpass('Control credential (not echoed): ').strip())
     if len(token) < 16:
         raise RuntimeError('missing credential')
     report = {'scope': 'one production HV V/f trial; no analyzer or firmware change',
@@ -84,9 +104,9 @@ def main():
                 raise RuntimeError('unexpected HV confirmation contract')
             h.post('/api/hv-arm', {'action': 'arm', 'confirm': confirm}, 'HV ARM')
             began = time.monotonic()
-            report['start_response'] = h.post('/api/start-sequence', {}, 'one-shot START')
-            # The endpoint applies its finite run limit before START. Once it
-            # confirms RUN, shorten that limit; never increase an existing one.
+            report['start_response'] = h.post('/api/start-sequence', {'runlimit_s': 3.0}, 'one-shot bounded START')
+            # The endpoint installs the short MCU limit before START. Repeating
+            # the setter cannot extend an already running deadline.
             h.command('SET RUNLIMIT 3')
             while time.monotonic() - began < 3:
                 s = h.status()
@@ -96,6 +116,7 @@ def main():
                         or s.get('hmi_hv_armed') != 1 or s.get('hmi_vbus_hv_calibrated') != 1
                         or not 250 <= float(s.get('vdc', 0)) <= 360
                         or not 0 <= float(s.get('bp_age_ms', 999999)) < 300
+                        or (s.get('fw_build') == 2026101002 and not trial_transport_clean(s))
                         or heartbeat['errors']):
                     report['abort_status'] = s
                     report['abort_observations'] = {

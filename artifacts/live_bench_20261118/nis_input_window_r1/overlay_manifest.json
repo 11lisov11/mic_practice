@@ -1,0 +1,19 @@
+{
+  "overlay_only": true,
+  "firmware_images_built": false,
+  "installed": false,
+  "hardware_commands": 0,
+  "source_build_IDs_unchanged_NOT_a_flashable_release": true,
+  "changed": [
+    "web_hmi/server.py",
+    "nucleo/Inc/current_shunt.h",
+    "nucleo/Inc/peak_core.h",
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Src/multi_native.c"
+  ],
+  "observer_math_and_control_unchanged": true,
+  "protection_limits_unchanged": true,
+  "physical_NIS_fix_proven": false,
+  "target_CPU_or_RAM_qualified": false,
+  "purpose": "Correct proven source-window capture gap; do not invent a motor/voltage correction from an underdetermined record"
+}

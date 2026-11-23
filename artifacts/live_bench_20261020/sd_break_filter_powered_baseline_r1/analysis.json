@@ -1,0 +1,48 @@
+{
+  "requested_run_completed": false,
+  "motor_start_commands": 0,
+  "clear_commands": 0,
+  "agent_reset_commands": 0,
+  "flash_commands": 0,
+  "reason_no_start": "Pre-existing hardware Break, not a UART CRC failure",
+  "pair": [
+    2026102001,
+    2026102002
+  ],
+  "event_tick_ms": 6996,
+  "event_before_start": true,
+  "moe_at_irq": false,
+  "pa6_high_at_irq": false,
+  "bkf_at_irq": 9,
+  "bdtr_at_irq_hex": "0x2393872",
+  "nominal_pulse_width_us": 18461.8,
+  "nominal_sample_period_us": 0.2,
+  "full_pulse_and_post_recorded": true,
+  "raw_decode_matches": true,
+  "source_identified": false,
+  "vbus_at_event_known": false,
+  "temperature_at_event_known": false,
+  "current_fault_mask": 0,
+  "latched_fault_mask": 1028,
+  "current_state": "SAFE",
+  "current_pwm": 0,
+  "current_sd": "HIGH",
+  "current_bus_v": 319.0,
+  "current_reported_temperature_c": 47.0,
+  "uart": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_transport_fault": 0,
+    "uno_rx_dropped": 0,
+    "uno_tx_short_writes": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_hw_flags": 0
+  },
+  "limitations": [
+    "Nominal DMA sampling is not an independently calibrated analog measurement.",
+    "The event has no cached bus/temperature context; current readings do not describe the event.",
+    "A long SD signal before START does not identify OC, UVLO, or an external SD assertion.",
+    "This boot event cannot determine whether BKF9 resolves the previous 22 Hz running event."
+  ]
+}

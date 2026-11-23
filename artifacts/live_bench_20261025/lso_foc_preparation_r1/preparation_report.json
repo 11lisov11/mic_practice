@@ -1,0 +1,78 @@
+{
+  "software_checks_passed": true,
+  "checks": {
+    "prepare_air56_lso_profile_selftest.py": {
+      "passed": true,
+      "exit_code": 0
+    },
+    "mcsdk_release_preflight_selftest.py": {
+      "passed": true,
+      "exit_code": 0
+    }
+  },
+  "workbench_unit_comparisons": true,
+  "nominal_current_scale": {
+    "rshunt_ohm": 0.04,
+    "gain": 2.1,
+    "vref_v": 3.3,
+    "accepted_as_nominal_not_measured": true
+  },
+  "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json",
+  "profile_errors": [
+    "lso_missing_or_invalid_magnetizing_current_rms_a",
+    "lso_missing_or_invalid_viscous_friction_nm_s",
+    "lso_requires_measured_motor_model",
+    "profile_provenance"
+  ],
+  "missing_motor_parameters": [
+    "rotor_resistance_ohm",
+    "stator_leakage_inductance_h",
+    "rotor_leakage_inductance_h",
+    "magnetizing_inductance_h",
+    "rotor_inertia_kg_m2",
+    "magnetizing_current_rms_a",
+    "viscous_friction_nm_s"
+  ],
+  "existing_rs_ohm": 0.35,
+  "existing_rs_measured": false,
+  "scalar_to_foc_adc_integration": {
+    "scalar_adc_owner": "mic_current_adc_irq",
+    "scalar_monitor_modifies_adc_queue_and_tim1_ch4": true,
+    "foc_requires_generated_R3_2_adc_owner_and_TSK_HighFrequencyTask": true,
+    "direct_reuse_of_scalar_monitor_in_foc_verified": false
+  },
+  "staged_foc_firmware_built": false,
+  "installed_foc_firmware": false,
+  "motor_started": false,
+  "hardware_commands": 0,
+  "eligible_for_foc_start": false,
+  "installed_pair_unchanged": [
+    2026102509,
+    2026102510
+  ],
+  "next_measurement": {
+    "method": "determine_rotor_resistance_and_inductances",
+    "note": "ordinary DC ohmmeter cannot determine Rr, leakage and magnetizing inductances; an appropriate identification experiment or impedance measurements are needed"
+  },
+  "source_sha256": {
+    "tools/prepare_air56_lso_profile.py": "799e92e24ec3dc0651eca65a79f9766a5e9ac659db0213791835622740784a89",
+    "tools/prepare_air56_lso_foc.ps1": "5ea9cb44d622964872c2656b02e15a0f1f7cafe4093c3d2f58f2465e6ff50f36",
+    "tools/mcsdk_release_preflight.py": "a426652de102d12360a6b57e8131de3d117173f499d0914073727513ed736b2b",
+    "tools/check_lso_workbench_units.py": "f54c535eee49987e3707d00fca22672b0d0fa2a540c21c028de3e62a9aa80537"
+  },
+  "motor_model_bridge_pytest": {
+    "passed": true,
+    "tests_passed": 9
+  },
+  "motor_model_derived_regulator_tuning_verified": false,
+  "stator_resistance_observation": {
+    "path": "C:\\mic_practice\\artifacts\\live_bench_20261025\\lso_foc_preparation_r1\\motor_line_resistance.json",
+    "line_resistance_ohm": 24.7,
+    "preliminary_star_equivalent_ohm": 12.35,
+    "lead_correction_pending": false,
+    "shorted_leads_ohm": 0.24,
+    "lead_corrected_line_ohm": 24.46,
+    "lead_corrected_star_equivalent_ohm": 12.23
+  },
+  "partial_motor_profile": "C:\\mic_practice\\artifacts\\live_bench_20261025\\lso_foc_preparation_r1\\motor_profile_partial.json"
+}

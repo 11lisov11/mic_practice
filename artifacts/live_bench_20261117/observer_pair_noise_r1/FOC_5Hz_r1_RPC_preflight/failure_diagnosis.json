@@ -1,0 +1,42 @@
+{
+  "baseline": null,
+  "boot_identity": null,
+  "samples": 0,
+  "ready": false,
+  "failure": "RPC preflight failed: HTTP Error 503: Service Unavailable",
+  "quiet_window_seconds": null,
+  "policy": "Stable historical counters allowed; any change latches failure; no rebaseline",
+  "trial_started": false,
+  "CLEAR": 0,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "halt": 0,
+  "flash": 0,
+  "thresholds_changed": false,
+  "authorization": {
+    "CLEAR_max": 1,
+    "START_max": 1,
+    "CLEAR_consumed": 0,
+    "START_consumed": 0,
+    "condition": "Only after fresh link and fully restored protections"
+  },
+  "RPC_failure_confirmed_by": [
+    "HTTP503 /api/status no response",
+    "Direct RouterClient get returns null"
+  ],
+  "Linux_HMI_and_router_processes_running": true,
+  "MCU_core_after_passive_read": "running",
+  "RAM_atomic": false,
+  "RAM_bytes": 786432,
+  "RAM_sha256": "3a33c16254cf3593c431f4b2d3a1f32eec94b0effbda7cdca75e0c0aaeab4eb4",
+  "RPC_health_words": [
+    76,
+    0,
+    0,
+    0
+  ],
+  "conclusion": "Trial blocked before any motor control command. Idle RPC failure; exact root cause not established by non-atomic RAM alone.",
+  "J1_OFF_confirmation_received": false,
+  "hardware_recovery_performed": false
+}

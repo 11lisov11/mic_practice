@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "flash_writes": 0,
+  "reset_commands": 0,
+  "halt_commands": 0,
+  "motor_commands": 0,
+  "source": "passive ST-Link HotPlug reads",
+  "ports": [
+    "COM10",
+    "COM13"
+  ],
+  "physical_authorization_context": "User completed requested J1OFF/discharge/PCUSB preparation; observed valid low bus and OFF, no invented meter number",
+  "native_image_sha256": "8c45ba4f86fb7d3e32893b97d9602b40c8356c6907630e778b22630667b9ce73",
+  "image_comparison": "exact HEX with erased FF padding",
+  "hex_erased_padding_offsets": [
+    116132,
+    116133,
+    116134,
+    116135
+  ],
+  "sealed_binary_sha256": "1ec54678afb84014327d637a2aee664b20dc2fe20231f029e88fb8ed0bc80de4",
+  "layout_from_actual_dwarf": {
+    "SensorType": 0,
+    "ConversionFactor": 2,
+    "LatestConv": 4,
+    "AvBusVoltage_d": 6,
+    "FaultState": 8
+  },
+  "rows": [
+    {
+      "tick_ms": 4046967,
+      "bus_volts": 9.953125,
+      "conversion_factor": 416,
+      "digital_bus": 1568,
+      "bdtr": 37304434,
+      "moe": false
+    },
+    {
+      "tick_ms": 4047417,
+      "bus_volts": 9.927734375,
+      "conversion_factor": 416,
+      "digital_bus": 1564,
+      "bdtr": 37304434,
+      "moe": false
+    }
+  ],
+  "tick_delta_ms": 450,
+  "fresh_live_bus_valid": true,
+  "HMI_raw_bus_V": 9.0,
+  "zero_allowed": true,
+  "voltage_proof_scope": "Fresh HMI and direct SWD agree on one ADC; not an independent physical voltmeter"
+}

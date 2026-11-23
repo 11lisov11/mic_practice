@@ -1,0 +1,32 @@
+{
+  "schema": "mic_ai.bkin_dma_arr_fix_install.v1",
+  "completed_at": "2026-10-17T22:29:04.8538853+03:00",
+  "candidate": "artifacts/live_bench_20261017/bkin_dma_arr_fix_r1",
+  "scope": "Nucleo BKIN-DMA recorder only",
+  "uno_flash_commands": 0,
+  "nucleo_flash_commands": 1,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "calibration_changed": false,
+  "nucleo": {
+    "model": "NUCLEO-G431RB",
+    "stlink_serial": "003A002C3335510933383531",
+    "hex": "artifacts/live_bench_20261017/bkin_dma_arr_fix_r1/nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+    "sha256": "392f43aa192b57ae752255bc089d84ce13d33d75a7f5fd21df7750af3071b922",
+    "write_verify": "Download verified successfully",
+    "reset": "completed",
+    "compatibility_build_id": 2026101710
+  },
+  "offline_selftest": {"pass": true, "checks": 10, "failures": []},
+  "operator_confirmation": {
+    "j1_off_and_dmm_at_or_below_10v_confirmed": true,
+    "reply": "готово",
+    "exact_meter_reading": null
+  },
+  "hmi_status": {
+    "post_flash": "offline",
+    "api_error": "method get not available",
+    "last_logged_fresh_state": {"time": "2026-10-17 19:22:13", "state": "SAFE", "pwm": 0, "vdc": 10.0},
+    "live_status_after_flash_verified": false
+  }
+}

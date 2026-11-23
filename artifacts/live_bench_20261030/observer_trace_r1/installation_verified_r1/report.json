@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "pair": [
+    2026103015,
+    2026103016
+  ],
+  "installed": true,
+  "initial_enumeration_attempt_writes": 0,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "readback_both_verified": true,
+  "independent_native_flash_sha256": "667c0ea45d997512e39612227154d0c630c1ec027d7a6ce8bf63c4d91d3c6298",
+  "recorder_RAM_empty": true,
+  "recorder_state_bytes": 1804,
+  "observer_trace": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "observer_trace_good": 0,
+  "observer_trace_bad": 0,
+  "zero_ready": 1,
+  "zero_attempts": 3,
+  "fault_masks": [
+    0,
+    0
+  ],
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 46,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "native_boot": {
+    "available": true,
+    "fresh": true,
+    "firmware": 2026103016,
+    "retained_sequence": 1,
+    "sequence_is_power_cycle_persistent": false,
+    "csr_raw": 335544320,
+    "previous_csr_raw": 0,
+    "flags": 4,
+    "causes": [
+      "NRST_FLAG",
+      "SOFTWARE"
+    ],
+    "previous_flags_cleared": false,
+    "current_flags_cleared": true,
+    "previous_boot_continuity": false,
+    "software_request_tag": 0,
+    "early_record_crc": 3402373783,
+    "native_tick_ms": 38148,
+    "summary_ru": "флаг NRST, программный сброс; предыдущая история не подтверждена",
+    "exact_physical_cause_identified": false,
+    "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+  },
+  "OFF_CPU": {
+    "available": true,
+    "observer_measured": true,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 100.93529411764706,
+    "irq_body_lower_us": 17.341176470588234,
+    "cpu_upper_us": 83.59411764705882,
+    "irq_root_count": 3,
+    "max_wall_us": 113.78823529411764,
+    "max_irq_body_lower_us": 29.0,
+    "max_cpu_upper_us": 85.58235294117647,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 64,
+    "meter_errors": 0,
+    "first_fault": null,
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "OFF_fast_cycles": 3600,
+  "calibration_unchanged": true,
+  "old_files_verified": 1848,
+  "thresholds_changed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "extra_test_resets": 0,
+  "programming_resets_used": true,
+  "real_RUN_observer_capture_not_yet_validated": true,
+  "target_recording_execution_time_not_measured": true,
+  "physical_state": {
+    "J1": "OFF",
+    "J4_15V": "ON",
+    "both_USB_PC": true
+  },
+  "evidence": "post_install_readback_r1/report.json"
+}

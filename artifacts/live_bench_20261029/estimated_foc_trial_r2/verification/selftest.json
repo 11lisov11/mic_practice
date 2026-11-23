@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "native_five_second_stop": true,
+  "wraparound_stop": true,
+  "calculated_profile_not_identification": true,
+  "calculated5Hz_bounded5s_gate": true,
+  "calculated_profile_persists_without_autostart": true,
+  "off_probe_no_pwm_writes": true,
+  "synthetic_clock_is_not_target_timing": true,
+  "crc_wire_roundtrip": true,
+  "protection_files_unchanged": [
+    "Inc/drive_parameters.h",
+    "Inc/power_stage_parameters.h",
+    "Inc/motor_control.h",
+    "Inc/current_core.h",
+    "Inc/identify_core.h",
+    "Inc/current_adc_window_plan.h",
+    "Inc/current_adc_deadline.h",
+    "Inc/peak_core.h",
+    "Src/current_shunt.c",
+    "Src/stm32g4xx_mc_it.c",
+    "Src/stm32g4xx_hal_msp.c",
+    "Src/regular_conversion_manager.c"
+  ],
+  "prepared_profile_crc32c": 1354279011
+}

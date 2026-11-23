@@ -1,0 +1,80 @@
+{
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 322.0,
+  "fault": 5,
+  "current_mask": 0,
+  "occurred_mask": 1024,
+  "break_irq_enabled": false,
+  "existing_first_wave_sha256": "00ca7877e135c1b51f7fbcb922354e3740e450b3135ded17fe5377b31b81554d",
+  "new_wave_not_recorded_because_first_record_frozen": true,
+  "break_snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": true,
+      "age_ms": 1857,
+      "reason": "recorded",
+      "raw": {
+        "magic": 827019842,
+        "schema": 2,
+        "bytes": 92,
+        "tick_ms": 526448,
+        "tim_sr": 222,
+        "tim_dier": 129,
+        "tim_bdtr": 37305458,
+        "tim_cnt": 2033,
+        "tim_arr": 5312,
+        "tim_ccr1": 2656,
+        "tim_ccr2": 2656,
+        "tim_ccr3": 2656,
+        "gpioa_idr": 40964,
+        "context_valid": 1,
+        "context_tick_ms": 526418,
+        "reference_speed_unit": 0,
+        "motor_state": 0,
+        "current_faults": 0,
+        "occurred_faults": 0,
+        "vbus_v": 10,
+        "temperature_deci_c": 490,
+        "command_sequence": 100,
+        "start_window": 0
+      },
+      "event": {
+        "bif": true,
+        "b2if": false,
+        "pa6_high_at_irq": false,
+        "bke_at_irq": true,
+        "moe_at_irq": false,
+        "during_start_request_window": false,
+        "start_window_flag_raw": false,
+        "start_window_flag_stale_after_run": false
+      },
+      "cached_context": {
+        "context_tick_ms": 526418,
+        "reference_speed_unit": 0,
+        "motor_state": 0,
+        "current_faults": 0,
+        "occurred_faults": 0,
+        "vbus_v": 10,
+        "temperature_deci_c": 490,
+        "command_sequence": 100,
+        "age_at_irq_ms": 30,
+        "reference_electrical_hz": 0.0,
+        "temperature_c": 49.0
+      }
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 1007,
+      "reason": "no_recorded_break"
+    }
+  ],
+  "sensor_errors": 24,
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "waiting_for": "operator clarification: sensor fixed / hands away versus manual adjustment while energized"
+}

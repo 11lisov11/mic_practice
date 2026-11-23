@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "Driver state machine, timeout/wrap/error recovery and encoder wire/age/CRC: 511",
+    "ADC, PWM, V/f, hardware Break, UART commands/watchdogs and MCU5s STOP unchanged; driver has no blocking waits or IRQ masking",
+    "Real recorded ADC/zero history/peak/calibration/manual/timed completion pipeline accepts new pair; corrupt CRC, bad zero and unknown firmware rejected",
+    "Web current/invalid-state tests pass; encoder source and validity retained"
+  ],
+  "driver_checks": 511,
+  "hardware_validated": false
+}

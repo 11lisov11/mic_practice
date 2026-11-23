@@ -1,0 +1,37 @@
+{
+  "mode": "POLL100",
+  "mcu_5s_autostop_verified": true,
+  "mcu_record": {
+    "run_id": 5,
+    "run_start_ms": 2755289,
+    "run_stop_ms": 2760289,
+    "run_elapsed_ms": 5000,
+    "run_reason": 1
+  },
+  "host_backup_stop": null,
+  "start_commands": 1,
+  "clear_commands": 0,
+  "off_confirmed": true,
+  "before": {
+    "enc_raw": 131,
+    "enc_status": 39,
+    "enc_ok": 1,
+    "enc_speed_ok": 1,
+    "enc_errors": 87
+  },
+  "sensor_error_delta": 43,
+  "valid_angle_active_snapshots": 0,
+  "valid_speed_active_snapshots": 0,
+  "observed_active_snapshots": 3,
+  "rotation_qualified": false,
+  "sensor_bus_pass": false,
+  "original_report_passed": false,
+  "current_sampling_limit": "Only one distinct5Hz current window; original qualification FAIL retained",
+  "limitations": [
+    "Normal field before START does not prove correct field throughout a full mechanical turn.",
+    "Invalid angle0 during I2Cfailure is not an observed rotor position.",
+    "Sparse host snapshots do not prove every sensor transaction failed; successful read counter also increased.",
+    "Before/after modulo angle cannot count turns or qualify mechanical motion.",
+    "No sensor or drive thresholds changed; no additional START/CLEAR sent."
+  ]
+}

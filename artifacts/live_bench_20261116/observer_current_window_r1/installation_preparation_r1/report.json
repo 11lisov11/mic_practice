@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "unsafe_states_rejected": [
+    "vdc",
+    "bp_vdc",
+    "state",
+    "pwm",
+    "hmi_hv_armed",
+    "bp_status",
+    "mc_age_ms",
+    "mc_uart_error_flags",
+    "mc_last_uart_error_flags",
+    "mc_bad_integrity",
+    "mc_bad_sequence",
+    "precharge",
+    "pfc",
+    "brake",
+    "bp_ext",
+    "fw_build",
+    "mc_fw_build",
+    "rpc_schema_version",
+    "mc_capabilities",
+    "bp_mcsdk_telemetry"
+  ],
+  "OFF_CPU_negative_cases": 8,
+  "OFF_CPU_boundary4000_accepted": true,
+  "OFF_CPU4001_rejected": true,
+  "ordinary_freshness_UART_RPC_required": true,
+  "post_programming_CLEAR_record_must_be_empty": true,
+  "script_hashes": {
+    "prepare_observer_window_installer.py": "ceea1e8d7c5c95e4d160d103b129f5152340977215c6ccc5dc88597f32a868c7",
+    "install_observer_current_window.py": "b3f8cb45b463e643340bb2d2adabbe2c8c8a51a04cb98eb8d85348cd270ebd11",
+    "verify_observer_current_window_idle.py": "cd89303336321db9624b703137ec8e8bca3cc33f7e63d435acb2d584b32fc8c7",
+    "test_observer_window_installer.py": "2a893455f2d8219159eb5e003379d097f5780019ed0b0af329dd50b8f57ff5c4"
+  },
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "package_pair": [
+    2026111611,
+    2026111612
+  ],
+  "preserved_files_verified": 5605
+}

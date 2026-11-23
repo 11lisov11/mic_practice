@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "actual controller/ramp/phase arithmetic",
+      "passed": true
+    },
+    {
+      "name": "old curve fails same continuity test",
+      "passed": true
+    },
+    {
+      "name": "scope of firmware changes bounded",
+      "passed": true
+    },
+    {
+      "name": "7447 actual UART regression checks retained",
+      "passed": true
+    },
+    {
+      "name": "new exact pair accepted",
+      "passed": true
+    },
+    {
+      "name": "mixed pair rejected",
+      "passed": true
+    },
+    {
+      "name": "Vbus calibration identity preserved",
+      "passed": true
+    },
+    {
+      "name": "SD telemetry accepts new pair",
+      "passed": true
+    }
+  ],
+  "vf": {
+    "passed": true,
+    "checks": 6250269,
+    "controller_sweep_calls": 541080,
+    "ramp_cases": 3,
+    "old_voltage_jump_v": 15.921024,
+    "new_join_left_v": 35.917431,
+    "new_join_v": 35.921024,
+    "new_join_right_v": 35.924618,
+    "left_slope_v_per_hz": 3.593445,
+    "right_slope_v_per_hz": 3.593445,
+    "maximum_0_001hz_voltage_step_v": 0.005223,
+    "maximum_actual_ramp_frequency_step_hz": 0.100002,
+    "maximum_actual_ramp_voltage_step_v": 0.519122,
+    "max_above10hz_ccr_difference": 0.0,
+    "hardware_commands": 0
+  },
+  "uart": {
+    "pass": true,
+    "old_fatal_reproduced": false,
+    "checks": 7447,
+    "two_NE_position_pairs": 903,
+    "hardware_commands": 0
+  },
+  "negative_controls": 1,
+  "hardware_commands": 0,
+  "actual_medium_rate_hz": 500,
+  "actual_pwm_rate_hz": 16000,
+  "limitations": [
+    "No physical PWM/rotor measurement; peripheral writes and unused CL PI are stubs.",
+    "SDK frequency resolution is0.1Hz; continuity refers to envelope, not an infinitely fine frequency command.",
+    "Starting torque below5Hz must be qualified later with real motor."
+  ]
+}

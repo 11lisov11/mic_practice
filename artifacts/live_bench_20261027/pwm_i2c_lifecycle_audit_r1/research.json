@@ -1,0 +1,79 @@
+{
+  "primary_failure": "NACK during pointer-write stage5, before receive, at278us of3000us budget",
+  "address_ack_and_exact_corrupted_wire_bit_proven": false,
+  "not_a_PWM_generation_fault_by_itself": true,
+  "healthy_PE_reset_issue": {
+    "installed": {
+      "healthy_reads": 200,
+      "healthy_enables": 200,
+      "healthy_pe_disables": 200,
+      "false_busy_errors": 1,
+      "nack_errors": 1
+    },
+    "persistent_pe": {
+      "healthy_reads": 200,
+      "healthy_enables": 1,
+      "healthy_pe_disables": 0,
+      "false_busy_errors": 0,
+      "nack_errors": 1
+    }
+  },
+  "held_PE_patch_is_target_built": false,
+  "held_PE_patch_installed": false,
+  "held_PE_eliminates_initial_NACK_proven": false,
+  "documented_errata_review": {
+    "2.11.1": "16MHz kernel=62.5ns; standard-mode setup>=250ns is adequate absent physical edge distortion",
+    "2.11.2": "Sole-master BERR clear/continue already implemented; BERR counts do not uniquely prove EMI",
+    "2.11.3": "Own address recognition off and one controller; conditions absent",
+    "2.11.4": "Slave/NOSTRETCH underrun; our controller mode condition absent",
+    "2.11.5": "APB170/I2C16=10.625 outside affected1.5..3; also onlyone pointer data byte",
+    "2.11.6": "SMBus target timeout; not this controller mode"
+  },
+  "LL_HandleTransfer_volatile_fix_already_present": true,
+  "I2C_register_sequence_matches_AS5600_datasheet": true,
+  "firsthand_related_cases": [
+    {
+      "url": "https://community.simplefoc.com/t/as5600-jamming/727",
+      "same_sensor": true,
+      "same_board": false,
+      "observed_fix": "Cable replacement; not a bench-specific proof"
+    },
+    {
+      "url": "https://community.simplefoc.com/t/bldcmotor-loopfoc-does-not-return-when-i2c-bus-locks-on-b-g431b-esc1/3577",
+      "same_mcu_family": true,
+      "same_board": false,
+      "first_sensor": "AS5048B; additional user AS5600",
+      "observed_findings": "Measured insufficient logic swing/ringing; wiring pullups/series resistance changes; board-specific resistor values must not be copied to Nucleo64"
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://www.st.com.cn/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+      "sections": "2.11.1 through2.11.6"
+    },
+    {
+      "url": "https://www.st.com/resource/en/reference_manual/dm00355726.pdf",
+      "sections": "I2C initialization, noise filters, error meanings; relevant excerpts only, not full PDF read"
+    },
+    {
+      "url": "https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf",
+      "sections": "Address0x36, pointer0x0B, raw0x0C/0x0D, filters50ns, DIR/supply/pullups"
+    },
+    {
+      "url": "https://github.com/simplefoc/Arduino-FOC/blob/master/src/sensors/MagneticSensorI2C.cpp",
+      "scope": "Maintainer source uses address0x36/raw0x0C"
+    },
+    {
+      "url": "https://github.com/adafruit/Adafruit_AS5600/blob/main/Adafruit_AS5600.cpp",
+      "scope": "Maintainer register map/read implementation"
+    }
+  ],
+  "wiring_user_confirmed": "Only4 external wires VCC/GND/SCL/SDA between AS5600 andNucleo; no external DIR wire",
+  "DIR_onboard_bias_known": false,
+  "module_pullups_and_supply_topology_known": false,
+  "physical_edge_levels_known": false,
+  "no_hardware_fault_cause_declared_proven": true,
+  "firmware_flash_commands": 0,
+  "motor_commands": 0,
+  "clear_commands": 0
+}

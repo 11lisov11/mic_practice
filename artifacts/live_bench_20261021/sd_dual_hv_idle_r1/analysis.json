@@ -1,0 +1,39 @@
+{
+  "schema": "mic_ai.sd_dual_hv_idle_analysis.v1",
+  "read_only": true,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "current_dc_bus_v": 319.0,
+  "event_tick_ms": 324623,
+  "event_before_any_start_this_boot": true,
+  "break_irq_bif": true,
+  "pwm_enabled_at_irq": false,
+  "pa6_low_samples": 90993,
+  "pa6_low_nominal_ms": 18.198600000000003,
+  "tp23_pa4_low_observed": false,
+  "same_irq_gpio_pa4_high_pa6_low": true,
+  "mismatch_samples": 90993,
+  "complete_window": true,
+  "independent_decode_matches": true,
+  "wave_snapshot_tick_matches": true,
+  "current_pa6_live": "HIGH",
+  "capture_consumed": true,
+  "break_irq_enabled_now": false,
+  "crc_integrity_errors": 0,
+  "uart_transport_fault": 0,
+  "scope": "J1 energization before motor START, not the previous 25-Hz running event",
+  "inference": "Investigate SD signal route and validate independent TP23-to-PA4 wire before assigning a cause to the IPM",
+  "not_proven": [
+    "TP23-to-PA4 electrical continuity has not been independently validated",
+    "No proof of intrinsic IPM defect or absence of an IPM fault",
+    "Nucleo inputs share its logic ground; this is not an isolated analog comparison",
+    "Event sensor context is 48 ms old; cached 0 V does not establish actual bus voltage at the electrical edge"
+  ],
+  "recommended_deenergized_checks": [
+    "With J1/J4 and both controller 5 V supplies OFF and DC bus discharged, check TP23-to-PA4 continuity",
+    "Under the same unpowered conditions check TP23-to-PA6 continuity through the existing SD cable/adapter path"
+  ],
+  "wave_sha256": "65c85a57b51d9336fc54bc73532e384dc4f09d836dcee402e2a1521d7ca42196"
+}

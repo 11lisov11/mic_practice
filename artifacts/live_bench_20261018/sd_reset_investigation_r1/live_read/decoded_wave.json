@@ -1,0 +1,49 @@
+{
+  "available": true,
+  "reason": "timeout_low_unfinished",
+  "schema": 4,
+  "stored_record": true,
+  "age_since_delivery_ms": 1666396,
+  "live_peer_fresh": true,
+  "event_tick_ms": 4865,
+  "sample_period_us": 0.2,
+  "sample_rate_hz": 5000000,
+  "sample_count": 502048,
+  "trigger_index": 2048,
+  "runs": [
+    {
+      "level": 1,
+      "samples": 2044,
+      "from_us": -409.6,
+      "to_us": -0.8
+    },
+    {
+      "level": 0,
+      "samples": 500004,
+      "from_us": -0.8,
+      "to_us": 100000.0
+    }
+  ],
+  "pulse_complete": false,
+  "pulse_width_us": null,
+  "post_complete": false,
+  "falling_edge_us": -0.8,
+  "rising_edge_us": null,
+  "left_censored": false,
+  "right_censored": true,
+  "timeout": true,
+  "dma_error": false,
+  "sampling_overrun": false,
+  "run_overflow": false,
+  "flags": 11,
+  "dma_flags_raw": 0,
+  "dma_remaining": 1928,
+  "summary_ru": "PA6 не завершил импульс за окно 100 мс. Запись обрезана по тайм-ауту; полной длительности нет.",
+  "trace_reference": "200-ns DMA sample grid relative to Break IRQ publication; IRQ latency is not an electrical-edge timestamp",
+  "limitations": [
+    "Pulses shorter than 0.2 us may be missed; edge positions are quantized to the sample grid",
+    "First event since boot; STOP/CLEAR do not overwrite it",
+    "Requested DMA rate requires hardware throughput validation; DMA flags cannot detect every missed timer request",
+    "Only PA6/SD is measured; width alone cannot uniquely identify overcurrent, driver undervoltage, or interference"
+  ]
+}

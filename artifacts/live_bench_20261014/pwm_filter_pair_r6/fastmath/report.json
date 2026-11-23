@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "valid_pwm_comparisons": 92160,
+  "invalid_input_cases": 40,
+  "baseline_zero_normalizer_result": 0,
+  "baseline_zero_normalizer_nonfinite_duty": true,
+  "baseline_zero_normalizer_ccr_writes": 3,
+  "filter_constant_input_cases": 8192,
+  "baseline_max_filter_lag_u16": 255,
+  "candidate_max_filter_lag_u16": 0,
+  "candidate_rise_95_samples": 766,
+  "candidate_fall_95_samples": 766,
+  "unavailable_adc_fault_preservation_cases": 3,
+  "target_optimization": "-Ofast",
+  "isfinite_mutant_detected": true,
+  "hardware_commands": 0,
+  "production_source_sha256": {
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "51f0b0ac889afb64b93861f8546923d385cbe61eb9db86deb607bc5d421cf23a",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": "159f8efcbaaecf0b85c1023c2e6c942c65eca138efd51c54e58994abf4470686",
+    "Src\\mc_tasks.c": "5846c8202dbfd75d98d5e105cdff0529e231d70e751b0f1bd5d63e7bf92cccf5",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLib\\Any\\Src\\r_divider_bus_voltage_sensor.c": "2ea60fbcc9afd3d56d60041b7ae1ce0e9b5880af9646f48d6553ee1f6ffe05d1"
+  }
+}

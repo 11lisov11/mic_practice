@@ -1,0 +1,197 @@
+{
+  "passed": true,
+  "pair": [
+    2026112315,
+    2026112316
+  ],
+  "hardware_commands": 0,
+  "installed": false,
+  "bench_snapshot": {
+    "start_ms": 801961,
+    "tick_ms": 802116,
+    "cycles_since_start": 26516304,
+    "sample_index": 2273,
+    "sampling_sector": 5,
+    "adc_phases": [
+      "U",
+      "V"
+    ],
+    "jdr1": [
+      31184,
+      35088
+    ],
+    "offset_counts": [
+      33006,
+      32954,
+      33031
+    ],
+    "phase_counts": [
+      1822,
+      -2134,
+      312
+    ],
+    "phase_nominal_A": [
+      1.0922023228236606,
+      -1.2792314801897322,
+      0.18702915736607142
+    ],
+    "phase_threshold_crossings": [],
+    "vector_threshold_crossed": true,
+    "timer_at_adc_read": {
+      "cnt": 5290,
+      "counting_down": false,
+      "cr1": 289
+    },
+    "timer_at_fault_handler": {
+      "arr": 5312,
+      "sr": 94,
+      "ccr": [
+        1119,
+        182,
+        5131,
+        5090
+      ]
+    },
+    "adc_isr_at_fault_handler": [
+      15,
+      79
+    ]
+  },
+  "bench_current_peak_cause_proven": false,
+  "benchmark_start_iq_peak_A": 1.197106497628348,
+  "benchmark_fixed_axis_iq_samples": [
+    [
+      63.92747647058823,
+      1.0538373674665178
+    ],
+    [
+      73.92678823529411,
+      0.9962899344308035
+    ],
+    [
+      83.9257294117647,
+      0.948333740234375
+    ],
+    [
+      93.92448235294118,
+      0.948333740234375
+    ],
+    [
+      103.92363529411764,
+      0.9675162179129464
+    ],
+    [
+      113.92264705882353,
+      1.0538373674665178
+    ],
+    [
+      123.92151764705882,
+      1.1401585170200892
+    ],
+    [
+      133.9206294117647,
+      1.1305672781808036
+    ],
+    [
+      143.92010588235294,
+      1.0058811732700892
+    ],
+    [
+      153.91865294117648,
+      1.0730198451450892
+    ]
+  ],
+  "replayed_timer_plan": {
+    "old_trigger_ticks": 5090,
+    "revised_trigger_ticks": 3454,
+    "before_w_ticks": 41,
+    "revised_before_w_ticks": 1677,
+    "required_acquisition_ticks": 112,
+    "no_window_publishes_no_duties": true
+  },
+  "raw_overcurrent_replay": {
+    "unchanged_trip_code": 64,
+    "replay_counts": [
+      1822,
+      -2134,
+      312
+    ]
+  },
+  "closed_loop_plant": {
+    "first_run_ms": 92,
+    "start_phase_voltage_vector_peak_V": 9.460197181902302,
+    "current_vector_peak_A": 0.5150724437893468,
+    "selected_adc_pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "checkpoints": [
+      {
+        "time_ms": 1000,
+        "rpm": 249.4951540115851,
+        "observer_rpm": 246.0
+      },
+      {
+        "time_ms": 2000,
+        "rpm": 306.36247456438093,
+        "observer_rpm": 306.0
+      },
+      {
+        "time_ms": 3000,
+        "rpm": 304.8040543336578,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 4000,
+        "rpm": 304.4694867713738,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 5000,
+        "rpm": 304.3897038750485,
+        "observer_rpm": 300.0
+      }
+    ],
+    "stop_ms": 5000,
+    "scope": "quantized ADC, averaged PWM1 voltage reconstructed from compiled CCR, nominal calculated motor"
+  },
+  "off_cases": 64,
+  "off_max_emulator_instructions": 1032,
+  "actual_target_DWT_pending": true,
+  "stack_headroom_bytes": 3120,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "guards": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "preserved_files": 930,
+  "web_hmi_sha256": "914e6b2e45ab95bdcd7533b9039272d9c1230279353535bd797f58888d4c0855",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "8a67b65186aecd47f95b9ec09654c246e644604dacf999e31ac0a0cb0a16c67c",
+    "ACIM-AIR56B2-LSO_FOC.elf": "e823328740b936428df29acf09fddabf7d4942d29b6fa1234019595cabbde853",
+    "ACIM-AIR56B2-LSO_FOC.hex": "da2fcfa1b9ee1c65c7d54e0616818db7a3b080ffeb479e2e3a225b3630a2de72",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "d39227239303c8e084c446542a5bf0090d3ca6a97b994b978ad3a502e6f0dcf3"
+  }
+}

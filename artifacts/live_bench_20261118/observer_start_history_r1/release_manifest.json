@@ -1,0 +1,63 @@
+{
+  "schema": "mic_ai.observer_start_history_release.v1",
+  "pair": [
+    2026111803,
+    2026111804
+  ],
+  "installed": false,
+  "offline_acceptance_passed": true,
+  "tests": {
+    "codec_and_ARM_sequence": "verification/report.json",
+    "native_adapter": "native_verification_r2/report.json",
+    "full_capacity": "capacity_verification/report.json",
+    "RPC_and_throughput": "transport_verification/report.json",
+    "real_saved_step": "verification/preserved_real_step_replay.json",
+    "native_build": "nucleo_build_report.json"
+  },
+  "hardware_commands": 0,
+  "live_status_GET": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "raw_current_trip_A": 1.35,
+  "ADC_UPDATE_ticks": 2048,
+  "control_and_observer_math_unchanged": true,
+  "publication_policy_candidate_NOT_included": true,
+  "UART_baud": 921600,
+  "both_images_must_be_installed_as_a_pair": true,
+  "UART_rate_hardware_qualified": false,
+  "new_foreground_cost_measured_on_target": false,
+  "new_target_4000_cycles_qualification": false,
+  "power_test_qualified": false,
+  "physical_NIS_root_cause_fixed": false,
+  "Nucleo_RAM_free_after_original_heap_stack_reserve_bytes": 392,
+  "Nucleo_heap_reserve_bytes": 512,
+  "Nucleo_stack_reserve_bytes": 1024,
+  "Uno_RAM_static_bytes": 217850,
+  "Uno_RAM_remaining_bytes": 44294,
+  "Uno_compiler_low_memory_warning": true,
+  "prior_input_hashes_verified": 2220,
+  "older_input_hashes_verified": 8349,
+  "identical_guard_headers": {
+    "motor_control.h": "0b445d2367a0b26c78383886af03ea7cf6673ecd930bc5dfa397b395be2f1dd3",
+    "observer_pair_noise.h": "4079862c57f13d6f14ec627e346f9026f194584672cf831e4e3ce59c14e4adbf",
+    "foc_experiment.h": "d96d8f5aaff3262bd0edf70c58ae757afd988736060450b79623d59b4e9f41e6",
+    "current_adc_window_plan.h": "6312075430eb46efd0d14fc2409a98db0604b0585fe4e3db06569d327437f79a",
+    "current_adc_deadline.h": "98e30b8e539b9facf490406d34dfa4da521d8b0caab8da15fad5c56eda96bfce",
+    "local_stop.h": "069b10fe55f9bbae078a0afb4816887f754c14eab586223da0d09a51fa59a4d5",
+    "first_break_snapshot.h": "dd8ef14cac21746fe60b7420444361f206ffce8d256009a97d4ba3a43dbaad5c",
+    "observer_trace_core.h": "17ca8a0f8a60c624076a6d25410907558442506e4e4889562cf8f44dccac0c84",
+    "peak_core.h": "8a861eb98062e079344dbad8565ba44185278b057dc9a3f0f3bca540bdefc510"
+  },
+  "artifacts": {
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "b3daf7524f5bcae08da7b8db26842073a50a8e316ee55a73b7909924a2910be3",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "1ec54678afb84014327d637a2aee664b20dc2fe20231f029e88fb8ed0bc80de4",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "e4e4c04dc044a46de4e652586b89d273e250fbb3a41dd211772cbfad09f9bf8a",
+    "build/uno/unoq_mcsdk_scalar.build-manifest.json": "509c480a5489afcd5e8acbe9690e932e07859bfb1146c535fe9bdb6aed6a465f",
+    "build/uno/UNOQ_MOTOR.ino.elf": "a7e1450329d1970a5c52c827d010ab532df439d42397c448fd606028b792c36d",
+    "build/uno/UNOQ_MOTOR.ino.elf-zsk.bin": "2aa1cf6c9201831a1010a207c81f35e1d4c81ac5b5da683212b93e5911581579"
+  }
+}

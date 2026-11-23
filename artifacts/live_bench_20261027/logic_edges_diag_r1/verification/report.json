@@ -1,0 +1,131 @@
+{
+  "passed": true,
+  "offline_only": true,
+  "hardware_tested": false,
+  "build": 2026102793,
+  "target_errors": 0,
+  "target_warnings": 0,
+  "native_checks": 1272745,
+  "host_cases": 5,
+  "actual_ADC_irq_model_samples": 80000,
+  "ADC_model_samples_accepted": 79999,
+  "actual_math_calls": 80000,
+  "medium_ramp_calls": 2500,
+  "target_math_sections": {
+    "ACIM_VF_Controller": {
+      "identical": true,
+      "bytes": 612,
+      "sha256": "67d20314a110f96655202f82da115a0a42ad7b839870cc0ce2ce179493fb784f"
+    },
+    "ACIM_VF_CalcAngle": {
+      "identical": true,
+      "bytes": 72,
+      "sha256": "ebe24563f238272967fb53482d4698d02cef44da5b9ccac1a244b5ea989ab83d"
+    },
+    "ACIM_VF_FluxFreqCalc": {
+      "identical": true,
+      "bytes": 180,
+      "sha256": "5a3bbc16812b54a0fbf89aa2e73e6cc5b0347e124a1eff7827581e832d6fc0b8"
+    },
+    "ACIM_VF_ExecRamp": {
+      "identical": true,
+      "bytes": 16,
+      "sha256": "cb72356ec7d98be370d5e2dcef3db968647bfb83c2ec79ff0e621c1f0d5cc775"
+    },
+    "PWM_SetPhasePWMOutputs": {
+      "identical": true,
+      "bytes": 252,
+      "sha256": "d78e9b1018e45050f38f29082601ae63343a08578899df57d082761e0547a71c"
+    }
+  },
+  "RAM_margin_above_heap_stack_bytes": 2704,
+  "stack_frames": {
+    "pins_low": 0,
+    "guard": 16,
+    "mic_load_active": 0,
+    "mic_load_prepare_pins": 32,
+    "mic_load_init": 8,
+    "mic_load_tim_update": 16,
+    "mic_load_medium_update": 16,
+    "mic_load_adc_enter": 8,
+    "mic_load_adc_exit": 4,
+    "mic_load_poll": 328,
+    "mic_current_update_epoch": 4,
+    "mic_current_init": 16,
+    "mic_current_adc_irq": 368,
+    "mic_current_load_quality": 0,
+    "mic_current_packet": 376,
+    "mic_current_peak_packet": 24,
+    "mic_zero_packet": 24
+  },
+  "decoder_negative_cases": 76,
+  "protection_functions_unchanged": true,
+  "UV_not_masked": true,
+  "actual_Vbus_not_forged": true,
+  "phase_pins_static_low": true,
+  "motor_ENABLE_rejected": true,
+  "I2C_state_machine_unchanged": true,
+  "source_and_previous_images_preserved": true,
+  "only_Nucleo_needs_programming": true,
+  "limitations": [
+    "Three auxiliary logic PWM lines, not the original six motor outputs or their harness",
+    "Carrier/duty follow real TIM1 computation; TIM8 carrier phase is independent of ADC/TIM1",
+    "Inverter and gate supplies must remain OFF; this test cannot prove powered EMC immunity",
+    "Digital Saleae cannot measure analog rise time/ringing",
+    "AS5600 is stationary; no motor START"
+  ],
+  "auxiliary_outputs": "TIM8 PC6/PC7/PC8; PC9 marker",
+  "auxiliary_BKIN": "PD2 active LOW; external PA6 jumper required",
+  "TIM1_original_six_pins_GPIO_LOW": true,
+  "TIM8_AOE_disabled": true,
+  "TIM8_break_locked": true,
+  "quiet_ms": 2000,
+  "edge_ms": 3000,
+  "auxiliary_stack_frames": {
+    "mic_edges_init": 104,
+    "mic_edges_guard": 4,
+    "mic_edges_begin": 64,
+    "mic_edges_update": 88,
+    "mic_edges_stop": 72
+  },
+  "capture_host_tests": {
+    "passed": true,
+    "actual_hardware_calls": 0,
+    "cases": [
+      {
+        "case": "preflight",
+        "exit": 0,
+        "mailbox_writes": 0,
+        "waveforms_saved": 0
+      },
+      {
+        "case": "capture_failure",
+        "exit": 1,
+        "mailbox_writes": 0,
+        "waveforms_saved": 0
+      },
+      {
+        "case": "absent",
+        "exit": 1,
+        "mailbox_writes": 0,
+        "waveforms_saved": 0
+      },
+      {
+        "case": "ambiguous",
+        "exit": 1,
+        "mailbox_writes": 1,
+        "waveforms_saved": 1
+      },
+      {
+        "case": "one",
+        "exit": 0,
+        "mailbox_writes": 1,
+        "waveforms_saved": 1
+      }
+    ],
+    "edge_CRC_negative_cases": 48,
+    "waveform_positive_and_negative_cases": 5,
+    "readout_during_load": false
+  },
+  "physical_edges_measured": false
+}

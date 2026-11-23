@@ -1,0 +1,86 @@
+08019b88 <__ieee754_hypotf>:
+ 8019b88:	ee10 3a10 	vmov	r3, s0
+ 8019b8c:	f023 4200 	bic.w	r2, r3, #2147483648	@ 0x80000000
+ 8019b90:	ee10 3a90 	vmov	r3, s1
+ 8019b94:	f023 4300 	bic.w	r3, r3, #2147483648	@ 0x80000000
+ 8019b98:	429a      	cmp	r2, r3
+ 8019b9a:	db02      	blt.n	8019ba2 <__ieee754_hypotf+0x1a>
+ 8019b9c:	4619      	mov	r1, r3
+ 8019b9e:	4613      	mov	r3, r2
+ 8019ba0:	460a      	mov	r2, r1
+ 8019ba2:	1a99      	subs	r1, r3, r2
+ 8019ba4:	f1b1 6f70 	cmp.w	r1, #251658240	@ 0xf000000
+ 8019ba8:	ee00 3a10 	vmov	s0, r3
+ 8019bac:	ee06 2a90 	vmov	s13, r2
+ 8019bb0:	dc3f      	bgt.n	8019c32 <__ieee754_hypotf+0xaa>
+ 8019bb2:	f1b3 4fb1 	cmp.w	r3, #1484783616	@ 0x58800000
+ 8019bb6:	b510      	push	{r4, lr}
+ 8019bb8:	dc2e      	bgt.n	8019c18 <__ieee754_hypotf+0x90>
+ 8019bba:	2400      	movs	r4, #0
+ 8019bbc:	f1b2 5f1a 	cmp.w	r2, #645922816	@ 0x26800000
+ 8019bc0:	da0a      	bge.n	8019bd8 <__ieee754_hypotf+0x50>
+ 8019bc2:	b342      	cbz	r2, 8019c16 <__ieee754_hypotf+0x8e>
+ 8019bc4:	f5b2 0f00 	cmp.w	r2, #8388608	@ 0x800000
+ 8019bc8:	da5e      	bge.n	8019c88 <__ieee754_hypotf+0x100>
+ 8019bca:	eddf 7a34 	vldr	s15, [pc, #208]	@ 8019c9c <__ieee754_hypotf+0x114>
+ 8019bce:	ee66 6aa7 	vmul.f32	s13, s13, s15
+ 8019bd2:	ee20 0a27 	vmul.f32	s0, s0, s15
+ 8019bd6:	3c7e      	subs	r4, #126	@ 0x7e
+ 8019bd8:	ee30 6a66 	vsub.f32	s12, s0, s13
+ 8019bdc:	eef4 6ac6 	vcmpe.f32	s13, s12
+ 8019be0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8019be4:	d528      	bpl.n	8019c38 <__ieee754_hypotf+0xb0>
+ 8019be6:	f36f 030b 	bfc	r3, #0, #12
+ 8019bea:	ee07 3a90 	vmov	s15, r3
+ 8019bee:	ee30 7a27 	vadd.f32	s14, s0, s15
+ 8019bf2:	ee30 0a67 	vsub.f32	s0, s0, s15
+ 8019bf6:	ee27 0a00 	vmul.f32	s0, s14, s0
+ 8019bfa:	eea6 0aa6 	vfma.f32	s0, s13, s13
+ 8019bfe:	eea7 0aa7 	vfma.f32	s0, s15, s15
+ 8019c02:	f7f2 fdeb 	bl	800c7dc <__wrap___ieee754_sqrtf>
+ 8019c06:	b134      	cbz	r4, 8019c16 <__ieee754_hypotf+0x8e>
+ 8019c08:	05e4      	lsls	r4, r4, #23
+ 8019c0a:	f104 547e 	add.w	r4, r4, #1065353216	@ 0x3f800000
+ 8019c0e:	ee07 4a90 	vmov	s15, r4
+ 8019c12:	ee20 0a27 	vmul.f32	s0, s0, s15
+ 8019c16:	bd10      	pop	{r4, pc}
+ 8019c18:	f1b3 4fff 	cmp.w	r3, #2139095040	@ 0x7f800000
+ 8019c1c:	da29      	bge.n	8019c72 <__ieee754_hypotf+0xea>
+ 8019c1e:	f103 435e 	add.w	r3, r3, #3724541952	@ 0xde000000
+ 8019c22:	f102 425e 	add.w	r2, r2, #3724541952	@ 0xde000000
+ 8019c26:	ee00 3a10 	vmov	s0, r3
+ 8019c2a:	ee06 2a90 	vmov	s13, r2
+ 8019c2e:	2444      	movs	r4, #68	@ 0x44
+ 8019c30:	e7c4      	b.n	8019bbc <__ieee754_hypotf+0x34>
+ 8019c32:	ee30 0a26 	vadd.f32	s0, s0, s13
+ 8019c36:	4770      	bx	lr
+ 8019c38:	f503 0300 	add.w	r3, r3, #8388608	@ 0x800000
+ 8019c3c:	f36f 030b 	bfc	r3, #0, #12
+ 8019c40:	ee07 3a90 	vmov	s15, r3
+ 8019c44:	eeb0 7a00 	vmov.f32	s14, #0	@ 0x40000000  2.0
+ 8019c48:	eeb0 5a67 	vmov.f32	s10, s15
+ 8019c4c:	ee90 5a07 	vfnms.f32	s10, s0, s14
+ 8019c50:	f36f 020b 	bfc	r2, #0, #12
+ 8019c54:	ee07 2a10 	vmov	s14, r2
+ 8019c58:	ee26 0a85 	vmul.f32	s0, s13, s10
+ 8019c5c:	ee76 5ac7 	vsub.f32	s11, s13, s14
+ 8019c60:	eea5 0aa7 	vfma.f32	s0, s11, s15
+ 8019c64:	eea6 0a06 	vfma.f32	s0, s12, s12
+ 8019c68:	eea7 0a27 	vfma.f32	s0, s14, s15
+ 8019c6c:	f7f2 fdb6 	bl	800c7dc <__wrap___ieee754_sqrtf>
+ 8019c70:	e7c9      	b.n	8019c06 <__ieee754_hypotf+0x7e>
+ 8019c72:	bf14      	ite	ne
+ 8019c74:	ee30 0a26 	vaddne.f32	s0, s0, s13
+ 8019c78:	ed9f 0a09 	vldreq	s0, [pc, #36]	@ 8019ca0 <__ieee754_hypotf+0x118>
+ 8019c7c:	f1b2 4fff 	cmp.w	r2, #2139095040	@ 0x7f800000
+ 8019c80:	d1c9      	bne.n	8019c16 <__ieee754_hypotf+0x8e>
+ 8019c82:	ed9f 0a07 	vldr	s0, [pc, #28]	@ 8019ca0 <__ieee754_hypotf+0x118>
+ 8019c86:	bd10      	pop	{r4, pc}
+ 8019c88:	f103 5308 	add.w	r3, r3, #570425344	@ 0x22000000
+ 8019c8c:	f102 5208 	add.w	r2, r2, #570425344	@ 0x22000000
+ 8019c90:	ee00 3a10 	vmov	s0, r3
+ 8019c94:	ee06 2a90 	vmov	s13, r2
+ 8019c98:	3c44      	subs	r4, #68	@ 0x44
+ 8019c9a:	e79d      	b.n	8019bd8 <__ieee754_hypotf+0x50>
+ 8019c9c:	7e800000 	.word	0x7e800000
+ 8019ca0:	7f800000 	.word	0x7f800000

@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "pair": [
+    2026111801,
+    2026111802
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "halt": 0,
+  "OFF_only": true,
+  "thresholds_changed": false,
+  "native_readback_verified": true,
+  "CPU_qualified": true,
+  "native_rows": [
+    {
+      "tick_ms": 86827,
+      "BKE": true,
+      "MOE": false,
+      "BIE": true,
+      "PA6_HIGH": true,
+      "running": 0,
+      "fe_trial_done": 0,
+      "fe_complete": 1,
+      "fe_case": 64,
+      "fe_fault": 0,
+      "fast_cycles": 3804,
+      "observer_cycles": 25521,
+      "OFF_source": 1,
+      "observer_steps": 64,
+      "meter_errors": 0,
+      "observer_max_wall_us": 240.8470588235294,
+      "observer_max_CPU_upper_us": 192.12941176470588,
+      "recorder_empty": true,
+      "recorder_bytes": 2052,
+      "clear_record_empty": true
+    },
+    {
+      "tick_ms": 87486,
+      "BKE": true,
+      "MOE": false,
+      "BIE": true,
+      "PA6_HIGH": true,
+      "running": 0,
+      "fe_trial_done": 0,
+      "fe_complete": 1,
+      "fe_case": 64,
+      "fe_fault": 0,
+      "fast_cycles": 3804,
+      "observer_cycles": 25521,
+      "OFF_source": 1,
+      "observer_steps": 64,
+      "meter_errors": 0,
+      "observer_max_wall_us": 240.8470588235294,
+      "observer_max_CPU_upper_us": 192.12941176470588,
+      "recorder_empty": true,
+      "recorder_bytes": 2052,
+      "clear_record_empty": true
+    }
+  ],
+  "fast_cycles": 3804,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_limit_ms": 2,
+  "samples": 12,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "59aab332-865c-47a3-b0d8-e64fc1ceb164",
+      [
+        2026111802,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        2769555900
+      ]
+    ],
+    "samples": 12,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 12.96799999999348,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "ordinary_telemetry_fresh": true,
+  "zero_ready": true,
+  "zero_spans": [
+    25,
+    28,
+    29,
+    30
+  ],
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 9,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "active_fault_mask": 4,
+  "saved_fault_mask": 4,
+  "transport_latch": 7,
+  "bad_count": 1,
+  "UART_clean_for_START": false,
+  "motor_start_readiness_evaluated": false,
+  "preserved_files_verified": 8056,
+  "full_adapter_under_PWM_measured": false,
+  "limitation": "Synthetic OFF64 DWT work with MOE=0; no PWM/run, no physical NIS improvement proved. Stable programming-time latches remain visible and are not START authorization."
+}

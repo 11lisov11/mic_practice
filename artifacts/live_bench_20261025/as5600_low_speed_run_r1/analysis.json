@@ -1,0 +1,22 @@
+{
+  "test_completed_as_planned": false,
+  "one_start": true,
+  "sensor_test_passed": false,
+  "drive_stopped_and_disarmed": true,
+  "ack_commands_in_separate_authorized_preparation": 1,
+  "clear_commands_during_run": 0,
+  "new_drive_faults": false,
+  "new_uart_crc_sequence_faults": false,
+  "sensor_errors_before": 0,
+  "sensor_errors_final": 17,
+  "sensor_errors_delta_total": 17,
+  "sampled_max_field_frequency_hz": 3.7,
+  "qualified_rpm_obtained": false,
+  "maximum_current_coverage_pct": 100,
+  "saved_sd_sha256_preserved": true,
+  "post_stop_encoder_bus_ok": 1,
+  "post_stop_angle_ok": 1,
+  "post_stop_rpm": 0.0,
+  "power_state": "operator mains and 15V left on; USB PC/Saleae disconnected; do not infer discharged bus",
+  "conclusion": "I2C/angle validity was lost during the scalar ramp and recovered after STOP. Electrical interference, supply disturbance and software timing are not distinguished by this record."
+}

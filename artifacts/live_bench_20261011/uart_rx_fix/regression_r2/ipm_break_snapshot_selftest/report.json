@@ -1,0 +1,30 @@
+{
+  "host_irq_cases": 12,
+  "decoder_and_source_cases": 20,
+  "checks": [
+    "decode actual C struct",
+    "no event zero record",
+    "signed field 15",
+    "signed field 20",
+    "tick rollover",
+    "missing context not synthesized",
+    "short",
+    "long",
+    "uncommitted",
+    "reject invalid field 0",
+    "reject invalid field 1",
+    "reject invalid field 2",
+    "reject invalid field 4",
+    "reject invalid field 13",
+    "reject invalid field 22",
+    "normal UART builder unchanged except context",
+    "CLEAR does not erase first hardware event",
+    "command guard unchanged apart from diagnostic marker",
+    "STOP unchanged apart from diagnostic marker",
+    "protection IRQ otherwise byte-identical"
+  ],
+  "hardware_commands": 0,
+  "scope": "Host register stubs; not physical ISR timing or IPM fault-cause qualification",
+  "source_sha256": "68a274abe3239bc6b3103c7d8c3f6e07e80f1ec956c6efabc13a0a4e21f24302",
+  "pass": true
+}

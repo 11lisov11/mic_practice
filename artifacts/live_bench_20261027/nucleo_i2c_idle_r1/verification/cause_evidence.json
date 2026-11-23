@@ -1,0 +1,20 @@
+{
+  "primary_physical_cause_proven": false,
+  "record": "artifacts/live_bench_20261026/rpc_boot_retry_r1/powered_first_fault_5hz_r1/trial/first_i2c_capture.json",
+  "recorded_state": "ISR0x8001 BUSY+TXE, SCL/SDA HIGH, driver IDLE before START, PE1",
+  "software_finding": "The installed driver leaves PE enabled between samples and immediately resets at the next BUSY check. Reproduced using the real captured entry.",
+  "candidate_policy": "Park PE0 between acquisitions. Observe both lines HIGH twice at least2us apart, enable PE, wait for BUSY clear and HIGH twice, then START. Nonblocking steps share the original3ms acquisition budget. Failures invalidate the complete sample and retain20ms backoff. No same-sample retry or manual line pulses.",
+  "berr_policy": "Clear sole master BERR and continue transfer per ES0431 2.11.2. Fatal NACK/ARLO/OVR/deadline are captured first with original flags and still abort; deadline unchanged.",
+  "wire_format2": "Peer2702 truthfully reports PE0 while idle. CRC, freshness, configuration and data checks remain. Mixed peer/format rejects. Uno2701 retains2609 RPC libraries.",
+  "sources": [
+    {"url": "https://www.st.com/resource/en/reference_manual/dm00355726.pdf", "section": "RM0440 39.4.6 and CR1 PE: clearing PE releases lines and resets state; minimum LOW three APB cycles"},
+    {"url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf", "section": "ES0431 2.11.2: spurious master BERR"}
+  ],
+  "limits": [
+    "Only the recorded first entry is replayed exactly. Later inputs are fault-injection models, not an analog waveform.",
+    "Parking PE reduces idle exposure but does not prove immunity during active transfers.",
+    "Real under-PWM validation and independent speed accuracy remain pending."
+  ],
+  "hardware_commands_this_preparation": 0,
+  "installed": false
+}

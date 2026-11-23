@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "duration_required_s": 1100,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "router_reconnect": 0,
+  "HTTP_methods": [
+    "GET"
+  ],
+  "scope": "RPC idle only; native UART fault history is recorded and must remain unchanged. Motor readiness still requires zero faults.",
+  "FOC_start_ready": false,
+  "preserved_files": 5506,
+  "native_tick_before": 12606961,
+  "native_tick_after": 13706461,
+  "good_frames_added": 21921,
+  "route_attempts": 1020,
+  "route_failures": 147,
+  "saved_native_transport_fault": 7,
+  "saved_UART_history": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "uno_rx_hw_errors": 1,
+    "uno_rx_dropped": 0
+  },
+  "samples": 1087,
+  "elapsed_s": 1101.0149999999558,
+  "max_HTTP_latency_s": 0.8439999999827705,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 291,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "1816d0ee-de1b-46a9-aa0b-901b71f9a9f3",
+      [
+        2026111606,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        1812657868
+      ]
+    ],
+    "samples": 1087,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 1099.6089999999967,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

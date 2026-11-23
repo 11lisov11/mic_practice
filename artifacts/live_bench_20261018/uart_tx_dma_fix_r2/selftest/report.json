@@ -1,0 +1,512 @@
+{
+  "checks": 121,
+  "details": [
+    {
+      "name": "test compiles exact embedded DMA driver",
+      "pass_": true
+    },
+    {
+      "name": "old truncation reproduced and actual DMA sender stress passes",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected abort_on_timeout",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected early_tc_advance",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected missing_crc_tail",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected no_DMA_error_stop",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected raised_TX_deadline",
+      "pass_": true
+    },
+    {
+      "name": "negative control detected clock_before_lock",
+      "pass_": true
+    },
+    {
+      "name": "UART CRC/replay/hard-error/300-ms watchdog contracts retained",
+      "pass_": true
+    },
+    {
+      "name": "450 actual BKIN capture/receiver cases retained",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\acim_lso_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\acim_motor_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\acim_vf_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\aspep.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\bkin_wave_capture.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\break_wire.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\drive_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\first_break_snapshot.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\local_stop.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\main.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\manual_scalar_control.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mcp_config.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_api.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_app_hooks.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_config.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_configuration_registers.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_config_common.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_interface.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_math.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_stm_types.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_tasks.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\mc_type.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\motorcontrol.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\parameters_conversion.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\parameters_conversion_g4xx.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\power_stage_parameters.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\pulse_core.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\pulse_record.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\pwm_common.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\pwm_curr_fdbk.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\register_interface.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\regular_conversion_manager.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\sd_live_status.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\speed_torq_ctrl.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\stm32g4xx_hal_conf.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\stm32g4xx_it.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\uart_reject_record.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Inc\\uart_v3_transport.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\aspep.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\hf_registers.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mcp.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mcp_config.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_api.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_app_hooks.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_config.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_configuration_registers.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_interface.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_math.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_parameters.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\mc_tasks.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\motorcontrol.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\pwm_common.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\pwm_curr_fdbk.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\regular_conversion_manager.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\speed_torq_ctrl.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\stm32g4xx_hal_msp.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\stm32g4xx_it.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\stm32g4xx_mc_it.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\sync_registers.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\system_stm32g4xx.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged nucleo\\Src\\usart_aspep_driver.c",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\as5600_teacher.cpp",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\as5600_teacher.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\bkin_wave_wire.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\bounded_rx.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\break_wire.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\deferred_log.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\id_ref_lut_motor1.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\link_timing.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\manual_scalar_control.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\mcsdk_supervisory.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\nucleo_buffered_serial.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\nucleo_fault_diagnostics.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\pulse_core.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\pulse_record.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\scoped_control_lock.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\superseded_reply.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\uart_reject_record.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\uart_reject_wire.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\uart_v3_transport.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\UNOQ_MOTOR.ino",
+      "pass_": true
+    },
+    {
+      "name": "unchanged UNOQ_MOTOR\\uno_q_control.h",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_transport_result",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_link_init",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_manual_bus_control",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_latch_fault_reason",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_clear_diagnostics",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_latch_fault",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_speed_ramp_ms",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_consume_sample",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_mcsdk_fault_present",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_rearm_break_irq",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_clear_frame_is_safe",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_rx_pop",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_capture_diagnostics",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_update_softstart_state",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_u32le",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_stop_motor",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_saturating_increment",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_service_fields_are_zero",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_rx_push",
+      "pass_": true
+    },
+    {
+      "name": "unchanged motor/receive function uno_abort_pending_rx_fault",
+      "pass_": true
+    },
+    {
+      "name": "RX ISR unchanged before appended TX completion service",
+      "pass_": true
+    },
+    {
+      "name": "same TX deadline without blocking partial-frame sender",
+      "pass_": true
+    },
+    {
+      "name": "CLEAR refuses active or failed TX",
+      "pass_": true
+    },
+    {
+      "name": "TX watchdog reaches real motor STOP/fault latch",
+      "pass_": true
+    },
+    {
+      "name": "live SD for peer 2026101808",
+      "pass_": true
+    },
+    {
+      "name": "live SD for peer 2026101812",
+      "pass_": true
+    },
+    {
+      "name": "new D3 decoded independently",
+      "pass_": true
+    },
+    {
+      "name": "calibration identity preserved",
+      "pass_": true
+    }
+  ],
+  "tx": {
+    "pass": true,
+    "checks": 292520,
+    "old_prefix_bytes": 39,
+    "dma_stress_frames": 2048
+  },
+  "uart": {
+    "pass": true,
+    "checks": 271,
+    "hardware_commands": 0
+  },
+  "bkin": {
+    "host_cases": 450,
+    "pass": true
+  },
+  "mutation_controls": 6,
+  "hardware_commands": 0,
+  "active_motor_test": false,
+  "limitations": [
+    "A synthetic main-thread stall reproduces the observed old HAL prefix; actual scheduling delay at the earlier event was not measured",
+    "DMA configuration and behavior require readback/idle and powered-load checks after installation"
+  ],
+  "pass": true
+}

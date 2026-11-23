@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "numeric": {
+    "exact_model_predicate_cases": 250421,
+    "all416_single_bit_mutations": true,
+    "normal_rounding_modes": 4,
+    "hypot_dispatch_bit_exact_cases": 2008485,
+    "controller_bit_exact_cases": 200000,
+    "raw135A_boundary_cases": 3
+  },
+  "unchanged_source_files": 160,
+  "threshold_protections_identical": true,
+  "FE_predicate_equivalent_full52_bytes": true,
+  "timed_probe_and_full_fast_function_unchanged": true,
+  "raw_current_trip_expression_unchanged": true,
+  "no_fast_math_or_global_math_override": true,
+  "target_cycles_measured": false,
+  "baseline_target_cycles": 4229,
+  "budget_cycles": 4000,
+  "limitation": "PC checks predicate/output equivalence and protected source scope. ARM disassembly must verify native bounded calls enter the same installed hypot core. Fresh MCU DWT qualification is still required; no claim of target4000 pass from host timing."
+}

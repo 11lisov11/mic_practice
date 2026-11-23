@@ -1,0 +1,52 @@
+{
+  "firmware_verified": true,
+  "rpc_ready": false,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "read_only": true,
+  "commands": [
+    {
+      "label": "nucleo_flash_read_only",
+      "exit_code": 0
+    },
+    {
+      "label": "gpioa_read_only",
+      "exit_code": 0
+    },
+    {
+      "label": "tim1_read_only",
+      "exit_code": 0
+    },
+    {
+      "label": "tim2_read_only",
+      "exit_code": 0
+    },
+    {
+      "label": "live_hmi_calibration_hashes",
+      "exit_code": 0
+    }
+  ],
+  "nucleo_byte_for_byte_match": true,
+  "nucleo_verified_bytes": 55672,
+  "uno_at_install_readback_verified": true,
+  "pa4_input_nopull": true,
+  "pa4_level": "HIGH",
+  "pa6_level": "HIGH",
+  "bkin_filter": 9,
+  "break_enabled": true,
+  "automatic_restart": false,
+  "pwm_output_enabled": false,
+  "tim2_arr": 33,
+  "hmi_files_match": true,
+  "calibration_unchanged": true,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "rpc_recovery": {
+    "owned_hmi_restarted": true,
+    "adb_reboot_exit": 1,
+    "adb_reboot_error": "closed",
+    "linux_restart_confirmed": false
+  },
+  "limitation": "Live MCU pair and end-to-end RPC not yet verified after upload; no powered test performed"
+}

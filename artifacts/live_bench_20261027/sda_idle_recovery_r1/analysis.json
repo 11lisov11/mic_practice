@@ -1,0 +1,49 @@
+{
+  "confirmed_software_defect": "SDA-low preflight repeats without a bus-clear path; no START/STOP/clocks can escape this state",
+  "observed_first_fault": {
+    "tick_ms": 8,
+    "pe": 0,
+    "isr": 1,
+    "scl": 1,
+    "sda": 0,
+    "state": 0,
+    "stage": 4,
+    "no_transfer": true,
+    "pwm": 0
+  },
+  "before_install": {
+    "enc_ok": 1,
+    "enc_errors": 0,
+    "raw": 1891
+  },
+  "after_install": {
+    "enc_ok": 0,
+    "reads": 0,
+    "primary_busy_only": true
+  },
+  "likely_trigger": "Controller reset while powered target was mid-read; plausible, not physically proven",
+  "physical_source_of_SDA_low_proven": false,
+  "initial_PWM_error_cause_solved": false,
+  "correction": "One OFF/low-bus attempt: release OD pins, nine SCL clocks with SDA released, NACK then STOP, verify both HIGH, restore AF/ODR",
+  "not_used_for_SCL_low": true,
+  "recovery_counter_record_frozen": true,
+  "sensor_register_writes": 0,
+  "protections_weakened": false,
+  "hardware_commands_this_analysis": 0,
+  "primary_sources": [
+    {
+      "url": "https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/nxp-designs/931/1/UM10204.pdf",
+      "section": "3.1.16",
+      "finding": "SDA LOW bus clear uses nine clock pulses; escalate to target reset/power-cycle only if still held"
+    },
+    {
+      "url": "https://www.st.com/resource/en/reference_manual/dm00355726.pdf",
+      "section": "39.4.6 and CR1.PE; local ST LL API note",
+      "finding": "PE0 resets controller and releases SCL/SDA; it does not clock/reset the separate target"
+    },
+    {
+      "url": "https://community.st.com/stm32-mcus-products-25/i2c-seems-blocked-when-restarting-debug-session-62286",
+      "finding": "Corroborating example of target left holding SDA after controller reset; not bench-specific proof"
+    }
+  ]
+}

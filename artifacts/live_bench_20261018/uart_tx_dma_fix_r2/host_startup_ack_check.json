@@ -1,0 +1,20 @@
+{
+  "pass": true,
+  "checks": 14,
+  "negative_fields": [
+    "vdc",
+    "bp_vdc",
+    "mc_fault_occurred_mask",
+    "mc_fault_current_mask",
+    "mc_bad_cnt",
+    "mc_bad_integrity",
+    "mc_last_bad_reason",
+    "mc_transport_fault",
+    "mc_uart_reject_hex",
+    "estop",
+    "pwm",
+    "mc_age_ms"
+  ],
+  "hardware_commands": 0,
+  "acknowledges_only": "Known J1-off undervoltage, only after recovered powered telemetry; one CLEAR, no retry"
+}

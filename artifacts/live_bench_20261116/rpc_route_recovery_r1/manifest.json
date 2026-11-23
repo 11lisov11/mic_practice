@@ -1,0 +1,50 @@
+{
+  "pair": [
+    2026111607,
+    2026111606
+  ],
+  "base_pair": [
+    2026111605,
+    2026111606
+  ],
+  "uno_only": true,
+  "nucleo_image_unchanged": true,
+  "built": true,
+  "installed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "controller_equations_changed": false,
+  "original_RPC_outage_cause_proven": false,
+  "observed_route_loss_recovery_fixed_in_source": true,
+  "route_refresh_period_ms": 5000,
+  "note": "Restores lost registrations only OFF. No MCU reset, no snapshot erasure, no automatic motor retry.",
+  "host_tests_passed": true,
+  "tests": "verification_router053/report.json",
+  "superseded_tests": "verification/report.json uses newer router duplicate semantics; not sufficient for installed0.5.3",
+  "native_hex_sha256": "8257b4d933b50a297c566f90a62b0d0ff07a3bc765dc49fc86349b9fa150364e",
+  "native_expected_sha256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+  "artifacts": {
+    "release/uno_2026111607_rpc_route_recovery.elf-zsk.bin": "f32e90ceffc8b4ef694aac0a9130c21abcdfbe12137214e941f90c526a0029b6"
+  },
+  "preserved_files_verified": 5417,
+  "rpc_actual_router_version": "0.5.3",
+  "route_exists_is_not_registration_proof": true,
+  "offline_limits_unchanged": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "qualification": "OFF route-loss recovery physically verified. Original RUN outage and five-second FOC remain unresolved.",
+  "installation_scope": "Uno1607 only; Nucleo1606 not programmed or reset",
+  "OFF_route_reconnect_verified": true,
+  "OFF_fast_cycles": 3618,
+  "FOC_start_ready": false,
+  "FOC_five_seconds_verified": false,
+  "qualified": false,
+  "acceptance_sha256": "1243ed9a01972d30d9d30be5246db1c356cf1c04dbc85fc2267801e4d6189066",
+  "current_RPC_usable": false,
+  "latest_idle_outage": "idle_timeout_diagnosis_r1/report.json"
+}

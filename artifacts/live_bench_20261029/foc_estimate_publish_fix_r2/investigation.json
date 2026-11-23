@@ -1,0 +1,102 @@
+{
+  "pair": [
+    2026103009,
+    2026103010
+  ],
+  "built": true,
+  "installed": false,
+  "source_capture": "foc_cache_snapshot_fix_r1/powered_FOC_ADC_20261030_r2/analysis.json",
+  "exact_historical_stage_not_recorded": true,
+  "recorded_interleaving_test": {
+    "passed": true,
+    "hardware_commands": 0,
+    "recorded_interleaving_reproduced": true,
+    "actual_legacy_C_trips": true,
+    "actual_candidate_C_accepts_newer_completed_estimate": true,
+    "historical_exact_publication_stage_not_proven": true,
+    "checkpoint_is_injected_not_observed_instruction": true,
+    "historical_observer_state_not_restored": true,
+    "terminal_counts_and_timestamps_transferred": true,
+    "unchanged_2ms_guard_rejects_stale_new_result": true,
+    "external_stop_prevents_commit": true,
+    "atomic_snapshot_checks": 90000,
+    "first_fault_immutable": true,
+    "six_pages_CRC_peer_validated": true,
+    "publication_metadata_HMI_validated": true,
+    "seven_regular_ADC_reasons_with_publication_metadata": true,
+    "trip_A": 1.35,
+    "ADC_guard_ticks": 2048,
+    "physical_5s_not_proven": true,
+    "results": {
+      "legacy": "actual native C recorded timeline and2ms safety checks OK",
+      "candidate": "actual native C recorded timeline and2ms safety checks OK"
+    }
+  },
+  "PC_schedule_model": {
+    "passed": true,
+    "hardware_commands": 0,
+    "source": "actual native C controller/observer adapter and double precision flux plant",
+    "nominal_period_cycles": 10624,
+    "observer_wall_cycles_from_last_capture": 117645,
+    "queue_cycles_from_last_capture": 62522,
+    "accounting_delay_cycles_injected": 446,
+    "injected_accounting_delay_is_hypothesis": true,
+    "IRQ_events_and_main_schedule_are_simulated": true,
+    "ADC_is_quantized_plant_not_physical_capture": true,
+    "measured_CPU_timing_not_replaced_by_simulation": true,
+    "adverse_unpaired_maxima_not_a_measured_combination": true,
+    "hardware_5s_still_pending": true,
+    "guards_unchanged": true,
+    "results": {
+      "legacy": {
+        "completed_5s": false,
+        "PWM_duration_s": 0.00299974706,
+        "elapsed_with_accounting_s": 0.00299974706,
+        "frames": 49,
+        "observer_calls": 2,
+        "fault": 3,
+        "reason": 4,
+        "peak_plant_A": 0.00393385854,
+        "estimate_limit_ms": 2
+      },
+      "candidate": {
+        "completed_5s": true,
+        "PWM_duration_s": 5.00002936,
+        "elapsed_with_accounting_s": 5.00052935,
+        "frames": 80009,
+        "observer_calls": 5000,
+        "fault": 0,
+        "reason": 0,
+        "peak_plant_A": 0.536747197,
+        "estimate_limit_ms": 2
+      },
+      "overload": {
+        "completed_5s": false,
+        "PWM_duration_s": 0.00340781176,
+        "elapsed_with_accounting_s": 0.00340781176,
+        "frames": 34,
+        "observer_calls": 1,
+        "fault": 3,
+        "reason": 4,
+        "peak_plant_A": 0.00370222804,
+        "estimate_limit_ms": 2
+      },
+      "adverse_unpaired_maxima": {
+        "completed_5s": false,
+        "PWM_duration_s": 0.00211742353,
+        "elapsed_with_accounting_s": 0.00211742353,
+        "frames": 34,
+        "observer_calls": 1,
+        "fault": 3,
+        "reason": 4,
+        "peak_plant_A": 0.00370222804,
+        "estimate_limit_ms": 2
+      }
+    }
+  },
+  "no_hardware_commands": true,
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_age_limit_ms": 2,
+  "next_action": "User J1OFF/meter below20V/bothUSB for install and OFF verification only"
+}

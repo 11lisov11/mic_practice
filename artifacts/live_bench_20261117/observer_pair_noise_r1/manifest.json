@@ -1,0 +1,65 @@
+{
+  "pair": [
+    2026111715,
+    2026111716
+  ],
+  "base_pair": [
+    2026111713,
+    2026111714
+  ],
+  "schema": 5,
+  "built": true,
+  "installed": false,
+  "hardware_commands": 0,
+  "noise_phase_floor_A2": 0.0004,
+  "NIS_limits": [
+    25,
+    50
+  ],
+  "physical_noise_calibrated": false,
+  "physical_NIS_fix_proven": false,
+  "current_trip_A": 1.35,
+  "OFF_budget_cycles": 4000,
+  "estimate_age_ms": 2,
+  "ADC_UPDATE_ticks": 2048,
+  "full_RUN_existing_deadline_cycles": 5312,
+  "observer_math_change": "pair-aware R and exact sequential whitening only",
+  "target_timing_qualified": false,
+  "FOC_powered_test_approved": false,
+  "corrected_R_is_coordinate_dependent": true,
+  "covariance_metric_assumption": "Existing0.0004 A2 interpreted as phase observation noise floor; equal independent measured-channel noise is a model assumption, not physical calibration",
+  "NIS_safety_guard_retained": true,
+  "NIS_stop_policy": "More than50 for20 consecutive steps in EITHER original fixed-R statistic OR corrected statistic",
+  "replay_ARM_synthetic_cases": 153,
+  "noise_model_mixtures_checked": 153,
+  "independent_noise_draws": 1200000,
+  "model_cases_per_variant": 19,
+  "legacy_capture_schemas": [
+    2,
+    3,
+    4
+  ],
+  "wire_bytes": 1888,
+  "replay_bytes": 456,
+  "record_pair_counts_in_all_rows": true,
+  "actual_saved_pair_composition_known": false,
+  "OFF_fast_limit_cycles": 4000,
+  "full_RUN_existing_limit_cycles": 5312,
+  "flash_bytes": 118200,
+  "bss_bytes": 30720,
+  "data_bytes": 976,
+  "global_RAM_growth_bytes": 16,
+  "source_variant": "Calculated uncalibrated noise floor, exact ADC pair geometry, unchanged RK4/Q/motor/control",
+  "preserved_files_verified": 5921,
+  "artifacts": {
+    "release/nucleo_2026111716_expected_readback.bin": "c7eae983173451b0e0c16cd49b4edfa67acbed10fb3f05b5e416f30c3819d5b2",
+    "release/nucleo_2026111716_pair_noise.bin": "c489ebee19a84ada3a23a548fa6b3dba1a80f763b0a3a3121fdb813d06f97679",
+    "release/nucleo_2026111716_pair_noise.elf": "48bdb4befbd48a9e462bc4cdca0573068ac7c39653fd33f6697a3ede87d08e1d",
+    "release/nucleo_2026111716_pair_noise.hex": "9818919da95e9831137f96411e5d2867494bb97b6e795b82a2656ab4d6e04a97",
+    "release/replay_manifest.json": "4e4eb1ef82c6e38f513525f2719416743073ed97bcb0d6b228c96b0369abee57",
+    "release/replay_observer_pair_noise.py": "616ef23558fcb791f392223979033f443dfdaa498e1bf52631452a4f9299220c",
+    "release/requirements.txt": "79eaab0fd1e1857695fe6f2f095f72d680b41f49f6b65d614e69bc05042929b4",
+    "release/sha256.json": "93152bce9076b88d6e50ca42fabddf9dc949e7533ea6b7dfa2004b52389b1a18",
+    "release/uno_2026111715_schema5.elf-zsk.bin": "0d317adc9b2a3444055db2f703d299145f7e13de3bfaf490bf51b50726c4d425"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "network_requests": 0,
+  "motor_commands": 0,
+  "local_code5_blocks_normal_START": false,
+  "HMI_local0_and5_results": [
+    [
+      true,
+      "ok"
+    ],
+    [
+      true,
+      "standalone live safety gate"
+    ]
+  ],
+  "active_fault_negative_cases": [
+    {
+      "change": {
+        "estop": 1
+      },
+      "results": [
+        [
+          false,
+          "ESTOP is active"
+        ],
+        [
+          false,
+          "ESTOP is active: estop=1"
+        ]
+      ]
+    },
+    {
+      "change": {
+        "bp_fault": 5,
+        "mc_fault": 5
+      },
+      "results": [
+        [
+          false,
+          "motor-controller fault is active: mc_fault=5"
+        ],
+        [
+          false,
+          "motor-controller fault is active: mc_fault=5"
+        ]
+      ]
+    },
+    {
+      "change": {
+        "link": false
+      },
+      "results": [
+        [
+          false,
+          "motor-controller link is stale or down"
+        ],
+        [
+          false,
+          "motor-controller link is stale or down"
+        ]
+      ]
+    },
+    {
+      "change": {
+        "mc_bad_cnt": 1,
+        "bp_bad_cnt": 1
+      },
+      "results": [
+        [
+          false,
+          "motor-controller bad-frame counter is non-zero: mc_bad=1"
+        ],
+        [
+          false,
+          "motor-controller bad-frame counter is non-zero: mc_bad=1"
+        ]
+      ]
+    }
+  ],
+  "native_start_source": "static const char *start_precheck(uint32_t now_ms) {\n  if(g_ma_pending)return \"algorithm configuration pending\";\n  const bool native_fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now_ms-g_bp_last_rsp_ms)<300U;\n  if(!xp_fresh(&g_research_caps,native_fresh,now_ms)||g_research_caps.selected!=g_ma_algorithm)\n    return \"native algorithm acknowledgement missing\";\n  if(g_ma_algorithm==4){\n    if(!id_execution_allowed(&g_id_meta,now_ms,g_id_execute_crc,g_manual_scalar_mode,g_run_limit_ms))return \"bounded identification authorization required\";\n  }\n  if(g_ma_algorithm!=1&&g_ma_algorithm!=4&&(!g_research_caps.profile_ready||\n      !fe_start_policy(g_research_caps.qualification,g_research_caps.experiment_flags,\n        g_ma_algorithm,g_manual_scalar_mode,g_run_limit_ms,g_freq_cmd)))\n    return \"FOC calculated trial requires timing ready, bounded5s and0to5Hz\";\n  // Native loop owns current control; AS5600 remains disabled.\n  if (g_estop_latched) {\n    return \"estop latched\";\n  }\n  if (g_state != STATE_SAFE) {\n    return \"not safe\";\n  }\n  if (g_pwm_enabled) {\n    return \"pwm already enabled\";\n  }\n  if (!msc_start_allowed(g_manual_scalar_mode, g_run_limit_ms,\n      msc_operator_alive(now_ms, g_manual_operator_seen, g_manual_operator_ms))) {\n    return \"runlimit required\";\n  }\n  if (USE_EXTERNAL_PWM) {\n    if (g_nucleo_last_rx_ms == 0 ||\n        (uint32_t)(now_ms - g_nucleo_last_rx_ms) > BP_REPLY_TIMEOUT_MS ||\n        g_bp_last_rsp_ms == 0 ||\n        (uint32_t)(now_ms - g_bp_last_rsp_ms) > BP_REPLY_TIMEOUT_MS) {\n      return \"bluepill link stale\";\n    }\n    if ((g_bp_status & BP_STATUS_LINK_OK) == 0U) {\n      return \"bluepill link not ready\";\n    }\n    if (g_bp_fault_code != 0 ||\n        (g_bp_status & (BP_STATUS_ESTOP | BP_STATUS_FAULT | BP_STATUS_TIMEOUT)) != 0U) {\n      return \"bluepill unsafe\";\n    }\n    if ((g_bp_status & BP_STATUS_PWM_ACTIVE) != 0U) {\n      return \"bluepill pwm active\";\n    }\n    if (g_nucleo_rx_bad != 0U || g_bp_bad_cnt != 0U) {\n      return \"bluepill bad counter\";\n    }\n  }\n  return nullptr;\n}",
+  "native_peer_guard_source": "static bool bp_fault_or_timeout(uint32_t now_ms) {\n  bool bp_fault = (g_bp_fault_code != 0) ||\n                  ((g_bp_status & BP_STATUS_FAULT) != 0u) ||\n                  ((g_bp_status & BP_STATUS_TIMEOUT) != 0u);\n  bool bp_stale = false;\n  if (g_pwm_enabled) {\n    if (g_bp_last_rsp_ms == 0) {\n      if (g_nucleo_last_tx_ms != 0) {\n        bp_stale = (uint32_t)(now_ms - g_nucleo_last_tx_ms) > BP_REPLY_TIMEOUT_MS;\n      }\n    } else {\n      bp_stale = (uint32_t)(now_ms - g_bp_last_rsp_ms) > BP_REPLY_TIMEOUT_MS;\n    }\n  }\n  return bp_fault || bp_stale;\n}",
+  "production_runtime_SHA256": "368a6941f1b95496029fd0dd3e3c0bd6752b6913f2f29b9ce9cd412b61ef20fe",
+  "schema2_decoder_source_SHA256": "6fc87d6debff1870a109b66613192253e7001d9d25f08e47b614955d47f68b1e",
+  "source_note": "Native functions inspected without editing; HMI gates executed against saved status. Live server and MCU repeat all real guards."
+}

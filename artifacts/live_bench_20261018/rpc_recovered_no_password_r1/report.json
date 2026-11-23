@@ -1,0 +1,32 @@
+{
+  "schema": "mic_ai.rpc_recovery_observation.v1",
+  "client_date": "2026-10-18",
+  "pass": true,
+  "checks": {
+    "fresh_safe_off": true,
+    "clean_uart": true,
+    "frames_progress": true,
+    "pair_matches": true
+  },
+  "recovery_mutation_commands": 0,
+  "firmware_writes": 0,
+  "motor_commands": 0,
+  "initial_status_503": true,
+  "recovery_cause": "not established; read-only requests subsequently succeeded",
+  "transport": "direct_wifi_http",
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "recorder_readonly": {
+    "TIM2_CEN": 1,
+    "PSC": 0,
+    "ARR": 169,
+    "UDE": 1,
+    "DMA_CNDTR_samples": [
+      673,
+      97
+    ],
+    "DMA_TC_HT": true,
+    "DMA_TE": false,
+    "TIM1_MOE": 0
+  },
+  "hardware_break_source_proven": false
+}

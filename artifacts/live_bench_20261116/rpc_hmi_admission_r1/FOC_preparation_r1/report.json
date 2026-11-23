@@ -1,0 +1,39 @@
+{
+  "PC_preparation_verified": true,
+  "trial_wrapper": "tools/run_rpc_hmi_admission_trial.py",
+  "pair": [
+    2026111609,
+    2026111606
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "FOC_start_ready": false,
+  "vdc": 9.0,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 35,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "zero_ready": 1,
+  "CPU": 3618,
+  "RPC_timeouts": 291,
+  "RPC_send_timeouts": 0,
+  "saved_native_transport_fault": 7,
+  "limits": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "next": "Both boards to powerbanks with5s pause; PCUSB and Saleae detached;15V ON;J1 OFF; no START/RESET"
+}

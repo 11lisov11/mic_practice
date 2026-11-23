@@ -1,0 +1,23 @@
+{
+  "error_acknowledged": "Assistant incorrectly identified TP11 as +15V in prior instructions and wiring note. Corrected to GND.",
+  "source": "Local official ST UM2014 Rev3, Table8 Test pins, pp22-23 and Figure7 p7",
+  "corrected_points": {
+    "TP8": "VCCH",
+    "TP11": "Ground",
+    "TP17": "CIN",
+    "TP21": "Ground",
+    "TP22": "Ground",
+    "TP23": "SD"
+  },
+  "user_values": {
+    "STEVAL_3V3_C21_to_TP21_V": 3.292,
+    "TP11_to_TP21_V": 0,
+    "TP23_to_TP21_V": 0
+  },
+  "interpretation": "TP11=0V is expected ground-to-ground and gives no evidence of missing15V. TP23=0V independently corroborates low SD on STEVAL. Actual driver supply remains unmeasured.",
+  "old_document_sha256": "19502d7532bb0b8d74d13b1fe27f5f901552a21656aaa66dfbaebf2fbb10c53a",
+  "corrected_document_sha256": "96514596502a80e119a5888bf46ecf4e4a20f308ab93096c459d4a88f113e2d9",
+  "MCU_images_changed": false,
+  "firmware_commands": 0,
+  "old_capture_files_modified": false
+}

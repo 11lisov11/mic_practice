@@ -1,0 +1,14 @@
+function describeBkinTrace(trace) {
+  if (Number(trace.schema) !== 4 || typeof trace.summary_ru !== "string") {
+    return "Неизвестный формат сохранённой записи SD; длительность не подтверждена.";
+  }
+  const age = Number(trace.age_since_delivery_ms);
+  const ageText = Number.isFinite(age) && age >= 0 ? ` Получена ${(age / 1000).toFixed(1)} с назад.` : "";
+  const live = trace.live_sd?.summary_ru || "Текущий SD: нет измерения";
+  return `Сохранённая запись: ${trace.summary_ru}${ageText} ${live}. ` +
+    "Возраст доставки не означает время от события. Шаг записи 0,2 мкс.";
+}
+
+const assert=require("assert");
+const wave={"available": true, "reason": "timeout_low_unfinished", "schema": 4, "stored_record": true, "age_since_delivery_ms": 62676, "live_peer_fresh": true, "event_tick_ms": 4865, "sample_period_us": 0.2, "sample_rate_hz": 5000000, "live_sd": {"available": true, "reason": "observed", "level": "HIGH", "age_ms": 20, "break_irq_enabled": false, "capture_running": false, "first_record_ready": true, "config_ok": true, "summary_ru": "SD сейчас HIGH: защита отпущена", "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"}, "sample_count": 502048, "trigger_index": 2048, "runs": [{"level": 1, "samples": 2044, "from_us": -409.6, "to_us": -0.8}, {"level": 0, "samples": 500004, "from_us": -0.8, "to_us": 100000.0}], "pulse_complete": false, "pulse_width_us": null, "post_complete": false, "falling_edge_us": -0.8, "rising_edge_us": null, "left_censored": false, "right_censored": true, "timeout": true, "dma_error": false, "sampling_overrun": false, "run_overflow": false, "flags": 11, "dma_flags_raw": 0, "dma_remaining": 1928, "summary_ru": "В сохранённом окне PA6 оставался LOW до конца 100 мс. Текущий уровень этим не измерен; полная длительность неизвестна.", "trace_reference": "200-ns DMA sample grid relative to Break IRQ publication; IRQ latency is not an electrical-edge timestamp", "limitations": ["Pulses shorter than 0.2 us may be missed; edge positions are quantized to the sample grid", "First event since boot; STOP/CLEAR do not overwrite it", "Requested DMA rate requires hardware throughput validation; DMA flags cannot detect every missed timer request", "Only PA6/SD is measured; width alone cannot uniquely identify overcurrent, driver undervoltage, or interference"]};
+const s=describeBkinTrace(wave);assert(s.includes("SD сейчас HIGH"));assert(!s.includes("undefined"));assert(!s.includes("NaN"));assert(!s.includes("1 мкс"));assert(!s.includes("не обнаружен"));assert(s.includes("0,2 мкс"));assert(s.includes("полная длительность неизвестна"));console.log(JSON.stringify({pass:true,text:s}));

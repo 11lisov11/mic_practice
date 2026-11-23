@@ -1,0 +1,167 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -24,7 +24,8 @@
+ typedef struct {
+   float integral[2],speed_integral,time_s,shift,last_va,last_vb;
+   uint32_t faults,adaptive_steps;
+-  uint8_t preflux; /* 0 unused, 1 stationary frame, 2 handed over */
++  uint8_t preflux; /* 0 unused, 1 commanded current frame, 2 handed over */
++  float start_cos,start_sin;
+ } ma_controller;
+ typedef struct {
+   uint32_t arr,latest,settle,acquire,min_pulse,deadtime_ticks;
+@@ -291,21 +292,34 @@
+   if(fault){c->faults++;out->fault=(uint8_t)fault;return fault;}
+   c->time_s+=dt;
+   const float flux=ma_control_norm(x[2],x[3]);
+-  /* Establish rotor flux along a commanded stator axis. An unsettled EKF
+-   * angle must not rotate the magnetizing current during the initial start.
+-   * A later loss of speed admission must not switch the current frame back. */
+-  if(!speed_ready&&c->preflux==0U)c->preflux=1U;
+-  const int stationary=!speed_ready&&c->preflux==1U;
+-  const int rotate=!stationary&&flux>.0001f;
+-  const float c0=rotate?x[2]/flux:1.f,s=rotate?x[3]/flux:0.f;
+-  if(speed_ready&&c->preflux==1U){
+-    /* Transport the existing stator voltage integral into the admitted dq
+-     * frame so that switching coordinates does not step its voltage. */
+-    const float a=c->integral[0],b=c->integral[1];
+-    c->integral[0]=c0*a+s*b;
+-    c->integral[1]=-s*a+c0*b;
+-    c->preflux=2U;
+-  }
++  if(!speed_ready&&c->preflux==0U){
++    c->start_cos=1.f;c->start_sin=0.f;c->preflux=1U;
++  }
++  float c0=1.f,s=0.f,start_omega=0.f;
++  if(c->preflux==1U){
++    /* Magnetize for 100 ms, then follow the bounded electrical reference in
++     * a commanded current frame. Rotor speed is not used during I/f. */
++    const float start_hz=c->time_s<.10f?0.f:ma_min2(reference_hz,5.f);
++    start_omega=6.2831853072f*start_hz;
++    const float delta=start_omega*dt;
++    const float next_c=c->start_cos-delta*c->start_sin;
++    const float next_s=c->start_sin+delta*c->start_cos;
++    const float norm=1.5f-.5f*(next_c*next_c+next_s*next_s);
++    c0=c->start_cos=next_c*norm;s=c->start_sin=next_s*norm;
++    /* An accepted flux alone cannot authorize torque from an implausible
++     * speed or a jump to an unrelated field axis. The existing NIS and age
++     * checks remain independent and are still applied in I/f. */
++    const float projection=c0*x[2]+s*x[3];
++    const float estimated_electrical_speed=m->poles*x[4];
++    if(speed_ready&&start_hz>=1.f&&projection>=.92f*flux&&
++       fabsf(estimated_electrical_speed-start_omega)<=6.2831853072f){
++      const float d=projection/flux,q=(c0*x[3]-s*x[2])/flux;
++      const float a=c->integral[0],b=c->integral[1];
++      c->integral[0]=d*a+q*b;c->integral[1]=-q*a+d*b;
++      c->preflux=2U;
++    }else speed_ready=0;
++  }
++  if(c->preflux!=1U&&flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
+   const float id=c0*ia+s*ib,iq=-s*ia+c0*ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
+   /* A provisional flux can establish magnetization, but an unqualified
+@@ -329,10 +343,12 @@
+   }
+   const float err[2]={idref-id,iqref-iq};
+   const float kr=m->lm/m->lr,ar=m->rr/m->lr,l=m->ls-kr*m->lm;
+-  const float sync=stationary?0.f:ma_clip(m->poles*omega+ar*m->lm*iq/ma_max2(flux,.025f),-600,600);
++  const float sync=c->preflux==1U?start_omega:ma_clip(m->poles*omega+ar*m->lm*iq/ma_max2(flux,.025f),-600,600);
+   const float res=m->rs+kr*ar*m->lm;
+-  const float ff[2]={res*id-kr*ar*flux-sync*l*iq,
+-    res*iq+kr*m->poles*omega*flux+sync*l*id};
++  /* I/f is a current loop. Its feed-forward uses Rs and the commanded
++   * rotation only, leaving flux and back-EMF compensation to closed-loop. */
++  const float ff[2]={c->preflux==1U?m->rs*id-sync*l*iq:res*id-kr*ar*flux-sync*l*iq,
++    c->preflux==1U?m->rs*iq+sync*l*id:res*iq+kr*m->poles*omega*flux+sync*l*id};
+   float dq[2]={ff[0]+l*m->current_bw*err[0]+c->integral[0],
+                ff[1]+l*m->current_bw*err[1]+c->integral[1]};
+   const float limit=.90f*bus*.5773502692f,mag=ma_control_norm(dq[0],dq[1]);
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -92,6 +92,27 @@
+ /* Published by the SAME sequence as voltage and time. Never substitute the
+  * newest foreground ADC sample for the endpoint of an older completed bin. */
+ static ma_current_sample bin_current;
++/* Experimental 5Hz profile: supervision of actual commanded dq-axis rate.
++ * Measure over 16 observer windows, outside the PWM IRQ. A biased speed
++ * estimate can otherwise be plausible at handover and later accelerate the
++ * electrical field above the requested band even while NIS remains low. */
++typedef struct {float alpha,beta,elapsed,angle_limit;uint8_t count,ready;} ma_field_rate;
++static ma_field_rate field_rate;
++static void ma_field_rate_update(ma_field_rate *rate,const float*x,float reference,float dt){
++ if(!rate->count){
++  rate->alpha=x[2];rate->beta=x[3];
++  rate->elapsed=rate->angle_limit=0.f;rate->count=1U;return;
++ }
++ rate->elapsed+=dt;
++ rate->angle_limit+=6.2831853072f*(reference+.75f)*dt;
++ if(++rate->count<17U)return;
++ const float cross=rate->alpha*x[3]-rate->beta*x[2];
++ const float dot=rate->alpha*x[2]+rate->beta*x[3];
++ const float angle=fabsf(atan2f(cross,dot));
++ rate->ready=(uint8_t)(rate->elapsed>.010f&&rate->elapsed<.030f&&angle<=rate->angle_limit);
++ rate->alpha=x[2];rate->beta=x[3];
++ rate->elapsed=rate->angle_limit=0.f;rate->count=1U;
++}
+ static ow_state observer_window;
+ static ow_bin bin_window;
+ static uint32_t observer_center_cycles;
+@@ -234,6 +255,7 @@
+   if(!fe_profile_allowed(selected))return 0;
+   running=0;run_fault=0;fe_trial_done=0;memset(&ma_perf,0,sizeof(ma_perf));
+   memset(ma_irq_last,0,sizeof(ma_irq_last));ma_perf_off=0;ma_reset(&observer,&controller);
++  memset(&field_rate,0,sizeof(field_rate));
+   ma_estimate_reset(DWT->CYCCNT);
+   od_begin(&observer_trace,MIC_NATIVE_BUILD);
+   nh_begin(&observer_history,&observer,&model,MIC_NATIVE_BUILD,DWT->CYCCNT,od_fpscr());
+@@ -333,11 +355,21 @@
+     ma_observer_record(&sample,stamp,trace_seq,trace_adc,trace_id,trace_iq,
+       trace_idref,trace_iqref,trace_ref,va,vb,dt,fault,0,&window);
+   }
++  if(!fault&&qualification==FE_ESTIMATED){
++    ma_field_rate_update(&field_rate,observer.x,trace_ref,dt);
++    if(__atomic_load_n(&controller.preflux,__ATOMIC_RELAXED)==2U&&!field_rate.ready){
++      fault=MA_OBSERVER;
++      ma_fail(MA_OBSERVER);
++      ma_observer_record(&sample,stamp,trace_seq,trace_adc,trace_id,trace_iq,
++        trace_idref,trace_iqref,trace_ref,va,vb,dt,fault,0,&window);
++    }
++  }
+   float endpoint_estimate[6];
+   if(!fault)fault=ow_forecast(&model,observer.x,window.tail_va,window.tail_vb,
+     (float)(stamp-window.center)/SystemCoreClock,endpoint_estimate);
+   const uint8_t speed_ready=(uint8_t)(!fault&&observer.steps>=500U&&observer.nis<25.f&&
+-    hypotf(observer.x[2],observer.x[3])>model.flux*.5f);
++    hypotf(observer.x[2],observer.x[3])>model.flux*.5f&&
++    (qualification!=FE_ESTIMATED||field_rate.ready));
+   ma_observer_done_cycles=DWT->CYCCNT;
+   /* Publish a successfully calculated state before IRQ/performance bookkeeping.
+    * Its age remains anchored to the measured input bin, never to this instant. */
+@@ -679,9 +711,13 @@
+    float measured_nis=fe_test_observer.nis;fe_test_observer.nis=25.f;
+    od_replay_commit(&observer_trace,&fe_test_observer,rc,probe_stage);
+    fe_test_observer.nis=measured_nis;
++   ma_field_rate rate_probe={fe_test_x[2],fe_test_x[3],.015f,.50f,16U,0U};
++   ma_field_rate_update(&rate_probe,fe_test_observer.x,5.f,.001f);
++   if(!rc&&rate_probe.count!=1U)rc=MA_OBSERVER;
+    float probe_forecast[6]={0};
+    if(!rc)rc=ow_forecast(&model,fe_test_observer.x,fe_test_out.va,fe_test_out.vb,.0005f,probe_forecast);
+    fe_applied_a=probe_forecast[0];
++   fe_applied_b=rate_probe.ready?1.f:0.f;
+    uint32_t cycles=DWT->CYCCNT-begin;
+    if(probe_capture){memset(&observer_trace,0,sizeof(observer_trace));}
+    ft_clock split_end=ma_clock_snapshot();ft_measure(&ma_perf,split_begin,split_end);
+@@ -707,7 +743,13 @@
+   for(unsigned n=1;n<16U;++n)(void)ow_push_pair(&fe_window_seed,n*10624U,31875U,
+     fe_test_ia,fe_test_ib,0,0,&discard,(uint8_t)(fe_case%3U));
+   /* Cover entry, sustained preflux, and dq handover in the OFF budget. */
++  /* Include the open-loop and qualified handover branches in OFF DWT.
++   * Synthetic inputs only. No output-enable, timer or protection writes. */
+   fe_test_controller.preflux=(uint8_t)(fe_n%3U);
++  fe_test_controller.start_cos=cosf((fe_case%16U)*.3926990817f);
++  fe_test_controller.start_sin=sinf((fe_case%16U)*.3926990817f);
++  if(fe_test_controller.preflux==1U&&(fe_case&9U)==9U)
++    fe_test_x[4]=ma_min2(fe_test_ref,5.f)*6.2831853072f;
+   __DMB();fe_pending=1;
+ }
+ 

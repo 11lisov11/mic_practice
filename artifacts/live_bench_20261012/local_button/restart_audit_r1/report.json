@@ -1,0 +1,22 @@
+{
+  "schema": "mic_ai.local_button_restart_audit.v1",
+  "reproduction_pass": true,
+  "button_stop_restart_path_reproduced": true,
+  "installed_firmware_safe_local_stop_proven": false,
+  "hardware_commands": 0,
+  "firmware_modified": false,
+  "stdout": "restart=1 failed=0",
+  "source_sha256": {
+    "Src/main.c": "9bee92ea44fd99a14dac5208db6bc3a2a9fb19c3ea2f2bbb9daa3190ccc0a951",
+    "Src/mc_tasks.c": "af2aa4e3e2f260497d5b5177d720f5481313706214ce985920b3d79a793d5603"
+  },
+  "assumptions": [
+    "Valid ENABLE heartbeat passes preceding transport and semantic guards",
+    "No active MCSDK fault; stop procedure reaches IDLE"
+  ],
+  "limitations": [
+    "Extracted callback and START branch with mocked MCSDK APIs",
+    "No IRQ timing, physical PWM or powered button test",
+    "Does not establish that the user encountered this path"
+  ]
+}

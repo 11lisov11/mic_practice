@@ -1,0 +1,20 @@
+{
+  "observed_autonomous_coldboot_root_cause_proven": false,
+  "source_defects_reproduced": [
+    "Original RpcCall result waits forever for a missing response",
+    "Original unknown-method tag gate can retain a request",
+    "Every attempted packet now reserves a distinct ID, including TX failure"
+  ],
+  "new_behavior": "Bounded handshake retry reuses one transport and one updater. RPC failure no longer triggers an MCU reset in idle setup/service.",
+  "actual_2607_observation": "Read-only SWD repeated snapshots showed setup delay, then handshake, then repeated core tick reset. No hardware UART error was present in sampled LPUART ISR.",
+  "actual_2609_observation": "Read-only SWD while unavailable showed 34 response timeouts, zero send timeouts, complete incoming get calls queued, and no sampled UART PE/FE/NE/ORE. No auto reset command remains on RPC begin failure.",
+  "linux_recovery": "Published Arduino router0.5.3 $/serial/close and $/serial/open with /dev/ttyHS1 returned true. Does not require sudo, MCU reset, firmware change or motor commands.",
+  "limitation": "This narrows the failure to RPC startup/stream state; a primary physical fault or exact Linux decoder state is not proven. USB and powerbank cold boot must be distinguished.",
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "arm_commands": 0,
+  "nucleo_flash_commands": 0,
+  "nucleo_reset_commands": 0,
+  "current_physical_state": "J1 OFF, DMM<20V confirmed by user; Uno USB PC, Nucleo powerbank, 15V unchanged ON; sensor/motor wiring unchanged.",
+  "autonomous_coldboot_verified": false
+}

@@ -1,0 +1,57 @@
+{
+  "hardware_commands": 0,
+  "phase_residual": {
+    "coordinates": "physical measured V/W; batch pre-update residual, not sequential conditional innovations",
+    "measured_A": [
+      0.14870047653420126,
+      -0.7536956676314608
+    ],
+    "predicted_A": [
+      0.03526522435192403,
+      -0.7421058421863763
+    ],
+    "innovation_A": [
+      0.11343525218227725,
+      -0.011589825445084481
+    ],
+    "sigma_A": [
+      0.020988808439157215,
+      0.021157298517161652
+    ],
+    "standardized": [
+      5.4045589348773975,
+      -0.547793256104197
+    ],
+    "NIS": 29.307123175357784
+  },
+  "nonunique_counterfactuals_NIS": {
+    "phase_V_offset_minus12_counts_with_voltage_held": 0.31096725588644414,
+    "modeled_beta_voltage_plus1V": 23.720501909634784
+  },
+  "these_are_not_calibrated_corrections": true,
+  "OFF_raw_statistics": {
+    "idle": {
+      "unique_packets": 153,
+      "means": [
+        2068.947712418301,
+        2067.156862745098,
+        2067.450980392157,
+        2069.1372549019607
+      ],
+      "std_counts": [
+        4.704128715222852,
+        5.3595925403096105,
+        4.331556752592392,
+        5.427826481161453
+      ],
+      "calibration_offsets": [
+        2068,
+        2065,
+        2066,
+        2068
+      ],
+      "offset_change_premise_not_proven": true
+    }
+  },
+  "physical_root_cause_uniquely_identified": false
+}

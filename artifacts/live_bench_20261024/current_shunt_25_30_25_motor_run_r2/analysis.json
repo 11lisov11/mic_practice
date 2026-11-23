@@ -1,0 +1,126 @@
+{
+  "motor_trial_completed": true,
+  "raw_runner_passed": true,
+  "raw_reports_preserved": true,
+  "physical_rotation_verified": true,
+  "speed_changes_verified": true,
+  "feedback_pending": false,
+  "user_feedback": "Да, ровно, оба изменения заметны",
+  "start_commands_this_attempt": 1,
+  "start_commands_total_this_request": 2,
+  "clear_commands_total": 0,
+  "flash_commands_total": 0,
+  "calibration_writes_total": 0,
+  "outputs_off_confirmed": true,
+  "current_scale_qualified": false,
+  "rotor_speed_measured": false,
+  "steps": [
+    {
+      "step": 1,
+      "target_hz": 25,
+      "distinct_valid_full_windows": 3,
+      "latest_rms_a": [
+        0.716,
+        0.722,
+        0.719
+      ],
+      "latest_peak_a": [
+        1.17,
+        1.381,
+        1.18
+      ],
+      "minimum_coverage_pct": 100,
+      "maximum_rejected_adc_samples_in_window": 0
+    },
+    {
+      "step": 2,
+      "target_hz": 30,
+      "distinct_valid_full_windows": 3,
+      "latest_rms_a": [
+        0.746,
+        0.756,
+        0.748
+      ],
+      "latest_peak_a": [
+        1.276,
+        1.228,
+        1.286
+      ],
+      "minimum_coverage_pct": 100,
+      "maximum_rejected_adc_samples_in_window": 0
+    },
+    {
+      "step": 3,
+      "target_hz": 25,
+      "distinct_valid_full_windows": 4,
+      "latest_rms_a": [
+        0.754,
+        0.761,
+        0.755
+      ],
+      "latest_peak_a": [
+        1.209,
+        1.286,
+        1.545
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    }
+  ],
+  "host_deadline_s": 40,
+  "start_http_timeout_s": 12,
+  "backup_stop_triggered": false,
+  "sd_waveform_limit": "Retained pre-START waveform cannot record a second full wave; hardware Break remains enabled.",
+  "previous_attempt": {
+    "report": "artifacts/live_bench_20261024/current_shunt_25_30_25_motor_run_r1/report.json",
+    "passed": false,
+    "error": "timed out",
+    "settled_steps": 0,
+    "outputs_off_confirmed": true,
+    "fault_masks": [
+      0,
+      0
+    ],
+    "resolution": "START HTTP wait increased from8s to12s on host only; controller confirmed successful START after old HTTP timeout. First attempt stopped and clean OFF was verified before completing the requested profile. No firmware or hardware protection changes."
+  },
+  "active_vdc_range": [
+    318.0,
+    323.0
+  ],
+  "active_temperature_channel_range_c": [
+    49.0,
+    54.0
+  ],
+  "counter_deltas": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_current_bad": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "uno_tx_short_writes": 0
+  },
+  "final_fault_masks": [
+    0,
+    0
+  ],
+  "final_vdc": 324.0,
+  "heartbeat_errors": [],
+  "collection_errors": [],
+  "final_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 34,
+    "break_irq_enabled": true,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "after_diagnostics_fault_masks": [
+    0,
+    0
+  ]
+}

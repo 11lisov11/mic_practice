@@ -1,0 +1,175 @@
+{
+  "passed": true,
+  "profile_hz": [
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "start_commands": 1,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "auto_stop_verified": true,
+  "seconds_until_stop": 34.75,
+  "physical_rotation_user_confirmed": true,
+  "physical_rotation_report": "Да, ровно, ускорение заметно",
+  "steps": [
+    {
+      "field_hz": 30,
+      "coverage_pct": 100,
+      "rejected_samples": 0,
+      "rms_valid": true,
+      "rms_u_nominal_a": 0.743,
+      "rms_v_nominal_a": 0.75,
+      "rms_w_nominal_a": 0.745,
+      "received_at_target_statuses": 4,
+      "distinct_at_target_windows": 4
+    },
+    {
+      "field_hz": 35,
+      "coverage_pct": 100,
+      "rejected_samples": 0,
+      "rms_valid": true,
+      "rms_u_nominal_a": 0.798,
+      "rms_v_nominal_a": 0.801,
+      "rms_w_nominal_a": 0.799,
+      "received_at_target_statuses": 4,
+      "distinct_at_target_windows": 4
+    },
+    {
+      "field_hz": 40,
+      "coverage_pct": 100,
+      "rejected_samples": 0,
+      "rms_valid": true,
+      "rms_u_nominal_a": 0.759,
+      "rms_v_nominal_a": 0.765,
+      "rms_w_nominal_a": 0.759,
+      "received_at_target_statuses": 4,
+      "distinct_at_target_windows": 4
+    },
+    {
+      "field_hz": 45,
+      "coverage_pct": 100,
+      "rejected_samples": 0,
+      "rms_valid": true,
+      "rms_u_nominal_a": 0.796,
+      "rms_v_nominal_a": 0.803,
+      "rms_w_nominal_a": 0.799,
+      "received_at_target_statuses": 3,
+      "distinct_at_target_windows": 3
+    },
+    {
+      "field_hz": 50,
+      "coverage_pct": 100,
+      "rejected_samples": 0,
+      "rms_valid": true,
+      "rms_u_nominal_a": 0.619,
+      "rms_v_nominal_a": 0.635,
+      "rms_w_nominal_a": 0.628,
+      "received_at_target_statuses": 4,
+      "distinct_at_target_windows": 4
+    }
+  ],
+  "software_rms_window_quality_verified": true,
+  "absolute_current_scale_qualified": false,
+  "nominal_peak_threshold_a": 6.005582,
+  "peak_triggered": false,
+  "nominal_max_peak_in_received_valid_windows_a": 1.976,
+  "raw_samples_observed_by_recorder": 488303,
+  "max_recorded_queue_publish_us": 5.1117647058823525,
+  "adc_trace_sha256": "cf1cc9f3f710032b1a6e9217e9041f47ac7190fda51adec1a7e8025279cc2c67",
+  "sd_record_preserved": true,
+  "sd_wave_sha256": "09ab8d06b01b4a514abc397f89c11d307c3215f0c19f710e7057fdea65fa7c0e",
+  "sd_wave_capture_free": false,
+  "adc_capture_frozen": true,
+  "frame_checks": [
+    {
+      "index": 0,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 1,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 2,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 3,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 4,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 5,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 6,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 7,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 8,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 9,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 10,
+      "accepted": true,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    },
+    {
+      "index": 11,
+      "accepted": false,
+      "geometry_safe": true,
+      "timer_down_at_irq": true,
+      "pending_epoch_mismatch": false
+    }
+  ],
+  "new_drive_or_uart_faults": false,
+  "limitation": "Valid RMS means the unchanged95%/density/ADC-quality criteria passed. Ampere gain, polarity and bandwidth are not independently metrologically qualified. NO_PEAK is the626-count online trigger result on eligible samples; stored12frames are at50Hz/STOP."
+}

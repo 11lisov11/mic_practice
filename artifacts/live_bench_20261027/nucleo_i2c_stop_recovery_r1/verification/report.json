@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "core": {
+    "passed": true,
+    "checks": 32761,
+    "event_cases": 400,
+    "exact_record_entry": true,
+    "modeled_continuation": true,
+    "hardware_validated": false,
+    "original": {
+      "passed": true,
+      "installed_2702_premature_PE_reset_reproduced": true,
+      "record_entry_exact": true
+    },
+    "platform": {
+      "passed": true,
+      "full_production_driver": true,
+      "w1c_mmio": true,
+      "terminal_captured_before_park": true,
+      "frozen_record_preserved": true
+    },
+    "record_sha256": "fd0fef5599875da3cd892edff34a28a8213175c6389746343b5545f062e64235",
+    "hardware_commands": 0
+  },
+  "checks": [
+    "Whole motor/PWM/ADC/Break/watchdog/control-UART/timed-stop sources match installed version after removing explicit diagnostics and build IDs; feedback validity/continuity unchanged",
+    "Actual HMI old/new capture semantics, mixed-peer rejection, re-identified current/autozero contracts, calibration compatibility and current UI pass; re-identified bytes are contract tests, not hardware data",
+    "Both target builds pass; Nucleo zero warnings, RAM/stack budgets, packaged RPC headers for BOTH compilation units and loader relocation checks pass"
+  ],
+  "nucleo_static_growth_bytes": 112,
+  "nucleo_ram_margin_above_heap_stack": 3528,
+  "capture_stack_bytes": 24,
+  "terminal_stack_bytes": 24,
+  "adc_irq_stack_bytes": 376,
+  "hardware_validated": false,
+  "sensor_under_pwm_qualified": false
+}

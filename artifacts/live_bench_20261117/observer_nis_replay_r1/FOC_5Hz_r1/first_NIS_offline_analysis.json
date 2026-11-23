@@ -1,0 +1,59 @@
+{
+  "installed_second_order": {
+    "NIS_double": 28.367182287848685,
+    "still_invalid_at25": true,
+    "innovation_unconditional_A": [
+      -0.011793863643222768,
+      0.1111517084663588
+    ],
+    "S_batch_A2": [
+      [
+        0.0004452241322170614,
+        -2.2291618144365438e-06
+      ],
+      [
+        -2.2291618144365438e-06,
+        0.0004399213973901512
+      ]
+    ]
+  },
+  "counterfactual_RK4_variational": {
+    "NIS_double": 28.388272179995848,
+    "still_invalid_at25": true,
+    "innovation_unconditional_A": [
+      -0.011793863643222768,
+      0.1111517084663588
+    ],
+    "S_batch_A2": [
+      [
+        0.00044499722237354187,
+        -2.2117293732432463e-06
+      ],
+      [
+        -2.2117293732432463e-06,
+        0.00043959669161950006
+      ]
+    ]
+  },
+  "firmware_NIS": 28.367168426513672,
+  "replay_step": 563,
+  "predicted_current_error_vs_ARM_A": [
+    1.1790805776179525e-08,
+    -1.3214893956892126e-08
+  ],
+  "prior_P_min_eigenvalue": 8.076556031276696e-07,
+  "post_P_min_eigenvalue": 8.099102887354525e-07,
+  "equivalent_one_step_voltage_change_V": [
+    -0.9033601247994865,
+    8.51729292251719
+  ],
+  "residual_after_fitted_voltage_A": [
+    -5.960818028061254e-08,
+    -6.099356908428888e-09
+  ],
+  "voltage_fit_is_physical_identification": false,
+  "voltages_changed_on_hardware": false,
+  "Q_R_thresholds_changed": false,
+  "hardware_commands": 0,
+  "limitation": "One stored step permits exact algorithm replay and conditional sensitivity, not identification of true terminal voltage, current scale, prior history or physical speed"
+}

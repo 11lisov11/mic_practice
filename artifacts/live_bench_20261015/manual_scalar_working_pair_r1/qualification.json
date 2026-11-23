@@ -1,0 +1,64 @@
+{
+  "pair": [
+    2026101501,
+    2026101502
+  ],
+  "artifacts_sha256": {
+    "uno_build\\UNOQ_MOTOR.ino.elf": "b255456a0e5834375a32c2a50874189f7055783bff739dd95b170c565e8bab6e",
+    "uno_build\\UNOQ_MOTOR.ino.hex": "5c706236fcbe3a4e3b7aa8ca02d0472b8cd025dbe7c90d3d13275d79679fe601",
+    "uno_build\\UNOQ_MOTOR.ino.bin": "6c7f45908484ab0b50c2cc377183e489709f7e3c84a0ca3638c35b429993b7e4",
+    "uno_build\\UNOQ_MOTOR.ino.elf-zsk.bin": "9170cd15f89717efb89b1a3466e02a059f4ac8a4f4004ad3e10a767e8551d74d",
+    "nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "1bcf9ab91cd0d4d8f54f2757e348059a37797926370dc15bfcc38f017ab196f7",
+    "nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "00b204d00275cee35ae14f6bed676e03a7e6c0f39601fb9ba7bef76b312e316d",
+    "nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "fff2d15df7dcb725f2091b9606a4dc8a07fbda73fbf169f480b13181a5bc9f4f"
+  },
+  "hmi_sha256": "0bba7921e6abc763f00ef6105b255cc569ff071dacb61791818ef120bbc8a2c4",
+  "header_sha256": "b9eb6be5bc74c62cce6904dcb2c0aabc58ffa6d38bb47051f514521106fff24c",
+  "source_hashes_verified": true,
+  "measurement_pwm_and_protection_sources_unchanged": true,
+  "physical_powered_uart_recovery_verified": false,
+  "hardware_commands": 0,
+  "no_fixture_firmware": true,
+  "target_builds_compiled": true,
+  "tests": 2106,
+  "normal_http_starts": 2,
+  "intact_ne_is_advisory": true,
+  "manual_scalar": true,
+  "manual_selftest_report": "tests_manual_r5\\report.json",
+  "hmi_static_sha256": {
+    "index.html": "85f221d5f78c385b63f62d1938b5b6adfaa395591cf749aa820bc581c4e673fe",
+    "app.js": "31977483ac814d000540717f47070872eae9f3aaee23a3afcee0f9dcdd1abe30",
+    "style.css": "94aed056753a7d468d3a03e802a81d18fa53757e0068118f0eec774ee1b20fdd"
+  },
+  "manual_selftests": {
+    "pass": true,
+    "hardware_commands": 0,
+    "hardware_validated": false,
+    "nucleo": {
+      "pass": true,
+      "assertions": 2103,
+      "single_bit_corruptions": 344,
+      "ne_byte_positions": 43,
+      "hardware_commands": 0
+    },
+    "uno": {
+      "pass": true,
+      "assertions": 9308,
+      "hardware_commands": 0
+    },
+    "http": {
+      "pass": true,
+      "cases": 33,
+      "hardware_commands": 0,
+      "scope": "Real HTTP handlers and manual-session expiry/watchdog forwarding, mocked MCU and motor"
+    },
+    "scope": "Actual Nucleo parser/command/feedback to actual Uno parser; actual Uno manual command/watchdog functions; real HMI HTTP. HAL/MCSDK/motor mocked.",
+    "nucleo_sha256": "4d402ab9577b97d0fb822ec40e5fdc2f091490f40b4580b82531e213a0aa2079",
+    "uno_sha256": "5a01226efb6dad7f56e8a10df6882dd8605d2c8eba6b05204ce73cacf809b493",
+    "hmi_sha256": "0bba7921e6abc763f00ef6105b255cc569ff071dacb61791818ef120bbc8a2c4",
+    "header_sha256": "15c6aa9f84350dcddb4346dd76bc482209a81cf220c99cc5263979bad0db9cee"
+  },
+  "installed": false,
+  "physical_manual_operation_verified": false,
+  "pass": true
+}

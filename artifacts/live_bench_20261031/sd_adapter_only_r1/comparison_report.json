@@ -1,0 +1,135 @@
+{
+  "operator_confirmed": {
+    "adapter": "IHM09M2 installed",
+    "34pin_cable": "removed",
+    "PA6_PA11_aux_wires": "removed",
+    "Nucleo": "PC USB",
+    "J1_J4": "OFF"
+  },
+  "levels": [
+    true,
+    true,
+    true
+  ],
+  "bare_levels": [
+    true,
+    true,
+    true
+  ],
+  "configuration_comparison": {
+    "PA6_mode": {
+      "bare": 2,
+      "adapter_only": 2,
+      "same": true
+    },
+    "PA6_open_drain": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "PA6_pull": {
+      "bare": 1,
+      "adapter_only": 1,
+      "same": true
+    },
+    "PA6_AF": {
+      "bare": 6,
+      "adapter_only": 6,
+      "same": true
+    },
+    "PA6_locked": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "PA11_mode": {
+      "bare": 3,
+      "adapter_only": 3,
+      "same": true
+    },
+    "BKBID": {
+      "bare": false,
+      "adapter_only": false,
+      "same": true
+    },
+    "BKE": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "BKP": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "MOE": {
+      "bare": false,
+      "adapter_only": false,
+      "same": true
+    },
+    "AOE": {
+      "bare": false,
+      "adapter_only": false,
+      "same": true
+    },
+    "BKINE": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "BKINP": {
+      "bare": true,
+      "adapter_only": true,
+      "same": true
+    },
+    "core_halted": {
+      "bare": false,
+      "adapter_only": false,
+      "same": true
+    }
+  },
+  "configuration_same_all": true,
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "old_captures_modified": false,
+  "exact_physical_cause_identified": false,
+  "conclusion_ru": "Nucleo с одним IHM09M2 без шлейфа и отдельных проводов PA6/PA11 даёт HIGH, как голая Nucleo. Постоянное удержание только переходником в этой конфигурации не воспроизведено. Снятые внешние соединения, посадка/контакт и эффект отключения питания ещё не разделены.",
+  "constraints": {
+    "new_probes": false,
+    "START": false,
+    "flash": false,
+    "protection_edits": false
+  },
+  "state_current": "J1/J4 OFF, adapter on Nucleo, cable absent, PA6/PA11 no auxiliary wires",
+  "next_information_requested": "Which external probes/wires were removed from PA6/PA11 before adapter removal? No reconnection requested yet.",
+  "test_sequence": [
+    {
+      "stage": "STEVAL disconnected, cable on adapter",
+      "PA6": "LOW"
+    },
+    {
+      "stage": "cable removed, adapter still installed",
+      "PA6": "LOW"
+    },
+    {
+      "stage": "adapter removed and PA6/PA11 freed after power-off",
+      "PA6": "HIGH"
+    },
+    {
+      "stage": "adapter remounted without cable or auxiliary PA6/PA11 wires",
+      "PA6": "HIGH"
+    }
+  ],
+  "limitations": [
+    "Adapter removal/reinstallation and controller power cycling occurred between earlier LOW and current HIGH.",
+    "Earlier auxiliary PA6/PA11 wiring is not independently documented.",
+    "No proof that any component is defective; no claim that every historical SD fault is resolved."
+  ]
+}

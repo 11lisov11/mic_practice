@@ -1,0 +1,15 @@
+Open CAD without scripts: SOLIDWORKS 2020 or later; keep assembly and part files together.
+
+Regeneration on the current workstation:
+- Windows, Python 3.12, numpy, scipy, matplotlib, pywin32.
+- SOLIDWORKS running with COM API; native gost-part.prtdot and gost-assy.asmdot templates.
+- Current template location is explicit in solidworks.py. Change it for another installation.
+- Full field recalculation: FEMM 4.2 and pyFEMM 0.1.3, installed on this workstation.
+- Helper modules in sibling design_v1/ and ipm15_battery_20261117/ are included in the review ZIP.
+
+CHANGE_DIAMETER.cmd starts an interactive diameter/stack prompt.
+Mode 1: regenerate native CAD and nominal DXF only.
+Mode 2: also solve a new six-frequency FEMM study and recompute winding/performance/thermal estimates.
+Global variables inside SLDPRT files are reference metadata. The cross-part parametric master is JSON/Python.
+The models are a concept study, with unmeasured donor geometry and unfinished mounting/fit details.
+No firmware, serial port or drive hardware is accessed by these scripts.

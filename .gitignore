@@ -94,3 +94,33 @@ artifacts/**/*.axf
 artifacts/**/*.pdom
 mcsdk_reference/_*DO_NOT_USE/
 mcsdk_reference/ACIM_IPM15B_SIEMENS_REFERENCE_NOT_AIR56/
+
+# Private original hardware firmware backups; preserve locally, never publish.
+# See AGENTS.md. A second copy is kept outside this Git work tree.
+/hardware_backups/
+
+# Private and unrelated local materials are not part of the public snapshot.
+**/.unoq_ssh/
+**/.ssh/
+**/family_*/
+/artifacts/cnc_setup_20261122/
+/output/fish_silicone_molds*/
+/output/delorean_a1/
+**/.playwright-cli/
+/output/playwright/
+**/.env
+**/.env.*
+**/config.local.json
+**/credentials.json
+**/token.json
+**/tokens.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.ppk
+/result.json
+/x.open)})
+
+# Boot log contains local network identifiers; keep the original only locally.
+/artifacts/live_bench_20261029/foc_observer_schedule_fix_r1/unexpected_boot_audit_20261030_r1/previous_boot_tail.txt

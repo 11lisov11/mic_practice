@@ -1,0 +1,81 @@
+{
+  "schema": "mic_ai.as5600_pwm2517_trial.v1",
+  "drive_trial_passed": true,
+  "as5600_bus_test_passed": false,
+  "start_commands": 1,
+  "normal_clear_commands": 1,
+  "repeated_start_commands": 0,
+  "flash_commands": 0,
+  "outputs_off_confirmed": true,
+  "mcu_start_dispatch_ms": 88623,
+  "mcu_stop_dispatch_ms": 93623,
+  "mcu_elapsed_ms": 5000,
+  "mcu_limit_ms": 5000,
+  "mcu_stop_reason": 1,
+  "host_backup_stop": null,
+  "final_estop": 0,
+  "final_motor_fault": 0,
+  "final_transport_fault": 0,
+  "final_fault_masks": [
+    0,
+    0
+  ],
+  "sensor_errors_since_preflight": 45,
+  "nack_count_delta": 10,
+  "timeout_count_delta": 1,
+  "observed_sensor_causes": [
+    2,
+    8,
+    9,
+    11
+  ],
+  "observed_error_isrs": [
+    32769,
+    32785,
+    33025,
+    33281
+  ],
+  "observed_flags": {
+    "NACKF": "0x8011 during ADDRESS_WRITE",
+    "BERR": "0x8101 during ADDRESS_READ",
+    "ARLO": "0x8201 during STOP",
+    "BUSY": "0x8001 before START of a new I2C transaction, often both pins observed HIGH after reset"
+  },
+  "max_sched_hold_us": 3003,
+  "config_matches_all": true,
+  "post_stop_successful_reads": 3615,
+  "post_stop_new_errors": 0,
+  "distinct_valid_5hz_current_windows": 2,
+  "nominal_current_rms_a": [
+    [
+      0.427,
+      0.431,
+      0.424
+    ],
+    [
+      0.428,
+      0.432,
+      0.426
+    ]
+  ],
+  "current_coverage_pct": [
+    100,
+    100
+  ],
+  "current_scale_independently_qualified": false,
+  "sd_high_after": true,
+  "sd_capture_free": true,
+  "angle_qualified": false,
+  "speed_qualified": false,
+  "magnetic_status_hex": "0x37",
+  "physical_rotation_verified": true,
+  "interpretation": "Idle web scheduling defect no longer reproduces, but hardware I2C error flags and BUSY recur during PWM. After STOP reading recovers without new errors. Flags alone do not identify power, wiring, device, controller or reset/recovery source.",
+  "limitations": [
+    "MCU timestamps identify supervisory dispatch, not oscilloscope-qualified IGBT edges",
+    "Read-counter delta from preflight includes idle preparation; not labelled as successful PWM-only reads",
+    "Per-cause BERR/ARLO/BUSY totals were not instrumented, only snapshots; do not invent a full breakdown"
+  ],
+  "physical_rotation_verification_source": "Explicit operator confirmation after completed trial",
+  "physical_rotation_description": "Rotated smoothly until automatic stop",
+  "rotor_speed_independently_measured": false
+}

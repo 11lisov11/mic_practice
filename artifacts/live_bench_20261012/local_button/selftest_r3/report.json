@@ -1,0 +1,18 @@
+{
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "local_stop_output": "checks=1038",
+  "mutations_detected": [
+    "no_output_guard",
+    "no_sticky_stop",
+    "held_clear_allowed",
+    "boot_stop_call_unguarded"
+  ],
+  "hmi_checks": 49,
+  "active_limits_unchanged": true,
+  "limitations": [
+    "HAL/MCSDK calls mocked; not a physical interrupt latency measurement",
+    "Candidate image not installed; physical PWM and button tests still required"
+  ],
+  "pass": true
+}

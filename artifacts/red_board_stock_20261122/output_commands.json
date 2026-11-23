@@ -1,0 +1,145 @@
+{
+  "test": "stock_firmware_digital_outputs_usb_only",
+  "started_monotonic": 185304.625,
+  "firmware_changed": false,
+  "motion_commands_sent": 0,
+  "electrical_output_measured": false,
+  "steps": [
+    {
+      "request_mask": 0,
+      "reply": {
+        "state": 0,
+        "flags": 1,
+        "ack_sequence": 0,
+        "outputs": 0,
+        "outputs_raw": 0,
+        "inputs": 0,
+        "tick": 28710,
+        "live_steps": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "raw_hex": "01000100000000000000000000000000000000000000000000000000000000000000000000000000000000002670000030",
+        "electrical_output_measured": false,
+        "received_monotonic": 185304.703
+      }
+    }
+  ],
+  "identity": {
+    "path": "\\\\?\\hid#vid_a720&pid_f803#8&7f014ae&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}",
+    "vid": 42784,
+    "pid": 63491,
+    "version": 768,
+    "product": "RNR ECO MOTION 2.0",
+    "manufacturer": "RobotAndRobot.com",
+    "serial_number": "816FAD79CE5"
+  },
+  "capabilities": {
+    "input_bytes": 49,
+    "output_bytes": 27,
+    "usage": 1,
+    "usage_page": 65280
+  },
+  "initial": {
+    "state": 0,
+    "flags": 1,
+    "ack_sequence": 65535,
+    "outputs": 0,
+    "outputs_raw": 0,
+    "inputs": 0,
+    "tick": 28659,
+    "live_steps": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "raw_hex": "010001ffff000000000000000000000000000000000000000000000000000000000000000000000000000000f36f0000bf",
+    "electrical_output_measured": false,
+    "received_monotonic": 185304.656
+  },
+  "completed": false,
+  "error": "TimeoutError('RNR HID read timeout')",
+  "final_zero": {
+    "state": 0,
+    "flags": 1,
+    "ack_sequence": 2,
+    "outputs": 0,
+    "outputs_raw": 0,
+    "inputs": 0,
+    "tick": 28965,
+    "live_steps": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "raw_hex": "01000102000000000000000000000000000000000000000000000000000000000000000000000000000000002571000030",
+    "electrical_output_measured": false,
+    "received_monotonic": 185304.953
+  },
+  "hid_trace": [
+    {
+      "direction": "in",
+      "start": 185304.625,
+      "end": 185304.656,
+      "raw_hex": "010001ffff000000000000000000000000000000000000000000000000000000000000000000000000000000f36f0000bf"
+    },
+    {
+      "direction": "out",
+      "start": 185304.656,
+      "end": 185304.656,
+      "raw_hex": "020300000000000000000000000000000000000000000000000000"
+    },
+    {
+      "direction": "in",
+      "start": 185304.656,
+      "end": 185304.703,
+      "raw_hex": "01000100000000000000000000000000000000000000000000000000000000000000000000000000000000002670000030"
+    },
+    {
+      "direction": "out",
+      "start": 185304.703,
+      "end": 185304.703,
+      "raw_hex": "020300010001000000000000000000000000000000000000000000"
+    },
+    {
+      "direction": "in",
+      "start": 185304.703,
+      "end": 185304.765,
+      "raw_hex": "01000101000000000000000000000000000000000000000000000000000000000000000000000000000000005970000030"
+    },
+    {
+      "direction": "in",
+      "start": 185304.765,
+      "end": 185304.812,
+      "raw_hex": "01000101000000000000000000000000000000000000000000000000000000000000000000000000000000008c70000030"
+    },
+    {
+      "direction": "in",
+      "start": 185304.812,
+      "end": 185304.859,
+      "raw_hex": "0100010100000000000000000000000000000000000000000000000000000000000000000000000000000000bf70000030"
+    },
+    {
+      "direction": "in",
+      "start": 185304.859,
+      "end": 185304.906,
+      "raw_hex": "0100010100000000000000000000000000000000000000000000000000000000000000000000000000000000f270000030"
+    },
+    {
+      "direction": "out",
+      "start": 185304.921,
+      "end": 185304.937,
+      "raw_hex": "020300020000000000000000000000000000000000000000000000"
+    },
+    {
+      "direction": "in",
+      "start": 185304.937,
+      "end": 185304.953,
+      "raw_hex": "01000102000000000000000000000000000000000000000000000000000000000000000000000000000000002571000030"
+    }
+  ]
+}

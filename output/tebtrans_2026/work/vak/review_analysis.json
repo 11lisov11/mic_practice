@@ -1,0 +1,126 @@
+{
+  "raw_sha256": "92f344e804b47553f8aa9cfe741c2b31501c4fabc36189144692a9c7f7041d5a",
+  "nominal_motor": {
+    "rs": 7.8680919534358695,
+    "rr": 20.831969806024176,
+    "ls": 0.4848975835206992,
+    "lr": 0.48434230603642564,
+    "lm": 0.48240691185340717,
+    "inertia": 7.646282455209753e-05,
+    "friction": 0.00011804380989131773,
+    "pole_pairs": 1
+  },
+  "measurement_covariance": [
+    [
+      9.789078699552977e-05,
+      0.00010989697840076784
+    ],
+    [
+      0.00010989697840076784,
+      0.0008744832055513104
+    ]
+  ],
+  "terminal_parameter_mape": {
+    "parameter_drift": {
+      "rs": 21.43535837533623,
+      "rr": 1.263203593922992,
+      "lm": 4.852296872129629
+    },
+    "composite": {
+      "rs": 21.40259894984272,
+      "rr": 1.2105965203533386,
+      "lm": 4.836924026979307
+    }
+  },
+  "trace_seed": 97200,
+  "trace_case": "composite",
+  "trace_step_s": 0.005,
+  "full_metric_step_s": 0.0001,
+  "trace_curve_ranges": [
+    {
+      "metric": "speed_true",
+      "method": "fixed_reference",
+      "points": 340,
+      "min": 121.10635825165856,
+      "max": 155.97434543632056
+    },
+    {
+      "metric": "speed_true",
+      "method": "joint_only",
+      "points": 340,
+      "min": 132.90427243897267,
+      "max": 153.69167305958706
+    },
+    {
+      "metric": "speed_true",
+      "method": "direct_feedback",
+      "points": 340,
+      "min": 137.63200763930493,
+      "max": 150.89144814537985
+    },
+    {
+      "metric": "speed_true",
+      "method": "confidence_feedback",
+      "points": 340,
+      "min": 137.34593857999832,
+      "max": 151.05488934895322
+    },
+    {
+      "metric": "current_a",
+      "method": "fixed_reference",
+      "points": 340,
+      "min": 0.7890915798721332,
+      "max": 1.143548575268329
+    },
+    {
+      "metric": "current_a",
+      "method": "joint_only",
+      "points": 340,
+      "min": 0.7195888858592011,
+      "max": 1.4350040931758394
+    },
+    {
+      "metric": "current_a",
+      "method": "direct_feedback",
+      "points": 340,
+      "min": 0.8436477270374922,
+      "max": 1.198582165899075
+    },
+    {
+      "metric": "current_a",
+      "method": "confidence_feedback",
+      "points": 340,
+      "min": 0.8448240339468749,
+      "max": 1.167061546248929
+    },
+    {
+      "metric": "torque_nm",
+      "method": "fixed_reference",
+      "points": 340,
+      "min": -0.0044743969963134305,
+      "max": 0.38178035343751443
+    },
+    {
+      "metric": "torque_nm",
+      "method": "joint_only",
+      "points": 340,
+      "min": 0.010041174684160744,
+      "max": 0.5132030272516651
+    },
+    {
+      "metric": "torque_nm",
+      "method": "direct_feedback",
+      "points": 340,
+      "min": 0.004935605492759518,
+      "max": 0.4209124132874735
+    },
+    {
+      "metric": "torque_nm",
+      "method": "confidence_feedback",
+      "points": 340,
+      "min": 0.005223855260205998,
+      "max": 0.4075097751494812
+    }
+  ],
+  "parameter_plot": "observer output before covariance weighting, not controller parameter"
+}

@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "build_errors": 0,
+  "build_warnings": 0,
+  "profile": "estimated, source 2202 except catalog ratings",
+  "run_on_target": false,
+  "installed": false,
+  "hardware_commands": 0,
+  "present": "ST LSO, R3_2 and Break; 5 s, 300 ms link, 1.35 A, 4000 cycles, 2 ms ADC limits",
+  "field_supervision": "16 ms mean field rate, speed reference plus 0.75 Hz",
+  "current_pairs_checked": 21169201,
+  "PC_model": {
+    "nominal": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5143301827566964,
+      "rpm": 305.7516983091873,
+      "rpm_estimated": 305.830951690147,
+      "field_frequency_Hz": 5.183679351975745
+    },
+    "Rs_plus20": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5402366913455025,
+      "rpm": 326.57657713199995,
+      "rpm_estimated": 300.2116655707432,
+      "field_frequency_Hz": 5.532521212296038
+    },
+    "Rr_plus20": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5167279924665178,
+      "rpm": 304.42207334104654,
+      "rpm_estimated": 305.76628961142785,
+      "field_frequency_Hz": 5.182715424847331
+    },
+    "shunt_plus5": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.513730730329241,
+      "rpm": 303.06846445774715,
+      "rpm_estimated": 305.97965193105614,
+      "field_frequency_Hz": 5.14912739375368
+    }
+  },
+  "preserved_files_verified": 1944,
+  "serial": "ST ASPEP/Motor Pilot on USART2; bench client must poll every <300 ms",
+  "old_NIS_policy": "2202 remains installed with NIS 25; ST LSO does not compute NIS",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "e397ebb480733d4e44bdd06cdb05af02573ca7165f00e6330f38a51c5ffd4b1e",
+    "ACIM-AIR56B2-LSO_FOC.elf": "aaacd7ea112c2817301c61b04d6caf43278f66027c130d73da5556c9fa036e8b",
+    "ACIM-AIR56B2-LSO_FOC.hex": "3d053d2c9447d4e591cc8ad1cc0d133ac3fa98823937bc821119bc4b8500d14e",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "f087102cf905eaaae1bcaabfc3e790cceb12c29c429284d48012e184c652e43d"
+  }
+}

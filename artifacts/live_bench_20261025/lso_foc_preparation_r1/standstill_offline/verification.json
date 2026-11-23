@@ -1,0 +1,27 @@
+{
+  "software_cli_verified": true,
+  "test_scope": "synthetic impedance sweep only; not measured motor model",
+  "test_count_standstill": 21,
+  "test_count_existing_bridge": 9,
+  "physical_motor_electrical_parameters_identified": false,
+  "hardware_commands": 0,
+  "firmware_built": false,
+  "firmware_installed": false,
+  "rotating_motor_run": false,
+  "stator_resistance_input_ohm": 12.23,
+  "known_current_scale": "nominal_datasheet",
+  "current_peak_capture_capacity": 12,
+  "acquisition_firmware_ready": false,
+  "remaining_work": [
+    "long synchronous voltage/current acquisition",
+    "inverter voltage error characterization including deadtime and device drops",
+    "bounded stationary-axis excitation and fault stop",
+    "real sweep and independent validation",
+    "FOC R3_2 integration and tuning"
+  ],
+  "source_sha256": {
+    "motor_identification\\standstill.py": "18d4720d35020ad8346a26d9bca827444bff9acd04805524fab7388122c90845",
+    "tools\\motor_parameter_identification.py": "7f32f1183fb0130b23e26d0ebe9d336be7a1ff98e6863e31c9c4610e3c91bfd1",
+    "tests\\test_acim_standstill_identification.py": "e13b60ae219056dbf09bf208b2838acf49e6b3f6051a4da8d023679334bfe85e"
+  }
+}

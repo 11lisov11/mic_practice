@@ -1,0 +1,208 @@
+{
+  "available": true,
+  "schema": 3,
+  "firmware": 2026111612,
+  "count": 2,
+  "total_observer_samples": 2,
+  "valid_samples": 1,
+  "invalid_samples": 1,
+  "first_loss": {
+    "cycles": 0,
+    "steps": 501,
+    "reason_mask": 32,
+    "estimate_valid": false,
+    "reasons_ru": [
+      "NIS не меньше 25"
+    ],
+    "control_sample_sequence": 0,
+    "control_adc_cycles": 0,
+    "observer_sample_sequence": 0,
+    "observer_adc_cycles": 179680,
+    "bin_cycles": 179680,
+    "rpm_est": 0.0,
+    "flux_alpha_wb": 0.0,
+    "flux_beta_wb": 0.0,
+    "flux_wb": 0.0,
+    "nis": 42.0,
+    "id_A": 0.0,
+    "iq_A": 0.0,
+    "id_ref_A": 0.0,
+    "iq_ref_A": 0.0,
+    "reference_hz": 0.0,
+    "observer_ia_A": 0.0,
+    "observer_ib_A": 0.0,
+    "input_va_V": 0.0,
+    "input_vb_V": 0.0,
+    "dt_s": 0.0,
+    "observer_fault": 0,
+    "published": false,
+    "predicted_current_A": [
+      0.0,
+      0.0
+    ],
+    "innovation_A": [
+      0.0,
+      0.0
+    ],
+    "innovation_variance_A2": [
+      0.0,
+      0.0
+    ],
+    "NIS_components": [
+      null,
+      null
+    ],
+    "endpoint_active_CCR": [
+      0,
+      0,
+      0
+    ],
+    "endpoint_bus_V": 0,
+    "endpoint_arr": 0,
+    "observation_cycles": 100000,
+    "window_first_cycles": 20320,
+    "window_count": 16,
+    "forecast_dt_s": 0.0004687058972194791,
+    "published_estimate_cycles": 179680,
+    "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+    "innovation_kind": "sequential_conditional",
+    "conditional_predicted_current_A": [
+      0.0,
+      0.0
+    ]
+  },
+  "control_fault": 0,
+  "record_stride_steps": 500,
+  "samples": [
+    {
+      "cycles": 0,
+      "steps": 500,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 0,
+      "control_adc_cycles": 0,
+      "observer_sample_sequence": 0,
+      "observer_adc_cycles": 179680,
+      "bin_cycles": 179680,
+      "rpm_est": 0.0,
+      "flux_alpha_wb": 0.0,
+      "flux_beta_wb": 0.0,
+      "flux_wb": 0.0,
+      "nis": 0.0,
+      "id_A": 0.0,
+      "iq_A": 0.0,
+      "id_ref_A": 0.0,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.0,
+      "observer_ia_A": 0.0,
+      "observer_ib_A": 0.0,
+      "input_va_V": 0.0,
+      "input_vb_V": 0.0,
+      "dt_s": 0.0,
+      "observer_fault": 0,
+      "published": false,
+      "predicted_current_A": [
+        0.0,
+        0.0
+      ],
+      "innovation_A": [
+        0.0,
+        0.0
+      ],
+      "innovation_variance_A2": [
+        0.0,
+        0.0
+      ],
+      "NIS_components": [
+        null,
+        null
+      ],
+      "endpoint_active_CCR": [
+        0,
+        0,
+        0
+      ],
+      "endpoint_bus_V": 0,
+      "endpoint_arr": 0,
+      "observation_cycles": 100000,
+      "window_first_cycles": 20320,
+      "window_count": 16,
+      "forecast_dt_s": 0.0004687058972194791,
+      "published_estimate_cycles": 179680,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "cycles": 0,
+      "steps": 501,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 0,
+      "control_adc_cycles": 0,
+      "observer_sample_sequence": 0,
+      "observer_adc_cycles": 179680,
+      "bin_cycles": 179680,
+      "rpm_est": 0.0,
+      "flux_alpha_wb": 0.0,
+      "flux_beta_wb": 0.0,
+      "flux_wb": 0.0,
+      "nis": 42.0,
+      "id_A": 0.0,
+      "iq_A": 0.0,
+      "id_ref_A": 0.0,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.0,
+      "observer_ia_A": 0.0,
+      "observer_ib_A": 0.0,
+      "input_va_V": 0.0,
+      "input_vb_V": 0.0,
+      "dt_s": 0.0,
+      "observer_fault": 0,
+      "published": false,
+      "predicted_current_A": [
+        0.0,
+        0.0
+      ],
+      "innovation_A": [
+        0.0,
+        0.0
+      ],
+      "innovation_variance_A2": [
+        0.0,
+        0.0
+      ],
+      "NIS_components": [
+        null,
+        null
+      ],
+      "endpoint_active_CCR": [
+        0,
+        0,
+        0
+      ],
+      "endpoint_bus_V": 0,
+      "endpoint_arr": 0,
+      "observation_cycles": 100000,
+      "window_first_cycles": 20320,
+      "window_count": 16,
+      "forecast_dt_s": 0.0004687058972194791,
+      "published_estimate_cycles": 179680,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "summary_ru": "Первый отказ оценки: NIS не меньше 25",
+  "limitation": "Schema3: токи усреднены по16 ADC; EKF корректируется в центре, в регулятор публикуется RK4-прогноз на конец окна. Raw токовая защита не усредняется. Скорость не подтверждена независимым датчиком."
+}

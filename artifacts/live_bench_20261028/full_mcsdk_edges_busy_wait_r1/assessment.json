@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "build": 2026102805,
+  "scope": "MCSDK protected OFF/FAULT and physical TIM1 diagnostic PWM on original pins, inverter ribbon absent",
+  "elapsed_ms": 5000.015705882353,
+  "native_tasks_during_5s": {
+    "MC_Run": 10000,
+    "Safety": 10000,
+    "Medium": 2500,
+    "HighFrequency": 80007
+  },
+  "native_command_dispatch_during_5s": 99,
+  "ADC_IRQ_during_5s": 80008,
+  "ADC_bad": 0,
+  "TIM_IRQ_max_us": 21.95294117647059,
+  "ADC_IRQ_max_us": 19.476470588235294,
+  "main_gap_max_us": 321.95882352941175,
+  "actual_16kHz_PWM_window_seconds": 4.0004863749999995,
+  "recorded_outputs": 5,
+  "WL_unrecorded": true,
+  "AS_complete_reads_during_PWM": 800,
+  "AS_errors_during_5s": 0,
+  "AS_errors_since_boot": 0,
+  "AS_boot_reads": 609,
+  "hardware_boot_note": "This flash/startup had free lines and no BUSY; the stuck-SDA branch is verified by actual-driver A/B replay and the earlier2804 hardware record, not claimed exercised by this boot",
+  "actual_driver_AB": {
+    "old_BUSY": 15,
+    "fixed_BUSY": 1,
+    "first_record_preserved": true,
+    "nine_clocks": true
+  },
+  "previous_hardware_record": "full_mcsdk_edges_r1/assessment.json",
+  "previous_hardware_startup": "SDA LOW/SCL HIGH/PE0, first BUSY at8ms,9-clock clear after290.994ms;15 retry errors before recovery permission",
+  "UART_RX_bad": 0,
+  "UART_guard": 0,
+  "TX_errors": {
+    "timeouts": 0,
+    "dma_errors": 0,
+    "full_errors": 0
+  },
+  "first_fault_slots": 0,
+  "motor_UV_active": true,
+  "motor_timer_disabled": true,
+  "physical_PWM_off_after": true,
+  "normal_motor_RUN_tested": false,
+  "powered_inverter_I2C_cause_proven": false,
+  "old_files_SHA_verified": 573,
+  "source_of_transfer_read_and_recovery_unchanged": true,
+  "primary_reference": "https://www.nxp.com/docs/en/user-guide/UM10204.pdf",
+  "remaining": "Compare with inverter ribbon and driver supply, then powered captures; no claim of powered rotation qualification"
+}

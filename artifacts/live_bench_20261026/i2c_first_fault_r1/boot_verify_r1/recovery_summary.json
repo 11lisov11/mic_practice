@@ -1,0 +1,26 @@
+{
+  "schema": "mic_ai.unoq_rpc_recovery.v1",
+  "operator_confirmed_j1_off_bus_below_20v_usb": true,
+  "router_package_version": "0.5.3",
+  "router_serial_port": "/dev/ttyHS1",
+  "sources": [
+    "https://github.com/arduino/arduino-router/blob/v0.5.3/main.go"
+  ],
+  "first_coldboot_result": "get method unavailable; no MCU exception; later providers registered but calls timed out",
+  "read_only_diagnostics": [
+    "mcu_boot_snapshot.log",
+    "read_bridge_state.log",
+    "direct_router_get_venv.log"
+  ],
+  "no_parameter_serial_calls_rejected_without_effect": true,
+  "serial_close_open_rpc_verified": true,
+  "serial_reconnect_log": "router_serial_reconnect_v053.log",
+  "mcu_boot_release_sequences_without_flash_writes": 2,
+  "nucleo_reset_commands": 0,
+  "owned_hmi_restart_after_serial_reconnect": true,
+  "firmware_writes": 0,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "after_serial_reconnect_report": "after_serial_reconnect.json",
+  "limitation": "Composite recovery succeeded; does not uniquely attribute failure to one component or prove future cold boots are reliable"
+}

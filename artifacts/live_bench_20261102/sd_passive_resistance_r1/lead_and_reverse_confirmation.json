@@ -1,0 +1,27 @@
+{
+  "operator_readings": {
+    "shorted_probes_ohm": 0.26,
+    "TP23_TP21_forward_ohm": 0.6,
+    "TP23_TP21_reverse_ohm": 0.58,
+    "R28_in_circuit_ohm": 1600
+  },
+  "simple_lead_compensated_estimate_ohm": {
+    "forward": 0.34,
+    "reverse": 0.32
+  },
+  "controller_separation_observation": "Previous read after STEVAL isolation: same3101/3102, PA6HIGH, PWM0; stored separately in controller_during_passive_isolation.json",
+  "preparation": "Operator measured following request: J1/J4OFF, ribbon removed at STEVAL, TP23 diagnostic wire removed",
+  "conclusion": "Stable near-zero SD-to-GND path strongly suspected on the isolated STEVAL. Low-ohm meter two-wire subtraction is approximate. No specific defective component identified. R28 cannot be evaluated individually from its in-circuit value.",
+  "candidates": [
+    "C20 or its solder/pads",
+    "PCB/solder bridge on SD net",
+    "IPM SD pin14/internal path"
+  ],
+  "next_component_separation": "With all STEVAL power absent, visually verify C20/R28 and IPM pads. If component isolation is needed, lift one C20 terminal and compare SD-GND board resistance against isolated C20 resistance. Never energize with protection network altered; restore or replace original330pF50V component before powered work.",
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "physical_component_modifications_by_agent": 0,
+  "old_capture_files_modified": false
+}

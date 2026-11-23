@@ -1,0 +1,50 @@
+08011a40 <TIM1_UP_TIM16_IRQHandler>:
+ 8011a40:	b570      	push	{r4, r5, r6, lr}
+ 8011a42:	f3ef 8305 	mrs	r3, IPSR
+ 8011a46:	b11b      	cbz	r3, 8011a50 <TIM1_UP_TIM16_IRQHandler+0x10>
+ 8011a48:	4b1a      	ldr	r3, [pc, #104]	@ (8011ab4 <TIM1_UP_TIM16_IRQHandler+0x74>)
+ 8011a4a:	685b      	ldr	r3, [r3, #4]
+ 8011a4c:	051b      	lsls	r3, r3, #20
+ 8011a4e:	d411      	bmi.n	8011a74 <TIM1_UP_TIM16_IRQHandler+0x34>
+ 8011a50:	4c19      	ldr	r4, [pc, #100]	@ (8011ab8 <TIM1_UP_TIM16_IRQHandler+0x78>)
+ 8011a52:	6863      	ldr	r3, [r4, #4]
+ 8011a54:	f3bf 8f5f 	dmb	sy
+ 8011a58:	4b18      	ldr	r3, [pc, #96]	@ (8011abc <TIM1_UP_TIM16_IRQHandler+0x7c>)
+ 8011a5a:	f06f 0201 	mvn.w	r2, #1
+ 8011a5e:	611a      	str	r2, [r3, #16]
+ 8011a60:	f7ef fef8 	bl	8001854 <mic_current_update_epoch>
+ 8011a64:	f7f8 fc0a 	bl	800a27c <TSK_HighFrequencyTask>
+ 8011a68:	f3bf 8f5f 	dmb	sy
+ 8011a6c:	6863      	ldr	r3, [r4, #4]
+ 8011a6e:	f3bf 8f5f 	dmb	sy
+ 8011a72:	bd70      	pop	{r4, r5, r6, pc}
+ 8011a74:	4c12      	ldr	r4, [pc, #72]	@ (8011ac0 <TIM1_UP_TIM16_IRQHandler+0x80>)
+ 8011a76:	4d10      	ldr	r5, [pc, #64]	@ (8011ab8 <TIM1_UP_TIM16_IRQHandler+0x78>)
+ 8011a78:	686e      	ldr	r6, [r5, #4]
+ 8011a7a:	6823      	ldr	r3, [r4, #0]
+ 8011a7c:	3301      	adds	r3, #1
+ 8011a7e:	6023      	str	r3, [r4, #0]
+ 8011a80:	f3bf 8f5f 	dmb	sy
+ 8011a84:	4b0d      	ldr	r3, [pc, #52]	@ (8011abc <TIM1_UP_TIM16_IRQHandler+0x7c>)
+ 8011a86:	f06f 0201 	mvn.w	r2, #1
+ 8011a8a:	611a      	str	r2, [r3, #16]
+ 8011a8c:	f7ef fee2 	bl	8001854 <mic_current_update_epoch>
+ 8011a90:	f7f8 fbf4 	bl	800a27c <TSK_HighFrequencyTask>
+ 8011a94:	f3bf 8f5f 	dmb	sy
+ 8011a98:	686a      	ldr	r2, [r5, #4]
+ 8011a9a:	6863      	ldr	r3, [r4, #4]
+ 8011a9c:	4413      	add	r3, r2
+ 8011a9e:	1b9b      	subs	r3, r3, r6
+ 8011aa0:	6063      	str	r3, [r4, #4]
+ 8011aa2:	68a3      	ldr	r3, [r4, #8]
+ 8011aa4:	3301      	adds	r3, #1
+ 8011aa6:	60a3      	str	r3, [r4, #8]
+ 8011aa8:	6823      	ldr	r3, [r4, #0]
+ 8011aaa:	3301      	adds	r3, #1
+ 8011aac:	6023      	str	r3, [r4, #0]
+ 8011aae:	f3bf 8f5f 	dmb	sy
+ 8011ab2:	bd70      	pop	{r4, r5, r6, pc}
+ 8011ab4:	e000ed00 	.word	0xe000ed00
+ 8011ab8:	e0001000 	.word	0xe0001000
+ 8011abc:	40012c00 	.word	0x40012c00
+ 8011ac0:	20005de8 	.word	0x20005de8

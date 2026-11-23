@@ -1,0 +1,210 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "SWD": 0,
+  "HTTP_methods": [
+    "GET"
+  ],
+  "operator_state": "Powerbanks; PC/Saleae detached; J4 ON; J1 OFF",
+  "checks": {
+    "installed_pair": true,
+    "disarmed_no_runs": true,
+    "bus_below20": true,
+    "fresh_native_replies": true,
+    "no_new_bad_frames": true,
+    "UART_RPC_clean": true,
+    "autonull_ready": true,
+    "calculated_profile": true,
+    "CPU64_cases": true,
+    "fast_budget4000": true,
+    "CPU_meter": true,
+    "observer_record_unoccupied": true,
+    "boot_records_fresh": true,
+    "no_reboot_during_observation": true,
+    "SD_currently_HIGH_configured": true
+  },
+  "pair": [
+    2026111503,
+    2026111504
+  ],
+  "samples": 20,
+  "boot_changed_since_PC": true,
+  "good_frame_increase": 655,
+  "rejected_frames": 0,
+  "zero_ready": 1,
+  "zero_offsets": [
+    2068,
+    2066,
+    2067,
+    2069
+  ],
+  "zero_spans": [
+    20,
+    31,
+    26,
+    23
+  ],
+  "zero_attempts": 3,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 30,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "repeat_break": {
+    "available": true,
+    "fresh": true,
+    "state": "WAIT_FIRST_CLEAR",
+    "state_code": 0,
+    "flags": 0,
+    "clear_rearm_tick_ms": 0,
+    "armed_tick_ms": 0,
+    "irq_count_before": 0,
+    "event_irq_count": 0,
+    "first_wave_crc32c": 0,
+    "event_tick_ms": 0,
+    "boot_record_crc32c": 3964690674,
+    "epoch_matches": true,
+    "first_wave_preserved": null,
+    "summary_ru": "Повторный Break: ожидается CLEAR после первого снимка",
+    "physical_cause_identified": false,
+    "TP23_connection_verified": false,
+    "limitation": "PA4 требует отдельного подтверждённого подключения TP23. Сохранённая запись и свежесть связи различаются.",
+    "wave": null,
+    "snapshot": {
+      "kind": "first_after_CLEAR",
+      "available": true,
+      "captured": false,
+      "age_ms": 8789,
+      "reason": "no_recorded_break"
+    },
+    "records_coherent": false,
+    "complete_window": false,
+    "live_usable": false
+  },
+  "active_fault_mask": 4,
+  "saved_fault_mask": 4,
+  "native_boot": {
+    "available": true,
+    "fresh": true,
+    "firmware": 2026111504,
+    "retained_sequence": 1,
+    "sequence_is_power_cycle_persistent": false,
+    "csr_raw": 201326592,
+    "previous_csr_raw": 0,
+    "flags": 4,
+    "causes": [
+      "NRST_FLAG",
+      "POWER_ON_OR_BROWNOUT"
+    ],
+    "previous_flags_cleared": false,
+    "current_flags_cleared": true,
+    "previous_boot_continuity": false,
+    "software_request_tag": 0,
+    "early_record_crc": 3964690674,
+    "native_tick_ms": 81333,
+    "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+    "exact_physical_cause_identified": false,
+    "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+  },
+  "CPU": {
+    "available": true,
+    "observer_measured": true,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 100.69411764705882,
+    "irq_body_lower_us": 16.258823529411764,
+    "cpu_upper_us": 84.43529411764706,
+    "irq_root_count": 3,
+    "max_wall_us": 113.7764705882353,
+    "max_irq_body_lower_us": 27.46470588235294,
+    "max_cpu_upper_us": 86.31176470588235,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 64,
+    "meter_errors": 0,
+    "first_fault": null,
+    "IRQ_breakdown": {
+      "available": false,
+      "scope": "last_completed_observer_window",
+      "window_us": 0.0,
+      "valid_mask": 0,
+      "handlers": [
+        {
+          "name": "DMA2_BKIN",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "DMA1_UART_TX",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART1_CONTROL",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "ADC1_2",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_UPDATE",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_BREAK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART2_MCSDK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "SysTick",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "EXTI_STOP",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        }
+      ],
+      "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+    },
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "preserved_files_verified": 3045,
+  "fast_kernel_cycles": 3615,
+  "fast_kernel_budget_cycles": 4000,
+  "motor_start_ready": false,
+  "PWM_test": false,
+  "limitation": "GET telemetry only; no SWD access on powerbanks. Empty recorder inferred from fresh boot/run_id0 and receiver state, not a direct RAM read."
+}

@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "Actual capture hook executes before state/error reset, distinguishes first boot/PWM, retains records, validates pages/CRC/padding/peer/OFF contract",
+    "Existing I2C and sensor wire model: 511 checks",
+    "PWM/ADC/SD/UART commands/protections/Uno MCU deadline and RX handoff unchanged; no new sensor recovery/filter policy",
+    "Real recorded ADC/zero/calibration/manual compatibility and new HMI first-fault decoder checked; wrong firmware/malformed records rejected"
+  ],
+  "capture_test": {
+    "passed": true,
+    "paging_crc_cases": 43,
+    "pre_reset_order_verified": true,
+    "two_immutable_slots_verified": true
+  },
+  "legacy_checks": 511,
+  "target_builds_verified": true,
+  "nucleo_static_growth_bytes": 352,
+  "nucleo_ram_margin_above_heap_stack": 3664,
+  "capture_stack_bytes": 24,
+  "adc_irq_stack_bytes": 376,
+  "hardware_capture_validated": false,
+  "non_gating_release_preflight_missing_hil_evidence": true
+}

@@ -1,0 +1,103 @@
+{
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "frequency_max_hz": 5,
+  "runlimit_ms": 5000,
+  "peer_reply_timeout_ms": 500,
+  "send_cadence_us": 50000,
+  "reply_guard_us": 8000,
+  "CPU_probe_budget_cycles": 4000,
+  "applied_voltage_source_corrected": true,
+  "accepted_reply_lifecycle_corrected": true,
+  "exact_saturated_polarity_fast_path": true,
+  "profiling_work_removed": false,
+  "pair": [
+    2026111503,
+    2026111504
+  ],
+  "base_pair": [
+    2026111501,
+    2026111502
+  ],
+  "built": true,
+  "installed": true,
+  "hardware_commands": 34,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "observer_tuning_changed": false,
+  "controller_equations_changed": false,
+  "OFF_CPU_qualified": true,
+  "FOC_start_ready": false,
+  "target_timing_measured": true,
+  "target_timing_measured_OFF": true,
+  "target_timing_requalification_required": false,
+  "hardware_validated": false,
+  "full_adapter_under_PWM_measured": false,
+  "CPU_baseline_cycles": 4229,
+  "FT_wire_schema": 3,
+  "FT_pages": 9,
+  "UART_TC_IRQ_order_fixed": true,
+  "exact_profile_all52_bytes_each_call": true,
+  "raw_current_trip_norm_unchanged": true,
+  "no_global_math_override": true,
+  "numeric_tests": {
+    "exact_model_predicate_cases": 250421,
+    "all416_single_bit_mutations": true,
+    "normal_rounding_modes": 4,
+    "hypot_dispatch_bit_exact_cases": 2008485,
+    "controller_bit_exact_cases": 200000,
+    "raw135A_boundary_cases": 3
+  },
+  "unchanged_source_files": 160,
+  "host_tests_passed": true,
+  "model_tests_passed": true,
+  "native_flash_bytes": 112528,
+  "hex_padding_offsets": [
+    108244,
+    108245,
+    108246,
+    108247
+  ],
+  "artifacts": {
+    "release/nucleo_2026111504_exact_profile_budget.hex": "c7073e0c2c06d9d55c5b957f159f307de63aa3cc126f696b061b86436c63494b",
+    "release/nucleo_2026111504_expected_readback.bin": "b09927049be0a5f5234e73f293dcf28990169610bb7eac2cb32ac8c9587eed95",
+    "release/uno_2026111503_exact_profile_budget.elf-zsk.bin": "286f3a6b8cb7189f7ce03c51c6e516954b36d14ca6e832a187176bb9f2555621"
+  },
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 28860,
+    ".noinit": 32,
+    "._user_heap_stack": 1540
+  },
+  "RAM_allocated": 31408,
+  "RAM_unallocated": 1360,
+  "preserved_files_verified": 3045,
+  "source_files": 162,
+  "verification_reports": {
+    "verification/report.json": "4a3d2293cc97625bcb30812a7e2627a20d3481bfb1e3ade871a6d846ec8a4a13",
+    "verification/ARM_call_scope.json": "72fa02fd61dccd8218d74627c145f1eb6be29c883a591af1a1048586f9f3b313",
+    "model_verification/model_report.json": "a289ae7439dd73bcd70f29fbf5a36d83360ae822b54cea10760ac502f3a20bfc",
+    "nucleo_build_report.json": "95c3942da5deded1fed3f5b68bdb68270565ecdcb039b60bf8310a1d84f5cde3",
+    "build/uno/unoq_mcsdk_scalar.build-manifest.json": "0ebe569bcfe0c7f35aa490344adc5b9335cc28440590f3e5b7a31170ba9e22d6"
+  },
+  "measured_OFF_fast_cycles": 3611,
+  "measured_CPU_profile_cases": 64,
+  "measured_OFF_observer_cycles": 19781,
+  "hardware_validation_scope": "Image readback and OFF-DWT CPU only",
+  "hardware_commands_scope": "Logged installation subprocesses and passive SWD reads; includes transport/HMI deployment; excludes GET requests",
+  "manual_RESET": 0,
+  "programming_resets_per_recipe": true,
+  "nucleo_flash_commands": 1,
+  "uno_flash_commands": 1,
+  "calibration_SHA256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "installation_acceptance_SHA256": "15ccbc8eeb4fd62eb91e9a7acaffdbc0212900421c2c3922fae9aafcff86296b",
+  "installed_reports": {
+    "hardware_install_r1/report.json": "e9c587538f196bf739b122471528b44042e897086b68ab24b4b0c073c14c555c",
+    "post_install_idle_r1/report.json": "3a11cd4339838645791c0ec431b44a886918e4b35c5bc8ed0d7dbea9627f55af"
+  }
+}

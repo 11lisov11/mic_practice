@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "source": "actual native adapter compiled on PC, synthetic clocks/samples",
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "results": {
+    "installed": {
+      "fault": 3,
+      "observer_steps": 0,
+      "dt_at_first_observer_service_s": 25.214513506,
+      "bin_samples_pending": 15
+    },
+    "fixed": {
+      "fault": 0,
+      "observer_steps": 2,
+      "dt_at_first_observer_service_s": 0.0,
+      "bin_samples_pending": 2
+    }
+  },
+  "protections_relaxed": false,
+  "current_deadline_and_age_guards_unchanged": true,
+  "observed_hardware_consistency": "Recorded MA_STALE3, software128,18ADC frames; observer startup epoch is a reproduced software defect. Internal stale timestamps were not directly captured on hardware."
+}

@@ -1,0 +1,59 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "requested_repeat_not_consumed": true,
+  "blocked_before_start": true,
+  "outputs_off": true,
+  "controller_Vbus_V": 323.0,
+  "native_detail_ms_previous_verified": 164446,
+  "native_detail_ms_current": 92544,
+  "native_restart_between_checks_indicated": true,
+  "restart_cause_not_identified": true,
+  "fresh_current_summary_age_ms": 19,
+  "fresh_current_detail_age_ms": 219,
+  "zero_ready": false,
+  "zero_bad": true,
+  "zero_attempts": 8,
+  "consecutive_stable_blocks": 2,
+  "required_consecutive_blocks": 3,
+  "rejected_blocks": [
+    {
+      "block": 3,
+      "failed_paths": [
+        "V1"
+      ],
+      "estimated_3sigma_mean_counts": 2.071,
+      "reasons": [
+        "оценка 3σ среднего больше 2 отсчётов"
+      ]
+    },
+    {
+      "block": 6,
+      "failed_paths": [
+        "V1"
+      ],
+      "estimated_3sigma_mean_counts": 2.002,
+      "reasons": [
+        "оценка 3σ среднего больше 2 отсчётов"
+      ]
+    }
+  ],
+  "mean_uncertainty_limit_counts": 2,
+  "autonull_criterion_unchanged": true,
+  "FOC_selftest_cases": 0,
+  "FOC_profile_not_ready_this_boot": true,
+  "default_algorithm_selected": 1,
+  "native_MC_masks": [
+    0,
+    1024
+  ],
+  "SD_currently_HIGH": true,
+  "SD_BIE_enabled": false,
+  "SD_first_pulse_us": 62,
+  "UART_RPC_errors_zero": true,
+  "calibration_files_not_modified": true,
+  "next_step": "Wait for answer: was Nucleo disconnected/reconnected after successful low-bus check, or continuously powered? Do not issue START/CLEAR or reset while HV remains. Preserve full8-block zero history and SD before subsequent preparation."
+}

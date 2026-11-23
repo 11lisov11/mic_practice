@@ -1,0 +1,19 @@
+{
+  "images_written": true,
+  "flash_readback_passed": true,
+  "uno_build": 2026102507,
+  "nucleo_build": 2026102508,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "calibration_unchanged": true,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "hmi_hashes_match": true,
+  "zero_direct_memory_passed": true,
+  "tim1_registers_passed": true,
+  "runtime_pair_verified": false,
+  "rpc_pending": true,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "error": "RPC timed out after programming despite active router and HMI services; full Linux cold start still required",
+  "next_step": "Both boards to powerbanks, PC USB/Saleae disconnected,15V ON,J1 OFF,no RESET/START; then verify over Wi-Fi. This cold-starts Uno and Nucleo without another flash."
+}

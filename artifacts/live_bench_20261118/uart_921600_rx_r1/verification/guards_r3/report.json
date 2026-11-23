@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "motor": {
+    "passed": true,
+    "checks": 33,
+    "OFF_cases": 64,
+    "fake_clock_not_target_timing": true
+  },
+  "parser": {
+    "pass": true,
+    "old_fatal_reproduced": false,
+    "checks": 7447,
+    "two_NE_position_pairs": 903,
+    "hardware_commands": 0
+  },
+  "TX_DMA": {
+    "pass": true,
+    "checks": 301101,
+    "dma_stress_frames": 2048
+  },
+  "ARM_byte_identical": {
+    "ma_native_fast": true,
+    "mic_observer_step": true,
+    "mic_observer_noise": true
+  },
+  "guards": {
+    "motor_control.h": "0b445d2367a0b26c78383886af03ea7cf6673ecd930bc5dfa397b395be2f1dd3",
+    "foc_experiment.h": "d96d8f5aaff3262bd0edf70c58ae757afd988736060450b79623d59b4e9f41e6",
+    "current_adc_deadline.h": "98e30b8e539b9facf490406d34dfa4da521d8b0caab8da15fad5c56eda96bfce",
+    "current_adc_window_plan.h": "6312075430eb46efd0d14fc2409a98db0604b0585fe4e3db06569d327437f79a",
+    "local_stop.h": "069b10fe55f9bbae078a0afb4816887f754c14eab586223da0d09a51fa59a4d5",
+    "first_break_snapshot.h": "dd8ef14cac21746fe60b7420444361f206ffce8d256009a97d4ba3a43dbaad5c",
+    "uart_v3_transport.h": "af9e65f16ee722270ccfb192550a6c70f73e875ef5fa05aa968cc59906e08d27",
+    "observer_start_history.h": "5878b0d31fe94f76143582a776884290a30c5035a5a21238a3b570ec74a8fe3e",
+    "observer_trace_core.h": "17ca8a0f8a60c624076a6d25410907558442506e4e4889562cf8f44dccac0c84",
+    "peak_core.h": "8a861eb98062e079344dbad8565ba44185278b057dc9a3f0f3bca540bdefc510"
+  },
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "hardware_commands": 0,
+  "target_cycles_measured": false,
+  "HAL_TX_complete_wait_preserved": true,
+  "NIS_math_unchanged": true
+}

@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "pair": [
+    2026111603,
+    2026111604
+  ],
+  "package_verified": true,
+  "rejected_unsafe_states": [
+    "vdc",
+    "bp_vdc",
+    "state",
+    "pwm",
+    "hmi_hv_armed",
+    "bp_status",
+    "mc_age_ms",
+    "mc_uart_error_flags",
+    "mc_bad_integrity",
+    "mc_bad_sequence",
+    "brake"
+  ],
+  "network_requests": 0,
+  "hardware_commands": 0,
+  "readback_prepared": true,
+  "OFF_CPU_limit": 4000,
+  "estimate_limit_ms": 2,
+  "post_install_current_freshness_check": true,
+  "ordinary_deadlines_ms": [
+    750,
+    1500,
+    1500
+  ]
+}

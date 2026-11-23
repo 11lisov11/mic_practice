@@ -1,0 +1,50 @@
+{
+  "fw_build": 2026111713,
+  "mc_fw_build": 2026111714,
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 10.0,
+  "mc_age_ms": 21,
+  "bp_vbus_age_ms": 21,
+  "mc_current_zero_ready": 1,
+  "mc_current_zero_stable": 3,
+  "mc_current_zero_spans": [
+    26,
+    27,
+    31,
+    25
+  ],
+  "mc_fault_current_mask": 0,
+  "mc_fault_occurred_mask": 0,
+  "mc_fault": 2,
+  "algorithm_selected": 1,
+  "algorithm_fault": 0,
+  "foc_timing_ready": true,
+  "foc_timing_cases": 64,
+  "foc_timing_fault": 0,
+  "algorithm_fast_cycles": 3811,
+  "algorithm_observer_cycles": 24930,
+  "mc_uart_error_flags": 0,
+  "mc_bad_integrity": 0,
+  "mc_bad_sequence": 0,
+  "rpc_timeouts": null,
+  "observer_trace": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "sd": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 21,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "read_only_statuses": 8,
+  "START": 0,
+  "CLEAR": 0
+}

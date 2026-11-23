@@ -1,0 +1,57 @@
+{
+  "pair": [
+    2026111609,
+    2026111606
+  ],
+  "base_pair": [
+    2026111607,
+    2026111606
+  ],
+  "uno_only": true,
+  "nucleo_image_unchanged": true,
+  "built": true,
+  "installed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "controller_equations_changed": false,
+  "original_RPC_outage_cause_proven": false,
+  "observed_route_loss_recovery_fixed_in_source": true,
+  "route_refresh_period_ms": 5000,
+  "note": "Restores lost registrations only OFF. No MCU reset, no snapshot erasure, no automatic motor retry.",
+  "host_tests_passed": true,
+  "tests": "verification_router053/report.json",
+  "superseded_tests": "verification/report.json uses newer router duplicate semantics; not sufficient for installed0.5.3",
+  "native_hex_sha256": "8257b4d933b50a297c566f90a62b0d0ff07a3bc765dc49fc86349b9fa150364e",
+  "native_expected_sha256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+  "preserved_files_verified": 5506,
+  "rpc_actual_router_version": "0.5.3",
+  "route_exists_is_not_registration_proof": true,
+  "offline_limits_unchanged": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "qualification": "Captured updater lock starvation corrected. Long idle result in acceptance; initiating stream failure and FOC RUN not fully qualified.",
+  "OFF_route_reconnect_verified": false,
+  "OFF_fast_cycles": 3618,
+  "FOC_start_ready": false,
+  "FOC_five_seconds_verified": false,
+  "qualified": false,
+  "current_RPC_usable": false,
+  "route_wait_blocks_updater_fixed_in_source": true,
+  "artifacts": {
+    "release/uno_2026111609_rpc_route_recovery.elf-zsk.bin": "7aaf47cb37d77c3e90be05f1e782a8587253773c3b9fed2de0c49dd39ca6a1b6"
+  },
+  "installation_scope": "Uno1609 only; native1606 not flashed/reset; no START/CLEAR",
+  "uno_readback_verified": true,
+  "calibration_unchanged": true,
+  "long_idle_qualification_pending": false,
+  "host_guard_progress_source": "uno_rx_count,32-bit accepted native RSPs; native16-bit good count remains checked for decrease",
+  "host_guard_sha256": "b6b600e037d1d7e5b5a87a58afd5f2b37400c5c7ecdd09c069da215cfd08c68a",
+  "host_guard_tests": "rpc_counter_guard_live_count_r1/report.json",
+  "long_idle_RPC_verified": false,
+  "acceptance_sha256": "79b1a28278d8076b7273c94fd5b48213cd485e66cdfe5099a44456713e7cae46"
+}

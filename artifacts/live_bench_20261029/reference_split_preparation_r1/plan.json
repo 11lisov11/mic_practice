@@ -1,0 +1,65 @@
+{
+  "schema": "mic_ai.reference_split.preparation.v1",
+  "status": "awaiting_DMM_levels_and_JP8_position",
+  "installed_pair": [
+    2026102941,
+    2026102940
+  ],
+  "firmware_changed": false,
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "physical_state": "User last confirmed J1/J4 OFF, both USB to PC, wiring unchanged",
+  "measurements": [
+    {
+      "name": "Nucleo3V3",
+      "red": "CN7-16",
+      "black": "CN7-19 GND",
+      "mode": "DC V"
+    },
+    {
+      "name": "NucleoVREFP",
+      "red": "CN10-7 VREFP (may be labelled AVDD)",
+      "black": "CN10-32 AGND",
+      "mode": "DC V"
+    },
+    {
+      "name": "STEVAL3V3",
+      "red": "C21 positive terminal",
+      "black": "TP11 GND",
+      "mode": "DC V"
+    },
+    {
+      "name": "STEVALbias",
+      "red": "C4 positive terminal (U1D output)",
+      "black": "TP11 GND",
+      "mode": "DC V"
+    }
+  ],
+  "observation": "Existing JP8 position1-2 or2-3; do not move it during this DC baseline",
+  "dmm_limitation": "DC levels alone cannot determine the source of the fast few-millivolt noise; no false noise-clear conclusion from a stable display.",
+  "next_capture": {
+    "status": "acquisition firmware not yet prepared or installed",
+    "measurement": "simultaneous internal VREFINT / external bias1.65V",
+    "required_qualification": [
+      "both ADC sample-and-hold apertures aligned, adequate VREFINT settling and sampling time",
+      "OFF/low-bus-only, raw buffer with CRC, saved before release",
+      "external bias input connection verified against existing pin uses before giving wiring instructions",
+      "never reuse old phase/phase records as VREFINT data; do not auto-correct current protections"
+    ],
+    "formula": "x=B/R; y=M/R; y/x=M/B. Reference-relative motion follows1/x; bias-relative motion follows y/x.",
+    "analysis_tool": "C:\\mic_practice\\tools\\analyze_reference_noise.py",
+    "analysis_validation": "9 tests on independent synthetic ADC forward model passed; not hardware qualification"
+  },
+  "sources": {
+    "nucleo_manual": "https://www.st.com/resource/en/user_manual/um2505-stm32g4-nucleo64-boards-mb1367-stmicroelectronics.pdf",
+    "nucleo_schematic": "https://www.st.com/resource/en/schematic_pack/mb1367-g431rb-c04_schematic.pdf",
+    "steval_manual_local": "C:\\mic_practice\\um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf"
+  },
+  "preserved_captures": {
+    "artifacts\\live_bench_20261029\\adc_noise_rpc_fix_r1\\idle_noise_hardware_r1\\capture.bin": "ea28b4b429bf3d752edc66cbd80026a87e579c0202c3cd10fad88f89ded69496",
+    "artifacts\\live_bench_20261029\\adc_noise_rpc_fix_r1\\idle_noise_15v_off_r1\\capture.bin": "0b43c1a9df06b0822c6db4eb07866d5be296d7b448833b35eb415458338fe997"
+  },
+  "source_of_noise_identified": false,
+  "protection_thresholds_changed": false
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "mic_ai.powered_trial.sender_delta.v1",
+  "pair": [
+    2026101008,
+    2026101006
+  ],
+  "images": {
+    "production_uno": "1ebb68a6bf9180643ec471e240b4ab125c51866f8da1d69c974421bbd403708a",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479"
+  },
+  "cases": {
+    "carrier_5": true,
+    "carrier_20": true,
+    "STOP": true,
+    "ESTOP": true,
+    "FREQ_ZERO": true,
+    "RUNLIMIT": true,
+    "ACTIVE_RPC": true,
+    "TIM1_BREAK": true
+  },
+  "normal_restore_verified": true,
+  "offline_pass": true,
+  "offline_suites": 42,
+  "idle_wifi_pass": true,
+  "physical_idle_pass": true,
+  "hv_release_approved": false,
+  "issued_at": 1791663040.2657561,
+  "expires_at": 1791666640.2657561,
+  "evidence_sha256": {
+    "pwm": "9d9db2573654d0d17b05c9a9b26bdecbe5897ef4cc43f47f806a3e71eae5949b",
+    "offline": "34eab856d77ab605db7ed1a1ffe8953239be79c8bda4bf1e34cba9b41d69c394",
+    "idle_wifi": "72770ca3fb4d9b1af6f197eb52910449e2652ffbda81977b930e45189a078d89",
+    "physical_idle": "a3ab5efd1f9c02beef46ebac5b35a58e295efcab1cb800880ef266ef1fb37292",
+    "sender_delta": "f52008f28a62595423ccbe95c2ae2ee1e68a36fa2146c2bfe82423d29ab9265e",
+    "sender_install": "de9584456032ab973ae6a53f3f765947de2740c9bf82d7f3b6861900a688ecd8"
+  },
+  "scope": "unchanged_nucleo_pwm_plus_sender_delta",
+  "pwm_evidence_pair": [
+    2026101007,
+    2026101006
+  ],
+  "pwm_evidence_images": {
+    "production_uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479"
+  },
+  "sender_delta_verified": true,
+  "sender_flash_verified": true,
+  "fresh_idle_wifi_pass": true,
+  "new_pair_active_pwm_measured": false
+}

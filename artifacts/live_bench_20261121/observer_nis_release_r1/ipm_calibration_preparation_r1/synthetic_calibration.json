@@ -1,0 +1,165 @@
+{
+  "timing_ns": 1097.0588235294126,
+  "conduction_V0_V": 0.6500000000000022,
+  "conduction_R_on_ohm": 0.2999999999999882,
+  "conduction_design_condition": 6.021012733642023,
+  "timer_hz": 170000000,
+  "model_nominal_deadtime_ticks": 229,
+  "all_phases_and_signs_in_both_groups": true,
+  "trial_model_defines": {
+    "MA_IPM_EDGE_ADJUST_HALF_TICKS": -85,
+    "MA_IPM_DEVICE_DROP_MV": 650,
+    "MA_IPM_ON_MILLIOHMS": 300
+  },
+  "fit": {
+    "cycles": 18,
+    "edge_bias_ns": 9.094947017729282e-13,
+    "edge_rms_ns": 1.941202522912999e-12,
+    "conduction_bias_V": -1.7825247450926126e-15,
+    "conduction_rms_V": 4.3320043141840506e-15,
+    "measured_cycle_mean_bias_V": 1.8750433304780422e-15,
+    "measured_cycle_mean_rms_V": 1.2395667553412153e-14,
+    "plateau_approximation_rms_V": 1.2809491335957507e-14,
+    "by_phase_and_sign": {
+      "U-1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -1.8503717077085944e-15,
+        "conduction_rms_V": 4.416771762501198e-15,
+        "measured_cycle_mean_bias_V": 1.2138438402568378e-14,
+        "measured_cycle_mean_rms_V": 1.233896894832203e-14,
+        "plateau_approximation_rms_V": 1.0974186296201698e-14
+      },
+      "U+1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -1.6653345369377348e-15,
+        "conduction_rms_V": 4.084755791419361e-15,
+        "measured_cycle_mean_bias_V": -6.809367884367627e-15,
+        "measured_cycle_mean_rms_V": 1.0087767680389479e-14,
+        "plateau_approximation_rms_V": 1.4385566057787882e-14
+      },
+      "V-1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -1.887379141862766e-15,
+        "conduction_rms_V": 4.505645609432346e-15,
+        "measured_cycle_mean_bias_V": -2.0724163126336257e-15,
+        "measured_cycle_mean_rms_V": 1.3322676295501878e-14,
+        "plateau_approximation_rms_V": 1.8006160946904698e-14
+      },
+      "V+1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -1.7393494052460785e-15,
+        "conduction_rms_V": 4.158522593018086e-15,
+        "measured_cycle_mean_bias_V": 2.6645352591003757e-15,
+        "measured_cycle_mean_rms_V": 7.160723346098895e-15,
+        "plateau_approximation_rms_V": 4.67173968785876e-15
+      },
+      "W-1": {
+        "cycles": 3,
+        "edge_bias_ns": -1.5158245029548805e-12,
+        "edge_rms_ns": 2.2888448060471848e-12,
+        "conduction_bias_V": -1.8503717077085944e-15,
+        "conduction_rms_V": 4.5811556401542764e-15,
+        "measured_cycle_mean_bias_V": -6.809367884367627e-15,
+        "measured_cycle_mean_rms_V": 1.0889999514151754e-14,
+        "plateau_approximation_rms_V": 1.3797769087549534e-14
+      },
+      "W+1": {
+        "cycles": 3,
+        "edge_bias_ns": 3.3348139065007367e-12,
+        "edge_rms_ns": 3.749942721349417e-12,
+        "conduction_bias_V": -1.7023419710919068e-15,
+        "conduction_rms_V": 4.221768122166024e-15,
+        "measured_cycle_mean_bias_V": 1.2138438402568378e-14,
+        "measured_cycle_mean_rms_V": 1.7903644354008054e-14,
+        "plateau_approximation_rms_V": 1.0986160316453369e-14
+      }
+    }
+  },
+  "validation": {
+    "cycles": 18,
+    "edge_bias_ns": 9.094947017729282e-13,
+    "edge_rms_ns": 4.29810427363246e-12,
+    "conduction_bias_V": -2.9667626380261127e-15,
+    "conduction_rms_V": 7.31208276461331e-15,
+    "measured_cycle_mean_bias_V": 4.243519116345043e-15,
+    "measured_cycle_mean_rms_V": 2.877874735408703e-14,
+    "plateau_approximation_rms_V": 2.6844448903253615e-14,
+    "by_phase_and_sign": {
+      "U-1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -3.0346096006420944e-15,
+        "conduction_rms_V": 7.40999365207696e-15,
+        "measured_cycle_mean_bias_V": 2.6645352591003757e-15,
+        "measured_cycle_mean_rms_V": 2.0116800053149086e-14,
+        "plateau_approximation_rms_V": 2.4253397322020706e-14
+      },
+      "U+1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 9.094947017729282e-13,
+        "conduction_bias_V": -2.8495724298712353e-15,
+        "conduction_rms_V": 7.0767465356539494e-15,
+        "measured_cycle_mean_bias_V": 1.2138438402568378e-14,
+        "measured_cycle_mean_rms_V": 1.591302455776226e-14,
+        "plateau_approximation_rms_V": 1.1569070846550224e-14
+      },
+      "V-1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 6.010009990131648e-12,
+        "conduction_bias_V": -3.0716170347962666e-15,
+        "conduction_rms_V": 7.545433761156327e-15,
+        "measured_cycle_mean_bias_V": -6.809367884367627e-15,
+        "measured_cycle_mean_rms_V": 4.660186768868224e-14,
+        "plateau_approximation_rms_V": 2.844945146671123e-14
+      },
+      "V+1": {
+        "cycles": 3,
+        "edge_bias_ns": 9.094947017729282e-13,
+        "edge_rms_ns": 6.010009990131648e-12,
+        "conduction_bias_V": -2.886579864025407e-15,
+        "conduction_rms_V": 7.097327364494329e-15,
+        "measured_cycle_mean_bias_V": 1.2138438402568378e-14,
+        "measured_cycle_mean_rms_V": 1.591302455776226e-14,
+        "plateau_approximation_rms_V": 3.1809520395056016e-14
+      },
+      "W-1": {
+        "cycles": 3,
+        "edge_bias_ns": -1.5158245029548805e-12,
+        "edge_rms_ns": 3.749942721349417e-12,
+        "conduction_bias_V": -3.0346096006420944e-15,
+        "conduction_rms_V": 7.574509637767748e-15,
+        "measured_cycle_mean_bias_V": 2.6645352591003757e-15,
+        "measured_cycle_mean_rms_V": 3.9358097822671683e-14,
+        "plateau_approximation_rms_V": 3.8513912492118684e-14
+      },
+      "W+1": {
+        "cycles": 3,
+        "edge_bias_ns": 3.3348139065007367e-12,
+        "edge_rms_ns": 4.78386144036737e-12,
+        "conduction_bias_V": -2.9235872981795788e-15,
+        "conduction_rms_V": 7.150675217780825e-15,
+        "measured_cycle_mean_bias_V": 2.6645352591003757e-15,
+        "measured_cycle_mean_rms_V": 1.836762134299157e-14,
+        "plateau_approximation_rms_V": 1.7237679879648763e-14
+      }
+    }
+  },
+  "fit_captures": [
+    "synthetic_fit"
+  ],
+  "validation_captures": [
+    "synthetic_test"
+  ],
+  "excluded_near_zero_current_cycles": 1
+}

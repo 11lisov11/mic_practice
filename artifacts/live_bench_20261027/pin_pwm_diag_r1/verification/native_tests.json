@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "checks": 192044,
+  "actual_hardware_calls": 0,
+  "I2C": [
+    {
+      "passed": true,
+      "mode": "normal",
+      "healthy_reads_before_fault": 200,
+      "healthy_pe_enables": 1,
+      "healthy_pe_disables": 0,
+      "clean_and_forced_cleanup_verified": true,
+      "first_records_frozen": true
+    },
+    {
+      "passed": true,
+      "mode": "lost_pe"
+    },
+    {
+      "passed": true,
+      "mode": "missing_hook"
+    }
+  ],
+  "original_TIM1_initializer_unchanged": true,
+  "AS5600_driver_unchanged": true,
+  "motor_application_not_booted": true
+}

@@ -362,6 +362,24 @@ def main() -> int:
         confirm="ARM 310V",
         profile="hv",
     )
+    discharged_production = safe_status(fw_build=2026101002, mc_fw_build=2026100801,
+        bp_fault=5, bp_vbus_raw=0, bp_vbus_valid=1, mc_diag_valid=1, mc_fault_reason=8,
+        mc_fault_current_mask=4, mc_fault_occurred_mask=4,
+        mc_uart_error_flags=0, mc_last_uart_error_flags=0)
+    ok, msg = mod.arm_profile_switch_precheck(discharged_production, hv_for_switch)
+    add_case(cases, "discharged_undervoltage_can_restore_disarmed_hv_profile", ok, msg)
+    ok, msg = mod.hv_arm_precheck(discharged_production, hv_for_switch, vbus_calibrated=True)
+    add_case(cases, "profile_restore_never_waives_undervoltage_for_arm", not ok, msg)
+    ok, msg = mod.arm_profile_switch_precheck(discharged_production, lv_cfg)
+    add_case(cases, "undervoltage_restore_exception_never_selects_lv", not ok, msg)
+    for key, value in (("pwm", 1), ("estop", 1), ("bp_fault", 1), ("bp_bad_cnt", 1),
+                       ("vdc", 3), ("bp_vdc", 3), ("vdc", float("nan")), ("bp_vbus_raw", 21),
+                       ("bp_vbus_age_ms", 300), ("mc_fault_current_mask", 0x400),
+                       ("mc_fault_occurred_mask", 0x404), ("mc_uart_error_flags", 2),
+                       ("mc_last_uart_error_flags", 2), ("mc_fw_build", 2026100899),
+                       ("fw_build", 2026101003)):
+        ok, msg = mod.arm_profile_switch_precheck(dict(discharged_production, **{key: value}), hv_for_switch)
+        add_case(cases, "profile_restore_rejects_" + key + "_" + str(value), not ok, msg)
     switch_state = mod.HvArmState(hv_for_switch)
     switch_state.set_config(lv_cfg)
     switch_snapshot = switch_state.snapshot()
@@ -841,6 +859,20 @@ def main() -> int:
     )
 
     softstart_arm = mod.HvArmState(lv_cfg)
+    bounded_arm = mod.HvArmState(lv_cfg)
+    bounded_arm.arm("ARM LV HV OFF", safe_status())
+    bounded_rpc = FakeRpc([safe_status(), safe_status(state="VF_RUN", state_code=1, pwm=1)])
+    bounded_app = mod.AppState(bounded_rpc, FakeLogs(), status_log_interval=60.0,
+        command_guard=mod.CommandGuardConfig(max_vdc=10.0, local_bench_gate=True),
+        hv_arm=bounded_arm, start_runlimit_sec=15.0)
+    ok, msg, _ = bounded_app.start_sequence(run_timeout_sec=0, poll_sec=0, runlimit_sec=3.0)
+    add_case(cases, "requested_limit_is_applied_before_START_without_changing_profile",
+        ok and bounded_rpc.commands == ["SET RUNLIMIT 3.000", "START"]
+        and bounded_app.start_runlimit_sec == 15.0, msg)
+    for invalid in (0, -1, .01, 16, float("nan"), float("inf"), True, "3"):
+        bounded_rpc.commands.clear()
+        ok, msg, _ = bounded_app.start_sequence(runlimit_sec=invalid)
+        add_case(cases, "invalid_requested_runlimit_" + str(invalid), not ok and not bounded_rpc.commands, msg)
     softstart_arm.arm("ARM LV HV OFF", safe_status())
     softstart_rpc = FakeRpc(
         [

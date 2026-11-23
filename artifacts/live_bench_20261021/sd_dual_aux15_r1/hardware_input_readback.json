@@ -1,0 +1,61 @@
+{
+  "read_only": true,
+  "motor_commands": 0,
+  "reset_commands": 0,
+  "clear_commands": 0,
+  "flash_commands": 0,
+  "commands": [
+    {
+      "label": "gpioa_aux15",
+      "exit_code": 0
+    },
+    {
+      "label": "dma_aux15",
+      "exit_code": 0
+    },
+    {
+      "label": "ring_aux15",
+      "exit_code": 0
+    }
+  ],
+  "pa4_input_nopull": true,
+  "pa4_level": "HIGH",
+  "pa6_level": "HIGH",
+  "dma_enabled": true,
+  "dma_peripheral_address": "0x48000010",
+  "dma_ring_address": "0x20000db4",
+  "dma_ring_sample_levels": [
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    },
+    {
+      "pa6": true,
+      "tp23_pa4": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "CLEAR_commands": 1,
+  "motor_START_commands": 0,
+  "flash_commands": 0,
+  "records_erased": false,
+  "commands": [
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-10-28T12:39:18.714449+00:00",
+      "elapsed_s": 0.519,
+      "request_timeout_s": 8.0,
+      "transport": "direct_wifi_http"
+    }
+  ]
+}

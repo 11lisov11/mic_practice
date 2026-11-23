@@ -1,0 +1,2850 @@
+{
+  "status": "INFEASIBLE_15KMH_WITH_SELECTED_BOARD_LIMITS",
+  "parameters": {
+    "project": "ACIM hub research prototype P1",
+    "status": "CALCULATION_GEOMETRY_NOT_MEASURED_NINEBOT",
+    "stator_diameter_mm": 110.0,
+    "stack_length_mm": 30.0,
+    "radial_airgap_mm": 0.4,
+    "wheel_rolling_diameter_mm_assumed": 254.0,
+    "total_vehicle_and_rider_mass_kg_assumed": 120.0,
+    "battery": {
+      "series": 10,
+      "minimum_V_assumed": 30.0,
+      "nominal_V": 36.0,
+      "full_V": 42.0
+    },
+    "inverter": {
+      "board": "EC BUYING / Yourcee DRV8302 SKU71451",
+      "board_voltage_limit_V_advertised": 45.0,
+      "current_peak_design_ceiling_A_assumed": 15.0,
+      "phase_current_limit_rms_A_assumed": 9.0,
+      "mosfet_Rds_hot_ohm_assumed": 0.02,
+      "shunt_ohm_inferred_not_measured": 0.005,
+      "PWM_Hz": 16000,
+      "deadtime_s_assumed": 5e-07
+    },
+    "mechanical": {
+      "shaft_diameter_mm": 20.0,
+      "bearing_bore_mm": 20.0,
+      "bearing_OD_mm": 47.0,
+      "bearing_width_mm": 14.0,
+      "cover_web_thickness_mm": 5.0,
+      "housing_wall_mm": 3.0,
+      "endwinding_overhang_mm_assumed": 18.0,
+      "cover_clearance_mm": 2.0,
+      "shaft_total_length_mm": 145.0
+    },
+    "thermal": {
+      "ambient_C": 25.0,
+      "winding_limit_C_screen": 90.0,
+      "winding_to_stator_K_W_assumed": 0.7,
+      "stator_to_ambient_K_W_assumed": 1.2,
+      "rotor_to_ambient_K_W_assumed": 0.9,
+      "winding_heat_capacity_J_kgK": 385.0,
+      "steel_heat_capacity_J_kgK": 460.0
+    }
+  },
+  "geometry": {
+    "status": "CALCULATION_GEOMETRY_NOT_MEASURED_NINEBOT",
+    "phases": 3,
+    "pole_pairs": 4,
+    "stator_slots": 48,
+    "rotor_bars": 50,
+    "reference_turns_per_coil": 10,
+    "coil_pitch_slots": 5,
+    "active_length_mm": 30.0,
+    "stator_outer_radius_mm": 55.0,
+    "stator_bore_radius_mm": 29.615384615384617,
+    "slot_bottom_radius_mm": 38.92307692307692,
+    "slot_shoulder_radius_mm": 52.88461538461539,
+    "slot_bottom_width_mm": 2.1153846153846154,
+    "slot_shoulder_width_mm": 3.8076923076923075,
+    "slot_layer_split_radius_mm": 46.87692307692308,
+    "slot_mouth_width_mm": 1.523076923076923,
+    "slot_mouth_base_radius_mm": 53.73076923076923,
+    "air_gap_radial_mm": 0.4,
+    "rotor_outer_radius_mm": 67.75384615384615,
+    "rotor_bar_inner_radius_mm": 56.07692307692307,
+    "rotor_bar_width_mm": 2.707692307692308,
+    "rotor_bar_depth_mm": 5.923076923076923,
+    "rotor_slot_opening_mm": 1.0,
+    "ring_axial_mm": 4.230769230769231,
+    "ring_radial_mm": 13.538461538461538,
+    "ring_mean_radius_mm": 60.98461538461538,
+    "ring_cross_section_mm2": 57.27810650887574,
+    "steel_lamination_mm": 0.5,
+    "packing_factor": 0.95,
+    "wheel_rolling_diameter_m_assumed": 0.254,
+    "total_mass_kg_assumed": 120.0,
+    "slot_copper_gross_mm2": 41.34763313609469,
+    "lamination_count_nominal": 60,
+    "lamination_stack_note": "Geometric stack / 0.5 mm; actual coated sheet stack must be measured. FEMM fill factor 0.95."
+  },
+  "package": {
+    "rotor_iron_OD_mm": 135.5076923076923,
+    "housing_OD_mm": 141.5076923076923,
+    "cover_inner_z_mm": 35.0,
+    "cover_outer_z_mm": 40.0,
+    "bearing_center_z_mm": 33.0,
+    "total_housing_width_mm": 80.0,
+    "outer_housing_radius_mm": 70.75384615384615,
+    "shaft_total_length_mm": 145.0,
+    "endring_inner_radius_mm": 54.215384615384615,
+    "endring_outer_radius_mm": 67.75384615384615,
+    "endturn_envelope_outer_radius_mm": 53.13076923076923,
+    "endturn_ring_radial_clearance_mm": 1.0846153846153825,
+    "status": "concept_envelopes; end winding bend/forming and donor fit require physical verification"
+  },
+  "model": {
+    "L_leak_total_2d_h": 0.0011850760851970941,
+    "M_effective_h": 0.010157534740960377,
+    "tau_rotor_s": 0.04105741800901958,
+    "Rr_effective_20_ohm": 0.2473982835142957,
+    "relative_complex_fit_rms": 0.00023163679791991896,
+    "fit_success": true,
+    "Bg_per_Id_peak_T_A": 0.08636435660303883,
+    "end_leakage_h_assumed": 0.00015,
+    "source_femm_json": "C:\\mic_practice\\research\\motor_wheel\\parametric_hub\\D110_L30\\femm\\linear.json",
+    "field_current_reference_turns": 10
+  },
+  "masses": {
+    "stator_steel_kg": 0.9947545117376766,
+    "rotor_steel_kg": 0.8598559247026275,
+    "cage_copper_kg": 0.6088515687348571
+  },
+  "roads": {
+    "flat10": {
+      "speed_kmh": 10,
+      "grade_pct": 0,
+      "force_N": 20.49364814814815,
+      "torque_Nm": 2.602693314814815,
+      "omega_rad_s": 21.872265966754156,
+      "shaft_W": 56.926800411522635,
+      "rpm": 208.8647547137734
+    },
+    "flat15": {
+      "speed_kmh": 15,
+      "grade_pct": 0,
+      "force_N": 24.038208333333337,
+      "torque_Nm": 3.0528524583333336,
+      "omega_rad_s": 32.808398950131235,
+      "shaft_W": 100.15920138888892,
+      "rpm": 313.29713207066015
+    },
+    "flat20": {
+      "speed_kmh": 20,
+      "grade_pct": 0,
+      "force_N": 29.000592592592593,
+      "torque_Nm": 3.6830752592592595,
+      "omega_rad_s": 43.74453193350831,
+      "shaft_W": 161.11440329218107,
+      "rpm": 417.7295094275468
+    },
+    "flat25": {
+      "speed_kmh": 25,
+      "grade_pct": 0,
+      "force_N": 35.380800925925925,
+      "torque_Nm": 4.493361717592593,
+      "omega_rad_s": 54.68066491688539,
+      "shaft_W": 245.70000643004116,
+      "rpm": 522.1618867844336
+    },
+    "hill5_10": {
+      "speed_kmh": 10,
+      "grade_pct": 5,
+      "force_N": 79.25817961440308,
+      "torque_Nm": 10.06578881102919,
+      "omega_rad_s": 21.872265966754156,
+      "shaft_W": 220.16161004000853,
+      "rpm": 208.8647547137734
+    }
+  },
+  "winding_candidates": [
+    {
+      "winding": {
+        "turns_per_coil": 4,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 64,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 11,
+        "wire_bare_diameter_mm": 0.5,
+        "copper_area_mm2": 2.1598449493429825,
+        "bare_slot_fill": 0.4178899318824673,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 8.78535878734103,
+        "total_wire_m": 289.916839982254,
+        "order_wire_m_with_15pct_reserve": 333.40436597959206,
+        "winding_copper_kg": 0.5100483441985213,
+        "Rphase20_ohm": 0.0701252122472184,
+        "Rline20_ohm_star": 0.1402504244944368,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 5,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 80,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 3,
+        "wire_bare_diameter_mm": 0.85,
+        "copper_area_mm2": 1.702350519163969,
+        "bare_slot_fill": 0.41171655788874906,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 10.881698484176288,
+        "total_wire_m": 97.93528635758659,
+        "order_wire_m_with_15pct_reserve": 112.62557931122457,
+        "winding_copper_kg": 0.49793762091825766,
+        "Rphase20_ohm": 0.11020085449812682,
+        "Rline20_ohm_star": 0.22040170899625364,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 6,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 96,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 6,
+        "wire_bare_diameter_mm": 0.55,
+        "copper_area_mm2": 1.4254976665663688,
+        "bare_slot_fill": 0.4137110325636428,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 12.978038181011545,
+        "total_wire_m": 233.60468725820783,
+        "order_wire_m_with_15pct_reserve": 268.645390346939,
+        "winding_copper_kg": 0.49728438530107544,
+        "Rphase20_ohm": 0.15695667799974053,
+        "Rline20_ohm_star": 0.31391335599948106,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 7,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 112,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 5,
+        "wire_bare_diameter_mm": 0.55,
+        "copper_area_mm2": 1.1879147221386408,
+        "bare_slot_fill": 0.4022190594368749,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 15.074377877846802,
+        "total_wire_m": 226.11566816770204,
+        "order_wire_m_with_15pct_reserve": 260.03301839285734,
+        "winding_copper_kg": 0.4813421869717509,
+        "Rphase20_ohm": 0.21877182744751614,
+        "Rline20_ohm_star": 0.4375436548950323,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 8,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 128,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.8,
+        "copper_area_mm2": 1.0053096491487339,
+        "bare_slot_fill": 0.38901753658876964,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 17.170717574682058,
+        "total_wire_m": 103.02430544809235,
+        "order_wire_m_with_15pct_reserve": 118.47795126530619,
+        "winding_copper_kg": 0.4639995510698854,
+        "Rphase20_ohm": 0.2944596933275058,
+        "Rline20_ohm_star": 0.5889193866550116,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 30.0,
+            "I_phase_rms_A": 8.563211020625536,
+            "I_phase_peak_A": 12.110209162831387,
+            "Id_peak_A": 7.236781753295764,
+            "Iq_torque_peak_A": 9.613588471303617,
+            "Iq_total_peak_A": 9.710105860529572,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 10.36248188967183,
+            "U_line_motor_rms_V": 12.691396549263795,
+            "U_pwm_required_phase_peak_V": 10.850091943407712,
+            "U_pwm_limit_phase_peak_V": 15.588457268119896,
+            "voltage_margin_peak_V": 4.738365324712184,
+            "Rs_hot_ohm": 0.3638932890141317,
+            "Rr_hot_ohm": 0.1894477095839071,
+            "Lm_effective_h": 0.006500822234214643,
+            "Lleak_effective_h": 0.0008396794637569097,
+            "copper_W": 80.05133772212123,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 113.84862410316197,
+            "motor_input_W": 170.7754245146846,
+            "motor_efficiency_model": 0.33334304729910147,
+            "power_factor_fundamental": 0.8846662499474017,
+            "power_balance_error_W": -2.842170943040401e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 4.399714979025758,
+            "inverter_shunts_W_inferred": 0.5499643723782197,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              180.72510386608857,
+              186.72510386608857
+            ],
+            "battery_current_A_bounds_assumed": [
+              6.024170128869619,
+              6.224170128869619
+            ],
+            "ripple_half_pp_A_estimate": 0.2791243684242972,
+            "current_peak_with_ripple_A_estimate": 12.389333531255684,
+            "copper_current_density_A_mm2": 8.517983516697175
+          },
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 8.563211020625536,
+            "I_phase_peak_A": 12.110209162831387,
+            "Id_peak_A": 7.236781753295764,
+            "Iq_torque_peak_A": 9.613588471303617,
+            "Iq_total_peak_A": 9.710105860529572,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 10.36248188967183,
+            "U_line_motor_rms_V": 12.691396549263795,
+            "U_pwm_required_phase_peak_V": 10.90484841896445,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 7.801300302779426,
+            "Rs_hot_ohm": 0.3638932890141317,
+            "Rr_hot_ohm": 0.1894477095839071,
+            "Lm_effective_h": 0.006500822234214643,
+            "Lleak_effective_h": 0.0008396794637569097,
+            "copper_W": 80.05133772212123,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 113.84862410316197,
+            "motor_input_W": 170.7754245146846,
+            "motor_efficiency_model": 0.33334304729910147,
+            "power_factor_fundamental": 0.8846662499474017,
+            "power_balance_error_W": -2.842170943040401e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 4.399714979025758,
+            "inverter_shunts_W_inferred": 0.5499643723782197,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              180.72510386608857,
+              186.72510386608857
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.020141774058016,
+              5.186808440724683
+            ],
+            "ripple_half_pp_A_estimate": 0.33494924210915666,
+            "current_peak_with_ripple_A_estimate": 12.445158404940543,
+            "copper_current_density_A_mm2": 8.517983516697175
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 8.563211020625536,
+            "I_phase_peak_A": 12.110209162831387,
+            "Id_peak_A": 7.236781753295764,
+            "Iq_torque_peak_A": 9.613588471303617,
+            "Iq_total_peak_A": 9.710105860529572,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 10.36248188967183,
+            "U_line_motor_rms_V": 12.691396549263795,
+            "U_pwm_required_phase_peak_V": 10.959672125981212,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 10.864168049386643,
+            "Rs_hot_ohm": 0.3638932890141317,
+            "Rr_hot_ohm": 0.1894477095839071,
+            "Lm_effective_h": 0.006500822234214643,
+            "Lleak_effective_h": 0.0008396794637569097,
+            "copper_W": 80.05133772212123,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 113.84862410316197,
+            "motor_input_W": 170.7754245146846,
+            "motor_efficiency_model": 0.33334304729910147,
+            "power_factor_fundamental": 0.8846662499474017,
+            "power_balance_error_W": -2.842170943040401e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 4.399714979025758,
+            "inverter_shunts_W_inferred": 0.5499643723782197,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              180.72510386608857,
+              186.72510386608857
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.302978663478299,
+              4.445835806335443
+            ],
+            "ripple_half_pp_A_estimate": 0.3907741157940161,
+            "current_peak_with_ripple_A_estimate": 12.500983278625403,
+            "copper_current_density_A_mm2": 8.517983516697175
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 9,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 144,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 1.1,
+        "copper_area_mm2": 0.9503317777109126,
+        "bare_slot_fill": 0.4137110325636428,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 19.267057271517317,
+        "total_wire_m": 57.80117181455195,
+        "order_wire_m_with_15pct_reserve": 66.47134758673474,
+        "winding_copper_kg": 0.49217540166410156,
+        "Rphase20_ohm": 0.3495243189289642,
+        "Rline20_ohm_star": 0.6990486378579284,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 30.0,
+            "I_phase_rms_A": 7.611743129444919,
+            "I_phase_peak_A": 10.764630366961232,
+            "Id_peak_A": 6.432694891818457,
+            "Iq_torque_peak_A": 8.545411974492104,
+            "Iq_total_peak_A": 8.631205209359619,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 11.38623871982866,
+            "U_line_motor_rms_V": 13.945237476550481,
+            "U_pwm_required_phase_peak_V": 11.846545322091824,
+            "U_pwm_limit_phase_peak_V": 15.588457268119896,
+            "voltage_margin_peak_V": 3.741911946028072,
+            "Rs_hot_ohm": 0.4319421533324139,
+            "Rr_hot_ohm": 0.2397697574421324,
+            "Lm_effective_h": 0.008227603140177906,
+            "Lleak_effective_h": 0.0010627193213173388,
+            "copper_W": 75.07841430476097,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.87570068580172,
+            "motor_input_W": 165.80250109732435,
+            "motor_efficiency_model": 0.34334102341500383,
+            "power_factor_fundamental": 0.8787165179052958,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 3.476318008119116,
+            "inverter_shunts_W_inferred": 0.4345397510148895,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.71335885645834,
+              180.71335885645834
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.823778628548611,
+              6.0237786285486115
+            ],
+            "ripple_half_pp_A_estimate": 0.22054271085376576,
+            "current_peak_with_ripple_A_estimate": 10.985173077814997,
+            "copper_current_density_A_mm2": 8.00956393121938
+          },
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 7.611743129444919,
+            "I_phase_peak_A": 10.764630366961232,
+            "Id_peak_A": 6.432694891818457,
+            "Iq_torque_peak_A": 8.545411974492104,
+            "Iq_total_peak_A": 8.631205209359619,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 11.38623871982866,
+            "U_line_motor_rms_V": 13.945237476550481,
+            "U_pwm_required_phase_peak_V": 11.900882005216245,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 6.8052667165276315,
+            "Rs_hot_ohm": 0.4319421533324139,
+            "Rr_hot_ohm": 0.2397697574421324,
+            "Lm_effective_h": 0.008227603140177906,
+            "Lleak_effective_h": 0.0010627193213173388,
+            "copper_W": 75.07841430476097,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.87570068580172,
+            "motor_input_W": 165.80250109732435,
+            "motor_efficiency_model": 0.34334102341500383,
+            "power_factor_fundamental": 0.8787165179052958,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 3.476318008119116,
+            "inverter_shunts_W_inferred": 0.4345397510148895,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.71335885645834,
+              180.71335885645834
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.853148857123843,
+              5.019815523790509
+            ],
+            "ripple_half_pp_A_estimate": 0.2646512530245189,
+            "current_peak_with_ripple_A_estimate": 11.02928161998575,
+            "copper_current_density_A_mm2": 8.00956393121938
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 7.611743129444919,
+            "I_phase_peak_A": 10.764630366961232,
+            "Id_peak_A": 6.432694891818457,
+            "Iq_torque_peak_A": 8.545411974492104,
+            "Iq_total_peak_A": 8.631205209359619,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 11.38623871982866,
+            "U_line_motor_rms_V": 13.945237476550481,
+            "U_pwm_required_phase_peak_V": 11.955284151537825,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 9.868556023830031,
+            "Rs_hot_ohm": 0.4319421533324139,
+            "Rr_hot_ohm": 0.2397697574421324,
+            "Lm_effective_h": 0.008227603140177906,
+            "Lleak_effective_h": 0.0010627193213173388,
+            "copper_W": 75.07841430476097,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.87570068580172,
+            "motor_input_W": 165.80250109732435,
+            "motor_efficiency_model": 0.34334102341500383,
+            "power_factor_fundamental": 0.8787165179052958,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": -3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 3.476318008119116,
+            "inverter_shunts_W_inferred": 0.4345397510148895,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.71335885645834,
+              180.71335885645834
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.159841877534722,
+              4.302699020391866
+            ],
+            "ripple_half_pp_A_estimate": 0.308759795195272,
+            "current_peak_with_ripple_A_estimate": 11.073390162156503,
+            "copper_current_density_A_mm2": 8.00956393121938
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 8.44849505912796,
+            "I_phase_peak_A": 11.947976294260847,
+            "Id_peak_A": 6.432694891818457,
+            "Iq_torque_peak_A": 9.980214437844207,
+            "Iq_total_peak_A": 10.068494125587595,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291993,
+            "slip_hz": 7.195949719914648,
+            "U_phase_motor_peak_V": 14.920405941962294,
+            "U_line_motor_rms_V": 18.273690656498907,
+            "U_pwm_required_phase_peak_V": 15.452155888864004,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 3.253992832879872,
+            "Rs_hot_ohm": 0.4319421533324139,
+            "Rr_hot_ohm": 0.2397697574421324,
+            "Lm_effective_h": 0.008227603140177906,
+            "Lleak_effective_h": 0.0010627193213173388,
+            "copper_W": 92.49229434157581,
+            "cage_W": 35.82328502660142,
+            "stator_iron_W_assumed": 1.0251737125293945,
+            "rotor_iron_W_assumed": 0.21143645954491908,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 138.41096225233252,
+            "motor_input_W": 238.57016364122143,
+            "motor_efficiency_model": 0.4198312138458158,
+            "power_factor_fundamental": 0.8733276727238455,
+            "power_balance_error_W": 2.842170943040401e-14,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 4.282624125846574,
+            "inverter_shunts_W_inferred": 0.5353280157308218,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              248.38811578279882,
+              254.38811578279882
+            ],
+            "battery_current_A_bounds_assumed": [
+              6.899669882855523,
+              7.066336549522189
+            ],
+            "ripple_half_pp_A_estimate": 0.2646512530245189,
+            "current_peak_with_ripple_A_estimate": 12.212627547285367,
+            "copper_current_density_A_mm2": 8.890047936182938
+          },
+          "42.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 8.44849505912796,
+            "I_phase_peak_A": 11.947976294260847,
+            "Id_peak_A": 6.432694891818457,
+            "Iq_torque_peak_A": 9.980214437844207,
+            "Iq_total_peak_A": 10.068494125587595,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291993,
+            "slip_hz": 7.195949719914648,
+            "U_phase_motor_peak_V": 14.920405941962294,
+            "U_line_motor_rms_V": 18.273690656498907,
+            "U_pwm_required_phase_peak_V": 15.506115097520071,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 6.3177250778477845,
+            "Rs_hot_ohm": 0.4319421533324139,
+            "Rr_hot_ohm": 0.2397697574421324,
+            "Lm_effective_h": 0.008227603140177906,
+            "Lleak_effective_h": 0.0010627193213173388,
+            "copper_W": 92.49229434157581,
+            "cage_W": 35.82328502660142,
+            "stator_iron_W_assumed": 1.0251737125293945,
+            "rotor_iron_W_assumed": 0.21143645954491908,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 138.41096225233252,
+            "motor_input_W": 238.57016364122143,
+            "motor_efficiency_model": 0.4198312138458158,
+            "power_factor_fundamental": 0.8733276727238455,
+            "power_balance_error_W": 2.842170943040401e-14,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 4.282624125846574,
+            "inverter_shunts_W_inferred": 0.5353280157308218,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              248.38811578279882,
+              254.38811578279882
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.914002756733305,
+              6.056859899590448
+            ],
+            "ripple_half_pp_A_estimate": 0.308759795195272,
+            "current_peak_with_ripple_A_estimate": 12.256736089456119,
+            "copper_current_density_A_mm2": 8.890047936182938
+          }
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 8.435624315535705,
+        "I_phase_peak_A": 11.929774314114852,
+        "Id_peak_A": 6.432694891818457,
+        "Iq_torque_peak_A": 9.928556447937028,
+        "Iq_total_peak_A": 10.046887658100253,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772406,
+        "slip_hz": 7.158703195772406,
+        "U_phase_motor_peak_V": 7.393995590037404,
+        "U_line_motor_rms_V": 9.055758177990336,
+        "U_pwm_required_phase_peak_V": 7.921961357722949,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 7.6664959103969474,
+        "Rs_hot_ohm": 0.4319421533324139,
+        "Rr_hot_ohm": 0.2397697574421324,
+        "Lm_effective_h": 0.008227603140177906,
+        "Lleak_effective_h": 0.0010627193213173388,
+        "copper_W": 92.21069677581403,
+        "cage_W": 35.45339926425928,
+        "stator_iron_W_assumed": 0.21229026668019876,
+        "rotor_iron_W_assumed": 0.2102528956957882,
+        "stray_PWM_W_assumed": 3.531800988963889,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 131.61844019141316,
+        "motor_input_W": 131.61844019141316,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.968057505556723,
+        "power_balance_error_W": -2.842170943040401e-14,
+        "rotor_slip_balance_error_W": -7.105427357601002e-15,
+        "inverter_conduction_W_assumed": 4.269585455571434,
+        "inverter_shunts_W_inferred": 0.5336981819464293,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          141.42172382893102,
+          147.42172382893102
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.7140574609643675,
+          4.914057460964368
+        ],
+        "ripple_half_pp_A_estimate": 0.22054271085376576,
+        "current_peak_with_ripple_A_estimate": 12.150317024968617,
+        "copper_current_density_A_mm2": 8.87650451493351
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 10,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 160,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 3,
+        "wire_bare_diameter_mm": 0.6,
+        "copper_area_mm2": 0.8482300164692441,
+        "bare_slot_fill": 0.41029193312096796,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 21.363396968352575,
+        "total_wire_m": 192.27057271517316,
+        "order_wire_m_with_15pct_reserve": 221.11115862244912,
+        "winding_copper_kg": 0.4870944842347504,
+        "Rphase20_ohm": 0.4342041151378574,
+        "Rline20_ohm_star": 0.8684082302757148,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 30.0,
+            "I_phase_rms_A": 6.85056881650043,
+            "I_phase_peak_A": 9.688167330265111,
+            "Id_peak_A": 5.789425402636612,
+            "Iq_torque_peak_A": 7.690870777042895,
+            "Iq_total_peak_A": 7.768084688423659,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.161426218581783,
+            "U_phase_motor_peak_V": 12.6797134453749,
+            "U_line_motor_rms_V": 15.529414012937883,
+            "U_pwm_required_phase_peak_V": 13.120936973602806,
+            "U_pwm_limit_phase_peak_V": 15.588457268119896,
+            "voltage_margin_peak_V": 2.46752029451709,
+            "Rs_hot_ohm": 0.5365894454873642,
+            "Rr_hot_ohm": 0.2960120462248548,
+            "Lm_effective_h": 0.010157534740960377,
+            "Lleak_effective_h": 0.0013119991621201711,
+            "copper_W": 75.54689986873225,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083704,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 109.344186249773,
+            "motor_input_W": 166.27098666129564,
+            "motor_efficiency_model": 0.34237362485546613,
+            "power_factor_fundamental": 0.8792951884742831,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 2.815817586576486,
+            "inverter_shunts_W_inferred": 0.35197719832206076,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.43878144619418,
+              180.43878144619418
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.814626048206473,
+              6.014626048206472
+            ],
+            "ripple_half_pp_A_estimate": 0.17863959579155025,
+            "current_peak_with_ripple_A_estimate": 9.866806926056661,
+            "copper_current_density_A_mm2": 8.07631029731288
+          },
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 6.85056881650043,
+            "I_phase_peak_A": 9.688167330265111,
+            "Id_peak_A": 5.789425402636612,
+            "Iq_torque_peak_A": 7.690870777042895,
+            "Iq_total_peak_A": 7.768084688423659,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.161426218581783,
+            "U_phase_motor_peak_V": 12.6797134453749,
+            "U_line_motor_rms_V": 15.529414012937883,
+            "U_pwm_required_phase_peak_V": 13.175224334664716,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 5.5309243870791605,
+            "Rs_hot_ohm": 0.5365894454873642,
+            "Rr_hot_ohm": 0.2960120462248548,
+            "Lm_effective_h": 0.010157534740960377,
+            "Lleak_effective_h": 0.0013119991621201711,
+            "copper_W": 75.54689986873225,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083704,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 109.344186249773,
+            "motor_input_W": 166.27098666129564,
+            "motor_efficiency_model": 0.34237362485546613,
+            "power_factor_fundamental": 0.8792951884742831,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 2.815817586576486,
+            "inverter_shunts_W_inferred": 0.35197719832206076,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.43878144619418,
+              180.43878144619418
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.845521706838728,
+              5.012188373505394
+            ],
+            "ripple_half_pp_A_estimate": 0.2143675149498603,
+            "current_peak_with_ripple_A_estimate": 9.902534845214971,
+            "copper_current_density_A_mm2": 8.07631029731288
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 6.85056881650043,
+            "I_phase_peak_A": 9.688167330265111,
+            "Id_peak_A": 5.789425402636612,
+            "Iq_torque_peak_A": 7.690870777042895,
+            "Iq_total_peak_A": 7.768084688423659,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.161426218581783,
+            "U_phase_motor_peak_V": 12.6797134453749,
+            "U_line_motor_rms_V": 15.529414012937883,
+            "U_pwm_required_phase_peak_V": 13.229571258376179,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 8.594268916991677,
+            "Rs_hot_ohm": 0.5365894454873642,
+            "Rr_hot_ohm": 0.2960120462248548,
+            "Lm_effective_h": 0.010157534740960377,
+            "Lleak_effective_h": 0.0013119991621201711,
+            "copper_W": 75.54689986873225,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083704,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 109.344186249773,
+            "motor_input_W": 166.27098666129564,
+            "motor_efficiency_model": 0.34237362485546613,
+            "power_factor_fundamental": 0.8792951884742831,
+            "power_balance_error_W": 5.684341886080802e-14,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 2.815817586576486,
+            "inverter_shunts_W_inferred": 0.35197719832206076,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.43878144619418,
+              180.43878144619418
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.15330432014748,
+              4.296161463004624
+            ],
+            "ripple_half_pp_A_estimate": 0.25009543410817037,
+            "current_peak_with_ripple_A_estimate": 9.938262764373281,
+            "copper_current_density_A_mm2": 8.07631029731288
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 7.603645553215167,
+            "I_phase_peak_A": 10.753178664834765,
+            "Id_peak_A": 5.789425402636612,
+            "Iq_torque_peak_A": 8.982192994059789,
+            "Iq_total_peak_A": 9.061644713028839,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291996,
+            "slip_hz": 7.195949719914651,
+            "U_phase_motor_peak_V": 16.60948694518576,
+            "U_line_motor_rms_V": 20.34238395256181,
+            "U_pwm_required_phase_peak_V": 17.12018503086037,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 1.5859636908835064,
+            "Rs_hot_ohm": 0.5365894454873642,
+            "Rr_hot_ohm": 0.2960120462248548,
+            "Lm_effective_h": 0.010157534740960377,
+            "Lleak_effective_h": 0.0013119991621201711,
+            "copper_W": 93.06944164921232,
+            "cage_W": 35.82328502660143,
+            "stator_iron_W_assumed": 1.025173712529395,
+            "rotor_iron_W_assumed": 0.21143645954491924,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 138.98810955996905,
+            "motor_input_W": 239.14731094885795,
+            "motor_efficiency_model": 0.41881801217621933,
+            "power_factor_fundamental": 0.8738384000582471,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": -7.105427357601002e-15,
+            "inverter_conduction_W_assumed": 3.4689255419357274,
+            "inverter_shunts_W_inferred": 0.43361569274196593,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              248.04985218353565,
+              254.04985218353565
+            ],
+            "battery_current_A_bounds_assumed": [
+              6.890273671764879,
+              7.056940338431546
+            ],
+            "ripple_half_pp_A_estimate": 0.2143675149498603,
+            "current_peak_with_ripple_A_estimate": 10.967546179784625,
+            "copper_current_density_A_mm2": 8.964131668984466
+          },
+          "42.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 7.603645553215167,
+            "I_phase_peak_A": 10.753178664834765,
+            "Id_peak_A": 5.789425402636612,
+            "Iq_torque_peak_A": 8.982192994059789,
+            "Iq_total_peak_A": 9.061644713028839,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291996,
+            "slip_hz": 7.195949719914651,
+            "U_phase_motor_peak_V": 16.60948694518576,
+            "U_line_motor_rms_V": 20.34238395256181,
+            "U_pwm_required_phase_peak_V": 17.174097963966236,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 4.64974221140162,
+            "Rs_hot_ohm": 0.5365894454873642,
+            "Rr_hot_ohm": 0.2960120462248548,
+            "Lm_effective_h": 0.010157534740960377,
+            "Lleak_effective_h": 0.0013119991621201711,
+            "copper_W": 93.06944164921232,
+            "cage_W": 35.82328502660143,
+            "stator_iron_W_assumed": 1.025173712529395,
+            "rotor_iron_W_assumed": 0.21143645954491924,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 138.98810955996905,
+            "motor_input_W": 239.14731094885795,
+            "motor_efficiency_model": 0.41881801217621933,
+            "power_factor_fundamental": 0.8738384000582471,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": -7.105427357601002e-15,
+            "inverter_conduction_W_assumed": 3.4689255419357274,
+            "inverter_shunts_W_inferred": 0.43361569274196593,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              248.04985218353565,
+              254.04985218353565
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.905948861512753,
+              6.048806004369896
+            ],
+            "ripple_half_pp_A_estimate": 0.25009543410817037,
+            "current_peak_with_ripple_A_estimate": 11.003274098942935,
+            "copper_current_density_A_mm2": 8.964131668984466
+          }
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 7.592061883982136,
+        "I_phase_peak_A": 10.736796882703368,
+        "Id_peak_A": 5.789425402636612,
+        "Iq_torque_peak_A": 8.935700803143328,
+        "Iq_total_peak_A": 9.042198892290232,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772409,
+        "slip_hz": 7.158703195772409,
+        "U_phase_motor_peak_V": 8.250141299495894,
+        "U_line_motor_rms_V": 10.104318244813536,
+        "U_pwm_required_phase_peak_V": 8.754939860147378,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 6.8335174079725185,
+        "Rs_hot_ohm": 0.5365894454873642,
+        "Rr_hot_ohm": 0.2960120462248548,
+        "Lm_effective_h": 0.010157534740960377,
+        "Lleak_effective_h": 0.0013119991621201711,
+        "copper_W": 92.78608692867269,
+        "cage_W": 35.4533992642593,
+        "stator_iron_W_assumed": 0.21229026668019885,
+        "rotor_iron_W_assumed": 0.21025289569578828,
+        "stray_PWM_W_assumed": 3.5318009889638895,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 132.19383034427184,
+        "motor_input_W": 132.19383034427184,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9683291684902001,
+        "power_balance_error_W": -2.842170943040401e-14,
+        "rotor_slip_balance_error_W": 7.105427357601002e-15,
+        "inverter_conduction_W_assumed": 3.4583642190128625,
+        "inverter_shunts_W_inferred": 0.4322955273766078,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          141.0844900906613,
+          147.0844900906613
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.702816336355377,
+          4.902816336355376
+        ],
+        "ripple_half_pp_A_estimate": 0.17863959579155025,
+        "current_peak_with_ripple_A_estimate": 10.915436478494918,
+        "copper_current_density_A_mm2": 8.950475385891293
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 11,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 176,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 1.0,
+        "copper_area_mm2": 0.7853981633974483,
+        "bare_slot_fill": 0.4178899318824673,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 23.45973666518783,
+        "total_wire_m": 70.37920999556349,
+        "order_wire_m_with_15pct_reserve": 80.93609149489801,
+        "winding_copper_kg": 0.4952702923560349,
+        "Rphase20_ohm": 0.5149564627937251,
+        "Rline20_ohm_star": 1.0299129255874502,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 30.0,
+            "I_phase_rms_A": 6.227789833182207,
+            "I_phase_peak_A": 8.807424845695554,
+            "Id_peak_A": 5.263114002396919,
+            "Iq_torque_peak_A": 6.991700706402631,
+            "Iq_total_peak_A": 7.061895171294235,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 13.84796573661279,
+            "U_line_motor_rms_V": 16.960225015122962,
+            "U_pwm_required_phase_peak_V": 14.272516895234352,
+            "U_pwm_limit_phase_peak_V": 15.588457268119896,
+            "voltage_margin_peak_V": 1.315940372885544,
+            "Rs_hot_ohm": 0.6363831967204855,
+            "Rr_hot_ohm": 0.35817457593207436,
+            "Lm_effective_h": 0.01229061703656206,
+            "Lleak_effective_h": 0.0015875189861654074,
+            "copper_W": 74.04706599699611,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 107.84435237803686,
+            "motor_input_W": 164.7711527895595,
+            "motor_efficiency_model": 0.3454900900294589,
+            "power_factor_fundamental": 0.8774288127454437,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 2.3271219723772596,
+            "inverter_shunts_W_inferred": 0.29089024654715745,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              172.3891650084839,
+              178.3891650084839
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.746305500282797,
+              5.946305500282796
+            ],
+            "ripple_half_pp_A_estimate": 0.14763602957979358,
+            "current_peak_with_ripple_A_estimate": 8.955060875275347,
+            "copper_current_density_A_mm2": 7.929468291907189
+          },
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 6.227789833182207,
+            "I_phase_peak_A": 8.807424845695554,
+            "Id_peak_A": 5.263114002396919,
+            "Iq_torque_peak_A": 6.991700706402631,
+            "Iq_total_peak_A": 7.061895171294235,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 13.84796573661279,
+            "U_line_motor_rms_V": 16.960225015122962,
+            "U_pwm_required_phase_peak_V": 14.326637286024368,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 4.3795114357195075,
+            "Rs_hot_ohm": 0.6363831967204855,
+            "Rr_hot_ohm": 0.35817457593207436,
+            "Lm_effective_h": 0.01229061703656206,
+            "Lleak_effective_h": 0.0015875189861654074,
+            "copper_W": 74.04706599699611,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 107.84435237803686,
+            "motor_input_W": 164.7711527895595,
+            "motor_efficiency_model": 0.3454900900294589,
+            "power_factor_fundamental": 0.8774288127454437,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 2.3271219723772596,
+            "inverter_shunts_W_inferred": 0.29089024654715745,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              172.3891650084839,
+              178.3891650084839
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.788587916902331,
+              4.955254583568998
+            ],
+            "ripple_half_pp_A_estimate": 0.1771632354957523,
+            "current_peak_with_ripple_A_estimate": 8.984588081191307,
+            "copper_current_density_A_mm2": 7.929468291907189
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 6.227789833182207,
+            "I_phase_peak_A": 8.807424845695554,
+            "Id_peak_A": 5.263114002396919,
+            "Iq_torque_peak_A": 6.991700706402631,
+            "Iq_total_peak_A": 7.061895171294235,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 13.84796573661279,
+            "U_line_motor_rms_V": 16.960225015122962,
+            "U_pwm_required_phase_peak_V": 14.38081372990016,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 7.443026445467696,
+            "Rs_hot_ohm": 0.6363831967204855,
+            "Rr_hot_ohm": 0.35817457593207436,
+            "Lm_effective_h": 0.01229061703656206,
+            "Lleak_effective_h": 0.0015875189861654074,
+            "copper_W": 74.04706599699611,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083698,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 107.84435237803686,
+            "motor_input_W": 164.7711527895595,
+            "motor_efficiency_model": 0.3454900900294589,
+            "power_factor_fundamental": 0.8774288127454437,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 2.3271219723772596,
+            "inverter_shunts_W_inferred": 0.29089024654715745,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              172.3891650084839,
+              178.3891650084839
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.104503928773426,
+              4.247361071630569
+            ],
+            "ripple_half_pp_A_estimate": 0.20669044141171103,
+            "current_peak_with_ripple_A_estimate": 9.014115287107265,
+            "copper_current_density_A_mm2": 7.929468291907189
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 6.9124050483774235,
+            "I_phase_peak_A": 9.775616968031603,
+            "Id_peak_A": 5.263114002396919,
+            "Iq_torque_peak_A": 8.165629994599806,
+            "Iq_total_peak_A": 8.237858830026214,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291993,
+            "slip_hz": 7.19594971991465,
+            "U_phase_motor_peak_V": 18.160428341991306,
+            "U_line_motor_rms_V": 22.24189147412831,
+            "U_pwm_required_phase_peak_V": 18.70656950105834,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 3.117270674309516,
+            "Rs_hot_ohm": 0.6363831967204855,
+            "Rr_hot_ohm": 0.35817457593207436,
+            "Lm_effective_h": 0.01229061703656206,
+            "Lleak_effective_h": 0.0015875189861654074,
+            "copper_W": 91.22173246125618,
+            "cage_W": 35.823285026601425,
+            "stator_iron_W_assumed": 1.0251737125293945,
+            "rotor_iron_W_assumed": 0.2114364595449192,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 137.1404003720129,
+            "motor_input_W": 237.2996017609018,
+            "motor_efficiency_model": 0.4220790959851979,
+            "power_factor_fundamental": 0.8721930964857029,
+            "power_balance_error_W": 2.842170943040401e-14,
+            "rotor_slip_balance_error_W": -7.105427357601002e-15,
+            "inverter_conduction_W_assumed": 2.8668806131700215,
+            "inverter_shunts_W_inferred": 0.3583600766462527,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              245.52484245071807,
+              251.52484245071807
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.845829582159954,
+              5.9886867250170965
+            ],
+            "ripple_half_pp_A_estimate": 0.20669044141171103,
+            "current_peak_with_ripple_A_estimate": 9.982307409443314,
+            "copper_current_density_A_mm2": 8.801147456821111
+          }
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 6.90187443998376,
+        "I_phase_peak_A": 9.760724438821244,
+        "Id_peak_A": 5.263114002396919,
+        "Iq_torque_peak_A": 8.123364366493933,
+        "Iq_total_peak_A": 8.220180811172936,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772408,
+        "slip_hz": 7.158703195772408,
+        "U_phase_motor_peak_V": 8.953379182877077,
+        "U_line_motor_rms_V": 10.965605235852916,
+        "U_pwm_required_phase_peak_V": 9.438719891253754,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 6.149737376866142,
+        "Rs_hot_ohm": 0.6363831967204855,
+        "Rr_hot_ohm": 0.35817457593207436,
+        "Lm_effective_h": 0.01229061703656206,
+        "Lleak_effective_h": 0.0015875189861654074,
+        "copper_W": 90.94400318674177,
+        "cage_W": 35.45339926425929,
+        "stator_iron_W_assumed": 0.2122902666801988,
+        "rotor_iron_W_assumed": 0.21025289569578823,
+        "stray_PWM_W_assumed": 3.531800988963889,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 130.35174660234094,
+        "motor_input_W": 130.35174660234094,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9674472040684188,
+        "power_balance_error_W": 1.4210854715202004e-14,
+        "rotor_slip_balance_error_W": -7.105427357601002e-15,
+        "inverter_conduction_W_assumed": 2.8581522471180683,
+        "inverter_shunts_W_inferred": 0.35726903088975853,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          138.56716788034876,
+          144.56716788034876
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.618905596011626,
+          4.818905596011626
+        ],
+        "ripple_half_pp_A_estimate": 0.14763602957979358,
+        "current_peak_with_ripple_A_estimate": 9.908360468401037,
+        "copper_current_density_A_mm2": 8.787739469784178
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 12,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 192,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 3,
+        "wire_bare_diameter_mm": 0.55,
+        "copper_area_mm2": 0.7127488332831844,
+        "bare_slot_fill": 0.4137110325636428,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 25.556076362023088,
+        "total_wire_m": 230.00468725820778,
+        "order_wire_m_with_15pct_reserve": 264.50539034693895,
+        "winding_copper_kg": 0.4896209098456145,
+        "Rphase20_ohm": 0.6181514944777569,
+        "Rline20_ohm_star": 1.2363029889555137,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 5.708807347083691,
+            "I_phase_peak_A": 8.073472775220925,
+            "Id_peak_A": 4.824521168863844,
+            "Iq_torque_peak_A": 6.409058980869078,
+            "Iq_total_peak_A": 6.473403907019715,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.08574319950001,
+            "slip_hz": 6.161426218581782,
+            "U_phase_motor_peak_V": 15.153384786024924,
+            "U_line_motor_rms_V": 18.559030300907356,
+            "U_pwm_required_phase_peak_V": 15.61927652866133,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 3.086872193082545,
+            "Rs_hot_ohm": 0.7639116168756119,
+            "Rr_hot_ohm": 0.4262573465637909,
+            "Lm_effective_h": 0.014626850026982942,
+            "Lleak_effective_h": 0.0018892787934530464,
+            "copper_W": 74.6887418537648,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629644,
+            "rotor_iron_W_assumed": 0.17890792323083696,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.48602823480553,
+            "motor_input_W": 165.41282864632817,
+            "motor_efficiency_model": 0.34414985148001276,
+            "power_factor_fundamental": 0.8782322270105418,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 1.9554288795670038,
+            "inverter_shunts_W_inferred": 0.24442860994587548,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              172.61268613584105,
+              178.61268613584105
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.794796837106696,
+              4.961463503773363
+            ],
+            "ripple_half_pp_A_estimate": 0.1488663298262919,
+            "current_peak_with_ripple_A_estimate": 8.222339105047217,
+            "copper_current_density_A_mm2": 8.009563931219382
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 5.708807347083691,
+            "I_phase_peak_A": 8.073472775220925,
+            "Id_peak_A": 4.824521168863844,
+            "Iq_torque_peak_A": 6.409058980869078,
+            "Iq_total_peak_A": 6.473403907019715,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.08574319950001,
+            "slip_hz": 6.161426218581782,
+            "U_phase_motor_peak_V": 15.153384786024924,
+            "U_line_motor_rms_V": 18.559030300907356,
+            "U_pwm_required_phase_peak_V": 15.67344141001859,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 6.150398765349266,
+            "Rs_hot_ohm": 0.7639116168756119,
+            "Rr_hot_ohm": 0.4262573465637909,
+            "Lm_effective_h": 0.014626850026982942,
+            "Lleak_effective_h": 0.0018892787934530464,
+            "copper_W": 74.6887418537648,
+            "cage_W": 26.263443821417205,
+            "stator_iron_W_assumed": 0.6806563669629644,
+            "rotor_iron_W_assumed": 0.17890792323083696,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.48602823480553,
+            "motor_input_W": 165.41282864632817,
+            "motor_efficiency_model": 0.34414985148001276,
+            "power_factor_fundamental": 0.8782322270105418,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 1.9554288795670038,
+            "inverter_shunts_W_inferred": 0.24442860994587548,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              172.61268613584105,
+              178.61268613584105
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.109825860377168,
+              4.252683003234311
+            ],
+            "ripple_half_pp_A_estimate": 0.17367738479734054,
+            "current_peak_with_ripple_A_estimate": 8.247150160018265,
+            "copper_current_density_A_mm2": 8.009563931219382
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": {
+            "useful_torque_Nm": 3.0528524583333336,
+            "rpm": 313.29713207066015,
+            "shaft_W": 100.1592013888889,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 6.336371294345972,
+            "I_phase_peak_A": 8.960982220695637,
+            "Id_peak_A": 4.824521168863844,
+            "Iq_torque_peak_A": 7.485160828383156,
+            "Iq_total_peak_A": 7.551370594190698,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 28.082425191291993,
+            "slip_hz": 7.195949719914648,
+            "U_phase_motor_peak_V": 19.862691839675033,
+            "U_line_motor_rms_V": 24.32672996267356,
+            "U_pwm_required_phase_peak_V": 20.394717652444026,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 1.42912252292383,
+            "Rs_hot_ohm": 0.7639116168756119,
+            "Rr_hot_ohm": 0.4262573465637909,
+            "Lm_effective_h": 0.014626850026982942,
+            "Lleak_effective_h": 0.0018892787934530464,
+            "copper_W": 92.0122402625427,
+            "cage_W": 35.823285026601425,
+            "stator_iron_W_assumed": 1.0251737125293945,
+            "rotor_iron_W_assumed": 0.21143645954491908,
+            "stray_PWM_W_assumed": 5.039737296232355,
+            "friction_W_assumed": 3.8190354158486097,
+            "motor_loss_W": 137.93090817329943,
+            "motor_input_W": 238.09010956218833,
+            "motor_efficiency_model": 0.42067770716333625,
+            "power_factor_fundamental": 0.8729006592927109,
+            "power_balance_error_W": 2.842170943040401e-14,
+            "rotor_slip_balance_error_W": 7.105427357601002e-15,
+            "inverter_conduction_W_assumed": 2.4089760707886994,
+            "inverter_shunts_W_inferred": 0.3011220088485874,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              245.8002076418256,
+              251.8002076418256
+            ],
+            "battery_current_A_bounds_assumed": [
+              5.852385896233943,
+              5.995243039091086
+            ],
+            "ripple_half_pp_A_estimate": 0.17367738479734054,
+            "current_peak_with_ripple_A_estimate": 9.134659605492978,
+            "copper_current_density_A_mm2": 8.89004793618294
+          }
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 6.32671823665178,
+        "I_phase_peak_A": 8.94733073558614,
+        "Id_peak_A": 4.824521168863844,
+        "Iq_torque_peak_A": 7.4464173359527726,
+        "Iq_total_peak_A": 7.535165743575192,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772406,
+        "slip_hz": 7.158703195772406,
+        "U_phase_motor_peak_V": 9.824143938470899,
+        "U_line_motor_rms_V": 12.032069904454998,
+        "U_pwm_required_phase_peak_V": 10.293802305349384,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 5.294654962770512,
+        "Rs_hot_ohm": 0.7639116168756119,
+        "Rr_hot_ohm": 0.4262573465637909,
+        "Lm_effective_h": 0.014626850026982942,
+        "Lleak_effective_h": 0.0018892787934530464,
+        "copper_W": 91.73210424621108,
+        "cage_W": 35.45339926425929,
+        "stator_iron_W_assumed": 0.21229026668019876,
+        "rotor_iron_W_assumed": 0.2102528956957882,
+        "stray_PWM_W_assumed": 3.531800988963889,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 131.13984766181025,
+        "motor_input_W": 131.13984766181025,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9678289165074144,
+        "power_balance_error_W": -1.4210854715202004e-14,
+        "rotor_slip_balance_error_W": 0.0,
+        "inverter_conduction_W_assumed": 2.4016418187589323,
+        "inverter_shunts_W_inferred": 0.30020522734486654,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          138.84169470791403,
+          144.84169470791403
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.628056490263801,
+          4.828056490263801
+        ],
+        "ripple_half_pp_A_estimate": 0.12405527485524324,
+        "current_peak_with_ripple_A_estimate": 9.071386010441383,
+        "copper_current_density_A_mm2": 8.876504514933512
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 13,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 208,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.65,
+        "copper_area_mm2": 0.6636614480708438,
+        "bare_slot_fill": 0.4173200819753549,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 27.652416058858346,
+        "total_wire_m": 165.91449635315007,
+        "order_wire_m_with_15pct_reserve": 190.80167080612256,
+        "winding_copper_kg": 0.4932975259774299,
+        "Rphase20_ohm": 0.7183295854241464,
+        "Rline20_ohm_star": 1.4366591708482928,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 36.0,
+            "I_phase_rms_A": 5.269668320384945,
+            "I_phase_peak_A": 7.452436407896237,
+            "Id_peak_A": 4.453404155874317,
+            "Iq_torque_peak_A": 5.9160544438791485,
+            "Iq_total_peak_A": 5.97544976032589,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.08574319950001,
+            "slip_hz": 6.161426218581779,
+            "U_phase_motor_peak_V": 16.358447799623214,
+            "U_line_motor_rms_V": 20.034925046515554,
+            "U_pwm_required_phase_peak_V": 16.812735868305534,
+            "U_pwm_limit_phase_peak_V": 18.706148721743876,
+            "voltage_margin_peak_V": 1.8934128534383419,
+            "Rs_hot_ohm": 0.8877117016671601,
+            "Rr_hot_ohm": 0.5002603581200046,
+            "Lm_effective_h": 0.01716623371222304,
+            "Lleak_effective_h": 0.0022172785839830894,
+            "copper_W": 73.95367518828778,
+            "cage_W": 26.263443821417194,
+            "stator_iron_W_assumed": 0.6806563669629644,
+            "rotor_iron_W_assumed": 0.17890792323083687,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 107.75096156932851,
+            "motor_input_W": 164.67776198085116,
+            "motor_efficiency_model": 0.34568602176013374,
+            "power_factor_fundamental": 0.8773112630056511,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 1.666164252412121,
+            "inverter_shunts_W_inferred": 0.20827053155151512,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              171.5521967648148,
+              177.5521967648148
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.765338799022633,
+              4.9320054656893
+            ],
+            "ripple_half_pp_A_estimate": 0.12684468340228422,
+            "current_peak_with_ripple_A_estimate": 7.579281091298522,
+            "copper_current_density_A_mm2": 7.940295968227499
+          },
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 5.269668320384945,
+            "I_phase_peak_A": 7.452436407896237,
+            "Id_peak_A": 4.453404155874317,
+            "Iq_torque_peak_A": 5.9160544438791485,
+            "Iq_total_peak_A": 5.97544976032589,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.08574319950001,
+            "slip_hz": 6.161426218581779,
+            "U_phase_motor_peak_V": 16.358447799623214,
+            "U_line_motor_rms_V": 20.034925046515554,
+            "U_pwm_required_phase_peak_V": 16.8668033188954,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 4.957036856472456,
+            "Rs_hot_ohm": 0.8877117016671601,
+            "Rr_hot_ohm": 0.5002603581200046,
+            "Lm_effective_h": 0.01716623371222304,
+            "Lleak_effective_h": 0.0022172785839830894,
+            "copper_W": 73.95367518828778,
+            "cage_W": 26.263443821417194,
+            "stator_iron_W_assumed": 0.6806563669629644,
+            "rotor_iron_W_assumed": 0.17890792323083687,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 107.75096156932851,
+            "motor_input_W": 164.67776198085116,
+            "motor_efficiency_model": 0.34568602176013374,
+            "power_factor_fundamental": 0.8773112630056511,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 0.0,
+            "inverter_conduction_W_assumed": 1.666164252412121,
+            "inverter_shunts_W_inferred": 0.20827053155151512,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              171.5521967648148,
+              177.5521967648148
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.084576113447971,
+              4.2274332563051145
+            ],
+            "ripple_half_pp_A_estimate": 0.14798546396933157,
+            "current_peak_with_ripple_A_estimate": 7.600421871865569,
+            "copper_current_density_A_mm2": 7.940295968227499
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 5.84004760306318,
+        "I_phase_peak_A": 8.259074525156436,
+        "Id_peak_A": 4.453404155874317,
+        "Iq_torque_peak_A": 6.873616002417942,
+        "Iq_total_peak_A": 6.955537609454021,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772404,
+        "slip_hz": 7.158703195772404,
+        "U_phase_motor_peak_V": 10.572309310859753,
+        "U_line_motor_rms_V": 12.948381607241027,
+        "U_pwm_required_phase_peak_V": 11.028361964236902,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 4.560095303882994,
+        "Rs_hot_ohm": 0.8877117016671601,
+        "Rr_hot_ohm": 0.5002603581200046,
+        "Lm_effective_h": 0.01716623371222304,
+        "Lleak_effective_h": 0.0022172785839830894,
+        "copper_W": 90.82930135635286,
+        "cage_W": 35.45339926425926,
+        "stator_iron_W_assumed": 0.21229026668019868,
+        "rotor_iron_W_assumed": 0.21025289569578812,
+        "stray_PWM_W_assumed": 3.531800988963889,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 130.237044771952,
+        "motor_input_W": 130.237044771952,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9673910924025193,
+        "power_balance_error_W": -1.4210854715202004e-14,
+        "rotor_slip_balance_error_W": -1.4210854715202004e-14,
+        "inverter_conduction_W_assumed": 2.04636936036264,
+        "inverter_shunts_W_inferred": 0.25579617004533,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          137.53921030235995,
+          143.53921030235995
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.584640343411999,
+          4.784640343411998
+        ],
+        "ripple_half_pp_A_estimate": 0.10570390283523684,
+        "current_peak_with_ripple_A_estimate": 8.364778427991672,
+        "copper_current_density_A_mm2": 8.799739114030581
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 14,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 224,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 3,
+        "wire_bare_diameter_mm": 0.5,
+        "copper_area_mm2": 0.5890486225480862,
+        "bare_slot_fill": 0.39889493497871886,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 29.7487557556936,
+        "total_wire_m": 267.7388018012424,
+        "order_wire_m_with_15pct_reserve": 307.8996220714287,
+        "winding_copper_kg": 0.4710307015790414,
+        "Rphase20_ohm": 0.8706726908376571,
+        "Rline20_ohm_star": 1.7413453816753142,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 4.893263440357449,
+            "I_phase_peak_A": 6.920119521617935,
+            "Id_peak_A": 4.135303859026151,
+            "Iq_torque_peak_A": 5.493479126459211,
+            "Iq_total_peak_A": 5.548631920302613,
+            "Bg_peak_T": 0.49999999999999994,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.1614262185817825,
+            "U_phase_motor_peak_V": 17.89940752589475,
+            "U_line_motor_rms_V": 21.922207568287604,
+            "U_pwm_required_phase_peak_V": 18.400417557636832,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 3.423422617731024,
+            "Rs_hot_ohm": 1.0759773113371767,
+            "Rr_hot_ohm": 0.5801836106007153,
+            "Lm_effective_h": 0.01990876809228234,
+            "Lleak_effective_h": 0.002571518357755535,
+            "copper_W": 77.28968969440064,
+            "cage_W": 26.263443821417212,
+            "stator_iron_W_assumed": 0.6806563669629644,
+            "rotor_iron_W_assumed": 0.17890792323083693,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 111.08697607544138,
+            "motor_input_W": 168.01377648696402,
+            "motor_efficiency_model": 0.3388222180455513,
+            "power_factor_fundamental": 0.8814141662331267,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 3.552713678800501e-15,
+            "inverter_conduction_W_assumed": 1.4366416258043293,
+            "inverter_shunts_W_inferred": 0.17958020322554116,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              174.6299983159939,
+              180.6299983159939
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.15785710276176,
+              4.300714245618902
+            ],
+            "ripple_half_pp_A_estimate": 0.12759971127967878,
+            "current_peak_with_ripple_A_estimate": 7.047719232897614,
+            "copper_current_density_A_mm2": 8.307062020093246
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 5.422901345701526,
+        "I_phase_peak_A": 7.669140630502406,
+        "Id_peak_A": 4.135303859026151,
+        "Iq_torque_peak_A": 6.382643430816663,
+        "Iq_total_peak_A": 6.458713494493022,
+        "Bg_peak_T": 0.49999999999999994,
+        "frequency_hz": 7.158703195772409,
+        "slip_hz": 7.158703195772409,
+        "U_phase_motor_peak_V": 11.730465539785804,
+        "U_line_motor_rms_V": 14.36682750888843,
+        "U_pwm_required_phase_peak_V": 12.175863330108985,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 3.412593938010911,
+        "Rs_hot_ohm": 1.0759773113371767,
+        "Rr_hot_ohm": 0.5801836106007153,
+        "Lm_effective_h": 0.01990876809228234,
+        "Lleak_effective_h": 0.002571518357755535,
+        "copper_W": 94.92656719383051,
+        "cage_W": 35.4533992642593,
+        "stator_iron_W_assumed": 0.2122902666801988,
+        "rotor_iron_W_assumed": 0.2102528956957882,
+        "stray_PWM_W_assumed": 3.5318009889638895,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 134.33431060942968,
+        "motor_input_W": 134.33431060942968,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9693103899179489,
+        "power_balance_error_W": 0.0,
+        "rotor_slip_balance_error_W": 7.105427357601002e-15,
+        "inverter_conduction_W_assumed": 1.764471540312685,
+        "inverter_shunts_W_inferred": 0.22055894253908562,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          141.31934109228146,
+          147.31934109228146
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.710644703076048,
+          4.9106447030760485
+        ],
+        "ripple_half_pp_A_estimate": 0.09114265091405628,
+        "current_peak_with_ripple_A_estimate": 7.760283281416463,
+        "copper_current_density_A_mm2": 9.206203254059616
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 15,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 240,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 0.85,
+        "copper_area_mm2": 0.5674501730546564,
+        "bare_slot_fill": 0.4117165578887491,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 31.84509545252886,
+        "total_wire_m": 95.53528635758659,
+        "order_wire_m_with_15pct_reserve": 109.86557931122456,
+        "winding_copper_kg": 0.4857351723968904,
+        "Rphase20_ohm": 0.9675024727655115,
+        "Rline20_ohm_star": 1.935004945531023,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": {
+            "useful_torque_Nm": 2.602693314814815,
+            "rpm": 208.8647547137734,
+            "shaft_W": 56.92680041152264,
+            "Vdc_V": 42.0,
+            "I_phase_rms_A": 4.567045877666953,
+            "I_phase_peak_A": 6.4587782201767405,
+            "Id_peak_A": 3.8596169350910743,
+            "Iq_torque_peak_A": 5.127247184695264,
+            "Iq_total_peak_A": 5.1787231256157735,
+            "Bg_peak_T": 0.5,
+            "frequency_hz": 20.085743199500012,
+            "slip_hz": 6.161426218581783,
+            "U_phase_motor_peak_V": 18.953233496372484,
+            "U_line_motor_rms_V": 23.212875520969472,
+            "U_pwm_required_phase_peak_V": 19.444305209605417,
+            "U_pwm_limit_phase_peak_V": 21.823840175367856,
+            "voltage_margin_peak_V": 2.3795349657624385,
+            "Rs_hot_ohm": 1.195639555843619,
+            "Rr_hot_ohm": 0.6660271040059232,
+            "Lm_effective_h": 0.022854453167160848,
+            "Lleak_effective_h": 0.002951998114770385,
+            "copper_W": 74.81561974557691,
+            "cage_W": 26.26344382141722,
+            "stator_iron_W_assumed": 0.6806563669629645,
+            "rotor_iron_W_assumed": 0.17890792323083704,
+            "stray_PWM_W_assumed": 4.247853663494098,
+            "friction_W_assumed": 2.426424605935632,
+            "motor_loss_W": 108.61290612661767,
+            "motor_input_W": 165.5397065381403,
+            "motor_efficiency_model": 0.3438860778601581,
+            "power_factor_fundamental": 0.8783902101967741,
+            "power_balance_error_W": 0.0,
+            "rotor_slip_balance_error_W": 7.105427357601002e-15,
+            "inverter_conduction_W_assumed": 1.2514744829228823,
+            "inverter_shunts_W_inferred": 0.1564343103653603,
+            "inverter_switching_W_bounds_assumed": [
+              2,
+              8
+            ],
+            "battery_W_bounds_assumed": [
+              171.94761533142855,
+              177.94761533142855
+            ],
+            "battery_current_A_bounds_assumed": [
+              4.093990841224489,
+              4.236847984081632
+            ],
+            "ripple_half_pp_A_estimate": 0.11115352627029795,
+            "current_peak_with_ripple_A_estimate": 6.569931746447039,
+            "copper_current_density_A_mm2": 8.048364586941554
+          }
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 5.061374589321424,
+        "I_phase_peak_A": 7.157864588468913,
+        "Id_peak_A": 3.8596169350910743,
+        "Iq_torque_peak_A": 5.957133868762219,
+        "Iq_total_peak_A": 6.028132594860154,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772409,
+        "slip_hz": 7.158703195772409,
+        "U_phase_motor_peak_V": 12.29422722091478,
+        "U_line_motor_rms_V": 15.057291736538243,
+        "U_pwm_required_phase_peak_V": 12.729058835881148,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 2.8593984322387485,
+        "Rs_hot_ohm": 1.195639555843619,
+        "Rr_hot_ohm": 0.6660271040059232,
+        "Lm_effective_h": 0.022854453167160848,
+        "Lleak_effective_h": 0.002951998114770385,
+        "copper_W": 91.88793463924455,
+        "cage_W": 35.45339926425931,
+        "stator_iron_W_assumed": 0.21229026668019885,
+        "rotor_iron_W_assumed": 0.21025289569578828,
+        "stray_PWM_W_assumed": 3.5318009889638895,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 131.29567805484373,
+        "motor_input_W": 131.29567805484373,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9679036097041656,
+        "power_balance_error_W": 1.4210854715202004e-14,
+        "rotor_slip_balance_error_W": 1.4210854715202004e-14,
+        "inverter_conduction_W_assumed": 1.5370507640057174,
+        "inverter_shunts_W_inferred": 0.19213134550071467,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          138.02486016435017,
+          144.02486016435017
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.600828672145005,
+          4.8008286721450055
+        ],
+        "ripple_half_pp_A_estimate": 0.07939537590735568,
+        "current_peak_with_ripple_A_estimate": 7.2372599643762685,
+        "copper_current_density_A_mm2": 8.919504882825926
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 16,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 256,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 0.8,
+        "copper_area_mm2": 0.5026548245743669,
+        "bare_slot_fill": 0.38901753658876964,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 33.94143514936412,
+        "total_wire_m": 101.82430544809236,
+        "order_wire_m_with_15pct_reserve": 117.09795126530621,
+        "winding_copper_kg": 0.4585950063960619,
+        "Rphase20_ohm": 1.164119617215502,
+        "Rline20_ohm_star": 2.328239234431004,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 4.745038677488835,
+        "I_phase_peak_A": 6.710498051689605,
+        "Id_peak_A": 3.618390876647882,
+        "Iq_torque_peak_A": 5.584813001964579,
+        "Iq_total_peak_A": 5.651374307681394,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772408,
+        "slip_hz": 7.158703195772408,
+        "U_phase_motor_peak_V": 13.622704221263817,
+        "U_line_motor_rms_V": 16.68433712947741,
+        "U_pwm_required_phase_peak_V": 14.049829682978041,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 1.538627585141855,
+        "Rs_hot_ohm": 1.4386190229549174,
+        "Rr_hot_ohm": 0.7577908383356284,
+        "Lm_effective_h": 0.026003288936858573,
+        "Lleak_effective_h": 0.0033587178550276387,
+        "copper_W": 97.17321394098693,
+        "cage_W": 35.453399264259296,
+        "stator_iron_W_assumed": 0.2122902666801988,
+        "rotor_iron_W_assumed": 0.21025289569578823,
+        "stray_PWM_W_assumed": 3.5318009889638895,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 136.58095735658608,
+        "motor_input_W": 136.58095735658608,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9702927452699194,
+        "power_balance_error_W": 0.0,
+        "rotor_slip_balance_error_W": 0.0,
+        "inverter_conduction_W_assumed": 1.3509235230518997,
+        "inverter_shunts_W_inferred": 0.16886544038148746,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          143.10074632001948,
+          149.10074632001948
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.770024877333983,
+          4.970024877333983
+        ],
+        "ripple_half_pp_A_estimate": 0.0697810921060743,
+        "current_peak_with_ripple_A_estimate": 6.7802791437956795,
+        "copper_current_density_A_mm2": 9.439954508557223
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 17,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 272,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 0.8,
+        "copper_area_mm2": 0.5026548245743669,
+        "bare_slot_fill": 0.4133311326255678,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 36.037774846199376,
+        "total_wire_m": 108.11332453859814,
+        "order_wire_m_with_15pct_reserve": 124.33032321938785,
+        "winding_copper_kg": 0.4869194102537017,
+        "Rphase20_ohm": 1.2360196460355632,
+        "Rline20_ohm_star": 2.4720392920711265,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": {
+        "useful_torque_Nm": 3.0528524583333336,
+        "rpm": 0.0,
+        "shaft_W": 0.0,
+        "Vdc_V": 30.0,
+        "I_phase_rms_A": 4.465918755283609,
+        "I_phase_peak_A": 6.315762872178452,
+        "Id_peak_A": 3.4055443544921244,
+        "Iq_torque_peak_A": 5.25629459008431,
+        "Iq_total_peak_A": 5.318940524876606,
+        "Bg_peak_T": 0.5,
+        "frequency_hz": 7.158703195772406,
+        "slip_hz": 7.158703195772406,
+        "U_phase_motor_peak_V": 13.882972933750436,
+        "U_line_motor_rms_V": 17.00309990027909,
+        "U_pwm_required_phase_peak_V": 14.3013157156761,
+        "U_pwm_limit_phase_peak_V": 15.588457268119896,
+        "voltage_margin_peak_V": 1.2871415524437957,
+        "Rs_hot_ohm": 1.527473078570749,
+        "Rr_hot_ohm": 0.8554748135898302,
+        "Lm_effective_h": 0.02935527540137549,
+        "Lleak_effective_h": 0.003791677578527294,
+        "copper_W": 91.39374118398793,
+        "cage_W": 35.45339926425929,
+        "stator_iron_W_assumed": 0.21229026668019876,
+        "rotor_iron_W_assumed": 0.2102528956957882,
+        "stray_PWM_W_assumed": 3.531800988963889,
+        "friction_W_assumed": 0.0,
+        "motor_loss_W": 130.8014845995871,
+        "motor_input_W": 130.8014845995871,
+        "motor_efficiency_model": 0.0,
+        "power_factor_fundamental": 0.9676658454980094,
+        "power_balance_error_W": 1.4210854715202004e-14,
+        "rotor_slip_balance_error_W": 0.0,
+        "inverter_conduction_W_assumed": 1.1966658197276343,
+        "inverter_shunts_W_inferred": 0.1495832274659543,
+        "inverter_switching_W_bounds_assumed": [
+          2,
+          8
+        ],
+        "battery_W_bounds_assumed": [
+          137.1477336467807,
+          143.1477336467807
+        ],
+        "battery_current_A_bounds_assumed": [
+          4.571591121559356,
+          4.771591121559356
+        ],
+        "ripple_half_pp_A_estimate": 0.06181300892441187,
+        "current_peak_with_ripple_A_estimate": 6.377575881102864,
+        "copper_current_density_A_mm2": 8.884663066877385
+      }
+    },
+    {
+      "winding": {
+        "turns_per_coil": 18,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 288,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.55,
+        "copper_area_mm2": 0.4751658888554563,
+        "bare_slot_fill": 0.4137110325636428,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 38.134114543034634,
+        "total_wire_m": 228.80468725820782,
+        "order_wire_m_with_15pct_reserve": 263.12539034693896,
+        "winding_copper_kg": 0.4870664180271277,
+        "Rphase20_ohm": 1.3835844494340492,
+        "Rline20_ohm_star": 2.7671688988680985,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 19,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 304,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 1,
+        "wire_bare_diameter_mm": 0.75,
+        "copper_area_mm2": 0.44178646691106466,
+        "bare_slot_fill": 0.40601805881762454,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 40.23045423986989,
+        "total_wire_m": 120.69136271960969,
+        "order_wire_m_with_15pct_reserve": 138.79506712755114,
+        "winding_copper_kg": 0.47774550407430016,
+        "Rphase20_ohm": 1.5699281961821139,
+        "Rline20_ohm_star": 3.1398563923642278,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 20,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 320,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.5,
+        "copper_area_mm2": 0.39269908169872414,
+        "bare_slot_fill": 0.37989993807497036,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 42.32679393670515,
+        "total_wire_m": 253.96076362023092,
+        "order_wire_m_with_15pct_reserve": 292.0548781632655,
+        "winding_copper_kg": 0.446791110802048,
+        "Rphase20_ohm": 1.8582012575945566,
+        "Rline20_ohm_star": 3.716402515189113,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 21,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 336,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.5,
+        "copper_area_mm2": 0.39269908169872414,
+        "bare_slot_fill": 0.39889493497871886,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 44.4231336335404,
+        "total_wire_m": 266.5388018012424,
+        "order_wire_m_with_15pct_reserve": 306.5196220714287,
+        "winding_copper_kg": 0.4689195513158291,
+        "Rphase20_ohm": 1.9502332944842349,
+        "Rline20_ohm_star": 3.9004665889684698,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    },
+    {
+      "winding": {
+        "turns_per_coil": 22,
+        "coils_series_per_phase": 16,
+        "turns_series_per_phase": 352,
+        "connection": "star",
+        "parallel_phase_paths": 1,
+        "winding_factor": 0.9330127018922193,
+        "coil_pitch_slots": 5,
+        "wire_strands_in_hand": 2,
+        "wire_bare_diameter_mm": 0.5,
+        "copper_area_mm2": 0.39269908169872414,
+        "bare_slot_fill": 0.4178899318824673,
+        "mean_turn_length_m_assumed": 0.1310212310522036,
+        "phase_length_one_strand_m": 46.51947333037566,
+        "total_wire_m": 279.11683998225396,
+        "order_wire_m_with_15pct_reserve": 320.98436597959204,
+        "winding_copper_kg": 0.49104799182961023,
+        "Rphase20_ohm": 2.042265331373913,
+        "Rline20_ohm_star": 4.084530662747826,
+        "not_wound_or_measured": true
+      },
+      "points": {
+        "flat10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat15": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat20": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "flat25": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        },
+        "hill5_10": {
+          "30.0": null,
+          "36.0": null,
+          "42.0": null
+        }
+      },
+      "standstill_flat15_torque": null
+    }
+  ],
+  "selected": null,
+  "mechanical": {
+    "load_case": "120kg or parameter mass, 60% rear axle, 3g shock, support span130mm ASSUMED",
+    "radial_total_N": 2118.96,
+    "bearing_radial_each_N": 1059.48,
+    "shaft_bending_moment_Nm": 33.90336,
+    "shaft_bending_MPa_smooth_solid": 43.167098651392315,
+    "shaft_torsion_MPa_smooth_solid": 12.732395447351625,
+    "shaft_von_Mises_MPa_smooth_solid": 48.47411770689857,
+    "shaft_yield_safety_at_235MPa_no_notches": 4.847947958969372,
+    "shaft_center_deflection_mm_ideal": 0.039915862411696194,
+    "bearing_L10h_screen_at25kmh": 56417.349789821215,
+    "rotor_centrifugal_hoop_MPa_at25kmh": 0.10500184166048807,
+    "torque_design_Nm": 20,
+    "airgap_budget_mm": {
+      "radial_gap": 0.4,
+      "rotor_runout_allowance": 0.08,
+      "stator_eccentricity_allowance": 0.06,
+      "bearing_play_allowance": 0.03,
+      "thermal_growth_reserve": 0.04,
+      "shaft_deflection_ideal": 0.039915862411696194,
+      "remaining_for_cover_flex_and_assembly": 0.15008413758830383
+    },
+    "not_verified": [
+      "cover/retainer strength and distortion",
+      "thread/keyway/cable hole stress",
+      "torque arm/frame/dropout",
+      "bearing fits and lubrication",
+      "cage joints, balancing, fretting",
+      "wheel donor interface"
+    ]
+  },
+  "reason": "No winding4..22 turns reaches flat15km/h at30..42V within9Arms/15Apeak+estimated ripple and0.5T"
+}

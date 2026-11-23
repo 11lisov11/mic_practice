@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "actual_release_ARM_replay": {
+    "passed": true,
+    "rows": 12,
+    "checkpoints": 0,
+    "all_states_reconstructed": true,
+    "first_NIS_ge25": 12,
+    "peak_NIS": 31.595359802246094,
+    "terminal_51_words_bit_exact": true,
+    "hardware_commands": 0,
+    "target_timing_measured": false,
+    "elf_sha256": "1b03c23bd64e83e0a7cb77147b43d2b384acc184548923f46ca2bed0c7c18aba"
+  },
+  "observer_kernel_bit_identical": true,
+  "native_readback_bytes": 125216,
+  "hex_erased_padding_offsets": [],
+  "page_contract": {
+    "roundtrip_pages": 16,
+    "negative_cases": [
+      "RUN",
+      "outputs_active",
+      "peer_PWM_active",
+      "bad_page",
+      "record_not_complete",
+      "stale_firmware"
+    ],
+    "old_files_read_only": true
+  },
+  "physical_timing_measured": false,
+  "protected_files_verified": 1738,
+  "hardware_commands": 0
+}

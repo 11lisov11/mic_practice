@@ -1,0 +1,45 @@
+{
+  "schema": "mic_ai.local_stop_operator_capture.v1",
+  "pass": true,
+  "checks": {
+    "six_pwm_signals_active": true,
+    "no_overlap": true,
+    "six_outputs_low_after_stop": true,
+    "low_tail_above_500ms": true,
+    "local_stop_observed_before_limit": true,
+    "pwm_off_with_local_stop": true,
+    "bus_zero": true,
+    "no_new_uart_errors_in_run": true,
+    "capture_device_and_sample_rate_verified": true
+  },
+  "operator_confirmed_pressed_and_released": true,
+  "capture_source": "C:/Users/USER/Desktop/Session 8.sal",
+  "capture_sha256": "abade1d935e0f508bbd4d8c87d6f53f833e4c9728f8e0d3eaebe89e08be489e4",
+  "first_pwm_edge_s": 80.55506825,
+  "last_pwm_edge_s": 82.02310925,
+  "active_span_s": 1.4680409999999995,
+  "low_tail_s": 9.645370749999998,
+  "carrier_hz": {
+    "0": 16000.00000037835,
+    "1": 16000.00000037835,
+    "2": 16000.00000037835,
+    "3": 16000.00000037835,
+    "4": 16000.00000037835,
+    "5": 16000.00000037835
+  },
+  "minimum_observed_deadtime_us": {
+    "U": 1.2499999968440534,
+    "V": 1.2499999968440534,
+    "W": 1.2499999968440534
+  },
+  "exact_button_to_off_latency_measured": false,
+  "physical_button_edge_measured": false,
+  "sample_rate_independently_extracted": true,
+  "production_image_active_pwm_measured": false,
+  "hv_release_approved": false,
+  "scope": "six outputs of detached 1204-derived fixture under normal Uno supervision; compiled guard/PWM sections match production",
+  "sample_rate_from_capture_metadata_hz": 4000000,
+  "digital_sample_period_ns": 250.0,
+  "device_id": "A7D1BB81883C0092",
+  "physical_device": true
+}

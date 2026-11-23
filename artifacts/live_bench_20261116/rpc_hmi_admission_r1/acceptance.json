@@ -1,0 +1,42 @@
+{
+  "installed": true,
+  "Linux_server_readback_verified": true,
+  "PC_RPC_tests_passed": true,
+  "Linux_RPC_tests_passed": true,
+  "command_guard_cases": 189,
+  "local_stop_cases": 35,
+  "Linux_unix_backlog_deadline_passed": true,
+  "HTTP_fanout_passed": true,
+  "HTTP_fanout_seconds": 2.812000000034459,
+  "long_idle_passed": true,
+  "long_idle_seconds": 1101.0149999999558,
+  "long_idle_samples": 1087,
+  "max_HTTP_seconds": 0.8439999999827705,
+  "RPC_timeouts_before": 291,
+  "RPC_timeouts_after": 291,
+  "route_failures_before": 147,
+  "route_failures_after": 147,
+  "firmware_pair": [
+    2026111609,
+    2026111606
+  ],
+  "this_HMI_update_MCU_flash": 0,
+  "this_HMI_update_MCU_reset": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "FOC_start_ready": false,
+  "FOC_five_seconds_verified": false,
+  "original_wire_failure_first_byte_identified": false,
+  "calibration_unchanged": true,
+  "protected_files_verified": 5506,
+  "protection_limits": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "thresholds_changed": false,
+  "server_sha256": "ba03ee5ae0153f70003c06be54f49148eed89954b75e3137e7c30542e23d1c79",
+  "qualification": "Idle RPC only. Confirmed queue/lock defects corrected. Does not qualify FOC or prove the initiating serial byte failure."
+}

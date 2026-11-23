@@ -1,0 +1,102 @@
+{
+  "date": "2026-10-27",
+  "purpose": "Compare first BUSY with HIGH/HIGH after persistent-PE change to primary AS5600/STM32 documentation and firsthand reports",
+  "hardware_commands": 0,
+  "firmware_changes": 0,
+  "root_cause_proven": false,
+  "local_evidence": {
+    "pair": [
+      2026102709,
+      2026102710
+    ],
+    "idle_seconds": 19.328,
+    "idle_successful_reads": 3871,
+    "idle_new_errors": 0,
+    "idle_vdc": 325,
+    "powered_first_trial_errors": 192,
+    "powered_repeat_errors": 195,
+    "first_cause": "BUSY",
+    "ISR": "0x8001",
+    "CR2": 0,
+    "SCL": "HIGH",
+    "SDA": "HIGH",
+    "first_failure_attempt_us": 3001.435,
+    "poll_gap_at_first_failure_us": 31.506,
+    "max_recorded_poll_gap_before_first_failure_us": 693.565,
+    "normal_success_PE_parks": 0,
+    "after_PE0_ISR": "0x1",
+    "after_PE0_lines": "HIGH/HIGH",
+    "interpretation": "No full >=3ms foreground starvation recorded before first failure. This does not exclude state sequencing, delayed handling of individual events, or electrical disturbance. Digital samples cannot prove line integrity."
+  },
+  "code_checks": {
+    "PWM": "TIM1 hardware outputs PA7,PB0,PB1,PA8,PA9,PA10",
+    "sensor": "I2C1 AF4 PB8/PB9; HSI16 kernel; 0x30521317; ANF enabled and DNF2",
+    "pin_conflict_in_initialization_found": false,
+    "encoder_poll": "foreground nonblocking state machine",
+    "interrupts": "TIM1/ADC higher priority than foreground",
+    "successful_read": "PE kept enabled; CR2 cleared after completed STOP",
+    "BERR": "clear and continue per ES0431; separate diagnostic count",
+    "read_sequence": "0x36, pointer0x0B, repeated START, status+RAW_ANGLE0x0C/0x0D"
+  },
+  "sources": [
+    {
+      "url": "https://cdn.sparkfun.com/assets/f/a/b/b/a/AS5600_Datasheet.pdf",
+      "type": "manufacturer datasheet mirrored by SparkFun",
+      "sections": [
+        "I2C pp10-17",
+        "register map p18",
+        "power p9",
+        "application pp32-33"
+      ],
+      "finding": "AS5600 is I2C target, no clock stretching, SCL is input; <50ns input-spike suppression; register-map/read sequence matches; VDD5V/VDD3V3 tied for3.3V mode; local bypass and pullups must match module topology. Sensor filtering/weak magnet must be separated from protocol failure."
+    },
+    {
+      "url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+      "type": "manufacturer errata ES0431 Rev9",
+      "sections": [
+        "2.11.1",
+        "2.11.2",
+        "2.11.5"
+      ],
+      "finding": "Spurious BERR: clear/continue already implemented. Standard-mode kernel16MHz exceeds4MHz minimum. First-byte-stall APB/kernel1.5..3 condition absent at170/16=10.625. Do not infer F1 analog-filter BUSY erratum applies toG431."
+    },
+    {
+      "url": "https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/src/encoders/as5600/AS5600.cpp",
+      "type": "maintainer driver source",
+      "finding": "Normal register-pointer write/repeated START/read and optional persistent pointer/read path. Generic Wire source is a protocol reference, not proof of immunity or a drop-in motor-safe replacement."
+    },
+    {
+      "url": "https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/src/encoders/as5600/README.md",
+      "type": "maintainer README",
+      "finding": "DIR must be defined. Existing module onboard bias unknown; four external wires do not establish DIR floating. Do not instruct blind grounding of outputs."
+    },
+    {
+      "url": "https://community.simplefoc.com/t/bldcmotor-loopfoc-does-not-return-when-i2c-bus-locks-on-b-g431b-esc1/3577",
+      "type": "firsthand bench report",
+      "finding": "B-G431B-ESC1 AS5048B, additional AS5600 user15cm cable: observed marginal logic levels and ringing, changes to board-specific series/pullup network improved behavior. Author later corrected series value470R to47R. Different board: no direct resistor transplant toNucleo64."
+    },
+    {
+      "url": "https://community.simplefoc.com/t/as5600-jamming/727",
+      "type": "firsthand bench report",
+      "finding": "AS5600 standalone okay, motor operation freezes readings; author resolved by replacing cable. Not proof our cable is defective."
+    },
+    {
+      "url": "https://community.simplefoc.com/t/sensor-update-taking-too-long-with-as5600-causing-vibration/3116",
+      "type": "firsthand software report",
+      "finding": "Blocking Wire calls delay software motor-loop updates onG431 board. Our PWM isTIM1 hardware and I2C polling nonblocking; symptom must not be equated automatically."
+    }
+  ],
+  "ranked_unproven_hypotheses": [
+    "Switching-related bus/ground/supply disturbance causes spurious protocol event and BUSY latch",
+    "I2C event sequencing/recovery bug exposed by PWM/ADC interrupt timing",
+    "Simple full foreground starvation >=3ms less supported by first snapshot; no shared PWM/I2C pins found"
+  ],
+  "next_discriminating_check": {
+    "goal": "Separate firmware workload from energized inverter switching",
+    "stage_A": "Same TIM1/ADC and I2C workload with inverter switching physically disabled and independently confirmed discharged/off; evaluate digital bus and counters",
+    "stage_B": "Compare same code with energized switching only under separately authorized powered test",
+    "instrument_limit": "Saleae can expose logical protocol events in a deenergized setup, cannot prove analog rise time/ringing or measure HV-referenced bus without suitable isolation",
+    "new_powered_start_authorized_by_this_research": false,
+    "protections_change": false
+  }
+}

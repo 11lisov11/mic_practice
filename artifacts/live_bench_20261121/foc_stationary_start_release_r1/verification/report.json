@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "actual_release_ARM_replay": {
+    "status": "saved observations, not a closed-loop replay of changed PWM",
+    "first_crossing": {
+      "step": 83,
+      "before_speed_loop": true,
+      "candidate_ARM_exact_rows": 83
+    },
+    "stop": {
+      "step": 571,
+      "reference_hz": 0.9000000357627869,
+      "NIS": 27.091480255126953,
+      "iq_reference_A": 0.5753154158592224,
+      "observer_rpm": -132.85304260253906,
+      "phase_U_prediction_error_A": -0.10876286029815674,
+      "candidate_ARM_exact_words": 51
+    }
+  },
+  "observer_kernel_bit_identical": true,
+  "native_readback_bytes": 122408,
+  "hex_erased_padding_offsets": [
+    118124,
+    118125,
+    118126,
+    118127
+  ],
+  "page_contract": {
+    "roundtrip_pages": 16,
+    "negative_cases": [
+      "RUN",
+      "outputs_active",
+      "peer_PWM_active",
+      "bad_page",
+      "record_not_complete",
+      "stale_firmware"
+    ],
+    "old_files_read_only": true
+  },
+  "physical_timing_measured": false,
+  "hardware_commands": 0,
+  "protected_files_verified": 1171
+}

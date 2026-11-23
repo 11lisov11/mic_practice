@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "installed": false,
+  "physical_peak_fix_verified": false,
+  "exact_captured_frames_replayed": 12,
+  "unsafe_original_frames_rejected": 12,
+  "safe_counterfactual_triggers_found": 12,
+  "new_trigger_currents_not_measured": true,
+  "raw_peak_preserved": true,
+  "actual_irq_checks": 358413,
+  "raw_zero_statistics_and_95percent_coverage_gate_unchanged": true,
+  "sweep": {
+    "safe_windows": 5296554,
+    "no_safe_window": 114246,
+    "geometry_failures": 0,
+    "installed": false
+  },
+  "incomplete_coverage_remains_invalid": true,
+  "zero_history_rpc_roundtrip": true,
+  "previous_calibration_identity_compatible": true,
+  "source_changes_beyond_identity": [
+    "nucleo/Src/current_shunt.c",
+    "nucleo/STM32CubeIDE/.settings/language.settings.xml",
+    "web_hmi/server.py",
+    "nucleo/Inc/current_adc_window_plan.h"
+  ],
+  "nucleo_ram_above_min_heap_stack_bytes": 4096,
+  "adc_irq_stack_bytes": 368,
+  "uno_logic_unchanged_except_pair_identity": true,
+  "hardware_isr_wcet_verified": false,
+  "limitation": "Replay validates the geometry and data rejection of old raw samples, not the analog current at a new sampling point. 771tick third-leg settling is conservative. Some vectors have no safe window; original coverage>=95%/density>=12samples/ms gates remain and RMS stays unavailable if insufficient. CCR latch/JSQR preload timing model is host-tested; hardware confirmation is pending.",
+  "sources": [
+    "https://www.st.com/resource/en/reference_manual/dm00355726-stm32g4-series-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf"
+  ]
+}

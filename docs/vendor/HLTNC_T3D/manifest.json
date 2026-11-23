@@ -1,0 +1,43 @@
+{
+  "saved_at_utc": "2026-10-29T21:38:17.705493+00:00",
+  "topic": "HLTNC T3D",
+  "review_status": "saved_for_later_not_studied",
+  "purpose_ru": "Руководства предоставлены пользователем для будущего изучения и подготовки нагрузочного сервопривода стенда АИР. Сейчас только сохранение; подключение и настройки по этим файлам ещё не проверены.",
+  "files": [
+    {
+      "file": "T3D_RU.pdf",
+      "original_name": "T3D 俄语版本_3000000465723500582.pdf",
+      "source": "C:\\Users\\USER\\Downloads\\Telegram Desktop\\T3D 俄语版本_3000000465723500582.pdf",
+      "language": "ru",
+      "version_from_filename": null,
+      "size_bytes": 14487684,
+      "sha256": "000abd1fc05fb362162a72e752f7cb9c11cda1f1c1665453158fcc9af7f04cc5"
+    },
+    {
+      "file": "T3D_EN_V2.3.pdf",
+      "original_name": "T3D完整版V2.3_英文版_3000000465723500814.pdf",
+      "source": "C:\\Users\\USER\\Downloads\\Telegram Desktop\\T3D完整版V2.3_英文版_3000000465723500814.pdf",
+      "language": "en",
+      "version_from_filename": "2.3",
+      "size_bytes": 7175617,
+      "sha256": "451d6c030d868ed64eb62e27eda75f45d3a0d40cfec7ae9a42bf36fd4604e834"
+    }
+  ],
+  "modbus_added_2026_11_22": {
+    "file": "T3D_MODBUS_V3_3_EN.pdf",
+    "original_name": "Servo-motor-_Modbus-communication-function-Description-V3_1_14_-English-version.pdf",
+    "source": "https://www.hlt-cnc.com/uploads/38006/files/Servo-motor-_Modbus-communication-function-Description-V3_1_14_-English-version.pdf",
+    "download_index": "https://www.hlt-cnc.com/download",
+    "language": "en",
+    "version_from_cover": "3.3",
+    "sha256": "d5e04c73f3b2a6b687151de4e55d66d0c0d559a1d318151082f2d59cfd83bac7"
+  },
+  "review_on_2026_11_22": {
+    "status": "offline_load_controller_prepared_hardware_not_validated",
+    "original_review_status_preserved_above": true,
+    "selected_kit": "HLTNC-T3D-400W-3M-BRAKE",
+    "operator_guide": "output/pdf/T3D_LOAD_GUIDE_RU.pdf",
+    "implementation": "load_bench",
+    "notes_ru": "Изучены режим момента, CN1, DI/DO, BRK, регенерация и Modbus. Реальные шильдики, ревизия, проводка, тормоз и снятие нагрузки ещё не проверены. Название файла Modbus отличается от версии на титуле. Пример CRC на PDF стр. 7 расходится со стандартным CRC; в коде проверяются независимые стандартные векторы."
+  }
+}

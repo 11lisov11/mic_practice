@@ -1,0 +1,38 @@
+{
+  "pair": [
+    2026103003,
+    2026103004
+  ],
+  "built": true,
+  "installed": false,
+  "proven_code_defect": "Current telemetry globally masks IRQ around296-byte cm_core copy; installed newlib memcpy copies one byte per loop.",
+  "recorded_observation": {
+    "ADC_sequence": 31759,
+    "update_CNT": 2226,
+    "guard_CNT_less_than": 2048,
+    "geometry_safe": true,
+    "queue_clean": true
+  },
+  "historical_caller_not_recorded": true,
+  "historical_site_attribution": "Strongly consistent blocker; exact responsible call was not captured.",
+  "fix": "ADC-writer sequence with memory barriers; foreground interruptible snapshot with3 attempts, skip busy packet.",
+  "tests": {
+    "interleave_positions": 297,
+    "odd_writer": true,
+    "wrap": true,
+    "busy_packet_not_sent": true,
+    "three_packet_types_equivalent": true,
+    "recorded_rows": 12,
+    "bad_row_still_rejected": true,
+    "actual_native_adapter": true,
+    "ARM_no_mask_in_current_packet": true
+  },
+  "controller_model_unchanged": true,
+  "guard_2048_unchanged": true,
+  "all_protections_unchanged": true,
+  "hardware_completion_5s_verified": false,
+  "new_START": 0,
+  "new_CLEAR": 0,
+  "new_flash": 0,
+  "next_step": "J1OFF, meter<20V, bothUSBPC;15V and wiring may stay. Flash3003/3004/readback/OFFtiming before another powered trial."
+}

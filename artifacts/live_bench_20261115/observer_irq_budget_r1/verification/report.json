@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "numeric": {
+    "bit_exact_control_cases": 200000,
+    "bit_exact_observer_cases": 20000,
+    "startup_and_active_and_boundary_cases": true
+  },
+  "UART": {
+    "old_pending_TC_reentry_reproduced": 100,
+    "new_TX_event_scenarios": 1024,
+    "CRC_payload_unchanged": true,
+    "DMA_error_still_stops": true
+  },
+  "IRQ_wire": {
+    "nine_IRQ_slots": true,
+    "wire9_pages": true,
+    "CRC_peer_format_guarded": true,
+    "bounded_torn_snapshot": true
+  },
+  "IRQ_wrapper": {
+    "actual_IRQ_wrapper_nested": true,
+    "C_helper_not_double_counted": true,
+    "early_return_cleanup": true
+  },
+  "IRQ_priorities_and_enables_unchanged": true,
+  "unchanged_protection_sources": [
+    "nucleo/Inc/foc_experiment.h",
+    "nucleo/Inc/current_adc_deadline.h",
+    "nucleo/Inc/current_adc_window_plan.h",
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Inc/current_core.h",
+    "nucleo/Src/regular_conversion_manager.c",
+    "nucleo/Inc/observer_applied_voltage.h",
+    "nucleo/Inc/local_stop.h"
+  ],
+  "fast_loop_guards_unchanged": true,
+  "OFF_probe_same_control_path_with_stricter_exact_model_check_inside_timing": true,
+  "captured_fault_replayed_without_changing_2ms": true,
+  "physical5s_run_proven": false,
+  "target_cycles_measured": false,
+  "limitation": "Original capture has aggregate IRQ time only. UART storm is reproduced from the actual handlers, but its occurrence in that powered run is not proven. Named IRQ timings are inclusive and cannot be summed."
+}

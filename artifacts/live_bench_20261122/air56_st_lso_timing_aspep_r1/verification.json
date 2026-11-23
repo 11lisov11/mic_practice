@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "build_errors": 0,
+  "build_warnings": 0,
+  "profile": "estimated, source 2202 except catalog ratings",
+  "run_on_target": false,
+  "installed": false,
+  "hardware_commands": 0,
+  "present": "ST LSO, R3_2 and Break; 5 s, 300 ms link, 1.35 A, 4000 cycles, 2 ms ADC limits",
+  "field_supervision": "16 ms mean field rate, speed reference plus 0.75 Hz",
+  "current_pairs_checked": 21169201,
+  "PC_model": {
+    "nominal": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5143301827566964,
+      "rpm": 305.7516983091873,
+      "rpm_estimated": 305.830951690147,
+      "field_frequency_Hz": 5.183679351975745
+    },
+    "Rs_plus20": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5402366913455025,
+      "rpm": 326.57657713199995,
+      "rpm_estimated": 300.2116655707432,
+      "field_frequency_Hz": 5.532521212296038
+    },
+    "Rr_plus20": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.5167279924665178,
+      "rpm": 304.42207334104654,
+      "rpm_estimated": 305.76628961142785,
+      "field_frequency_Hz": 5.182715424847331
+    },
+    "shunt_plus5": {
+      "completed": true,
+      "stop_ms": 5000,
+      "magnetized_ms": 22.0,
+      "peak_current_A": 0.513730730329241,
+      "rpm": 303.06846445774715,
+      "rpm_estimated": 305.97965193105614,
+      "field_frequency_Hz": 5.14912739375368
+    }
+  },
+  "preserved_files_verified": 1894,
+  "serial": "Motor Pilot ASPEP over circular DMA on USART2 at 1843200, verified in CPU emulator",
+  "old_NIS_policy": "Archived experimental EKF has threshold 25. ST LSO does not compute NIS.",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "8b0abd6624b907e2889f7660aa69a47075db73f270cd46ae2ebdc294a57b3c63",
+    "ACIM-AIR56B2-LSO_FOC.elf": "aa546371246b000b8ce1c0949f242891cba6e1e1592202e713abeb5b0eca97b2",
+    "ACIM-AIR56B2-LSO_FOC.hex": "73b00913e79c6102c2751d7e836911b1d41f53ce843509da19ccbb37c7115667"
+  },
+  "offline_candidate": "timing_aspep_PC.json"
+}

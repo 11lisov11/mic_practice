@@ -1,0 +1,35 @@
+{
+  "scope": "Read-only review of installed smooth-Vf pair2401/2402 and ST schematics; no hardware change or FOC run",
+  "hardware_commands": 0,
+  "existing_board_measurement_chain": {
+    "shunts": "Three low-side shunts R25/R26/R27, schematic nominal0.04ohm; actual assembly value not established by code",
+    "amplifiers": "External TSV994 U1A/U1B/U1C with1.65V bias, schematic gain2.1",
+    "reference_schematic": "https://www.st.com/resource/en/schematic_pack/steval-ipm15b_schematic.pdf",
+    "routing_caveat": "Board signal selectors and physical shield routing must match amplified outputs; firmware definitions alone do not establish physical switch positions"
+  },
+  "existing_software": {
+    "mode": "MAIN_VF_OL",
+    "current_driver": "R3_2 initialized, ADC1/ADC2 injected channels with TIM1_TRGO configuration",
+    "u_mapping": "PA0 / ADC1_IN1",
+    "v_mapping": "PC1 / ADC1_IN7 or ADC2_IN7, depending on sampling sector",
+    "w_mapping": "PC0 / ADC2_IN6",
+    "internal_opamps": "OPAMPParams=MC_NULL; external amplifiers intended",
+    "internal_comparators": "CompOCPA/B/CSelection=MC_NULL; not configured for phase current regulation",
+    "high_frequency_task": "Calls ACIM_VF_Controller, not a closed-loop current controller",
+    "current_telemetry": "HMI explicitly marks mc_current_telemetry_valid=0 / not_acquired_mcsdk_backend",
+    "current_reply_slots": "Existing main.c reply byte slots are used for fault diagnostics; cannot silently overwrite them with current samples",
+    "current_nominal_conversion": "At Rshunt0.04ohm and gain2.1,0.084V/A and about9.6mA per12bit ADC count before filtering; not a qualified accuracy specification"
+  },
+  "needed_work": [
+    "Verify selected analog routes and actual current conversion scale, zero bias, polarity, phase ordering and saturation",
+    "Implement valid current sampling windows synchronized to PWM; low-side shunt readings cannot be polled arbitrarily",
+    "Export timestamped RMS/peak current and validity; identify reconstructed current rather than treating it as an independent sample",
+    "Store current context before first SD/UART stop without blocking the high-frequency task; decimate/buffer telemetry to avoid loading UART",
+    "Identify actual AIR56B2 ACIM model: Rs,Rr,Lls,Llr,Lm and magnetizing current, with correct delta to controller-model conventions",
+    "Integrate official MCSDK ACIM LSO-FOC current PI loops, flux observer and startup state machine while retaining existing localSTOP,BKIN,watchdogs and no-auto-restart behavior",
+    "Check existing generate-LSO scripts before reuse: they start from an older reference project and do not automatically retain all installed October24 UART/SD fixes"
+  ],
+  "motor_parameter_evidence": "docs/mcsdk_acim_motor_profile.template.json remains unfilled; catalog profile is a V/f candidate, not measured FOC data",
+  "recommended_next_stage": "Qualify current acquisition first while retaining corrected scalar control; do not switch to FOC solely because comparators are present",
+  "physical_status_not_reconfirmed": "Last observed DC bus after no-motor run323V; no subsequent off/discharge confirmation. No flash or wiring actions performed."
+}

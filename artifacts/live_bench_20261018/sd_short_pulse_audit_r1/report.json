@@ -1,0 +1,18 @@
+{
+  "recorder": {
+    "pass": true,
+    "cases": 8387,
+    "constant_high_phases": 8192,
+    "observed_wave_replays": 65,
+    "long_pulse_replays": 130
+  },
+  "wrong_bit_negative_control_detected": true,
+  "exact_installed_recorder_source": true,
+  "hardware_commands": 0,
+  "conclusion": "Changing adjacent GPIO bits does not create LOW on PA6 in actual C processing; recorded runs replay identically, and 24/70-us synthetic pulses do not compress to 0.4 us.",
+  "limitations": [
+    "Mocked DMA is supplied correct input words; this does not qualify real DMA service timing or prove analog GPIO integrity.",
+    "No hardware fault source has been uniquely identified."
+  ],
+  "pass": true
+}

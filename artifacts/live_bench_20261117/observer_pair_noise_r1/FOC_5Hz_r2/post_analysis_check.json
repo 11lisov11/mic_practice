@@ -1,0 +1,30 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "purpose": "Fresh post-analysis outputs-off check only",
+  "available": true,
+  "state": "SAFE",
+  "pwm": 0,
+  "HV_arm": 0,
+  "run_elapsed_ms": 5000,
+  "mc_age_ms": 48,
+  "rpc_response_timeouts": 209,
+  "rpc_send_timeouts": 0,
+  "fault": 0,
+  "current": 0,
+  "occurred": 0,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 48,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "off_confirmed": true
+}

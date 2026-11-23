@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "pair": [
+    2026112301,
+    2026112302
+  ],
+  "installed": false,
+  "hardware_commands": 0,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "preserved_files": 1944,
+  "OFF_emulated_cases": 64,
+  "OFF_instructions_baseline_max": 579,
+  "OFF_instructions_capture_max": 696,
+  "OFF_LSO_max_instructions": 209,
+  "actual_target_DWT_pending": true,
+  "ccm_bytes": 5456,
+  "remaining_ram_before_stack": 3264,
+  "host_capture_samples": 80000,
+  "host_capture_windows": 500,
+  "Uno_capabilities_and_HMI_verified": true,
+  "web_hmi_sha256": "9332d558501ff175f47562b05015046fdfc2d2e4e4a4df6dd6cc8b1f2550bbe8",
+  "wire_921600_simulation": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "Motor_Pilot_UART2_simulation": {
+    "baud": 1843200,
+    "consecutive_version_roundtrips": 360,
+    "wire_frames": 376,
+    "motor": "IEK_AIR56B2_D_CALCULATED",
+    "wrap_test": true,
+    "max_negotiated_payload": 64,
+    "invalid_header_length_and_crc": true,
+    "partial_timeout": true,
+    "uart_overrun_recovery": true,
+    "dma_transfer_error_recovery": true,
+    "late_scheduler_recovery": true,
+    "physically_tested": false,
+    "pin_output_enabled": false
+  },
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "e397ebb480733d4e44bdd06cdb05af02573ca7165f00e6330f38a51c5ffd4b1e",
+    "ACIM-AIR56B2-LSO_FOC.elf": "aaacd7ea112c2817301c61b04d6caf43278f66027c130d73da5556c9fa036e8b",
+    "ACIM-AIR56B2-LSO_FOC.hex": "3d053d2c9447d4e591cc8ad1cc0d133ac3fa98823937bc821119bc4b8500d14e",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "7d95ad5f83da83bcefc82b3a57b36e23695e94c12ac30e545e485e7a0100fa4b"
+  }
+}

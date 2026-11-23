@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "pair": [
+    2026102811,
+    2026102812
+  ],
+  "hardware_commands": 0,
+  "flash_commands": 0,
+  "start_commands": 0,
+  "nucleo_build_errors": 0,
+  "nucleo_build_warnings": 0,
+  "nucleo_ram_growth_bytes": 80,
+  "nucleo_ram_margin_above_heap_stack": 3240,
+  "nucleo_stack_frames": {
+    "mic_i2c_wire_init": 152,
+    "mic_i2c_wire_freeze": 12,
+    "mic_i2c_wire_service": 24,
+    "mic_i2c_wire_packet": 32
+  },
+  "adc_irq_stack_bytes": 376,
+  "native_hmi_checks": 1346,
+  "native_wire_checks": 134253,
+  "unchanged_protected_files": 1512,
+  "i2c_recovery_timing_filters_unchanged": true,
+  "native_start_clear_stop_thresholds_unchanged": true,
+  "old_archives_and_installed_images_unchanged": true,
+  "uno_loader_pass": true,
+  "rpc_override_dependencies_verified": true,
+  "calibration_identity_compatible": true,
+  "waveform_crc_parent_and_epoch_tests_pass": true,
+  "known_address_nack_decoder_pass": true,
+  "nominal_sample_hz": 8500000,
+  "nominal_history_us": 481.88235294117646,
+  "hardware_validated": false,
+  "initial_pwm_i2c_fixed_or_proven": false,
+  "limitations": [
+    "GPIO sampler is digital; analog voltage/rise time and DMA jitter are not measured",
+    "481.9us is sufficient for the previously recorded address NACK but does not cover a full3ms BUSY timeout",
+    "Sampler and SD storage change need low-bus hardware qualification before another HV run",
+    "A manual frozen capture also remains immutable until MCU reset; archive before reset",
+    "Native tests model peripherals; no physical START was performed for this package"
+  ]
+}

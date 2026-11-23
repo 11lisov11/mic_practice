@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "collection_is_GET_only": true,
+  "motor_commands": 0,
+  "bytes": 1888,
+  "SHA256": "ed8372cff00e3464e6f44b2b10563232d1ac36939e0c7b82921aec97f79be593",
+  "samples": 11,
+  "total_observer_samples": 4999,
+  "valid_samples": 4500,
+  "invalid_samples": 499,
+  "first_loss": null,
+  "control_fault": 0,
+  "boot_after_collection": {
+    "identity": [
+      2026111612,
+      1,
+      201326592,
+      0,
+      4,
+      0,
+      3713711204
+    ],
+    "Linux_boot_id": "dcb72e9f-4540-4cdd-8583-e4ff551d80e4",
+    "native_tick_ms": 202035,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111612,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 3713711204,
+      "native_tick_ms": 202035,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae90101007c02c478010000000000000c00000000040000000000000064bc5add331503000055cce492"
+  }
+}

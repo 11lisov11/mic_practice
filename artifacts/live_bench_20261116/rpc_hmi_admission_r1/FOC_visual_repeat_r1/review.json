@@ -1,0 +1,110 @@
+{
+  "passed": true,
+  "START": 1,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "run_id": 2,
+  "autostop_ms": 5000,
+  "OFF4000_proof_retained_from_same_boot": true,
+  "estimate_limit_ms_unchanged": 2,
+  "old_first_trial_files_verified": 23,
+  "prior_SD_record_retained": true,
+  "physical_rotation_verified": false,
+  "new_raw_ADC_claimed": false,
+  "new_observer_trace_claimed": false,
+  "RPC_timeouts": 0,
+  "RPC_send_timeouts": 0,
+  "active_fault_mask": 0,
+  "latched_fault_mask": 0,
+  "runtime_CPU_IRQ": {
+    "available": true,
+    "observer_measured": true,
+    "source": "runtime_observer",
+    "observer_wall_us": 249.87058823529412,
+    "irq_body_lower_us": 154.75294117647059,
+    "cpu_upper_us": 95.11764705882354,
+    "irq_root_count": 8,
+    "max_wall_us": 312.54117647058825,
+    "max_irq_body_lower_us": 214.8294117647059,
+    "max_cpu_upper_us": 160.91764705882352,
+    "window_queue_us": 78.95882352941176,
+    "input_age_us": 78.95882352941176,
+    "result_age_us": 328.82941176470587,
+    "max_window_queue_us": 202.71764705882353,
+    "max_result_age_us": 453.7705882352941,
+    "observer_steps": 4964,
+    "meter_errors": 0,
+    "first_fault": null,
+    "IRQ_breakdown": {
+      "available": true,
+      "scope": "last_completed_observer_window",
+      "window_us": 249.87058823529412,
+      "valid_mask": 511,
+      "handlers": [
+        {
+          "name": "DMA2_BKIN",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "DMA1_UART_TX",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART1_CONTROL",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "ADC1_2",
+          "valid": true,
+          "completed_calls": 4,
+          "inclusive_body_us": 40.39411764705882
+        },
+        {
+          "name": "TIM1_UPDATE",
+          "valid": true,
+          "completed_calls": 4,
+          "inclusive_body_us": 114.35882352941177
+        },
+        {
+          "name": "TIM1_BREAK",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART2_MCSDK",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "SysTick",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "EXTI_STOP",
+          "valid": true,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        }
+      ],
+      "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+    },
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "nominal_RMS_last_window_A": [
+    0.357,
+    0.371,
+    0.364
+  ],
+  "note": "Visual repeat only. Frozen/raw records are not assumed new. No firmware or device resets, no CLEAR; live protection guards retained."
+}

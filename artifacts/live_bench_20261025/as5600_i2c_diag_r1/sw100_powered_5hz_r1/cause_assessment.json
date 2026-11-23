@@ -1,0 +1,41 @@
+{
+  "passed_drive_trial": true,
+  "frequency_reference_reached_hz": 5.0,
+  "physical_rotation_confirmed": false,
+  "motor_start_commands": 1,
+  "in_trial_clear_commands": 0,
+  "separately_authorized_prestart_clear_commands": 1,
+  "outputs_off_confirmed": true,
+  "mode": "SW100",
+  "native_i2c_controller_used_for_sensor": false,
+  "total_transfer_error_delta": 68,
+  "observed_active_bus_ok_snapshots": 0,
+  "active_read_counter_constant": true,
+  "observed_error_stage": "ADDRESS_WRITE: address0x36/write byte0x6c ACK sampled HIGH",
+  "observed_cause_code": 2,
+  "observed_stage_code": 4,
+  "captured_failed_transfer_duration_us_range": [
+    272,
+    290
+  ],
+  "post_stop_successful_read_delta": 1268,
+  "post_stop_error_delta": 0,
+  "sd_snapshot_preserved": true,
+  "sd_snapshot_sha256": "1a80672982a2cc8bdefc2a6b17756ca6501106e1377db48de312e98896ee2060",
+  "drive_faults_after": 0,
+  "drive_masks_after": [
+    0,
+    0
+  ],
+  "interpretation": "Native I2C peripheral/driver is not necessary for this failure. With PWM active, software master sees missing address ACK. Electrical interference/supply/reference or slave-side behavior needs verification.",
+  "physical_cause_proven": false,
+  "not_proven": [
+    "Sensor silicon defect",
+    "Sensor actually generated no ACK versus corrupted ACK at MCU",
+    "VCC brownout",
+    "Ground bounce",
+    "Pull-up value",
+    "Common cause with pre-START SD pulse",
+    "Timing/pin state while PWM active electrically qualified"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "mic_ai.powered_trial.v1",
+  "pair": [
+    2026101007,
+    2026101006
+  ],
+  "images": {
+    "production_uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479"
+  },
+  "cases": {
+    "carrier_5": true,
+    "carrier_20": true,
+    "STOP": true,
+    "ESTOP": true,
+    "FREQ_ZERO": true,
+    "RUNLIMIT": true,
+    "ACTIVE_RPC": true,
+    "TIM1_BREAK": true
+  },
+  "normal_restore_verified": true,
+  "offline_pass": true,
+  "offline_suites": 40,
+  "idle_wifi_pass": true,
+  "physical_idle_pass": true,
+  "hv_release_approved": false,
+  "issued_at": 1791658274.5044398,
+  "expires_at": 1791661874.5044398,
+  "evidence_sha256": {
+    "pwm": "9d9db2573654d0d17b05c9a9b26bdecbe5897ef4cc43f47f806a3e71eae5949b",
+    "offline": "86c55c45328c068bc521c22382104bda029f9672c14bdea7f4645e658f80de71",
+    "idle_wifi": "49e845a5dbf68152c7e806576a3fdd5d0a5a26b1db73a6ad0b4f3ee053ebc167",
+    "physical_idle": "a3ab5efd1f9c02beef46ebac5b35a58e295efcab1cb800880ef266ef1fb37292"
+  }
+}

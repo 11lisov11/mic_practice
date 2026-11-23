@@ -1,0 +1,29 @@
+{
+  "prepared": true,
+  "waiting_for_physical_fresh_capture": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "pair": [
+    2026103011,
+    2026103012
+  ],
+  "user_requested_one_repeat": true,
+  "current_PWM": 0,
+  "current_Vbus_controller_V": 322.0,
+  "supervisor_run_id": 1,
+  "retained_host_ESTOP": true,
+  "old_ADC_capture_frozen": true,
+  "old_ADC_sha256": "ecc7e416af318464f23d3ad6de4a5996670cd3c502816f0695e70969f8878c15",
+  "old_files_verified": 1608,
+  "offline_retry_validation": "verification/saved_retry_fix_r1/report.json",
+  "next_physical_step": "J1 OFF, meter below20V, one B2 RESET on Nucleo. Leave15V,Uno,powerbanks,wiring unchanged. J1 staysOFF pending fresh epoch/zero/SD checks.",
+  "no_new_firmware_needed": true,
+  "next_trial_command": "tools/run_foc_observer_schedule_trial.py --confirm-autonomous-powered --clear-once --saved-previous-trial artifacts/live_bench_20261029/foc_observer_schedule_fix_r1/powered_FOC_schedule_20261030_r1 --outdir artifacts/live_bench_20261029/foc_observer_schedule_fix_r1/powered_FOC_schedule_20261030_r2",
+  "trial_command_requires_new_powered_confirmation_after_fresh_epoch": true,
+  "ADC_new_payload_CRC_firmware_and_epoch_checked": true,
+  "START_requires_fresh_OFF64_timing_and_autozero": true,
+  "protections_and_firmware_unchanged": true
+}

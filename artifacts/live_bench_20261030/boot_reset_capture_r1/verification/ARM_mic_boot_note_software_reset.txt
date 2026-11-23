@@ -1,0 +1,306 @@
+
+C:\mic_practice\artifacts\live_bench_20261030\boot_reset_capture_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08012970 <mic_boot_note_software_reset>:
+ 8012970:	490a      	ldr	r1, [pc, #40]	@ (801299c <mic_boot_note_software_reset+0x2c>)
+ 8012972:	4b0b      	ldr	r3, [pc, #44]	@ (80129a0 <mic_boot_note_software_reset+0x30>)
+ 8012974:	680a      	ldr	r2, [r1, #0]
+ 8012976:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 801297a:	429a      	cmp	r2, r3
+ 801297c:	f8d1 e004 	ldr.w	lr, [r1, #4]
+ 8012980:	688d      	ldr	r5, [r1, #8]
+ 8012982:	68cf      	ldr	r7, [r1, #12]
+ 8012984:	690e      	ldr	r6, [r1, #16]
+ 8012986:	694c      	ldr	r4, [r1, #20]
+ 8012988:	f8d1 8018 	ldr.w	r8, [r1, #24]
+ 801298c:	f8d1 c01c 	ldr.w	ip, [r1, #28]
+ 8012990:	b089      	sub	sp, #36	@ 0x24
+ 8012992:	d007      	beq.n	80129a4 <mic_boot_note_software_reset+0x34>
+ 8012994:	b009      	add	sp, #36	@ 0x24
+ 8012996:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 801299a:	bf00      	nop
+ 801299c:	20006920 	.word	0x20006920
+ 80129a0:	31525442 	.word	0x31525442
+ 80129a4:	f103 438e 	add.w	r3, r3, #1191182336	@ 0x47000000
+ 80129a8:	f503 03e3 	add.w	r3, r3, #7438336	@ 0x718000
+ 80129ac:	f603 43a4 	addw	r3, r3, #3236	@ 0xca4
+ 80129b0:	459e      	cmp	lr, r3
+ 80129b2:	d1ef      	bne.n	8012994 <mic_boot_note_software_reset+0x24>
+ 80129b4:	2d00      	cmp	r5, #0
+ 80129b6:	d0ed      	beq.n	8012994 <mic_boot_note_software_reset+0x24>
+ 80129b8:	2c0f      	cmp	r4, #15
+ 80129ba:	d8eb      	bhi.n	8012994 <mic_boot_note_software_reset+0x24>
+ 80129bc:	f20f 3bb0 	addw	fp, pc, #944	@ 0x3b0
+ 80129c0:	e9db ab00 	ldrd	sl, fp, [fp]
+ 80129c4:	e9cd 5702 	strd	r5, r7, [sp, #8]
+ 80129c8:	e9cd 6404 	strd	r6, r4, [sp, #16]
+ 80129cc:	e9cd ab00 	strd	sl, fp, [sp]
+ 80129d0:	4be9      	ldr	r3, [pc, #932]	@ (8012d78 <mic_boot_note_software_reset+0x408>)
+ 80129d2:	f8cd 8018 	str.w	r8, [sp, #24]
+ 80129d6:	f1ad 0904 	sub.w	r9, sp, #4
+ 80129da:	f10d 0e18 	add.w	lr, sp, #24
+ 80129de:	f04f 32ff 	mov.w	r2, #4294967295
+ 80129e2:	f859 8f04 	ldr.w	r8, [r9, #4]!
+ 80129e6:	fa5f fa88 	uxtb.w	sl, r8
+ 80129ea:	ea8a 0202 	eor.w	r2, sl, r2
+ 80129ee:	f342 0a00 	sbfx	sl, r2, #0, #1
+ 80129f2:	ea0a 0a03 	and.w	sl, sl, r3
+ 80129f6:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 80129fa:	f342 0240 	sbfx	r2, r2, #1, #1
+ 80129fe:	401a      	ands	r2, r3
+ 8012a00:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012a04:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012a08:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012a0c:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012a10:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012a14:	401a      	ands	r2, r3
+ 8012a16:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012a1a:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012a1e:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012a22:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012a26:	f342 0b40 	sbfx	fp, r2, #1, #1
+ 8012a2a:	ea0b 0b03 	and.w	fp, fp, r3
+ 8012a2e:	f34a 0240 	sbfx	r2, sl, #1, #1
+ 8012a32:	ea8b 0b5a 	eor.w	fp, fp, sl, lsr #1
+ 8012a36:	401a      	ands	r2, r3
+ 8012a38:	ea82 025b 	eor.w	r2, r2, fp, lsr #1
+ 8012a3c:	ea4f 0b52 	mov.w	fp, r2, lsr #1
+ 8012a40:	f3c8 2a07 	ubfx	sl, r8, #8, #8
+ 8012a44:	f012 0201 	ands.w	r2, r2, #1
+ 8012a48:	bf18      	it	ne
+ 8012a4a:	461a      	movne	r2, r3
+ 8012a4c:	ea8a 0a0b 	eor.w	sl, sl, fp
+ 8012a50:	ea8a 0a02 	eor.w	sl, sl, r2
+ 8012a54:	f34a 0200 	sbfx	r2, sl, #0, #1
+ 8012a58:	401a      	ands	r2, r3
+ 8012a5a:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012a5e:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012a62:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012a66:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012a6a:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012a6e:	401a      	ands	r2, r3
+ 8012a70:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012a74:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012a78:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012a7c:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012a80:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012a84:	401a      	ands	r2, r3
+ 8012a86:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012a8a:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012a8e:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012a92:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012a96:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012a9a:	401a      	ands	r2, r3
+ 8012a9c:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012aa0:	ea4f 0b52 	mov.w	fp, r2, lsr #1
+ 8012aa4:	f3c8 4a07 	ubfx	sl, r8, #16, #8
+ 8012aa8:	f012 0201 	ands.w	r2, r2, #1
+ 8012aac:	bf18      	it	ne
+ 8012aae:	461a      	movne	r2, r3
+ 8012ab0:	ea8a 0a0b 	eor.w	sl, sl, fp
+ 8012ab4:	ea8a 0a02 	eor.w	sl, sl, r2
+ 8012ab8:	f34a 0200 	sbfx	r2, sl, #0, #1
+ 8012abc:	401a      	ands	r2, r3
+ 8012abe:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012ac2:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012ac6:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012aca:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012ace:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012ad2:	401a      	ands	r2, r3
+ 8012ad4:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012ad8:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012adc:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012ae0:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012ae4:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012ae8:	401a      	ands	r2, r3
+ 8012aea:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012aee:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012af2:	ea0a 0a03 	and.w	sl, sl, r3
+ 8012af6:	ea8a 0a52 	eor.w	sl, sl, r2, lsr #1
+ 8012afa:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012afe:	401a      	ands	r2, r3
+ 8012b00:	ea82 025a 	eor.w	r2, r2, sl, lsr #1
+ 8012b04:	ea4f 0a52 	mov.w	sl, r2, lsr #1
+ 8012b08:	f012 0201 	ands.w	r2, r2, #1
+ 8012b0c:	bf18      	it	ne
+ 8012b0e:	461a      	movne	r2, r3
+ 8012b10:	ea8a 6818 	eor.w	r8, sl, r8, lsr #24
+ 8012b14:	ea88 0202 	eor.w	r2, r8, r2
+ 8012b18:	f342 0800 	sbfx	r8, r2, #0, #1
+ 8012b1c:	ea08 0803 	and.w	r8, r8, r3
+ 8012b20:	ea88 0852 	eor.w	r8, r8, r2, lsr #1
+ 8012b24:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012b28:	401a      	ands	r2, r3
+ 8012b2a:	ea82 0258 	eor.w	r2, r2, r8, lsr #1
+ 8012b2e:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012b32:	ea08 0803 	and.w	r8, r8, r3
+ 8012b36:	ea88 0852 	eor.w	r8, r8, r2, lsr #1
+ 8012b3a:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012b3e:	401a      	ands	r2, r3
+ 8012b40:	ea82 0258 	eor.w	r2, r2, r8, lsr #1
+ 8012b44:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012b48:	ea08 0803 	and.w	r8, r8, r3
+ 8012b4c:	ea88 0852 	eor.w	r8, r8, r2, lsr #1
+ 8012b50:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012b54:	401a      	ands	r2, r3
+ 8012b56:	ea82 0258 	eor.w	r2, r2, r8, lsr #1
+ 8012b5a:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012b5e:	ea08 0803 	and.w	r8, r8, r3
+ 8012b62:	ea88 0852 	eor.w	r8, r8, r2, lsr #1
+ 8012b66:	f342 0240 	sbfx	r2, r2, #1, #1
+ 8012b6a:	401a      	ands	r2, r3
+ 8012b6c:	45ce      	cmp	lr, r9
+ 8012b6e:	ea82 0258 	eor.w	r2, r2, r8, lsr #1
+ 8012b72:	f47f af36 	bne.w	80129e2 <mic_boot_note_software_reset+0x72>
+ 8012b76:	43d2      	mvns	r2, r2
+ 8012b78:	4594      	cmp	ip, r2
+ 8012b7a:	f47f af0b 	bne.w	8012994 <mic_boot_note_software_reset+0x24>
+ 8012b7e:	f20f 19f0 	addw	r9, pc, #496	@ 0x1f0
+ 8012b82:	e9d9 8900 	ldrd	r8, r9, [r9]
+ 8012b86:	f044 0408 	orr.w	r4, r4, #8
+ 8012b8a:	e9cd 5702 	strd	r5, r7, [sp, #8]
+ 8012b8e:	e9cd 6404 	strd	r6, r4, [sp, #16]
+ 8012b92:	e9cd 8900 	strd	r8, r9, [sp]
+ 8012b96:	4a78      	ldr	r2, [pc, #480]	@ (8012d78 <mic_boot_note_software_reset+0x408>)
+ 8012b98:	9006      	str	r0, [sp, #24]
+ 8012b9a:	f1ad 0c04 	sub.w	ip, sp, #4
+ 8012b9e:	f04f 33ff 	mov.w	r3, #4294967295
+ 8012ba2:	f85c 9f04 	ldr.w	r9, [ip, #4]!
+ 8012ba6:	fa5f f889 	uxtb.w	r8, r9
+ 8012baa:	ea88 0803 	eor.w	r8, r8, r3
+ 8012bae:	f348 0300 	sbfx	r3, r8, #0, #1
+ 8012bb2:	4013      	ands	r3, r2
+ 8012bb4:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012bb8:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012bbc:	ea08 0802 	and.w	r8, r8, r2
+ 8012bc0:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012bc4:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012bc8:	4013      	ands	r3, r2
+ 8012bca:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012bce:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012bd2:	ea08 0802 	and.w	r8, r8, r2
+ 8012bd6:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012bda:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012bde:	4013      	ands	r3, r2
+ 8012be0:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012be4:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012be8:	ea08 0802 	and.w	r8, r8, r2
+ 8012bec:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012bf0:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012bf4:	4013      	ands	r3, r2
+ 8012bf6:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012bfa:	ea4f 0a53 	mov.w	sl, r3, lsr #1
+ 8012bfe:	f3c9 2807 	ubfx	r8, r9, #8, #8
+ 8012c02:	f013 0301 	ands.w	r3, r3, #1
+ 8012c06:	ea88 080a 	eor.w	r8, r8, sl
+ 8012c0a:	bf18      	it	ne
+ 8012c0c:	4613      	movne	r3, r2
+ 8012c0e:	ea88 0303 	eor.w	r3, r8, r3
+ 8012c12:	f343 0800 	sbfx	r8, r3, #0, #1
+ 8012c16:	ea08 0802 	and.w	r8, r8, r2
+ 8012c1a:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012c1e:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012c22:	f348 0a40 	sbfx	sl, r8, #1, #1
+ 8012c26:	4013      	ands	r3, r2
+ 8012c28:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012c2c:	ea0a 0a02 	and.w	sl, sl, r2
+ 8012c30:	ea8a 0a53 	eor.w	sl, sl, r3, lsr #1
+ 8012c34:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012c38:	ea03 0802 	and.w	r8, r3, r2
+ 8012c3c:	f34a 0340 	sbfx	r3, sl, #1, #1
+ 8012c40:	ea88 085a 	eor.w	r8, r8, sl, lsr #1
+ 8012c44:	4013      	ands	r3, r2
+ 8012c46:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012c4a:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012c4e:	ea08 0802 	and.w	r8, r8, r2
+ 8012c52:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012c56:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012c5a:	4013      	ands	r3, r2
+ 8012c5c:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012c60:	ea4f 0a53 	mov.w	sl, r3, lsr #1
+ 8012c64:	f3c9 4807 	ubfx	r8, r9, #16, #8
+ 8012c68:	f013 0301 	ands.w	r3, r3, #1
+ 8012c6c:	ea88 080a 	eor.w	r8, r8, sl
+ 8012c70:	bf18      	it	ne
+ 8012c72:	4613      	movne	r3, r2
+ 8012c74:	ea88 0303 	eor.w	r3, r8, r3
+ 8012c78:	f343 0800 	sbfx	r8, r3, #0, #1
+ 8012c7c:	ea08 0802 	and.w	r8, r8, r2
+ 8012c80:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012c84:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012c88:	f348 0a40 	sbfx	sl, r8, #1, #1
+ 8012c8c:	4013      	ands	r3, r2
+ 8012c8e:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012c92:	ea0a 0a02 	and.w	sl, sl, r2
+ 8012c96:	ea8a 0a53 	eor.w	sl, sl, r3, lsr #1
+ 8012c9a:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012c9e:	ea03 0802 	and.w	r8, r3, r2
+ 8012ca2:	f34a 0340 	sbfx	r3, sl, #1, #1
+ 8012ca6:	ea88 085a 	eor.w	r8, r8, sl, lsr #1
+ 8012caa:	4013      	ands	r3, r2
+ 8012cac:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012cb0:	f348 0a40 	sbfx	sl, r8, #1, #1
+ 8012cb4:	ea0a 0a02 	and.w	sl, sl, r2
+ 8012cb8:	f343 0840 	sbfx	r8, r3, #1, #1
+ 8012cbc:	ea8a 0a53 	eor.w	sl, sl, r3, lsr #1
+ 8012cc0:	ea08 0802 	and.w	r8, r8, r2
+ 8012cc4:	ea88 085a 	eor.w	r8, r8, sl, lsr #1
+ 8012cc8:	ea4f 0358 	mov.w	r3, r8, lsr #1
+ 8012ccc:	f018 0801 	ands.w	r8, r8, #1
+ 8012cd0:	bf18      	it	ne
+ 8012cd2:	4690      	movne	r8, r2
+ 8012cd4:	ea83 6319 	eor.w	r3, r3, r9, lsr #24
+ 8012cd8:	ea83 0308 	eor.w	r3, r3, r8
+ 8012cdc:	f343 0800 	sbfx	r8, r3, #0, #1
+ 8012ce0:	ea08 0802 	and.w	r8, r8, r2
+ 8012ce4:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012ce8:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012cec:	4013      	ands	r3, r2
+ 8012cee:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012cf2:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012cf6:	ea08 0802 	and.w	r8, r8, r2
+ 8012cfa:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012cfe:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012d02:	4013      	ands	r3, r2
+ 8012d04:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012d08:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012d0c:	ea08 0802 	and.w	r8, r8, r2
+ 8012d10:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012d14:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012d18:	4013      	ands	r3, r2
+ 8012d1a:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012d1e:	f348 0840 	sbfx	r8, r8, #1, #1
+ 8012d22:	ea08 0802 	and.w	r8, r8, r2
+ 8012d26:	ea88 0853 	eor.w	r8, r8, r3, lsr #1
+ 8012d2a:	f343 0340 	sbfx	r3, r3, #1, #1
+ 8012d2e:	4013      	ands	r3, r2
+ 8012d30:	45e6      	cmp	lr, ip
+ 8012d32:	ea83 0358 	eor.w	r3, r3, r8, lsr #1
+ 8012d36:	f47f af34 	bne.w	8012ba2 <mic_boot_note_software_reset+0x232>
+ 8012d3a:	2200      	movs	r2, #0
+ 8012d3c:	43db      	mvns	r3, r3
+ 8012d3e:	61ca      	str	r2, [r1, #28]
+ 8012d40:	f3bf 8f5f 	dmb	sy
+ 8012d44:	4a0d      	ldr	r2, [pc, #52]	@ (8012d7c <mic_boot_note_software_reset+0x40c>)
+ 8012d46:	600a      	str	r2, [r1, #0]
+ 8012d48:	f102 428e 	add.w	r2, r2, #1191182336	@ 0x47000000
+ 8012d4c:	f502 02e3 	add.w	r2, r2, #7438336	@ 0x718000
+ 8012d50:	f602 42a4 	addw	r2, r2, #3236	@ 0xca4
+ 8012d54:	604a      	str	r2, [r1, #4]
+ 8012d56:	608d      	str	r5, [r1, #8]
+ 8012d58:	60cf      	str	r7, [r1, #12]
+ 8012d5a:	610e      	str	r6, [r1, #16]
+ 8012d5c:	614c      	str	r4, [r1, #20]
+ 8012d5e:	6188      	str	r0, [r1, #24]
+ 8012d60:	f3bf 8f5f 	dmb	sy
+ 8012d64:	61cb      	str	r3, [r1, #28]
+ 8012d66:	f3bf 8f5f 	dmb	sy
+ 8012d6a:	b009      	add	sp, #36	@ 0x24
+ 8012d6c:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 8012d70:	31525442 	.word	0x31525442
+ 8012d74:	78c3e0e6 	.word	0x78c3e0e6
+ 8012d78:	82f63b78 	.word	0x82f63b78
+ 8012d7c:	31525442 	.word	0x31525442

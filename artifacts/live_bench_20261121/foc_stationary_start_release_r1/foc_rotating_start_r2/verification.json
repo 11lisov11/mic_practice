@@ -1,0 +1,147 @@
+{
+  "passed": true,
+  "checks": {
+    "nominal_reached_5Hz_with_handover": true,
+    "rotating_current_reaches_5Hz_without_using_bad_speed": true,
+    "field_rate_guard_stops_model_overspeed": true,
+    "NIS_25_stops": true,
+    "NIS_just_below_25_is_accepted": true,
+    "raw_current_trip": true,
+    "estimate_age_trip": true
+  },
+  "nominal": {
+    "completed_5s": true,
+    "PWM_duration_s": 5.00002936,
+    "frames": 80009,
+    "observer_calls": 5000,
+    "fault": 0,
+    "reason": 0,
+    "peak_plant_A": 0.510762236,
+    "rpm_true_end": 300.379322,
+    "rpm_est_end": 300.054235,
+    "speed_RMSE_after1s_rpm": 0.342310689,
+    "native_valid_fraction_after1s": 1,
+    "peak_NIS": 0.468332946,
+    "prequalification_Iq_ref_max_A": 0,
+    "first_torque_step": 643,
+    "maximum_reference_Hz": 5,
+    "peak_hold_speed_error_rpm": 6.5176237,
+    "handover_step": 642,
+    "maximum_plant_rpm": 306.517624
+  },
+  "unavailable": {
+    "stationary": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.512393339,
+      "rpm_true_end": 0,
+      "rpm_est_end": 0,
+      "speed_RMSE_after1s_rpm": 0,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 0.51125592,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 0,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 300,
+      "handover_step": 0,
+      "maximum_plant_rpm": 0
+    },
+    "I_f": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.510722666,
+      "rpm_true_end": 294.896854,
+      "rpm_est_end": 294.402482,
+      "speed_RMSE_after1s_rpm": 0.38547131,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 0.468332946,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 0,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 12.1626869,
+      "handover_step": 0,
+      "maximum_plant_rpm": 300.058333
+    }
+  },
+  "model_voltage_error_overspeed_test": {
+    "stationary": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.515291819,
+      "rpm_true_end": 561.007798,
+      "rpm_est_end": 582.912932,
+      "speed_RMSE_after1s_rpm": 23.2376061,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 14.1462965,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 500,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 261.777138,
+      "handover_step": 500,
+      "maximum_plant_rpm": 561.777138
+    },
+    "I_f": {
+      "completed_5s": false,
+      "PWM_duration_s": 1.21752509,
+      "frames": 19483,
+      "observer_calls": 1217,
+      "fault": 5,
+      "reason": 8,
+      "peak_plant_A": 0.530130702,
+      "rpm_true_end": 264.814356,
+      "rpm_est_end": 323.423482,
+      "speed_RMSE_after1s_rpm": 84.0179959,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 14.4379654,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 0,
+      "maximum_reference_Hz": 3.87255192,
+      "peak_hold_speed_error_rpm": 0,
+      "handover_step": 1204,
+      "maximum_plant_rpm": 264.651538
+    }
+  },
+  "archive_files_verified": 1288,
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        7824,
+        8320
+      ],
+      "ma_native_service": [
+        7768,
+        8380
+      ],
+      "ma_native_profile_tick": [
+        3464,
+        3568
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2
+  },
+  "hardware_commands": 0,
+  "history_read_only_RPC": true,
+  "observed_early_NIS_step": 12,
+  "NIS_trip": 25,
+  "OFF_cycles_limit": 4000,
+  "estimate_age_ms": 2
+}

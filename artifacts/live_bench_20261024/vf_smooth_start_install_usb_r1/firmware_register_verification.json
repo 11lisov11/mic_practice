@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "motor_commands": 0,
+  "commands": [
+    {
+      "label": "fresh_nucleo_flash_read",
+      "exit_code": 0
+    },
+    {
+      "label": "fresh_tim1_read",
+      "exit_code": 0
+    },
+    {
+      "label": "fresh_gpioa_read",
+      "exit_code": 0
+    }
+  ],
+  "nucleo_image_matches": true,
+  "nucleo_verified_bytes": 57888,
+  "pwm_output_enabled": false,
+  "break_enabled": true,
+  "bkin_filter": 9,
+  "automatic_restart": false,
+  "pa4_input_nopull": true,
+  "rpc_verified": false
+}

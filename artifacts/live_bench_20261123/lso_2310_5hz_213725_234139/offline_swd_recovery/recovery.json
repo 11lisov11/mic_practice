@@ -1,0 +1,33 @@
+{
+  "mode": "SWD HotPlug read only",
+  "reset_requested": false,
+  "last_capture_recovered": false,
+  "before": {
+    "bus_V": 9.2421875,
+    "scale": 416,
+    "tick": 34391,
+    "PWM": false,
+    "break_enabled": true
+  },
+  "after": {
+    "bus_V": 9.2421875,
+    "scale": 416,
+    "tick": 36504,
+    "PWM": false,
+    "break_enabled": true
+  },
+  "RAM_sha256": "3f8956108e5466c1adc373f21e8a723b3807825b556b11f9ee7cc1b415312846",
+  "CCMRAM_sha256": "c4ac9e62c48cdd9b2d183c772dafd0cb60a9f04826576553a0540c558ad18c99",
+  "found_trace": {
+    "magic": "0x0",
+    "active": 0,
+    "rows": 1,
+    "start_ms": 0,
+    "end_ms": 0
+  },
+  "expected_header": {
+    "start_ms": 4814189,
+    "rows": 20
+  },
+  "reason": "The old application is running, but its volatile capture buffer is empty after USB power transfer."
+}

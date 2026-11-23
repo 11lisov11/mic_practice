@@ -1,0 +1,26 @@
+{
+  "schema": "mic_ai.powered_i2c_capture_preflight.v1",
+  "passed": false,
+  "operator_reported_powerbanks_pc_saleae_disconnected_j4_j1_on": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "firmware_writes": 0,
+  "mcu_reset_commands": 0,
+  "owned_hmi_restart_commands": 1,
+  "wifi_linux_reachable": true,
+  "status_available": false,
+  "protection_state_independently_confirmed": false,
+  "direct_router_get_response": false,
+  "first_pwm_fault_captured": false,
+  "error": "WiFi HMI status and independent direct RouterClient get time out after autonomous cold boot; no START sent",
+  "evidence": [
+    "connection_errors.json",
+    "wifi_service_probe.log",
+    "hmi_reconnect.log",
+    "after_hmi_reconnect.json",
+    "router_diagnostics.log",
+    "direct_router_get.log"
+  ],
+  "next_step": "J1 off; DMM below20V before connecting onlyUno USBPC; Nucleo powerbank/J4 unchanged. Diagnose and fix autonomous RPC startup before another powered test."
+}

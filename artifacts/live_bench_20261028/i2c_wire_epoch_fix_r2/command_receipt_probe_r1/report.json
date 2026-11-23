@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "START_commands": 0,
+  "CLEAR_commands": 0,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "commands": [],
+  "unknown_command": {
+    "http": 500,
+    "body": {
+      "ok": false,
+      "error": "rejected"
+    },
+    "expected_native_result": false,
+    "side_effects": "unknown parser branch; no hardware/control action"
+  },
+  "set_parameter": {
+    "http": 200,
+    "body": {
+      "ok": true
+    }
+  },
+  "observed_accel_after": 4.0,
+  "parameter_received": true,
+  "restore_parameter": {
+    "http": 200,
+    "body": {
+      "ok": true
+    }
+  },
+  "parameter_restored": true,
+  "outputs_off": true,
+  "accel_original": 5.0,
+  "accel_final": 5.0
+}

@@ -173,7 +173,7 @@ def source_errors(
         (r"USE_NUCLEO_UART_FALLBACK\s*=\s*true", "uno_uart_bridge_disabled"),
         (r"BP_VER\s*=\s*0x02", "uno_protocol_version_not_v2"),
         (r"RPC_SCHEMA_VERSION\s*=\s*3U", "uno_rpc_schema_not_v3"),
-        (r"FW_BUILD_ID\s*=\s*2026100804U", "uno_build_identity_mismatch"),
+        (r"FW_BUILD_ID\s*=\s*2026101002U", "uno_build_identity_mismatch"),
         (r"mp_tx_array\(91\)", "uno_rpc_diagnostic_extension_missing"),
         (r"MC_TELEMETRY_FLAG_FW_BUILD_VALID\s*=\s*0x10", "uno_nucleo_build_flag_missing"),
         (r"g_bp_fw_build\s*=\s*\(uint32_t\)rx\[23\]", "uno_nucleo_build_decode_missing"),

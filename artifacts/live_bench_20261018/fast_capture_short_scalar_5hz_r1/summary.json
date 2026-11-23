@@ -1,0 +1,48 @@
+{
+  "pass": false,
+  "run_start_stop_completed": true,
+  "physical_rotation_confirmed": true,
+  "target_hz": 5,
+  "active_field_reference_samples_hz": [
+    1.4,
+    3.0,
+    4.5
+  ],
+  "target_hold_confirmed": false,
+  "active_bus_range_v": [
+    319.0,
+    319.0
+  ],
+  "active_temperature_range_c": [
+    48.0,
+    48.0
+  ],
+  "break_recorded": false,
+  "wave_received": false,
+  "max_crc_rejects": 0,
+  "max_sequence_errors": 0,
+  "max_uart_hardware_flags": 0,
+  "uno_noise_count_before": 0,
+  "uno_noise_count_after": 0,
+  "nucleo_noise_observed_before": 0,
+  "nucleo_noise_observed_after": 1,
+  "recovered_drops_before": 0,
+  "recovered_drops_after": 1,
+  "transport_faults_max": 0,
+  "mc_fault_max": 0,
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "final_arm": 0,
+  "final_uart_age_ms": 28,
+  "automatic_stop": {
+    "http": 200,
+    "ok": true
+  },
+  "repeat_starts": 0,
+  "firmware_writes": 0,
+  "clear_commands": 0,
+  "limitations": [
+    "Field reference is not rotor speed; no qualified phase-current telemetry",
+    "5-Hz hold not verified before scheduled host STOP"
+  ]
+}

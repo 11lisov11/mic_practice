@@ -1,0 +1,26 @@
+{
+  "GET_only": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "fast_budget_cycles": 4000,
+  "fast_max_cycles": 3953,
+  "fast_within_budget": true,
+  "observer_record_unoccupied": true,
+  "first_Break_saved": true,
+  "first_Break_tick_ms": 4910,
+  "first_Break_MOE": false,
+  "first_Break_width_us": 17763.600000000002,
+  "first_Break_complete": true,
+  "repeat_capture": "WAIT_FIRST_CLEAR",
+  "break_irq_enabled": false,
+  "next_start_allowed": false,
+  "notes": "J1 OFF with UNDER_VOLT; saved Break requires explicit native CLEAR and readiness verification after HV. PA4 external wire absent: no IPM/PA6 localization from mismatch.",
+  "source_sha256": {
+    "status_samples.jsonl": "87a08b1ffac27f5ce06cdc4602ff6d4cad48b2c29e024f559133fb42c8869248",
+    "SD_trace.json": "76022a3b8b7ab4b79d8d73541f420bd854d7294a1289e3728d224b2645212dfe",
+    "SD_snapshots.json": "25d3b2d06fa523b6a084c5288f3e19a949a7f7b5148d55cd5ed5081a5085d454",
+    "report.json": "c34ef928972bd9c2720f86ef2215199d0766f8c25a1d180191a9ac5aafe9d128"
+  }
+}

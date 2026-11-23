@@ -1,0 +1,16 @@
+{
+  "passed": false,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "arm_commands": 0,
+  "commands": [
+    "MODE VF",
+    "SET RUNMODE BOUNDED",
+    "SET ACCEL 5",
+    "SET DECEL 1",
+    "SET RUNLIMIT 5",
+    "SET FREQ 5",
+    "SET ALGORITHM FOC"
+  ],
+  "error": "No FOC selection acknowledgement"
+}

@@ -1,0 +1,24 @@
+{
+  "pass": true,
+  "checks": [
+    "real saved 586-second trace remains readable",
+    "active BKIN polarity is high",
+    "saved low-only window is not called an active pulse",
+    "IRQ high is shown alongside the saved window",
+    "sample window remains explicitly 1024 samples",
+    "active-high pulse at capture edge is decoded",
+    "boundary is labeled instead of claiming exact pulse width",
+    "stale current Nucleo link still blocks passive trace display",
+    "retained D1 event stays available after five seconds",
+    "RUN context overrides the stuck start-window marker",
+    "raw marker defect stays visible for diagnosis",
+    "non-RUN startup context remains classified as startup",
+    "browser text names active-high PA6",
+    "browser text reports snapshot age and pulse limitation"
+  ],
+  "check_count": 14,
+  "hardware_commands": 0,
+  "mcu_flash_commands": 0,
+  "actuation_commands": 0,
+  "scope": "Saved-event decoder and candidate browser text; no device access"
+}

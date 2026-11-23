@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "synthetic_fixtures": true,
+  "checks": [
+    {
+      "name": "fresh exact pair can enter run preparation",
+      "passed": true
+    },
+    {
+      "name": "actual occupied 18-ms capture is rejected without CLEAR or START",
+      "passed": true
+    },
+    {
+      "name": "only known startup UV can be acknowledged once",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects mc_fault_current_mask",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects mc_fault_occurred_mask",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects mc_uart_error_flags",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects mc_age_ms",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects vdc",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects mc_fw_build",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects pwm",
+      "passed": true
+    },
+    {
+      "name": "startup acknowledgement rejects estop",
+      "passed": true
+    },
+    {
+      "name": "run preparation rejects SD level",
+      "passed": true
+    },
+    {
+      "name": "run preparation rejects SD break_irq_enabled",
+      "passed": true
+    },
+    {
+      "name": "run preparation rejects SD capture_running",
+      "passed": true
+    },
+    {
+      "name": "run preparation rejects SD first_record_ready",
+      "passed": true
+    },
+    {
+      "name": "run preparation rejects SD config_ok",
+      "passed": true
+    },
+    {
+      "name": "diagnostic range and deadline bounded",
+      "passed": true
+    }
+  ],
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "reset_commands": 0,
+  "clear_commands": 0,
+  "requested_targets_hz": [
+    5,
+    10,
+    15,
+    20,
+    25
+  ],
+  "host_deadline_s": 60,
+  "operator_watchdog_s": 3,
+  "actual_preparation_ready": false
+}

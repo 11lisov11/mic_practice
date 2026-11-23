@@ -1,0 +1,37 @@
+{
+  "pair": [
+    2026111809,
+    2026111810
+  ],
+  "built": true,
+  "installed": false,
+  "offline_acceptance_passed": true,
+  "tests": [
+    "verification/stack_and_pages_r2/report.json",
+    "verification/kernel_contract_r2/report.json",
+    "verification/Uno_RX_kernel_r1/report.json",
+    "verification/history_link_r1/report.json",
+    "verification/guard/report.json",
+    "nucleo_build_report.json"
+  ],
+  "artifacts": {
+    "release/nucleo_2026111810_expected_readback.bin": "1ecb1fd58fde65c670ac6f2009280e4049e55d7c88b511cf9fc186e1ff605b5b",
+    "release/nucleo_2026111810_stack_guard.bin": "20016295dd7208d1734e851f593355e8725087dc48dc397a048648f418e168a1",
+    "release/nucleo_2026111810_stack_guard.elf": "5fb43b0f5fd3476a68492a86096ededa770311825a74c5ddd756a0553904d86b",
+    "release/nucleo_2026111810_stack_guard.hex": "c8ae3d07aabd13268137371b9db8581f5bdf4f50962b45a50c69d05adead029b",
+    "release/uno_2026111809_stack_epoch.elf-zsk.bin": "d3c6ad5e1488dffea06062cad0b17167405adec21fb54bddf186d0164553f2ab"
+  },
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "raw_current_trip_A": 1.35,
+  "ADC_UPDATE_ticks": 2048,
+  "stack_reserve": 4096,
+  "heap_reserve": 512,
+  "scope_USART2_async_payload": 512,
+  "capture_capacities_unchanged": true,
+  "scheduler_unchanged_and_tested": true,
+  "old_records_preserved": 2461,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0
+}

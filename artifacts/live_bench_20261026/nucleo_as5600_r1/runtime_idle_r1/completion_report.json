@@ -1,0 +1,98 @@
+{
+  "schema": "mic_ai.nucleo_as5600_runtime.v1",
+  "passed": false,
+  "rpc_restored": true,
+  "runtime_pair_verified": true,
+  "pair": [
+    2026102601,
+    2026102602
+  ],
+  "source": "nucleo_g431_i2c1",
+  "i2c_errors": 0,
+  "i2c_reads": 88079,
+  "field_valid": true,
+  "angle_valid": true,
+  "adc_zero_ready": 1,
+  "zero_history_valid": 1,
+  "sd": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 45,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 10.0,
+  "idle_stress_passed": false,
+  "idle_stress_failed_check": "enc_peer_bad increased",
+  "peer_bad_before": 10,
+  "peer_bad_at_failure": 11,
+  "peer_bad_later": 23,
+  "sensor_read_delta_during_stress": 5285,
+  "sensor_error_delta_during_stress": 0,
+  "control_uart_bad": 0,
+  "uno_rx_dropped": 0,
+  "uno_rx_hw_errors": 0,
+  "firmware_writes_this_verification": 0,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "original_install_report": "installation_r1/report.json",
+  "stress_report": "runtime_idle_r1/report.json",
+  "rx_race_model_report": "rx_handoff_audit_r1/report.json",
+  "captured_crc_reconstruction": [
+    {
+      "rejected_hex": "55aada0fb9004adfc37805006704a20e00006e890000000000000000000000000000bc0201012a5af1a455",
+      "crc_valid": false,
+      "single_erasure_candidates": [
+        {
+          "insertion_offset": 36,
+          "missing_byte": 1,
+          "reconstructed_hex": "55aada0fb9004adfc37805006704a20e00006e890000000000000000000000000000bc020101012a5af1a4"
+        },
+        {
+          "insertion_offset": 37,
+          "missing_byte": 1,
+          "reconstructed_hex": "55aada0fb9004adfc37805006704a20e00006e890000000000000000000000000000bc020101012a5af1a4"
+        },
+        {
+          "insertion_offset": 38,
+          "missing_byte": 1,
+          "reconstructed_hex": "55aada0fb9004adfc37805006704a20e00006e890000000000000000000000000000bc020101012a5af1a4"
+        }
+      ],
+      "limitation": "Reconstruction hypothesis, not a wire capture"
+    },
+    {
+      "rejected_hex": "55aada0f9b004adfc37803006700a20e000009bd0000000000000000000000000000b902030101e908b255",
+      "crc_valid": false,
+      "single_erasure_candidates": [
+        {
+          "insertion_offset": 42,
+          "missing_byte": 74,
+          "reconstructed_hex": "55aada0f9b004adfc37803006700a20e000009bd0000000000000000000000000000b902030101e908b24a"
+        }
+      ],
+      "limitation": "Reconstruction hypothesis, not a wire capture"
+    },
+    {
+      "rejected_hex": "55aada0f0500dfc37801006700a20e0000e5520100000000000000000000000000b3020301013f65471855",
+      "crc_valid": false,
+      "single_erasure_candidates": [
+        {
+          "insertion_offset": 6,
+          "missing_byte": 74,
+          "reconstructed_hex": "55aada0f05004adfc37801006700a20e0000e5520100000000000000000000000000b3020301013f654718"
+        }
+      ],
+      "limitation": "Reconstruction hypothesis, not a wire capture"
+    }
+  ],
+  "sensor_under_pwm_qualified": false,
+  "conclusion": "Installation and RPC verified; Nucleo I2C is healthy at idle. End-to-end telemetry qualification failed. Actual adapter/vendor double RX ownership race reproduced on host; candidate repair is not installed or target-build verified."
+}

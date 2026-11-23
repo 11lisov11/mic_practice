@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "candidate": false,
+      "case": "renew",
+      "passed": true,
+      "output": " blocked=602 admitted=0 PASS renew calls=300\n"
+    },
+    {
+      "candidate": false,
+      "case": "lost",
+      "passed": true,
+      "output": "PASS lost simulated_ms=1500\n"
+    },
+    {
+      "candidate": false,
+      "case": "late",
+      "passed": true,
+      "output": "PASS late simulated_ms=1501\n"
+    },
+    {
+      "candidate": false,
+      "case": "unknown",
+      "passed": true,
+      "output": "PASS unknown simulated_ms=0\n"
+    },
+    {
+      "candidate": false,
+      "case": "tagged",
+      "passed": true,
+      "output": "PASS tagged simulated_ms=1\n"
+    },
+    {
+      "candidate": false,
+      "case": "generic",
+      "passed": true,
+      "output": "PASS generic simulated_ms=0\n"
+    },
+    {
+      "candidate": false,
+      "case": "tx",
+      "passed": true,
+      "output": "PASS tx simulated_ms=2000\n"
+    },
+    {
+      "candidate": false,
+      "case": "admission",
+      "passed": true,
+      "output": "PASS admission simulated_ms=1500\n"
+    },
+    {
+      "candidate": false,
+      "case": "mutex",
+      "passed": true,
+      "output": "PASS mutex simulated_ms=1507\n"
+    },
+    {
+      "candidate": true,
+      "case": "renew",
+      "passed": true,
+      "output": " blocked=0 admitted=602 PASS renew calls=300\n"
+    },
+    {
+      "candidate": true,
+      "case": "lost",
+      "passed": true,
+      "output": "PASS lost simulated_ms=1500\n"
+    },
+    {
+      "candidate": true,
+      "case": "late",
+      "passed": true,
+      "output": "PASS late simulated_ms=1501\n"
+    },
+    {
+      "candidate": true,
+      "case": "unknown",
+      "passed": true,
+      "output": "PASS unknown simulated_ms=0\n"
+    },
+    {
+      "candidate": true,
+      "case": "tagged",
+      "passed": true,
+      "output": "PASS tagged simulated_ms=1\n"
+    },
+    {
+      "candidate": true,
+      "case": "generic",
+      "passed": true,
+      "output": "PASS generic simulated_ms=0\n"
+    },
+    {
+      "candidate": true,
+      "case": "tx",
+      "passed": true,
+      "output": "PASS tx simulated_ms=2000\n"
+    },
+    {
+      "candidate": true,
+      "case": "admission",
+      "passed": true,
+      "output": "PASS admission simulated_ms=1500\n"
+    },
+    {
+      "candidate": true,
+      "case": "mutex",
+      "passed": true,
+      "output": "PASS mutex simulated_ms=1507\n"
+    }
+  ],
+  "actual_RPC_headers": true,
+  "kernel_UART_router_mocked": true,
+  "old_captured_mutex_wait_reproduced": true,
+  "registration_wait_does_not_hold_bridge_mutex": true,
+  "timeout_1500_unchanged": true,
+  "motor_guards_normalized_identical": true,
+  "preserved_files": 5506,
+  "original_serial_failure_byte_identified": false,
+  "hardware_commands": 0
+}

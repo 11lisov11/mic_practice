@@ -1,0 +1,35 @@
+{
+  "classification": "Nucleo command transport fail-stop: UV3_BAD_CRC (2), first diagnostic CRC (1)",
+  "direction": "Uno Q -> Nucleo command receiver",
+  "last_fault_motor_state": 6,
+  "fault_sequence": 196,
+  "first_reason_code": 1,
+  "transport_fault_code": 2,
+  "nucleo_rejected_count": 1,
+  "uno_reply_integrity_rejections": 0,
+  "mc_current_fault_mask": 0,
+  "mc_occurred_fault_mask": 0,
+  "break_recorded": false,
+  "wave_received": false,
+  "nucleo_noise_bytes_before": 1,
+  "nucleo_noise_bytes_after": 13,
+  "nucleo_recovered_drop_count_before": 1,
+  "nucleo_recovered_drop_count_after": 4,
+  "last_active_observed_reference_hz": 11.7,
+  "latched_reference_after_stop_hz": 13.0,
+  "targets_settled_hz": [
+    5,
+    10
+  ],
+  "highest_target_sent_hz": 15,
+  "twenty_or_higher_commands_sent": false,
+  "source_physical_identified": false,
+  "limits": [
+    "UV3_BAD_CRC is also returned for framing/header resynchronization rejection",
+    "The corrupted/raw command bytes and exact discard timestamps were not recorded",
+    "Electrical interference versus parser/receive/sender defect is unresolved",
+    "This transport stop is distinct from the earlier recorded TIM1 Break at 20 Hz",
+    "No 15-Hz hold or 20-to-50-Hz operation was qualified in this run"
+  ],
+  "future_work": "Capture raw rejected command bytes, parser state and discard reasons before any policy change; keep CRC/watchdog/Break intact"
+}

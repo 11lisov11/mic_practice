@@ -1,0 +1,47 @@
+{
+  "pass": true,
+  "valid_pwm_comparisons": 92160,
+  "invalid_input_cases": 27,
+  "baseline_zero_normalizer_result": 0,
+  "baseline_zero_normalizer_nonfinite_duty": true,
+  "baseline_zero_normalizer_ccr_writes": 3,
+  "filter_constant_input_cases": 8192,
+  "baseline_max_filter_lag_u16": 255,
+  "candidate_max_filter_lag_u16": 0,
+  "candidate_rise_95_samples": 766,
+  "candidate_fall_95_samples": 766,
+  "schema": "mic_ai.production_pwm_filter_audit.v1",
+  "source_pair": [
+    2026101205,
+    2026101204
+  ],
+  "hardware_commands": 0,
+  "firmware_flashed": false,
+  "release_ready": false,
+  "source_sha256": {
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "ff3e55c72ab17d6ae2e7344c2c518da0055d4c647c98aa4b068015257bb65c14",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": "5545b54d09c831f22f10bf74043037b2e5b4b14939edf0082042040568d55728",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLib\\Any\\Src\\r_divider_bus_voltage_sensor.c": "348c7ba942e875bb63997dd04b162b00a450049842cc8d02c57d6e0d875afa70",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLib\\Any\\Inc\\r_divider_bus_voltage_sensor.h": "f3e009d5b6913529c067e4b9f01f8655e83062c2b473eb553eb4258b6a8a1a88",
+    "Src\\mc_tasks.c": "af2aa4e3e2f260497d5b5177d720f5481313706214ce985920b3d79a793d5603",
+    "Src\\mc_math.c": "9dec5a6e02cd505b5d90bb7355818f5d82ce34202438d6be959d5bdd4e9d028b",
+    "Inc\\parameters_conversion.h": "cb63edc052b97d79507b6d6432cebaa5ee2e6e0b09e5c3404826b20773b52ef6",
+    "Inc\\parameters_conversion_g4xx.h": "060a2a56d3c481519da84e8577e8e236916df5e1687ad6233989f3c4a56efe51",
+    "Inc\\drive_parameters.h": "fea97b06ca7fd866d6f065d43dbf0a98653802400083f503d140a09327163b51"
+  },
+  "sources_unchanged": true,
+  "candidate_modified_files": [
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/acim_vf_control.c",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Src/r_divider_bus_voltage_sensor.c",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Inc/r_divider_bus_voltage_sensor.h",
+    "Src/mc_tasks.c"
+  ],
+  "physical_incident_cause_proven": false,
+  "limitations": [
+    "Host register stubs do not reproduce physical output pulses or IRQ timing; angle-update dispatch is stubbed in HFT propagation tests",
+    "Zero normalizer exposes a software defect; it is not demonstrated in the powered trial",
+    "Filter correction changes DC bias and handle layout: target rebuild and calibration review required",
+    "Hardware BKIN filter and UART acceptance/stop guards remain unchanged"
+  ]
+}

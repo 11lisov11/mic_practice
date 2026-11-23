@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "PASS: 44 hardware-reader fault/deadline and timed-run cases",
+    "PASS: 16 cases, observed scheduling delays, real bus failures, ISR activity, guaranteed scope release",
+    "Entire motor sketch identical outside build identity and2passive diagnostics; all timing/protection/UART/ADC/SD headers identical",
+    "Original3ms deadline, faults, no retry and angle/speed gates retained; IRQs not masked by scope",
+    "Recorded zero/calibration accepted for2517; completed5s predicate stays narrow; unknown/fault/active rejected"
+  ],
+  "hardware_validated": false,
+  "latency_budget": "No preemptible thread handover during nominal~550us or timeout3ms transfer, plus live IRQ execution; sleep2ms after it. Actual UART and web response latency require idle stress."
+}

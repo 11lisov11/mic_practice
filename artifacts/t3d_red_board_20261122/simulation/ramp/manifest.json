@@ -1,0 +1,142 @@
+{
+  "schema": "mic.t3d.load.v1",
+  "run_id": "070485e24eac44feb56eaeea32f9f303",
+  "started_utc": "2026-11-22T19:42:06.798125+00:00",
+  "completed": true,
+  "hardware_validated": false,
+  "hardware_session": false,
+  "simulation": true,
+  "profile": "ramp",
+  "seed": 20261122,
+  "limits": {
+    "rated_torque_nm": 1.27,
+    "max_torque_nm": 0.12,
+    "max_power_w": 5.0,
+    "max_energy_j": 15.0,
+    "min_rpm": 80.0,
+    "max_rpm": 350.0,
+    "slew_nm_s": 0.12,
+    "duration_s": 4.0,
+    "cycle_s": 0.5,
+    "deadline_s": 0.45,
+    "nis_limit": 25.0
+  },
+  "configuration": {
+    "kit": "HLTNC-T3D-400W-3M-BRAKE",
+    "schema": "mic.t3d.commissioning.v2.red_board",
+    "bench_url": "http://192.168.1.138:8080",
+    "expected_firmware_pair": [
+      2026112013,
+      2026111810
+    ],
+    "expected_algorithm": 1,
+    "require_observer_valid": true,
+    "profile_seed": 20261122,
+    "modbus": {
+      "unit": 1,
+      "baud": 19200,
+      "parity": "E"
+    },
+    "servo_usb": {
+      "port": null,
+      "vid": null,
+      "pid": null,
+      "serial_number": null,
+      "location": null
+    },
+    "red_board": {
+      "backend": "watchdog_cdc",
+      "mcu_candidate": "AT32F403RCT6",
+      "mcu_confirmed": true,
+      "gpio_map_verified": true,
+      "firmware_installed_and_verified": true,
+      "expected_firmware_id": "RNRWD_AT32F403RC_20261122",
+      "stock_identity": {
+        "vid": 42784,
+        "pid": 63491,
+        "serial_number": "816FAD79CE5",
+        "product": "RNR ECO MOTION 2.0",
+        "version": 768
+      },
+      "runtime_usb": {
+        "port": null,
+        "vid": 11836,
+        "pid": 22336,
+        "serial_number": null,
+        "location": null
+      }
+    },
+    "limits": {
+      "rated_torque_nm": 1.27,
+      "max_torque_nm": 0.12,
+      "max_power_w": 5.0,
+      "max_energy_j": 15.0,
+      "min_rpm": 80.0,
+      "max_rpm": 350.0,
+      "slew_nm_s": 0.12,
+      "duration_s": 4.0,
+      "cycle_s": 0.5,
+      "deadline_s": 0.45,
+      "nis_limit": 25.0
+    },
+    "qualification": {
+      "motor_nameplate_checked": true,
+      "driver_revision_checked": true,
+      "mode_and_sign_tested": true,
+      "parameter_readback_checked": true,
+      "independent_czero_watchdog_tested": true,
+      "stop_chain_tested": true,
+      "parking_brake_timing_tested": true,
+      "coupling_and_guard_checked": true,
+      "air_loaded_trial_authorized_and_qualified": true,
+      "usb_isolation_checked": true,
+      "actual_rated_torque_nm": 1.27,
+      "di_conducting_bit": 0,
+      "do_conducting_bit": 1,
+      "watchdog_measured_drop_s": 0.75,
+      "validated_regen_power_w": 100.0,
+      "validated_regen_energy_j": 100.0
+    },
+    "fixture_only": true
+  },
+  "source_sha256": {
+    "control.py": "80a98cc5344dec5419cf41b504d55dabd40c7403f60021a54fa2317c0609d678",
+    "protocol.py": "31a0f2b6f6753fed0930693fa2c29169fce3477f0e0c4bbb351860ce849285e8",
+    "red_board.py": "2cf4a643b07215d4f32df7ae82e01f5bd3a92fb35fd8b80252003e80f99cd2d4",
+    "runner.py": "8463dcfd9984811a3267f1438a07cc65d77a85949623d9be86be7cfa6402040f",
+    "simulation.py": "371f2a1cdf768a88ab0a8dfa1b93887dc7440f98d7be7226cff3418b08ae8aba",
+    "ui.py": "70bfff1d1e71187dd7f0c7f8b01586687bfac14c66fc7dca2a9a28f1137469e0",
+    "watchdog.py": "3f1d4b20ea843d8ec6670fb82840bc1df82f6d15027e38d0bd7ea5cbf389948a",
+    "__init__.py": "e928d9e28fe4862679a932f3ef56629fb1e35b7f76282c49d4ab33eed9b02f64",
+    "__main__.py": "23a0e563bcebd8e2949448b54aed322eba6bb0d3b2958a380f017f59eb375417"
+  },
+  "commands_to_air_start": 0,
+  "torque_source": "volatile_P145_integer_percent",
+  "torque_ground_truth": false,
+  "encoder_reference_source": "T3D_FC04_rpm",
+  "time_alignment": "host_poll_intervals_only_not_synchronized_MCU_samples",
+  "nonzero_commands": 3,
+  "stop_results": {
+    "watchdog_disarm": {
+      "acknowledged": true
+    },
+    "zero_torque_readback": {
+      "acknowledged": true
+    },
+    "AIR_stop": {
+      "acknowledged": true
+    }
+  },
+  "failure": null,
+  "permit_controller": "red_board",
+  "reported_permit_firmware_id": null,
+  "native_run_key": [
+    2026112013,
+    2026111810,
+    42,
+    1234
+  ],
+  "excitation_commanded": true,
+  "drive_torque_feedback_nonzero_samples": 3,
+  "energy_budget_used_j": 3.723834492055101
+}

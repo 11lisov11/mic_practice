@@ -1,0 +1,104 @@
+{
+  "schema": "mic_ai.research_plan.v1",
+  "pair": [
+    2026102911,
+    2026102912
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "algorithm": "VF_FIXED",
+      "label": "Скалярный V/f — старт/стоп и задания частоты",
+      "status": "ready",
+      "reason_code": "",
+      "reason": "Алгоритм доступен; перед пуском проверяются питание, токи и защиты.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 2,
+      "algorithm": "FOC_FIXED",
+      "label": "Векторный FOC с фиксированным потоком",
+      "status": "blocked",
+      "reason_code": "FOC_KERNEL_AND_MOTOR_MODEL_REQUIRED",
+      "reason": "Нужны действующий FOC-контур, измеренные Rr/Lm/индуктивности и проверка наблюдателя.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 3,
+      "algorithm": "ADAPTIVE_PWM",
+      "label": "Адаптивный ШИМ",
+      "status": "blocked",
+      "reason_code": "ADAPTIVE_PWM_PORT_AND_ADC_QUALIFICATION_REQUIRED",
+      "reason": "Алгоритм из модели не перенесён; окна АЦП проверены для фиксированных 16 кГц.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 4,
+      "algorithm": "FOC_CLASSICAL",
+      "label": "FOC с классической оптимизацией потока",
+      "status": "blocked",
+      "reason_code": "QUALIFIED_FOC_REQUIRED",
+      "reason": "Сначала нужен проверенный FOC и идентифицированная модель потерь.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 5,
+      "algorithm": "AI_SHADOW",
+      "label": "ИИ — расчёт предложения без управления",
+      "status": "blocked",
+      "reason_code": "TRAINED_MODEL_REQUIRED",
+      "reason": "Пока есть офлайн-инструменты обучения; модели, обученной на новых опытах АИР, нет.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 6,
+      "algorithm": "AI_ACTIVE",
+      "label": "ИИ — управление через ограничения",
+      "status": "blocked",
+      "reason_code": "QUALIFIED_FOC_AND_AI_POLICY_REQUIRED",
+      "reason": "Нужны проверенный FOC, обученная политика и проверка ограничений.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    },
+    {
+      "order": 7,
+      "algorithm": "EXTREMUM_SEARCH",
+      "label": "Ограниченный поиск экстремума",
+      "status": "blocked",
+      "reason_code": "QUALIFIED_BASELINE_AND_POWER_MEASUREMENT_REQUIRED",
+      "reason": "Нужны пригодная базовая система и измерение активной мощности; RMS токов её не заменяет.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    }
+  ],
+  "executable": false,
+  "incomplete_stage_policy": "stop_before_any_start_no_silent_skip",
+  "autonomous_boot_or_reset_start": false,
+  "protection_threshold_changes": false
+}

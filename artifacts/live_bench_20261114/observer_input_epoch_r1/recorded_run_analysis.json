@@ -1,0 +1,113 @@
+{
+  "passed": true,
+  "source_run_id": 5,
+  "recorded_status_samples": [
+    {
+      "run_elapsed_ms": 1300,
+      "freq": 2.0,
+      "rpm_est": 389.75,
+      "rpm_est_valid": 1,
+      "research_native_valid": 1,
+      "algorithm_selected": 2,
+      "algorithm_fault": 0,
+      "algorithm_profile_crc": 1354279011,
+      "foc_experiment_flags": 1,
+      "foc_timing_cases": 64,
+      "mc_fault_current_mask": 0,
+      "mc_fault_occurred_mask": 0
+    },
+    {
+      "run_elapsed_ms": 2563,
+      "freq": 4.1,
+      "rpm_est": 389.41,
+      "rpm_est_valid": 0,
+      "research_native_valid": 1,
+      "algorithm_selected": 2,
+      "algorithm_fault": 0,
+      "algorithm_profile_crc": 1354279011,
+      "foc_experiment_flags": 1,
+      "foc_timing_cases": 64,
+      "mc_fault_current_mask": 0,
+      "mc_fault_occurred_mask": 0
+    },
+    {
+      "run_elapsed_ms": 3826,
+      "freq": 5.0,
+      "rpm_est": 388.4,
+      "rpm_est_valid": 0,
+      "research_native_valid": 1,
+      "algorithm_selected": 2,
+      "algorithm_fault": 0,
+      "algorithm_profile_crc": 1354279011,
+      "foc_experiment_flags": 1,
+      "foc_timing_cases": 64,
+      "mc_fault_current_mask": 0,
+      "mc_fault_occurred_mask": 0
+    }
+  ],
+  "record_has_flux_NIS_IdIq": false,
+  "web_IdIq_zero_values_are_not_native_measurements": true,
+  "validity_drop_interval_ms": [
+    1300,
+    2563
+  ],
+  "native_validity_expression": "running && allowed_profile && steps>=500 && !run_fault && flux>0.5*target && NIS<25",
+  "flux_target_Wb": 0.25,
+  "flux_valid_lower_bound_exclusive_Wb": 0.125,
+  "NIS_upper_bound_exclusive": 25,
+  "exact_recorded_loss_cause_proven": false,
+  "branch_inference_assumptions": "RUN and>=500 observer steps still held in the packet; these two gate inputs were not exported together in this release.",
+  "live_loss_possibilities": [
+    "flux fell to or below0.125Wb",
+    "NIS rose to or above25",
+    "nonfinite values"
+  ],
+  "timing_fault_recorded": false,
+  "max_result_age_us": 433.38235294117646,
+  "estimate_age_limit_us": 2000,
+  "source_bug": "Latest foreground current was paired with voltage/time of an earlier completed bin.",
+  "fix": "Latch offset-corrected endpoint current in the same sequence as voltage bin and use its ADC timestamp.",
+  "voltage_model_limitation": "Retains prior averaged commanded voltage and deadtime model; inverter voltage error and hardware motor parameters are not identified by this change.",
+  "recorded_timing_simulation": {
+    "observer_wall_cycles": 54022,
+    "queue_cycles": 30158,
+    "conservative_pair_of_separate_maxima": true,
+    "results": [
+      {
+        "variant": "baseline",
+        "completed_5s": true,
+        "PWM_duration_s": 5.00002936,
+        "frames": 80009,
+        "observer_calls": 5000,
+        "fault": 0,
+        "reason": 0,
+        "peak_plant_A": 0.533660463,
+        "rpm_true_end": 300.95776,
+        "rpm_est_end": 300.114633,
+        "speed_RMSE_after1s_rpm": 0.9738731,
+        "native_valid_fraction_after1s": 1,
+        "peak_NIS": 0.238433674
+      },
+      {
+        "variant": "candidate",
+        "completed_5s": true,
+        "PWM_duration_s": 5.00002936,
+        "frames": 80009,
+        "observer_calls": 5000,
+        "fault": 0,
+        "reason": 0,
+        "peak_plant_A": 0.535199641,
+        "rpm_true_end": 299.42896,
+        "rpm_est_end": 299.657137,
+        "speed_RMSE_after1s_rpm": 0.428879537,
+        "native_valid_fraction_after1s": 1,
+        "peak_NIS": 0.29156363
+      }
+    ],
+    "measured_current_replay": false,
+    "independent_model_only": true
+  },
+  "hardware_commands": 0,
+  "thresholds_changed": false,
+  "old_captures_unchanged": true
+}

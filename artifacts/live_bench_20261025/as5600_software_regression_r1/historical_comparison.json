@@ -1,0 +1,25 @@
+{
+  "original_priority": "CONFIG_NUM_PREEMPT_PRIORITIES-1 =14 on this kernel",
+  "installed_priority": 4,
+  "native_driver_diff_only_priority_and_comment": true,
+  "diff": [
+    "--- \n",
+    "+++ \n",
+    "@@ -50,10 +50,10 @@\n",
+    " void as5600_teacher_begin() {",
+    "   if (started) return;",
+    "   started = true;",
+    "-  // Lowest preemptible priority; I2C waits leave UART/RPC runnable.",
+    "+  // I2C blocks outside control ownership; sampling is not starved by bulk RPC TX.",
+    "   k_thread_create(&sensor_thread, sensor_stack, K_THREAD_STACK_SIZEOF(sensor_stack),",
+    "                   sensor_worker, nullptr, nullptr, nullptr,",
+    "-                  CONFIG_NUM_PREEMPT_PRIORITIES - 1, 0, K_NO_WAIT);",
+    "+                  4, 0, K_NO_WAIT);",
+    " }",
+    " ",
+    " As5600Sample as5600_teacher_snapshot(uint32_t now_ms) {"
+  ],
+  "historical_success_report": "artifacts/unoq_as5600_20261007/check_r1/report.json",
+  "historical_report_pwm": false,
+  "priority_causes_nack_proven": false
+}

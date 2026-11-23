@@ -1,0 +1,104 @@
+{
+  "passed": true,
+  "port": "COM13",
+  "programming_attempts": 1,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "old_flash_and_RAM_preserved": true,
+  "before": {
+    "bus_V": 9.2548828125,
+    "tick": 964671,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 94
+  },
+  "readback_verified": true,
+  "readback_bytes": 38968,
+  "readback_sha256": "8b0abd6624b907e2889f7660aa69a47075db73f270cd46ae2ebdc294a57b3c63",
+  "hex_padding_offsets": [],
+  "after": {
+    "bus_V": 17.71630859375,
+    "tick": 452,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 94
+  },
+  "ccm_verified_bytes": 4704,
+  "DWT": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "max_cycles": 2360,
+    "max_lso_cycles": 1682,
+    "failures": 0,
+    "passed": true,
+    "min_cycles": 1250,
+    "cases_above_4000": 0
+  },
+  "motor_pilot_protocol": {
+    "port": "COM13",
+    "baud": 1843200,
+    "ASPEP_established": true,
+    "MCP_version": 1,
+    "motor": "IEK_AIR56B2_D_CALCULATED,\u0001",
+    "state": 10,
+    "bus_V": 11,
+    "fault_word": 262148,
+    "wire": [
+      {
+        "tx": "05410090",
+        "rx": "05410090"
+      },
+      {
+        "tx": "05410090",
+        "rx": "05410090"
+      },
+      {
+        "tx": "06100020",
+        "rx": "361000d0"
+      },
+      {
+        "tx": "290000e00100",
+        "rx": "5a0000c00100000000"
+      },
+      {
+        "tx": "4900007011004900",
+        "rx": "2a0000d00a00"
+      },
+      {
+        "tx": "4900007011009105",
+        "rx": "3a0000500b0000"
+      },
+      {
+        "tx": "4900007011001900",
+        "rx": "5a0000c00400040000"
+      },
+      {
+        "tx": "490000701100e100",
+        "rx": "ca01004049454b5f414952353642325f445f43414c43554c415445442c010000"
+      }
+    ],
+    "split_payload": false,
+    "only_read_commands": true
+  },
+  "final": {
+    "bus_V": 9.47705078125,
+    "tick": 907,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 94
+  },
+  "preserved_files_verified": 1923
+}

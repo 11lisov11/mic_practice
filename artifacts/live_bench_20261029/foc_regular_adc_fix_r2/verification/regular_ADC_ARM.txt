@@ -1,0 +1,372 @@
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_regular_adc_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08010b94 <RCM_CurrentEpoch>:
+ 8010b94:	4b35      	ldr	r3, [pc, #212]	@ (8010c6c <RCM_CurrentEpoch+0xd8>)
+ 8010b96:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 8010b98:	041b      	lsls	r3, r3, #16
+ 8010b9a:	d560      	bpl.n	8010c5e <RCM_CurrentEpoch+0xca>
+ 8010b9c:	b4f0      	push	{r4, r5, r6, r7}
+ 8010b9e:	4d34      	ldr	r5, [pc, #208]	@ (8010c70 <RCM_CurrentEpoch+0xdc>)
+ 8010ba0:	882b      	ldrh	r3, [r5, #0]
+ 8010ba2:	b29b      	uxth	r3, r3
+ 8010ba4:	2b00      	cmp	r3, #0
+ 8010ba6:	d15e      	bne.n	8010c66 <RCM_CurrentEpoch+0xd2>
+ 8010ba8:	4b32      	ldr	r3, [pc, #200]	@ (8010c74 <RCM_CurrentEpoch+0xe0>)
+ 8010baa:	7818      	ldrb	r0, [r3, #0]
+ 8010bac:	2800      	cmp	r0, #0
+ 8010bae:	d053      	beq.n	8010c58 <RCM_CurrentEpoch+0xc4>
+ 8010bb0:	4b31      	ldr	r3, [pc, #196]	@ (8010c78 <RCM_CurrentEpoch+0xe4>)
+ 8010bb2:	4a32      	ldr	r2, [pc, #200]	@ (8010c7c <RCM_CurrentEpoch+0xe8>)
+ 8010bb4:	4c32      	ldr	r4, [pc, #200]	@ (8010c80 <RCM_CurrentEpoch+0xec>)
+ 8010bb6:	681b      	ldr	r3, [r3, #0]
+ 8010bb8:	fba2 2303 	umull	r2, r3, r2, r3
+ 8010bbc:	6822      	ldr	r2, [r4, #0]
+ 8010bbe:	6811      	ldr	r1, [r2, #0]
+ 8010bc0:	f1b1 4fa0 	cmp.w	r1, #1342177280	@ 0x50000000
+ 8010bc4:	ea4f 1393 	mov.w	r3, r3, lsr #6
+ 8010bc8:	d14b      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010bca:	6852      	ldr	r2, [r2, #4]
+ 8010bcc:	2a04      	cmp	r2, #4
+ 8010bce:	d148      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010bd0:	4a2c      	ldr	r2, [pc, #176]	@ (8010c84 <RCM_CurrentEpoch+0xf0>)
+ 8010bd2:	7811      	ldrb	r1, [r2, #0]
+ 8010bd4:	2900      	cmp	r1, #0
+ 8010bd6:	d044      	beq.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010bd8:	492b      	ldr	r1, [pc, #172]	@ (8010c88 <RCM_CurrentEpoch+0xf4>)
+ 8010bda:	684e      	ldr	r6, [r1, #4]
+ 8010bdc:	492b      	ldr	r1, [pc, #172]	@ (8010c8c <RCM_CurrentEpoch+0xf8>)
+ 8010bde:	680f      	ldr	r7, [r1, #0]
+ 8010be0:	eba6 0c07 	sub.w	ip, r6, r7
+ 8010be4:	4563      	cmp	r3, ip
+ 8010be6:	d93c      	bls.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010be8:	2801      	cmp	r0, #1
+ 8010bea:	d036      	beq.n	8010c5a <RCM_CurrentEpoch+0xc6>
+ 8010bec:	6866      	ldr	r6, [r4, #4]
+ 8010bee:	6837      	ldr	r7, [r6, #0]
+ 8010bf0:	f1b7 4fa0 	cmp.w	r7, #1342177280	@ 0x50000000
+ 8010bf4:	d135      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010bf6:	6876      	ldr	r6, [r6, #4]
+ 8010bf8:	2e04      	cmp	r6, #4
+ 8010bfa:	d132      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010bfc:	7856      	ldrb	r6, [r2, #1]
+ 8010bfe:	b386      	cbz	r6, 8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c00:	f8df c084 	ldr.w	ip, [pc, #132]	@ 8010c88 <RCM_CurrentEpoch+0xf4>
+ 8010c04:	684f      	ldr	r7, [r1, #4]
+ 8010c06:	f8dc 6004 	ldr.w	r6, [ip, #4]
+ 8010c0a:	1bf6      	subs	r6, r6, r7
+ 8010c0c:	42b3      	cmp	r3, r6
+ 8010c0e:	d928      	bls.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c10:	2802      	cmp	r0, #2
+ 8010c12:	d021      	beq.n	8010c58 <RCM_CurrentEpoch+0xc4>
+ 8010c14:	68a6      	ldr	r6, [r4, #8]
+ 8010c16:	6837      	ldr	r7, [r6, #0]
+ 8010c18:	f1b7 4fa0 	cmp.w	r7, #1342177280	@ 0x50000000
+ 8010c1c:	d121      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c1e:	6876      	ldr	r6, [r6, #4]
+ 8010c20:	2e04      	cmp	r6, #4
+ 8010c22:	d11e      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c24:	7896      	ldrb	r6, [r2, #2]
+ 8010c26:	b1e6      	cbz	r6, 8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c28:	f8dc 6004 	ldr.w	r6, [ip, #4]
+ 8010c2c:	688f      	ldr	r7, [r1, #8]
+ 8010c2e:	1bf6      	subs	r6, r6, r7
+ 8010c30:	42b3      	cmp	r3, r6
+ 8010c32:	d916      	bls.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c34:	2803      	cmp	r0, #3
+ 8010c36:	d00f      	beq.n	8010c58 <RCM_CurrentEpoch+0xc4>
+ 8010c38:	68e0      	ldr	r0, [r4, #12]
+ 8010c3a:	6804      	ldr	r4, [r0, #0]
+ 8010c3c:	f1b4 4fa0 	cmp.w	r4, #1342177280	@ 0x50000000
+ 8010c40:	d10f      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c42:	6840      	ldr	r0, [r0, #4]
+ 8010c44:	2804      	cmp	r0, #4
+ 8010c46:	d10c      	bne.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c48:	78d2      	ldrb	r2, [r2, #3]
+ 8010c4a:	b152      	cbz	r2, 8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c4c:	68c9      	ldr	r1, [r1, #12]
+ 8010c4e:	f8dc 2004 	ldr.w	r2, [ip, #4]
+ 8010c52:	1a52      	subs	r2, r2, r1
+ 8010c54:	429a      	cmp	r2, r3
+ 8010c56:	d204      	bcs.n	8010c62 <RCM_CurrentEpoch+0xce>
+ 8010c58:	2001      	movs	r0, #1
+ 8010c5a:	bcf0      	pop	{r4, r5, r6, r7}
+ 8010c5c:	4770      	bx	lr
+ 8010c5e:	2001      	movs	r0, #1
+ 8010c60:	4770      	bx	lr
+ 8010c62:	2380      	movs	r3, #128	@ 0x80
+ 8010c64:	802b      	strh	r3, [r5, #0]
+ 8010c66:	2000      	movs	r0, #0
+ 8010c68:	bcf0      	pop	{r4, r5, r6, r7}
+ 8010c6a:	4770      	bx	lr
+ 8010c6c:	40012c00 	.word	0x40012c00
+ 8010c70:	2000675c 	.word	0x2000675c
+ 8010c74:	2000677c 	.word	0x2000677c
+ 8010c78:	20000374 	.word	0x20000374
+ 8010c7c:	10624dd3 	.word	0x10624dd3
+ 8010c80:	20006780 	.word	0x20006780
+ 8010c84:	20006770 	.word	0x20006770
+ 8010c88:	e0001000 	.word	0xe0001000
+ 8010c8c:	20006760 	.word	0x20006760
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_regular_adc_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08010c90 <RCM_ServiceAfterInjected>:
+ 8010c90:	4b34      	ldr	r3, [pc, #208]	@ (8010d64 <RCM_ServiceAfterInjected+0xd4>)
+ 8010c92:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 8010c94:	041b      	lsls	r3, r3, #16
+ 8010c96:	d505      	bpl.n	8010ca4 <RCM_ServiceAfterInjected+0x14>
+ 8010c98:	b570      	push	{r4, r5, r6, lr}
+ 8010c9a:	4c33      	ldr	r4, [pc, #204]	@ (8010d68 <RCM_ServiceAfterInjected+0xd8>)
+ 8010c9c:	8823      	ldrh	r3, [r4, #0]
+ 8010c9e:	b29b      	uxth	r3, r3
+ 8010ca0:	b10b      	cbz	r3, 8010ca6 <RCM_ServiceAfterInjected+0x16>
+ 8010ca2:	bd70      	pop	{r4, r5, r6, pc}
+ 8010ca4:	4770      	bx	lr
+ 8010ca6:	4d31      	ldr	r5, [pc, #196]	@ (8010d6c <RCM_ServiceAfterInjected+0xdc>)
+ 8010ca8:	682a      	ldr	r2, [r5, #0]
+ 8010caa:	b1aa      	cbz	r2, 8010cd8 <RCM_ServiceAfterInjected+0x48>
+ 8010cac:	6811      	ldr	r1, [r2, #0]
+ 8010cae:	6808      	ldr	r0, [r1, #0]
+ 8010cb0:	0740      	lsls	r0, r0, #29
+ 8010cb2:	d54d      	bpl.n	8010d50 <RCM_ServiceAfterInjected+0xc0>
+ 8010cb4:	6c09      	ldr	r1, [r1, #64]	@ 0x40
+ 8010cb6:	482e      	ldr	r0, [pc, #184]	@ (8010d70 <RCM_ServiceAfterInjected+0xe0>)
+ 8010cb8:	f021 010f 	bic.w	r1, r1, #15
+ 8010cbc:	8151      	strh	r1, [r2, #10]
+ 8010cbe:	7b11      	ldrb	r1, [r2, #12]
+ 8010cc0:	4a2c      	ldr	r2, [pc, #176]	@ (8010d74 <RCM_ServiceAfterInjected+0xe4>)
+ 8010cc2:	6840      	ldr	r0, [r0, #4]
+ 8010cc4:	f842 0021 	str.w	r0, [r2, r1, lsl #2]
+ 8010cc8:	f3bf 8f5f 	dmb	sy
+ 8010ccc:	6829      	ldr	r1, [r5, #0]
+ 8010cce:	4a2a      	ldr	r2, [pc, #168]	@ (8010d78 <RCM_ServiceAfterInjected+0xe8>)
+ 8010cd0:	602b      	str	r3, [r5, #0]
+ 8010cd2:	7b0b      	ldrb	r3, [r1, #12]
+ 8010cd4:	2101      	movs	r1, #1
+ 8010cd6:	54d1      	strb	r1, [r2, r3]
+ 8010cd8:	4e28      	ldr	r6, [pc, #160]	@ (8010d7c <RCM_ServiceAfterInjected+0xec>)
+ 8010cda:	7833      	ldrb	r3, [r6, #0]
+ 8010cdc:	2b00      	cmp	r3, #0
+ 8010cde:	d0e0      	beq.n	8010ca2 <RCM_ServiceAfterInjected+0x12>
+ 8010ce0:	f7f0 fde0 	bl	80018a4 <mic_current_regular_window>
+ 8010ce4:	2800      	cmp	r0, #0
+ 8010ce6:	d0dc      	beq.n	8010ca2 <RCM_ServiceAfterInjected+0x12>
+ 8010ce8:	4a25      	ldr	r2, [pc, #148]	@ (8010d80 <RCM_ServiceAfterInjected+0xf0>)
+ 8010cea:	4b26      	ldr	r3, [pc, #152]	@ (8010d84 <RCM_ServiceAfterInjected+0xf4>)
+ 8010cec:	7811      	ldrb	r1, [r2, #0]
+ 8010cee:	f853 0021 	ldr.w	r0, [r3, r1, lsl #2]
+ 8010cf2:	6801      	ldr	r1, [r0, #0]
+ 8010cf4:	688b      	ldr	r3, [r1, #8]
+ 8010cf6:	075b      	lsls	r3, r3, #29
+ 8010cf8:	d42a      	bmi.n	8010d50 <RCM_ServiceAfterInjected+0xc0>
+ 8010cfa:	7a04      	ldrb	r4, [r0, #8]
+ 8010cfc:	2301      	movs	r3, #1
+ 8010cfe:	40a3      	lsls	r3, r4
+ 8010d00:	2c09      	cmp	r4, #9
+ 8010d02:	ea43 6384 	orr.w	r3, r3, r4, lsl #26
+ 8010d06:	eb04 0c44 	add.w	ip, r4, r4, lsl #1
+ 8010d0a:	d824      	bhi.n	8010d56 <RCM_ServiceAfterInjected+0xc6>
+ 8010d0c:	ea43 530c 	orr.w	r3, r3, ip, lsl #20
+ 8010d10:	6b0c      	ldr	r4, [r1, #48]	@ 0x30
+ 8010d12:	6028      	str	r0, [r5, #0]
+ 8010d14:	0d1b      	lsrs	r3, r3, #20
+ 8010d16:	f424 64f8 	bic.w	r4, r4, #1984	@ 0x7c0
+ 8010d1a:	f403 63f8 	and.w	r3, r3, #1984	@ 0x7c0
+ 8010d1e:	4323      	orrs	r3, r4
+ 8010d20:	630b      	str	r3, [r1, #48]	@ 0x30
+ 8010d22:	2304      	movs	r3, #4
+ 8010d24:	6c0c      	ldr	r4, [r1, #64]	@ 0x40
+ 8010d26:	600b      	str	r3, [r1, #0]
+ 8010d28:	f3bf 8f5f 	dmb	sy
+ 8010d2c:	6804      	ldr	r4, [r0, #0]
+ 8010d2e:	7811      	ldrb	r1, [r2, #0]
+ 8010d30:	68a3      	ldr	r3, [r4, #8]
+ 8010d32:	7830      	ldrb	r0, [r6, #0]
+ 8010d34:	f023 4300 	bic.w	r3, r3, #2147483648	@ 0x80000000
+ 8010d38:	f023 033f 	bic.w	r3, r3, #63	@ 0x3f
+ 8010d3c:	3101      	adds	r1, #1
+ 8010d3e:	f043 0304 	orr.w	r3, r3, #4
+ 8010d42:	60a3      	str	r3, [r4, #8]
+ 8010d44:	fbb1 f3f0 	udiv	r3, r1, r0
+ 8010d48:	fb00 1113 	mls	r1, r0, r3, r1
+ 8010d4c:	7011      	strb	r1, [r2, #0]
+ 8010d4e:	bd70      	pop	{r4, r5, r6, pc}
+ 8010d50:	2380      	movs	r3, #128	@ 0x80
+ 8010d52:	8023      	strh	r3, [r4, #0]
+ 8010d54:	bd70      	pop	{r4, r5, r6, pc}
+ 8010d56:	f1ac 0c1e 	sub.w	ip, ip, #30
+ 8010d5a:	ea43 530c 	orr.w	r3, r3, ip, lsl #20
+ 8010d5e:	f043 7300 	orr.w	r3, r3, #33554432	@ 0x2000000
+ 8010d62:	e7d5      	b.n	8010d10 <RCM_ServiceAfterInjected+0x80>
+ 8010d64:	40012c00 	.word	0x40012c00
+ 8010d68:	2000675c 	.word	0x2000675c
+ 8010d6c:	20006778 	.word	0x20006778
+ 8010d70:	e0001000 	.word	0xe0001000
+ 8010d74:	20006760 	.word	0x20006760
+ 8010d78:	20006770 	.word	0x20006770
+ 8010d7c:	2000677c 	.word	0x2000677c
+ 8010d80:	20006774 	.word	0x20006774
+ 8010d84:	20006780 	.word	0x20006780
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_regular_adc_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08010e54 <RCM_ExecRegularConv>:
+ 8010e54:	b470      	push	{r4, r5, r6}
+ 8010e56:	4601      	mov	r1, r0
+ 8010e58:	b118      	cbz	r0, 8010e62 <RCM_ExecRegularConv+0xe>
+ 8010e5a:	4b41      	ldr	r3, [pc, #260]	@ (8010f60 <RCM_ExecRegularConv+0x10c>)
+ 8010e5c:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 8010e5e:	041d      	lsls	r5, r3, #16
+ 8010e60:	d457      	bmi.n	8010f12 <RCM_ExecRegularConv+0xbe>
+ 8010e62:	4d40      	ldr	r5, [pc, #256]	@ (8010f64 <RCM_ExecRegularConv+0x110>)
+ 8010e64:	6828      	ldr	r0, [r5, #0]
+ 8010e66:	2800      	cmp	r0, #0
+ 8010e68:	d076      	beq.n	8010f58 <RCM_ExecRegularConv+0x104>
+ 8010e6a:	6802      	ldr	r2, [r0, #0]
+ 8010e6c:	6813      	ldr	r3, [r2, #0]
+ 8010e6e:	075c      	lsls	r4, r3, #29
+ 8010e70:	d5fc      	bpl.n	8010e6c <RCM_ExecRegularConv+0x18>
+ 8010e72:	6c13      	ldr	r3, [r2, #64]	@ 0x40
+ 8010e74:	4e3c      	ldr	r6, [pc, #240]	@ (8010f68 <RCM_ExecRegularConv+0x114>)
+ 8010e76:	4c3d      	ldr	r4, [pc, #244]	@ (8010f6c <RCM_ExecRegularConv+0x118>)
+ 8010e78:	7b02      	ldrb	r2, [r0, #12]
+ 8010e7a:	6876      	ldr	r6, [r6, #4]
+ 8010e7c:	f844 6022 	str.w	r6, [r4, r2, lsl #2]
+ 8010e80:	f023 030f 	bic.w	r3, r3, #15
+ 8010e84:	8143      	strh	r3, [r0, #10]
+ 8010e86:	f3bf 8f5f 	dmb	sy
+ 8010e8a:	682b      	ldr	r3, [r5, #0]
+ 8010e8c:	4e38      	ldr	r6, [pc, #224]	@ (8010f70 <RCM_ExecRegularConv+0x11c>)
+ 8010e8e:	7b1a      	ldrb	r2, [r3, #12]
+ 8010e90:	2001      	movs	r0, #1
+ 8010e92:	2300      	movs	r3, #0
+ 8010e94:	54b0      	strb	r0, [r6, r2]
+ 8010e96:	602b      	str	r3, [r5, #0]
+ 8010e98:	7a08      	ldrb	r0, [r1, #8]
+ 8010e9a:	680a      	ldr	r2, [r1, #0]
+ 8010e9c:	2301      	movs	r3, #1
+ 8010e9e:	2809      	cmp	r0, #9
+ 8010ea0:	eb00 0540 	add.w	r5, r0, r0, lsl #1
+ 8010ea4:	fa03 f300 	lsl.w	r3, r3, r0
+ 8010ea8:	ea43 6380 	orr.w	r3, r3, r0, lsl #26
+ 8010eac:	bf84      	itt	hi
+ 8010eae:	3d1e      	subhi	r5, #30
+ 8010eb0:	ea43 5305 	orrhi.w	r3, r3, r5, lsl #20
+ 8010eb4:	6b10      	ldr	r0, [r2, #48]	@ 0x30
+ 8010eb6:	bf94      	ite	ls
+ 8010eb8:	ea43 5305 	orrls.w	r3, r3, r5, lsl #20
+ 8010ebc:	f043 7300 	orrhi.w	r3, r3, #33554432	@ 0x2000000
+ 8010ec0:	0d1b      	lsrs	r3, r3, #20
+ 8010ec2:	f420 60f8 	bic.w	r0, r0, #1984	@ 0x7c0
+ 8010ec6:	f403 63f8 	and.w	r3, r3, #1984	@ 0x7c0
+ 8010eca:	4303      	orrs	r3, r0
+ 8010ecc:	6313      	str	r3, [r2, #48]	@ 0x30
+ 8010ece:	2304      	movs	r3, #4
+ 8010ed0:	6c10      	ldr	r0, [r2, #64]	@ 0x40
+ 8010ed2:	6013      	str	r3, [r2, #0]
+ 8010ed4:	6893      	ldr	r3, [r2, #8]
+ 8010ed6:	f023 4300 	bic.w	r3, r3, #2147483648	@ 0x80000000
+ 8010eda:	f023 033f 	bic.w	r3, r3, #63	@ 0x3f
+ 8010ede:	f043 0304 	orr.w	r3, r3, #4
+ 8010ee2:	6093      	str	r3, [r2, #8]
+ 8010ee4:	6813      	ldr	r3, [r2, #0]
+ 8010ee6:	075b      	lsls	r3, r3, #29
+ 8010ee8:	d5fc      	bpl.n	8010ee4 <RCM_ExecRegularConv+0x90>
+ 8010eea:	6c10      	ldr	r0, [r2, #64]	@ 0x40
+ 8010eec:	4b1e      	ldr	r3, [pc, #120]	@ (8010f68 <RCM_ExecRegularConv+0x114>)
+ 8010eee:	f020 000f 	bic.w	r0, r0, #15
+ 8010ef2:	685a      	ldr	r2, [r3, #4]
+ 8010ef4:	7b0b      	ldrb	r3, [r1, #12]
+ 8010ef6:	b280      	uxth	r0, r0
+ 8010ef8:	f844 2023 	str.w	r2, [r4, r3, lsl #2]
+ 8010efc:	8148      	strh	r0, [r1, #10]
+ 8010efe:	f3bf 8f5f 	dmb	sy
+ 8010f02:	7b0a      	ldrb	r2, [r1, #12]
+ 8010f04:	4b1b      	ldr	r3, [pc, #108]	@ (8010f74 <RCM_ExecRegularConv+0x120>)
+ 8010f06:	2101      	movs	r1, #1
+ 8010f08:	54b1      	strb	r1, [r6, r2]
+ 8010f0a:	2200      	movs	r2, #0
+ 8010f0c:	bc70      	pop	{r4, r5, r6}
+ 8010f0e:	801a      	strh	r2, [r3, #0]
+ 8010f10:	4770      	bx	lr
+ 8010f12:	4a19      	ldr	r2, [pc, #100]	@ (8010f78 <RCM_ExecRegularConv+0x124>)
+ 8010f14:	7b03      	ldrb	r3, [r0, #12]
+ 8010f16:	7812      	ldrb	r2, [r2, #0]
+ 8010f18:	429a      	cmp	r2, r3
+ 8010f1a:	d805      	bhi.n	8010f28 <RCM_ExecRegularConv+0xd4>
+ 8010f1c:	4b15      	ldr	r3, [pc, #84]	@ (8010f74 <RCM_ExecRegularConv+0x120>)
+ 8010f1e:	2280      	movs	r2, #128	@ 0x80
+ 8010f20:	801a      	strh	r2, [r3, #0]
+ 8010f22:	8948      	ldrh	r0, [r1, #10]
+ 8010f24:	bc70      	pop	{r4, r5, r6}
+ 8010f26:	4770      	bx	lr
+ 8010f28:	4a14      	ldr	r2, [pc, #80]	@ (8010f7c <RCM_ExecRegularConv+0x128>)
+ 8010f2a:	f852 2023 	ldr.w	r2, [r2, r3, lsl #2]
+ 8010f2e:	4282      	cmp	r2, r0
+ 8010f30:	d1f4      	bne.n	8010f1c <RCM_ExecRegularConv+0xc8>
+ 8010f32:	4a0f      	ldr	r2, [pc, #60]	@ (8010f70 <RCM_ExecRegularConv+0x11c>)
+ 8010f34:	5cd2      	ldrb	r2, [r2, r3]
+ 8010f36:	2a00      	cmp	r2, #0
+ 8010f38:	d0f0      	beq.n	8010f1c <RCM_ExecRegularConv+0xc8>
+ 8010f3a:	4a0b      	ldr	r2, [pc, #44]	@ (8010f68 <RCM_ExecRegularConv+0x114>)
+ 8010f3c:	4c0b      	ldr	r4, [pc, #44]	@ (8010f6c <RCM_ExecRegularConv+0x118>)
+ 8010f3e:	6852      	ldr	r2, [r2, #4]
+ 8010f40:	480f      	ldr	r0, [pc, #60]	@ (8010f80 <RCM_ExecRegularConv+0x12c>)
+ 8010f42:	f854 3023 	ldr.w	r3, [r4, r3, lsl #2]
+ 8010f46:	6800      	ldr	r0, [r0, #0]
+ 8010f48:	1ad3      	subs	r3, r2, r3
+ 8010f4a:	4a0e      	ldr	r2, [pc, #56]	@ (8010f84 <RCM_ExecRegularConv+0x130>)
+ 8010f4c:	fba2 0200 	umull	r0, r2, r2, r0
+ 8010f50:	ebb3 1f92 	cmp.w	r3, r2, lsr #6
+ 8010f54:	d3e5      	bcc.n	8010f22 <RCM_ExecRegularConv+0xce>
+ 8010f56:	e7e1      	b.n	8010f1c <RCM_ExecRegularConv+0xc8>
+ 8010f58:	4e05      	ldr	r6, [pc, #20]	@ (8010f70 <RCM_ExecRegularConv+0x11c>)
+ 8010f5a:	4c04      	ldr	r4, [pc, #16]	@ (8010f6c <RCM_ExecRegularConv+0x118>)
+ 8010f5c:	e79c      	b.n	8010e98 <RCM_ExecRegularConv+0x44>
+ 8010f5e:	bf00      	nop
+ 8010f60:	40012c00 	.word	0x40012c00
+ 8010f64:	20006778 	.word	0x20006778
+ 8010f68:	e0001000 	.word	0xe0001000
+ 8010f6c:	20006760 	.word	0x20006760
+ 8010f70:	20006770 	.word	0x20006770
+ 8010f74:	2000675c 	.word	0x2000675c
+ 8010f78:	2000677c 	.word	0x2000677c
+ 8010f7c:	20006780 	.word	0x20006780
+ 8010f80:	20000374 	.word	0x20000374
+ 8010f84:	10624dd3 	.word	0x10624dd3
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_regular_adc_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+080018a4 <mic_current_regular_window>:
+ 80018a4:	4b0a      	ldr	r3, [pc, #40]	@ (80018d0 <mic_current_regular_window+0x2c>)
+ 80018a6:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
+ 80018a8:	6818      	ldr	r0, [r3, #0]
+ 80018aa:	6adb      	ldr	r3, [r3, #44]	@ 0x2c
+ 80018ac:	f010 0010 	ands.w	r0, r0, #16
+ 80018b0:	d00d      	beq.n	80018ce <mic_current_regular_window+0x2a>
+ 80018b2:	f5b3 6fc0 	cmp.w	r3, #1536	@ 0x600
+ 80018b6:	d909      	bls.n	80018cc <mic_current_regular_window+0x28>
+ 80018b8:	f5b2 6f80 	cmp.w	r2, #1024	@ 0x400
+ 80018bc:	d906      	bls.n	80018cc <mic_current_regular_window+0x28>
+ 80018be:	f5a3 7300 	sub.w	r3, r3, #512	@ 0x200
+ 80018c2:	4293      	cmp	r3, r2
+ 80018c4:	bf94      	ite	ls
+ 80018c6:	2000      	movls	r0, #0
+ 80018c8:	2001      	movhi	r0, #1
+ 80018ca:	4770      	bx	lr
+ 80018cc:	2000      	movs	r0, #0
+ 80018ce:	4770      	bx	lr
+ 80018d0:	40012c00 	.word	0x40012c00

@@ -1,0 +1,93 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -26,7 +26,7 @@
+   uint32_t faults,adaptive_steps;
+   uint8_t preflux; /* 0 unused, 1 commanded current frame, 2 handed over */
+   float start_cos,start_sin;
+-  float if_last_ia,if_last_ib;
++  float last_ia,last_ib;
+ } ma_controller;
+ typedef struct {
+   uint32_t arr,latest,settle,acquire,min_pulse,deadtime_ticks;
+@@ -301,29 +301,25 @@
+   else if(hypotf(ia,ib)>m->trip_current)fault=MA_CURRENT;
+   for(unsigned i=0;i<6;i++)if(!isfinite(x[i]))fault=MA_OBSERVER;
+   if(fault){c->faults++;out->fault=(uint8_t)fault;return fault;}
++  const int first_frame=c->time_s==0.f;
+   c->time_s+=dt;
+   const float flux=ma_control_norm(x[2],x[3]);
+   if(!speed_ready&&c->preflux==0U){
+     c->start_cos=1.f;c->start_sin=0.f;c->preflux=1U;
+-    c->if_last_ia=ia;c->if_last_ib=ib;
+   }
+   float c0=1.f,s=0.f,start_omega=0.f;
++  int handover=0;
+   if(c->preflux==1U){
+     const float start_hz=c->time_s<.10f?0.f:ma_min2(reference_hz,5.f);
+     start_omega=6.2831853072f*start_hz;
+     c0=c->start_cos;s=c->start_sin;
+-    /* At handover the PI integral is still in the currently applied frame.
+-     * Check that frame against the estimate, without advancing an oscillator
+-     * which will no longer be used. Keep the same admission criteria. */
+     const float projection=c0*x[2]+s*x[3];
+     if(speed_ready&&start_hz>=1.f&&flux>.0001f&&projection>=.92f*flux&&
+        fabsf(m->poles*x[4]-start_omega)<=6.2831853072f){
+       const float inv_flux=1.f/flux;
+-      const float d=projection*inv_flux,q=(c0*x[3]-s*x[2])*inv_flux;
+-      const float a=c->integral[0],b=c->integral[1];
+-      c->integral[0]=d*a+q*b;c->integral[1]=-q*a+d*b;
+       c0=x[2]*inv_flux;s=x[3]*inv_flux;
+       c->preflux=2U;
++      handover=1;
+     }else{
+       const float delta=start_omega*dt;
+       const float next_c=c0-delta*s,next_s=s+delta*c0;
+@@ -332,14 +328,11 @@
+       speed_ready=0;
+     }
+   }else if(flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
+-  /* During I/f only, attenuate alternating ADC-frame feedback before the
+-   * current PI. Raw ia/ib have already passed the original current trip.
+-   * Keep the dead-time polarity and the 16-frame observer input raw. */
+-  float feedback_ia=ia,feedback_ib=ib;
+-  if(c->preflux==1U){
+-    feedback_ia=.5f*(ia+c->if_last_ia);feedback_ib=.5f*(ib+c->if_last_ib);
+-    c->if_last_ia=ia;c->if_last_ib=ib;
+-  }
++  /* Keep identical feedback on both sides of the I/f to FOC handover.
++   * Peak protection, dead-time polarity and the observer still use raw samples. */
++  const float feedback_ia=first_frame?ia:.5f*(ia+c->last_ia);
++  const float feedback_ib=first_frame?ib:.5f*(ib+c->last_ib);
++  c->last_ia=ia;c->last_ib=ib;
+   const float id=c0*feedback_ia+s*feedback_ib,iq=-s*feedback_ia+c0*feedback_ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
+   /* A provisional flux can establish magnetization, but an unqualified
+@@ -369,8 +362,15 @@
+    * rotation only, leaving flux and back-EMF compensation to closed-loop. */
+   const float ff[2]={c->preflux==1U?m->rs*id-sync*l*iq:res*id-kr*ar*flux-sync*l*iq,
+     c->preflux==1U?m->rs*iq+sync*l*id:res*iq+kr*m->poles*omega*flux+sync*l*id};
+-  float dq[2]={ff[0]+l*m->current_bw*err[0]+c->integral[0],
+-               ff[1]+l*m->current_bw*err[1]+c->integral[1]};
++  const float kp_current=l*m->current_bw;
++  const float vd=ff[0]+kp_current*err[0],vq=ff[1]+kp_current*err[1];
++  if(handover){
++    /* Track the last realizable stator voltage in the new frame. Rotating
++     * the integral alone leaves the feed-forward and proportional steps. */
++    c->integral[0]=c0*c->last_va+s*c->last_vb-vd;
++    c->integral[1]=-s*c->last_va+c0*c->last_vb-vq;
++  }
++  float dq[2]={vd+c->integral[0],vq+c->integral[1]};
+   const float limit=.90f*bus*.5773502692f;
+   const float scale=ma_voltage_scale(dq[0],dq[1],limit);
+   for(unsigned i=0;i<2;i++){
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -755,7 +755,7 @@
+   /* Include the open-loop and qualified handover branches in OFF DWT.
+    * Synthetic inputs only. No output-enable, timer or protection writes. */
+   fe_test_controller.preflux=(uint8_t)(fe_n%3U);
+-  if(!fe_n){fe_test_controller.if_last_ia=fe_test_ia;fe_test_controller.if_last_ib=fe_test_ib;}
++  if(!fe_n){fe_test_controller.last_ia=fe_test_ia;fe_test_controller.last_ib=fe_test_ib;}
+   fe_test_controller.start_cos=cosf((fe_case%16U)*.3926990817f);
+   fe_test_controller.start_sin=sinf((fe_case%16U)*.3926990817f);
+   if(fe_test_controller.preflux==1U&&(fe_case&9U)==9U)

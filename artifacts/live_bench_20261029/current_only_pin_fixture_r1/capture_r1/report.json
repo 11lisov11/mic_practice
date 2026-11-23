@@ -1,0 +1,97 @@
+{
+  "passed": false,
+  "flash_commands": 2,
+  "pin_requests": 1,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "isolation_operator_confirmed": true,
+  "restored": true,
+  "boot": {
+    "build": 2026102990,
+    "state": 0,
+    "reason": 0,
+    "attempted": 0,
+    "elapsed_ms": 0.0,
+    "clock_hz": 170000000,
+    "updates": 0,
+    "phase": 0,
+    "BDTR": 37305458,
+    "ARR": 5312,
+    "CCR": [
+      1328,
+      2656,
+      3984
+    ],
+    "GPIOA_IDR": 41024,
+    "local_stop": 0,
+    "CCER": 1365,
+    "SMCR": 0,
+    "SysTick_LOAD": 169999
+  },
+  "after": {
+    "build": 2026102990,
+    "state": 2,
+    "reason": 0,
+    "attempted": 1,
+    "elapsed_ms": 5000.003570588236,
+    "clock_hz": 170000000,
+    "updates": 80008,
+    "phase": 2,
+    "BDTR": 37305458,
+    "ARR": 5312,
+    "CCR": [
+      1328,
+      2656,
+      3984
+    ],
+    "GPIOA_IDR": 41024,
+    "local_stop": 0,
+    "CCER": 1365,
+    "SMCR": 0,
+    "SysTick_LOAD": 169999
+  },
+  "native_auto_stop_verified": true,
+  "capture_saved": true,
+  "restore_sha256": "a3ce3a422c79eeec7aa721461f996665d89b29c499b6d78912a653d3ffbce9a3",
+  "channels": {
+    "0": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.22853434523717597,
+      "rising_edges": 80008,
+      "active_duration_s": 5.0006255
+    },
+    "1": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.7285271658988538,
+      "rising_edges": 80008,
+      "active_duration_s": 5.000635917
+    },
+    "2": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.47851180695469653,
+      "rising_edges": 80008,
+      "active_duration_s": 5.000633333
+    },
+    "3": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.4785280547371996,
+      "rising_edges": 80008,
+      "active_duration_s": 5.000628167
+    },
+    "4": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.7285462565215902,
+      "rising_edges": 80008,
+      "active_duration_s": 5.000641083
+    },
+    "5": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.2285345722990322,
+      "rising_edges": 80008,
+      "active_duration_s": 5.0006203330000005
+    }
+  },
+  "sd_high_entire_capture": true,
+  "waveform_analysis_passed": false,
+  "production_live_restored": true
+}

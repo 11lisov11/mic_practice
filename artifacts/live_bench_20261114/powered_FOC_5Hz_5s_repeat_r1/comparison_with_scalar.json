@@ -1,0 +1,58 @@
+{
+  "FOC_run_id": 5,
+  "VF_run_id": 4,
+  "FOC_duration_ms": 5000,
+  "VF_duration_ms": 5000,
+  "selection": "Last recorded live full200ms window at5Hz for each run; no frozen partial tail windows used",
+  "FOC_RMS_nominal_A": [
+    0.364,
+    0.346,
+    0.382
+  ],
+  "VF_RMS_nominal_A": [
+    0.413,
+    0.419,
+    0.413
+  ],
+  "FOC_mean_RMS_nominal_A": 0.36400000000000005,
+  "VF_mean_RMS_nominal_A": 0.415,
+  "FOC_lower_current_percent": 12.289156626506008,
+  "both_window_ms": 200,
+  "both_ADC_coverage_percent": 100,
+  "FOC_observer_validity_during_run": [
+    {
+      "elapsed_ms": 1300,
+      "rpm_est": 389.75,
+      "valid": 1,
+      "reference_hz": 2.0
+    },
+    {
+      "elapsed_ms": 2563,
+      "rpm_est": 389.41,
+      "valid": 0,
+      "reference_hz": 4.1
+    },
+    {
+      "elapsed_ms": 3826,
+      "rpm_est": 388.4,
+      "valid": 0,
+      "reference_hz": 5.0
+    }
+  ],
+  "FOC_observer_validity_lost_in_some_samples": true,
+  "absolute_current_scale_qualified": false,
+  "rotor_speed_independently_measured": false,
+  "power_or_efficiency_measured": false,
+  "physical_FOC_rotation_verified": true,
+  "physical_VF_rotation_verified": true,
+  "FOC_raw_first_ADC_preserved": true,
+  "native_and_Linux_boot_unchanged": true,
+  "CLEAR": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "limitations": [
+    "Same5Hz reference does not prove the same actual shaft speed.",
+    "Nominal shunt scale; one selected window per run is only a preliminary comparison.",
+    "Internal observer speed-valid flag dropped during this FOC run; no independent encoder to validate speed."
+  ]
+}

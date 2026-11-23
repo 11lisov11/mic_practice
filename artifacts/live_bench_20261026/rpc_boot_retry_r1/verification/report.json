@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "Motor algorithm, watchdog, SD, encoder capture, display and UART control code unchanged; identity, read-only counters and idle-only startup retry differ",
+    "Both sketch and Bridge singleton compiled against same patched local headers; target ELF includes health counters; loader relocation check passed",
+    "Recorded zero capture and calibration decode with new Uno identity; unknown identity rejected; four diagnostics parse through actual HMI"
+  ],
+  "autonomous_coldboot_verified": false
+}

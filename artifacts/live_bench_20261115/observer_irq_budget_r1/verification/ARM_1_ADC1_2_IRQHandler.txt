@@ -1,0 +1,77 @@
+08011ed0 <ADC1_2_IRQHandler>:
+ 8011ed0:	b570      	push	{r4, r5, r6, lr}
+ 8011ed2:	f3ef 8305 	mrs	r3, IPSR
+ 8011ed6:	2b22      	cmp	r3, #34	@ 0x22
+ 8011ed8:	d011      	beq.n	8011efe <ADC1_2_IRQHandler+0x2e>
+ 8011eda:	4c2a      	ldr	r4, [pc, #168]	@ (8011f84 <ADC1_2_IRQHandler+0xb4>)
+ 8011edc:	6863      	ldr	r3, [r4, #4]
+ 8011ede:	f3bf 8f5f 	dmb	sy
+ 8011ee2:	f7ef fdab 	bl	8001a3c <mic_current_adc_irq>
+ 8011ee6:	f7ff fc51 	bl	801178c <RCM_ServiceAfterInjected>
+ 8011eea:	f04f 43a0 	mov.w	r3, #1342177280	@ 0x50000000
+ 8011eee:	2240      	movs	r2, #64	@ 0x40
+ 8011ef0:	601a      	str	r2, [r3, #0]
+ 8011ef2:	f3bf 8f5f 	dmb	sy
+ 8011ef6:	6863      	ldr	r3, [r4, #4]
+ 8011ef8:	f3bf 8f5f 	dmb	sy
+ 8011efc:	bd70      	pop	{r4, r5, r6, pc}
+ 8011efe:	4b22      	ldr	r3, [pc, #136]	@ (8011f88 <ADC1_2_IRQHandler+0xb8>)
+ 8011f00:	685b      	ldr	r3, [r3, #4]
+ 8011f02:	051b      	lsls	r3, r3, #20
+ 8011f04:	d52c      	bpl.n	8011f60 <ADC1_2_IRQHandler+0x90>
+ 8011f06:	4c21      	ldr	r4, [pc, #132]	@ (8011f8c <ADC1_2_IRQHandler+0xbc>)
+ 8011f08:	4d1e      	ldr	r5, [pc, #120]	@ (8011f84 <ADC1_2_IRQHandler+0xb4>)
+ 8011f0a:	686e      	ldr	r6, [r5, #4]
+ 8011f0c:	6823      	ldr	r3, [r4, #0]
+ 8011f0e:	3301      	adds	r3, #1
+ 8011f10:	6023      	str	r3, [r4, #0]
+ 8011f12:	f3bf 8f5f 	dmb	sy
+ 8011f16:	f7ef fd91 	bl	8001a3c <mic_current_adc_irq>
+ 8011f1a:	f7ff fc37 	bl	801178c <RCM_ServiceAfterInjected>
+ 8011f1e:	f04f 43a0 	mov.w	r3, #1342177280	@ 0x50000000
+ 8011f22:	2240      	movs	r2, #64	@ 0x40
+ 8011f24:	601a      	str	r2, [r3, #0]
+ 8011f26:	f3bf 8f5f 	dmb	sy
+ 8011f2a:	686b      	ldr	r3, [r5, #4]
+ 8011f2c:	6862      	ldr	r2, [r4, #4]
+ 8011f2e:	1b9b      	subs	r3, r3, r6
+ 8011f30:	441a      	add	r2, r3
+ 8011f32:	6062      	str	r2, [r4, #4]
+ 8011f34:	68a2      	ldr	r2, [r4, #8]
+ 8011f36:	3201      	adds	r2, #1
+ 8011f38:	60a2      	str	r2, [r4, #8]
+ 8011f3a:	6822      	ldr	r2, [r4, #0]
+ 8011f3c:	3201      	adds	r2, #1
+ 8011f3e:	6022      	str	r2, [r4, #0]
+ 8011f40:	4a13      	ldr	r2, [pc, #76]	@ (8011f90 <ADC1_2_IRQHandler+0xc0>)
+ 8011f42:	6a51      	ldr	r1, [r2, #36]	@ 0x24
+ 8011f44:	3101      	adds	r1, #1
+ 8011f46:	6251      	str	r1, [r2, #36]	@ 0x24
+ 8011f48:	6a91      	ldr	r1, [r2, #40]	@ 0x28
+ 8011f4a:	3101      	adds	r1, #1
+ 8011f4c:	6291      	str	r1, [r2, #40]	@ 0x28
+ 8011f4e:	6ad1      	ldr	r1, [r2, #44]	@ 0x2c
+ 8011f50:	440b      	add	r3, r1
+ 8011f52:	62d3      	str	r3, [r2, #44]	@ 0x2c
+ 8011f54:	6a53      	ldr	r3, [r2, #36]	@ 0x24
+ 8011f56:	3301      	adds	r3, #1
+ 8011f58:	6253      	str	r3, [r2, #36]	@ 0x24
+ 8011f5a:	f3bf 8f5f 	dmb	sy
+ 8011f5e:	bd70      	pop	{r4, r5, r6, pc}
+ 8011f60:	4c08      	ldr	r4, [pc, #32]	@ (8011f84 <ADC1_2_IRQHandler+0xb4>)
+ 8011f62:	6865      	ldr	r5, [r4, #4]
+ 8011f64:	f3bf 8f5f 	dmb	sy
+ 8011f68:	f7ef fd68 	bl	8001a3c <mic_current_adc_irq>
+ 8011f6c:	f7ff fc0e 	bl	801178c <RCM_ServiceAfterInjected>
+ 8011f70:	f04f 43a0 	mov.w	r3, #1342177280	@ 0x50000000
+ 8011f74:	2240      	movs	r2, #64	@ 0x40
+ 8011f76:	601a      	str	r2, [r3, #0]
+ 8011f78:	f3bf 8f5f 	dmb	sy
+ 8011f7c:	6863      	ldr	r3, [r4, #4]
+ 8011f7e:	1b5b      	subs	r3, r3, r5
+ 8011f80:	e7de      	b.n	8011f40 <ADC1_2_IRQHandler+0x70>
+ 8011f82:	bf00      	nop
+ 8011f84:	e0001000 	.word	0xe0001000
+ 8011f88:	e000ed00 	.word	0xe000ed00
+ 8011f8c:	20005f4c 	.word	0x20005f4c
+ 8011f90:	20005ee0 	.word	0x20005ee0

@@ -1,0 +1,499 @@
+
+artifacts\live_bench_20261030\observer_trace_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0801474c <HAL_GPIO_Init>:
+  assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
+  assert_param(IS_GPIO_PIN(GPIO_Init->Pin));
+  assert_param(IS_GPIO_MODE(GPIO_Init->Mode));
+
+  /* Configure the port pins */
+  while (((GPIO_Init->Pin) >> position) != 0U)
+ 801474c:	680b      	ldr	r3, [r1, #0]
+ 801474e:	2b00      	cmp	r3, #0
+ 8014750:	f000 8194 	beq.w	8014a7c <HAL_GPIO_Init+0x330>
+{
+ 8014754:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 8014758:	f1b0 4f90 	cmp.w	r0, #1207959552	@ 0x48000000
+ 801475c:	b085      	sub	sp, #20
+  uint32_t position = 0x00U;
+ 801475e:	f04f 0200 	mov.w	r2, #0
+ 8014762:	f000 80d6 	beq.w	8014912 <HAL_GPIO_Init+0x1c6>
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+        SYSCFG->EXTICR[position >> 2U] = temp;
+
+        /* Clear Rising Falling edge configuration */
+        temp = EXTI->RTSR1;
+ 8014766:	f8df 8330 	ldr.w	r8, [pc, #816]	@ 8014a98 <HAL_GPIO_Init+0x34c>
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+ 801476a:	9100      	str	r1, [sp, #0]
+    iocurrent = (GPIO_Init->Pin) & (1UL << position);
+ 801476c:	f04f 0b01 	mov.w	fp, #1
+ 8014770:	fa0b f502 	lsl.w	r5, fp, r2
+    if (iocurrent != 0x00u)
+ 8014774:	ea15 0a03 	ands.w	sl, r5, r3
+ 8014778:	f000 8082 	beq.w	8014880 <HAL_GPIO_Init+0x134>
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 801477c:	9e00      	ldr	r6, [sp, #0]
+ 801477e:	6877      	ldr	r7, [r6, #4]
+ 8014780:	f007 0e03 	and.w	lr, r7, #3
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 8014784:	2103      	movs	r1, #3
+ 8014786:	0054      	lsls	r4, r2, #1
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 8014788:	f10e 39ff 	add.w	r9, lr, #4294967295
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 801478c:	fa01 fc04 	lsl.w	ip, r1, r4
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 8014790:	f1b9 0f01 	cmp.w	r9, #1
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 8014794:	4631      	mov	r1, r6
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 8014796:	ea6f 0c0c 	mvn.w	ip, ip
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 801479a:	68b6      	ldr	r6, [r6, #8]
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 801479c:	d978      	bls.n	8014890 <HAL_GPIO_Init+0x144>
+      if (((GPIO_Init->Mode & GPIO_MODE) != MODE_ANALOG) ||
+ 801479e:	f1be 0f03 	cmp.w	lr, #3
+ 80147a2:	d101      	bne.n	80147a8 <HAL_GPIO_Init+0x5c>
+ 80147a4:	2e01      	cmp	r6, #1
+ 80147a6:	d005      	beq.n	80147b4 <HAL_GPIO_Init+0x68>
+        temp = GPIOx->PUPDR;
+ 80147a8:	68c5      	ldr	r5, [r0, #12]
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80147aa:	40a6      	lsls	r6, r4
+        temp &= ~(GPIO_PUPDR_PUPD0 << (position * 2U));
+ 80147ac:	ea05 050c 	and.w	r5, r5, ip
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80147b0:	432e      	orrs	r6, r5
+        GPIOx->PUPDR = temp;
+ 80147b2:	60c6      	str	r6, [r0, #12]
+      temp = GPIOx->MODER;
+ 80147b4:	6805      	ldr	r5, [r0, #0]
+      temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2U));
+ 80147b6:	fa0e f404 	lsl.w	r4, lr, r4
+      temp &= ~(GPIO_MODER_MODE0 << (position * 2U));
+ 80147ba:	ea05 050c 	and.w	r5, r5, ip
+      temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2U));
+ 80147be:	432c      	orrs	r4, r5
+      if ((GPIO_Init->Mode & EXTI_MODE) != 0x00u)
+ 80147c0:	f417 3f40 	tst.w	r7, #196608	@ 0x30000
+      GPIOx->MODER = temp;
+ 80147c4:	6004      	str	r4, [r0, #0]
+      if ((GPIO_Init->Mode & EXTI_MODE) != 0x00u)
+ 80147c6:	d05b      	beq.n	8014880 <HAL_GPIO_Init+0x134>
+        __HAL_RCC_SYSCFG_CLK_ENABLE();
+ 80147c8:	4db0      	ldr	r5, [pc, #704]	@ (8014a8c <HAL_GPIO_Init+0x340>)
+ 80147ca:	6e2c      	ldr	r4, [r5, #96]	@ 0x60
+ 80147cc:	f044 0401 	orr.w	r4, r4, #1
+ 80147d0:	662c      	str	r4, [r5, #96]	@ 0x60
+ 80147d2:	6e2c      	ldr	r4, [r5, #96]	@ 0x60
+ 80147d4:	f004 0401 	and.w	r4, r4, #1
+ 80147d8:	9403      	str	r4, [sp, #12]
+ 80147da:	9c03      	ldr	r4, [sp, #12]
+        temp = SYSCFG->EXTICR[position >> 2U];
+ 80147dc:	f022 0403 	bic.w	r4, r2, #3
+ 80147e0:	f104 4480 	add.w	r4, r4, #1073741824	@ 0x40000000
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+ 80147e4:	f002 0603 	and.w	r6, r2, #3
+ 80147e8:	210f      	movs	r1, #15
+ 80147ea:	f504 3480 	add.w	r4, r4, #65536	@ 0x10000
+ 80147ee:	00b6      	lsls	r6, r6, #2
+ 80147f0:	fa01 fc06 	lsl.w	ip, r1, r6
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+ 80147f4:	49a6      	ldr	r1, [pc, #664]	@ (8014a90 <HAL_GPIO_Init+0x344>)
+        temp = SYSCFG->EXTICR[position >> 2U];
+ 80147f6:	68a5      	ldr	r5, [r4, #8]
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+ 80147f8:	4288      	cmp	r0, r1
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+ 80147fa:	ea25 050c 	bic.w	r5, r5, ip
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+ 80147fe:	f000 8082 	beq.w	8014906 <HAL_GPIO_Init+0x1ba>
+ 8014802:	49a4      	ldr	r1, [pc, #656]	@ (8014a94 <HAL_GPIO_Init+0x348>)
+ 8014804:	4288      	cmp	r0, r1
+ 8014806:	d078      	beq.n	80148fa <HAL_GPIO_Init+0x1ae>
+ 8014808:	f8df c290 	ldr.w	ip, [pc, #656]	@ 8014a9c <HAL_GPIO_Init+0x350>
+ 801480c:	4560      	cmp	r0, ip
+ 801480e:	f000 812f 	beq.w	8014a70 <HAL_GPIO_Init+0x324>
+ 8014812:	f8df c28c 	ldr.w	ip, [pc, #652]	@ 8014aa0 <HAL_GPIO_Init+0x354>
+ 8014816:	4560      	cmp	r0, ip
+ 8014818:	f000 8131 	beq.w	8014a7e <HAL_GPIO_Init+0x332>
+ 801481c:	f8df c284 	ldr.w	ip, [pc, #644]	@ 8014aa4 <HAL_GPIO_Init+0x358>
+ 8014820:	4560      	cmp	r0, ip
+ 8014822:	bf0c      	ite	eq
+ 8014824:	f04f 0c05 	moveq.w	ip, #5
+ 8014828:	f04f 0c06 	movne.w	ip, #6
+ 801482c:	fa0c f606 	lsl.w	r6, ip, r6
+ 8014830:	4335      	orrs	r5, r6
+        SYSCFG->EXTICR[position >> 2U] = temp;
+ 8014832:	60a5      	str	r5, [r4, #8]
+        temp = EXTI->RTSR1;
+ 8014834:	f8d8 4008 	ldr.w	r4, [r8, #8]
+        temp &= ~(iocurrent);
+ 8014838:	ea6f 050a 	mvn.w	r5, sl
+        if ((GPIO_Init->Mode & TRIGGER_RISING) != 0x00U)
+ 801483c:	02fe      	lsls	r6, r7, #11
+        temp &= ~(iocurrent);
+ 801483e:	bf54      	ite	pl
+ 8014840:	402c      	andpl	r4, r5
+        {
+          temp |= iocurrent;
+ 8014842:	ea4a 0404 	orrmi.w	r4, sl, r4
+        }
+        EXTI->RTSR1 = temp;
+ 8014846:	f8c8 4008 	str.w	r4, [r8, #8]
+
+        temp = EXTI->FTSR1;
+ 801484a:	f8d8 400c 	ldr.w	r4, [r8, #12]
+        temp &= ~(iocurrent);
+        if ((GPIO_Init->Mode & TRIGGER_FALLING) != 0x00U)
+ 801484e:	02b9      	lsls	r1, r7, #10
+        temp &= ~(iocurrent);
+ 8014850:	bf54      	ite	pl
+ 8014852:	402c      	andpl	r4, r5
+        {
+          temp |= iocurrent;
+ 8014854:	ea4a 0404 	orrmi.w	r4, sl, r4
+        }
+        EXTI->FTSR1 = temp;
+ 8014858:	f8c8 400c 	str.w	r4, [r8, #12]
+
+        temp = EXTI->EMR1;
+ 801485c:	f8d8 4004 	ldr.w	r4, [r8, #4]
+        temp &= ~(iocurrent);
+        if ((GPIO_Init->Mode & EXTI_EVT) != 0x00U)
+ 8014860:	03be      	lsls	r6, r7, #14
+        temp &= ~(iocurrent);
+ 8014862:	bf54      	ite	pl
+ 8014864:	402c      	andpl	r4, r5
+        {
+          temp |= iocurrent;
+ 8014866:	ea4a 0404 	orrmi.w	r4, sl, r4
+        }
+        EXTI->EMR1 = temp;
+ 801486a:	f8c8 4004 	str.w	r4, [r8, #4]
+
+        /* Clear EXTI line configuration */
+        temp = EXTI->IMR1;
+ 801486e:	f8d8 4000 	ldr.w	r4, [r8]
+        temp &= ~(iocurrent);
+        if ((GPIO_Init->Mode & EXTI_IT) != 0x00U)
+ 8014872:	03f9      	lsls	r1, r7, #15
+        temp &= ~(iocurrent);
+ 8014874:	bf54      	ite	pl
+ 8014876:	402c      	andpl	r4, r5
+        {
+          temp |= iocurrent;
+ 8014878:	ea4a 0404 	orrmi.w	r4, sl, r4
+        }
+        EXTI->IMR1 = temp;
+ 801487c:	f8c8 4000 	str.w	r4, [r8]
+      }
+    }
+
+    position++;
+ 8014880:	3201      	adds	r2, #1
+  while (((GPIO_Init->Pin) >> position) != 0U)
+ 8014882:	fa33 f402 	lsrs.w	r4, r3, r2
+ 8014886:	f47f af73 	bne.w	8014770 <HAL_GPIO_Init+0x24>
+  }
+}
+ 801488a:	b005      	add	sp, #20
+ 801488c:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+        temp = GPIOx->OSPEEDR;
+ 8014890:	f8d0 9008 	ldr.w	r9, [r0, #8]
+        temp |= (GPIO_Init->Speed << (position * 2U));
+ 8014894:	68c9      	ldr	r1, [r1, #12]
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 8014896:	ea09 090c 	and.w	r9, r9, ip
+        temp |= (GPIO_Init->Speed << (position * 2U));
+ 801489a:	40a1      	lsls	r1, r4
+ 801489c:	ea41 0909 	orr.w	r9, r1, r9
+        GPIOx->OSPEEDR = temp;
+ 80148a0:	f8c0 9008 	str.w	r9, [r0, #8]
+        temp = GPIOx->OTYPER;
+ 80148a4:	f8d0 9004 	ldr.w	r9, [r0, #4]
+        temp &= ~(GPIO_OTYPER_OT0 << position) ;
+ 80148a8:	ea29 0905 	bic.w	r9, r9, r5
+        temp |= (((GPIO_Init->Mode & OUTPUT_TYPE) >> OUTPUT_TYPE_Pos) << position);
+ 80148ac:	f3c7 1500 	ubfx	r5, r7, #4, #1
+ 80148b0:	4095      	lsls	r5, r2
+ 80148b2:	ea45 0509 	orr.w	r5, r5, r9
+        GPIOx->OTYPER = temp;
+ 80148b6:	6045      	str	r5, [r0, #4]
+        temp = GPIOx->PUPDR;
+ 80148b8:	68c5      	ldr	r5, [r0, #12]
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80148ba:	40a6      	lsls	r6, r4
+        temp &= ~(GPIO_PUPDR_PUPD0 << (position * 2U));
+ 80148bc:	ea05 050c 	and.w	r5, r5, ip
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80148c0:	432e      	orrs	r6, r5
+      if ((GPIO_Init->Mode & GPIO_MODE) == MODE_AF)
+ 80148c2:	f1be 0f02 	cmp.w	lr, #2
+        GPIOx->PUPDR = temp;
+ 80148c6:	60c6      	str	r6, [r0, #12]
+      if ((GPIO_Init->Mode & GPIO_MODE) == MODE_AF)
+ 80148c8:	f47f af74 	bne.w	80147b4 <HAL_GPIO_Init+0x68>
+        temp = GPIOx->AFR[position >> 3U];
+ 80148cc:	ea4f 09d2 	mov.w	r9, r2, lsr #3
+ 80148d0:	eb00 0989 	add.w	r9, r0, r9, lsl #2
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 80148d4:	f002 0607 	and.w	r6, r2, #7
+        temp = GPIOx->AFR[position >> 3U];
+ 80148d8:	f8d9 1020 	ldr.w	r1, [r9, #32]
+ 80148dc:	9101      	str	r1, [sp, #4]
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 80148de:	9900      	ldr	r1, [sp, #0]
+ 80148e0:	690d      	ldr	r5, [r1, #16]
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 80148e2:	00b6      	lsls	r6, r6, #2
+ 80148e4:	210f      	movs	r1, #15
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 80148e6:	40b5      	lsls	r5, r6
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 80148e8:	fa01 f606 	lsl.w	r6, r1, r6
+ 80148ec:	9901      	ldr	r1, [sp, #4]
+ 80148ee:	ea21 0606 	bic.w	r6, r1, r6
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 80148f2:	4335      	orrs	r5, r6
+        GPIOx->AFR[position >> 3U] = temp;
+ 80148f4:	f8c9 5020 	str.w	r5, [r9, #32]
+ 80148f8:	e75c      	b.n	80147b4 <HAL_GPIO_Init+0x68>
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+ 80148fa:	f04f 0c02 	mov.w	ip, #2
+ 80148fe:	fa0c f606 	lsl.w	r6, ip, r6
+ 8014902:	4335      	orrs	r5, r6
+ 8014904:	e795      	b.n	8014832 <HAL_GPIO_Init+0xe6>
+ 8014906:	f04f 0c01 	mov.w	ip, #1
+ 801490a:	fa0c f606 	lsl.w	r6, ip, r6
+ 801490e:	4335      	orrs	r5, r6
+ 8014910:	e78f      	b.n	8014832 <HAL_GPIO_Init+0xe6>
+        temp = EXTI->RTSR1;
+ 8014912:	f8df 8184 	ldr.w	r8, [pc, #388]	@ 8014a98 <HAL_GPIO_Init+0x34c>
+ 8014916:	e051      	b.n	80149bc <HAL_GPIO_Init+0x270>
+      if (((GPIO_Init->Mode & GPIO_MODE) != MODE_ANALOG) ||
+ 8014918:	2c03      	cmp	r4, #3
+ 801491a:	d101      	bne.n	8014920 <HAL_GPIO_Init+0x1d4>
+ 801491c:	2e01      	cmp	r6, #1
+ 801491e:	d006      	beq.n	801492e <HAL_GPIO_Init+0x1e2>
+        temp = GPIOx->PUPDR;
+ 8014920:	68c5      	ldr	r5, [r0, #12]
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 8014922:	fa06 f60e 	lsl.w	r6, r6, lr
+        temp &= ~(GPIO_PUPDR_PUPD0 << (position * 2U));
+ 8014926:	ea0c 0505 	and.w	r5, ip, r5
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 801492a:	432e      	orrs	r6, r5
+        GPIOx->PUPDR = temp;
+ 801492c:	60c6      	str	r6, [r0, #12]
+      temp = GPIOx->MODER;
+ 801492e:	6805      	ldr	r5, [r0, #0]
+      temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2U));
+ 8014930:	fa04 f40e 	lsl.w	r4, r4, lr
+      temp &= ~(GPIO_MODER_MODE0 << (position * 2U));
+ 8014934:	ea05 050c 	and.w	r5, r5, ip
+      temp |= ((GPIO_Init->Mode & GPIO_MODE) << (position * 2U));
+ 8014938:	432c      	orrs	r4, r5
+      if ((GPIO_Init->Mode & EXTI_MODE) != 0x00u)
+ 801493a:	f417 3f40 	tst.w	r7, #196608	@ 0x30000
+      GPIOx->MODER = temp;
+ 801493e:	6004      	str	r4, [r0, #0]
+      if ((GPIO_Init->Mode & EXTI_MODE) != 0x00u)
+ 8014940:	d037      	beq.n	80149b2 <HAL_GPIO_Init+0x266>
+        __HAL_RCC_SYSCFG_CLK_ENABLE();
+ 8014942:	4d52      	ldr	r5, [pc, #328]	@ (8014a8c <HAL_GPIO_Init+0x340>)
+ 8014944:	6e2c      	ldr	r4, [r5, #96]	@ 0x60
+ 8014946:	f044 0401 	orr.w	r4, r4, #1
+ 801494a:	662c      	str	r4, [r5, #96]	@ 0x60
+ 801494c:	6e2c      	ldr	r4, [r5, #96]	@ 0x60
+ 801494e:	f004 0401 	and.w	r4, r4, #1
+ 8014952:	9403      	str	r4, [sp, #12]
+ 8014954:	9c03      	ldr	r4, [sp, #12]
+        temp = SYSCFG->EXTICR[position >> 2U];
+ 8014956:	f022 0403 	bic.w	r4, r2, #3
+ 801495a:	f104 4480 	add.w	r4, r4, #1073741824	@ 0x40000000
+ 801495e:	f504 3480 	add.w	r4, r4, #65536	@ 0x10000
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+ 8014962:	f002 0503 	and.w	r5, r2, #3
+ 8014966:	260f      	movs	r6, #15
+ 8014968:	00ad      	lsls	r5, r5, #2
+ 801496a:	fa06 f505 	lsl.w	r5, r6, r5
+        temp = SYSCFG->EXTICR[position >> 2U];
+ 801496e:	68a6      	ldr	r6, [r4, #8]
+        temp &= ~(0x0FUL << (4U * (position & 0x03U)));
+ 8014970:	ea26 0505 	bic.w	r5, r6, r5
+        SYSCFG->EXTICR[position >> 2U] = temp;
+ 8014974:	60a5      	str	r5, [r4, #8]
+        if ((GPIO_Init->Mode & TRIGGER_RISING) != 0x00U)
+ 8014976:	02fe      	lsls	r6, r7, #11
+        temp = EXTI->RTSR1;
+ 8014978:	f8d8 4008 	ldr.w	r4, [r8, #8]
+        temp &= ~(iocurrent);
+ 801497c:	ea6f 0509 	mvn.w	r5, r9
+        if ((GPIO_Init->Mode & TRIGGER_RISING) != 0x00U)
+ 8014980:	d473      	bmi.n	8014a6a <HAL_GPIO_Init+0x31e>
+        temp &= ~(iocurrent);
+ 8014982:	402c      	ands	r4, r5
+        EXTI->RTSR1 = temp;
+ 8014984:	f8c8 4008 	str.w	r4, [r8, #8]
+        if ((GPIO_Init->Mode & TRIGGER_FALLING) != 0x00U)
+ 8014988:	02be      	lsls	r6, r7, #10
+        temp = EXTI->FTSR1;
+ 801498a:	f8d8 400c 	ldr.w	r4, [r8, #12]
+        if ((GPIO_Init->Mode & TRIGGER_FALLING) != 0x00U)
+ 801498e:	d469      	bmi.n	8014a64 <HAL_GPIO_Init+0x318>
+        temp &= ~(iocurrent);
+ 8014990:	402c      	ands	r4, r5
+        EXTI->FTSR1 = temp;
+ 8014992:	f8c8 400c 	str.w	r4, [r8, #12]
+        if ((GPIO_Init->Mode & EXTI_EVT) != 0x00U)
+ 8014996:	03be      	lsls	r6, r7, #14
+        temp = EXTI->EMR1;
+ 8014998:	f8d8 4004 	ldr.w	r4, [r8, #4]
+        if ((GPIO_Init->Mode & EXTI_EVT) != 0x00U)
+ 801499c:	d45f      	bmi.n	8014a5e <HAL_GPIO_Init+0x312>
+        temp &= ~(iocurrent);
+ 801499e:	402c      	ands	r4, r5
+        EXTI->EMR1 = temp;
+ 80149a0:	f8c8 4004 	str.w	r4, [r8, #4]
+        if ((GPIO_Init->Mode & EXTI_IT) != 0x00U)
+ 80149a4:	03ff      	lsls	r7, r7, #15
+        temp = EXTI->IMR1;
+ 80149a6:	f8d8 4000 	ldr.w	r4, [r8]
+        if ((GPIO_Init->Mode & EXTI_IT) != 0x00U)
+ 80149aa:	d455      	bmi.n	8014a58 <HAL_GPIO_Init+0x30c>
+        temp &= ~(iocurrent);
+ 80149ac:	402c      	ands	r4, r5
+        EXTI->IMR1 = temp;
+ 80149ae:	f8c8 4000 	str.w	r4, [r8]
+    position++;
+ 80149b2:	3201      	adds	r2, #1
+  while (((GPIO_Init->Pin) >> position) != 0U)
+ 80149b4:	fa33 f402 	lsrs.w	r4, r3, r2
+ 80149b8:	f43f af67 	beq.w	801488a <HAL_GPIO_Init+0x13e>
+    iocurrent = (GPIO_Init->Pin) & (1UL << position);
+ 80149bc:	2401      	movs	r4, #1
+ 80149be:	fa04 f502 	lsl.w	r5, r4, r2
+    if (iocurrent != 0x00u)
+ 80149c2:	ea13 0905 	ands.w	r9, r3, r5
+ 80149c6:	d0f4      	beq.n	80149b2 <HAL_GPIO_Init+0x266>
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 80149c8:	684f      	ldr	r7, [r1, #4]
+ 80149ca:	fa02 fe04 	lsl.w	lr, r2, r4
+ 80149ce:	f007 0403 	and.w	r4, r7, #3
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 80149d2:	2603      	movs	r6, #3
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 80149d4:	f104 3aff 	add.w	sl, r4, #4294967295
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 80149d8:	fa06 fc0e 	lsl.w	ip, r6, lr
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 80149dc:	f1ba 0f01 	cmp.w	sl, #1
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80149e0:	688e      	ldr	r6, [r1, #8]
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 80149e2:	ea6f 0c0c 	mvn.w	ip, ip
+      if(((GPIO_Init->Mode & GPIO_MODE) == MODE_OUTPUT) ||
+ 80149e6:	d897      	bhi.n	8014918 <HAL_GPIO_Init+0x1cc>
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80149e8:	fa06 f60e 	lsl.w	r6, r6, lr
+        temp = GPIOx->OSPEEDR;
+ 80149ec:	f8d0 b008 	ldr.w	fp, [r0, #8]
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 80149f0:	9600      	str	r6, [sp, #0]
+        temp |= (GPIO_Init->Speed << (position * 2U));
+ 80149f2:	68ce      	ldr	r6, [r1, #12]
+        temp &= ~(GPIO_OSPEEDR_OSPEED0 << (position * 2U));
+ 80149f4:	ea0c 0b0b 	and.w	fp, ip, fp
+        temp |= (GPIO_Init->Speed << (position * 2U));
+ 80149f8:	fa06 fa0e 	lsl.w	sl, r6, lr
+ 80149fc:	ea4a 0a0b 	orr.w	sl, sl, fp
+        GPIOx->OSPEEDR = temp;
+ 8014a00:	f8c0 a008 	str.w	sl, [r0, #8]
+        temp = GPIOx->OTYPER;
+ 8014a04:	f8d0 a004 	ldr.w	sl, [r0, #4]
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 8014a08:	9e00      	ldr	r6, [sp, #0]
+        temp &= ~(GPIO_OTYPER_OT0 << position) ;
+ 8014a0a:	ea2a 0a05 	bic.w	sl, sl, r5
+        temp |= (((GPIO_Init->Mode & OUTPUT_TYPE) >> OUTPUT_TYPE_Pos) << position);
+ 8014a0e:	f3c7 1500 	ubfx	r5, r7, #4, #1
+ 8014a12:	4095      	lsls	r5, r2
+ 8014a14:	ea45 050a 	orr.w	r5, r5, sl
+        GPIOx->OTYPER = temp;
+ 8014a18:	6045      	str	r5, [r0, #4]
+        temp = GPIOx->PUPDR;
+ 8014a1a:	68c5      	ldr	r5, [r0, #12]
+        temp &= ~(GPIO_PUPDR_PUPD0 << (position * 2U));
+ 8014a1c:	ea0c 0505 	and.w	r5, ip, r5
+        temp |= ((GPIO_Init->Pull) << (position * 2U));
+ 8014a20:	432e      	orrs	r6, r5
+      if ((GPIO_Init->Mode & GPIO_MODE) == MODE_AF)
+ 8014a22:	2c02      	cmp	r4, #2
+        GPIOx->PUPDR = temp;
+ 8014a24:	60c6      	str	r6, [r0, #12]
+      if ((GPIO_Init->Mode & GPIO_MODE) == MODE_AF)
+ 8014a26:	d182      	bne.n	801492e <HAL_GPIO_Init+0x1e2>
+        temp = GPIOx->AFR[position >> 3U];
+ 8014a28:	08d6      	lsrs	r6, r2, #3
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 8014a2a:	690d      	ldr	r5, [r1, #16]
+ 8014a2c:	00b6      	lsls	r6, r6, #2
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 8014a2e:	f002 0a07 	and.w	sl, r2, #7
+ 8014a32:	f106 4690 	add.w	r6, r6, #1207959552	@ 0x48000000
+ 8014a36:	ea4f 0a8a 	mov.w	sl, sl, lsl #2
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 8014a3a:	fa05 f50a 	lsl.w	r5, r5, sl
+        temp = GPIOx->AFR[position >> 3U];
+ 8014a3e:	f8d6 b020 	ldr.w	fp, [r6, #32]
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 8014a42:	9500      	str	r5, [sp, #0]
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 8014a44:	250f      	movs	r5, #15
+ 8014a46:	fa05 fa0a 	lsl.w	sl, r5, sl
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 8014a4a:	9d00      	ldr	r5, [sp, #0]
+        temp &= ~(0xFU << ((position & 0x07U) * 4U));
+ 8014a4c:	ea2b 0b0a 	bic.w	fp, fp, sl
+        temp |= ((GPIO_Init->Alternate) << ((position & 0x07U) * 4U));
+ 8014a50:	ea45 050b 	orr.w	r5, r5, fp
+        GPIOx->AFR[position >> 3U] = temp;
+ 8014a54:	6235      	str	r5, [r6, #32]
+ 8014a56:	e76a      	b.n	801492e <HAL_GPIO_Init+0x1e2>
+          temp |= iocurrent;
+ 8014a58:	ea44 0409 	orr.w	r4, r4, r9
+ 8014a5c:	e7a7      	b.n	80149ae <HAL_GPIO_Init+0x262>
+          temp |= iocurrent;
+ 8014a5e:	ea44 0409 	orr.w	r4, r4, r9
+ 8014a62:	e79d      	b.n	80149a0 <HAL_GPIO_Init+0x254>
+          temp |= iocurrent;
+ 8014a64:	ea49 0404 	orr.w	r4, r9, r4
+ 8014a68:	e793      	b.n	8014992 <HAL_GPIO_Init+0x246>
+          temp |= iocurrent;
+ 8014a6a:	ea49 0404 	orr.w	r4, r9, r4
+ 8014a6e:	e789      	b.n	8014984 <HAL_GPIO_Init+0x238>
+        temp |= (GPIO_GET_INDEX(GPIOx) << (4U * (position & 0x03U)));
+ 8014a70:	f04f 0c03 	mov.w	ip, #3
+ 8014a74:	fa0c f606 	lsl.w	r6, ip, r6
+ 8014a78:	4335      	orrs	r5, r6
+ 8014a7a:	e6da      	b.n	8014832 <HAL_GPIO_Init+0xe6>
+ 8014a7c:	4770      	bx	lr
+ 8014a7e:	f04f 0c04 	mov.w	ip, #4
+ 8014a82:	fa0c f606 	lsl.w	r6, ip, r6
+ 8014a86:	4335      	orrs	r5, r6
+ 8014a88:	e6d3      	b.n	8014832 <HAL_GPIO_Init+0xe6>
+ 8014a8a:	bf00      	nop
+ 8014a8c:	40021000 	.word	0x40021000
+ 8014a90:	48000400 	.word	0x48000400
+ 8014a94:	48000800 	.word	0x48000800
+ 8014a98:	40010400 	.word	0x40010400
+ 8014a9c:	48000c00 	.word	0x48000c00
+ 8014aa0:	48001000 	.word	0x48001000
+ 8014aa4:	48001400 	.word	0x48001400

@@ -1,0 +1,216 @@
+{
+  "pair": [
+    2026102703,
+    2026102704
+  ],
+  "motor_commands": {
+    "clear_before_first_start": 1,
+    "first_start": 1,
+    "operator_requested_repeat_start": 1,
+    "clear_before_repeat": 0,
+    "flash": 0,
+    "reset": 0
+  },
+  "sensor_under_pwm_qualified": false,
+  "physical_rotation_confirmed": true,
+  "physical_confirmation_pending": false,
+  "drive_faults_during_trials": false,
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "final_arm": 0,
+  "final_transport": 0,
+  "final_masks": [
+    0,
+    0
+  ],
+  "runs": [
+    {
+      "name": "first",
+      "original_report": "trial/report.json",
+      "raw_full_measurement_pass": false,
+      "raw_error": "Timed OFF observed but fewer than2 valid5Hz current windows",
+      "timed_run_completed": true,
+      "run_start_ms": 411112,
+      "run_stop_ms": 416112,
+      "mcu_elapsed_ms": 5000,
+      "outputs_off_confirmed": true,
+      "target_hz": 5,
+      "active_snapshots": 3,
+      "distinct_valid_target_current_windows": 1,
+      "i2c_error_delta": 110,
+      "counters": {
+        "nack": 38,
+        "deadline": 21,
+        "busy": 41,
+        "arlo": 10,
+        "ovr": 0,
+        "short": 0,
+        "setup": 0,
+        "berr_clears": 43,
+        "clean_stops": 15,
+        "forced_resets": 88,
+        "stop_requests": 25,
+        "cleanup_expired": 47
+      },
+      "sampled_successful_reads_during_pwm": [
+        83693,
+        83828,
+        83930
+      ],
+      "sampled_angles_during_pwm": [
+        {
+          "raw": 2367,
+          "ok": 1,
+          "speed_ok": 1,
+          "rpm": 0.0,
+          "status": 103
+        },
+        {
+          "raw": 0,
+          "ok": 0,
+          "speed_ok": 0,
+          "rpm": 0.0,
+          "status": 0
+        },
+        {
+          "raw": 240,
+          "ok": 0,
+          "speed_ok": 0,
+          "rpm": 0.0,
+          "status": 55
+        }
+      ]
+    },
+    {
+      "name": "operator_requested_repeat",
+      "original_report": "repeat_trial/report.json",
+      "raw_full_measurement_pass": false,
+      "raw_error": "Timed OFF observed but fewer than2 valid5Hz current windows",
+      "timed_run_completed": true,
+      "run_start_ms": 600552,
+      "run_stop_ms": 605552,
+      "mcu_elapsed_ms": 5000,
+      "outputs_off_confirmed": true,
+      "target_hz": 5,
+      "active_snapshots": 3,
+      "distinct_valid_target_current_windows": 1,
+      "i2c_error_delta": 100,
+      "counters": {
+        "nack": 31,
+        "deadline": 15,
+        "busy": 42,
+        "arlo": 12,
+        "ovr": 0,
+        "short": 0,
+        "setup": 0,
+        "berr_clears": 63,
+        "clean_stops": 20,
+        "forced_resets": 72,
+        "stop_requests": 17,
+        "cleanup_expired": 30
+      },
+      "sampled_successful_reads_during_pwm": [
+        121190,
+        121343,
+        121476
+      ],
+      "sampled_angles_during_pwm": [
+        {
+          "raw": 2303,
+          "ok": 1,
+          "speed_ok": 0,
+          "rpm": 0.0,
+          "status": 39
+        },
+        {
+          "raw": 3368,
+          "ok": 1,
+          "speed_ok": 0,
+          "rpm": 0.0,
+          "status": 39
+        },
+        {
+          "raw": 0,
+          "ok": 0,
+          "speed_ok": 0,
+          "rpm": 0.0,
+          "status": 0
+        }
+      ],
+      "physical_rotation_verified": true
+    }
+  ],
+  "first_fault": {
+    "tick_ms": 417575,
+    "cycles": 2268221863,
+    "decision_isr": 32785,
+    "isr_before_gpio": 32785,
+    "gpiob_idr": 80,
+    "isr_after_gpio": 32785,
+    "cr1": 513,
+    "cr2": 65644,
+    "timingr": 810685207,
+    "gpiob_moder": 4294618810,
+    "gpiob_otyper": 768,
+    "gpiob_afrh": 68,
+    "rcc_ccipr": 268443648,
+    "tim1_bdtr": 37338226,
+    "tim1_cnt": 1620,
+    "tim1_cr1": 305,
+    "tim1_arr": 5312,
+    "tim1_ccr1": 2656,
+    "tim1_ccr2": 2640,
+    "tim1_ccr3": 2669,
+    "poll_gap_cycles": 4055,
+    "max_poll_gap_cycles": 91611,
+    "attempt_age_cycles": 47339,
+    "errors_before": 0,
+    "reads_before": 83514,
+    "previous_isr": 32769,
+    "previous_cr2": 65644,
+    "previous_gpio": 851,
+    "previous_cycles": 2268217808,
+    "sysclk_hz": 170000000,
+    "rcc_cfgr": 15,
+    "gpio_sample_cycles": 2268222370,
+    "kind": "first_with_pwm",
+    "cause": "NACK",
+    "cause_code": 2,
+    "stage": 5,
+    "driver_state": 2,
+    "received_bytes": 0,
+    "scl": false,
+    "sda": false,
+    "pwm_moe": true,
+    "poll_gap_us": 23.852941176470587,
+    "attempt_age_us": 278.4647058823529,
+    "registers_changed_during_gpio_sample": false,
+    "record_crc32c": "338c2b55",
+    "limitation": "Sequential MMIO snapshot before PE/reset; not an analog waveform or a simultaneous sample of all registers",
+    "cleanup_terminal_isr": 32769,
+    "cleanup_terminal_cr1": 513,
+    "cleanup_terminal_cr2": 82028,
+    "cleanup_terminal_gpio": 592,
+    "cleanup_terminal_cycles": 2268307799,
+    "cleanup_flags": 26,
+    "cleanup_stop_seen": false,
+    "cleanup_forced": true,
+    "cleanup_arlo": false,
+    "cleanup_stop_requested": true,
+    "cleanup_expired": true,
+    "cleanup_no_transfer": false,
+    "cleanup_duration_us": 505.50588235294117
+  },
+  "findings_ru": [
+    "РќРѕРІС‹Р№ РґСЂР°Р№РІРµСЂ РёСЃРїРѕР»РЅРёР» РѕРіСЂР°РЅРёС‡РµРЅРЅРѕРµ РѕР¶РёРґР°РЅРёРµ Рё РѕРґРЅСѓ softwareSTOP: terminalCR1PE1, STOPpending1, STOPF0, BUSY1. РўРѕР»СЊРєРѕ РїРѕСЃР»Рµ505.506РјРєСЃ РІС‹РїРѕР»РЅРµРЅ РІС‹РЅСѓР¶РґРµРЅРЅС‹Р№ PEreset.",
+    "РџРµСЂРІС‹Р№ NACK РѕС‚РјРµС‡РµРЅ РЅР° stage5/state2 РїРѕСЃР»Рµ Р·Р°РіСЂСѓР·РєРё0x0B РІ TXDR Рё РѕР¶РёРґР°РЅРёСЏ TC; РІРѕР·СЂР°СЃС‚278.465РјРєСЃ РјРµРЅСЊС€Рµ Р±СЋРґР¶РµС‚Р°3РјСЃ, РїСЂРµРґС‹РґСѓС‰РёР№poll23.853РјРєСЃ. Р­С‚Рѕ РЅРµ РїРµСЂРІС‹Р№ С‚Р°Р№Рј-Р°СѓС‚ Рё РЅРµ РґРѕРєР°Р·Р°С‚РµР»СЊСЃС‚РІРѕ РѕР±С‰РµР№ РЅРµС…РІР°С‚РєРё РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚Рё MCU.",
+    "Р’ РїРµСЂРІРѕРј GPIO snapshot SCL/SDA LOW; РІ terminal snapshot SCL LOW/SDA HIGH. РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рµ С†РёС„СЂРѕРІС‹Рµ СЃРЅРёРјРєРё РЅРµ РїРѕРєР°Р·С‹РІР°СЋС‚, РєР°РєРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ РёР»Рё РїРѕРјРµС…Р° РґРµСЂР¶Р°Р»Рё/РёСЃРєР°Р·РёР»Рё Р»РёРЅРёСЋ.",
+    "РћРґРёРЅРѕС‡РЅС‹Рµ NACK/ARLO/OVR/BUSY/SHORT/SETUP РєР°С‚РµРіРѕСЂРёРё вЂ” РїРµСЂРІРёС‡РЅС‹Рµ РїСЂРёС‡РёРЅС‹ РїРѕРїС‹С‚РѕРє. BERRclears106 Р·Р° РґРІР° РїСЂРѕРіРѕРЅР° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ, РІ СЃСѓРјРјСѓ210 РЅРµ РІС…РѕРґСЏС‚.",
+    "РљРѕРґ РѕР¶РёРґР°РЅРёСЏSTOP РёСЃРїСЂР°РІР»РµРЅ, РЅРѕ РїРµСЂРІС‹Рј NACK Рё РЅРµРІРѕР·РјРѕР¶РЅРѕСЃС‚СЊСЋ Р·Р°РІРµСЂС€РёС‚СЊSTOP РїСЂРѕР±Р»РµРјР° РЅРµ РёСЃС‡РµСЂРїС‹РІР°РµС‚СЃСЏ. РџРµСЂРµРєР»Р°РґС‹РІР°С‚СЊ РІСЃС‘ РЅР° РІРµР±-РїР»Р°РЅРёСЂРѕРІС‰РёРє РёР»Рё СѓС‚РІРµСЂР¶РґР°С‚СЊ Р°РїРїР°СЂР°С‚РЅС‹Р№ РґРµС„РµРєС‚ РїРѕ СЌС‚РёРј РґР°РЅРЅС‹Рј РЅРµР»СЊР·СЏ.",
+    "РћР±Р° raw report.passed=false: strict runner РїРѕР»СѓС‡РёР» С‚РѕР»СЊРєРѕ РѕРґРЅРѕ РІР°Р»РёРґРЅРѕРµ5Р“С† РѕРєРЅРѕ РІРѕ РІСЂРµРјСЏ PWM РІРјРµСЃС‚Рѕ РґРІСѓС…; РѕСЃС‚Р°Р»СЊРЅС‹Рµ Р·Р°РїРёСЃРё Р±С‹Р»Рё РЅР° СЂР°Р·РіРѕРЅРµ Рё РІ РјРѕРјРµРЅС‚ OFF. Р­С‚Рѕ РїРѕР»РЅРѕС‚Р° РІС‹Р±РѕСЂРєРё С‚РѕРєР°, РЅРµ Р°РІР°СЂРёР№РЅР°СЏ РѕСЃС‚Р°РЅРѕРІРєР° РґРІРёРіР°С‚РµР»СЏ. РљСЂРёС‚РµСЂРёР№ РЅРµ РѕСЃР»Р°Р±Р»СЏР»СЃСЏ, РЅРѕРІРѕРіРѕ СЃС‚Р°СЂС‚Р° СЂР°РґРё РѕРєРЅР° РЅРµ Р±С‹Р»Рѕ.",
+    "РџРµСЂРІС‹Р№160Р‘ Р·Р°С…РІР°С‚CRC338c2b55 СЃРѕС…СЂР°РЅС‘РЅ РІ РѕР±РѕРёС… СЃР»РѕС‚Р°С… Рё РЅРµ РёР·РјРµРЅРёР»СЃСЏ РІРѕ РІС‚РѕСЂРѕРј РїСѓСЃРєРµ. enc_fault_bad СѓРІРµР»РёС‡РёР»СЃСЏ1в†’3, РїРѕР»РЅС‹Рµ Р·Р°РїРёСЃРё CRC-valid; РїСЂРёС‡РёРЅР° РѕС‚РєР°Р·Р° РѕС‚РґРµР»СЊРЅС‹С… СЃС‚СЂР°РЅРёС† РЅРµ Р·Р°С„РёРєСЃРёСЂРѕРІР°РЅР° Рё РЅРµ РѕР±СЉСЏРІР»СЏРµС‚СЃСЏ СЃРёР»РѕРІРѕР№ UART CRC-РѕС€РёР±РєРѕР№.",
+    "РџРѕСЃР»РµSTOP С‡С‚РµРЅРёСЏ РїСЂРѕРґРѕР»Р¶Р°СЋС‚СЃСЏ, I2CРѕС€РёР±РєРё РѕСЃС‚Р°СЋС‚СЃСЏ210. РџСЂРѕРіСЂР°РјРјРЅС‹Р№ РёСЃРїСЂР°РІР»РµРЅРЅС‹Р№ cleanup РїСЂРѕРІРµСЂРµРЅ РЅР° СЌС‚РѕРј СЌРїРёР·РѕРґРµ; РґРѕСЃС‚РѕРІРµСЂРЅР°СЏ СЃРєРѕСЂРѕСЃС‚СЊAS5600 РїРѕРґPWM/FOC РЅРµ РїРѕРґС‚РІРµСЂР¶РґРµРЅР°."
+  ],
+  "physical_rotation_confirmation_scope": "operator_requested_repeat_only",
+  "operator_answer": "Да, вращался ровно"
+}

@@ -1,0 +1,33 @@
+{
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0
+  },
+  "flag_cases_checked": 256,
+  "fresh_samples": 3,
+  "all_sd_low": true,
+  "uart_flags": [
+    0,
+    0,
+    0
+  ],
+  "integrity_errors": [
+    0,
+    0,
+    0
+  ],
+  "decoder_matches_raw_flags": true,
+  "occurred_mask_does_not_change_decoded_level": true,
+  "native_source_reads": "GPIOA->IDR & GPIO_PIN_6",
+  "live_config_ok_all": true,
+  "linux_boot_changed_since_previous_read": true,
+  "previous_native_tick_ms": 1001561,
+  "current_native_tick_ms": 49710,
+  "physical_source_of_low_determined": false,
+  "user_declined_repeated_supply_measurements": true,
+  "protection_changes": false,
+  "previous_captures_modified": false
+}

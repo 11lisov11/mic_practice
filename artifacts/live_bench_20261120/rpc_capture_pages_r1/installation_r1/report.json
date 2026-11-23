@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "pair": [
+    2026112013,
+    2026111810
+  ],
+  "uno_flash_commands": 1,
+  "native_flash_commands": 0,
+  "native_reset_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "operator_confirmation": "User ready: J1OFF, meter<20V, UnoUSB; no wiring change",
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "USB_identities",
+      "exit_code": 0
+    },
+    {
+      "label": "native_OFF_immediate_before",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_before",
+      "exit_code": 0
+    },
+    {
+      "label": "HMI_hash_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_HMI_before",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server",
+      "exit_code": 0
+    },
+    {
+      "label": "staged_HMI_hash",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_config.json",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_HMI.py",
+      "exit_code": 0
+    },
+    {
+      "label": "candidate_calibration_check",
+      "exit_code": 0
+    },
+    {
+      "label": "native_OFF_before_write",
+      "exit_code": 0
+    },
+    {
+      "label": "router_close",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_Uno_once",
+      "exit_code": 0
+    },
+    {
+      "label": "verify_readback_restart_Uno",
+      "exit_code": 0
+    },
+    {
+      "label": "pull_Uno_flash_readback",
+      "exit_code": 0
+    },
+    {
+      "label": "router_open",
+      "exit_code": 0
+    },
+    {
+      "label": "deploy_HMI",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_after",
+      "exit_code": 0
+    },
+    {
+      "label": "HMI_readback",
+      "exit_code": 0
+    },
+    {
+      "label": "native_flash_after",
+      "exit_code": 0
+    },
+    {
+      "label": "native_OFF_after",
+      "exit_code": 0
+    }
+  ],
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "uno_readback_verified": true,
+  "Uno_readback_sha256": "47b4f9b4f917d7c893bdee1c1e92f1757515bde8c1da2bacf0298ac86bd5db8f",
+  "HMI_deployment": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/rpc_2026112013_20261121_101226",
+    "calibration_unchanged": true,
+    "runtime_verified": false,
+    "hmi_restarts": 1,
+    "flash_commands": 0,
+    "motor_commands": 0
+  },
+  "calibration_after": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_unchanged": true,
+  "HMI_readback_verified": true,
+  "native_image_unchanged_verified": true,
+  "runtime_pending": "Remote end closed connection without response",
+  "runtime_pair_verified": true
+}

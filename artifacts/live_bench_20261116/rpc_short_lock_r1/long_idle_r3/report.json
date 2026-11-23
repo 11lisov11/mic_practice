@@ -1,0 +1,41 @@
+{
+  "passed": false,
+  "duration_required_s": 1100,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "router_reconnect": 0,
+  "HTTP_methods": [
+    "GET"
+  ],
+  "scope": "RPC idle only; native UART fault history is recorded and must remain unchanged. Motor readiness still requires zero faults.",
+  "FOC_start_ready": false,
+  "error": "Native frames stopped advancing",
+  "samples": 2,
+  "elapsed_s": 2.735000000044238,
+  "max_HTTP_latency_s": 1.2810000000172295,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "1816d0ee-de1b-46a9-aa0b-901b71f9a9f3",
+      [
+        2026111606,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        1812657868
+      ]
+    ],
+    "samples": 1,
+    "ready": false,
+    "failure": "Native frames stopped advancing",
+    "quiet_window_seconds": 0.0,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

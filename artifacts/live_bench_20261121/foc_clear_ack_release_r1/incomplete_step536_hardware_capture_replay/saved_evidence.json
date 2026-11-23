@@ -1,0 +1,239 @@
+{
+  "step": 536,
+  "electrical_reference_Hz": 0.800000011920929,
+  "NIS": 26.485742568969727,
+  "conditional_NIS_terms": [
+    25.202161822932542,
+    1.2835814588774848
+  ],
+  "phase_U_mean_A_534_535_536": [
+    0.1510989010989011,
+    0.1510989010989011,
+    0.16908686551543695
+  ],
+  "previous_window_mean_minus_prior_U_A": 0.07387568957203036,
+  "change_in_measured_U_since_previous_window_A": 0.017987964416535857,
+  "predictor_change_U_this_step_A": -0.013553731143474579,
+  "total_U_innovation_A": 0.1054173851320408,
+  "previous_gap_fraction_of_final_U_innovation": 0.7007922789917165,
+  "phase_U_max_consecutive_change_A": 0.16309087737659164,
+  "phase_U_peak_to_peak_A": 0.18227803942089654,
+  "bit_exact_NIS_51_words": true,
+  "first_crossing_during_warmup": {
+    "passed": true,
+    "rows": 237,
+    "checkpoints": 14,
+    "all_states_reconstructed": true,
+    "first_NIS_ge25": 237,
+    "peak_NIS": 25.384750366210938,
+    "terminal_51_words_bit_exact": true,
+    "hardware_commands": 0,
+    "target_timing_measured": false,
+    "elf_sha256": "1b03c23bd64e83e0a7cb77147b43d2b384acc184548923f46ca2bed0c7c18aba"
+  },
+  "centered_ADC_residual_fixture_counts": [
+    [
+      -8,
+      -6
+    ],
+    [
+      8,
+      9
+    ],
+    [
+      3,
+      3
+    ],
+    [
+      11,
+      4
+    ],
+    [
+      -6,
+      -4
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      -9,
+      -8
+    ],
+    [
+      -2,
+      -4
+    ],
+    [
+      -1,
+      -1
+    ],
+    [
+      -4,
+      -9
+    ],
+    [
+      4,
+      8
+    ],
+    [
+      7,
+      6
+    ],
+    [
+      -9,
+      -1
+    ],
+    [
+      -4,
+      -4
+    ],
+    [
+      4,
+      9
+    ],
+    [
+      0,
+      -5
+    ],
+    [
+      -1,
+      5
+    ],
+    [
+      4,
+      1
+    ],
+    [
+      -4,
+      1
+    ],
+    [
+      10,
+      3
+    ],
+    [
+      -5,
+      -5
+    ],
+    [
+      -2,
+      -4
+    ],
+    [
+      -5,
+      -4
+    ],
+    [
+      2,
+      -3
+    ],
+    [
+      0,
+      8
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      0,
+      0
+    ],
+    [
+      12,
+      9
+    ],
+    [
+      1,
+      7
+    ],
+    [
+      -4,
+      -2
+    ],
+    [
+      -12,
+      -3
+    ],
+    [
+      -4,
+      -9
+    ],
+    [
+      -10,
+      -6
+    ],
+    [
+      -3,
+      -2
+    ],
+    [
+      1,
+      7
+    ],
+    [
+      0,
+      -5
+    ],
+    [
+      2,
+      6
+    ],
+    [
+      7,
+      0
+    ],
+    [
+      -8,
+      -6
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      -8,
+      0
+    ],
+    [
+      7,
+      0
+    ],
+    [
+      -8,
+      0
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      -5,
+      1
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      -8,
+      0
+    ],
+    [
+      9,
+      1
+    ]
+  ],
+  "first_237_steps_same_inputs_rest_prior": {
+    "score_at_237_before": 25.384750366210938,
+    "score_at_237_candidate": 14.430414199829102,
+    "peak_NIS_before": 25.384750366210938,
+    "peak_NIS_candidate": 19.80769920349121,
+    "rpm_at_100_before": 625.0922101472614,
+    "rpm_at_100_candidate": 8.9862163595203,
+    "crossings_candidate": 0,
+    "not_a_replay_of_unavailable_steps_238_to_535": true
+  },
+  "scope": "No measured terminal voltage or independent rotor speed. Centered real frame deviations exercise I/f feedback in a separate model, not a closed-loop replay of the physical bench."
+}

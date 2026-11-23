@@ -1,0 +1,17 @@
+{
+  "operator_correction": "User corrected TP8 reading:15V present, previous0V was a measurement mistake",
+  "supersedes": "TP8_zero_report.json",
+  "measurements": {
+    "STEVAL_3V3_C21_to_TP21_V": 3.292,
+    "TP8_VCCH_to_TP21_V": 15,
+    "TP23_SD_to_TP21_V": 0
+  },
+  "earlier_CIN_observation": "0 rawADC at TP17 while J4ON; probe has since moved to TP23, so this is not a current concurrent CIN measurement",
+  "outstanding": "Actual VCCL pin13 relative to local IPM GND pin16; identify source holding shared SD without bypassing protection",
+  "exact_physical_cause_identified": false,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "old_evidence_overwritten": false
+}

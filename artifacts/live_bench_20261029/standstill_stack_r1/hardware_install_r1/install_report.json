@@ -1,0 +1,64 @@
+{
+  "passed": false,
+  "uno_flash_commands": 0,
+  "nucleo_flash_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "programming_guard": "fresh independent passive SWD + exact predecessor readback + physical meter confirmation",
+  "native_preflight": {
+    "passed": true,
+    "source": "passive ST-Link HotPlug reads",
+    "ports": [
+      "COM10",
+      "COM13"
+    ],
+    "independent_meter_confirmation": "user below 20 V / J1 off",
+    "native_image_sha256": "aa12546c9d5bff2b07e2be1fa0f0016b9cd9acd177e534223c953d348dc4e8e1",
+    "layout_from_actual_dwarf": {
+      "SensorType": 0,
+      "ConversionFactor": 2,
+      "LatestConv": 4,
+      "AvBusVoltage_d": 6,
+      "FaultState": 8
+    },
+    "rows": [
+      {
+        "tick_ms": 594712,
+        "bus_volts": 10.26416015625,
+        "conversion_factor": 416,
+        "digital_bus": 1617,
+        "bdtr": 37305458,
+        "moe": false
+      },
+      {
+        "tick_ms": 595170,
+        "bus_volts": 10.22607421875,
+        "conversion_factor": 416,
+        "digital_bus": 1611,
+        "bdtr": 37305458,
+        "moe": false
+      }
+    ],
+    "tick_delta_ms": 458,
+    "flash_writes": 0,
+    "reset_commands": 0,
+    "halt_commands": 0,
+    "motor_commands": 0
+  },
+  "commands": [
+    {
+      "label": "calibration_hash",
+      "exit_code": 0
+    },
+    {
+      "label": "preserve_halt_native",
+      "exit_code": 0
+    },
+    {
+      "label": "router_serial_close",
+      "exit_code": 1
+    }
+  ],
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "error": "router_serial_close failed; see C:\\mic_practice\\artifacts\\live_bench_20261029\\standstill_stack_r1\\hardware_install_r1\\router_serial_close.log"
+}

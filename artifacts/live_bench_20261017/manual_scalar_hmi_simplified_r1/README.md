@@ -1,0 +1,3 @@
+# Simplified manual V/f HMI candidate
+
+The candidate app.js is based on the exact diagnostic bundle currently served by Uno Q and preserves the live fault explanation and BKIN snapshot UI. It reduces the manual view to Start, Stop, emergency stop, and the 0–50 Hz slider, while moving acceleration/downshift settings into a collapsed panel. It hides the key field while the stored token is valid and hides ARM text/button from the normal view; Start runs the existing authenticated timed HV preflight. Backend authentication, timed permit, safety thresholds, MCU images and calibration are unchanged. No motor or flash commands were sent. Local candidate only; not installed.

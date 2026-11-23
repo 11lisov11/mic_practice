@@ -1,0 +1,81 @@
+{
+  "captures": [
+    {
+      "capture": "stock_router_compare_r1",
+      "requests": 2,
+      "responses": 2,
+      "missing_request_ids": [],
+      "replies_at_64_byte_boundary": []
+    },
+    {
+      "capture": "stock_router_packet_r1",
+      "requests": 119,
+      "responses": 119,
+      "missing_request_ids": [],
+      "replies_at_64_byte_boundary": []
+    },
+    {
+      "capture": "stock_router_stress_r1",
+      "requests": 13,
+      "responses": 12,
+      "missing_request_ids": [
+        13
+      ],
+      "replies_at_64_byte_boundary": [
+        {
+          "request_id": 12,
+          "reply_wire_bytes": 14336,
+          "next_request_id": 13,
+          "next_request_answered": false
+        }
+      ]
+    },
+    {
+      "capture": "stock_router_stress_r2",
+      "requests": 15,
+      "responses": 14,
+      "missing_request_ids": [
+        15
+      ],
+      "replies_at_64_byte_boundary": [
+        {
+          "request_id": 14,
+          "reply_wire_bytes": 14336,
+          "next_request_id": 15,
+          "next_request_answered": false
+        }
+      ]
+    },
+    {
+      "capture": "stock_router_stress_r3",
+      "requests": 79,
+      "responses": 79,
+      "missing_request_ids": [],
+      "replies_at_64_byte_boundary": [
+        {
+          "request_id": 54,
+          "reply_wire_bytes": 14336,
+          "next_request_id": 55,
+          "next_request_answered": true
+        }
+      ]
+    },
+    {
+      "capture": "stock_router_stress_r4",
+      "requests": 11,
+      "responses": 10,
+      "missing_request_ids": [
+        11
+      ],
+      "replies_at_64_byte_boundary": [
+        {
+          "request_id": 10,
+          "reply_wire_bytes": 14336,
+          "next_request_id": 11,
+          "next_request_answered": false
+        }
+      ]
+    }
+  ],
+  "interpretation": "Observational correlation only. An aligned response followed by a successful GET rules out length by itself as a sufficient cause."
+}

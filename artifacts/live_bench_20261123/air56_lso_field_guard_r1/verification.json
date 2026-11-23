@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "pair": [
+    2026112311,
+    2026112312
+  ],
+  "hardware_commands": 0,
+  "installed": false,
+  "saved_fault_header": {
+    "duration_ms": 206,
+    "current_rows": 20,
+    "dwt_cycles": 1392,
+    "fault": 32,
+    "raw_rows_available": false
+  },
+  "host_cases": "15 guard cases passed",
+  "first_fault_export_with_estop": {
+    "start_ms": 3514,
+    "reason": "rotor_rate",
+    "samples": 256,
+    "field_hz": 2.0000030994415283,
+    "rotor_hz": 2.0000030994415283,
+    "reference_hz": 0.0,
+    "measured_slip_hz": 0.0,
+    "current_equivalent_flux_counts": 835.2678833007812
+  },
+  "closed_loop_plant": {
+    "handoff_ms": 58,
+    "simulated_peak_A": 0.5150891485111496,
+    "handoff_flux_equivalent_A": 0.3574120104312897,
+    "speed_checkpoints": [
+      {
+        "time_ms": 1000,
+        "simulated_rpm": 258.0279960014553,
+        "observer_rpm": 252.0
+      },
+      {
+        "time_ms": 2000,
+        "simulated_rpm": 305.25688347979764,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 3000,
+        "simulated_rpm": 305.9683782573867,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 4000,
+        "simulated_rpm": 305.42924922098865,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 5000,
+        "simulated_rpm": 305.02469263868403,
+        "observer_rpm": 300.0
+      }
+    ],
+    "stop_ms": 5000,
+    "scope": "calculated unloaded motor, averaged voltage"
+  },
+  "off_cases": 64,
+  "off_max_emulator_instructions": 982,
+  "actual_target_DWT_pending": true,
+  "stack_headroom_bytes": 3124,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "guards": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "preserved_files": 881,
+  "web_hmi_sha256": "55d5a6c1f5ddc18ad14fe5618c116e16054cc4d9f427548b1af8ced21e254762",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "d5b5aefd19c273809e3f52a641fca0c2744e36c679d9242c84b2bb244626af3e",
+    "ACIM-AIR56B2-LSO_FOC.elf": "c4a7816609891685db8d094322f03d51fa3d500a771bd92166ad6db096b92bc0",
+    "ACIM-AIR56B2-LSO_FOC.hex": "4ce2202c164f408d70d34b79fbe37dca5833cd5bab54c0f3d0e64c5b28716bba",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "b50a28af103b332b42d04cdbe5032a20d7fdf26e6b50a245edd7b8abddd52ce3"
+  }
+}

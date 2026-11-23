@@ -1,0 +1,46 @@
+
+C:\mic_practice\artifacts\live_bench_20261012\local_button\candidate_r5\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08008ea0 <PWM_SetPhasePWMOutputs>:
+ 8008ea0:	b410      	push	{r4}
+ 8008ea2:	f8d0 4088 	ldr.w	r4, [r0, #136]	@ 0x88
+ 8008ea6:	6ae1      	ldr	r1, [r4, #44]	@ 0x2c
+ 8008ea8:	6ae2      	ldr	r2, [r4, #44]	@ 0x2c
+ 8008eaa:	6ae3      	ldr	r3, [r4, #44]	@ 0x2c
+ 8008eac:	ed80 0a25 	vstr	s0, [r0, #148]	@ 0x94
+ 8008eb0:	3901      	subs	r1, #1
+ 8008eb2:	ee06 1a90 	vmov	s13, r1
+ 8008eb6:	3a01      	subs	r2, #1
+ 8008eb8:	ee07 2a10 	vmov	s14, r2
+ 8008ebc:	eef8 6a66 	vcvt.f32.u32	s13, s13
+ 8008ec0:	3b01      	subs	r3, #1
+ 8008ec2:	ee07 3a90 	vmov	s15, r3
+ 8008ec6:	eeb8 7a47 	vcvt.f32.u32	s14, s14
+ 8008eca:	ee66 6a80 	vmul.f32	s13, s13, s0
+ 8008ece:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 8008ed2:	ee27 7a20 	vmul.f32	s14, s14, s1
+ 8008ed6:	eefc 6ae6 	vcvt.u32.f32	s13, s13
+ 8008eda:	ee67 7a81 	vmul.f32	s15, s15, s2
+ 8008ede:	ee16 3a90 	vmov	r3, s13
+ 8008ee2:	eebc 7ac7 	vcvt.u32.f32	s14, s14
+ 8008ee6:	b299      	uxth	r1, r3
+ 8008ee8:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8008eec:	ee17 3a10 	vmov	r3, s14
+ 8008ef0:	b29a      	uxth	r2, r3
+ 8008ef2:	ee17 3a90 	vmov	r3, s15
+ 8008ef6:	b29b      	uxth	r3, r3
+ 8008ef8:	edc0 0a26 	vstr	s1, [r0, #152]	@ 0x98
+ 8008efc:	ed80 1a27 	vstr	s2, [r0, #156]	@ 0x9c
+ 8008f00:	f8a0 10a0 	strh.w	r1, [r0, #160]	@ 0xa0
+ 8008f04:	f8a0 20a2 	strh.w	r2, [r0, #162]	@ 0xa2
+ 8008f08:	f8a0 30a4 	strh.w	r3, [r0, #164]	@ 0xa4
+ 8008f0c:	6361      	str	r1, [r4, #52]	@ 0x34
+ 8008f0e:	63a2      	str	r2, [r4, #56]	@ 0x38
+ 8008f10:	63e3      	str	r3, [r4, #60]	@ 0x3c
+ 8008f12:	6920      	ldr	r0, [r4, #16]
+ 8008f14:	f85d 4b04 	ldr.w	r4, [sp], #4
+ 8008f18:	f000 0001 	and.w	r0, r0, #1
+ 8008f1c:	4770      	bx	lr

@@ -1,0 +1,24 @@
+{
+  "pass": true,
+  "checks": {
+    "all_samples_received": true,
+    "transport_clean": true,
+    "pwm_off_disarmed": true,
+    "expected_under_voltage_only": true,
+    "valid_temperature": true,
+    "trial_unspent": true
+  },
+  "samples": 35,
+  "reported_bus_range_v": [
+    6.0,
+    8.0
+  ],
+  "reported_temp_range_c": [
+    50.0,
+    50.0
+  ],
+  "start_commands": 0,
+  "arm_commands": 0,
+  "transport": "direct_wifi_http",
+  "scope": "operator reports J4 15 V; no mains; no actuation"
+}

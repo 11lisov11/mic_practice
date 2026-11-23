@@ -1,0 +1,112 @@
+{
+  "date_moscow": "2026-10-19",
+  "sources": [
+    {
+      "title": "ST AN4277 Rev9: filtering the break input",
+      "url": "https://www.st.com/content/st_com/en/technical-documents/an4277-how-to-use-pwm-shutdown-for-motor-control-and-digital-power-conversion-on-stm32-mcus-stmicroelectronics_asset/chunk-004-topic-an4277-filtering-the-break-input.html",
+      "kind": "official application note",
+      "finding": "Switching noise can spuriously trigger Break; configurable filtering exists but must preserve protection timing."
+    },
+    {
+      "title": "ST STM32G4 LL TIM header",
+      "url": "https://raw.githubusercontent.com/STMicroelectronics/stm32g4xx-hal-driver/master/Inc/stm32g4xx_ll_tim.h",
+      "kind": "official implementation documentation",
+      "finding": "BKF=3 corresponds to fSAMPLING=fCK_INT and N=8; installed local header matches."
+    },
+    {
+      "title": "ST AN4694 EMC design guides, sections4.4.2.2 and5 item5",
+      "url": "https://www.st.com/resource/en/application_note/an4694-emc-design-guides-for-motor-control-applications-stmicroelectronics.pdf",
+      "kind": "official application note",
+      "finding": "Finite shared return inductance and driver/controller ground connections can inject noise into logic and sensing even when a DC ground connection exists."
+    },
+    {
+      "title": "STGIB15CH60TS-L DS10424 Rev10 section4 Table11",
+      "url": "https://www.st.com/resource/en/datasheet/stgib15ch60ts-l.pdf",
+      "kind": "exact module datasheet",
+      "finding": "Typical internal fault-output hold is24us for short OC and70us for short UVLO, without additional SD RC. These are typical, not guaranteed minimum values."
+    },
+    {
+      "title": "ST UM2014 sections4.3.1/4.3.2",
+      "url": "https://www.st.com/resource/en/user_manual/um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf",
+      "kind": "exact board manual",
+      "finding": "SD is bidirectional, with R28=10k pullup and C20 restart network. External shutdown and module fault signaling share the net."
+    },
+    {
+      "title": "STM32G431 ES0431 Rev9 sections2.3.1/2.4.4/2.7.1/2.8.5",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+      "kind": "exact MCU errata",
+      "finding": "The short-pulse bidirectional BKIN issue requires bidirectional mode; saved event BKBID=0. DMAMUX remapping issue has synchronization/reconfiguration preconditions absent in the normal configured recorder. No matched GPIO/DMA false-LOW root cause identified."
+    },
+    {
+      "title": "ST Community: TIM1_BKIN noise immunity problem (2021)",
+      "url": "https://community.st.com/stm32-mcus-products-25/tim1-bkin-noise-immunity-problem-33487",
+      "kind": "first-person forum report, STM32F1",
+      "finding": "Reports noise-triggered BKIN trips. Different MCU, and the discussed internal pullup is already enabled in our source; not an established fix for this stand."
+    },
+    {
+      "title": "ST Community: SLLIMM2 low-voltage input signal injection (2026)",
+      "url": "https://community.st.com/power-management-53/sllimm-2nd-series-low-voltage-input-signal-injection-166835",
+      "kind": "first-person forum report, different STGIF module, unanswered",
+      "finding": "Reports approximately100ns negative input spikes with an RC network. Relevant mechanism example, not proof or a validated solution."
+    },
+    {
+      "title": "ST Community: Weird noise on ADC current sensing (2025)",
+      "url": "https://community.st.com/stm32-mcus-motor-control-34/weird-noise-on-adc-current-sensing-150447",
+      "kind": "first-person G431 FOC report and moderator guidance",
+      "finding": "ADC/PWM sampling timing and switching/ground interference discussed. Does not directly justify tuning a current regulator in our open-loop V/f path."
+    },
+    {
+      "title": "ST Community: NUCLEO-F303RE + STEVAL-IPM15B (2019/2020)",
+      "url": "https://community.st.com/power-management-53/is-anyone-successfully-using-nucleo-f303re-steval-ipm15b-44874",
+      "kind": "first-person forum report, different MCU/FOC application",
+      "finding": "A user reports resolving startup overcurrent by PWM frequency and flux/torque regulator changes. Different control mode and trigger; not transplanted to the22Hz runtime fault."
+    },
+    {
+      "title": "ST AN4277: Break implementation",
+      "url": "https://www.st.com/content/st_com/en/technical-documents/an4277-how-to-use-pwm-shutdown-for-motor-control-and-digital-power-conversion-on-stm32-mcus-stmicroelectronics_asset/chunk-002-topic-an4277-break-implementation.html",
+      "kind": "official application note",
+      "finding": "BIF is not a unique physical-source identifier: system-level break requests can join external BKIN and comparator requests."
+    }
+  ],
+  "leading_hypothesis": "Switching-related disturbance or local reference shift on the SD/BKIN path, with capture integrity still to be independently checked.",
+  "physical_root_cause_proven": false,
+  "mechanism_supported_by_current_configuration": "BKF3 is an8-sample fast filter, approximately47ns at configured170MHz. A true0.4us pulse can pass; a one-point200ns DMA observation does not measure its true analog width.",
+  "other_candidates": [
+    "A true module OC/UVLO assertion truncated/misrepresented by measurement",
+    "Another enabled system Break source",
+    "Unqualified phase-current or V/f operating condition creating a real power-stage fault"
+  ],
+  "evidence_against_simple_crc_cause": "The run retained CRC/sequence/dropped/transport counters at0; MC_DP_FAULT0x400 and BIF were recorded.",
+  "temperature_interpretation": "Primary software temperature fault was not recorded. Module documentation lists OC/UVLO for SD;52C cached sensor data cannot independently qualify die temperature or all heat-induced failure mechanisms.",
+  "local_audit": {
+    "event_bdtr": "0x02333c72",
+    "event_BKBID": 0,
+    "event_BKF": 3,
+    "preserved_idle_AF1": "0x00000201",
+    "comparators_routed_to_break_in_idle_snapshot": false,
+    "event_AF1_not_recorded": true,
+    "software_generated_TIM1_BG_call_found_in_application_or_active_MCSDK_sources": false,
+    "CSS_enabled_in_source": true,
+    "NMI_handler_linked_to_default_infinite_loop_at": "0x08000f0c",
+    "CSS_interpretation": "Normal replies continued after fault, inconsistent with a persistent CSS NMI entering the linked default handler; no event-time CSS flag was captured, so not a complete hardware exclusion."
+  },
+  "actions_performed": [
+    "Web/manual/forum research",
+    "Read-only audit of saved code/registers/events",
+    "Saved source-linked findings"
+  ],
+  "actions_not_performed": [
+    "No control commands",
+    "No board reset",
+    "No flashing",
+    "No protection/filter changes",
+    "No reconnection assumed"
+  ],
+  "measurement_decision": [
+    "If endpoint discrepancy is independently observed: investigate interconnect, reference and probe influence before any filter change.",
+    "If long module SD assertion is observed: distinguish VCC/UVLO from CIN/OC with qualified measurements; duration alone is insufficient.",
+    "If BIF occurs without verified external LOW: inspect event-time AF1/AF2 and system Break flags, plus recorder service timing.",
+    "Auxiliary-only Saleae capture tests the route and instrumentation; absence of a fault there cannot validate powered22Hz operation."
+  ],
+  "pending_operator_preparation_not_confirmed": "J1 physically unplugged after bus discharge; Saleae CH6 PA6/CN10-13, CH7 STEVAL TP23, GND CN7-19; boards powerbanks and J4off. Do not assume user completed this just because they requested research."
+}

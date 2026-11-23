@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "pair": [
+    2026102401,
+    2026102402
+  ],
+  "installation_runtime_connection_verified": true,
+  "nucleo_byte_for_byte_match": true,
+  "uno_at_install_flash_readback_verified": true,
+  "calibration_unchanged": true,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "rpc_recovery_pending": false,
+  "post_cold_boot_reset_commands": 1,
+  "additional_flash_commands_this_turn": 0,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "live_setting_commands": [
+    "SET FREQ 5",
+    "SET FREQ 9.9",
+    "SET FREQ 10",
+    "SET FREQ 15",
+    "SET FREQ 20",
+    "SET FREQ 23",
+    "SET FREQ 25",
+    "SET FREQ 50",
+    "SET FREQ 25",
+    "SET FREQ 10",
+    "SET FREQ 5",
+    "SET FREQ 0"
+  ],
+  "live_samples": 26,
+  "outputs_disabled_all_samples": true,
+  "uart_errors_during_idle_test": 0,
+  "host_actual_sdk_ramp_rates_hz_per_s": [
+    1,
+    5,
+    10
+  ],
+  "host_old_jump_v": 15.921024,
+  "host_new_curve_continuous_at_10hz": true,
+  "physical_pwm_waveform_measured": false,
+  "powered_motor_test_performed": false,
+  "original_installer_timeout_report_preserved": true,
+  "early_cold_boot_adb_failure_preserved": true,
+  "limitation": "Live setting acknowledgements are HMI/Uno settings while PWM is off; actual 0-50Hz motor acceleration remains untested. This correction does not establish the physical cause of UART/SD faults.",
+  "reports": {
+    "installation": "C:\\mic_practice\\artifacts\\live_bench_20261024\\vf_smooth_start_install_usb_r1\\completion_after_cold_start_r2.json",
+    "idle_settings": "C:\\mic_practice\\artifacts\\live_bench_20261024\\vf_smooth_start_install_usb_r1\\idle_frequency\\report.json",
+    "reset": "C:\\mic_practice\\artifacts\\live_bench_20261024\\vf_smooth_start_install_usb_r1\\nucleo_reset_after_cold_start.json",
+    "host": "C:\\mic_practice\\artifacts\\live_bench_20261024\\vf_smooth_start_r1\\selftest\\report.json"
+  }
+}

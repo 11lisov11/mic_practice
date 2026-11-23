@@ -1,0 +1,149 @@
+{
+  "passed": true,
+  "command_guard_cases": 189,
+  "local_stop_cases": 35,
+  "local_stop": [
+    {
+      "ok": true,
+      "label": "unlatched API state"
+    },
+    {
+      "ok": true,
+      "label": "0x8D real API latch"
+    },
+    {
+      "ok": true,
+      "label": "raw status preserved"
+    },
+    {
+      "ok": true,
+      "label": "current ESTOP preserved"
+    },
+    {
+      "ok": true,
+      "label": "first fault fields preserved"
+    },
+    {
+      "ok": true,
+      "label": "detail separates current STOP and first fault"
+    },
+    {
+      "ok": true,
+      "label": "first mask text preserved"
+    },
+    {
+      "ok": true,
+      "label": "flight recorder summary"
+    },
+    {
+      "ok": true,
+      "label": "STOP transition observed with unchanged first fault"
+    },
+    {
+      "ok": true,
+      "label": "pre-STOP context"
+    },
+    {
+      "ok": true,
+      "label": "at-STOP context"
+    },
+    {
+      "ok": true,
+      "label": "recorder preserves first fault"
+    },
+    {
+      "ok": true,
+      "label": "no fabricated driver source"
+    },
+    {
+      "ok": true,
+      "label": "snapshot provenance retained"
+    },
+    {
+      "ok": true,
+      "label": "timing limitation retained"
+    },
+    {
+      "ok": true,
+      "label": "diagnostic transition logged"
+    },
+    {
+      "ok": true,
+      "label": "periodic status consistent"
+    },
+    {
+      "ok": true,
+      "label": "same STOP deduplicated"
+    },
+    {
+      "ok": true,
+      "label": "no duplicate detail prefix"
+    },
+    {
+      "ok": true,
+      "label": "RPC source unmodified"
+    },
+    {
+      "ok": true,
+      "label": "missing telemetry does not invent latch"
+    },
+    {
+      "ok": true,
+      "label": "telemetry variant 0"
+    },
+    {
+      "ok": true,
+      "label": "variant detail 0"
+    },
+    {
+      "ok": true,
+      "label": "telemetry variant 1"
+    },
+    {
+      "ok": true,
+      "label": "variant detail 1"
+    },
+    {
+      "ok": true,
+      "label": "telemetry variant 2"
+    },
+    {
+      "ok": true,
+      "label": "variant detail 2"
+    },
+    {
+      "ok": true,
+      "label": "telemetry variant 3"
+    },
+    {
+      "ok": true,
+      "label": "variant detail 3"
+    },
+    {
+      "ok": true,
+      "label": "telemetry variant 4"
+    },
+    {
+      "ok": true,
+      "label": "variant detail 4"
+    },
+    {
+      "ok": true,
+      "label": "latch-only change logged even if current fault unchanged"
+    },
+    {
+      "ok": true,
+      "label": "current fault change logged independently of latch"
+    },
+    {
+      "ok": true,
+      "label": "UI functions executed: "
+    },
+    {
+      "ok": true,
+      "label": "six UI status cases"
+    }
+  ],
+  "hardware_commands": 0,
+  "scope": "PC fake backend only. Legacy generator identity assertion excluded because transport changed; all motor guard source after SerialClient is identical."
+}

@@ -1,0 +1,78 @@
+{
+  "investigation_completed_on_host": true,
+  "hardware_commands": 0,
+  "motor_starts": 0,
+  "flash_writes": 0,
+  "physical_cause_proven": false,
+  "most_supported_hypothesis": "Switching-correlated ADC measurement contamination through an unguarded third-leg compare edge. Not a confirmed cause on hardware.",
+  "confirmed_code_gap": "cm_pair_window guards only selected shunt phases and accepts an excluded-phase compare during acquisition.",
+  "frequency_match_hz_at_observed_bus_range": [
+    37.9,
+    38.2,
+    38.5
+  ],
+  "exact_counterexample": {
+    "field_hz": 37.9,
+    "angle_deg": 88.3,
+    "ccr": [
+      4928,
+      1463,
+      1584
+    ],
+    "pair": 2,
+    "bus_v": 318
+  },
+  "synthetic_outlier_demonstration": {
+    "assumed_true_u_a": 0.748299,
+    "published_rms_u_a": 0.889854,
+    "published_peak_u_a": 11.147741,
+    "valid": true,
+    "bad": 0,
+    "samples": 3201
+  },
+  "actual_irq_host_regression": {
+    "passed": true,
+    "hardware_commands": 0,
+    "physical_measurements": false,
+    "checks": 42324,
+    "power_pwm_registers_unchanged": true
+  },
+  "proposed_planner": {
+    "safe_windows": 5296554,
+    "no_safe_window": 114246,
+    "geometry_failures": 0,
+    "installed": false
+  },
+  "planner_limits": "Not integrated into timer/ADC IRQs. Must verify preload/update epoch, queue write deadlines and coverage before deployment. Keeps latest trigger4928 and rejects impossible windows; up to11% angle positions are unavailable at high modulation, exceeding installed95% accepted-sample criterion. Do not weaken that criterion just to pass.",
+  "sync_review": {
+    "source_config": [
+      "Both ADCs: same TIM1_TRGO rising trigger, independent mode, async42.5MHz/1, 12-bit left aligned, sampling24.5cycles, one injected rank after initialization.",
+      "ADC1 phases U ch1/V ch7; ADC2 V ch7/W ch6; four separate frozen offsets.",
+      "JQM1 queue end-empty, fixed trigger, fixed length. ADC2 JEOS required; loss latches invalid.",
+      "RCR1, PWM channels preload; next-context selection is based on shadow compares. No per-sample timer epoch or physical timestamp saved."
+    ],
+    "not_proven": [
+      "Actual hardware latency of both sample apertures",
+      "No queue overflow/context mismatch during a spike",
+      "Actual cause of large accepted ADC deviation"
+    ],
+    "device_revision": "Rev X from archived STM32CubeProgrammer log; no new USB/SWD access",
+    "errata_review": "ES0431 Rev9: Y-only channel0 substitution and Z-only mux-switch disturbance do not apply to archived RevX. Wrong-JDR issue requires AHB/ADC>10, while configured ratio4; JQM0 queue-change issues do not match JQM1/fixed trigger/length. None of these observations proves the device fault-free."
+  },
+  "live_evidence_limits": [
+    "Peak packets carry maxima/RMS; separate rawADC snapshots are not the samples that caused maxima.",
+    "At40-50Hz peaks repeat in multiple accepted windows including windows without any rejected timing samples. CRC/sequence clean; one UART NOISE advisory does not prove a cause.",
+    "Software traces alone cannot certify analog current accuracy; persistent peaks may require independent current measurement."
+  ],
+  "next_capture_fields": [
+    "rawADC1/2 around peak with channel/pair ids and actual conversion sequence id",
+    "active/planned CCR1/2/3/4, timerCNT/DIR and update epoch",
+    "ADC1/2 ISR incl JEOS/JQOVF, consumed/planned contexts, timing validity and nearest edge margin",
+    "pre/post samples around maximum, not just last rawADC"
+  ],
+  "sources": {
+    "timer_reference": "https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+    "adc_recommendations": "https://www.st.com/resource/en/application_note/an5346-stm32g4-adc-use-tips-and-recommendations-stmicroelectronics.pdf",
+    "chip_errata": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf"
+  }
+}

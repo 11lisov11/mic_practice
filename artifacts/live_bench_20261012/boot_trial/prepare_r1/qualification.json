@@ -1,0 +1,43 @@
+{
+  "schema": "mic_ai.powered_trial.unoq1108.v1",
+  "pair": [
+    2026101108,
+    2026101102
+  ],
+  "images": {
+    "production_uno": "2d981c66e978be9cf2bc2b36a98f493b8350758ce0a36814867dfc510f8bffc8",
+    "production_nucleo": "d17b1ed8313b7e355e66681f90beaf84e7535e22504212f79ef44ce2bad5d37c"
+  },
+  "profile": "short",
+  "scope": "unchanged_nucleo_pwm_with_supervisory_boot_fix",
+  "new_pair_active_pwm_measured": false,
+  "physical_idle_registers_current": false,
+  "hv_release_approved": false,
+  "current_telemetry_qualified": false,
+  "max_run_s": 3,
+  "max_frequency_hz": 5,
+  "offline_suites": 57,
+  "sd_sample_v": 2.6,
+  "idle_tx_max_gap_us": 53177,
+  "evidence_sha256": {
+    "pwm": "9d9db2573654d0d17b05c9a9b26bdecbe5897ef4cc43f47f806a3e71eae5949b",
+    "source_audit": "2e11f2a8f3fe6d6db8822626f3548115375674145a24ad169b3e8c0f392f1c7f",
+    "uno_install": "26846a87b5f3b8fe3d863fe4b85df783324684217d473364504ad733cdc6f082",
+    "nucleo_install": "d36b5a02a74b013fa8588242ff8f9ed9a29cb2cef42526f4b84d3f787a6ba80f",
+    "offline": "2cd84295ec8c23ce8d93654d83b1d809027978f024ab79bc29c8af917998c1ef",
+    "idle_wifi": "86f24c36998251aa7f53cae0a61e1789a0e3e22e343b0fa6e5500ef06c47e4d0",
+    "autonomous": "dc205e055fb60d0a180bbc128a97c0736c1ed9f64184b8d15b71c4be6edb823c",
+    "sd_sample": "0cf14722a35374bf3c2535d42b96e02a35a4e5f4b12cb4412a96bd14e953a59a",
+    "calibration": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17"
+  },
+  "issued_at": 1791755718.546057,
+  "expires_at": 1791756318.546057,
+  "nucleo_pwm_equivalence_pass": true,
+  "calibration_contract_pass": true,
+  "images_verified": true,
+  "offline_pass": true,
+  "idle_wifi_pass": true,
+  "autonomous_boot_pass": true,
+  "prestart_break_context_pass": true,
+  "sd_sample_operator_reported": true
+}

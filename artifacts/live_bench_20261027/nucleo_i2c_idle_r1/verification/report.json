@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "Every motor/PWM/ADC/Break/deadtime/watchdog/control-UART source unchanged except build identity; display, UI and qualified local RPC libraries byte-identical",
+    "First-fault callback and160B capture ordering, frozen slots and OFF-only page producer preserved",
+    "Actual HMI decodes old captured record; compatible re-identified zero/current/capture contracts pass; mixed peer rejects; calibration identity retained",
+    "Both target builds pass, Nucleo zero warnings; fixed RAM/stack budgets and loader relocation constraints retained"
+  ],
+  "capture_test": {
+    "passed": true,
+    "paging_crc_cases": 43,
+    "pre_reset_order_verified": true,
+    "two_immutable_slots_verified": true
+  },
+  "replay": {
+    "passed": true,
+    "hardware_commands": 0,
+    "record_sha256": "599d4843c958a8ba649fe52a2502a81d7576faf8017cd8a27954703d49f231b0",
+    "results": [
+      {
+        "kind": "original",
+        "result": {
+          "passed": true,
+          "original_immediate_reset_replayed": true,
+          "checks": 1
+        }
+      },
+      {
+        "kind": "candidate",
+        "result": {
+          "passed": true,
+          "checks": 2928,
+          "recorded_busy_replayed": true,
+          "normal_samples": 200,
+          "physical_pwm_qualified": false
+        }
+      }
+    ],
+    "limitation": "Only the recorded first entry is replayed exactly. Later flag/line sequences are fault-injection models, not a recorded analog waveform or proof of immunity under real PWM.",
+    "platform_test": {
+      "passed": true,
+      "actual_platform_driver_compiled": true,
+      "parked_PE0_packet_validated": true,
+      "configuration_mismatch_rejected": true
+    }
+  },
+  "nucleo_static_growth_bytes": 24,
+  "nucleo_ram_margin_above_heap_stack": 3640,
+  "capture_stack_bytes": 24,
+  "adc_irq_stack_bytes": 376,
+  "hardware_validated": false,
+  "sensor_under_pwm_qualified": false
+}

@@ -1,0 +1,98 @@
+{
+  "trial_completed": true,
+  "autostop_ms": 5000,
+  "PWM_now": 0,
+  "physical_rotation_verified": false,
+  "user_observation": "Repeat requested; physical rotation not yet confirmed",
+  "RPC_new_errors": 0,
+  "native_or_Linux_reset": false,
+  "prior_SD_record_preserved": true,
+  "nominal_RMS_last_window_A": [
+    0.38,
+    0.344,
+    0.366
+  ],
+  "nominal_peak_last_window_A": [
+    0.72,
+    0.691,
+    0.7
+  ],
+  "current_window_ms": 178,
+  "current_window_covers_full_5Hz_period": false,
+  "current_scale_independently_qualified": false,
+  "current_coverage_pct": 100,
+  "OFF_probe_fast_cycles": 3618,
+  "OFF_probe_budget_cycles": 4000,
+  "RUN_reported_full_fast_path_max_cycles": 4352,
+  "RUN_existing_deadline_cycles": 5312,
+  "budgets_unchanged": true,
+  "max_result_age_us": 712.7588235294118,
+  "estimate_limit_us": 2000,
+  "observer_steps": 4978,
+  "observer_valid_samples": 2120,
+  "observer_invalid_samples": 2858,
+  "first_estimate_loss": {
+    "cycles": 2474222931,
+    "steps": 503,
+    "reason_mask": 32,
+    "estimate_valid": false,
+    "reasons_ru": [
+      "NIS не меньше 25"
+    ],
+    "control_sample_sequence": 15019488,
+    "control_adc_cycles": 2474102647,
+    "observer_sample_sequence": 15019488,
+    "observer_adc_cycles": 2474102647,
+    "bin_cycles": 2474102647,
+    "rpm_est": -71.54388427734375,
+    "flux_alpha_wb": -0.20145660638809204,
+    "flux_beta_wb": -0.11077216267585754,
+    "flux_wb": 0.22990266697298944,
+    "nis": 42.40830993652344,
+    "id_A": 0.5667871236801147,
+    "iq_A": 0.36035454273223877,
+    "id_ref_A": 0.5055840611457825,
+    "iq_ref_A": 0.34369832277297974,
+    "reference_hz": 0.800000011920929,
+    "observer_ia_A": -0.3261817395687103,
+    "observer_ib_A": -0.5871188044548035,
+    "input_va_V": -1.6417229175567627,
+    "input_vb_V": -7.205112457275391,
+    "dt_s": 0.000999900046736002,
+    "observer_fault": 0,
+    "published": true,
+    "predicted_current_A": [
+      -0.2301156371831894,
+      -0.4900648295879364
+    ],
+    "innovation_A": [
+      -0.09606610238552094,
+      -0.09759891033172607
+    ],
+    "innovation_variance_A2": [
+      0.0004402225895319134,
+      0.00044419325422495604
+    ],
+    "NIS_components": [
+      20.96370392386774,
+      21.444601437184847
+    ],
+    "endpoint_active_CCR": [
+      2504,
+      2437,
+      2875
+    ],
+    "endpoint_bus_V": 322,
+    "endpoint_arr": 5312
+  },
+  "speed_estimate_valid": 0,
+  "raw_ADC_record_bytes": 1024,
+  "observer_record_bytes": 1832,
+  "raw_ADC_active_rows": 12,
+  "raw_ADC_max_active_update_cnt": 141,
+  "UPDATE_limit": 2048,
+  "raw_current_trip_A": 1.35,
+  "full_sensorless_FOC_qualified": false,
+  "repeat_START_sent": false,
+  "repeat_requires_fresh_diagnostic_epoch": true
+}

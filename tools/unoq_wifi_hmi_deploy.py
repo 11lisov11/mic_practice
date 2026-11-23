@@ -1,232 +1,215 @@
-#!/usr/bin/env python3
+"""Deploy only Uno Linux/HMI via pinned key-authenticated SSH; never flash an MCU."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
-import subprocess
-import sys
-import time
-import urllib.request
 from pathlib import Path
+import shlex
+import subprocess
+from typing import Optional
 from urllib.parse import urlparse
+import urllib.request
+import uuid
+
+from install_vbus_hmi_fix_remote import precheck
 
 
 DEFAULT_URL = "http://192.168.1.138:8080"
 DEFAULT_REMOTE = "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi"
-VBUS_RAW_MIN_VALID = 1
-VBUS_RAW_ZERO_MAX = 400
-VBUS_RAW_MAX_VALID = 4094
-
-
-def log(message: str) -> None:
-    print(message, flush=True)
-
-
-def run(command: list[str]) -> None:
-    log("RUN " + " ".join(command))
-    subprocess.run(command, check=True)
 
 
 def shell_quote(value: str) -> str:
-    return "'" + value.replace("'", "'\"'\"'") + "'"
+    return shlex.quote(value)
 
 
-def fetch_status(base_url: str, timeout: float = 5.0) -> dict:
-    request = urllib.request.Request(base_url.rstrip("/") + "/api/status", headers={"Accept": "application/json"})
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        payload = json.loads(response.read().decode("utf-8"))
-    if payload.get("ok") is not True or not isinstance(payload.get("data"), dict):
-        raise RuntimeError(payload.get("error") or "UNO Q status is unavailable")
+def fetch_status(base_url: str, timeout: float = 8.0) -> dict:
+    opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    with opener.open(base_url.rstrip("/")+"/api/status",timeout=timeout) as response:
+        payload=json.load(response)
+    if payload.get("ok") is not True or not isinstance(payload.get("data"),dict):
+        raise RuntimeError(payload.get("error") or "HMI status unavailable")
     return payload["data"]
 
 
-def safe_for_update(status: dict, max_vdc: float) -> tuple[bool, str]:
-    if str(status.get("state", "")).upper() != "SAFE":
-        return False, f"state={status.get('state')}"
-    for key in ("pwm", "estop", "precharge", "pfc", "brake", "bp_fault"):
-        try:
-            value = int(status.get(key, 0) or 0)
-        except (TypeError, ValueError):
-            return False, f"{key} telemetry is invalid"
-        if value != 0:
-            return False, f"{key}={status.get(key)}"
-    try:
-        bad = max(int(status.get("bp_bad", 0) or 0), int(status.get("bp_bad_cnt", 0) or 0))
-    except (TypeError, ValueError):
-        return False, "Blue Pill error counter is invalid"
-    if bad != 0:
-        return False, f"bp_bad={bad}"
-    if status.get("link") is False:
-        return False, "Blue Pill link is down"
-    ages: list[float] = []
-    for key in ("bp_rsp_age_ms", "bp_age_ms"):
-        try:
-            age = float(status[key])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if math.isfinite(age):
-            ages.append(age)
-    if not ages or min(ages) > 1000.0:
-        return False, "Blue Pill link is stale"
-    vdc_values: list[float] = []
-    for key in ("vdc", "bp_vdc"):
-        try:
-            value = float(status[key])
-        except (KeyError, TypeError, ValueError):
-            continue
-        if math.isfinite(value) and value >= 0.0:
-            vdc_values.append(value)
-    if not vdc_values:
-        return False, "DC bus telemetry is unavailable"
-    vdc = max(vdc_values)
-    if vdc > max_vdc:
-        return False, f"vdc={vdc:.1f} V exceeds update limit {max_vdc:.1f} V"
-    try:
-        raw_age_ms = float(status["bp_vbus_age_ms"])
-        raw = int(status["bp_vbus_raw"])
-    except (KeyError, TypeError, ValueError):
-        return False, "raw DC bus telemetry is unavailable"
-    if not math.isfinite(raw_age_ms) or raw_age_ms > 1000.0:
-        return False, "raw DC bus telemetry is stale"
-    if raw < VBUS_RAW_MIN_VALID or raw > VBUS_RAW_MAX_VALID:
-        return False, f"raw DC bus telemetry is invalid: raw={raw}"
-    if max_vdc <= 10.0 and raw > VBUS_RAW_ZERO_MAX:
-        return False, f"raw DC bus is not in the zero-bus range: raw={raw}"
-    return True, "ok"
+def safe_for_update(status: dict, max_vdc: float, *, lso_verified_idle=False) -> tuple[bool,str]:
+    if type(max_vdc) not in (int,float) or not math.isfinite(max_vdc) or max_vdc not in (2,10):
+        return False,"unreviewed update voltage limit"
+    ok,reason=precheck(status,int(max_vdc),lso_verified_idle=lso_verified_idle)
+    if not ok:return ok,reason
+    # mc_bad_integrity is a cumulative since-boot diagnostic counter. A historical
+    # rejected frame remains visible in HMI, but does not make a read-only HMI
+    # bundle update unsafe when the current response and all active/freshness gates pass.
+    if type(status.get("mc_bad_integrity")) is not int or not 0 <= status["mc_bad_integrity"] <= 0xFFFF:
+        return False,"invalid diagnostic counter: mc_bad_integrity"
+    for key in ("mc_bad_cnt","mc_bad_sequence","mc_uart_error_flags",
+                "mc_last_uart_error_flags","uno_tx_short_writes","bp_transport_fault"):
+        if type(status.get(key)) is not int or status[key]!=0:
+            return False,"transport unhealthy: "+key
+    return True,"disarmed, discharged, fresh measurement contract and clean UART"
 
 
-def ssh_base(host: str, port: int, user: str, key: Path) -> list[str]:
-    return [
-        "ssh",
-        "-i",
-        str(key),
-        "-p",
-        str(port),
-        "-o",
-        "BatchMode=yes",
-        "-o",
-        "ConnectTimeout=5",
-        "-o",
-        "StrictHostKeyChecking=accept-new",
-        f"{user}@{host}",
-    ]
+def identity_options(key: Path, known_hosts: Path) -> list[str]:
+    return ["-i",str(key),"-o","BatchMode=yes","-o","IdentitiesOnly=yes",
+        "-o","ConnectTimeout=5","-o","StrictHostKeyChecking=yes",
+        "-o","UserKnownHostsFile="+str(known_hosts),"-o","UpdateHostKeys=no",
+        "-o","PasswordAuthentication=no","-o","KbdInteractiveAuthentication=no",
+        "-o","ForwardAgent=no"]
 
 
-def scp_base(host: str, port: int, user: str, key: Path) -> list[str]:
-    return [
-        "scp",
-        "-i",
-        str(key),
-        "-P",
-        str(port),
-        "-o",
-        "BatchMode=yes",
-        "-o",
-        "ConnectTimeout=5",
-        "-o",
-        "StrictHostKeyChecking=accept-new",
-    ]
+def ssh_base(host: str, port: int, user: str, key: Path,
+             known_hosts: Path=Path(".unoq_ssh/known_hosts")) -> list[str]:
+    return ["ssh",*identity_options(key,known_hosts),"-p",str(port),f"{user}@{host}"]
+
+
+def scp_base(host: str, port: int, user: str, key: Path,
+             known_hosts: Path=Path(".unoq_ssh/known_hosts")) -> list[str]:
+    return ["scp",*identity_options(key,known_hosts),"-P",str(port)]
+
+
+def matching_host(url: str, override: str="") -> str:
+    parsed=urlparse(url)
+    if parsed.scheme!="http" or not parsed.hostname or parsed.username or parsed.password:
+        raise ValueError("explicit unauthenticated LAN HMI URL required")
+    host=parsed.hostname
+    if override and override!=host:
+        raise ValueError("SSH target must match the guarded HMI host")
+    return host
+
+
+def app_candidate_path(root: Path, include_app_js: bool,
+                       explicit: Optional[Path] = None) -> Optional[Path]:
+    if explicit is not None and not include_app_js:
+        raise ValueError("--candidate-app-js requires --include-app-js")
+    if not include_app_js:
+        return None
+    candidate=(explicit or (root/"web_hmi/static/app.js")).resolve(strict=True)
+    if not candidate.is_file() or candidate.suffix.lower()!=".js":
+        raise ValueError("candidate app bundle must be a JavaScript file")
+    return candidate
+
+
+def physical_update_confirmation(max_vdc: int, both_off: bool, mains_off: bool) -> bool:
+    return (max_vdc == 2 and both_off) or (max_vdc == 10 and (both_off or mains_off))
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Deploy UNO Q HMI over key-authenticated Wi-Fi SSH.")
-    parser.add_argument("--url", default=DEFAULT_URL)
-    parser.add_argument("--host", default="", help="UNO Q address; defaults to the host from --url")
-    parser.add_argument("--user", default="arduino")
-    parser.add_argument("--ssh-port", type=int, default=2222)
-    parser.add_argument("--key", default=".unoq_ssh/id_ed25519")
-    parser.add_argument("--remote", default=DEFAULT_REMOTE)
-    parser.add_argument("--max-vdc", type=float, default=10.0)
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--url",default=DEFAULT_URL)
+    p.add_argument("--host",default="")
+    p.add_argument("--user",choices=("arduino",),default="arduino")
+    p.add_argument("--ssh-port",type=int,default=2222)
+    p.add_argument("--key",type=Path,default=Path(".unoq_ssh/id_ed25519"))
+    p.add_argument("--known-hosts",type=Path,default=Path(".unoq_ssh/known_hosts"))
+    p.add_argument("--remote",default=DEFAULT_REMOTE)
+    p.add_argument("--max-vdc",type=int,choices=(2,10),default=2)
+    p.add_argument("--confirm-mains-j4-off",action="store_true")
+    p.add_argument("--confirm-mains-off",action="store_true",help="10-V HMI-only tier: J4 may remain on; no MCU writes")
+    p.add_argument("--lso-verified-idle",action="store_true",help="Exact 2305/2306 pair, discharged live bus and inactive soft-start")
+    p.add_argument("--dry-run",action="store_true")
+    p.add_argument("--include-app-js",action="store_true")
+    p.add_argument("--reinstall-identical",action="store_true")
+    p.add_argument("--outdir",type=Path)
+    p.add_argument("--candidate-server",type=Path,help="Explicit reviewed self-contained HMI server; default is repository server")
+    p.add_argument("--candidate-app-js",type=Path,help="Explicit reviewed browser bundle used with --include-app-js")
+    a=p.parse_args()
+    if a.remote!=DEFAULT_REMOTE:p.error("only the scoped HMI target is supported")
+    if a.candidate_app_js and not a.include_app_js:
+        p.error("--candidate-app-js requires --include-app-js")
+    if a.lso_verified_idle and (a.max_vdc != 10 or a.include_app_js or not a.candidate_server):
+        p.error("LSO idle mode requires the 10-V server-only update path and an explicit candidate")
+    if not a.dry_run and not (a.lso_verified_idle or physical_update_confirmation(
+            a.max_vdc,a.confirm_mains_j4_off,a.confirm_mains_off)):
+        p.error("2-V tier requires mains/J4 off; 10-V HMI-only tier requires mains off")
+    if not 1<=a.ssh_port<=65535:p.error("invalid SSH port")
+    host=matching_host(a.url,a.host)
+    key=a.key.resolve(strict=True);known=a.known_hosts.resolve(strict=True)
+    root=Path(__file__).resolve().parents[1]
+    try:
+        app_source=app_candidate_path(root,a.include_app_js,a.candidate_app_js)
+    except (OSError,ValueError) as exc:
+        p.error(str(exc))
+    out=(a.outdir or root/"artifacts/hmi_wifi_deploy"/uuid.uuid4().hex).resolve()
+    out.mkdir(parents=True,exist_ok=False)
+    report=dict(pass_=False,commands=[],transport="pinned_key_wifi_ssh",ssh_port=a.ssh_port,
+        mcu_flash_commands=0,actuation_commands=0,scope="Linux HMI only")
+    ssh=ssh_base(host,a.ssh_port,a.user,key,known)
+    scp=scp_base(host,a.ssh_port,a.user,key,known)
 
-    parsed = urlparse(args.url)
-    host = args.host.strip() or str(parsed.hostname or "")
-    if not host:
-        raise SystemExit("ERROR: UNO Q host is missing")
-    key = Path(args.key)
-    if not key.exists():
-        raise SystemExit(f"ERROR: SSH key not found: {key}; run the one-time ADB bootstrap first")
+    def run(command: list[str],label: str,timeout=90) -> str:
+        result=subprocess.run(command,capture_output=True,text=True,encoding="utf-8",errors="replace",timeout=timeout)
+        (out/(label+".log")).write_text(result.stdout+result.stderr,encoding="utf-8")
+        report["commands"].append(dict(label=label,exit_code=result.returncode))
+        if result.returncode:raise RuntimeError(label+" failed; see retained log")
+        return result.stdout
 
-    status = fetch_status(args.url)
-    safe, reason = safe_for_update(status, args.max_vdc)
-    if not safe:
-        raise SystemExit(f"ERROR: Wi-Fi deploy refused: {reason}")
-    log(f"SAFE update gate: {reason}")
-    if args.dry_run:
-        log("DRY-RUN complete; no files changed")
-        return 0
+    def remote_hash(path: str,label: str) -> str:
+        value=run(ssh+["sha256sum "+shell_quote(path)],label).split()[0]
+        if len(value)!=64 or any(c not in "0123456789abcdef" for c in value):
+            raise RuntimeError("invalid remote SHA256")
+        return value
 
-    repo = Path(__file__).resolve().parents[1]
-    local = repo / "web_hmi"
-    files = [
-        local / "server.py",
-        local / "requirements.txt",
-        local / "flash_unoq_sketch_090.cfg",
-        local / "static" / "index.html",
-        local / "static" / "app.js",
-        local / "static" / "style.css",
-    ]
-    missing = [str(path) for path in files if not path.is_file()]
-    if missing:
-        raise SystemExit("ERROR: missing HMI files: " + ", ".join(missing))
-
-    stamp = int(time.time())
-    staging = f"/tmp/unoq_hmi_update_{stamp}"
-    ssh = ssh_base(host, args.ssh_port, args.user, key)
-    scp = scp_base(host, args.ssh_port, args.user, key)
-    run(ssh + [f"mkdir -p {shell_quote(staging + '/static')}"])
-    run(
-        scp
-        + [
-            str(local / "server.py"),
-            str(local / "requirements.txt"),
-            str(local / "flash_unoq_sketch_090.cfg"),
-            f"{args.user}@{host}:{staging}/",
-        ]
-    )
-    run(
-        scp
-        + [
-            str(local / "static" / "index.html"),
-            str(local / "static" / "app.js"),
-            str(local / "static" / "style.css"),
-            f"{args.user}@{host}:{staging}/static/",
-        ]
-    )
-
-    remote = shell_quote(args.remote)
-    install = (
-        "set -eu; "
-        f"cd {shell_quote(staging)}; python3 -m py_compile server.py; "
-        f"mkdir -p {remote}/static {remote}/logs; "
-        f"install -m 0644 server.py requirements.txt flash_unoq_sketch_090.cfg {remote}/; "
-        f"install -m 0644 static/index.html static/app.js static/style.css {remote}/static/; "
-        f"rm -rf {shell_quote(staging)}; "
-        "if sudo -n systemctl restart unoq-hmi.service >/dev/null 2>&1; then :; "
-        "else pid=\"$(ss -ltnp 2>/dev/null | sed -n 's/.*:8080 .*pid=\\([0-9]\\+\\).*/\\1/p' | head -n 1)\"; "
-        "test -n \"$pid\" && kill \"$pid\"; fi"
-    )
-    run(ssh + [install])
-
-    last_error = "server did not return"
-    for _ in range(30):
-        time.sleep(0.25)
-        try:
-            final_status = fetch_status(args.url, timeout=2.0)
-            final_safe, final_reason = safe_for_update(final_status, args.max_vdc)
-            if final_safe:
-                log("DONE: HMI updated over Wi-Fi and returned SAFE")
-                return 0
-            last_error = final_reason
-        except Exception as exc:
-            last_error = str(exc)
-    log(f"ERROR: HMI update verification failed: {last_error}")
-    return 1
+    try:
+        report["before"]=before=fetch_status(a.url)
+        ok,reason=safe_for_update(before,a.max_vdc,lso_verified_idle=a.lso_verified_idle)
+        if not ok:raise RuntimeError(reason)
+        if run(ssh+["id -u"],"verify_ssh_identity").strip()!="1000":
+            raise RuntimeError("unexpected SSH user identity")
+        server=(a.candidate_server or root/"web_hmi/server.py").resolve(strict=True)
+        if not server.is_file() or server.suffix!=".py":raise RuntimeError("candidate server must be a Python file")
+        expected=hashlib.sha256(server.read_bytes()).hexdigest()
+        report["candidate_sha256"]=expected
+        cal="/home/arduino/.config/mic-ai/vbus_calibration.json"
+        report["calibration_before_sha256"]=remote_hash(cal,"calibration_before")
+        installed=remote_hash(a.remote+"/server.py","server_before")
+        report["server_before_sha256"]=installed
+        if a.dry_run:
+            report.update(pass_=True,dry_run=True,files_changed=False)
+        elif installed==expected and not a.include_app_js and not a.reinstall_identical:
+            report.update(pass_=True,already_current=True,files_changed=False)
+        else:
+            identifier=uuid.uuid4().hex
+            remote_server="/tmp/mic_wifi_hmi_"+identifier+".py"
+            remote_installer="/tmp/mic_wifi_installer_"+identifier+".py"
+            run(scp+[str(server),f"{a.user}@{host}:{remote_server}"],"stage_server")
+            run(scp+[str(root/"tools/install_vbus_hmi_fix_remote.py"),f"{a.user}@{host}:{remote_installer}"],"stage_installer")
+            if remote_hash(remote_server,"verify_staged_server")!=expected:
+                raise RuntimeError("staged server differs from tested source")
+            command=["python3",remote_installer,"--candidate",remote_server,"--sha256",expected]
+            if a.max_vdc==10:
+                command += ["--max-vdc","10","--lso-verified-idle" if a.lso_verified_idle else "--confirm-mains-off"]
+            if a.include_app_js:
+                app=app_source
+                remote_app="/tmp/mic_wifi_app_"+identifier+".js"
+                run(scp+[str(app),f"{a.user}@{host}:{remote_app}"],"stage_app_js")
+                command += ["--app-js",remote_app,"--app-js-sha256",hashlib.sha256(app.read_bytes()).hexdigest()]
+                report["app_js_candidate"]=str(app)
+                report["app_js_sha256"]=hashlib.sha256(app.read_bytes()).hexdigest()
+            checked=run(ssh+[shlex.join(command+["--check-only"])],"remote_precheck")
+            report["remote_check_only_pass"]='"check_only": true' in checked
+            if not report["remote_check_only_pass"]:raise RuntimeError("remote precheck not confirmed")
+            report["install_output"]=run(ssh+[shlex.join(command)],"install_hmi",90)
+            report["files_changed"]=True
+            report["same_content_reinstall"]=installed==expected
+            report["server_after_sha256"]=remote_hash(a.remote+"/server.py","server_after")
+            if report["server_after_sha256"]!=expected:raise RuntimeError("installed HMI hash mismatch")
+            report["pass_"]=True
+        report["calibration_after_sha256"]=remote_hash(cal,"calibration_after")
+        report["calibration_unchanged"]=report["calibration_before_sha256"]==report["calibration_after_sha256"]
+        report["after"]=after=fetch_status(a.url)
+        if not safe_for_update(after,a.max_vdc,lso_verified_idle=a.lso_verified_idle)[0] or not report["calibration_unchanged"]:
+            raise RuntimeError("post-deployment state/calibration check failed")
+        if (after.get("fw_build"),after.get("mc_fw_build"))!=(before.get("fw_build"),before.get("mc_fw_build")):
+            raise RuntimeError("unexpected MCU identity change")
+    except Exception as e:
+        report["pass_"]=False;report["error"]=f"{type(e).__name__}: {e}"
+    finally:
+        report["pass"]=report.pop("pass_")
+        (out/"report.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
+    print(json.dumps({k:report.get(k) for k in ("pass","ssh_port","dry_run","same_content_reinstall",
+                    "calibration_unchanged","mcu_flash_commands","actuation_commands","error")}))
+    return 0 if report["pass"] else 1
 
 
-if __name__ == "__main__":
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
-    raise SystemExit(main())
+if __name__=="__main__":raise SystemExit(main())

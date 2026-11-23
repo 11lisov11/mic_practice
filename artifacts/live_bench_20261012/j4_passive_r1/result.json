@@ -1,0 +1,53 @@
+{
+  "passive_link_pass": true,
+  "new_good_messages": 1201,
+  "vdc_range": [
+    7.0,
+    9.0
+  ],
+  "temperature_reported_range": [
+    49.0,
+    49.0
+  ],
+  "max_tx_gap_us": 53177,
+  "max_rx_poll_gap_ms": 5,
+  "observed_output_states": [
+    [
+      "SAFE",
+      0,
+      0
+    ]
+  ],
+  "first_break_record_unchanged_during_collection": true,
+  "first_break": {
+    "magic": 827019842,
+    "schema": 2,
+    "bytes": 92,
+    "tick_ms": 261709,
+    "tim_sr": 223,
+    "tim_dier": 128,
+    "tim_bdtr": 36911218,
+    "tim_cnt": 708,
+    "tim_arr": 5312,
+    "tim_ccr1": 0,
+    "tim_ccr2": 0,
+    "tim_ccr3": 0,
+    "gpioa_idr": 40964,
+    "context_valid": 1,
+    "context_tick_ms": 261707,
+    "reference_speed_unit": 0,
+    "motor_state": 10,
+    "current_faults": 4,
+    "occurred_faults": 4,
+    "vbus_v": 0,
+    "temperature_deci_c": 300,
+    "command_sequence": 162,
+    "start_window": 0
+  },
+  "live_sd_level_available": false,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "mains_start_approved": false,
+  "note": "15 V J4 is operator-reported, not remotely measured. The bus ceiling is only a passive auxiliary-powered observation bound, not a start or programming allowance."
+}

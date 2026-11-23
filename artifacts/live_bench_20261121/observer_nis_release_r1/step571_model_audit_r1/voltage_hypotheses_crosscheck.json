@@ -1,0 +1,103 @@
+{
+  "cases": {
+    "571": {
+      "unchanged": {
+        "NIS": 27.091480255126953,
+        "voltage_delta_A_B_V": [
+          0.0,
+          0.0
+        ]
+      },
+      "ST_typical_propagation_only_15A": {
+        "NIS": 22.912517547607422,
+        "voltage_delta_A_B_V": [
+          -0.6526480923694779,
+          -1.1304196554468418
+        ]
+      },
+      "ST_typical_propagation_plus_0_5V_model_drop": {
+        "NIS": 24.96120262145996,
+        "voltage_delta_A_B_V": [
+          -0.3193147590361447,
+          -0.5530693862572158
+        ]
+      },
+      "ST_typical_propagation_plus_1V_model_drop": {
+        "NIS": 27.18876838684082,
+        "voltage_delta_A_B_V": [
+          0.014018574297188634,
+          0.02428088293240988
+        ]
+      },
+      "model_deadtime_minus_0_25us": {
+        "NIS": 21.735313415527344,
+        "voltage_delta_A_B_V": [
+          -0.8587474899598396,
+          -1.4873942834826863
+        ]
+      },
+      "model_deadtime_plus_0_25us": {
+        "NIS": 33.63487243652344,
+        "voltage_delta_A_B_V": [
+          0.8587474899598396,
+          1.4873942834826863
+        ]
+      }
+    },
+    "659": {
+      "unchanged": {
+        "NIS": 29.307125091552734,
+        "voltage_delta_A_B_V": [
+          0.0,
+          0.0
+        ]
+      },
+      "ST_typical_propagation_only_15A": {
+        "NIS": 25.224857330322266,
+        "voltage_delta_A_B_V": [
+          0.6506212349397594,
+          1.1269090353988702
+        ]
+      },
+      "ST_typical_propagation_plus_0_5V_model_drop": {
+        "NIS": 27.121511459350586,
+        "voltage_delta_A_B_V": [
+          0.3172879016064257,
+          0.5495587662092442
+        ]
+      },
+      "ST_typical_propagation_plus_1V_model_drop": {
+        "NIS": 29.4274959564209,
+        "voltage_delta_A_B_V": [
+          -0.016045431726907568,
+          -0.027791502980381556
+        ]
+      },
+      "model_deadtime_minus_0_25us": {
+        "NIS": 24.259700775146484,
+        "voltage_delta_A_B_V": [
+          0.8560805722891567,
+          1.4827750465774607
+        ]
+      },
+      "model_deadtime_plus_0_25us": {
+        "NIS": 37.054344177246094,
+        "voltage_delta_A_B_V": [
+          -0.8560805722891567,
+          -1.4827750465774607
+        ]
+      }
+    }
+  },
+  "source_sha256": {
+    "artifacts/live_bench_20261121/observer_nis_release_r1/FOC_5Hz_NIS_20261121_r1_analysis/observer_trace_decoded.json": "860f444793e1b27a8c6e57a6173582b0833538f9a611c05e90ad180e16a94456",
+    "artifacts/live_bench_20261121/observer_nis_release_r1/FOC_5Hz_NIS_20261121_r1/paged_capture/ADC_peak.bin": "740a0a78251d958b93aa5cf0884626af069eb6880f5d72f2561fca6ba0717b41",
+    "artifacts/live_bench_20261121/observer_nis_release_r1/release/nucleo_2026112102_nis_admission.elf": "d1776208523f01b088288a18a9d0aa67c3fc45d63a79ab3ba4d466df795016a5",
+    "artifacts/live_bench_20261118/exact_nis_input_release_r1/FOC_5Hz_r2/observer_trace_decoded.json": "6e742535e2561c6aae545ca06772e65ec15ee958352bbb8c279cf8d092f94c6f",
+    "artifacts/live_bench_20261118/exact_nis_input_release_r1/FOC_5Hz_r2/ADC_peak.bin": "07b3f4ffb12ae509230f082911abf2ed3c6eb1664860205b87d1d7b937a89030",
+    "artifacts/live_bench_20261118/exact_nis_input_release_r1/release/nucleo_2026111802_exact_source.elf": "383b46a8d6950e831b53a192b71eb1230e53dc98ece73791dc05d65fe789c0dd"
+  },
+  "datasheet": "ST DS10424 Rev10 tab7, 15A switching delays used only for a counterfactual",
+  "actual_current_calibrated": false,
+  "installed": false
+}

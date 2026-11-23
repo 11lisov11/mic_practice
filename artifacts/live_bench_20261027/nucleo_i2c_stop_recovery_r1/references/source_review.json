@@ -1,0 +1,19 @@
+[
+  {
+    "url": "https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+    "scope": "Релевантные разделы I2C master START/STOP/NBYTES, NACK/STOPF и PE. Полный12МБ PDF локально не скачан, прочтение целиком не заявляется."
+  },
+  {
+    "url": "https://github.com/STMicroelectronics/stm32g4xx-hal-driver/blob/master/Src/stm32g4xx_hal_i2c.c",
+    "sha256": "4a8db87aa3362e9fd2b9a5365b11b289c2beaa644267ac2a321768db65a7cf68",
+    "scope": "Локальный pinned HAL: I2C_IsErrorOccurred, I2C_Master_ISR_IT, I2C_Flush_TXDR; NACKCF затем STOPF и ограниченное завершение."
+  },
+  {
+    "url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+    "scope": "2.11.2: существующий sole-master BERR workaround сохранён."
+  },
+  {
+    "url": "https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf",
+    "scope": "Адрес0x36, STATUS0x0B, RAW_ANGLE0x0C/0x0D и магнитные флаги; не доказательство физической причины NACK."
+  }
+]

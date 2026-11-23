@@ -1,0 +1,68 @@
+{
+  "VF2510": {
+    "TIM1_Break_assignments": [
+      "sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;",
+      "sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;",
+      "sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;",
+      "sBreakDeadTimeConfig.DeadTime = ((DEAD_TIME_COUNTS) / 2);",
+      "sBreakDeadTimeConfig.BreakState = TIM_BREAK_ENABLE;",
+      "sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;",
+      "sBreakDeadTimeConfig.BreakFilter =\n      LL_TIM_BREAK_FILTER_FDIV8_N8 >> TIM_BDTR_BKF_Pos;",
+      "sBreakDeadTimeConfig.BreakAFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.Break2State = TIM_BREAK2_DISABLE;",
+      "sBreakDeadTimeConfig.Break2Polarity = TIM_BREAK2POLARITY_HIGH;",
+      "sBreakDeadTimeConfig.Break2Filter = 3;",
+      "sBreakDeadTimeConfig.Break2AFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;"
+    ],
+    "GPIO_TIM1_init_sha256": "438e8d04542c78e07ac7f443ee040e03d4039e8414700e308aafbf3909ba1f39",
+    "pin_lock_sha256": "6b0ef0415dcf76aceb636636cdb1c7e08e77160bb4ebd7ae37180a612e6637cb",
+    "Break_matches_current": true,
+    "GPIO_init_matches_current": true,
+    "pin_lock_matches_current": true
+  },
+  "FOC3014": {
+    "TIM1_Break_assignments": [
+      "sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;",
+      "sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;",
+      "sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;",
+      "sBreakDeadTimeConfig.DeadTime = ((DEAD_TIME_COUNTS) / 2);",
+      "sBreakDeadTimeConfig.BreakState = TIM_BREAK_ENABLE;",
+      "sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;",
+      "sBreakDeadTimeConfig.BreakFilter =\n      LL_TIM_BREAK_FILTER_FDIV8_N8 >> TIM_BDTR_BKF_Pos;",
+      "sBreakDeadTimeConfig.BreakAFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.Break2State = TIM_BREAK2_DISABLE;",
+      "sBreakDeadTimeConfig.Break2Polarity = TIM_BREAK2POLARITY_HIGH;",
+      "sBreakDeadTimeConfig.Break2Filter = 3;",
+      "sBreakDeadTimeConfig.Break2AFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;"
+    ],
+    "GPIO_TIM1_init_sha256": "438e8d04542c78e07ac7f443ee040e03d4039e8414700e308aafbf3909ba1f39",
+    "pin_lock_sha256": "6b0ef0415dcf76aceb636636cdb1c7e08e77160bb4ebd7ae37180a612e6637cb",
+    "Break_matches_current": true,
+    "GPIO_init_matches_current": true,
+    "pin_lock_matches_current": true
+  },
+  "current3016": {
+    "TIM1_Break_assignments": [
+      "sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_ENABLE;",
+      "sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_ENABLE;",
+      "sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;",
+      "sBreakDeadTimeConfig.DeadTime = ((DEAD_TIME_COUNTS) / 2);",
+      "sBreakDeadTimeConfig.BreakState = TIM_BREAK_ENABLE;",
+      "sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;",
+      "sBreakDeadTimeConfig.BreakFilter =\n      LL_TIM_BREAK_FILTER_FDIV8_N8 >> TIM_BDTR_BKF_Pos;",
+      "sBreakDeadTimeConfig.BreakAFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.Break2State = TIM_BREAK2_DISABLE;",
+      "sBreakDeadTimeConfig.Break2Polarity = TIM_BREAK2POLARITY_HIGH;",
+      "sBreakDeadTimeConfig.Break2Filter = 3;",
+      "sBreakDeadTimeConfig.Break2AFMode = TIM_BREAK_AFMODE_INPUT;",
+      "sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;"
+    ],
+    "GPIO_TIM1_init_sha256": "438e8d04542c78e07ac7f443ee040e03d4039e8414700e308aafbf3909ba1f39",
+    "pin_lock_sha256": "6b0ef0415dcf76aceb636636cdb1c7e08e77160bb4ebd7ae37180a612e6637cb",
+    "Break_matches_current": true,
+    "GPIO_init_matches_current": true,
+    "pin_lock_matches_current": true
+  }
+}

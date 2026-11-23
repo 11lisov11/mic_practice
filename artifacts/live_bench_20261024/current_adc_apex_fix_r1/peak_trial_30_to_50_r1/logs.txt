@@ -1,0 +1,26 @@
+2026-10-25 12:20:48 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=321.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=8 hmi_local_stop_latched=0
+2026-10-25 12:20:51 CMD CLEAR
+2026-10-25 12:20:54 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=321.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:20:59 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=321.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:21:05 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=322.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:21:10 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=321.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:27:37 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=322.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:27:37 CMD MODE VF
+2026-10-25 12:27:37 CMD SET FREQ 30
+2026-10-25 12:27:39 ARM profile=hv ttl=30.0s vdc=322.0
+2026-10-25 12:27:40 WIFI_START_STEP SOFTSTART owner=external-autonomous ready=1 mcsdk=1
+2026-10-25 12:27:42 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=322.00 bp_temp_c=50.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:27:44 WIFI_START_OK state=VF_RUN freq=6.50 speed=390.0 softstart=external-ready
+2026-10-25 12:27:48 STAT state=VF_RUN mode=VF pwm=1 freq=24.80 speed=1488.0 vdc=318.00 bp_temp_c=51.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:27:52 CMD SET FREQ 35
+2026-10-25 12:27:53 STAT state=VF_RUN mode=VF pwm=1 freq=30.00 speed=1800.0 vdc=318.00 bp_temp_c=51.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:27:57 CMD SET FREQ 40
+2026-10-25 12:27:58 STAT state=VF_RUN mode=VF pwm=1 freq=35.00 speed=2100.0 vdc=319.00 bp_temp_c=52.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:28:03 STAT state=VF_RUN mode=VF pwm=1 freq=40.00 speed=2400.0 vdc=319.00 bp_temp_c=53.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:28:03 CMD SET FREQ 45
+2026-10-25 12:28:08 STAT state=VF_RUN mode=VF pwm=1 freq=45.00 speed=2700.0 vdc=319.00 bp_temp_c=54.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=3 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:28:08 CMD SET FREQ 50
+2026-10-25 12:28:13 STAT state=SAFE mode=VF pwm=0 freq=50.00 speed=3000.0 vdc=319.00 bp_temp_c=55.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0
+2026-10-25 12:28:13 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-25 12:28:15 WIFI_STOP_SEQUENCE emergency=0 ok=1 STOP=True; PRECHARGE_OFF=external-autonomous-no-control; outputs_off=1
+2026-10-25 12:28:20 STAT state=SAFE mode=VF pwm=0 freq=0.00 speed=0.0 vdc=323.00 bp_temp_c=54.0 bp_temp_fault=0 bp_phase_c_v=0.000 bp_phase_c_virtual=0 fan_duty=0.00 bp_fan_rpm=0 bp_cmd_mode=0 bp_foc_backend=0 mc_diag_valid=1 mc_fault_reason=0 hmi_local_stop_latched=0

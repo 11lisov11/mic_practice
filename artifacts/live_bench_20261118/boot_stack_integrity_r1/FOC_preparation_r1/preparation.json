@@ -1,0 +1,27 @@
+{
+  "pair": [
+    2026111809,
+    2026111810
+  ],
+  "PC_OFF_precheck_passed": true,
+  "requested_trial": {
+    "mode": "FOC",
+    "frequency_Hz": 5,
+    "local_auto_stop_ms": 5000,
+    "captures": [
+      "NIS",
+      "raw_ADC",
+      "CPU_IRQ",
+      "observer_state_covariance_start_history"
+    ]
+  },
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_limit_ms": 2,
+  "preserved_records": true,
+  "pending": "Disconnect PC/Saleae, move both boards to power banks, keep15V and J1OFF; validate autonomous boot before energizing J1"
+}

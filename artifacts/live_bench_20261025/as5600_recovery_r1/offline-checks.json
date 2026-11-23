@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "checks": [
+    "PASS: 185 recovery, BERR-workaround, full-frame, deadline, scheduler and filter-timing cases",
+    "Motor sketch, MCU5s stop, UART, ADC/SD and protection headers unchanged outside identity/sensor mode/passive diagnostics",
+    "Full real ADC/zero-history/peak/completion/calibration pipeline accepts2518; corrupted CRC and unknown firmware remain rejected",
+    "Installed2517 BERR-abort path reproduced by source; candidate applies documented U585 erratum without waiving NACK/ARLO/OVR/full-frame/deadline"
+  ],
+  "limitation": "Behavioral host peripheral model, not electrical replay. Original PWM NACK/BERR/ARLO source and filtered-mode electrical timing require bench verification."
+}

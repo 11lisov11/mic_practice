@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "compiler_arguments": [
+    "C:\\ST\\STM32CubeIDE_2.2.0\\STM32CubeIDE\\plugins\\com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.14.3.rel1.win32_1.0.100.202602081740\\tools\\bin\\arm-none-eabi-gcc.exe",
+    "-std=gnu11",
+    "-mcpu=cortex-m4",
+    "-mthumb",
+    "-mfpu=fpv4-sp-d16",
+    "-mfloat-abi=hard",
+    "-O2",
+    "-fno-fast-math",
+    "-ffunction-sections",
+    "-IC:\\mic_practice\\artifacts\\live_bench_20261114\\current_polarity_budget_r1\\nucleo\\Inc",
+    "-c",
+    "C:\\mic_practice\\artifacts\\live_bench_20261114\\current_polarity_budget_r1\\verification\\polarity_ARM.c",
+    "-o",
+    "C:\\mic_practice\\artifacts\\live_bench_20261114\\current_polarity_budget_r1\\verification\\polarity_ARM.o"
+  ],
+  "baseline_always_executes_division": true,
+  "candidate_has_saturation_branches_before_division": true,
+  "saturation_uses_no_library_calls_or_stack_spills": true,
+  "emulator_used": false,
+  "target_cycles_measured": false,
+  "notes": "Actual CortexM4F object inspection; no numeric target-cycle claim."
+}

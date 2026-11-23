@@ -1,0 +1,36 @@
+{
+  "schema": "mic_ai.local_stop_hmi_install.v1",
+  "pass": false,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "mcu_firmware_changed": false,
+  "calibration_file_modified": false,
+  "first_fault_snapshot_preserved": false,
+  "hv_release_approved": false,
+  "hmi_sha256": "21bda96fae14b0fa13db27d1fb21edd6f059e6d2037199944bdae50999569276",
+  "ui_sha256": "42700af1d5aad3409f49b00ed64c0d615bb490640cad5c8f4139380a6d53aa27",
+  "operations": [
+    {
+      "label": "remote_precheck",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server_py",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_app_js",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_install",
+      "exit_code": 0
+    },
+    {
+      "label": "restart_hmi",
+      "exit_code": 1
+    }
+  ],
+  "error": "restart_hmi failed; inspect retained log"
+}

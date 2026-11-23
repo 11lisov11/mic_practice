@@ -1,0 +1,70 @@
+{
+  "scope": "passive read with in-memory peer whitelist correction; installed files unchanged",
+  "hardware_commands": 0,
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 3.0,
+  "mc_fault_detail": "first=ESTOP UART=NONE MCSDK_current=0x0000[NONE] MCSDK_occurred=0x0000[NONE] state=8 seq=110 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0",
+  "snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": true,
+      "age_ms": 1505,
+      "reason": "recorded",
+      "raw": {
+        "magic": 827019842,
+        "schema": 2,
+        "bytes": 92,
+        "tick_ms": 760447,
+        "tim_sr": 223,
+        "tim_dier": 128,
+        "tim_bdtr": 36911218,
+        "tim_cnt": 4847,
+        "tim_arr": 5312,
+        "tim_ccr1": 0,
+        "tim_ccr2": 0,
+        "tim_ccr3": 0,
+        "gpioa_idr": 40964,
+        "context_valid": 1,
+        "context_tick_ms": 760444,
+        "reference_speed_unit": 0,
+        "motor_state": 10,
+        "current_faults": 4,
+        "occurred_faults": 4,
+        "vbus_v": 0,
+        "temperature_deci_c": 300,
+        "command_sequence": 222,
+        "start_window": 0
+      },
+      "event": {
+        "bif": true,
+        "b2if": false,
+        "pa6_high_at_irq": false,
+        "bke_at_irq": true,
+        "moe_at_irq": false,
+        "during_start_request_window": false
+      },
+      "cached_context": {
+        "context_tick_ms": 760444,
+        "reference_speed_unit": 0,
+        "motor_state": 10,
+        "current_faults": 4,
+        "occurred_faults": 4,
+        "vbus_v": 0,
+        "temperature_deci_c": 300,
+        "command_sequence": 222,
+        "age_at_irq_ms": 3,
+        "reference_electrical_hz": 0.0,
+        "temperature_c": 30.0
+      }
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 103,
+      "reason": "no_recorded_break"
+    }
+  ]
+}

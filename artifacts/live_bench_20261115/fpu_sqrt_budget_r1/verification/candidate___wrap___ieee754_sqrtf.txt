@@ -1,0 +1,13 @@
+0800c7dc <__wrap___ieee754_sqrtf>:
+ 800c7dc:	ee10 3a10 	vmov	r3, s0
+ 800c7e0:	f5a3 0200 	sub.w	r2, r3, #8388608	@ 0x800000
+ 800c7e4:	f1b2 4ffe 	cmp.w	r2, #2130706432	@ 0x7f000000
+ 800c7e8:	d204      	bcs.n	800c7f4 <__wrap___ieee754_sqrtf+0x18>
+ 800c7ea:	eef1 2a10 	vmrs	r2, fpscr
+ 800c7ee:	f012 7fe0 	tst.w	r2, #29360128	@ 0x1c00000
+ 800c7f2:	d003      	beq.n	800c7fc <__wrap___ieee754_sqrtf+0x20>
+ 800c7f4:	ee00 3a10 	vmov	s0, r3
+ 800c7f8:	f00c bed8 	b.w	80195ac <__ieee754_sqrtf>
+ 800c7fc:	eeb1 0ac0 	vsqrt.f32	s0, s0
+ 800c800:	4770      	bx	lr
+ 800c802:	bf00      	nop

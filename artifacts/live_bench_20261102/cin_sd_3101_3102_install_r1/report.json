@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "pair": [
+    2026103101,
+    2026103102
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "thresholds_changed": false,
+  "operator_confirmation": "J1/J4OFF, motor disconnected, TP17 through1k to PB11/CN10-18, both boards PCUSB",
+  "physical_CIN_connection_independently_verified": false,
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_18080",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_12222",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_RAM_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_flash_before",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_before",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_server.py",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_app.js",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "hash_index.html",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_config.json",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_deploy_hmi.py",
+      "exit_code": 0
+    },
+    {
+      "label": "candidate_calibration_check",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "readback_native",
+      "exit_code": 0
+    },
+    {
+      "label": "router_close",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "verify_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "router_open",
+      "exit_code": 0
+    },
+    {
+      "label": "deploy_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "calibration_after",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_after",
+      "exit_code": 0
+    }
+  ],
+  "before_pair": [
+    2026103013,
+    2026103014
+  ],
+  "previous_native_image_verified": true,
+  "calibration_before": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "native_readback_verified": true,
+  "native_flash_sha256": "75aabb5522a2b5a4e9c51976ee41f65b260ac569d6aac65c18b251f34f334b84",
+  "uno_readback_verified": true,
+  "hmi_deployment": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/cin_sd_3102_20261102_154832",
+    "calibration_unchanged": true,
+    "runtime_verified": false,
+    "hmi_restarts": 1,
+    "flash_commands": 0,
+    "motor_commands": 0
+  },
+  "calibration_after": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_unchanged": true,
+  "PB11_analog": true,
+  "PB11_no_pull": true,
+  "runtime_pending": "HTTP Error 503: Service Unavailable",
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "LOW",
+    "age_ms": 16,
+    "break_irq_enabled": false,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас LOW: вход защиты активен",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "CIN": {
+    "available": true,
+    "fresh": true,
+    "valid": true,
+    "raw_adc": 0,
+    "voltage_mv_approx": 0.0,
+    "reference_mv_nominal": 3290,
+    "reference_calibrated": false,
+    "sequence": 225,
+    "start_tick_ms": 27400,
+    "end_tick_ms": 27400,
+    "conversion_cycles": 2101,
+    "sd_before": "LOW",
+    "sd_after": "LOW",
+    "timeouts": 0,
+    "errors": 0,
+    "reason_code": 0,
+    "threshold_band": "below_threshold_band",
+    "summary_ru": "CIN ≈ 0.000 В; SD LOW→LOW",
+    "reason": "OK",
+    "physical_cause_identified": false,
+    "connection_verified": false,
+    "limitation": "OFF-only, 10 Гц; не осциллограф. VREF принято 3,290 В; подключение провода отдельно не определяется. Низкий CIN не доказывает UVLO."
+  },
+  "zero_ready": 1
+}

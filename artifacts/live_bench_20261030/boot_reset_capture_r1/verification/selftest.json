@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "native": {
+    "checks": 10616,
+    "packet_hex": "55aae9010100e6e0c378030000000000001400000004070000003150434d6ad01793d007000000cb24a124"
+  },
+  "decoded": {
+    "available": true,
+    "fresh": true,
+    "firmware": 2026103014,
+    "retained_sequence": 3,
+    "sequence_is_power_cycle_persistent": false,
+    "csr_raw": 335544320,
+    "previous_csr_raw": 67108864,
+    "flags": 7,
+    "causes": [
+      "NRST_FLAG",
+      "SOFTWARE"
+    ],
+    "previous_flags_cleared": true,
+    "current_flags_cleared": true,
+    "previous_boot_continuity": true,
+    "software_request_tag": 1296257073,
+    "early_record_crc": 2467811434,
+    "native_tick_ms": 2000,
+    "summary_ru": "флаг NRST, программный сброс; команда MCSDK SW_RESET",
+    "exact_physical_cause_identified": false,
+    "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+  },
+  "replayed_epochs": [
+    {
+      "folder": "current_trip_after_reset_20261030_r1",
+      "tick": 164446,
+      "zero_ready": 1,
+      "algorithm": 2,
+      "reset_reason_recoverable": false
+    },
+    {
+      "folder": "current_repeat_powered_preflight_20261030_r1",
+      "tick": 92544,
+      "zero_ready": 0,
+      "algorithm": 1,
+      "reset_reason_recoverable": false
+    }
+  ],
+  "unchanged_source_files": 142,
+  "RAM_allocated": 28480,
+  "retained_bytes": 32,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "guards_unchanged": true,
+  "hardware_validated": false
+}

@@ -1,0 +1,95 @@
+{
+  "status": "PYTHON_REFERENCE_ONLY",
+  "SimInTech_installation_status": "not_checked_by_this_reference_script",
+  "SimInTech_run_executed": false,
+  "SimInTech_block_count": null,
+  "SimInTech_ODE_count": null,
+  "frequency_hz": 5,
+  "replay_check": {
+    "historical_mean_error_rad_s": 1.7406262724542623,
+    "replayed_mean_error_rad_s": 1.7406262724542623,
+    "absolute_difference_rad_s": 0.0,
+    "matches_at_1e_9": true
+  },
+  "cases": [
+    {
+      "case": "prior_128_load_0",
+      "sample_index": 128,
+      "load_fraction_rated_torque": 0.0,
+      "rows": 12000,
+      "source": "existing_independent_Python_RK4_plant",
+      "ideal_applied_voltage_diagnostic": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 9.05649207776534,
+        "max_abs_speed_error_rad_s": 9.341194623322487,
+        "final_abs_speed_error_rad_s": 9.028884612327662,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": 30.417093773744885,
+        "final_estimated_speed_rad_s": 39.44597838607255
+      },
+      "nominal_duty_voltage_reconstruction": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 3.845610175532035,
+        "max_abs_speed_error_rad_s": 4.1904921045236065,
+        "final_abs_speed_error_rad_s": 3.8907735708020716,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": 30.417093773744885,
+        "final_estimated_speed_rad_s": 34.307867344546956
+      },
+      "max_measured_current_vector_A": 1.0626744431107746
+    },
+    {
+      "case": "prior_128_load_0.35",
+      "sample_index": 128,
+      "load_fraction_rated_torque": 0.35,
+      "rows": 12000,
+      "source": "existing_independent_Python_RK4_plant",
+      "ideal_applied_voltage_diagnostic": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 0.5616495488733789,
+        "max_abs_speed_error_rad_s": 5.731898711733006,
+        "final_abs_speed_error_rad_s": 0.09496230776525973,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": -0.014307849584605998,
+        "final_estimated_speed_rad_s": 0.08065445818065373
+      },
+      "nominal_duty_voltage_reconstruction": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 2.706501282319804,
+        "max_abs_speed_error_rad_s": 3.711603013554969,
+        "final_abs_speed_error_rad_s": 2.907386973633194,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": -0.014307849584605998,
+        "final_estimated_speed_rad_s": -2.9216948232177997
+      },
+      "max_measured_current_vector_A": 1.0626744431107746
+    },
+    {
+      "case": "prior_11_load_0.35",
+      "sample_index": 11,
+      "load_fraction_rated_torque": 0.35,
+      "rows": 12000,
+      "source": "existing_independent_Python_RK4_plant",
+      "ideal_applied_voltage_diagnostic": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 1.7406262724542623,
+        "max_abs_speed_error_rad_s": 8.45714358293586,
+        "final_abs_speed_error_rad_s": 0.7905882762997698,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": 0.927100920009535,
+        "final_estimated_speed_rad_s": 1.7176891963093048
+      },
+      "nominal_duty_voltage_reconstruction": {
+        "samples": 5000,
+        "mean_abs_speed_error_rad_s": 3.4900485515305366,
+        "max_abs_speed_error_rad_s": 4.592241285346683,
+        "final_abs_speed_error_rad_s": 4.191835476989498,
+        "valid_fraction": 1.0,
+        "final_true_speed_rad_s": 0.927100920009535,
+        "final_estimated_speed_rad_s": -3.2647345569799624
+      },
+      "max_measured_current_vector_A": 1.0736903355172795
+    }
+  ],
+  "hardware_actions": 0
+}

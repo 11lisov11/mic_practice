@@ -1,0 +1,57 @@
+{
+  "pass": true,
+  "functions": {
+    "TIM1_BRK_TIM15_IRQHandler": {
+      "equal": true,
+      "bytes": 420,
+      "sha256": "a1d11a168902e565454ad966ed7454af1e534d893a45e43eac883392497fba8b"
+    },
+    "TIM1_UP_TIM16_IRQHandler": {
+      "equal": true,
+      "bytes": 16,
+      "sha256": "f042760b098f4156931c7cb5aea2c63b67f3798da960c9c6fa4bf975e3f2a216"
+    },
+    "PWM_SwitchOnPWM": {
+      "equal": true,
+      "bytes": 32,
+      "sha256": "c18c351595f2baf58790a1365bafaa31e4fab47e4af875defd815225b77456d0"
+    },
+    "PWM_SwitchOffPWM": {
+      "equal": true,
+      "bytes": 32,
+      "sha256": "79bbaf497b969141d7ca3454ba890f73a36b5d5f6a2bced0a363dc6bb05ca0cd"
+    },
+    "PWM_SetPhasePWMOutputs": {
+      "equal": true,
+      "bytes": 128,
+      "sha256": "71b1259ebd9c0ec0f2b814d9eb05977f0be739faf87c34c98609c695d7036d10"
+    },
+    "PWMC_DP_Handler": {
+      "equal": true,
+      "bytes": 20,
+      "sha256": "dbb640f931ead262529e6d835c874edcd24a495568bf0f0e26fc05be8b6972a8"
+    },
+    "UI_HandleStartStopButton_cb": {
+      "equal": true,
+      "bytes": 40,
+      "sha256": "be9bbc0f0749d89838657e8411f68bef1a7677d00d0fa674c4ac6745a2a016e8"
+    },
+    "mic_local_stop_blocked": {
+      "equal": true,
+      "bytes": 64,
+      "sha256": "c0bfaea14dd514e039b2fe3dfec3a7e2e44201f5eeb0e83a6c29181ecd615292"
+    },
+    "mic_local_stop_enable_outputs": {
+      "equal": true,
+      "bytes": 92,
+      "sha256": "12efae7e6b1028c42d4b9ea994979cf248bf384665c3a0be1ba1a93fb1a9077f"
+    },
+    "mic_local_stop_clear": {
+      "equal": true,
+      "bytes": 96,
+      "sha256": "2cbec4e21197084d099dd5e053bf482d070693ac9558efa39aef49a8839bc5a2"
+    }
+  },
+  "timer_initializer_source_identical": true,
+  "scope": "unlinked function machine-code sections; linker relocation addresses excluded"
+}

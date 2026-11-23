@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "checks": {
+    "channel_0": true,
+    "channel_1": true,
+    "channel_2": true,
+    "channel_3": true,
+    "channel_4": true,
+    "channel_5": true,
+    "native_auto_stop": true,
+    "restored_readback": true,
+    "production_uart_restored": true,
+    "no_digital_pair_overlap": true,
+    "sd_high": true,
+    "deadtime_matches": true,
+    "cross_phase_channel_identity": true
+  },
+  "channels": {
+    "0": {
+      "expected_duty": 0.22853915662650603,
+      "observed_duty": 0.22853434523717597,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    },
+    "1": {
+      "expected_duty": 0.728539156626506,
+      "observed_duty": 0.7285271658988538,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    },
+    "2": {
+      "expected_duty": 0.47853915662650603,
+      "observed_duty": 0.47851180695469653,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    },
+    "3": {
+      "expected_duty": 0.47853915662650603,
+      "observed_duty": 0.4785280547371996,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    },
+    "4": {
+      "expected_duty": 0.728539156626506,
+      "observed_duty": 0.7285462565215902,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    },
+    "5": {
+      "expected_duty": 0.22853915662650603,
+      "observed_duty": 0.2285345722990322,
+      "frequency_hz": 15999.999999994658,
+      "rising_edges": 80008
+    }
+  },
+  "deadtime_nominal_us": 1.3411764705882354,
+  "deadtime_measured_min_us": 1.332999999270612,
+  "duty_tolerance": 0.002966917670682731,
+  "sample_rate_hz": 12000000,
+  "correction_reason": "Original evaluator compared pin high-time to CCR/ARR without subtracting the unchanged hardware deadtime. Original failed report and raw capture are preserved.",
+  "additional_hardware_runs": 0,
+  "motor_application_validated": false,
+  "cross_phase_identity_violation_s": 0.0,
+  "capture_sha256": "69f6ef8afde1b5086a5a6fd0418f5977b81e4d1fa620e3ecd81617f1f3673259"
+}

@@ -1,0 +1,153 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -26,7 +26,7 @@
+   uint32_t faults,adaptive_steps;
+   uint8_t preflux; /* 0 unused, 1 commanded current frame, 2 handed over */
+   float start_cos,start_sin;
+-  float if_last_ia,if_last_ib;
++  float feedback_ia,feedback_ib;
+ } ma_controller;
+ typedef struct {
+   uint32_t arr,latest,settle,acquire,min_pulse,deadtime_ticks;
+@@ -273,7 +273,7 @@
+   for(unsigned attempt=0;attempt<2;attempt++){
+     for(unsigned i=0;i<3;i++){cc[i]=ma_round_ccr((base[i]+shift)*g->arr);if(cc[i]>g->arr)return MA_WINDOW;}
+     p=mic_plan_current_window(cc[0],cc[1],cc[2],g->latest,g->settle,g->acquire);
+-    if(p.valid)break;
++    if(p.valid||shift==target)break; /* Same compares would fail again. */
+     shift=target;
+   }
+   if(!p.valid)return MA_WINDOW;
+@@ -305,25 +305,21 @@
+   const float flux=ma_control_norm(x[2],x[3]);
+   if(!speed_ready&&c->preflux==0U){
+     c->start_cos=1.f;c->start_sin=0.f;c->preflux=1U;
+-    c->if_last_ia=ia;c->if_last_ib=ib;
++    c->feedback_ia=ia;c->feedback_ib=ib;
+   }
+   float c0=1.f,s=0.f,start_omega=0.f;
++  int handover=0;
+   if(c->preflux==1U){
+     const float start_hz=c->time_s<.10f?0.f:ma_min2(reference_hz,5.f);
+     start_omega=6.2831853072f*start_hz;
+     c0=c->start_cos;s=c->start_sin;
+-    /* At handover the PI integral is still in the currently applied frame.
+-     * Check that frame against the estimate, without advancing an oscillator
+-     * which will no longer be used. Keep the same admission criteria. */
+     const float projection=c0*x[2]+s*x[3];
+     if(speed_ready&&start_hz>=1.f&&flux>.0001f&&projection>=.92f*flux&&
+        fabsf(m->poles*x[4]-start_omega)<=6.2831853072f){
+       const float inv_flux=1.f/flux;
+-      const float d=projection*inv_flux,q=(c0*x[3]-s*x[2])*inv_flux;
+-      const float a=c->integral[0],b=c->integral[1];
+-      c->integral[0]=d*a+q*b;c->integral[1]=-q*a+d*b;
+       c0=x[2]*inv_flux;s=x[3]*inv_flux;
+       c->preflux=2U;
++      handover=1;
+     }else{
+       const float delta=start_omega*dt;
+       const float next_c=c0-delta*s,next_s=s+delta*c0;
+@@ -332,14 +328,15 @@
+       speed_ready=0;
+     }
+   }else if(flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
+-  /* During I/f only, attenuate alternating ADC-frame feedback before the
+-   * current PI. Raw ia/ib have already passed the original current trip.
+-   * Keep the dead-time polarity and the 16-frame observer input raw. */
++  /* At 16 kHz this pole (about 340 Hz) is above the 400 rad/s
++   * current loop. Carry its state through handover. Use its polarity for
++   * dead-time compensation; raw peaks and the observer current stay raw. */
+   float feedback_ia=ia,feedback_ib=ib;
+-  if(c->preflux==1U){
+-    feedback_ia=.5f*(ia+c->if_last_ia);feedback_ib=.5f*(ib+c->if_last_ib);
+-    c->if_last_ia=ia;c->if_last_ib=ib;
+-  }
++  if(c->preflux){
++    feedback_ia=c->feedback_ia+.125f*(ia-c->feedback_ia);
++    feedback_ib=c->feedback_ib+.125f*(ib-c->feedback_ib);
++  }
++  c->feedback_ia=feedback_ia;c->feedback_ib=feedback_ib;
+   const float id=c0*feedback_ia+s*feedback_ib,iq=-s*feedback_ia+c0*feedback_ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
+   /* A provisional flux can establish magnetization, but an unqualified
+@@ -369,8 +366,15 @@
+    * rotation only, leaving flux and back-EMF compensation to closed-loop. */
+   const float ff[2]={c->preflux==1U?m->rs*id-sync*l*iq:res*id-kr*ar*flux-sync*l*iq,
+     c->preflux==1U?m->rs*iq+sync*l*id:res*iq+kr*m->poles*omega*flux+sync*l*id};
+-  float dq[2]={ff[0]+l*m->current_bw*err[0]+c->integral[0],
+-               ff[1]+l*m->current_bw*err[1]+c->integral[1]};
++  const float kp_current=l*m->current_bw;
++  const float vd=ff[0]+kp_current*err[0],vq=ff[1]+kp_current*err[1];
++  if(handover){
++    /* Track the last realizable stator voltage in the new frame. Rotating
++     * the integral alone leaves the feed-forward and proportional steps. */
++    c->integral[0]=c0*c->last_va+s*c->last_vb-vd;
++    c->integral[1]=-s*c->last_va+c0*c->last_vb-vq;
++  }
++  float dq[2]={vd+c->integral[0],vq+c->integral[1]};
+   const float limit=.90f*bus*.5773502692f;
+   const float scale=ma_voltage_scale(dq[0],dq[1],limit);
+   for(unsigned i=0;i<2;i++){
+@@ -382,9 +386,9 @@
+   out->id_measured=id;out->iq_measured=iq;
+   const float requested_a=c0*dq[0]-s*dq[1],requested_b=s*dq[0]+c0*dq[1];
+   const float loss=bus*g->deadtime_ticks/(2.f*g->arr);
+-  const float loss_phase[3]={loss*ma_current_polarity(ia),
+-    loss*ma_current_polarity((-.5f*ia+.8660254038f*ib)),
+-    loss*ma_current_polarity((-.5f*ia-.8660254038f*ib))};
++  const float loss_phase[3]={loss*ma_current_polarity(feedback_ia),
++    loss*ma_current_polarity((-.5f*feedback_ia+.8660254038f*feedback_ib)),
++    loss*ma_current_polarity((-.5f*feedback_ia-.8660254038f*feedback_ib))};
+   const float loss_a=(2*loss_phase[0]-loss_phase[1]-loss_phase[2])/3;
+   const float loss_b=(loss_phase[1]-loss_phase[2])*.5773502692f;
+   float aperture_scale=1;
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -446,8 +446,6 @@
+   float applied_a=0,applied_b=0;
+   const float actual_ia=ma_amps(sample.counts[0]);
+   const float actual_ib=(actual_ia+2.f*ma_amps(sample.counts[1]))*.5773502692f;
+-  int voltage_fault=ma_applied_voltage(&g,sample.ccr,sample.arr,sample.bus_v,
+-    actual_ia,actual_ib,&applied_a,&applied_b);
+   /* fe_profile_allowed has just validated the exact calculated model.
+    * TIM1 has the highest configurable IRQ priority; no foreground profile write
+    * can occur here. Other qualifications retain their own per-frame validation. */
+@@ -462,7 +460,10 @@
+     (ma_amps(sample.counts[0])+2.f*ma_amps(sample.counts[1]))*.5773502692f,
+     reference_hz,VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super),1.f/16000U,fresh,&out,model_ok);
+   }
+-  if(!fault && voltage_fault)fault=voltage_fault;
++  /* Use the same filtered polarity for the active-epoch voltage model.
++   * Keep the raw, paired current sample in the observer window below. */
++  if(!fault)fault=ma_applied_voltage(&g,sample.ccr,sample.arr,sample.bus_v,
++    controller.feedback_ia,controller.feedback_ib,&applied_a,&applied_b);
+   ow_bin completed_window;int window_ready=0;
+   /* Raw1.35A check above is never filtered. Include accumulator in deadline. */
+   if(!fault){window_ready=ow_push_pair(&observer_window,sample.cycles,SystemCoreClock*3U/16000U,
+@@ -673,13 +674,13 @@
+  if(!fe_pending||LL_TIM_IsEnabledAllOutputs(TIM1))return 0;
+  const uint32_t begin=DWT->CYCCNT;
+  const uint16_t cc[3]={(uint16_t)(fe_test_geometry.arr/2U),(uint16_t)(fe_test_geometry.arr/2U),(uint16_t)(fe_test_geometry.arr/2U)};
+- float av,bv;int avrc=ma_applied_voltage(&fe_test_geometry,cc,(uint16_t)fe_test_geometry.arr,
+-   (uint16_t)fe_test_bus,fe_test_ia,fe_test_ib,&av,&bv);
+- fe_applied_a=av;fe_applied_b=bv;
+  const int model_ok=fe_model_exact(&model);
+  volatile uint8_t speed_ready=(uint8_t)(fe_case&1U);
+- fe_rc=avrc?avrc:ma_control_with_speed_admission(&fe_test_controller,&fe_control_model,fe_test_x,&fe_test_geometry,MA_FOC,
++ fe_rc=ma_control_with_speed_admission(&fe_test_controller,&fe_control_model,fe_test_x,&fe_test_geometry,MA_FOC,
+    fe_test_ia,fe_test_ib,fe_test_ref,fe_test_bus,1.f/16000U,1,&fe_test_out,model_ok,speed_ready);
++ float av=0.f,bv=0.f;
++ if(!fe_rc)fe_rc=ma_applied_voltage(&fe_test_geometry,cc,(uint16_t)fe_test_geometry.arr,
++   (uint16_t)fe_test_bus,fe_test_controller.feedback_ia,fe_test_controller.feedback_ib,&av,&bv);
+  ow_state window_probe=fe_window_seed;ow_bin window_result={0};
+  const int wrc=ow_push_pair(&window_probe,16U*10624U,31875U,
+    fe_test_ia,fe_test_ib,av,bv,&window_result,(uint8_t)(fe_case%3U));
+@@ -755,7 +756,7 @@
+   /* Include the open-loop and qualified handover branches in OFF DWT.
+    * Synthetic inputs only. No output-enable, timer or protection writes. */
+   fe_test_controller.preflux=(uint8_t)(fe_n%3U);
+-  if(!fe_n){fe_test_controller.if_last_ia=fe_test_ia;fe_test_controller.if_last_ib=fe_test_ib;}
++  if(!fe_n){fe_test_controller.feedback_ia=fe_test_ia;fe_test_controller.feedback_ib=fe_test_ib;}
+   fe_test_controller.start_cos=cosf((fe_case%16U)*.3926990817f);
+   fe_test_controller.start_sin=sinf((fe_case%16U)*.3926990817f);
+   if(fe_test_controller.preflux==1U&&(fe_case&9U)==9U)

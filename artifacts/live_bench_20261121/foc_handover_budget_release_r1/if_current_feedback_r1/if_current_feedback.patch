@@ -1,0 +1,45 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -26,6 +26,7 @@
+   uint32_t faults,adaptive_steps;
+   uint8_t preflux; /* 0 unused, 1 commanded current frame, 2 handed over */
+   float start_cos,start_sin;
++  float if_last_ia,if_last_ib;
+ } ma_controller;
+ typedef struct {
+   uint32_t arr,latest,settle,acquire,min_pulse,deadtime_ticks;
+@@ -304,6 +305,7 @@
+   const float flux=ma_control_norm(x[2],x[3]);
+   if(!speed_ready&&c->preflux==0U){
+     c->start_cos=1.f;c->start_sin=0.f;c->preflux=1U;
++    c->if_last_ia=ia;c->if_last_ib=ib;
+   }
+   float c0=1.f,s=0.f,start_omega=0.f;
+   if(c->preflux==1U){
+@@ -330,7 +332,15 @@
+       speed_ready=0;
+     }
+   }else if(flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
+-  const float id=c0*ia+s*ib,iq=-s*ia+c0*ib;
++  /* During I/f only, attenuate alternating ADC-frame feedback before the
++   * current PI. Raw ia/ib have already passed the original current trip.
++   * Keep the dead-time polarity and the 16-frame observer input raw. */
++  float feedback_ia=ia,feedback_ib=ib;
++  if(c->preflux==1U){
++    feedback_ia=.5f*(ia+c->if_last_ia);feedback_ib=.5f*(ib+c->if_last_ib);
++    c->if_last_ia=ia;c->if_last_ib=ib;
++  }
++  const float id=c0*feedback_ia+s*feedback_ib,iq=-s*feedback_ia+c0*feedback_ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
+   /* A provisional flux can establish magnetization, but an unqualified
+    * speed must not command torque or enter speed feed-forward. */
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -746,6 +746,7 @@
+   /* Include the open-loop and qualified handover branches in OFF DWT.
+    * Synthetic inputs only. No output-enable, timer or protection writes. */
+   fe_test_controller.preflux=(uint8_t)(fe_n%3U);
++  if(!fe_n){fe_test_controller.if_last_ia=fe_test_ia;fe_test_controller.if_last_ib=fe_test_ib;}
+   fe_test_controller.start_cos=cosf((fe_case%16U)*.3926990817f);
+   fe_test_controller.start_sin=sinf((fe_case%16U)*.3926990817f);
+   if(fe_test_controller.preflux==1U&&(fe_case&9U)==9U)

@@ -1,0 +1,28 @@
+{
+  "epoch": 33022,
+  "start_ms": 360702,
+  "end_ms": 365694,
+  "elapsed_nucleo_ms": 4992,
+  "elapsed_uno_ms": 5000,
+  "uno_stop_reason": 1,
+  "nucleo_stop_reason": 2,
+  "windows": 498,
+  "expected_data_pages": 249,
+  "max_dwt_cycles": 1355,
+  "first_fault": 0,
+  "adc_samples": 79671,
+  "after": {
+    "state": "SAFE",
+    "pwm": 0,
+    "estop": 1,
+    "mc_fault": 3,
+    "bp_vdc": 326.0,
+    "mc_age_ms": 30
+  },
+  "relevant_hmi_events": [
+    "2026-11-23 09:52:23 CMD CLEAR",
+    "2026-11-23 09:52:28 WIFI_START_OK state=VF_RUN freq=0.00 speed=0.0 softstart=external-ready",
+    "2026-11-23 09:52:36 OPERATOR_HEARTBEAT_LOST age=3.60s stop_ok=1 stop_err=- estop_ok=1 estop_err=- relay_ok=1 relay_err=external-autonomous-no-control"
+  ],
+  "download_complete": false
+}

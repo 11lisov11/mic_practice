@@ -1,0 +1,65 @@
+{
+  "physical_root_cause_proven": false,
+  "hardware_commands": 0,
+  "protection_changes": 0,
+  "old_wave": {
+    "path": "C:\\mic_practice\\artifacts\\live_bench_20261021\\sd_dual_hv_idle_r1\\bkin_wave.bin",
+    "sha256": "65c85a57b51d9336fc54bc73532e384dc4f09d836dcee402e2a1521d7ca42196",
+    "pa6_low_samples": 90993,
+    "pa4_low_samples": 0,
+    "nominal_sample_ns": 200,
+    "runs": [
+      [
+        3,
+        2041
+      ],
+      [
+        2,
+        90993
+      ],
+      [
+        3,
+        321
+      ]
+    ]
+  },
+  "new_snapshot": {
+    "BDTR": 37305458,
+    "BKBID": false,
+    "BKE": true,
+    "MOE": false,
+    "AOE": false,
+    "PA6_HIGH": false,
+    "tick_ms": 0,
+    "context_valid": 0
+  },
+  "latest_SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "LOW",
+    "age_ms": 37,
+    "break_irq_enabled": false,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас LOW: вход защиты активен",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "zero_ready": 1,
+  "zero_offsets": [
+    2068,
+    2065,
+    2066,
+    2069
+  ],
+  "nominal_SD_RC": {
+    "R28_ohm": 10000,
+    "C20_pF": 330,
+    "tau_us": 3.3
+  },
+  "old_TP23_probe_continuity_independently_confirmed": false,
+  "next_test": "J1 and J4 OFF; controllers powered; unplug cable at STEVAL only; read PA6, no START",
+  "HIGH_interpretation": "LOW depends on STEVAL connection; does not prove internal IPM defect",
+  "LOW_interpretation": "LOW remains on cable/adapter/Nucleo side",
+  "old_captures_modified": false
+}

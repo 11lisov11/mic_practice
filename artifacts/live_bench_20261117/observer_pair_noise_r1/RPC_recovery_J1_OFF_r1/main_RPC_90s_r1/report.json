@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "required_seconds": 90,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "automatic_reopens": 0,
+  "scope": "Main RPC idle after diagnostic temporary router restored its port; not motor qualification",
+  "samples": 77,
+  "elapsed_s": 90.85999999998603,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 209,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "03204748-f785-436b-94f5-49bac7a92244",
+      [
+        2026111716,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        2721839430
+      ]
+    ],
+    "samples": 77,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 89.59399999998277,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "final": {
+    "state": "SAFE",
+    "pwm": 0,
+    "vdc": 10.0,
+    "mc_current_zero_ready": 1,
+    "mc_current_zero_stable": 3,
+    "mc_fault": 5,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 1028,
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 23,
+      "break_irq_enabled": false,
+      "capture_running": false,
+      "first_record_ready": true,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "algorithm_fast_cycles": 3827,
+    "algorithm_observer_cycles": 25013
+  }
+}

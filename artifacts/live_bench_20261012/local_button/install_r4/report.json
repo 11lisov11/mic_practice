@@ -1,0 +1,76 @@
+{
+  "operator_confirmed_physical_offline": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "uno_firmware_changed": true,
+  "hv_release_approved": false,
+  "commands": [
+    {
+      "label": "usb_inventory",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_before",
+      "exit_code": 0
+    },
+    {
+      "label": "nucleo_backup",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_staging",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_recovery",
+      "exit_code": 0
+    },
+    {
+      "label": "install_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "nucleo_readback",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_after",
+      "exit_code": 0
+    }
+  ],
+  "image_sha256": "f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949",
+  "hmi_sha256": "5b9a25097b8d590db98ddcd37b121f30f573f4465fea67c512231a2f0dc40d15",
+  "old_image_sha256": "27d7b1151ad69a0958043552ef53c840867edb1e0fd3ad145c2645f3922aa033",
+  "hmi_install": {
+    "installed": true,
+    "sha256": "5b9a25097b8d590db98ddcd37b121f30f573f4465fea67c512231a2f0dc40d15",
+    "calibration_unchanged": true,
+    "new_pid": 1217,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/router_recovery_91c09b6632984ecbb746f4e339a95710",
+    "actuation_commands": 0,
+    "mcu_flash_commands": 0,
+    "rpc_verified": false
+  },
+  "nucleo_programmer_verify_pass": true,
+  "nucleo_readback_sha256": "f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949",
+  "nucleo_readback_matches": true,
+  "uno_flash_attempted": true,
+  "uno_flash_verify_pass": true,
+  "uno_image_sha256": "afd0c72fc33c1519d9a85b6fd43356057a66048f82d20e1ebbbd56cd5e714714",
+  "hmi_verified": true,
+  "calibration_unchanged": true,
+  "pass": true
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "mic_ai.ipm_first_break_package.v1",
+  "package_verified": true,
+  "firmware_build_id": 2026101101,
+  "record_schema": 2,
+  "record_bytes": 92,
+  "build_errors": 0,
+  "build_warnings": 0,
+  "artifacts": {
+    ".elf": {
+      "path": "C:\\mic_practice\\artifacts\\live_bench_20261011\\ipm_break_snapshot\\candidate_r2\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "sha256": "7744796c8868df2c4db2aa9c5a6d334e88f88dd9b0abc2288cbe9e7f99cbf27d",
+      "bytes": 2097004
+    },
+    ".bin": {
+      "path": "C:\\mic_practice\\artifacts\\live_bench_20261011\\ipm_break_snapshot\\candidate_r2\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "sha256": "c2916541f70a4a2948e5cd7bace3774be52bbe22ef93920434da110043d3f547",
+      "bytes": 43548
+    },
+    ".hex": {
+      "path": "C:\\mic_practice\\artifacts\\live_bench_20261011\\ipm_break_snapshot\\candidate_r2\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "sha256": "4e8b8293f792e5e73cd69e65c3d735acd45b1b78051a1f77504abd91f73ff57c",
+      "bytes": 122585
+    }
+  },
+  "ram_symbols": {
+    "mic_break_context": {
+      "address": "0x200005b8",
+      "bytes": 64
+    },
+    "mic_break_context_index": {
+      "address": "0x200005b4",
+      "bytes": 4
+    },
+    "mic_break_context_valid": {
+      "address": "0x200005b0",
+      "bytes": 4
+    },
+    "mic_break_irq_count": {
+      "address": "0x200005f8",
+      "bytes": 4
+    },
+    "mic_break_start_window": {
+      "address": "0x200005fc",
+      "bytes": 4
+    },
+    "mic_first_break": {
+      "address": "0x2000065c",
+      "bytes": 92
+    },
+    "mic_first_start_break": {
+      "address": "0x20000600",
+      "bytes": 92
+    }
+  },
+  "extra_ram_bytes": 264,
+  "installed": false,
+  "hardware_commands": 0,
+  "hv_release_approved": false,
+  "note": "RAM addresses belong ONLY to this ELF; never reuse with installed 2026101006",
+  "readback_prerequisites": [
+    "Diagnostic image installed and identity verified in a separate low-voltage session",
+    "Mains physically disconnected, J4 off, DC bus verified discharged before connecting any PC wire",
+    "Preserve MCU supply after event: power cycling, reset, or reset-on-connect erases the .bss record",
+    "No automatic ST-Link readback or powered trial is authorized by this package"
+  ]
+}

@@ -1,0 +1,499 @@
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_fast_budget_fix_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08003674 <mic_current_packet>:
+ 8003674:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 8003678:	ed2d 8b02 	vpush	{d8}
+ 800367c:	b0d3      	sub	sp, #332	@ 0x14c
+ 800367e:	4604      	mov	r4, r0
+ 8003680:	460e      	mov	r6, r1
+ 8003682:	9201      	str	r2, [sp, #4]
+ 8003684:	f3ef 8310 	mrs	r3, PRIMASK
+ 8003688:	9302      	str	r3, [sp, #8]
+ 800368a:	b672      	cpsid	i
+ 800368c:	ad08      	add	r5, sp, #32
+ 800368e:	49d9      	ldr	r1, [pc, #868]	@ (80039f4 <mic_current_packet+0x380>)
+ 8003690:	f44f 7294 	mov.w	r2, #296	@ 0x128
+ 8003694:	4628      	mov	r0, r5
+ 8003696:	f013 f8f5 	bl	8016884 <memcpy>
+ 800369a:	49d6      	ldr	r1, [pc, #856]	@ (80039f4 <mic_current_packet+0x380>)
+ 800369c:	e9d1 831c 	ldrd	r8, r3, [r1, #112]	@ 0x70
+ 80036a0:	9303      	str	r3, [sp, #12]
+ 80036a2:	6f8b      	ldr	r3, [r1, #120]	@ 0x78
+ 80036a4:	9304      	str	r3, [sp, #16]
+ 80036a6:	f891 30a4 	ldrb.w	r3, [r1, #164]	@ 0xa4
+ 80036aa:	9306      	str	r3, [sp, #24]
+ 80036ac:	f891 30ae 	ldrb.w	r3, [r1, #174]	@ 0xae
+ 80036b0:	9300      	str	r3, [sp, #0]
+ 80036b2:	f891 30e0 	ldrb.w	r3, [r1, #224]	@ 0xe0
+ 80036b6:	9305      	str	r3, [sp, #20]
+ 80036b8:	f8b1 30e1 	ldrh.w	r3, [r1, #225]	@ 0xe1
+ 80036bc:	9307      	str	r3, [sp, #28]
+ 80036be:	6fcf      	ldr	r7, [r1, #124]	@ 0x7c
+ 80036c0:	f891 a0a5 	ldrb.w	sl, [r1, #165]	@ 0xa5
+ 80036c4:	f891 b0ac 	ldrb.w	fp, [r1, #172]	@ 0xac
+ 80036c8:	f891 90ad 	ldrb.w	r9, [r1, #173]	@ 0xad
+ 80036cc:	9b02      	ldr	r3, [sp, #8]
+ 80036ce:	f383 8810 	msr	PRIMASK, r3
+ 80036d2:	2229      	movs	r2, #41	@ 0x29
+ 80036d4:	2100      	movs	r1, #0
+ 80036d6:	1ca0      	adds	r0, r4, #2
+ 80036d8:	f013 f8a1 	bl	801681e <memset>
+ 80036dc:	f64a 2355 	movw	r3, #43605	@ 0xaa55
+ 80036e0:	2e02      	cmp	r6, #2
+ 80036e2:	8023      	strh	r3, [r4, #0]
+ 80036e4:	f000 8128 	beq.w	8003938 <mic_current_packet+0x2c4>
+ 80036e8:	2e00      	cmp	r6, #0
+ 80036ea:	bf0c      	ite	eq
+ 80036ec:	23d5      	moveq	r3, #213	@ 0xd5
+ 80036ee:	23d6      	movne	r3, #214	@ 0xd6
+ 80036f0:	f1b9 0900 	subs.w	r9, r9, #0
+ 80036f4:	bf18      	it	ne
+ 80036f6:	f04f 0901 	movne.w	r9, #1
+ 80036fa:	70a3      	strb	r3, [r4, #2]
+ 80036fc:	9a00      	ldr	r2, [sp, #0]
+ 80036fe:	f1bb 0300 	subs.w	r3, fp, #0
+ 8003702:	bf18      	it	ne
+ 8003704:	2301      	movne	r3, #1
+ 8003706:	ea43 1309 	orr.w	r3, r3, r9, lsl #4
+ 800370a:	b10a      	cbz	r2, 8003710 <mic_current_packet+0x9c>
+ 800370c:	f043 0308 	orr.w	r3, r3, #8
+ 8003710:	f01a 0f04 	tst.w	sl, #4
+ 8003714:	bf18      	it	ne
+ 8003716:	f043 0304 	orrne.w	r3, r3, #4
+ 800371a:	f00a 0260 	and.w	r2, sl, #96	@ 0x60
+ 800371e:	431a      	orrs	r2, r3
+ 8003720:	fa5f f982 	uxtb.w	r9, r2
+ 8003724:	f1bb 0f00 	cmp.w	fp, #0
+ 8003728:	d003      	beq.n	8003732 <mic_current_packet+0xbe>
+ 800372a:	f1b8 0f0f 	cmp.w	r8, #15
+ 800372e:	f200 80e9 	bhi.w	8003904 <mic_current_packet+0x290>
+ 8003732:	4ab1      	ldr	r2, [pc, #708]	@ (80039f8 <mic_current_packet+0x384>)
+ 8003734:	9b01      	ldr	r3, [sp, #4]
+ 8003736:	f8c4 3006 	str.w	r3, [r4, #6]
+ 800373a:	6813      	ldr	r3, [r2, #0]
+ 800373c:	3301      	adds	r3, #1
+ 800373e:	6013      	str	r3, [r2, #0]
+ 8003740:	7123      	strb	r3, [r4, #4]
+ 8003742:	2e00      	cmp	r6, #0
+ 8003744:	f040 80fa 	bne.w	800393c <mic_current_packet+0x2c8>
+ 8003748:	f8c4 700a 	str.w	r7, [r4, #10]
+ 800374c:	f1b8 0f00 	cmp.w	r8, #0
+ 8003750:	f040 8174 	bne.w	8003a3c <mic_current_packet+0x3c8>
+ 8003754:	f8b5 3098 	ldrh.w	r3, [r5, #152]	@ 0x98
+ 8003758:	eddf 6aa8 	vldr	s13, [pc, #672]	@ 80039fc <mic_current_packet+0x388>
+ 800375c:	eddf 7aa8 	vldr	s15, [pc, #672]	@ 8003a00 <mic_current_packet+0x38c>
+ 8003760:	ee07 3a10 	vmov	s14, r3
+ 8003764:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 8003768:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 800376c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003770:	ee67 7a27 	vmul.f32	s15, s14, s15
+ 8003774:	f300 8271 	bgt.w	8003c5a <mic_current_packet+0x5e6>
+ 8003778:	eeb6 7a00 	vmov.f32	s14, #96	@ 0x3f000000  0.5
+ 800377c:	ee77 7a87 	vadd.f32	s15, s15, s14
+ 8003780:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003784:	ee17 3a90 	vmov	r3, s15
+ 8003788:	b2da      	uxtb	r2, r3
+ 800378a:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 800378e:	7563      	strb	r3, [r4, #21]
+ 8003790:	f9b5 309e 	ldrsh.w	r3, [r5, #158]	@ 0x9e
+ 8003794:	7522      	strb	r2, [r4, #20]
+ 8003796:	f603 5257 	addw	r2, r3, #3415	@ 0xd57
+ 800379a:	f641 21ae 	movw	r1, #6830	@ 0x1aae
+ 800379e:	b292      	uxth	r2, r2
+ 80037a0:	428a      	cmp	r2, r1
+ 80037a2:	f200 821e 	bhi.w	8003be2 <mic_current_packet+0x56e>
+ 80037a6:	ee07 3a90 	vmov	s15, r3
+ 80037aa:	ed9f 7a95 	vldr	s14, [pc, #596]	@ 8003a00 <mic_current_packet+0x38c>
+ 80037ae:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 80037b2:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 80037b6:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 80037ba:	ee17 3a90 	vmov	r3, s15
+ 80037be:	b2da      	uxtb	r2, r3
+ 80037c0:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 80037c4:	76e3      	strb	r3, [r4, #27]
+ 80037c6:	f8b5 309a 	ldrh.w	r3, [r5, #154]	@ 0x9a
+ 80037ca:	eddf 6a8c 	vldr	s13, [pc, #560]	@ 80039fc <mic_current_packet+0x388>
+ 80037ce:	eddf 7a8c 	vldr	s15, [pc, #560]	@ 8003a00 <mic_current_packet+0x38c>
+ 80037d2:	76a2      	strb	r2, [r4, #26]
+ 80037d4:	ee07 3a10 	vmov	s14, r3
+ 80037d8:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 80037dc:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 80037e0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80037e4:	ee67 7a27 	vmul.f32	s15, s14, s15
+ 80037e8:	f300 8246 	bgt.w	8003c78 <mic_current_packet+0x604>
+ 80037ec:	eeb6 7a00 	vmov.f32	s14, #96	@ 0x3f000000  0.5
+ 80037f0:	ee77 7a87 	vadd.f32	s15, s15, s14
+ 80037f4:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 80037f8:	ee17 3a90 	vmov	r3, s15
+ 80037fc:	b2da      	uxtb	r2, r3
+ 80037fe:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003802:	75e3      	strb	r3, [r4, #23]
+ 8003804:	f9b5 30a0 	ldrsh.w	r3, [r5, #160]	@ 0xa0
+ 8003808:	75a2      	strb	r2, [r4, #22]
+ 800380a:	f603 5257 	addw	r2, r3, #3415	@ 0xd57
+ 800380e:	f641 21ae 	movw	r1, #6830	@ 0x1aae
+ 8003812:	b292      	uxth	r2, r2
+ 8003814:	428a      	cmp	r2, r1
+ 8003816:	f200 81da 	bhi.w	8003bce <mic_current_packet+0x55a>
+ 800381a:	ee07 3a90 	vmov	s15, r3
+ 800381e:	ed9f 7a78 	vldr	s14, [pc, #480]	@ 8003a00 <mic_current_packet+0x38c>
+ 8003822:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 8003826:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 800382a:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 800382e:	ee17 3a90 	vmov	r3, s15
+ 8003832:	b2da      	uxtb	r2, r3
+ 8003834:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003838:	7722      	strb	r2, [r4, #28]
+ 800383a:	7763      	strb	r3, [r4, #29]
+ 800383c:	f8b5 309c 	ldrh.w	r3, [r5, #156]	@ 0x9c
+ 8003840:	eddf 6a6e 	vldr	s13, [pc, #440]	@ 80039fc <mic_current_packet+0x388>
+ 8003844:	eddf 7a6e 	vldr	s15, [pc, #440]	@ 8003a00 <mic_current_packet+0x38c>
+ 8003848:	ee07 3a10 	vmov	s14, r3
+ 800384c:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 8003850:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 8003854:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003858:	ee67 7a27 	vmul.f32	s15, s14, s15
+ 800385c:	f300 81f8 	bgt.w	8003c50 <mic_current_packet+0x5dc>
+ 8003860:	eeb6 7a00 	vmov.f32	s14, #96	@ 0x3f000000  0.5
+ 8003864:	ee77 7a87 	vadd.f32	s15, s15, s14
+ 8003868:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 800386c:	ee17 3a90 	vmov	r3, s15
+ 8003870:	b2da      	uxtb	r2, r3
+ 8003872:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003876:	7663      	strb	r3, [r4, #25]
+ 8003878:	f9b5 30a2 	ldrsh.w	r3, [r5, #162]	@ 0xa2
+ 800387c:	7622      	strb	r2, [r4, #24]
+ 800387e:	f603 5257 	addw	r2, r3, #3415	@ 0xd57
+ 8003882:	f641 21ae 	movw	r1, #6830	@ 0x1aae
+ 8003886:	b292      	uxth	r2, r2
+ 8003888:	428a      	cmp	r2, r1
+ 800388a:	f200 8193 	bhi.w	8003bb4 <mic_current_packet+0x540>
+ 800388e:	ee07 3a90 	vmov	s15, r3
+ 8003892:	ed9f 7a5b 	vldr	s14, [pc, #364]	@ 8003a00 <mic_current_packet+0x38c>
+ 8003896:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 800389a:	f019 0f20 	tst.w	r9, #32
+ 800389e:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 80038a2:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 80038a6:	ee17 3a90 	vmov	r3, s15
+ 80038aa:	b2da      	uxtb	r2, r3
+ 80038ac:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 80038b0:	77a2      	strb	r2, [r4, #30]
+ 80038b2:	77e3      	strb	r3, [r4, #31]
+ 80038b4:	f040 8183 	bne.w	8003bbe <mic_current_packet+0x54a>
+ 80038b8:	9b03      	ldr	r3, [sp, #12]
+ 80038ba:	eb18 0203 	adds.w	r2, r8, r3
+ 80038be:	d005      	beq.n	80038cc <mic_current_packet+0x258>
+ 80038c0:	2364      	movs	r3, #100	@ 0x64
+ 80038c2:	fb03 f308 	mul.w	r3, r3, r8
+ 80038c6:	fbb3 f3f2 	udiv	r3, r3, r2
+ 80038ca:	b2de      	uxtb	r6, r3
+ 80038cc:	9b04      	ldr	r3, [sp, #16]
+ 80038ce:	9a06      	ldr	r2, [sp, #24]
+ 80038d0:	f884 2020 	strb.w	r2, [r4, #32]
+ 80038d4:	1afb      	subs	r3, r7, r3
+ 80038d6:	b29b      	uxth	r3, r3
+ 80038d8:	2200      	movs	r2, #0
+ 80038da:	9903      	ldr	r1, [sp, #12]
+ 80038dc:	7166      	strb	r6, [r4, #5]
+ 80038de:	f363 0207 	bfi	r2, r3, #0, #8
+ 80038e2:	0a1b      	lsrs	r3, r3, #8
+ 80038e4:	f363 220f 	bfi	r2, r3, #8, #8
+ 80038e8:	f64f 73ff 	movw	r3, #65535	@ 0xffff
+ 80038ec:	4299      	cmp	r1, r3
+ 80038ee:	bf28      	it	cs
+ 80038f0:	4619      	movcs	r1, r3
+ 80038f2:	f361 4217 	bfi	r2, r1, #16, #8
+ 80038f6:	f3c1 2307 	ubfx	r3, r1, #8, #8
+ 80038fa:	f363 621f 	bfi	r2, r3, #24, #8
+ 80038fe:	f8c4 2022 	str.w	r2, [r4, #34]	@ 0x22
+ 8003902:	e035      	b.n	8003970 <mic_current_packet+0x2fc>
+ 8003904:	9b04      	ldr	r3, [sp, #16]
+ 8003906:	1afb      	subs	r3, r7, r3
+ 8003908:	eb03 0343 	add.w	r3, r3, r3, lsl #1
+ 800390c:	ebb8 0f83 	cmp.w	r8, r3, lsl #2
+ 8003910:	f4ff af0f 	bcc.w	8003732 <mic_current_packet+0xbe>
+ 8003914:	9b03      	ldr	r3, [sp, #12]
+ 8003916:	2264      	movs	r2, #100	@ 0x64
+ 8003918:	4443      	add	r3, r8
+ 800391a:	fb02 f108 	mul.w	r1, r2, r8
+ 800391e:	eb03 0243 	add.w	r2, r3, r3, lsl #1
+ 8003922:	ebc3 1342 	rsb	r3, r3, r2, lsl #5
+ 8003926:	4299      	cmp	r1, r3
+ 8003928:	f4ff af03 	bcc.w	8003732 <mic_current_packet+0xbe>
+ 800392c:	f01a 0f20 	tst.w	sl, #32
+ 8003930:	bf08      	it	eq
+ 8003932:	f049 0902 	orreq.w	r9, r9, #2
+ 8003936:	e6fc      	b.n	8003732 <mic_current_packet+0xbe>
+ 8003938:	23d7      	movs	r3, #215	@ 0xd7
+ 800393a:	e6d9      	b.n	80036f0 <mic_current_packet+0x7c>
+ 800393c:	f00e faf6 	bl	8011f2c <HAL_GetTick>
+ 8003940:	2e02      	cmp	r6, #2
+ 8003942:	f8c4 000a 	str.w	r0, [r4, #10]
+ 8003946:	d05f      	beq.n	8003a08 <mic_current_packet+0x394>
+ 8003948:	6aab      	ldr	r3, [r5, #40]	@ 0x28
+ 800394a:	f8c4 3016 	str.w	r3, [r4, #22]
+ 800394e:	692b      	ldr	r3, [r5, #16]
+ 8003950:	f8c4 301e 	str.w	r3, [r4, #30]
+ 8003954:	6b6b      	ldr	r3, [r5, #52]	@ 0x34
+ 8003956:	f8c4 3012 	str.w	r3, [r4, #18]
+ 800395a:	6aeb      	ldr	r3, [r5, #44]	@ 0x2c
+ 800395c:	f8c4 301a 	str.w	r3, [r4, #26]
+ 8003960:	6b2b      	ldr	r3, [r5, #48]	@ 0x30
+ 8003962:	696a      	ldr	r2, [r5, #20]
+ 8003964:	f8c4 300e 	str.w	r3, [r4, #14]
+ 8003968:	2304      	movs	r3, #4
+ 800396a:	f8c4 2022 	str.w	r2, [r4, #34]	@ 0x22
+ 800396e:	7163      	strb	r3, [r4, #5]
+ 8003970:	2301      	movs	r3, #1
+ 8003972:	4a24      	ldr	r2, [pc, #144]	@ (8003a04 <mic_current_packet+0x390>)
+ 8003974:	f884 3026 	strb.w	r3, [r4, #38]	@ 0x26
+ 8003978:	f884 9003 	strb.w	r9, [r4, #3]
+ 800397c:	1e61      	subs	r1, r4, #1
+ 800397e:	f104 0026 	add.w	r0, r4, #38	@ 0x26
+ 8003982:	f04f 33ff 	mov.w	r3, #4294967295
+ 8003986:	f811 6f01 	ldrb.w	r6, [r1, #1]!
+ 800398a:	405e      	eors	r6, r3
+ 800398c:	f346 0300 	sbfx	r3, r6, #0, #1
+ 8003990:	f346 0540 	sbfx	r5, r6, #1, #1
+ 8003994:	4013      	ands	r3, r2
+ 8003996:	ea83 0356 	eor.w	r3, r3, r6, lsr #1
+ 800399a:	4015      	ands	r5, r2
+ 800399c:	ea85 0553 	eor.w	r5, r5, r3, lsr #1
+ 80039a0:	f343 0340 	sbfx	r3, r3, #1, #1
+ 80039a4:	f345 0640 	sbfx	r6, r5, #1, #1
+ 80039a8:	4013      	ands	r3, r2
+ 80039aa:	ea83 0355 	eor.w	r3, r3, r5, lsr #1
+ 80039ae:	4016      	ands	r6, r2
+ 80039b0:	ea86 0653 	eor.w	r6, r6, r3, lsr #1
+ 80039b4:	f343 0340 	sbfx	r3, r3, #1, #1
+ 80039b8:	f346 0540 	sbfx	r5, r6, #1, #1
+ 80039bc:	4013      	ands	r3, r2
+ 80039be:	ea83 0356 	eor.w	r3, r3, r6, lsr #1
+ 80039c2:	4015      	ands	r5, r2
+ 80039c4:	ea85 0553 	eor.w	r5, r5, r3, lsr #1
+ 80039c8:	f343 0340 	sbfx	r3, r3, #1, #1
+ 80039cc:	4013      	ands	r3, r2
+ 80039ce:	f345 0640 	sbfx	r6, r5, #1, #1
+ 80039d2:	ea83 0355 	eor.w	r3, r3, r5, lsr #1
+ 80039d6:	4288      	cmp	r0, r1
+ 80039d8:	ea06 0502 	and.w	r5, r6, r2
+ 80039dc:	ea85 0353 	eor.w	r3, r5, r3, lsr #1
+ 80039e0:	d1d1      	bne.n	8003986 <mic_current_packet+0x312>
+ 80039e2:	43db      	mvns	r3, r3
+ 80039e4:	f8c4 3027 	str.w	r3, [r4, #39]	@ 0x27
+ 80039e8:	b053      	add	sp, #332	@ 0x14c
+ 80039ea:	ecbd 8b02 	vpop	{d8}
+ 80039ee:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 80039f2:	bf00      	nop
+ 80039f4:	20001150 	.word	0x20001150
+ 80039f8:	20000830 	.word	0x20000830
+ 80039fc:	45d57835 	.word	0x45d57835
+ 8003a00:	41197f4f 	.word	0x41197f4f
+ 8003a04:	82f63b78 	.word	0x82f63b78
+ 8003a08:	9b05      	ldr	r3, [sp, #20]
+ 8003a0a:	7163      	strb	r3, [r4, #5]
+ 8003a0c:	4b9d      	ldr	r3, [pc, #628]	@ (8003c84 <mic_current_packet+0x610>)
+ 8003a0e:	6223      	str	r3, [r4, #32]
+ 8003a10:	f240 2303 	movw	r3, #515	@ 0x203
+ 8003a14:	84a3      	strh	r3, [r4, #36]	@ 0x24
+ 8003a16:	f8d5 30c8 	ldr.w	r3, [r5, #200]	@ 0xc8
+ 8003a1a:	9a07      	ldr	r2, [sp, #28]
+ 8003a1c:	f8c4 3016 	str.w	r3, [r4, #22]
+ 8003a20:	f8d5 30c4 	ldr.w	r3, [r5, #196]	@ 0xc4
+ 8003a24:	83e2      	strh	r2, [r4, #30]
+ 8003a26:	f8c4 3012 	str.w	r3, [r4, #18]
+ 8003a2a:	f8d5 20c0 	ldr.w	r2, [r5, #192]	@ 0xc0
+ 8003a2e:	f8d5 30cc 	ldr.w	r3, [r5, #204]	@ 0xcc
+ 8003a32:	f8c4 200e 	str.w	r2, [r4, #14]
+ 8003a36:	f8c4 301a 	str.w	r3, [r4, #26]
+ 8003a3a:	e799      	b.n	8003970 <mic_current_packet+0x2fc>
+ 8003a3c:	ee07 8a90 	vmov	s15, r8
+ 8003a40:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 8003a44:	eeb7 7a00 	vmov.f32	s14, #112	@ 0x3f800000  1.0
+ 8003a48:	ee87 8a27 	vdiv.f32	s16, s14, s15
+ 8003a4c:	e9d5 0120 	ldrd	r0, r1, [r5, #128]	@ 0x80
+ 8003a50:	f7fd f966 	bl	8000d20 <__aeabi_ul2f>
+ 8003a54:	ee07 0a90 	vmov	s15, r0
+ 8003a58:	ed9f 7a8b 	vldr	s14, [pc, #556]	@ 8003c88 <mic_current_packet+0x614>
+ 8003a5c:	ee67 7a88 	vmul.f32	s15, s15, s16
+ 8003a60:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 8003a64:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003a68:	f340 80d0 	ble.w	8003c0c <mic_current_packet+0x598>
+ 8003a6c:	23ff      	movs	r3, #255	@ 0xff
+ 8003a6e:	f049 0920 	orr.w	r9, r9, #32
+ 8003a72:	461a      	mov	r2, r3
+ 8003a74:	73e3      	strb	r3, [r4, #15]
+ 8003a76:	f8b5 3098 	ldrh.w	r3, [r5, #152]	@ 0x98
+ 8003a7a:	eddf 6a84 	vldr	s13, [pc, #528]	@ 8003c8c <mic_current_packet+0x618>
+ 8003a7e:	eddf 7a84 	vldr	s15, [pc, #528]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003a82:	73a2      	strb	r2, [r4, #14]
+ 8003a84:	ee07 3a10 	vmov	s14, r3
+ 8003a88:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 8003a8c:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 8003a90:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003a94:	ee67 7a27 	vmul.f32	s15, s14, s15
+ 8003a98:	f300 80e9 	bgt.w	8003c6e <mic_current_packet+0x5fa>
+ 8003a9c:	eeb6 7a00 	vmov.f32	s14, #96	@ 0x3f000000  0.5
+ 8003aa0:	ee77 7a87 	vadd.f32	s15, s15, s14
+ 8003aa4:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003aa8:	ee17 3a90 	vmov	r3, s15
+ 8003aac:	b2da      	uxtb	r2, r3
+ 8003aae:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003ab2:	7563      	strb	r3, [r4, #21]
+ 8003ab4:	f9b5 309e 	ldrsh.w	r3, [r5, #158]	@ 0x9e
+ 8003ab8:	7522      	strb	r2, [r4, #20]
+ 8003aba:	f603 5257 	addw	r2, r3, #3415	@ 0xd57
+ 8003abe:	f641 21ae 	movw	r1, #6830	@ 0x1aae
+ 8003ac2:	b292      	uxth	r2, r2
+ 8003ac4:	428a      	cmp	r2, r1
+ 8003ac6:	f200 8087 	bhi.w	8003bd8 <mic_current_packet+0x564>
+ 8003aca:	ee07 3a90 	vmov	s15, r3
+ 8003ace:	ed9f 7a70 	vldr	s14, [pc, #448]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003ad2:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 8003ad6:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 8003ada:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 8003ade:	ee17 3a90 	vmov	r3, s15
+ 8003ae2:	b2da      	uxtb	r2, r3
+ 8003ae4:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003ae8:	e9d5 0122 	ldrd	r0, r1, [r5, #136]	@ 0x88
+ 8003aec:	76a2      	strb	r2, [r4, #26]
+ 8003aee:	76e3      	strb	r3, [r4, #27]
+ 8003af0:	f7fd f916 	bl	8000d20 <__aeabi_ul2f>
+ 8003af4:	ee07 0a90 	vmov	s15, r0
+ 8003af8:	ed9f 7a63 	vldr	s14, [pc, #396]	@ 8003c88 <mic_current_packet+0x614>
+ 8003afc:	ee67 7a88 	vmul.f32	s15, s15, s16
+ 8003b00:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 8003b04:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003b08:	dd70      	ble.n	8003bec <mic_current_packet+0x578>
+ 8003b0a:	23ff      	movs	r3, #255	@ 0xff
+ 8003b0c:	f049 0920 	orr.w	r9, r9, #32
+ 8003b10:	461a      	mov	r2, r3
+ 8003b12:	7463      	strb	r3, [r4, #17]
+ 8003b14:	f8b5 309a 	ldrh.w	r3, [r5, #154]	@ 0x9a
+ 8003b18:	eddf 6a5c 	vldr	s13, [pc, #368]	@ 8003c8c <mic_current_packet+0x618>
+ 8003b1c:	eddf 7a5c 	vldr	s15, [pc, #368]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003b20:	7422      	strb	r2, [r4, #16]
+ 8003b22:	ee07 3a10 	vmov	s14, r3
+ 8003b26:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 8003b2a:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 8003b2e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003b32:	ee67 7a27 	vmul.f32	s15, s14, s15
+ 8003b36:	f300 8095 	bgt.w	8003c64 <mic_current_packet+0x5f0>
+ 8003b3a:	eeb6 7a00 	vmov.f32	s14, #96	@ 0x3f000000  0.5
+ 8003b3e:	ee77 7a87 	vadd.f32	s15, s15, s14
+ 8003b42:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003b46:	ee17 3a90 	vmov	r3, s15
+ 8003b4a:	b2da      	uxtb	r2, r3
+ 8003b4c:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003b50:	75e3      	strb	r3, [r4, #23]
+ 8003b52:	f9b5 30a0 	ldrsh.w	r3, [r5, #160]	@ 0xa0
+ 8003b56:	75a2      	strb	r2, [r4, #22]
+ 8003b58:	f603 5257 	addw	r2, r3, #3415	@ 0xd57
+ 8003b5c:	f641 21ae 	movw	r1, #6830	@ 0x1aae
+ 8003b60:	b292      	uxth	r2, r2
+ 8003b62:	428a      	cmp	r2, r1
+ 8003b64:	d82e      	bhi.n	8003bc4 <mic_current_packet+0x550>
+ 8003b66:	ee07 3a90 	vmov	s15, r3
+ 8003b6a:	ed9f 7a49 	vldr	s14, [pc, #292]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003b6e:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 8003b72:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 8003b76:	eefd 7ae7 	vcvt.s32.f32	s15, s15
+ 8003b7a:	ee17 3a90 	vmov	r3, s15
+ 8003b7e:	b2da      	uxtb	r2, r3
+ 8003b80:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003b84:	e9d5 0124 	ldrd	r0, r1, [r5, #144]	@ 0x90
+ 8003b88:	7722      	strb	r2, [r4, #28]
+ 8003b8a:	7763      	strb	r3, [r4, #29]
+ 8003b8c:	f7fd f8c8 	bl	8000d20 <__aeabi_ul2f>
+ 8003b90:	ee07 0a90 	vmov	s15, r0
+ 8003b94:	ed9f 7a3c 	vldr	s14, [pc, #240]	@ 8003c88 <mic_current_packet+0x614>
+ 8003b98:	ee67 7a88 	vmul.f32	s15, s15, s16
+ 8003b9c:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 8003ba0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8003ba4:	dd42      	ble.n	8003c2c <mic_current_packet+0x5b8>
+ 8003ba6:	23ff      	movs	r3, #255	@ 0xff
+ 8003ba8:	461a      	mov	r2, r3
+ 8003baa:	f049 0920 	orr.w	r9, r9, #32
+ 8003bae:	74a2      	strb	r2, [r4, #18]
+ 8003bb0:	74e3      	strb	r3, [r4, #19]
+ 8003bb2:	e643      	b.n	800383c <mic_current_packet+0x1c8>
+ 8003bb4:	2300      	movs	r3, #0
+ 8003bb6:	f049 0920 	orr.w	r9, r9, #32
+ 8003bba:	77a3      	strb	r3, [r4, #30]
+ 8003bbc:	77e3      	strb	r3, [r4, #31]
+ 8003bbe:	f009 09fd 	and.w	r9, r9, #253	@ 0xfd
+ 8003bc2:	e679      	b.n	80038b8 <mic_current_packet+0x244>
+ 8003bc4:	2300      	movs	r3, #0
+ 8003bc6:	f049 0920 	orr.w	r9, r9, #32
+ 8003bca:	461a      	mov	r2, r3
+ 8003bcc:	e7da      	b.n	8003b84 <mic_current_packet+0x510>
+ 8003bce:	2300      	movs	r3, #0
+ 8003bd0:	f049 0920 	orr.w	r9, r9, #32
+ 8003bd4:	461a      	mov	r2, r3
+ 8003bd6:	e62f      	b.n	8003838 <mic_current_packet+0x1c4>
+ 8003bd8:	2300      	movs	r3, #0
+ 8003bda:	f049 0920 	orr.w	r9, r9, #32
+ 8003bde:	461a      	mov	r2, r3
+ 8003be0:	e782      	b.n	8003ae8 <mic_current_packet+0x474>
+ 8003be2:	2300      	movs	r3, #0
+ 8003be4:	f049 0920 	orr.w	r9, r9, #32
+ 8003be8:	461a      	mov	r2, r3
+ 8003bea:	e5eb      	b.n	80037c4 <mic_current_packet+0x150>
+ 8003bec:	eef1 6ae7 	vsqrt.f32	s13, s15
+ 8003bf0:	ed9f 7a27 	vldr	s14, [pc, #156]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003bf4:	eef6 7a00 	vmov.f32	s15, #96	@ 0x3f000000  0.5
+ 8003bf8:	eee6 7a87 	vfma.f32	s15, s13, s14
+ 8003bfc:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003c00:	ee17 3a90 	vmov	r3, s15
+ 8003c04:	b2da      	uxtb	r2, r3
+ 8003c06:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003c0a:	e782      	b.n	8003b12 <mic_current_packet+0x49e>
+ 8003c0c:	eef1 6ae7 	vsqrt.f32	s13, s15
+ 8003c10:	ed9f 7a1f 	vldr	s14, [pc, #124]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003c14:	eef6 7a00 	vmov.f32	s15, #96	@ 0x3f000000  0.5
+ 8003c18:	eee6 7a87 	vfma.f32	s15, s13, s14
+ 8003c1c:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003c20:	ee17 3a90 	vmov	r3, s15
+ 8003c24:	b2da      	uxtb	r2, r3
+ 8003c26:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003c2a:	e723      	b.n	8003a74 <mic_current_packet+0x400>
+ 8003c2c:	eef1 6ae7 	vsqrt.f32	s13, s15
+ 8003c30:	ed9f 7a17 	vldr	s14, [pc, #92]	@ 8003c90 <mic_current_packet+0x61c>
+ 8003c34:	eef6 7a00 	vmov.f32	s15, #96	@ 0x3f000000  0.5
+ 8003c38:	eee6 7a87 	vfma.f32	s15, s13, s14
+ 8003c3c:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 8003c40:	ee17 3a90 	vmov	r3, s15
+ 8003c44:	b2da      	uxtb	r2, r3
+ 8003c46:	f3c3 2307 	ubfx	r3, r3, #8, #8
+ 8003c4a:	74a2      	strb	r2, [r4, #18]
+ 8003c4c:	74e3      	strb	r3, [r4, #19]
+ 8003c4e:	e5f5      	b.n	800383c <mic_current_packet+0x1c8>
+ 8003c50:	23ff      	movs	r3, #255	@ 0xff
+ 8003c52:	f049 0920 	orr.w	r9, r9, #32
+ 8003c56:	461a      	mov	r2, r3
+ 8003c58:	e60d      	b.n	8003876 <mic_current_packet+0x202>
+ 8003c5a:	23ff      	movs	r3, #255	@ 0xff
+ 8003c5c:	f049 0920 	orr.w	r9, r9, #32
+ 8003c60:	461a      	mov	r2, r3
+ 8003c62:	e594      	b.n	800378e <mic_current_packet+0x11a>
+ 8003c64:	23ff      	movs	r3, #255	@ 0xff
+ 8003c66:	f049 0920 	orr.w	r9, r9, #32
+ 8003c6a:	461a      	mov	r2, r3
+ 8003c6c:	e770      	b.n	8003b50 <mic_current_packet+0x4dc>
+ 8003c6e:	23ff      	movs	r3, #255	@ 0xff
+ 8003c70:	f049 0920 	orr.w	r9, r9, #32
+ 8003c74:	461a      	mov	r2, r3
+ 8003c76:	e71c      	b.n	8003ab2 <mic_current_packet+0x43e>
+ 8003c78:	23ff      	movs	r3, #255	@ 0xff
+ 8003c7a:	f049 0920 	orr.w	r9, r9, #32
+ 8003c7e:	461a      	mov	r2, r3
+ 8003c80:	e5bf      	b.n	8003802 <mic_current_packet+0x18e>
+ 8003c82:	bf00      	nop
+ 8003c84:	02000803 	.word	0x02000803
+ 8003c88:	4c320141 	.word	0x4c320141
+ 8003c8c:	45d57835 	.word	0x45d57835
+ 8003c90:	41197f4f 	.word	0x41197f4f

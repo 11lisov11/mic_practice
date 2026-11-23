@@ -1,0 +1,23 @@
+{
+  "operator_steering": "User requests motor research and does not want further probe or connection changes.",
+  "followup_cable_removal_request": "withdrawn; do not assume cable removed from IHM09M2",
+  "followup_PA6_probe_question": "withdrawn; no action requested",
+  "last_confirmed_wiring": "STEVAL end unplugged, cable remains on IHM09M2, J1/J4 OFF, controllers on powerbanks",
+  "correction": {
+    "earlier_R3_to_VH_hypothesis": "not established; do not use as diagnosis",
+    "authoritative_UM3030_Table3": "CN10-13 PA6 DIAG/ENABLE/BKIN1 through R3; CN10-21 PA9 VH_PWM through R8",
+    "inference": "No basis for instructing removal of R3 or attributing current LOW to a normal R3-to-VH short",
+    "source": "https://www.st.com/resource/en/user_manual/um3030-getting-started-with-the-xnucleoihm09m2-motor-control-connector-expansion-board-for-stm32-nucleo-stmicroelectronics.pdf"
+  },
+  "research_readiness": {
+    "current_blocker": "Fresh PA6 LOW persists without STEVAL; exact remaining source not identified",
+    "do_not_start": "Protection connection is physically removed and input LOW",
+    "VF_50Hz": "Past operator-confirmed rotation exists; does not qualify FOC 50Hz",
+    "next_prepared_motor_trial": "One FOC5Hz5s with current/flux/NIS/IdIq/CPU/IRQ/first validity-loss recording and controller auto-stop",
+    "runner": "tools/run_foc_observer_trace_trial.py",
+    "research_claim_limit": "Calculated profile and measured shunt nominal scale are not independently identified physical parameters or validated rotor-speed reference"
+  },
+  "new_START_CLEAR_ARM_RESET_flash_commands": 0,
+  "firmware_or_protection_edits": false,
+  "old_captures_modified": false
+}

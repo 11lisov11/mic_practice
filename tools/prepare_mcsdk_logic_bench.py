@@ -116,12 +116,39 @@ def function_span(text: str, name: str) -> tuple[int, int]:
     return match.start(), end
 
 
+def fixture_state(bus_limit_v: int = 2) -> str:
+    if type(bus_limit_v) is not int or bus_limit_v not in (2, 10):
+        raise ValueError("Only isolated 2 V and auxiliary-only 10 V fixtures are supported")
+    if bus_limit_v == 2:
+        return FIXTURE_STATE
+    return FIXTURE_STATE.replace("<= 2U", "<= 10U").replace(
+        "> 2U", "> 10U").replace(
+        "UNPOWERED MCSDK FIXTURE ONLY. Never flash this image for a powered drive.",
+        "AUXILIARY-ONLY MCSDK FIXTURE. J1 and motor must be disconnected.").replace(
+        "Operator-measured bus must be <2 V.",
+        "Filtered ADC bus must remain <=10 V; no external DC source is permitted.").replace(
+        "before using a later nonzero filtered voltage as a latched interlock.",
+        "before using a later above-limit voltage as a latched interlock.")
+
+
 def prepare(root: Path, out: Path, *, production_build: int = 2026100707,
-            bench_build: int = BENCH_BUILD) -> dict:
+            bench_build: int = BENCH_BUILD, bus_limit_v: int = 2,
+            automatic_sd_pulse: bool = False, source_override: Path | None = None) -> dict:
     source = root / "mcsdk_reference/AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV"
-    allowed_pairs = {(2026100707, BENCH_BUILD), (2026100801, 2026100899)}
+    allowed_pairs = {(2026100707, BENCH_BUILD), (2026100801, 2026100899), (2026101006, 2026101099)}
     if (production_build, bench_build) not in allowed_pairs:
         raise RuntimeError("Unreviewed production/fixture build pair")
+    if source_override is not None:
+        source = source_override.resolve(strict=True)
+        if (production_build, bench_build) != (2026101006, 2026101099) or not source.is_relative_to(root.resolve()):
+            raise RuntimeError("Unreviewed fixture source override")
+    elif production_build == 2026101006:
+        raise RuntimeError("UART v3 fixture requires its reviewed production snapshot")
+    state = fixture_state(bus_limit_v)
+    if bus_limit_v != 2 and (production_build, bench_build) != (2026100801, 2026100899):
+        raise RuntimeError("Auxiliary-only fixture requires reviewed 801/899 protocol pair")
+    if automatic_sd_pulse and bus_limit_v != 10:
+        raise RuntimeError("External GPIO SD stimulus requires auxiliary-only 10 V fixture")
     text = (source / "Src/main.c").read_text(encoding="utf-8-sig")
     build_match = re.search(r'#define MIC_NUCLEO_FW_BUILD_ID (\d+)UL', text)
     if not build_match or int(build_match[1]) != production_build:
@@ -138,12 +165,32 @@ def prepare(root: Path, out: Path, *, production_build: int = 2026100707,
                         "static void uno_link_init(void);\nbool mic_logic_bench_bus_ready(void);")
     begin, end = function_span(text, "uno_update_softstart_state")
     text = text[:begin] + BENCH_BUS_READY + text[end:]
+    if automatic_sd_pulse:
+        init = '''  /* External test wire only: PC8 -> 1k -> STEVAL TP23. */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+'''
+        text = replace_once(text, "  /* USER CODE BEGIN MX_GPIO_Init_2 */",
+                            "  /* USER CODE BEGIN MX_GPIO_Init_2 */\n" + init)
     main.write_text(text, encoding="utf-8")
 
     tasks = target / "Src/mc_tasks.c"
     text = tasks.read_text(encoding="utf-8-sig")
+    if automatic_sd_pulse:
+        state = '#include "aux_sd_pulse.h"\nstatic MicBenchSdPulse mic_bench_sd_pulse;\n' + state
+        pulse = '''  /* This pin is an external stimulus; never substitute a TIM1 BG event. */
+  const bool pull_sd = mic_bench_sd_pull(&mic_bench_sd_pulse, now,
+      (TIM1->BDTR & TIM_BDTR_MOE) != 0U, mic_logic_bench_bus_ready());
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, pull_sd ? GPIO_PIN_RESET : GPIO_PIN_SET);
+'''
+        state = replace_once(state, "  if (mic_bench_interlock_fault) {",
+                             pulse + "  if (mic_bench_interlock_fault) {")
     text = replace_once(text, "__weak void TSK_SafetyTask_PWMOFF(uint8_t bMotor)",
-                        FIXTURE_STATE + "\n__weak void TSK_SafetyTask_PWMOFF(uint8_t bMotor)")
+                        state + "\n__weak void TSK_SafetyTask_PWMOFF(uint8_t bMotor)")
     anchor = "CodeReturn |= errMask[bMotor] & RVBS_CalcAvVbus(&BusVoltageSensor_M1, rawValueM1);"
     text = replace_once(text, anchor, anchor +
                         "\n    CodeReturn = mic_logic_bench_observe_bus(rawValueM1, CodeReturn);")
@@ -158,6 +205,10 @@ def prepare(root: Path, out: Path, *, production_build: int = 2026100707,
     vf.write_text(text, encoding="utf-8")
 
     changed = {Path("Src/main.c"), Path("Src/mc_tasks.c"), vf_relative}
+    if automatic_sd_pulse:
+        pulse_header = Path("Inc/aux_sd_pulse.h")
+        shutil.copyfile(root / "tools/fixtures/aux_sd_pulse.h", target / pulse_header)
+        changed.add(pulse_header)
     files = [p.relative_to(source) for p in source.rglob("*") if p.is_file()
              and not any(x in ("Debug", "Release", ".metadata") for x in p.relative_to(source).parts)]
     mismatches = [str(p) for p in files if p not in changed and
@@ -165,11 +216,19 @@ def prepare(root: Path, out: Path, *, production_build: int = 2026100707,
     if mismatches:
         raise RuntimeError("Unexpected clone differences: " + str(mismatches))
     report = {
-        "pass": True, "purpose": "ISOLATED ZERO-BUS LOGIC ONLY; NOT FOR HV OR MOTOR",
+        "pass": True, "purpose": "ISOLATED LOGIC ONLY; NOT FOR HV OR MOTOR",
+        "fixture_variant": ("auxiliary_only_10v_auto_sd_pc8" if automatic_sd_pulse
+                            else "zero_bus" if bus_limit_v == 2 else "auxiliary_only_10v"),
+        "external_stimulus": {"gpio": "PC8", "connector": "CN10-2", "type": "open_drain",
+                              "resistor_ohm": 1000, "destination": "STEVAL TP23",
+                              "after_pwm_ms": 800, "hold_ms": 250, "once_per_boot": True}
+                             if automatic_sd_pulse else None,
+        "identity_note": "899 identifies the reviewed UART layout; use variant and image hashes for binary identity",
         "bench_build": bench_build, "production_build": production_build,
         "project": str(target), "production_untouched": True,
-        "unchanged_files": len(files) - len(changed),
-        "changed_files": {str(p): {"production_sha256": hashlib.sha256((source / p).read_bytes()).hexdigest(),
+        "unchanged_files": len(files) - len(set(files) & changed),
+        "changed_files": {str(p): {"production_sha256": hashlib.sha256((source / p).read_bytes()).hexdigest()
+                                  if (source / p).is_file() else None,
                                   "bench_sha256": hashlib.sha256((target / p).read_bytes()).hexdigest()}
                           for p in sorted(changed)},
         "critical_sources_identical": {
@@ -177,11 +236,13 @@ def prepare(root: Path, out: Path, *, production_build: int = 2026100707,
                 Path("Src/stm32g4xx_mc_it.c"), Path("Src/stm32g4xx_hal_msp.c"),
                 Path("Src/pwm_curr_fdbk.c"), Path("Inc/drive_parameters.h"),
                 Path("MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c"))},
-        "bench_only_changes": ["separate build identity", "real ADC zero-bus interlock and 15 s output cap",
-                               "zero-bus ready instead of HV settle", "310 V virtual modulation normalization"],
+        "bench_only_changes": ["separate test identity",
+                               f"real ADC <= {bus_limit_v} V interlock and 15 s output cap",
+                               "isolated low-voltage ready instead of HV settle",
+                               "310 V virtual modulation normalization"],
         "hardware_validated": False,
-        "operator_measured_bus_max_v": 2,
-        "fixture_mcsdk_filtered_voltage_limit_v": 2,
+        "operator_measured_bus_max_v": 2 if bus_limit_v == 2 else None,
+        "fixture_mcsdk_filtered_voltage_limit_v": bus_limit_v,
         "raw_ADC_is_diagnostic_only": True,
     }
     (out / "fixture_manifest.json").write_text(json.dumps(report, indent=2) + "\n")
@@ -193,9 +254,14 @@ def main() -> int:
     parser.add_argument("--outdir", type=Path, required=True)
     parser.add_argument("--production-build", type=int, default=2026100707)
     parser.add_argument("--bench-build", type=int, default=BENCH_BUILD)
+    parser.add_argument("--max-bus-v", type=int, choices=(2, 10), default=2,
+                        help="10 V variant permits J4 only; J1 and motor remain disconnected")
+    parser.add_argument("--automatic-sd-pulse", action="store_true",
+                        help="PC8 open-drain external test wire only; no software break injection")
     args = parser.parse_args()
     report = prepare(Path(__file__).resolve().parents[1], args.outdir,
-                     production_build=args.production_build, bench_build=args.bench_build)
+                     production_build=args.production_build, bench_build=args.bench_build,
+                     bus_limit_v=args.max_bus_v, automatic_sd_pulse=args.automatic_sd_pulse)
     print(json.dumps(report, indent=2))
     return 0
 

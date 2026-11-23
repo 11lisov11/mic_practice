@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "platform": [
+    {
+      "passed": true,
+      "mode": "normal",
+      "healthy_reads_before_fault": 200,
+      "healthy_pe_enables": 1,
+      "healthy_pe_disables": 0,
+      "clean_and_forced_cleanup_verified": true,
+      "first_records_frozen": true
+    },
+    {
+      "passed": true,
+      "mode": "lost_pe"
+    },
+    {
+      "passed": true,
+      "mode": "missing_hook"
+    }
+  ],
+  "bus_clear_driver": [
+    {
+      "passed": true,
+      "mode": 0,
+      "record": "55aade010209b6dfc378010103004a010000345f1700334bdd91000000000000000000000000000c3e552a",
+      "parent": "49464331b6dfc3780800000080c014000b0400800100000001000000d00100000100000000020000000000001713523000000a0000030000440000000020000000000000000000000000000000000000000000000000000000000000a4060000a406000030c8070000000000000000000100000000000000d0010000dcb9140080fe210a0000000080c01400010000000002000000000000d001000080c01400"
+    },
+    {
+      "passed": true,
+      "mode": 1,
+      "record": "55aade010309b6dfc3780101010018010000345f1700334bdd9100000000000000000000000000bc8576af",
+      "parent": "49464331b6dfc3780800000080c014000b0400800100000001000000d00100000100000000020000000000001713523000000a0000030000440000000020000000000000000000000000000000000000000000000000000000000000a4060000a406000030c8070000000000000000000100000000000000d0010000dcb9140080fe210a0000000080c01400010000000002000000000000d001000080c01400"
+    },
+    {
+      "passed": true,
+      "mode": 2
+    }
+  ],
+  "bus_clear_core": {
+    "passed": true,
+    "cases": 92
+  },
+  "regression": {
+    "passed": true,
+    "checks": 32767,
+    "event_cases": 400,
+    "exact_record_entry": true,
+    "modeled_continuation": true,
+    "hardware_validated": false
+  },
+  "ab": {
+    "healthy_reads": 200,
+    "healthy_enables": 1,
+    "healthy_pe_disables": 0,
+    "false_busy_errors": 0,
+    "nack_errors": 1
+  },
+  "hmi_checks": 450,
+  "healthy_idle_config_verified": true,
+  "error_cleanup_preserved": true,
+  "frozen_records_verified": true,
+  "protection_source_isolation": true,
+  "rpc_libraries_unchanged": true,
+  "calibration_identity_compatible": true,
+  "historical_records_preserved": true
+}

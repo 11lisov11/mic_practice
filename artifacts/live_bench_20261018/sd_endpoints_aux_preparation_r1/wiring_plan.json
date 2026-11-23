@@ -1,0 +1,62 @@
+{
+  "scope": "passive auxiliary-only SD endpoint comparison",
+  "power_before_connecting_probes": {
+    "j1_source_physically_unplugged": true,
+    "j4_15v_off": true,
+    "meter_dc_bus_below_v": 2,
+    "boards_on_powerbanks": true
+  },
+  "probes": {
+    "CH6": "Nucleo PA6 / CN10-13",
+    "CH7": "STEVAL-IPM15B TP23 (SD / IPM pin14 net)",
+    "GND": "Nucleo logical GND / CN7-19"
+  },
+  "other_probes": "PWM CH0..5 may retain their existing correct mapping; no additional channels required for endpoint comparison",
+  "usb": "Saleae to PC only after physical J1 removal and meter-confirmed discharge; MCU USB not required",
+  "leave_off_until_capture_armed": [
+    "J1",
+    "J4 15V"
+  ],
+  "no_start_no_reset_no_flash": true,
+  "source_pdf": "C:/mic_practice/um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf",
+  "source_pages": [
+    7,
+    23
+  ],
+  "historical_device": {
+    "id": "12092652639477301394",
+    "name": "Logic",
+    "max_digital_sample_rate_hz": 24000000,
+    "analog_channels_available": false
+  },
+  "historical_metadata": "artifacts/live_bench_20261012/local_button/pwm_session_r2/manual_run_1791818470131763700/capture_meta.json",
+  "capture": {
+    "rate_hz": 24000000,
+    "duration_s": 30,
+    "glitch_filter": false,
+    "enabled_digital_channels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  "capture_runtime_command": "python tools/capture_sd_endpoints_aux.py --confirm-j1-physically-unplugged-meter-below-2v-before-probes --outdir artifacts/live_bench_20261018/sd_endpoints_aux_capture_r1",
+  "operator_action_during_capture": "Enable only J4 15V after capture-start confirmation; J1 remains physically unplugged.",
+  "interpretation": [
+    "Compare LOW start/end times on TP23 and PA6 at 41.7-ns sample spacing; no digital glitch filter.",
+    "A LOW only on PA6 points to the interconnect/measurement/reference path; swap probes to check instrument influence before assigning cause.",
+    "A shared LOW shows propagation to both endpoints, but does not uniquely prove intrinsic IPM overcurrent/UVLO.",
+    "No auxiliary-only event cannot clear or reproduce the powered 22-Hz failure by itself.",
+    "CIN/15V/phase/DC-bus are not direct inputs for this digital-only measurement.",
+    "USB unplugging from PC, a floating laptop or an unverified USB isolator is not an accepted isolation plan for HV."
+  ],
+  "powered_capture_with_this_direct_wiring_allowed": false,
+  "hardware_capture_started": false,
+  "motor_commands": 0,
+  "flash_commands": 0
+}

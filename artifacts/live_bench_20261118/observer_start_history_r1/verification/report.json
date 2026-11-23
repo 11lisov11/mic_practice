@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "codec": {
+    "passed": true,
+    "checks": 3536,
+    "rows": 659,
+    "nucleo_capture_bytes": 652,
+    "uno_capture_bytes": 114476,
+    "synthetic_fixture": true,
+    "target_timing_measured": false
+  },
+  "replay": {
+    "passed": true,
+    "rows": 659,
+    "checkpoints": 41,
+    "all_states_reconstructed": true,
+    "first_NIS_ge25": 659,
+    "peak_NIS": 210.8251953125,
+    "terminal_51_words_bit_exact": true,
+    "hardware_commands": 0,
+    "target_timing_measured": false,
+    "elf_sha256": "b3daf7524f5bcae08da7b8db26842073a50a8e316ee55a73b7909924a2910be3"
+  },
+  "corruptions_rejected": [
+    {
+      "case": "truncated_rows",
+      "rejected": "Missing row/checkpoint"
+    },
+    {
+      "case": "changed_input",
+      "rejected": "Whole-sequence state/input chain mismatch"
+    },
+    {
+      "case": "changed_checkpoint",
+      "rejected": "x/P checkpoint mismatch at 16"
+    },
+    {
+      "case": "changed_metadata",
+      "rejected": "Metadata identity/CRC"
+    }
+  ],
+  "hardware_commands": 0,
+  "physical_startup_not_recovered": true,
+  "new_physical_NIS_cause_NOT_proven": true
+}

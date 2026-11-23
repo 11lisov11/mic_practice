@@ -1,0 +1,91 @@
+
+C:\mic_practice\artifacts\live_bench_20261012\local_button\candidate_r5\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+080088b4 <ACIM_VF_Controller>:
+ 80088b4:	b510      	push	{r4, lr}
+ 80088b6:	edd0 7a07 	vldr	s15, [r0, #28]
+ 80088ba:	ed90 7a06 	vldr	s14, [r0, #24]
+ 80088be:	ed2d 8b04 	vpush	{d8-d9}
+ 80088c2:	eef0 7ae7 	vabs.f32	s15, s15
+ 80088c6:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 80088ca:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80088ce:	b086      	sub	sp, #24
+ 80088d0:	4604      	mov	r4, r0
+ 80088d2:	d87e      	bhi.n	80089d2 <ACIM_VF_Controller+0x11e>
+ 80088d4:	edd0 8a04 	vldr	s17, [r0, #16]
+ 80088d8:	ed9f 7a3f 	vldr	s14, [pc, #252]	@ 80089d8 <ACIM_VF_Controller+0x124>
+ 80088dc:	ee68 8a87 	vmul.f32	s17, s17, s14
+ 80088e0:	ee68 8aa7 	vmul.f32	s17, s17, s15
+ 80088e4:	edd4 7a02 	vldr	s15, [r4, #8]
+ 80088e8:	ed9f 7a3c 	vldr	s14, [pc, #240]	@ 80089dc <ACIM_VF_Controller+0x128>
+ 80088ec:	edc4 8a03 	vstr	s17, [r4, #12]
+ 80088f0:	eef4 7ae8 	vcmpe.f32	s15, s17
+ 80088f4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80088f8:	bf44      	itt	mi
+ 80088fa:	eef0 8a67 	vmovmi.f32	s17, s15
+ 80088fe:	edc4 7a03 	vstrmi	s15, [r4, #12]
+ 8008902:	ed94 9a09 	vldr	s18, [r4, #36]	@ 0x24
+ 8008906:	edd4 7a14 	vldr	s15, [r4, #80]	@ 0x50
+ 800890a:	ee29 9a07 	vmul.f32	s18, s18, s14
+ 800890e:	eef4 7ae8 	vcmpe.f32	s15, s17
+ 8008912:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8008916:	bf48      	it	mi
+ 8008918:	edc4 7a03 	vstrmi	s15, [r4, #12]
+ 800891c:	eeb0 0a49 	vmov.f32	s0, s18
+ 8008920:	bf48      	it	mi
+ 8008922:	eef0 8a67 	vmovmi.f32	s17, s15
+ 8008926:	f7fa ffd9 	bl	80038dc <MCM_floatTrig_Functions>
+ 800892a:	eddf 7a2d 	vldr	s15, [pc, #180]	@ 80089e0 <ACIM_VF_Controller+0x12c>
+ 800892e:	edd4 9a03 	vldr	s19, [r4, #12]
+ 8008932:	eeb0 8a40 	vmov.f32	s16, s0
+ 8008936:	ee39 0a27 	vadd.f32	s0, s18, s15
+ 800893a:	f7fa ffcf 	bl	80038dc <MCM_floatTrig_Functions>
+ 800893e:	eddf 7a29 	vldr	s15, [pc, #164]	@ 80089e4 <ACIM_VF_Controller+0x130>
+ 8008942:	ee69 9a80 	vmul.f32	s19, s19, s0
+ 8008946:	ee39 0a27 	vadd.f32	s0, s18, s15
+ 800894a:	ed94 9a03 	vldr	s18, [r4, #12]
+ 800894e:	f7fa ffc5 	bl	80038dc <MCM_floatTrig_Functions>
+ 8008952:	edd4 7a14 	vldr	s15, [r4, #80]	@ 0x50
+ 8008956:	eeb7 6a00 	vmov.f32	s12, #112	@ 0x3f800000  1.0
+ 800895a:	eec6 5a27 	vdiv.f32	s11, s12, s15
+ 800895e:	eef7 0a00 	vmov.f32	s1, #112	@ 0x3f800000  1.0
+ 8008962:	ee68 7a25 	vmul.f32	s15, s16, s11
+ 8008966:	ee65 6aa9 	vmul.f32	s13, s11, s19
+ 800896a:	ee67 7aa8 	vmul.f32	s15, s15, s17
+ 800896e:	ee29 7a00 	vmul.f32	s14, s18, s0
+ 8008972:	eef4 7ac6 	vcmpe.f32	s15, s12
+ 8008976:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800897a:	bfdc      	itt	le
+ 800897c:	ee77 7a86 	vaddle.f32	s15, s15, s12
+ 8008980:	eeb6 0a00 	vmovle.f32	s0, #96	@ 0x3f000000  0.5
+ 8008984:	eef4 6ae0 	vcmpe.f32	s13, s1
+ 8008988:	bfd4      	ite	le
+ 800898a:	ee27 0a80 	vmulle.f32	s0, s15, s0
+ 800898e:	eeb0 0a46 	vmovgt.f32	s0, s12
+ 8008992:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 8008996:	ee27 7a25 	vmul.f32	s14, s14, s11
+ 800899a:	dc05      	bgt.n	80089a8 <ACIM_VF_Controller+0xf4>
+ 800899c:	ee76 6aa0 	vadd.f32	s13, s13, s1
+ 80089a0:	eef6 0a00 	vmov.f32	s1, #96	@ 0x3f000000  0.5
+ 80089a4:	ee66 0aa0 	vmul.f32	s1, s13, s1
+ 80089a8:	eeb7 1a00 	vmov.f32	s2, #112	@ 0x3f800000  1.0
+ 80089ac:	eeb4 7ac1 	vcmpe.f32	s14, s2
+ 80089b0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 80089b4:	dc05      	bgt.n	80089c2 <ACIM_VF_Controller+0x10e>
+ 80089b6:	ee37 7a01 	vadd.f32	s14, s14, s2
+ 80089ba:	eeb6 1a00 	vmov.f32	s2, #96	@ 0x3f000000  0.5
+ 80089be:	ee27 1a01 	vmul.f32	s2, s14, s2
+ 80089c2:	6860      	ldr	r0, [r4, #4]
+ 80089c4:	b006      	add	sp, #24
+ 80089c6:	ecbd 8b04 	vpop	{d8-d9}
+ 80089ca:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
+ 80089ce:	f000 ba67 	b.w	8008ea0 <PWM_SetPhasePWMOutputs>
+ 80089d2:	edd0 8a05 	vldr	s17, [r0, #20]
+ 80089d6:	e785      	b.n	80088e4 <ACIM_VF_Controller+0x30>
+ 80089d8:	40c90fdb 	.word	0x40c90fdb
+ 80089dc:	42652ee0 	.word	0x42652ee0
+ 80089e0:	43700000 	.word	0x43700000
+ 80089e4:	42f00000 	.word	0x42f00000

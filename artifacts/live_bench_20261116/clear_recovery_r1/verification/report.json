@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "baseline_reproduction": "healthy_background_TX_rejects_CLEAR_before_Break_and_MCSDK",
+  "actual_CLEAR_branch": true,
+  "actual_ST_MCI_ACK": true,
+  "actual_DMA_driver": {
+    "pass": true,
+    "checks": 292687,
+    "old_prefix_bytes": 39,
+    "dma_stress_frames": 2048
+  },
+  "guard_functions_unchanged": [
+    "MX_TIM1_Init",
+    "MX_ADC1_Init",
+    "MX_ADC2_Init",
+    "uno_rearm_break_irq",
+    "uno_stop_motor",
+    "mic_repeat_capture_arm",
+    "mic_repeat_break_irq",
+    "mic_bkin_prepare_record",
+    "uno_send_reply",
+    "uno_tx_submit",
+    "uno_tx_tc_isr",
+    "uno_tx_watchdog",
+    "uno_clear_frame_is_safe",
+    "uno_transport_result"
+  ],
+  "HMI_CRC_bit_injections": 344,
+  "first_attempt_record_immutable": true,
+  "MCSDK_rejected_ACK_keeps_latch": true,
+  "async_ACK_not_claimed_ready": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "target_verified": false
+}

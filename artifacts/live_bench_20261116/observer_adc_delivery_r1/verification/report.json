@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "scheduler": {
+    "legacy": {
+      "observer_pages_delivered": 15,
+      "ADC_pages_delivered": 0,
+      "observer_complete_us": 0,
+      "ADC_complete_us": 0,
+      "control_replies": 160,
+      "queue_full": 0
+    },
+    "candidate": {
+      "observer_pages_delivered": 397,
+      "ADC_pages_delivered": 79,
+      "observer_complete_us": 1281800,
+      "ADC_complete_us": 3529800,
+      "control_replies": 160,
+      "queue_full": 0
+    },
+    "candidate_cadence_phase_cases": [
+      {
+        "cadence_us": 20000,
+        "phase_us": 0,
+        "observer_pages_delivered": 399,
+        "ADC_pages_delivered": 79,
+        "observer_complete_us": 1260200,
+        "ADC_complete_us": 3529900,
+        "control_replies": 400,
+        "queue_full": 0
+      },
+      {
+        "cadence_us": 33000,
+        "phase_us": 1000,
+        "observer_pages_delivered": 387,
+        "ADC_pages_delivered": 79,
+        "observer_complete_us": 1274800,
+        "ADC_complete_us": 3526400,
+        "control_replies": 242,
+        "queue_full": 0
+      },
+      {
+        "cadence_us": 40000,
+        "phase_us": 1900,
+        "observer_pages_delivered": 398,
+        "ADC_pages_delivered": 79,
+        "observer_complete_us": 1260800,
+        "ADC_complete_us": 3516800,
+        "control_replies": 199,
+        "queue_full": 0
+      },
+      {
+        "cadence_us": 50000,
+        "phase_us": 17000,
+        "observer_pages_delivered": 395,
+        "ADC_pages_delivered": 79,
+        "observer_complete_us": 1263800,
+        "ADC_complete_us": 3522400,
+        "control_replies": 160,
+        "queue_full": 0
+      },
+      {
+        "cadence_us": 100000,
+        "phase_us": 4300,
+        "observer_pages_delivered": 392,
+        "ADC_pages_delivered": 79,
+        "observer_complete_us": 1266800,
+        "ADC_complete_us": 3533100,
+        "control_replies": 80,
+        "queue_full": 0
+      }
+    ]
+  },
+  "capture": {
+    "capture_requests": true,
+    "frozen_immutable": true,
+    "threshold626_unchanged": true,
+    "raw1024_wire_roundtrip": true,
+    "release_decoder_CRC_and_cause_verified": true
+  },
+  "native_recorder": {
+    "actual_native_recorder": true,
+    "first_loss_only": true,
+    "no_state_or_NIS_change": true
+  },
+  "saved1832_observer_decoder_regression": true,
+  "saved_NIS": {
+    "steps": 501,
+    "NIS": 38.957801818847656,
+    "components": [
+      0.24862142575086424,
+      38.709180707676175
+    ],
+    "beta_fraction": 0.9936181865470912,
+    "beta_error_A": -0.1312679946422577,
+    "input_timestamps_match": true,
+    "reason": "OD_NIS",
+    "physical_cause_identifiable_from_sparse_record": false
+  },
+  "observer_and_controller_math_byte_identical": true,
+  "thresholds_changed": false,
+  "fast_timed_body_unchanged": true,
+  "CPU_4000_proven_on_new_target": false,
+  "scheduler_scope": "Two actual production page-sender functions and actual new arbiter; competing stream readiness/queue timing simulated at115200baud. Not a measured UART timeline.",
+  "diagnostic_request_does_not_modify_validity_or_faults": true,
+  "no_motor_commands": true,
+  "old_failed_records_preserved": true
+}

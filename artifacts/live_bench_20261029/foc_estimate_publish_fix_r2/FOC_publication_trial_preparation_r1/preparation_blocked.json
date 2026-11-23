@@ -1,0 +1,22 @@
+{
+  "prepared": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "outputs_off": true,
+  "pair": [
+    2026103009,
+    2026103010
+  ],
+  "exact_observation": "SAFE/PWM0 but latched UART_RX_ERROR/ORE and SD/Break; activeMCmask0, occurred1024, transport4",
+  "hardware_errors_not_ignored": true,
+  "UART_record_in_idle_observation": true,
+  "SD_record_preserved": true,
+  "next_step": "Disconnect both boards fromPC for5seconds then powerbanks;PC/Saleae disconnected,15Vunchanged,J1OFF,no START/RESET. Fresh autonomous checks before powered stage.",
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_age_limit_ms": 2,
+  "preserved_old_files_verified": 1442
+}

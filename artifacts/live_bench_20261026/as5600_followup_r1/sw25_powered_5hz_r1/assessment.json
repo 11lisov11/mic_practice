@@ -1,0 +1,90 @@
+{
+  "sensor_mode": "SW25",
+  "mcu_5s_autostop_verified": true,
+  "mcu_record": {
+    "run_id": 6,
+    "run_start_ms": 3403403,
+    "run_stop_ms": 3408403,
+    "run_elapsed_ms": 5000,
+    "run_reason": 1
+  },
+  "host_backup_stop": null,
+  "off_confirmed": true,
+  "sensor_bus_pass": false,
+  "failed_reads_delta": 50,
+  "active_snapshots": [
+    {
+      "run_elapsed_ms": 1314,
+      "enc_reads": 1270019,
+      "enc_errors": 143,
+      "enc_diag_mode": 2,
+      "enc_diag_cr1": 0,
+      "enc_diag_stage": 4,
+      "enc_diag_cause": 2,
+      "enc_diag_us": 669,
+      "enc_diag_cfg_match": 1,
+      "enc_diag_tx_byte": 108,
+      "enc_diag_tx_echo": 108,
+      "enc_diag_tx_bits": 8,
+      "mc_current_rms_a": [
+        0.116,
+        0.133,
+        0.172
+      ]
+    },
+    {
+      "run_elapsed_ms": 2597,
+      "enc_reads": 1270019,
+      "enc_errors": 156,
+      "enc_diag_mode": 2,
+      "enc_diag_cr1": 0,
+      "enc_diag_stage": 4,
+      "enc_diag_cause": 2,
+      "enc_diag_us": 674,
+      "enc_diag_cfg_match": 1,
+      "enc_diag_tx_byte": 108,
+      "enc_diag_tx_echo": 108,
+      "enc_diag_tx_bits": 8,
+      "mc_current_rms_a": [
+        0.357,
+        0.319,
+        0.311
+      ]
+    },
+    {
+      "run_elapsed_ms": 3880,
+      "enc_reads": 1270019,
+      "enc_errors": 169,
+      "enc_diag_mode": 2,
+      "enc_diag_cr1": 0,
+      "enc_diag_stage": 4,
+      "enc_diag_cause": 2,
+      "enc_diag_us": 661,
+      "enc_diag_cfg_match": 1,
+      "enc_diag_tx_byte": 108,
+      "enc_diag_tx_echo": 108,
+      "enc_diag_tx_bits": 8,
+      "mc_current_rms_a": [
+        0.44,
+        0.442,
+        0.437
+      ]
+    }
+  ],
+  "conclusion": "Three active snapshots show GPIO readback of all8 transmitted0x6c bits and NACK at address-write, with I2C2 PE0 and unchanged open-drain GPIO configuration. Hardware-I2C flag handling alone cannot explain this observation.",
+  "physical_root_cause_proven": false,
+  "next_checks": [
+    "Supply integrity at the sensor and ground-reference differences",
+    "SDA/SCL pullups, edge quality and interference at the sensor"
+  ],
+  "limitations": [
+    "No electrically isolated waveform or sensor supply transient was captured.",
+    "GPIO echo is8 sampled bit levels, not a continuous electrical waveform.",
+    "Cannot classify every failed transaction from three host snapshots.",
+    "Poll-controller counters and first-event ring are retained from earlier mode and are not SW25 error-category counters.",
+    "NominalSW25 name: actual timing includes GPIO/IRQ overhead, idle transfers~3.1ms.",
+    "Normal magnetic status before/after does not qualify angle through PWM errors.",
+    "Original report remains failed for only one distinct5Hz current window; MCU timed completion is separately verified.",
+    "No further START/CLEAR/flash after this single trial."
+  ]
+}

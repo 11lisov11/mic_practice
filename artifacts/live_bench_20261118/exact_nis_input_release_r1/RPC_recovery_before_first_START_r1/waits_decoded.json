@@ -1,0 +1,512 @@
+{
+  "mutexes": {
+    "control": {
+      "address": "0x2001579c",
+      "wait_next": "0x2001579c",
+      "wait_prev": "0x2001579c",
+      "owner": "0x0",
+      "count": 0,
+      "owner_prio": 4
+    },
+    "read": {
+      "address": "0x200196d0",
+      "wait_next": "0x200196d0",
+      "wait_prev": "0x200196d0",
+      "owner": "0x0",
+      "count": 0,
+      "owner_prio": 5
+    },
+    "write": {
+      "address": "0x200196e4",
+      "wait_next": "0x200196e4",
+      "wait_prev": "0x200196e4",
+      "owner": "0x0",
+      "count": 0,
+      "owner_prio": 5
+    },
+    "bridge": {
+      "address": "0x200196f8",
+      "wait_next": "0x200196f8",
+      "wait_prev": "0x200196f8",
+      "owner": "0x0",
+      "count": 0,
+      "owner_prio": 5
+    },
+    "outgoing": {
+      "address": "0x2001970c",
+      "wait_next": "0x2001970c",
+      "wait_prev": "0x2001970c",
+      "owner": "0x20014eb0",
+      "count": 1,
+      "owner_prio": 4
+    }
+  },
+  "stacks": [
+    {
+      "thread": "0x20014eb0",
+      "state": 4,
+      "pended_on": "0x0",
+      "matches": [
+        {
+          "at": "0x2001ac9c",
+          "value": "0x20010fad",
+          "symbol": "app:_ZL21bridge_service_workerPvS_S_+0x1bc"
+        },
+        {
+          "at": "0x2001ad30",
+          "value": "0x20010df1",
+          "symbol": "app:_ZL21bridge_service_workerPvS_S_+0x0"
+        },
+        {
+          "at": "0x2001ad4c",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    },
+    {
+      "thread": "bridge",
+      "state": 4,
+      "pended_on": "0x0",
+      "matches": [
+        {
+          "at": "0x2004be9c",
+          "value": "0x8010e8b",
+          "symbol": "kernel:z_tick_sleep+0x4e"
+        },
+        {
+          "at": "0x2004bea0",
+          "value": "0x8010860",
+          "symbol": "kernel:z_swap_irqlock+0x24"
+        },
+        {
+          "at": "0x2004beec",
+          "value": "0x8010e79",
+          "symbol": "kernel:z_tick_sleep+0x3c"
+        },
+        {
+          "at": "0x2004bef0",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004bf04",
+          "value": "0x801a235",
+          "symbol": "kernel:z_impl_k_sleep+0xa"
+        },
+        {
+          "at": "0x2004bf08",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004bf14",
+          "value": "0x2000fddf",
+          "symbol": "app:_ZN11BridgeClass6updateEv+0x4a"
+        },
+        {
+          "at": "0x2004c06c",
+          "value": "0x20003a1d",
+          "symbol": "app:_ZN11BridgeClass10is_startedEv+0x0"
+        },
+        {
+          "at": "0x2004c070",
+          "value": "0x2000fd95",
+          "symbol": "app:_ZN11BridgeClass6updateEv+0x0"
+        },
+        {
+          "at": "0x2004c07c",
+          "value": "0x2000fe5b",
+          "symbol": "app:_Z16updateEntryPointPvS_S_+0x12"
+        },
+        {
+          "at": "0x2004c084",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    },
+    {
+      "thread": "sysworkq",
+      "state": 2,
+      "pended_on": "0x2000157c",
+      "matches": [
+        {
+          "at": "0x2004aff4",
+          "value": "0x80110c9",
+          "symbol": "kernel:z_sched_wait+0x10"
+        },
+        {
+          "at": "0x2004aff8",
+          "value": "0x8010860",
+          "symbol": "kernel:z_swap_irqlock+0x24"
+        },
+        {
+          "at": "0x2004b014",
+          "value": "0x80102b5",
+          "symbol": "kernel:work_queue_main+0x58"
+        },
+        {
+          "at": "0x2004b02c",
+          "value": "0x801025d",
+          "symbol": "kernel:work_queue_main+0x0"
+        },
+        {
+          "at": "0x2004b03c",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    },
+    {
+      "thread": "idle",
+      "state": 0,
+      "pended_on": "0x0",
+      "matches": [
+        {
+          "at": "0x2004290c",
+          "value": "0x8019b33",
+          "symbol": "kernel:idle+0x14"
+        },
+        {
+          "at": "0x20042910",
+          "value": "0x80170be",
+          "symbol": "kernel:arch_cpu_idle+0x18"
+        },
+        {
+          "at": "0x2004291c",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    },
+    {
+      "thread": "main",
+      "state": 4,
+      "pended_on": "0x0",
+      "matches": [
+        {
+          "at": "0x2004a54c",
+          "value": "0x8010e8b",
+          "symbol": "kernel:z_tick_sleep+0x4e"
+        },
+        {
+          "at": "0x2004a550",
+          "value": "0x8010860",
+          "symbol": "kernel:z_swap_irqlock+0x24"
+        },
+        {
+          "at": "0x2004a59c",
+          "value": "0x8010e79",
+          "symbol": "kernel:z_tick_sleep+0x3c"
+        },
+        {
+          "at": "0x2004a5a0",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004a5b4",
+          "value": "0x801a235",
+          "symbol": "kernel:z_impl_k_sleep+0xa"
+        },
+        {
+          "at": "0x2004a5b8",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004a5c0",
+          "value": "0x2001371d",
+          "symbol": "app:millis+0x0"
+        },
+        {
+          "at": "0x2004a5c4",
+          "value": "0x2000c955",
+          "symbol": "app:loop+0x590"
+        },
+        {
+          "at": "0x2004a5c8",
+          "value": "0x2000c3c4",
+          "symbol": "app:loop+0x0"
+        },
+        {
+          "at": "0x2004a5ec",
+          "value": "0x20013535",
+          "symbol": "app:main+0x14"
+        },
+        {
+          "at": "0x2004a5f0",
+          "value": "0x2000c3c4",
+          "symbol": "app:loop+0x0"
+        },
+        {
+          "at": "0x2004a61c",
+          "value": "0x20007485",
+          "symbol": "app:_Z10__loopHookv+0x0"
+        },
+        {
+          "at": "0x2004a620",
+          "value": "0x2000c3c5",
+          "symbol": "app:loop+0x0"
+        },
+        {
+          "at": "0x2004a63c",
+          "value": "0x20013535",
+          "symbol": "app:main+0x14"
+        },
+        {
+          "at": "0x2004a648",
+          "value": "0x20013521",
+          "symbol": "app:main+0x0"
+        },
+        {
+          "at": "0x2004a64c",
+          "value": "0x8007db3",
+          "symbol": "kernel:llext_bootstrap+0x2e"
+        },
+        {
+          "at": "0x2004a654",
+          "value": "0x20013521",
+          "symbol": "app:main+0x0"
+        },
+        {
+          "at": "0x2004a66c",
+          "value": "0x80055bd",
+          "symbol": "kernel:loader.constprop.0.isra.0+0x198"
+        },
+        {
+          "at": "0x2004a6a0",
+          "value": "0x801725b",
+          "symbol": "kernel:llext_buf_read+0x0"
+        },
+        {
+          "at": "0x2004a6a4",
+          "value": "0x8017285",
+          "symbol": "kernel:llext_buf_seek+0x0"
+        },
+        {
+          "at": "0x2004a6a8",
+          "value": "0x8017299",
+          "symbol": "kernel:llext_buf_peek+0x0"
+        },
+        {
+          "at": "0x2004a8e0",
+          "value": "0x801a1c1",
+          "symbol": "kernel:z_thread_timeout+0x0"
+        },
+        {
+          "at": "0x2004a8ec",
+          "value": "0x8015ef1",
+          "symbol": "kernel:main+0x6"
+        },
+        {
+          "at": "0x2004a8f4",
+          "value": "0x800fa71",
+          "symbol": "kernel:bg_thread_main+0x44"
+        },
+        {
+          "at": "0x2004a908",
+          "value": "0x800fa2d",
+          "symbol": "kernel:bg_thread_main+0x0"
+        },
+        {
+          "at": "0x2004a914",
+          "value": "0x800fa2d",
+          "symbol": "kernel:bg_thread_main+0x0"
+        },
+        {
+          "at": "0x2004a91c",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        },
+        {
+          "at": "0x2004a920",
+          "value": "0x800fa2d",
+          "symbol": "kernel:bg_thread_main+0x0"
+        },
+        {
+          "at": "0x2004a924",
+          "value": "0x80078d5",
+          "symbol": "kernel:arch_switch_to_main_thread+0x38"
+        }
+      ]
+    }
+  ],
+  "values": {
+    "mic_rpc_health": {
+      "address": "0x20019474",
+      "words": [
+        65,
+        0,
+        0,
+        0
+      ]
+    },
+    "_ZL12g_rpc_routes": {
+      "address": "0x200164f4",
+      "words": [
+        662473,
+        127,
+        27,
+        515945,
+        0
+      ]
+    },
+    "_ZL11g_timed_run": {
+      "address": "0x2001526c",
+      "words": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "decoder": {
+    "address": "0x20014204",
+    "client": "0x20053998",
+    "server": "0x200539c8",
+    "server_decoder": "0x20014204",
+    "transport": "0x20053988",
+    "bytes_stored": 0,
+    "packet_type": 4294967295,
+    "packet_size": 0,
+    "response_offset": 0,
+    "response_size": 0,
+    "msg_id": 276,
+    "discarded": 0,
+    "decoded_objects": []
+  },
+  "bridge_serial": "0x20019bbc",
+  "serials": {
+    "Serial1": {
+      "address": "0x20019ca8",
+      "uart_device": "0x801b994",
+      "tx_ring": [
+        40144,
+        8193,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        64,
+        0
+      ],
+      "rx_ring": [
+        40252,
+        8193,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        64,
+        0
+      ],
+      "tx_sem": [
+        "0x20019d10",
+        "0x20019d10",
+        "0x1",
+        "0x1",
+        "0x20019d20"
+      ],
+      "rx_sem": [
+        "0x20019d7c",
+        "0x20019d7c",
+        "0x1",
+        "0x1",
+        "0x20019d8c"
+      ]
+    },
+    "Serial2": {
+      "address": "0x20019bbc",
+      "uart_device": "0x801b94c",
+      "tx_ring": [
+        39908,
+        8193,
+        30045,
+        30045,
+        30016,
+        30045,
+        30045,
+        30016,
+        64,
+        0
+      ],
+      "rx_ring": [
+        40016,
+        8193,
+        11230,
+        11230,
+        11200,
+        11230,
+        11230,
+        11200,
+        64,
+        0
+      ],
+      "tx_sem": [
+        "0x20019c24",
+        "0x20019c24",
+        "0x1",
+        "0x1",
+        "0x20019c34"
+      ],
+      "rx_sem": [
+        "0x20019c90",
+        "0x20019c90",
+        "0x1",
+        "0x1",
+        "0x20019ca0"
+      ]
+    },
+    "Serial3": {
+      "address": "0x20019ad0",
+      "uart_device": "0x801b970",
+      "tx_ring": [
+        39672,
+        8193,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        64,
+        0
+      ],
+      "rx_ring": [
+        39780,
+        8193,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        64,
+        0
+      ],
+      "tx_sem": [
+        "0x20019b38",
+        "0x20019b38",
+        "0x1",
+        "0x1",
+        "0x20019b48"
+      ],
+      "rx_sem": [
+        "0x20019ba4",
+        "0x20019ba4",
+        "0x1",
+        "0x1",
+        "0x20019bb4"
+      ]
+    }
+  }
+}

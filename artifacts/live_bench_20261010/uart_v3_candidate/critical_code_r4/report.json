@@ -1,0 +1,37 @@
+{
+  "pass": true,
+  "functions": {
+    "TIM1_BRK_TIM15_IRQHandler": {
+      "equal": true,
+      "bytes": 84,
+      "sha256": "fe24f1d2987a91e28641568e2f1a0ceb815669496c97d8f186d28f78ef6182b7"
+    },
+    "TIM1_UP_TIM16_IRQHandler": {
+      "equal": true,
+      "bytes": 16,
+      "sha256": "f042760b098f4156931c7cb5aea2c63b67f3798da960c9c6fa4bf975e3f2a216"
+    },
+    "PWM_SwitchOnPWM": {
+      "equal": true,
+      "bytes": 36,
+      "sha256": "34b7566f426ba7ecb3d527654e1f350a5ad55eadd88e065a6230654373d2cb4e"
+    },
+    "PWM_SwitchOffPWM": {
+      "equal": true,
+      "bytes": 32,
+      "sha256": "79bbaf497b969141d7ca3454ba890f73a36b5d5f6a2bced0a363dc6bb05ca0cd"
+    },
+    "PWM_SetPhasePWMOutputs": {
+      "equal": true,
+      "bytes": 128,
+      "sha256": "71b1259ebd9c0ec0f2b814d9eb05977f0be739faf87c34c98609c695d7036d10"
+    },
+    "PWMC_DP_Handler": {
+      "equal": true,
+      "bytes": 20,
+      "sha256": "dbb640f931ead262529e6d835c874edcd24a495568bf0f0e26fc05be8b6972a8"
+    }
+  },
+  "timer_initializer_source_identical": true,
+  "scope": "unlinked function machine-code sections; linker relocation addresses excluded"
+}

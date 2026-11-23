@@ -19,6 +19,10 @@ def source_hashes(root):
     paths += [root / "web_hmi/server.py", root / "web_hmi/requirements.txt"]
     paths += list((root / "web_hmi/static").glob("*"))
     paths += list((root / "tools").glob("*.py"))
+    paths += list((root / "tools").glob("*.cfg"))
+    paths += list((root / "research/uart_v3").glob("*"))
+    paths += list((root / "research/ipm_break").glob("*"))
+    paths += list((root / "research/uart_rx").glob("*"))
     paths += [root / "tools/build_acim_reference.ps1", root / "tools/build_unoq_mcsdk_scalar.ps1"]
     return {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
             for p in sorted(set(paths)) if p.is_file()}
@@ -42,11 +46,22 @@ def main():
               "audit_uart_noise_readonly_selftest", "power_stage_readonly_audit_selftest",
               "verify_production_wifi_idle_selftest", "verify_wifi_command_path_selftest",
               "analyze_mcsdk_modulation_selftest", "collect_wifi_telemetry_selftest",
-              "wifi_http_via_wsl_selftest", "run_wifi_nucleo_pwm_bench_selftest"]
+              "wifi_http_via_wsl_selftest", "run_wifi_nucleo_pwm_bench_selftest",
+              "install_unoq_control_owner_selftest", "run_current_pwm_801_selftest",
+              "reset_unoq_nucleo_idle_selftest", "wifi_motor_extended_trial_selftest",
+              "install_uart_v3_pair_selftest", "uart_v3_hmi_status_selftest",
+              "uart_v3_pwm_bench_selftest", "powered_trial_selftest", "sender_trial_tools_selftest",
+              "vf_30s_profile_selftest", "coast30_gate_selftest", "unoq_wifi_hmi_deploy_selftest", "ipm_break_install_selftest",
+              "router_serial_ownership_selftest", "unoq_rx_fix_selftest", "rx_short_trial_selftest"]
     detailed = ["production_mcsdk_link_dynamic_selftest", "uno_supervisory_runtime_selftest",
                 "mcsdk_async_clear_diagnostics_selftest", "ipm_sd_irq_selftest",
                 "mcsdk_startup_ramp_selftest", "uno_matrix_renderer_selftest",
-                "uart_guard_release_selftest", "uart_fifo_fault_stress_selftest"]
+                "uart_guard_release_selftest", "uart_fifo_fault_stress_selftest",
+                "uno_control_ownership_selftest", "uart_command_corruption_selftest",
+                "uno_reply_restart_selftest", "uart_v3_candidate_selftest", "uart_v3_uno_peer_selftest",
+                "uart_v3_sender_invariant_selftest", "ipm_break_snapshot_selftest", "ipm_break_wifi_selftest",
+                "unoq_idle_deadline_selftest", "unoq_rpc_priority_selftest", "unoq_bridge_boot_selftest",
+                "unoq_llext_selftest", "unoq_fault_context_fix_selftest", "unoq_boot_trial_selftest"]
     tests = []
     start = time.monotonic()
     for name in simple + detailed:
@@ -55,6 +70,8 @@ def main():
             cmd += ["--outdir", str(out / name)]
         if name == "production_mcsdk_link_dynamic_selftest":
             cmd += ["--mutation-check"]
+        if name == "uart_v3_candidate_selftest":
+            cmd += ["--integrated"]
         if name == "uart_guard_release_selftest":
             cmd += ["--baseline-source", str(args.baseline_source.resolve(strict=True))]
         try:
@@ -77,7 +94,12 @@ def main():
               "tests": tests, "source_sha256": sources_before,
               "sources_unchanged_during_tests": unchanged,
               "duration_sec": round(time.monotonic() - start, 3),
-              "hardware_commands": 0, "hardware_validated": False}
+              "hardware_commands": 0, "hardware_validated": False,
+              "hv_release_approved": False,
+              "checksum_qualification_pass": json.loads(
+                  (out / "uart_command_corruption_selftest/report.json").read_text()
+              ).get("checksum_qualification_pass", False)
+              if (out / "uart_command_corruption_selftest/report.json").exists() else False}
     (out / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"pass": report["pass"], "suites": len(tests), "report": str(out / "report.json")}))
     return 0 if report["pass"] else 1

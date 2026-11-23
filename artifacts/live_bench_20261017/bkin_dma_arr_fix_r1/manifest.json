@@ -1,0 +1,229 @@
+{
+  "schema": "mic_ai.bkin_dma_arr_fix_candidate.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1",
+  "predecessor": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_boot_armed_r1",
+  "pair_compatibility_ids": [
+    2026101711,
+    2026101710
+  ],
+  "nucleo_only_update": true,
+  "uno_image_changed": false,
+  "hmi_changed": false,
+  "change": "Set TIM2 PSC=0 and ARR=(TIM2 clock / 1 MHz)-1; the prior ARR=0 blocked the counter, leaving DMA CNDTR at 1024 and zero captured PA6 samples.",
+  "evidence_input": "artifacts/live_bench_20261017/bkin_dma_boot_armed_install_r1/live_j1_ramp_snapshot.json",
+  "previous_nucleo_hex_sha256": "68868bb69d4bb78c9c1e986f77cf638f079ba29e3146a615c185bea208b7e716",
+  "source_sha256": {
+    "nucleo/Src/main.c": "04204e2510c96ff59a84c719d9e610c53194696f1e87073be774ea0caedef710",
+    "nucleo/Inc/bkin_wave_capture.h": "aa48b5b8e0564c0bbd911fcc31e7dc3c5739067b8da988d67a2e5d16e2b603f4",
+    "nucleo/Inc/break_wire.h": "a8733ed99c0e282517231d712b5da4b880f35d2a53df153b1992bdf220a0aa84",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": "406babf1925e56ca9b74b53964dc70b7cf0e49baec1f3c009dbd3e259e6fc13c",
+    "UNOQ_MOTOR/break_wire.h": "a8733ed99c0e282517231d712b5da4b880f35d2a53df153b1992bdf220a0aa84",
+    "UNOQ_MOTOR/nucleo_fault_diagnostics.h": "16442aefd9d38d6394e2556bfc85bde88a9b11706a99cea402018cb4fa53947b",
+    "web_hmi/server.py": "fbcfcad2fd351ef9ab8a18862917cee4469b41fa369aec9993bfb7299cad28b3"
+  },
+  "calibration_changed": false,
+  "control_protocol_changed": false,
+  "pwm_or_motor_control_changed": false,
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "mcu_flash_commands": 0,
+  "operationally_qualified": false,
+  "hv_release_approved": false,
+  "built": true,
+  "selftest_pass": true,
+  "selftest": {
+    "pass": true,
+    "checks": 10,
+    "failures": [],
+    "hardware_commands": 0,
+    "mcu_flash_commands": 0,
+    "motor_commands": 0,
+    "scope": "Offline source, timer-period, and HMI parser checks only"
+  },
+  "nucleo_hex": {
+    "path": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+    "sha256": "392f43aa192b57ae752255bc089d84ce13d33d75a7f5fd21df7750af3071b922",
+    "bytes": 136093,
+    "manifest_sha256": "392F43AA192B57AE752255BC089D84CE13D33D75A7F5FD21DF7750AF3071B922",
+    "build_id": 2026101710,
+    "build_errors": 0,
+    "build_warnings": 0
+  },
+  "release_preflight": {
+    "tool": "mcsdk_release_preflight",
+    "control_mode": "vf",
+    "pass": false,
+    "project": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo",
+    "artifacts": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug",
+    "motor_profile": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json",
+    "motor_profile_sha256": "2FCAAF268BA3BA97970A21EF0918E18F91CCE6982699B7EE992B1559736F5EB6",
+    "failed_checks": [
+      "external_softstart_hil_validated",
+      "ipm_sd_bkin_hardware_trip_validated"
+    ],
+    "checks": {
+      "project_directory": {
+        "pass": true,
+        "evidence": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo"
+      },
+      "cube_ioc_present": {
+        "pass": true,
+        "evidence": [
+          "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc"
+        ]
+      },
+      "target_is_nucleo_g431rb": {
+        "pass": true,
+        "evidence": "STM32G431RB"
+      },
+      "mcsdk_topology_markers": {
+        "pass": true,
+        "evidence": {
+          "IHM09M2_or_NUCLEO_G431RB": true,
+          "IPM15B": true,
+          "ACIM": true
+        }
+      },
+      "ipm_sd_bkin_static_configuration": {
+        "pass": true,
+        "evidence": {
+          "sd_uses_driver_protection_handler": true,
+          "pa6_is_tim1_bkin": true,
+          "break_enabled": true,
+          "external_break_source_enabled": true,
+          "external_sd_is_active_low": true,
+          "break_output_polarity_matches_inverted_source": true,
+          "generated_break_remains_enabled": true,
+          "automatic_output_disabled": true,
+          "pa6_open_drain_pullup": true,
+          "break_irq_present": true
+        }
+      },
+      "uno_and_mcsdk_uart_are_separate": {
+        "pass": true,
+        "evidence": {
+          "uno_link_usart1_pb6_pb7": true,
+          "mcsdk_transport_usart2_pa2_pa3": true
+        }
+      },
+      "external_softstart_configured": {
+        "pass": true,
+        "evidence": {
+          "required_define": "#define MIC_EXTERNAL_SOFTSTART_CONFIGURED 1",
+          "note": "The mains soft-start is autonomous and installed ahead of the rectifier."
+        }
+      },
+      "external_softstart_has_no_mcu_control": {
+        "pass": true,
+        "evidence": {
+          "required_define": "#define MIC_SOFTSTART_GPIO_CONTROLLED 0",
+          "forbidden_markers": [
+            "UNO_PRECHARGE_GPIO",
+            "uno_precharge_set"
+          ]
+        }
+      },
+      "external_softstart_bus_settle_guard": {
+        "pass": true,
+        "evidence": {
+          "settle_ms": 3500,
+          "minimum_ms": 3000
+        }
+      },
+      "external_softstart_hil_validated": {
+        "pass": false,
+        "evidence": {
+          "required_define": "#define MIC_EXTERNAL_SOFTSTART_HIL_VALIDATED 1",
+          "note": "Set to 1 only after checking NTC limiting, autonomous bypass timing, DC-bus stability, and restart behavior on the assembled power path."
+        }
+      },
+      "motor_profile_present": {
+        "pass": true,
+        "evidence": "C:\\mic_practice\\docs\\mcsdk_acim_motor_profile.iek_air56b2_catalog_operator_confirmed_vf_candidate.json"
+      },
+      "motor_profile_is_catalog_confirmed_acim": {
+        "pass": true,
+        "evidence": {
+          "errors": [],
+          "source_kind": "catalog_operator_confirmed_vf_candidate_pending_instance_provenance_and_identification"
+        }
+      },
+      "generated_motor_configuration_matches_profile": {
+        "pass": true,
+        "evidence": {
+          "errors": [],
+          "values": {
+            "pole_pairs": 1.0,
+            "rated_phase_voltage_v": 127.0,
+            "max_speed_rpm": 3000.0,
+            "nominal_bus_voltage_v": 325.0,
+            "files": {
+              "acim_motor_parameters": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\Inc\\acim_motor_parameters.h",
+              "drive_parameters": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\Inc\\drive_parameters.h",
+              "power_stage_parameters": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\Inc\\power_stage_parameters.h",
+              "ioc": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc"
+            },
+            "measured_model": {
+              "stator_resistance_ohm": 2.85,
+              "rotor_resistance_ohm": 0.7,
+              "stator_leakage_inductance_h": 0.003,
+              "rotor_leakage_inductance_h": 0.003,
+              "magnetizing_inductance_h": 0.099,
+              "rotor_inertia_kg_m2": null
+            },
+            "profile_connection": "delta"
+          },
+          "required_dc_bus_v": 311.1269837220809
+        }
+      },
+      "release_artifacts": {
+        "pass": true,
+        "evidence": {
+          ".elf": [
+            {
+              "path": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+              "bytes": 2131596,
+              "sha256": "0BEF4A0DACD5032BF6D6E75F50711662B70135ABA48B2235816188BBEEF23A03"
+            }
+          ],
+          ".bin": [
+            {
+              "path": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+              "bytes": 48352,
+              "sha256": "DB3772C0AE303F00B35A1F88E53DD3BF270C5964128A323793D9ACE2DD41BBE0"
+            }
+          ],
+          ".hex": [
+            {
+              "path": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+              "bytes": 136093,
+              "sha256": "392F43AA192B57AE752255BC089D84CE13D33D75A7F5FD21DF7750AF3071B922"
+            }
+          ]
+        }
+      },
+      "release_artifacts_are_one_build": {
+        "pass": true,
+        "evidence": [
+          "ACIM-NUCLEOG431RB-IPM15B-VF_OL"
+        ]
+      },
+      "ipm_sd_bkin_hardware_trip_validated": {
+        "pass": false,
+        "evidence": {
+          "errors": [
+            "evidence_missing"
+          ],
+          "path": ""
+        }
+      },
+      "artifacts_inside_project": {
+        "pass": true,
+        "evidence": {
+          "project": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo",
+          "artifacts": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_arr_fix_r1\\nucleo\\STM32CubeIDE\\Debug"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "pass": true,
+  "control_parser": {
+    "pass": true,
+    "cases": 388,
+    "assertions": 476,
+    "hardware_commands": 0
+  },
+  "wire": {
+    "wire_cases": 373,
+    "wire_assertions": 858
+  },
+  "emitter": {
+    "pass": true,
+    "emitter_cases": 10
+  },
+  "hmi_cases": 21,
+  "hmi_checks": [
+    "real HMI text decoder carries record",
+    "reference not rotor speed",
+    "context age",
+    "GPIO and BKE decode",
+    "reject bp_fw_build=2026101006",
+    "reject bp_age_ms=300",
+    "reject mc_break1_age_ms=5001",
+    "reject mc_break1_age_ms=-1",
+    "reject mc_break1_age_ms=nan",
+    "reject mc_break1_hex=xx",
+    "reject ABI word 0",
+    "reject ABI word 1",
+    "reject ABI word 2",
+    "reject ABI word 4",
+    "reject ABI word 13",
+    "reject ABI word 22",
+    "no-event not treated as fault",
+    "GET snapshot requires key",
+    "GET snapshot structured JSON",
+    "GET did not extend operator heartbeat",
+    "GET only read and logged"
+  ],
+  "CRC_mutation_detected": true,
+  "hardware_commands": 0,
+  "scope": "Actual Uno byte parser, shared assembler, actual HMI decoder and authenticated local HTTP route; UART hardware mocked"
+}

@@ -1,0 +1,294 @@
+{
+  "channel_map": {
+    "0": "UH",
+    "1": "UL",
+    "2": "VH",
+    "3": "VL",
+    "4": "WH",
+    "5": "SDA",
+    "7": "SCL",
+    "6": "SD"
+  },
+  "sample_rate_hz": 8000000,
+  "resolution_ns": 125,
+  "PWM_rising_edges": {
+    "0": 64006,
+    "1": 64006,
+    "2": 64006,
+    "3": 64006,
+    "4": 64005
+  },
+  "median_carrier_hz": {
+    "0": 15999.999999980446,
+    "1": 15999.999999980446,
+    "2": 15999.999999980446,
+    "3": 15999.999999980446,
+    "4": 15999.999999980446
+  },
+  "PWM_first_edge_s": 1.06953075,
+  "PWM_last_edge_s": 5.070009375,
+  "PWM_window_s": 4.0004786249999995,
+  "complementary_overlap_intervals": {
+    "U": 0,
+    "V": 0,
+    "W": null
+  },
+  "observed_PWM_outputs_verified": true,
+  "all_six_PWM_outputs_observed": false,
+  "SD_low_intervals": [],
+  "SCL_edges": 225232,
+  "SDA_edges": 60332,
+  "I2C_parts": 4022,
+  "AS5600_valid_reads": 2011,
+  "AS5600_complete_read_parts_within_PWM": 800,
+  "partial_frames_within_PWM": [],
+  "AS5600_target_NACK": [],
+  "normal_controller_final_read_NACKs": 2011,
+  "unexpected_frames": [],
+  "partial_frames": [],
+  "last_sensor_bytes": [
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ],
+    [
+      103,
+      15,
+      129
+    ]
+  ],
+  "first_parts": [
+    {
+      "start_s": 0.00061225,
+      "end_s": 0.000851375,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.000851375,
+      "end_s": 0.001307875,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    },
+    {
+      "start_s": 0.0056395,
+      "end_s": 0.00588225,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.00588225,
+      "end_s": 0.0063385,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    },
+    {
+      "start_s": 0.01061625,
+      "end_s": 0.0108555,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.0108555,
+      "end_s": 0.011312,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    },
+    {
+      "start_s": 0.0156105,
+      "end_s": 0.0158495,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.0158495,
+      "end_s": 0.01630575,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    },
+    {
+      "start_s": 0.020613625,
+      "end_s": 0.020852875,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.020852875,
+      "end_s": 0.021309375,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    }
+  ],
+  "analog_ringing_or_sub125ns_glitches_qualified": false
+}

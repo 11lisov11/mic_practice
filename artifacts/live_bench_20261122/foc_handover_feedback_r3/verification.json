@@ -1,0 +1,236 @@
+{
+  "passed": true,
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        8620,
+        8472
+      ],
+      "ma_native_service": [
+        8400,
+        8400
+      ],
+      "ma_native_profile_tick": [
+        3956,
+        3840
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2,
+    "step_756_replay": {
+      "exact_words": 51,
+      "original_NIS": 30.997943878173828,
+      "same_CCR_prior_and_current_NIS_with_filtered_polarity": 32.51095962524414
+    },
+    "OFF": {
+      "cases": 64,
+      "iterations_per_case": 8,
+      "DWT_on_target_measured": false,
+      "max_ARM_instructions_before_after": {
+        "firmware_fixture": [
+          1571,
+          1563
+        ],
+        "speed_jump_stress": [
+          1571,
+          2301
+        ]
+      }
+    }
+  },
+  "hardware_commands": 0,
+  "limits": [
+    25,
+    4000,
+    2
+  ],
+  "preserved_files": 1762,
+  "quick_results": {
+    "nominal": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    },
+    "captured_deviations": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    },
+    "captured_deviations_early": {
+      "baseline": [
+        5,
+        2.08770108,
+        683
+      ],
+      "candidate": [
+        0,
+        5,
+        683
+      ]
+    },
+    "captured_deviations_late": {
+      "baseline": [
+        0,
+        5,
+        750
+      ],
+      "candidate": [
+        0,
+        5,
+        750
+      ]
+    },
+    "double_deviations": {
+      "baseline": [
+        5,
+        1.04278076,
+        723
+      ],
+      "candidate": [
+        5,
+        3.78752232,
+        723
+      ]
+    },
+    "deviations_plus_offset": {
+      "baseline": [
+        5,
+        2.19267249,
+        723
+      ],
+      "candidate": [
+        5,
+        2.27266502,
+        723
+      ]
+    },
+    "Rs_plus20pct": {
+      "baseline": [
+        5,
+        2.11267996,
+        723
+      ],
+      "candidate": [
+        5,
+        2.11267996,
+        723
+      ]
+    },
+    "Rr_plus20pct": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    },
+    "voltage_mismatch_1V": {
+      "baseline": [
+        5,
+        1.95269501,
+        723
+      ],
+      "candidate": [
+        5,
+        2.19267249,
+        723
+      ]
+    },
+    "voltage_mismatch_2V": {
+      "baseline": [
+        5,
+        0,
+        0
+      ],
+      "candidate": [
+        5,
+        0,
+        0
+      ]
+    },
+    "edge_minus250ns": {
+      "baseline": [
+        5,
+        3.87251425,
+        1284
+      ],
+      "candidate": [
+        5,
+        3.95250678,
+        1287
+      ]
+    },
+    "current_trip": {
+      "baseline": [
+        2,
+        0,
+        0
+      ],
+      "candidate": [
+        2,
+        0,
+        0
+      ]
+    },
+    "age_2_1ms": {
+      "baseline": [
+        3,
+        0,
+        0
+      ],
+      "candidate": [
+        3,
+        0,
+        0
+      ]
+    },
+    "NIS_exactly25": {
+      "baseline": [
+        5,
+        0.242855996,
+        0
+      ],
+      "candidate": [
+        5,
+        0.242855996,
+        0
+      ]
+    },
+    "NIS_below25": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    }
+  }
+}

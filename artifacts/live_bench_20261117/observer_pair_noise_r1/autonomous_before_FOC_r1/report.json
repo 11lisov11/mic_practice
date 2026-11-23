@@ -1,0 +1,198 @@
+{
+  "fw_build": 2026111715,
+  "mc_fw_build": 2026111716,
+  "state": "SAFE",
+  "pwm": 0,
+  "hmi_hv_armed": 0,
+  "estop": 0,
+  "run_id": 0,
+  "vdc": 9.0,
+  "bp_vdc": 9.0,
+  "mc_age_ms": 27,
+  "bp_vbus_valid": 1,
+  "bp_vbus_age_ms": 27,
+  "bp_temp_valid": 1,
+  "bp_temp_fault": 0,
+  "bp_status": 9,
+  "mc_current_zero_ready": 1,
+  "mc_current_zero_stable": 3,
+  "mc_current_zero_spans": [
+    23,
+    37,
+    27,
+    24
+  ],
+  "mc_zero_history_good": 3,
+  "mc_zero_history_bad": 0,
+  "foc_timing_ready": true,
+  "foc_timing_cases": 64,
+  "foc_timing_fault": 0,
+  "algorithm_fast_cycles": 3827,
+  "algorithm_observer_cycles": 25013,
+  "algorithm_fault": 0,
+  "mc_fault": 5,
+  "bp_fault": 5,
+  "mc_fault_reason": 8,
+  "mc_fault_current_mask": 4,
+  "mc_fault_occurred_mask": 1028,
+  "mc_transport_fault": 0,
+  "bp_transport_fault": 0,
+  "mc_bad_cnt": 0,
+  "mc_uart_error_flags": 0,
+  "mc_bad_integrity": 0,
+  "mc_bad_sequence": 0,
+  "rpc_response_timeouts": 0,
+  "rpc_send_timeouts": 0,
+  "observer_trace": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "mc_observer_trace_complete": 0,
+  "mc_observer_trace_good": 0,
+  "mc_observer_trace_bad": 0,
+  "mc_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 27,
+    "break_irq_enabled": false,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "foc_runtime": {
+    "available": true,
+    "observer_measured": true,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 208.42352941176472,
+    "irq_body_lower_us": 23.211764705882352,
+    "cpu_upper_us": 185.21176470588236,
+    "irq_root_count": 3,
+    "max_wall_us": 230.08823529411765,
+    "max_irq_body_lower_us": 42.16470588235294,
+    "max_cpu_upper_us": 188.3235294117647,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 64,
+    "meter_errors": 0,
+    "first_fault": null,
+    "IRQ_breakdown": {
+      "available": false,
+      "scope": "last_completed_observer_window",
+      "window_us": 0.0,
+      "valid_mask": 0,
+      "handlers": [
+        {
+          "name": "DMA2_BKIN",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "DMA1_UART_TX",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART1_CONTROL",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "ADC1_2",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_UPDATE",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_BREAK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART2_MCSDK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "SysTick",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "EXTI_STOP",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        }
+      ],
+      "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+    },
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "checks": {
+    "pair": true,
+    "outputs_OFF": true,
+    "low_bus_valid_fresh": true,
+    "autozero": true,
+    "OFF64_timing": true,
+    "UART_clean": true,
+    "SD_current_HIGH": true,
+    "trace_receiver_empty": true,
+    "RPC_guard": true
+  },
+  "read_only_preflight_passed": true,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "03204748-f785-436b-94f5-49bac7a92244",
+      [
+        2026111716,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        2721839430
+      ]
+    ],
+    "samples": 13,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 15.90600000001723,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "thresholds_changed": false,
+  "trace_RAM_directly_read": false,
+  "trace_readiness_basis": "Fresh autonomous boot; run_id=0; no START; receiver empty; installed recorder initialization previously verified",
+  "SD_wave_bytes": 320,
+  "start_ready_now": false,
+  "start_blockers": [
+    "J1 is OFF / MC_UNDER_VOLT",
+    "Break IRQ not rearmed after preserved startup event; no CLEAR authorized/performed"
+  ]
+}

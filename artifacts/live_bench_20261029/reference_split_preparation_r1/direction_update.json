@@ -1,0 +1,27 @@
+{
+  "status": "reference_capture_deferred_by_user_steering_toward_FOC",
+  "original_plan_retained": true,
+  "user_dmm_volts": {
+    "Nucleo3V3": 3.30,
+    "NucleoVREFP": 3.29,
+    "STEVAL3V3": 3.29,
+    "STEVALbias_C4": 1.645
+  },
+  "JP8_position": "unknown_not_inferred",
+  "C4_1k_PB11_wiring": "not_confirmed_do_not_assume_connected",
+  "extra_wire_required_now": false,
+  "reference_acquisition_firmware_prepared": false,
+  "reference_acquisition_firmware_installed": false,
+  "hardware_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "protection_thresholds_changed": false,
+  "physical_state_last_confirmed": "J1 and J4 OFF, boards on USB PC; no wiring changes confirmed after the C4 request",
+  "FOC_review": "C:/mic_practice/artifacts/live_bench_20261029/foc_recorded_noise_review_r3/report.json",
+  "decision": "Recorded OFF ADC noise does not alone prevent simulated5Hz FOC or smooth0to50Hz. Do not require completion of the analog-reference diagnostic before reviewing actual FOC readiness.",
+  "remaining_physical_work": [
+    "Actual motor electrical parameters have not been identified: do not stage simulation priors as hardware evidence.",
+    "FOC STM32 timing and scheduling need their own OFF-output qualification; IDENT timing does not substitute.",
+    "Current conversion remains nominal, not independently calibrated."
+  ]
+}

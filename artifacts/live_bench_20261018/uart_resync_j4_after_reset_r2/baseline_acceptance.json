@@ -1,0 +1,28 @@
+{
+  "read_only": true,
+  "transport_read_pass": true,
+  "ready_for_powered_run": false,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "pair": [
+    2026101807,
+    2026101806
+  ],
+  "reason": "First SD/BKIN capture already occupied after user-confirmed reset; LOW did not return HIGH within 100 ms. Current SD level and full pulse duration are not measured by this frozen record. No motor run performed.",
+  "event_tick_ms": 4865,
+  "wave_snapshot_tick_match": true,
+  "uart_reject": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "physical_state_user_confirmed": {
+    "powerbanks": true,
+    "pc_saleae_disconnected": true,
+    "j4_15v_on": true,
+    "j1_off": true,
+    "nucleo_reset_pressed": true
+  }
+}

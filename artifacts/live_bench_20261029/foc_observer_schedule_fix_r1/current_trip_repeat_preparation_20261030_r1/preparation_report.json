@@ -1,0 +1,30 @@
+{
+  "prepared": true,
+  "physical_step_pending": true,
+  "user_explicitly_requested_one_more_repeat": true,
+  "current_fault": "MA_CURRENT",
+  "current_algorithm_fault": 2,
+  "MC_fault_masks": [
+    1,
+    1
+  ],
+  "current_Vbus_controller_V": 322.0,
+  "current_PWM": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "previous_trial": "powered_FOC_schedule_20261030_r2",
+  "previous_capture_preserved": true,
+  "old_files_verified": 1638,
+  "next_step": "J1 OFF, meter below20V, one B2 RESET on Nucleo. Leave15V/Uno/powerbanks/wiring unchanged, J1 remains OFF for fresh checks.",
+  "offline_tests": "verification/current_repeat_fix_r1/report.json",
+  "current_repeat_not_allowed_without_fresh_native_epoch": true,
+  "fresh_epoch_requires_immutable_native_fault_gone_boot_OFF64_fresh_zero_and_no_active_MC_faults": true,
+  "unchanged_native_current_trip_A": 1.35,
+  "unchanged_ADC_guard_ticks": 2048,
+  "unchanged_estimate_limit_ms": 2,
+  "repeat_scope": "Only this archived near-threshold event; no automatic retries, no current fault CLEAR at322V, no code update on boards.",
+  "invocation_after_physical_reset_then_powered_confirmation": "tools/run_foc_observer_schedule_trial.py --confirm-autonomous-powered --saved-previous-trial artifacts/live_bench_20261029/foc_observer_schedule_fix_r1/powered_FOC_schedule_20261030_r2 --repeat-saved-current-trip --outdir artifacts/live_bench_20261029/foc_observer_schedule_fix_r1/powered_FOC_schedule_20261030_r3"
+}

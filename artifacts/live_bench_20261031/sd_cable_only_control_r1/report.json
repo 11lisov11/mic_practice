@@ -1,0 +1,53 @@
+{
+  "operator_confirmed": {
+    "STEVAL": "disconnected",
+    "cable": "on IHM09M2, other end free",
+    "J1_J4": "OFF",
+    "controller_power": "unchanged",
+    "RESET": "not pressed"
+  },
+  "current_levels": [
+    true,
+    true,
+    true
+  ],
+  "previous_with_STEVAL_15V": false,
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "old_captures_modified": false,
+  "level_verified_by_HTTP": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 51,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "fault_masks_now": [
+    0,
+    0
+  ],
+  "native_tick_before_ms": 2304305,
+  "native_tick_now_ms": 48787,
+  "native_restarted_between_stages": true,
+  "native_boot_flags_now": [
+    "NRST_FLAG"
+  ],
+  "Linux_boot_unchanged": true,
+  "interpretation": "The cable-only setup currently gives HIGH; LOW appears in the connected STEVAL setup. A native restart between stages prevents claiming an unconfounded same-boot cause. No intrinsic module defect established.",
+  "old_SD_wave_preserved_in": "artifacts/live_bench_20261031/sd_reconnected_15V_r1/SD_wave.bin",
+  "exact_physical_source_identified": false,
+  "boot_estimate_UTC_from_status_file": "2026-10-31T14:26:41.243316+00:00",
+  "first_register_read_file_UTC": "2026-10-31T14:26:52.163467+00:00"
+}

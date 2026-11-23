@@ -1,0 +1,24 @@
+{
+  "prepared": true,
+  "pair": [
+    2026102605,
+    2026102604
+  ],
+  "target_hz": 5,
+  "uno_mcu_runlimit_ms": 5000,
+  "capture_slots": [
+    "first_since_boot",
+    "first_with_pwm"
+  ],
+  "capture_collection_after_outputs_off_s": 12,
+  "offline_tests_passed": 20,
+  "firmware_writes": 0,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "fresh_powered_confirmation_required": true,
+  "automatic_clear_in_runner": false,
+  "final_remote_off_required": true,
+  "current_rms_coverage_gates_unchanged": true,
+  "command": "python tools/run_as5600_bounded_5hz.py --uno-build 2026102605 --sensor-mode NUCLEO --collect-first-i2c-fault --confirm-powered-ready --outdir <new-directory>",
+  "runner_sha256": "8d70b96c48c26c96972d946cf0a73f80e4ac0840d850d33c3cea50998f42ac1d"
+}

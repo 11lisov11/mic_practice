@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "physical_context": "user confirmed J1 OFF; 15V and powerbanks remain ON",
+  "samples": 13,
+  "unique_detail_packets": 13,
+  "raw_adc_stats": [
+    {
+      "path": 0,
+      "n": 13,
+      "minimum": 2059,
+      "maximum": 2076,
+      "mean": 2067.923076923077,
+      "sd_counts": 6.435080140158039,
+      "offset": 2069
+    },
+    {
+      "path": 1,
+      "n": 13,
+      "minimum": 2056,
+      "maximum": 2079,
+      "mean": 2069.923076923077,
+      "sd_counts": 6.613893690073174,
+      "offset": 2068
+    },
+    {
+      "path": 2,
+      "n": 13,
+      "minimum": 2052,
+      "maximum": 2077,
+      "mean": 2066,
+      "sd_counts": 6.904105059069327,
+      "offset": 2067
+    },
+    {
+      "path": 3,
+      "n": 13,
+      "minimum": 2060,
+      "maximum": 2080,
+      "mean": 2068.769230769231,
+      "sd_counts": 5.068758002934022,
+      "offset": 2069
+    }
+  ],
+  "vdc_range": [
+    191.0,
+    223.0
+  ],
+  "id_result_crc_unchanged": true,
+  "adc_peak_unchanged": true,
+  "faults_preserved": true,
+  "mc_age_ms_max": 48,
+  "limitation": "Low-rate diagnostic snapshots; not a synchronous noise spectrum or a physical current calibration."
+}

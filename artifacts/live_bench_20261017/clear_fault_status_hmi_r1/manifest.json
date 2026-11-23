@@ -1,0 +1,29 @@
+{
+  "candidate": "clear_fault_status_hmi_r1",
+  "source_pair": [
+    2026101507,
+    2026101506
+  ],
+  "installed": true,
+  "files": [
+    {
+      "sha256": "b5de3b717a4fe02e12ff55a60d66e186c55aa435e8722b67aee45d893c023476",
+      "path": "web_hmi/server.py"
+    },
+    {
+      "sha256": "38cd06b39f228d6436002606754cfe478d1d0a2f2ccd484ccae2d4255ba5dec8",
+      "path": "web_hmi/static/app.js"
+    }
+  ],
+  "mcu_images_changed": false,
+  "calibration_changed": false,
+  "actuation_commands": 0,
+  "mcu_flash_commands": 0,
+  "deployed_report": "artifacts/hmi_wifi_deploy/177c180b3dbc4332bdeb934b80304193/report.json",
+  "tests": [
+    "node --check",
+    "tools/clear_fault_status_hmi_selftest.js",
+    "tools/install_vbus_hmi_fix_selftest.py",
+    "tools/unoq_wifi_hmi_deploy_selftest.py"
+  ]
+}

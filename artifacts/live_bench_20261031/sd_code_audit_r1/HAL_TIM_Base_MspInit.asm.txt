@@ -1,0 +1,82 @@
+
+artifacts\live_bench_20261030\observer_trace_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+080117d0 <HAL_TIM_Base_MspInit>:
+  * This function configures the hardware resources used in this example
+  * @param htim_base: TIM_Base handle pointer
+  * @retval None
+  */
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
+{
+ 80117d0:	b510      	push	{r4, lr}
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  if(htim_base->Instance==TIM1)
+ 80117d2:	4a1b      	ldr	r2, [pc, #108]	@ (8011840 <HAL_TIM_Base_MspInit+0x70>)
+ 80117d4:	6801      	ldr	r1, [r0, #0]
+{
+ 80117d6:	b088      	sub	sp, #32
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 80117d8:	2300      	movs	r3, #0
+  if(htim_base->Instance==TIM1)
+ 80117da:	4291      	cmp	r1, r2
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+ 80117dc:	e9cd 3302 	strd	r3, r3, [sp, #8]
+ 80117e0:	e9cd 3304 	strd	r3, r3, [sp, #16]
+ 80117e4:	9306      	str	r3, [sp, #24]
+  if(htim_base->Instance==TIM1)
+ 80117e6:	d001      	beq.n	80117ec <HAL_TIM_Base_MspInit+0x1c>
+
+    /* USER CODE END TIM1_MspInit 1 */
+
+  }
+
+}
+ 80117e8:	b008      	add	sp, #32
+ 80117ea:	bd10      	pop	{r4, pc}
+    __HAL_RCC_TIM1_CLK_ENABLE();
+ 80117ec:	f103 4380 	add.w	r3, r3, #1073741824	@ 0x40000000
+ 80117f0:	f503 3304 	add.w	r3, r3, #135168	@ 0x21000
+    GPIO_InitStruct.Pin = M1_OCP_Pin;
+ 80117f4:	ed9f 7b10 	vldr	d7, [pc, #64]	@ 8011838 <HAL_TIM_Base_MspInit+0x68>
+    __HAL_RCC_TIM1_CLK_ENABLE();
+ 80117f8:	6e1a      	ldr	r2, [r3, #96]	@ 0x60
+ 80117fa:	f442 6200 	orr.w	r2, r2, #2048	@ 0x800
+ 80117fe:	661a      	str	r2, [r3, #96]	@ 0x60
+ 8011800:	6e1a      	ldr	r2, [r3, #96]	@ 0x60
+ 8011802:	f402 6200 	and.w	r2, r2, #2048	@ 0x800
+ 8011806:	9200      	str	r2, [sp, #0]
+ 8011808:	9a00      	ldr	r2, [sp, #0]
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+ 801180a:	6cda      	ldr	r2, [r3, #76]	@ 0x4c
+ 801180c:	f042 0201 	orr.w	r2, r2, #1
+ 8011810:	64da      	str	r2, [r3, #76]	@ 0x4c
+ 8011812:	6cdb      	ldr	r3, [r3, #76]	@ 0x4c
+ 8011814:	f003 0301 	and.w	r3, r3, #1
+ 8011818:	9301      	str	r3, [sp, #4]
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 801181a:	2201      	movs	r2, #1
+    GPIO_InitStruct.Alternate = GPIO_AF6_TIM1;
+ 801181c:	2306      	movs	r3, #6
+    HAL_GPIO_Init(M1_OCP_GPIO_Port, &GPIO_InitStruct);
+ 801181e:	a902      	add	r1, sp, #8
+ 8011820:	f04f 4090 	mov.w	r0, #1207959552	@ 0x48000000
+    GPIO_InitStruct.Pin = M1_OCP_Pin;
+ 8011824:	ed8d 7b02 	vstr	d7, [sp, #8]
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+ 8011828:	9c01      	ldr	r4, [sp, #4]
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+ 801182a:	9204      	str	r2, [sp, #16]
+    GPIO_InitStruct.Alternate = GPIO_AF6_TIM1;
+ 801182c:	9306      	str	r3, [sp, #24]
+    HAL_GPIO_Init(M1_OCP_GPIO_Port, &GPIO_InitStruct);
+ 801182e:	f002 ff8d 	bl	801474c <HAL_GPIO_Init>
+}
+ 8011832:	b008      	add	sp, #32
+ 8011834:	bd10      	pop	{r4, pc}
+ 8011836:	bf00      	nop
+ 8011838:	00000040 	.word	0x00000040
+ 801183c:	00000012 	.word	0x00000012
+ 8011840:	40012c00 	.word	0x40012c00

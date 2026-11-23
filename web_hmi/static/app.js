@@ -220,7 +220,12 @@ function mcFaultName(code) {
   return names[Number(code)] || `КОД ${Number(code)}`;
 }
 
+function mcLocalStopLatched(data) {
+  return (Number(mcField(data, "status", 0)) & 0x80) !== 0;
+}
+
 function mcFaultSummary(data, code) {
+  if (mcLocalStopLatched(data)) return "ЛОКАЛЬНЫЙ STOP B1 (PC13)";
   if (Number(code) !== 5) return mcFaultName(code);
   if (Number(data.mc_diag_valid || 0) !== 1) return mcFaultName(code);
   const names = ["NONE", "CRC", "VERSION", "REPLAY", "ESTOP", "SERVICE",
@@ -739,7 +744,7 @@ async function refreshStatus() {
       const mcFault = Number(mcField(data, "fault", 0));
       const mcBad = Number(mcField(data, "bad_cnt", mcField(data, "bad", 0)));
       const mcAge = Number(mcField(data, "rsp_age_ms", mcField(data, "age_ms", -1)));
-      const linkState = mcFault !== 0 ? mcFaultSummary(data, mcFault) : (mcBad !== 0 ? "ОШИБКА UART" : "OK");
+      const linkState = mcFault !== 0 || mcLocalStopLatched(data) ? mcFaultSummary(data, mcFault) : (mcBad !== 0 ? "ОШИБКА UART" : "OK");
       linkVal.title = data.mc_fault_detail || "";
       linkVal.textContent = `${linkState} / bad=${mcBad} / ${mcAge.toFixed(0)} мс`;
     }

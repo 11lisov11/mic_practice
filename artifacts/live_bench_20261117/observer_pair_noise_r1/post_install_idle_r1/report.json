@@ -1,0 +1,79 @@
+{
+  "fw_build": 2026111715,
+  "mc_fw_build": 2026111716,
+  "state": "SAFE",
+  "pwm": 0,
+  "hmi_hv_armed": 0,
+  "vdc": 0.0,
+  "mc_current_zero_ready": 1,
+  "mc_current_zero_stable": 3,
+  "mc_current_zero_spans": [
+    28,
+    34,
+    30,
+    28
+  ],
+  "mc_zero_history_good": 3,
+  "mc_zero_history_bad": 0,
+  "foc_timing_cases": 64,
+  "foc_timing_fault": 0,
+  "algorithm_fast_cycles": 3827,
+  "algorithm_observer_cycles": 25018,
+  "algorithm_fault": 0,
+  "mc_fault": 2,
+  "mc_fault_reason": 8,
+  "mc_fault_current_mask": 4,
+  "mc_fault_occurred_mask": 4,
+  "mc_transport_fault": 7,
+  "mc_bad_cnt": 1,
+  "mc_uart_error_flags": 0,
+  "mc_bad_integrity": 0,
+  "mc_bad_sequence": 0,
+  "rpc_response_timeouts": 0,
+  "rpc_send_timeouts": 0,
+  "observer_trace": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "mc_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 21,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "passed": true,
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "80423b7c-060e-42b5-ad94-3bf85e471b75",
+      [
+        2026111716,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        558255263
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 7.73499999998603,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET_added": 0,
+  "OFF_only": true
+}

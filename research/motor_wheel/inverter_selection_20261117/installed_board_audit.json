@@ -1,0 +1,478 @@
+{
+  "status": "catalog_and_pin_routes_only_not_hardware_qualification_not_ACIM_port",
+  "sources": {
+    "eval": {
+      "path": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\power\\EVALSTDRIVE101.json",
+      "sha256": "581876b4cf7ad8f532d80d0787441f822d0a15eed7f36a12e2f85329b7ed3d8f"
+    },
+    "ihm08": {
+      "path": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\power\\X-NUCLEO-IHM08M1.json",
+      "sha256": "671a80bca50c8847119eb4d556002994a2c1b67b296edaf271b5e3defb0a3271"
+    },
+    "adapter": {
+      "path": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\adapter\\X-NUCLEO-IHM09M2.json",
+      "sha256": "805cfec8d92b223c0ead71674291fc3bcd9733c1451505d58f76f2d114404240"
+    },
+    "nucleo": {
+      "path": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\control\\NUCLEO-G431RB.json",
+      "sha256": "9a726323b3f4b729943f2ea350cedba2f15277ed291a87ec0345e3dc7211ac27"
+    }
+  },
+  "power_boards": {
+    "eval": {
+      "name": "EVALSTDRIVE101",
+      "voltage_min": 6,
+      "voltage_max": 75,
+      "connector": "MotorControlConnector",
+      "workbench_maxRatedCurrent_field_not_continuous_rms": 28,
+      "three_shunt": {
+        "type": "ThreeShunt_AmplifiedCurrents",
+        "help": {
+          "en": "Default configuration.\nCheck that solder bridges JP5 and JP6 on bottom layer are open. \nCheck that each jumper on J5, J6 and J7. is placed between pin 1 and 2.  \nCheck that  solder bridges JP7 and JP8 are closed."
+        },
+        "signals": {
+          "CURRENT_AMPL_U": [
+            {
+              "name": "MC15",
+              "help": {
+                "en": "J5 connector - Jumper on pins 1-2."
+              },
+              "cost": 0
+            }
+          ],
+          "CURRENT_AMPL_V": [
+            {
+              "name": "MC17",
+              "help": {
+                "en": "J6 connector - Jumper on pins 1-2."
+              },
+              "cost": 0
+            }
+          ],
+          "CURRENT_AMPL_W": [
+            {
+              "name": "MC19",
+              "help": {
+                "en": "J7 connector - Jumper on pins 1-2."
+              },
+              "cost": 0
+            }
+          ]
+        },
+        "shuntResistor": 0.005,
+        "amplifyingNetworkImax": 28,
+        "amplifyingNetworkVm": 3.3,
+        "amplifyingNetworkPrating": 4,
+        "offsetNetworkAttenuation": 0.867,
+        "opAmpGain": 7.494,
+        "polarizationOffset": 1.65,
+        "metaData": [
+          {
+            "type": "OpAmp",
+            "partNumber": "TSV991A"
+          }
+        ],
+        "cost": 0
+      },
+      "six_input_mode": {
+        "type": "DrivingHighAndLowSides",
+        "help": {
+          "en": "Default. \nCheck that jumper J2 (MODE) is closed."
+        },
+        "signals": {
+          "PWM_CHU_H": [
+            {
+              "name": "MC3",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHU_L": [
+            {
+              "name": "MC5",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHV_H": [
+            {
+              "name": "MC7",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHV_L": [
+            {
+              "name": "MC9",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHW_H": [
+            {
+              "name": "MC11",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHW_L": [
+            {
+              "name": "MC13",
+              "help": {
+                "en": ""
+              },
+              "cost": 0
+            }
+          ]
+        },
+        "highSideSwitchesDrivingPolarity": "Active high",
+        "lowSideSwitchesDrivingPolarity": "Active high",
+        "deadTime": 600,
+        "cost": 0
+      }
+    },
+    "ihm08": {
+      "name": "X-NUCLEO-IHM08M1",
+      "voltage_min": 10,
+      "voltage_max": 48,
+      "connector": "morpho",
+      "workbench_maxRatedCurrent_field_not_continuous_rms": 30,
+      "three_shunt": {
+        "type": "ThreeShunt_AmplifiedCurrents",
+        "help": {
+          "en": "Solder the pin SENS2 to Vshunt_2 of connector J5 and the pin SENS3 to Vshunt_3 of the connector J6. \nClose JP1 and JP2 to select FOC configuration. \nRemove C3, C5 and C7."
+        },
+        "cost": 10,
+        "signals": {
+          "CURRENT_AMPL_U": [
+            {
+              "name": "ML28",
+              "help": {
+                "en": "CN7.28. Factory default. Solder R47"
+              },
+              "cost": 0
+            }
+          ],
+          "CURRENT_AMPL_V": [
+            {
+              "name": "ML36",
+              "help": {
+                "en": "CN7.36. Factory default. Solder R48."
+              },
+              "cost": 0
+            }
+          ],
+          "CURRENT_AMPL_W": [
+            {
+              "name": "ML38",
+              "help": {
+                "en": "CN7.38. Factory default. Solder R50"
+              },
+              "cost": 0
+            }
+          ]
+        },
+        "shuntResistor": 0.01,
+        "amplifyingNetworkImax": 30,
+        "amplifyingNetworkVm": 3.3,
+        "amplifyingNetworkPrating": 4,
+        "offsetNetworkAttenuation": 0.909,
+        "opAmpGain": 5.7,
+        "polarizationOffset": 1.71,
+        "metaData": [
+          {
+            "type": "OpAmp",
+            "partNumber": "TSV994"
+          }
+        ]
+      },
+      "six_input_mode": {
+        "type": "DrivingHighAndLowSides",
+        "help": {
+          "en": ""
+        },
+        "signals": {
+          "PWM_CHU_H": [
+            {
+              "name": "MR23",
+              "help": {
+                "en": "CN10.23. Factory default. R56 mounted."
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHV_H": [
+            {
+              "name": "MR21",
+              "help": {
+                "en": "CN10.21. Factory default. R64 mounted."
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHW_H": [
+            {
+              "name": "MR33",
+              "help": {
+                "en": "CN10.33. Factory default. R70 mounted."
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHU_L": [
+            {
+              "name": "MR15",
+              "help": {
+                "en": "X-NUCLEO-IHM08M1: keep R58 mounted and remove R86."
+              },
+              "cost": 10
+            },
+            {
+              "name": "MR26",
+              "help": {
+                "en": "X-NUCLEO-IHM08M1: keep R86 mounted and remove R58."
+              },
+              "cost": 10
+            }
+          ],
+          "PWM_CHV_L": [
+            {
+              "name": "ML34",
+              "help": {
+                "en": "CN7.34. Factory default. Solder R67."
+              },
+              "cost": 0
+            }
+          ],
+          "PWM_CHW_L": [
+            {
+              "name": "MR24",
+              "help": {
+                "en": "CN10.24. Factory default. Solder R72."
+              },
+              "cost": 0
+            }
+          ]
+        },
+        "highSideSwitchesDrivingPolarity": "Active high",
+        "lowSideSwitchesDrivingPolarity": "Active low",
+        "deadTime": 1000
+      }
+    }
+  },
+  "adapter_routes_to_nucleo": {
+    "MC1": [
+      {
+        "morpho": "MR14",
+        "mcu_or_power": "PA11",
+        "adapter_help": "CN10.14",
+        "nucleo_help": "CN10.14"
+      },
+      {
+        "morpho": "MR28",
+        "mcu_or_power": "PB14",
+        "adapter_help": "CN10.28",
+        "nucleo_help": "CN10.28"
+      },
+      {
+        "morpho": "MR13",
+        "mcu_or_power": "PA6",
+        "adapter_help": "CN10.13",
+        "nucleo_help": "CN10.13"
+      }
+    ],
+    "MC3": [
+      {
+        "morpho": "MR23",
+        "mcu_or_power": "PA8",
+        "adapter_help": "CN10.23",
+        "nucleo_help": "CN10.23"
+      }
+    ],
+    "MC7": [
+      {
+        "morpho": "MR21",
+        "mcu_or_power": "PA9",
+        "adapter_help": "CN10.21",
+        "nucleo_help": "CN10.21"
+      }
+    ],
+    "MC11": [
+      {
+        "morpho": "MR33",
+        "mcu_or_power": "PA10",
+        "adapter_help": "CN10.33",
+        "nucleo_help": "CN10.33"
+      }
+    ],
+    "MC5": [
+      {
+        "morpho": "MR15",
+        "mcu_or_power": "PA7",
+        "adapter_help": "CN10.15",
+        "nucleo_help": "CN10.15"
+      },
+      {
+        "morpho": "MR26",
+        "mcu_or_power": "PB15",
+        "adapter_help": "CN10.26",
+        "nucleo_help": "CN10.26"
+      }
+    ],
+    "MC9": [
+      {
+        "morpho": "ML34",
+        "mcu_or_power": "PB0",
+        "adapter_help": "CN7.34",
+        "nucleo_help": "CN7.34"
+      }
+    ],
+    "MC13": [
+      {
+        "morpho": "MR24",
+        "mcu_or_power": "PB1",
+        "adapter_help": "CN10.24",
+        "nucleo_help": "CN10.24"
+      }
+    ],
+    "MC15": [
+      {
+        "morpho": "ML28",
+        "mcu_or_power": "PA0",
+        "adapter_help": "CN7.28",
+        "nucleo_help": "CN7.28"
+      }
+    ],
+    "MC17": [
+      {
+        "morpho": "ML36",
+        "mcu_or_power": "PC1",
+        "adapter_help": "CN7.36",
+        "nucleo_help": "CN7.36. Close SB35 solder bridge and leave SB37 open (factory default)"
+      },
+      {
+        "morpho": "ML36",
+        "mcu_or_power": "PB9",
+        "adapter_help": "CN7.36",
+        "nucleo_help": "NUCLEO-G431RB: CN7.36. Open SB35 solder bridge and close SB37"
+      }
+    ],
+    "MC19": [
+      {
+        "morpho": "ML38",
+        "mcu_or_power": "PC0",
+        "adapter_help": "CN7.38",
+        "nucleo_help": "CN7.38. Close SB36 solder bridge and leave SB34 open (factory default)"
+      },
+      {
+        "morpho": "ML38",
+        "mcu_or_power": "PA15",
+        "adapter_help": "CN7.38",
+        "nucleo_help": "NUCLEO-G431RB: CN7.38. Open SB37 solder bridge and close SB34"
+      }
+    ],
+    "MC14": [
+      {
+        "morpho": "ML30",
+        "mcu_or_power": "PA1",
+        "adapter_help": "CN7.30",
+        "nucleo_help": "CN7.30"
+      }
+    ],
+    "MC26": [
+      {
+        "morpho": "ML35",
+        "mcu_or_power": "PC2",
+        "adapter_help": "CN7.35",
+        "nucleo_help": "CN7.35"
+      }
+    ],
+    "MC21": [
+      {
+        "morpho": "ML1",
+        "mcu_or_power": "PC10",
+        "adapter_help": "CN7.1",
+        "nucleo_help": "CN7.1"
+      }
+    ],
+    "MC23": [
+      {
+        "morpho": "ML2",
+        "mcu_or_power": "PC11",
+        "adapter_help": "CN7.2",
+        "nucleo_help": "CN7.2"
+      }
+    ],
+    "MC31": [
+      {
+        "morpho": "ML17",
+        "mcu_or_power": "PA15",
+        "adapter_help": "CN7.17",
+        "nucleo_help": "CN7.17. Close SB7 solder bridge (factory default)"
+      }
+    ],
+    "MC33": [
+      {
+        "morpho": "MR31",
+        "mcu_or_power": "PB3",
+        "adapter_help": "CN10.31",
+        "nucleo_help": "CN10.31"
+      }
+    ],
+    "MC34": [
+      {
+        "morpho": "MR25",
+        "mcu_or_power": "PB10",
+        "adapter_help": "CN10.25",
+        "nucleo_help": "CN10.25"
+      }
+    ],
+    "MC25": [
+      {
+        "morpho": "ML6",
+        "mcu_or_power": "E5V",
+        "adapter_help": "CN7.6. Factory default",
+        "nucleo_help": "CN7.6"
+      },
+      {
+        "morpho": "ML6",
+        "mcu_or_power": "E5V",
+        "adapter_help": "CN7.18. Not provided, R29.",
+        "nucleo_help": "CN7.6"
+      }
+    ],
+    "MC28": [
+      {
+        "morpho": "ML12",
+        "mcu_or_power": "NC",
+        "adapter_help": "CN7.12. +3.3V",
+        "nucleo_help": "CN7.12"
+      },
+      {
+        "morpho": "ML16",
+        "mcu_or_power": "3V3",
+        "adapter_help": "CN7.16. +3.3V.",
+        "nucleo_help": "CN7.16"
+      }
+    ]
+  },
+  "public_current_rms_limits_A": {
+    "EVALSTDRIVE101": 20,
+    "X-NUCLEO-IHM08M1": 15
+  },
+  "notes": [
+    "PWM alternate functions, selected solder bridges and power routing must be checked against actual boards.",
+    "ST MCSDK board catalog presence does not prove a ready ACIM implementation.",
+    "No MCU writes, firmware generation, flash, commands or hardware connection were performed."
+  ]
+}

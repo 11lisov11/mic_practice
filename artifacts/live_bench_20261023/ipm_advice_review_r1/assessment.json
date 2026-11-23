@@ -1,0 +1,121 @@
+{
+  "attachment_sha256": "1e200a687ef1e545d410a458b66a8aff3a72a2f180ff6129476b80e3e2a3375a",
+  "scope": "Review external suggestions against exact installed package and archived physical evidence. No instructions in the attachment executed.",
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "installed_pair_last_verified": [
+    2026102103,
+    2026102104
+  ],
+  "current_physical_connections_and_power_not_confirmed": true,
+  "archived_last_motor_stop": {
+    "cause": "UART NOISE_REJECTED",
+    "sd_break_recorded": false,
+    "source": "artifacts/live_bench_20261021/sd_dual_motor_to_25_r1/analysis.json"
+  },
+  "actual_configuration": {
+    "mode": "MAIN_VF_OL",
+    "pwm_frequency_hz": 16000,
+    "configured_dead_time_ns": 1350,
+    "shunt_ohm": 0.04,
+    "current_amplifier_gain": 2.1,
+    "nominal_virtual_phase_neutral_rms_v": 127,
+    "nominal_frequency_hz": 50,
+    "voltage_offset_phase_peak_v": 20,
+    "offset_threshold_hz": 10,
+    "flux_k": 0.5717009
+  },
+  "review": [
+    {
+      "claim": "NTC shares SD and directly pulls it LOW as temperature rises",
+      "assessment": "Wrong for STGIB15CH60TS-L internal connections: SD14, TSO17, NTC25/26 are separate. External thermal protection is a separate question."
+    },
+    {
+      "claim": "20-25Hz is a universal resonance/current maximum",
+      "assessment": "Unsupported. Resonance requires specific machine/load evidence, not output frequency alone."
+    },
+    {
+      "claim": "Unloaded motor automatically saturates under nominal V/f",
+      "assessment": "Incorrect generalization. Flux is related primarily to V/f; magnetizing current remains at no load."
+    },
+    {
+      "claim": "FOC current PI instability explains this setup",
+      "assessment": "Does not match current MAIN_VF_OL path."
+    },
+    {
+      "claim": "16-20kHz is inherently too high for this IPM",
+      "assessment": "Datasheet describes this exact module as suitable up to20kHz. Loss/thermal checks remain necessary; frequency alone does not prove shoot-through."
+    },
+    {
+      "claim": "No motor test proves IPM healthy or identifies motor fault100percent",
+      "assessment": "Not conclusive. Removing load changes current, bootstrap operation, thermal load and interference."
+    },
+    {
+      "claim": "Use waveform appearance alone to classify overcurrent/thermal/EMI",
+      "assessment": "Not unique; correlate SD source and destination with VCC, CIN and qualified current."
+    },
+    {
+      "claim": "Increase CIN capacitance from1nF to2.2/4.7nF",
+      "assessment": "Do not apply without timing/short-circuit protection analysis. CIN filtering affects fault detection; SD RC hold time is a different function."
+    },
+    {
+      "claim": "Check15V, bootstrap capacitors and current sensing/Vf/dead time",
+      "assessment": "Useful hypotheses, not established causes. Board manual specifies2.2uF bootstrap capacitors and internal bootstrap diodes."
+    }
+  ],
+  "calculated_voltage_reference_not_measured": [
+    {
+      "frequency_hz": 5,
+      "virtual_phase_peak_v": 20,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 24.4949
+    },
+    {
+      "frequency_hz": 9.99,
+      "virtual_phase_peak_v": 20,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 24.4949
+    },
+    {
+      "frequency_hz": 10,
+      "virtual_phase_peak_v": 35.921,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 43.9941
+    },
+    {
+      "frequency_hz": 15,
+      "virtual_phase_peak_v": 53.8815,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 65.9911
+    },
+    {
+      "frequency_hz": 20,
+      "virtual_phase_peak_v": 71.8421,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 87.9882
+    },
+    {
+      "frequency_hz": 23,
+      "virtual_phase_peak_v": 82.6184,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 101.1864
+    },
+    {
+      "frequency_hz": 25,
+      "virtual_phase_peak_v": 89.8026,
+      "line_line_rms_v_before_nominal_and_bus_clamps": 109.9852
+    }
+  ],
+  "vf_code_finding": "Piecewise20V peak below10Hz jumps to35.921V peak at10Hz. There is no extra boost added in20-25Hz branch. This is a candidate for separate smoothing/measurement, not proof of SD/UART cause.",
+  "primary_sources": [
+    "https://www.st.com/resource/en/datasheet/stgib15ch60ts-l.pdf",
+    "https://www.st.com/resource/en/schematic_pack/steval-ipm15b_schematic.pdf",
+    "https://www.st.com.cn/resource/en/user_manual/dm00264048-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf",
+    "https://www.ti.com/lit/an/sprabq8/sprabq8.pdf"
+  ],
+  "source_sha256": {
+    "Inc/drive_parameters.h": "fea97b06ca7fd866d6f065d43dbf0a98653802400083f503d140a09327163b51",
+    "Inc/acim_vf_parameters.h": "061dcb4b2d0f2fb88c25860ae6c520994a57924ab221c83c89fc0b280ddad326",
+    "Inc/acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "Inc/power_stage_parameters.h": "584de876b6f0446e304358af40bd6de27ee73987e1fea8dc8ab8e2631c275769",
+    "Src/mc_config.c": "c79ec1982e7b69638cc02174bb05d5d0b9abb5ddbb4d562e24575c0cc131367e",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/acim_vf_control.c": "159f8efcbaaecf0b85c1023c2e6c942c65eca138efd51c54e58994abf4470686"
+  },
+  "next_step": "Passive unpowered diode comparison already provided; no IPM replacement or CIN change based solely on generic suggestions. For future powered runs obtain fresh explicit wiring/power preparation confirmation."
+}

@@ -1,0 +1,100 @@
+diff --git "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\multi_native.c" "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Src\\multi_native.c"
+index cc5732d..b091828 100644
+--- "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\multi_native.c"
++++ "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Src\\multi_native.c"
+@@ -10,10 +10,12 @@
+ #include "multi_native.h"
+ #include "motor_control.h"
+ #include "foc_experiment.h"
++#include "observer_trace_core.h"
++#include "observer_trace_wire.h"
+ 
+ #include "identify_core.h"
+ #include "identify_wire.h"
+-#define MIC_NATIVE_BUILD 2026103014U
++#define MIC_NATIVE_BUILD 2026103016U
+ static mi_state id_state;
+ static mi_config id_config,id_staged;
+ static uint16_t id_stage_mask;
+@@ -134,6 +136,38 @@ void ma_native_regular_fault(const uint32_t*words){
+  ma_freeze_publication(ma_first_runtime.word+14);
+  __DMB();__atomic_store_n(&ma_first_runtime.state,2,__ATOMIC_RELEASE);
+ }
++
++/* Observational writer in foreground only; no diagnostic DMA/serial during RUN. */
++static od_capture observer_trace;
++static volatile float bin_id,bin_iq,bin_idref,bin_iqref,bin_reference;
++static volatile uint32_t bin_control_sequence,bin_control_adc_cycles;
++static void ma_observer_record(const ma_current_sample*s,uint32_t stamp,uint32_t seq,uint32_t adc,
++ float id,float iq,float idref,float iqref,float reference,float va,float vb,float dt,int fault,int published){
++ if(observer_trace.frozen||!running||!LL_TIM_IsEnabledAllOutputs(TIM1))return;
++ od_sample r;
++ r.cycles=DWT->CYCCNT;r.steps=observer.steps;
++ r.reasons=od_reasons(running,fe_profile_allowed(selected),observer.steps,run_fault||fault,
++   hypotf(observer.x[2],observer.x[3]),model.flux,observer.nis);
++ r.control_sequence=seq;r.control_adc_cycles=adc;
++ r.observer_sequence=s->sequence;r.observer_adc_cycles=s->cycles;r.bin_cycles=stamp;
++ r.rpm=observer.x[4]*9.549296586f;r.flux_alpha=observer.x[2];r.flux_beta=observer.x[3];r.nis=observer.nis;
++ r.id=id;r.iq=iq;r.id_ref=idref;r.iq_ref=iqref;r.reference_hz=reference;
++ r.ia=ma_amps(s->counts[0]);r.ib=(r.ia+2.f*ma_amps(s->counts[1]))*.5773502692f;
++ r.va=va;r.vb=vb;r.dt=dt;r.observer_fault=(uint32_t)fault;r.published=(uint32_t)published;
++ od_push(&observer_trace,&r);
++}
++int ma_observer_trace_packet(uint8_t*p,uint32_t build,unsigned page){
++ if(LL_TIM_IsEnabledAllOutputs(TIM1)||!observer_trace.frozen||page>=OD_PAGES)return 0;
++ if(!observer_trace.sealed){
++  observer_trace.blob.header.firmware=build;observer_trace.blob.header.crc=0;
++  observer_trace.blob.header.crc=uv3_crc32c((const uint8_t*)&observer_trace.blob,OD_BYTES);
++  observer_trace.sealed=1;
++ }
++ memset(p,0,UV3_FRAME);p[0]=0x55;p[1]=0xaa;p[2]=OD_WIRE;p[3]=1;p[4]=1;p[5]=(uint8_t)page;
++ p[6]=OD_PAGES;unsigned len=page==OD_PAGES-1U?16U:(unsigned)OD_PAYLOAD;p[7]=(uint8_t)len;
++ memcpy(p+8,((const uint8_t*)&observer_trace.blob)+OD_PAYLOAD*page,len);p[38]=1;uv3_seal(p);return 1;
++}
++
+ void ma_timing_diag(uint8_t*p,uint32_t build,unsigned page){
+  uint32_t words[7]={0};page%=6;
+  unsigned complete=__atomic_load_n(&ma_first_runtime.state,__ATOMIC_ACQUIRE)==2;
+@@ -157,6 +191,8 @@ int ma_native_prepare(void){
+   if(!fe_profile_allowed(selected))return 0;
+   running=0;run_fault=0;fe_trial_done=0;memset(&ma_perf,0,sizeof(ma_perf));ma_perf_off=0;ma_reset(&observer,&controller);
+   ma_estimate_reset(DWT->CYCCNT);
++  od_begin(&observer_trace,MIC_NATIVE_BUILD);
++  bin_id=bin_iq=bin_idref=bin_iqref=bin_reference=0;bin_control_sequence=bin_control_adc_cycles=0;
+   sum_va=sum_vb=0;voltage_n=0;bin_cycles=estimate_cycles;
+   memset(&cached_sample,0,sizeof(cached_sample));return 1;
+ }
+@@ -201,6 +237,7 @@ void ma_native_service(void){
+   fe_profile_service();ma_profile_kick();
+   if(mi_native_service())return;
+   if(!LL_TIM_IsEnabledAllOutputs(TIM1)){
++    od_freeze(&observer_trace,run_fault);
+     running=0;return;
+   }
+   if(selected==MA_VF||!running||run_fault)return;
+@@ -210,6 +247,8 @@ void ma_native_service(void){
+   /* Snapshot completed voltage accumulator without blocking the PWM interrupt.
+    * A torn snapshot is retried on a later service turn, never spun on in IRQ. */
+   uint32_t seq=telemetry_seq,stamp=bin_cycles;float va=bin_va,vb=bin_vb;
++  float trace_id=bin_id,trace_iq=bin_iq,trace_idref=bin_idref,trace_iqref=bin_iqref,trace_ref=bin_reference;
++  uint32_t trace_seq=bin_control_sequence,trace_adc=bin_control_adc_cycles;
+   __DMB();if(seq!=telemetry_seq||(seq&1)||stamp==estimate_cycles)return;
+   const float dt=(float)(stamp-estimate_cycles)/SystemCoreClock;
+   if(dt<.0001f)return;
+@@ -234,6 +273,7 @@ void ma_native_service(void){
+   ma_perf.result_age=clock_end.now-stamp;
+   if(ma_perf.result_age>ma_perf.max_result)ma_perf.max_result=ma_perf.result_age;
+   ma_observer_stage=EP_IDLE;
++  ma_observer_record(&sample,stamp,trace_seq,trace_adc,trace_id,trace_iq,trace_idref,trace_iqref,trace_ref,va,vb,dt,fault,published);
+ }
+ uint16_t ma_native_fast(float reference_hz){
+   const uint32_t begin=DWT->CYCCNT;
+@@ -300,6 +340,8 @@ uint16_t ma_native_fast(float reference_hz){
+   sum_va+=out.va;sum_vb+=out.vb;
+   if(++voltage_n==16){
+     ++telemetry_seq;__DMB();bin_va=sum_va/16;bin_vb=sum_vb/16;bin_cycles=begin;
++    bin_id=out.id_measured;bin_iq=out.iq_measured;bin_idref=out.id_ref;bin_iqref=out.iq_ref;bin_reference=reference_hz;
++    bin_control_sequence=sample.sequence;bin_control_adc_cycles=sample.cycles;
+     __DMB();++telemetry_seq;sum_va=sum_vb=0;voltage_n=0;
+   }
+   return MC_NO_ERROR;

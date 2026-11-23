@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "START": 0,
+  "ARM": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "HTTP_methods": [
+    "GET"
+  ],
+  "stand_state": "J1 OFF, J4 ON, separate powerbanks, no PC/Saleae",
+  "checks": {
+    "fresh_autonomous_link": true,
+    "clean_UART": true,
+    "autozero": true,
+    "FOC_profile_and_OFF_timing": true,
+    "empty_NIS_and_ADC_records": true,
+    "SD_Break_ready": true,
+    "no_unexpected_active_fault": true,
+    "adc_page_waiting_for_capture": true,
+    "observer_page_waiting_for_capture": true
+  },
+  "pair": [
+    2026112101,
+    2026112102
+  ],
+  "bus_range": [
+    9.0,
+    10.0
+  ],
+  "advances": 451,
+  "bus_reason": 8,
+  "active_mask": 0,
+  "stored_mask": 4,
+  "SD": "HIGH",
+  "BIE": true,
+  "fast_cycles": 3810,
+  "uart": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_last_uart_error_flags": 0,
+    "mc_transport_fault": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "mc_bad_cnt": 0,
+    "rpc_route_failures": 0
+  },
+  "autozero_state": 1,
+  "first_NIS_capture_ready": true,
+  "archive_files_verified": 664,
+  "samples": 20,
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "f90b1f88-c2ed-48d6-ade2-d4850251b0e1",
+      [
+        2026112102,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3500516566
+      ]
+    ],
+    "samples": 20,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 22.593999999997322,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

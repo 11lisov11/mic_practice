@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "suites": [
+    {
+      "suite": "web_hmi_command_guard_selftest",
+      "pass": true
+    },
+    {
+      "suite": "powered_trial_selftest",
+      "pass": true
+    },
+    {
+      "suite": "coast30_gate_selftest",
+      "pass": true
+    },
+    {
+      "suite": "web_hmi_control_access_selftest",
+      "pass": true
+    },
+    {
+      "suite": "vbus_calibration_identity_selftest",
+      "pass": true
+    }
+  ],
+  "hardware_commands": 0,
+  "scope": "Existing command, trial, authentication and calibration tests against prepared HMI"
+}

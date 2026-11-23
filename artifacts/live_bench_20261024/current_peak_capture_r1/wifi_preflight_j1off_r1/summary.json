@@ -1,0 +1,53 @@
+{
+  "schema": "mic_ai.wifi_telemetry.v1",
+  "pass": false,
+  "checks": {
+    "wifi_status_received": false,
+    "no_http_errors": false,
+    "build_identity_stable": false,
+    "uart_fresh": false,
+    "bp_good_valid": false,
+    "bp_bad_valid": false,
+    "bp_bad_cnt_valid": false,
+    "idle_outputs_off": false,
+    "no_new_uart_errors": false,
+    "vdc_within_limit": false
+  },
+  "samples": 0,
+  "http_errors": [
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable",
+    "HTTPError: HTTP Error 503: Service Unavailable"
+  ],
+  "first_builds": {
+    "fw_build": null,
+    "mc_fw_build": null
+  },
+  "counters": {
+    "bp_good": {
+      "first": null,
+      "last": null
+    },
+    "bp_bad": {
+      "first": null,
+      "last": null
+    },
+    "bp_bad_cnt": {
+      "first": null,
+      "last": null
+    }
+  },
+  "detailed_uart_counters_available": false,
+  "detailed_uart_counters": null,
+  "log_lines": 518,
+  "max_vdc": 20.0,
+  "host_utc": "2026-10-25T09:29:07.488263+00:00",
+  "duration_requested_s": 8.0,
+  "transport": "direct_wifi_http_get_only"
+}

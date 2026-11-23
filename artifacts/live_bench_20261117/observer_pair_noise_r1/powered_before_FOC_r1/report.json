@@ -1,0 +1,131 @@
+{
+  "fw_build": 2026111715,
+  "mc_fw_build": 2026111716,
+  "state": "SAFE",
+  "pwm": 0,
+  "hmi_hv_armed": 0,
+  "estop": 0,
+  "run_id": 0,
+  "vdc": 321.0,
+  "bp_vdc": 321.0,
+  "bp_vbus_valid": 1,
+  "bp_vbus_age_ms": 13,
+  "mc_age_ms": 12,
+  "bp_status": 9,
+  "mc_current_zero_ready": 1,
+  "mc_current_zero_stable": 3,
+  "mc_current_zero_spans": [
+    23,
+    37,
+    27,
+    24
+  ],
+  "mc_zero_history_good": 3,
+  "mc_zero_history_bad": 0,
+  "foc_timing_ready": true,
+  "foc_timing_cases": 64,
+  "foc_timing_fault": 0,
+  "algorithm_fast_cycles": 3827,
+  "algorithm_observer_cycles": 25013,
+  "algorithm_fault": 0,
+  "mc_fault": 5,
+  "bp_fault": 5,
+  "mc_fault_reason": 8,
+  "mc_fault_current_mask": 4,
+  "mc_fault_occurred_mask": 1028,
+  "mc_transport_fault": 0,
+  "mc_bad_cnt": 0,
+  "mc_uart_error_flags": 0,
+  "mc_bad_integrity": 0,
+  "mc_bad_sequence": 0,
+  "rpc_response_timeouts": 0,
+  "rpc_send_timeouts": 0,
+  "observer_trace": {
+    "available": false,
+    "reason": "not_received"
+  },
+  "mc_observer_trace_complete": 0,
+  "mc_observer_trace_bad": 0,
+  "mc_sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 12,
+    "break_irq_enabled": false,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "vdc_range": [
+    321.0,
+    322.0
+  ],
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "03204748-f785-436b-94f5-49bac7a92244",
+      [
+        2026111716,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        2721839430
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 8.422000000020489,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "OFF_timing_ready": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "thresholds_changed": false,
+  "checks": {
+    "pair_correct": true,
+    "outputs_OFF": true,
+    "live_bus": true,
+    "RPC_stable": true,
+    "UART_clean": true,
+    "autozero_ready": true,
+    "SD_HIGH": true,
+    "Break_IRQ_rearmed": false,
+    "MCSDK_active_clear": false,
+    "MCSDK_latches_clear": false,
+    "OFF_timing_ready": true,
+    "trace_receiver_empty": true
+  },
+  "first_Break": {
+    "event_tick_ms": 23742,
+    "pulse": {
+      "fall_sample": 1997,
+      "rise_sample": 89794,
+      "from_us": -10.200000000000001,
+      "to_us": 17549.2,
+      "left_censored": false,
+      "right_censored": false,
+      "pulse_complete": true,
+      "width_samples": 87797,
+      "width_us": 17559.4
+    }
+  },
+  "same_boot_as_unpowered_preflight": true,
+  "SD_first_record_unchanged": true,
+  "start_ready_now": false,
+  "blockers": [
+    "Break_IRQ_rearmed",
+    "MCSDK_active_clear",
+    "MCSDK_latches_clear"
+  ]
+}

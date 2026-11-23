@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "source": "actual native C controller/observer adapter and double precision flux plant",
+  "nominal_period_cycles": 10624,
+  "observer_wall_cycles_from_last_capture": 117645,
+  "queue_cycles_from_last_capture": 62522,
+  "accounting_delay_cycles_injected": 446,
+  "injected_accounting_delay_is_hypothesis": true,
+  "IRQ_events_and_main_schedule_are_simulated": true,
+  "ADC_is_quantized_plant_not_physical_capture": true,
+  "measured_CPU_timing_not_replaced_by_simulation": true,
+  "adverse_unpaired_maxima_not_a_measured_combination": true,
+  "hardware_5s_still_pending": true,
+  "guards_unchanged": true,
+  "results": {
+    "legacy": {
+      "completed_5s": false,
+      "PWM_duration_s": 0.00299974706,
+      "elapsed_with_accounting_s": 0.00299974706,
+      "frames": 49,
+      "observer_calls": 2,
+      "fault": 3,
+      "reason": 4,
+      "peak_plant_A": 0.00393385854,
+      "estimate_limit_ms": 2
+    },
+    "candidate": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "elapsed_with_accounting_s": 5.00052935,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.536747197,
+      "estimate_limit_ms": 2
+    },
+    "overload": {
+      "completed_5s": false,
+      "PWM_duration_s": 0.00340781176,
+      "elapsed_with_accounting_s": 0.00340781176,
+      "frames": 34,
+      "observer_calls": 1,
+      "fault": 3,
+      "reason": 4,
+      "peak_plant_A": 0.00370222804,
+      "estimate_limit_ms": 2
+    },
+    "adverse_unpaired_maxima": {
+      "completed_5s": false,
+      "PWM_duration_s": 0.00211742353,
+      "elapsed_with_accounting_s": 0.00211742353,
+      "frames": 34,
+      "observer_calls": 1,
+      "fault": 3,
+      "reason": 4,
+      "peak_plant_A": 0.00370222804,
+      "estimate_limit_ms": 2
+    }
+  }
+}

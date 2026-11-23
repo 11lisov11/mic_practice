@@ -6,12 +6,13 @@ import shutil
 import subprocess
 import tempfile
 
-from prepare_mcsdk_logic_bench import FIXTURE_STATE
+from prepare_mcsdk_logic_bench import fixture_state
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--outdir", type=Path, required=True)
+    parser.add_argument("--max-bus-v", type=int, choices=(2, 10), default=2)
     args = parser.parse_args()
     out = args.outdir.resolve()
     out.mkdir(parents=True, exist_ok=False)
@@ -84,7 +85,10 @@ int main() {
 }
 '''
     unit = out / "fixture_test.cpp"
-    unit.write_text(preamble + FIXTURE_STATE + cases)
+    cases = cases.replace("voltage>2", f"voltage>{args.max_bus_v}").replace(
+        "voltage<=2", f"voltage<={args.max_bus_v}").replace(
+        "observed_v=3;", f"observed_v={args.max_bus_v + 1};")
+    unit.write_text(preamble + fixture_state(args.max_bus_v) + cases)
     compiler = shutil.which("g++")
     if not compiler:
         raise RuntimeError("g++ required")
@@ -98,6 +102,7 @@ int main() {
         run = subprocess.run([str(exe)], capture_output=True, text=True)
         (out / "run.log").write_text(run.stdout + run.stderr)
     report = {"pass": run.returncode == 0, "raw_values_tested": 1000, "filtered_voltages_tested": 451,
+              "fixture_bus_limit_v": args.max_bus_v,
               "scope": "host fixture interlock test; not a physical voltage injection"}
     (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report))

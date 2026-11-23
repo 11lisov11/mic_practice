@@ -1,0 +1,182 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -24,6 +24,7 @@
+ typedef struct {
+   float integral[2],speed_integral,time_s,shift,last_va,last_vb;
+   uint32_t faults,adaptive_steps;
++  uint8_t preflux; /* 0 unused, 1 stationary frame, 2 handed over */
+ } ma_controller;
+ typedef struct {
+   uint32_t arr,latest,settle,acquire,min_pulse,deadtime_ticks;
+@@ -275,9 +276,9 @@
+   out->vb=(out->duty[1]-out->duty[2])*bus*.5773502692f;
+   return MA_OK;
+ }
+-static inline __attribute__((always_inline)) int ma_control_checked(ma_controller*c,const ma_motor*m,const float*x,
++static inline __attribute__((always_inline)) int ma_control_with_speed_admission(ma_controller*c,const ma_motor*m,const float*x,
+     const ma_geometry*g,int algorithm,float ia,float ib,float reference_hz,
+-    float bus,float dt,int fresh,ma_output*out,int model_ok){
++    float bus,float dt,int fresh,ma_output*out,int model_ok,int speed_ready){
+   memset(out,0,sizeof(*out));
+   int fault=MA_OK;
+   if(!model_ok||!isfinite(ia)||!isfinite(ib)||!isfinite(reference_hz)||
+@@ -290,20 +291,37 @@
+   if(fault){c->faults++;out->fault=(uint8_t)fault;return fault;}
+   c->time_s+=dt;
+   const float flux=ma_control_norm(x[2],x[3]);
+-  const float c0=flux>.0001f?x[2]/flux:1.f,s=flux>.0001f?x[3]/flux:0.f;
++  /* Establish rotor flux along a commanded stator axis. An unsettled EKF
++   * angle must not rotate the magnetizing current during the initial start.
++   * A later loss of speed admission must not switch the current frame back. */
++  if(!speed_ready&&c->preflux==0U)c->preflux=1U;
++  const int stationary=!speed_ready&&c->preflux==1U;
++  const int rotate=!stationary&&flux>.0001f;
++  const float c0=rotate?x[2]/flux:1.f,s=rotate?x[3]/flux:0.f;
++  if(speed_ready&&c->preflux==1U){
++    /* Transport the existing stator voltage integral into the admitted dq
++     * frame so that switching coordinates does not step its voltage. */
++    const float a=c->integral[0],b=c->integral[1];
++    c->integral[0]=c0*a+s*b;
++    c->integral[1]=-s*a+c0*b;
++    c->preflux=2U;
++  }
+   const float id=c0*ia+s*ib,iq=-s*ia+c0*ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
++  /* A provisional flux can establish magnetization, but an unqualified
++   * speed must not command torque or enter speed feed-forward. */
++  const float omega = speed_ready ? x[4] : 0.f;
+   float iqref=0;
+-  if(c->time_s<.35f)c->speed_integral=0;
++  if(c->time_s<.35f||!speed_ready)c->speed_integral=0;
+   else {
+   const float iqmax=sqrtf(ma_max2(0,m->current_limit*m->current_limit-idref*idref));
+   const float omega_ref=reference_hz*6.2831853072f/m->poles;
+-  const float speederr=omega_ref-x[4],kp=2*m->j*m->speed_bw,ki=m->j*m->speed_bw*m->speed_bw;
++  const float speederr=omega_ref-omega,kp=2*m->j*m->speed_bw,ki=m->j*m->speed_bw*m->speed_bw;
+   const float tqgain=1.5f*m->poles*m->lm/m->lr*ma_max2(flux,.025f);
+   const float raw=kp*speederr+c->speed_integral;
+   iqref=ma_clip(raw/tqgain,-iqmax,iqmax);
+   /* No regenerative torque request without a commissioned brake path. */
+-  if(x[4]>0&&iqref<0)iqref=0;
++  if(omega>0&&iqref<0)iqref=0;
+   if(c->time_s>=.35f){
+     c->speed_integral+=dt*(ki*speederr+m->speed_bw*(tqgain*iqref-raw));
+     c->speed_integral=ma_clip(c->speed_integral,-2*tqgain*m->current_limit,2*tqgain*m->current_limit);
+@@ -311,10 +329,10 @@
+   }
+   const float err[2]={idref-id,iqref-iq};
+   const float kr=m->lm/m->lr,ar=m->rr/m->lr,l=m->ls-kr*m->lm;
+-  const float sync=ma_clip(m->poles*x[4]+ar*m->lm*iq/ma_max2(flux,.025f),-600,600);
++  const float sync=stationary?0.f:ma_clip(m->poles*omega+ar*m->lm*iq/ma_max2(flux,.025f),-600,600);
+   const float res=m->rs+kr*ar*m->lm;
+   const float ff[2]={res*id-kr*ar*flux-sync*l*iq,
+-    res*iq+kr*m->poles*x[4]*flux+sync*l*id};
++    res*iq+kr*m->poles*omega*flux+sync*l*id};
+   float dq[2]={ff[0]+l*m->current_bw*err[0]+c->integral[0],
+                ff[1]+l*m->current_bw*err[1]+c->integral[1]};
+   const float limit=.90f*bus*.5773502692f,mag=ma_control_norm(dq[0],dq[1]);
+@@ -348,6 +366,12 @@
+   c->integral[1]+=dt*m->current_bw*(-s*(out->va-requested_a)+c0*(out->vb-requested_b));
+   c->last_va=out->va;c->last_vb=out->vb;out->valid=1;return MA_OK;
+ }
++static inline __attribute__((always_inline)) int ma_control_checked(ma_controller*c,
++    const ma_motor*m,const float*x,const ma_geometry*g,int algorithm,float ia,float ib,
++    float reference_hz,float bus,float dt,int fresh,ma_output*out,int model_ok){
++  return ma_control_with_speed_admission(c,m,x,g,algorithm,ia,ib,reference_hz,bus,dt,
++    fresh,out,model_ok,1);
++}
+ /* General callers validate the model here. The native IRQ uses the result
+  * of the identical validation already performed in that SAME IRQ invocation;
+  * no result is cached between frames and no foreground mutation can intervene. */
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -56,7 +56,7 @@
+ static ma_controller controller;
+ /* Single foreground writer; highest-priority TIM1 reader cannot be preempted
+  * by that writer. Only a complete inactive slot is published, in one store. */
+-typedef struct {float x[6];uint32_t stamp;} ma_estimate_slot;
++typedef struct {float x[6];uint32_t stamp;uint8_t speed_ready;} ma_estimate_slot;
+ static ma_estimate_slot estimate_slot[2];
+ static uint32_t estimate_index;
+ static volatile uint32_t estimate_cycles;
+@@ -68,20 +68,22 @@
+  __atomic_store_n(&estimate_index,0,__ATOMIC_RELEASE);estimate_cycles=stamp;
+  ma_observer_stage=EP_IDLE;ma_observer_done_cycles=ma_commit_mark_cycles=ma_input_bin=0;
+ }
+-static int ma_estimate_publish(const float*x,uint32_t stamp){
++static int ma_estimate_publish(const float*x,uint32_t stamp,uint8_t speed_ready){
+  if(run_fault||!LL_TIM_IsEnabledAllOutputs(TIM1))return 0;
+  unsigned next=__atomic_load_n(&estimate_index,__ATOMIC_RELAXED)^1U;
+  ma_observer_stage=EP_COPY;
+  for(unsigned i=0;i<6;++i)estimate_slot[next].x[i]=x[i];
+  estimate_slot[next].stamp=stamp;
++ estimate_slot[next].speed_ready=speed_ready;
+  __DMB();if(run_fault||!LL_TIM_IsEnabledAllOutputs(TIM1))return 0;
+  ma_commit_mark_cycles=DWT->CYCCNT;
+  __atomic_store_n(&estimate_index,next,__ATOMIC_RELEASE);
+  estimate_cycles=stamp;ma_observer_stage=EP_COMMITTED;return 1;
+ }
+-static uint32_t ma_estimate_read(float*x){
++static uint32_t ma_estimate_read(float*x,uint8_t*speed_ready){
+  unsigned index=__atomic_load_n(&estimate_index,__ATOMIC_ACQUIRE);
+  for(unsigned i=0;i<6;++i)x[i]=estimate_slot[index].x[i];
++ *speed_ready=estimate_slot[index].speed_ready;
+  return estimate_slot[index].stamp;
+ }
+ 
+@@ -334,10 +336,12 @@
+   float endpoint_estimate[6];
+   if(!fault)fault=ow_forecast(&model,observer.x,window.tail_va,window.tail_vb,
+     (float)(stamp-window.center)/SystemCoreClock,endpoint_estimate);
++  const uint8_t speed_ready=(uint8_t)(!fault&&observer.steps>=500U&&observer.nis<25.f&&
++    hypotf(observer.x[2],observer.x[3])>model.flux*.5f);
+   ma_observer_done_cycles=DWT->CYCCNT;
+   /* Publish a successfully calculated state before IRQ/performance bookkeeping.
+    * Its age remains anchored to the measured input bin, never to this instant. */
+-  int published=!fault&&ma_estimate_publish(endpoint_estimate,stamp);
++  int published=!fault&&ma_estimate_publish(endpoint_estimate,stamp,speed_ready);
+   if(!fault)observer_center_cycles=window.center;
+   ma_observer_stage=published?EP_ACCOUNTING:EP_ABORTED;
+   ft_clock clock_end=ma_clock_snapshot();ft_measure(&ma_perf,clock_begin,clock_end);
+@@ -381,7 +385,7 @@
+    * sample, bounded by the same age limit. Invalid completed samples still stop. */
+   if(got&&sample.valid&&sample.zero)cached_sample=sample;
+   else if(!got&&cached_sample.valid){sample=cached_sample;got=1;}
+-  float x[6];uint32_t est_cycles=ma_estimate_read(x);
++  float x[6];uint8_t speed_ready;uint32_t est_cycles=ma_estimate_read(x,&speed_ready);
+   const int coherent=1; /* whole published slot, no odd-sequence fallback */
+   int fresh=got&&sample.valid&&sample.zero&&
+     (uint32_t)(begin-sample.cycles)<SystemCoreClock*3U/16000U&&
+@@ -409,9 +413,9 @@
+   const int model_ok=qualification==FE_ESTIMATED||ma_motor_valid(&model);
+   int fault;
+   if(qualification==FE_ESTIMATED){
+-    fault=ma_control_checked(&controller,&fe_control_model,x,&g,selected,ma_amps(sample.counts[0]),
++    fault=ma_control_with_speed_admission(&controller,&fe_control_model,x,&g,selected,ma_amps(sample.counts[0]),
+     (ma_amps(sample.counts[0])+2.f*ma_amps(sample.counts[1]))*.5773502692f,
+-    reference_hz,VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super),1.f/16000U,fresh,&out,model_ok);
++    reference_hz,VBS_GetAvBusVoltage_V(&BusVoltageSensor_M1._Super),1.f/16000U,fresh,&out,model_ok,speed_ready);
+   }else{
+     fault=ma_control_checked(&controller,&model,x,&g,selected,ma_amps(sample.counts[0]),
+     (ma_amps(sample.counts[0])+2.f*ma_amps(sample.counts[1]))*.5773502692f,
+@@ -632,8 +636,9 @@
+    (uint16_t)fe_test_bus,fe_test_ia,fe_test_ib,&av,&bv);
+  fe_applied_a=av;fe_applied_b=bv;
+  const int model_ok=fe_model_exact(&model);
+- fe_rc=avrc?avrc:ma_control_checked(&fe_test_controller,&fe_control_model,fe_test_x,&fe_test_geometry,MA_FOC,
+-   fe_test_ia,fe_test_ib,fe_test_ref,fe_test_bus,1.f/16000U,1,&fe_test_out,model_ok);
++ volatile uint8_t speed_ready=(uint8_t)(fe_case&1U);
++ fe_rc=avrc?avrc:ma_control_with_speed_admission(&fe_test_controller,&fe_control_model,fe_test_x,&fe_test_geometry,MA_FOC,
++   fe_test_ia,fe_test_ib,fe_test_ref,fe_test_bus,1.f/16000U,1,&fe_test_out,model_ok,speed_ready);
+  ow_state window_probe=fe_window_seed;ow_bin window_result={0};
+  const int wrc=ow_push_pair(&window_probe,16U*10624U,31875U,
+    fe_test_ia,fe_test_ib,av,bv,&window_result,(uint8_t)(fe_case%3U));
+@@ -701,6 +706,8 @@
+   ow_reset(&fe_window_seed,0);ow_bin discard;
+   for(unsigned n=1;n<16U;++n)(void)ow_push_pair(&fe_window_seed,n*10624U,31875U,
+     fe_test_ia,fe_test_ib,0,0,&discard,(uint8_t)(fe_case%3U));
++  /* Cover entry, sustained preflux, and dq handover in the OFF budget. */
++  fe_test_controller.preflux=(uint8_t)(fe_n%3U);
+   __DMB();fe_pending=1;
+ }
+ 

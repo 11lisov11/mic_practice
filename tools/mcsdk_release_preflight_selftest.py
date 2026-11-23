@@ -76,7 +76,7 @@ def make_project(root: Path) -> None:
         "MotorControl.LLS=0.003\n"
         "MotorControl.LLR=0.003\n"
         "MotorControl.LMS=0.099\n"
-        "MotorControl.WB_UI_INERTIA=0.001\n"
+        "MotorControl.WB_UI_INERTIA=1000\n"
         "PA6.Signal=TIM1_BKIN\n"
         "PA6.GPIO_PuPd=GPIO_PULLUP\n"
         "TIM1.BreakState=TIM_BREAK_ENABLE\n"
@@ -115,7 +115,7 @@ def make_official_style_project(root: Path) -> None:
         "MotorControl.LLS=0.003\n"
         "MotorControl.LLR=0.003\n"
         "MotorControl.LMS=0.099\n"
-        "MotorControl.WB_UI_INERTIA=0.001\n"
+        "MotorControl.WB_UI_INERTIA=1000\n"
         "PA6.Signal=TIM1_BKIN\n"
         "PA6.GPIO_PuPd=GPIO_PULLUP\n"
         "TIM1.BreakState=TIM_BREAK_ENABLE\n"
@@ -211,6 +211,16 @@ def main() -> int:
         profile_path.write_text(json.dumps(profile("nameplate_and_measurement")), encoding="utf-8")
         evidence_path = make_bkin_evidence(root)
         accepted = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        inertia_ioc = root / "motor.ioc"
+        good_inertia = inertia_ioc.read_text(encoding="utf-8")
+        inertia_ioc.write_text(good_inertia.replace("WB_UI_INERTIA=1000", "WB_UI_INERTIA=0.001"), encoding="utf-8")
+        incorrect_inertia = gate.inspect(root, profile_path, root / "Release", evidence_path)
+        incorrect_inertia_rejected = (
+            not incorrect_inertia["pass"]
+            and "config_measured_motor_parameters_mismatch" in
+            incorrect_inertia["checks"]["generated_motor_configuration_matches_profile"]["evidence"]["errors"]
+        )
+        inertia_ioc.write_text(good_inertia, encoding="utf-8")
         artifact_evidence = accepted["checks"]["release_artifacts"]["evidence"]
         artifacts_are_hashed = all(
             entry["bytes"] == 2048 and len(entry["sha256"]) == 64
@@ -311,6 +321,7 @@ def main() -> int:
         "tool": "mcsdk_release_preflight_selftest",
         "pass": (
             accepted["pass"]
+            and incorrect_inertia_rejected
             and artifacts_are_hashed
             and profile_is_hashed
             and vf_accepted["pass"]
@@ -347,6 +358,7 @@ def main() -> int:
             and infinite_model_rejected
         ),
         "accepted_project": accepted["pass"],
+        "si_inertia_written_directly_to_micro_si_field_rejected": incorrect_inertia_rejected,
         "artifacts_are_hashed": artifacts_are_hashed,
         "profile_is_hashed": profile_is_hashed,
         "operator_confirmed_catalog_accepted_for_vf_only": vf_accepted["pass"] and not foc_catalog_rejected["pass"],

@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "preparation_only": true,
+  "build": 2026102804,
+  "errors": 0,
+  "warnings": 0,
+  "hardware_calls": 0,
+  "installed": false,
+  "hardware_tested": false,
+  "RAM_margin_above_reserved_heap_stack": 2688,
+  "individual_diagnostic_stack_frames": {
+    "finish": 80,
+    "guard": 32,
+    "mic_pin_active": 0,
+    "mic_pin_force_abort": 80,
+    "mic_pin_init": 8,
+    "mic_pin_break": 0,
+    "mic_pin_irq": 272,
+    "mic_pin_poll": 280
+  },
+  "host_negative_cases": 73,
+  "native_checks": 833777,
+  "old_archived_files_verified": 461,
+  "normal_MCSDK_UV_not_masked": true,
+  "physical_TIM1_BKIN_deadtime_unchanged": true,
+  "source_scope": "Native MCSDK OFF/FAULT owns non-routed TIM8; independent one-shot TIM1 generator uses original six pins",
+  "stages": [
+    "1s baseline",
+    "2s real16kHz fixed PWM",
+    "2s real16kHz VF-modulated PWM"
+  ],
+  "limitations": [
+    "Target waveform/timing/I2C results pending one separately invoked5s capture",
+    "Not normal motor RUN, no powered inverter",
+    "WL not recorded with retained Saleae probe map"
+  ],
+  "install_command": "python tools/full_mcsdk_edges_host.py install --isolation-confirmed --outdir <new-folder>",
+  "status_command": "python tools/full_mcsdk_edges_host.py status --isolation-confirmed --outdir <new-folder>",
+  "run_command": "python tools/full_mcsdk_edges_host.py run --isolation-confirmed --allow-one-5s-fixture-request --outdir <new-folder>"
+}

@@ -1,0 +1,20 @@
+{
+  "source": "UM2014 Rev3 page 7 schematic; viewed existing um2014_powerstage_rotated.png",
+  "J4_2": "+15V",
+  "J4_1": "GND",
+  "TP11": "+15V NOT GND",
+  "TP23": "SD",
+  "requested_VDC": [
+    "J4-2 relative J4-1",
+    "TP23 relative J4-1",
+    "Nucleo PA6 CN10-13 relative CN7-19"
+  ],
+  "requires_meter_bus_below20V_before_moving_probes": true,
+  "commands_sent": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "source": "operator_messages",
+  "motor_observation": {
+    "exact_reply": "Да, ровно, ускорение заметно",
+    "smooth_rotation_reported": true,
+    "acceleration_visible_reported": true,
+    "rotor_speed_measured": false
+  },
+  "j4_supply_observation": {
+    "exact_message": "Если что, при максимальном, как я увидел, был топ потребления ватт — это 0.1 и сколько-то там ватта было при напряжении 15 вольт. Это потребление платы, ну, где-то там 15 вольт.",
+    "reported_voltage_v_approx": 15,
+    "reported_power_w_approx": 0.1,
+    "exact_value_and_display_units_verified": false,
+    "current_if_exactly_0_1w_at_15v_ma": 6.666666666666667,
+    "limitation": "Approximate operator display observation; not a measurement of transient driver-supply voltage or motor power."
+  }
+}

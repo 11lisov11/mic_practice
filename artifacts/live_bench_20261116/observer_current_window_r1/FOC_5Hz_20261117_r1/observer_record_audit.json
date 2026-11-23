@@ -1,0 +1,114 @@
+{
+  "passed": true,
+  "collection_is_GET_only": true,
+  "motor_commands": 0,
+  "bytes": 1888,
+  "SHA256": "d99200c913cfed5d416e1d579d762fefeb4600b5129642fdde06f50c4df09f7e",
+  "samples": 11,
+  "total_observer_samples": 4978,
+  "valid_samples": 3546,
+  "invalid_samples": 1432,
+  "first_loss": {
+    "cycles": 273862486,
+    "steps": 562,
+    "reason_mask": 32,
+    "estimate_valid": false,
+    "reasons_ru": [
+      "NIS не меньше 25"
+    ],
+    "control_sample_sequence": 30776076,
+    "control_adc_cycles": 273752190,
+    "observer_sample_sequence": 30776076,
+    "observer_adc_cycles": 273752190,
+    "bin_cycles": 273752190,
+    "rpm_est": -129.1167755126953,
+    "flux_alpha_wb": 0.1858351081609726,
+    "flux_beta_wb": -0.1318315714597702,
+    "flux_wb": 0.22784698957579597,
+    "nis": 25.87227439880371,
+    "id_A": 0.5438355803489685,
+    "iq_A": 0.592207133769989,
+    "id_ref_A": 0.5055840611457825,
+    "iq_ref_A": 0.5435851812362671,
+    "reference_hz": 0.9000000357627869,
+    "observer_ia_A": 0.7560940384864807,
+    "observer_ib_A": 0.12150866538286209,
+    "input_va_V": 8.761491775512695,
+    "input_vb_V": 4.929203510284424,
+    "dt_s": 0.0009998470777645707,
+    "observer_fault": 0,
+    "published": true,
+    "predicted_current_A": [
+      0.6690765023231506,
+      0.18311119079589844
+    ],
+    "innovation_A": [
+      0.08701753616333008,
+      -0.062279410660266876
+    ],
+    "innovation_variance_A2": [
+      0.000442654883954674,
+      0.00044245956814847887
+    ],
+    "NIS_components": [
+      17.105993572888725,
+      8.766281195864106
+    ],
+    "endpoint_active_CCR": [
+      2919,
+      2534,
+      2393
+    ],
+    "endpoint_bus_V": 321,
+    "endpoint_arr": 5312,
+    "observation_cycles": 273672497,
+    "window_first_cycles": 273592882,
+    "window_count": 16,
+    "forecast_dt_s": 0.0004687823529820889,
+    "published_estimate_cycles": 273752190,
+    "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+    "innovation_kind": "sequential_conditional",
+    "conditional_predicted_current_A": [
+      0.6690765023231506,
+      0.18378807604312897
+    ]
+  },
+  "control_fault": 0,
+  "boot_after_collection": {
+    "identity": [
+      2026111612,
+      1,
+      201326592,
+      0,
+      4,
+      0,
+      3713711204
+    ],
+    "Linux_boot_id": "dcb72e9f-4540-4cdd-8583-e4ff551d80e4",
+    "native_tick_ms": 972335,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111612,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 3713711204,
+      "native_tick_ms": 972335,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae90101007c02c478010000000000000c00000000040000000000000064bc5add2fd60e0000e70f0ea0"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "mic.uart_v3_offline_summary.v1",
+  "pass": true,
+  "checks": {
+    "regression_36": true,
+    "current_sources_match_regression": true,
+    "generated_nucleo_matches_tested_source": true,
+    "generated_uno_matches_tested_source": true,
+    "critical_pwm_code_equal": true,
+    "mutex_elf_layout": true
+  },
+  "hardware_commands": 0,
+  "boards_flashed": false,
+  "flash_ready": false,
+  "hv_release_approved": false,
+  "protocol_version": 3,
+  "frame_bytes": 43,
+  "candidate_uno_build": 2026101004,
+  "candidate_nucleo_build": 2026101003,
+  "artifacts": [
+    {
+      "path": "C:\\mic_practice\\artifacts\\live_bench_20261010\\uart_v3_candidate\\firmware_r3\\uno_build\\UNOQ_MOTOR.ino.elf-zsk.bin",
+      "bytes": 131444,
+      "sha256": "a8c1dce723fd7c70f866c8ac096e884490e3b364aa4dbf0f3ba6e277a94efb2c"
+    },
+    {
+      "path": "C:\\mic_practice\\artifacts\\live_bench_20261010\\uart_v3_candidate\\firmware_r3\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "bytes": 43044,
+      "sha256": "937b2f0b204ac94141340a3b2da92276c4604b3875593683b04c0ac181f07264"
+    }
+  ],
+  "pending": [
+    "Explicit disconnected mains/J4-off and discharged-bus confirmation",
+    "Coordinated pair installation and zero-bus Wi-Fi qualification",
+    "HMI identity/calibration migration and low-voltage PWM verification"
+  ],
+  "evidence": "regression_r3/report.json",
+  "documentation": "C:/mic_practice/docs/uart_v3_candidate.md"
+}

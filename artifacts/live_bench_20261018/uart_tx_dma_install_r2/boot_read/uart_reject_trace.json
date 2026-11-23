@@ -1,0 +1,55 @@
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "reason": "saved_command_reject",
+    "schema": 1,
+    "records": [
+      {
+        "tick_ms": 2277,
+        "reason_code": 2,
+        "length": 1,
+        "speculative_prefix": 0,
+        "uart_flags": 0,
+        "last_committed_sequence": 201,
+        "budget_used": 1,
+        "recoverable_losses": 0,
+        "dropped_before": 0,
+        "last_valid_ms": 2149,
+        "candidate_started_ms": 2146,
+        "receiver_flags": 1,
+        "raw_hex": "2a",
+        "marks_hex": "00",
+        "full_frame_crc_matches": null,
+        "stored_crc": null,
+        "calculated_crc": null
+      },
+      {
+        "tick_ms": 2450,
+        "reason_code": 7,
+        "length": 0,
+        "speculative_prefix": 0,
+        "uart_flags": 0,
+        "last_committed_sequence": 201,
+        "budget_used": 1,
+        "recoverable_losses": 1,
+        "dropped_before": 1,
+        "last_valid_ms": 2149,
+        "candidate_started_ms": 2146,
+        "receiver_flags": 1,
+        "raw_hex": "",
+        "marks_hex": "",
+        "full_frame_crc_matches": null,
+        "stored_crc": null,
+        "calculated_crc": null
+      }
+    ],
+    "speculative_prefix_expiries": 0,
+    "summary_ru": "UART Uno→Nucleo: неполный кандидат/синхронизация (0 байт); причина 7, бюджет 1/2. Сырые байты сохранены.",
+    "physical_cause_identified": false,
+    "limitations": [
+      "Parser observation times, not electrical edge timestamps",
+      "Only the latest recovered rejection and first fatal rejection are retained until peer reset"
+    ]
+  }
+}

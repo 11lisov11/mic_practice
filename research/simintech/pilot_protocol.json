@@ -1,0 +1,93 @@
+{
+  "schema": "mic_ai.simintech_pilot.v1",
+  "date": "2026-11-22",
+  "status": "PROPOSED_NOT_EXECUTED_IN_SIMINTECH",
+  "purpose": "Independent dynamic validation of the existing ACIM observer and MIK flux adaptation",
+  "first_motor": "AIR56B2; one frozen parameter profile from the existing project",
+  "second_motor": "Current motor-wheel P3 profile, after AIR56B2 pilot acceptance",
+  "existing_bench_scope": "read_only_document_review_no_firmware_or_hardware_actions",
+  "source": {
+    "transcript_path": "C:/Users/USER/Downloads/Telegram Desktop/Транскрипция_Основы_моделирования_электроприводов_в_SimInTech.txt",
+    "transcript_sha256": "744f6a0b7e2b661dc652c934df13dd92729385be949c37906e0e95ff0a267598",
+    "seminar_date": "2026-11-19",
+    "relevant_timestamps": ["00:28:14", "00:32:58", "00:47:16", "00:51:06", "01:10:07", "01:11:11", "01:13:23", "01:15:56", "01:21:11"]
+  },
+  "engine_qualification": {
+    "installation_tested": false,
+    "native_project_created": false,
+    "license_modules_verified_on_host": false,
+    "api_supported_in_documentation": "Windows COM",
+    "documented_cli_options": ["/silentmode", "/macros", "/exitonstop", "/run"],
+    "required_modules_to_check": ["subsystem_mbty", "library_edrives", "library_elec_dynamic", "library_mech"],
+    "optional_later_module": "subsystem_cgen",
+    "demo_general_template_limits": {
+      "blocks": 250,
+      "differential_equations": 30,
+      "code_generation_blocks": 200
+    },
+    "parallel_processes": "one until license terms and process isolation are verified"
+  },
+  "model_layers": [
+    "battery_or_bench_DC_source_and_inverter",
+    "ACIM_and_mechanical_load",
+    "sampled_measurement_chain",
+    "discrete_FOC_and_sensorless_observer",
+    "slower_MIK_flux_supervisor",
+    "independent_truth_logger_and_metric_audit"
+  ],
+  "units_contract": {
+    "alpha_beta_dq": "amplitude_invariant_peak_SI",
+    "motor_connection": "explicit_physical_connection_and_equivalent_model_separate",
+    "pole_count": "pole_pairs_p; never substitute_total_poles",
+    "time": "seconds_with_explicit_ADC_controller_and_PWM_update_timestamps",
+    "speed": "mechanical_rad_per_s; electrical_frequency_and_slip_separate",
+    "parameters": "measured_derived_and_assumed_sources_separate",
+    "energy": "joules; input_equals_losses_useful_work_and_change_of_stored_energy"
+  },
+  "observer_contract": {
+    "realistic_allowed_inputs": ["measured_stator_currents", "measured_DC_bus_voltage", "previous_PWM_duties", "measurement_and_actuation_timestamps", "explicit_nominal_parameter_profile"],
+    "voltage_reconstruction": "from the same measurements and PWM history available on hardware, with calibrated corrections",
+    "optional_phase_voltage_measurement": "only if the hardware signal is actually available and characterized",
+    "prohibited_controller_inputs": ["true_speed", "true_rotor_angle", "true_rotor_flux", "actual_hidden_load_torque", "true_temperature_dependent_plant_parameters", "exact_unmeasured_applied_motor_voltage"],
+    "truth_access": "metric_logger_only",
+    "ideal_applied_voltage_case": "separate_oracle_diagnostic_not_a_realistic_sensorless_result",
+    "reference_encoder": "validation_only; excluded_from_sensorless_controller"
+  },
+  "stages": [
+    {"id": "A", "goal": "Match averaged plant and energy balance to frozen Python reference; verify units and initial states"},
+    {"id": "B", "goal": "Add actual PWM timing, dead-time, semiconductor drops, DC ripple and ADC errors; demonstrate solver convergence"},
+    {"id": "C", "goal": "Run existing observer with fixed gains and no hidden-state inputs; compare against truth"},
+    {"id": "D", "goal": "Evaluate FOC and MIK at equal useful work, initial and final stored energy, with all adaptation costs"},
+    {"id": "E", "goal": "Qualify CLI or COM adapter, export, run manifests and repeatability before agent-driven searches"}
+  ],
+  "diagnostic_cases": {
+    "existing_Vf_stator_frequency_cases_hz": [5, 15, 30, 45],
+    "low_frequency_5Hz": "explicit_diagnostic; excluded_from_existing_moderate_speed_gate; new_success_criteria_must_be_locked_before_tuning",
+    "additional_cases": ["load_step", "preflux_and_acceleration", "low_frequency_crossing", "flux_reduction", "DC_bus_sag", "temperature_Rs_Rr_mismatch", "magnetizing_curve_mismatch", "ADC_offset_gain_quantization", "sample_delay_and_PWM_update_delay", "measurement_dropout_and_fallback"],
+    "scenario_values": "freeze_from_existing_profiles_or_explicit_assumptions_before_first_optimization; not_hardware_commands"
+  },
+  "timing": {
+    "controller_step": "from frozen active hardware timing profile",
+    "plant_step": "resolve PWM edges and dead-time; compare h, h/2 and h/4",
+    "ZOH_and_computation_delay": "explicit",
+    "supervisor_step": "separate slower task, frozen per experiment",
+    "MCU_cycle_budget": "existing project acceptance budget remains unchanged; simulator_runtime_is_not_MCU_WCET"
+  },
+  "losses": {
+    "stator_and_rotor_copper": "included with explicit temperature laws",
+    "saturation": "measured or clearly labeled assumed curve",
+    "iron_loss": "physical current-carrying loss branch or validated equivalent, not only an additive power number",
+    "semiconductor_static": "from a selected device model",
+    "switching_energy": "explicit model and device data required before efficiency claims",
+    "probe_energy": "included in MIK comparison"
+  },
+  "metrics": ["speed_error_abs_rad_s", "speed_error_normalized_by_fixed_rated_speed", "flux_or_angle_error_when_defined", "observer_capture_time_s", "loss_of_lock_count", "false_valid_fraction", "current_voltage_margins", "useful_work_J", "DC_input_energy_J", "probe_energy_J", "initial_final_magnetic_and_kinetic_energy_J", "power_balance_residual", "step_refinement_sensitivity", "fallback_duration_s"],
+  "evidence_requirements": ["engine_version", "active_license_modules", "native_model_hashes", "controller_source_hash", "parameter_provenance", "solver_and_timing_settings", "random_seed", "train_validation_split", "exported_timestamped_traces", "independent_metric_calculation", "truth_input_isolation", "no_change_to_existing_hardware_acceptance_thresholds"],
+  "acceptance": {
+    "numeric_tolerances": "to_be_locked_after_baseline_convergence_before_algorithm_tuning",
+    "sensorless_success": "requires_true_state_accuracy_and_reliable_validity; positive_valid_alone_is_insufficient",
+    "energy_success": "requires_equal_useful_work_and_stored_energy_accounting",
+    "novelty_claim": false,
+    "hardware_release_authorized_by_simulation": false
+  }
+}

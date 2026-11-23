@@ -1,0 +1,134 @@
+{
+  "passed": true,
+  "pair": [
+    2026112309,
+    2026112310
+  ],
+  "hardware_commands": 0,
+  "installed": false,
+  "measured_rotation_verified": false,
+  "saved_run_magnetization": {
+    "first_check_ms": 144542,
+    "checks": 729,
+    "in_band": 0,
+    "id_counts": {
+      "min": -488,
+      "max": 359,
+      "last": -165,
+      "reference": 843,
+      "low": 590,
+      "high": 1095
+    },
+    "last_iq_counts": -91,
+    "iq_ref_counts": 0,
+    "final_streak": 0,
+    "max_streak": 0
+  },
+  "qualified_start": {
+    "handoff_ms": 58,
+    "handoff_flux_equivalent_A": 0.3553476333618164,
+    "result": {
+      "start_ms": 3514,
+      "end_ms": 8514,
+      "magnetization": {
+        "first_check_ms": 3516,
+        "checks": 29,
+        "in_band": 28,
+        "id_counts": {
+          "min": 589,
+          "max": 843,
+          "last": 843,
+          "reference": 843,
+          "low": 590,
+          "high": 1095
+        },
+        "last_iq_counts": 0,
+        "iq_ref_counts": 0,
+        "final_streak": 10,
+        "max_streak": 10
+      },
+      "entered_run": true,
+      "run_enter_ms": 3572,
+      "run_checks": 2469,
+      "ramp_command_state": 2,
+      "speed_target_hz": 5.0,
+      "speed_ref_hz": 5.0,
+      "max_speed_ref_hz": 5.0,
+      "iq_ref_max_counts": 1033,
+      "last_run_id_counts": 843,
+      "last_run_iq_counts": 0,
+      "terminal_state": 8,
+      "terminal_faults": 0,
+      "stop_reason": 1
+    }
+  },
+  "closed_loop_plant": {
+    "handoff_ms": 58,
+    "simulated_peak_A": 0.5150891485111496,
+    "handoff_flux_equivalent_A": 0.3574120104312897,
+    "speed_checkpoints": [
+      {
+        "time_ms": 1000,
+        "simulated_rpm": 258.0279960014553,
+        "observer_rpm": 252.0
+      },
+      {
+        "time_ms": 2000,
+        "simulated_rpm": 305.25688347979764,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 3000,
+        "simulated_rpm": 305.9683782573867,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 4000,
+        "simulated_rpm": 305.42924922098865,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 5000,
+        "simulated_rpm": 305.02469263868403,
+        "observer_rpm": 300.0
+      }
+    ],
+    "stop_ms": 5000,
+    "scope": "calculated unloaded motor, averaged voltage"
+  },
+  "guard_causes": [
+    "sd_low",
+    "break_irq_disabled",
+    "break_flag",
+    "bus_out_of_range"
+  ],
+  "off_cases": 64,
+  "off_max_emulator_instructions": 706,
+  "actual_target_DWT_pending": true,
+  "stack_headroom_bytes": 3112,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "guards": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "preserved_files": 860,
+  "web_hmi_sha256": "bc0ac8ed280e98c4f21088b8dd4be11fee2b6cc0e3e6f3132893a15db6a97454",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "badb001366572b40f3f956359d8871fbb93fd94a52a30cda9a81a15173e1c600",
+    "ACIM-AIR56B2-LSO_FOC.elf": "09f5376d7cd74f522a978bddcf72053c39b714612345df59d0f581471d862cf6",
+    "ACIM-AIR56B2-LSO_FOC.hex": "fc34512ef420d0c35ee53feb94650453f554874ebee5335cfd65e2dffa26a9ca",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "9704b56492998e46bf56e7d45d12e3eaf9ff8de5fcaaff6b709b513a17e9eedf"
+  }
+}

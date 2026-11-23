@@ -1,0 +1,30 @@
+{
+  "schema": "mic_ai.local_stop_release_observation.v1",
+  "pass": true,
+  "checks": {
+    "stop_latch_retained_after_operator_confirmed_release": true,
+    "current_stop_cause_displayed": true,
+    "first_fault_snapshot_preserved": true,
+    "outputs_off": true,
+    "reported_bus_zero": true,
+    "no_transport_errors": true
+  },
+  "operator_confirmed_button_released": true,
+  "samples": 11,
+  "observation_requested_s": 10,
+  "transport": "direct_wifi_http_get_only",
+  "clear_commands": 0,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "active_pwm_stop_timing_measured": false,
+  "hv_release_approved": false,
+  "first_fault_fields": {
+    "mc_fault_reason": 8,
+    "mc_uart_error_flags": 0,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 4,
+    "mc_fault_motor_state": 10,
+    "mc_fault_sequence": 227,
+    "mc_fault_tx_status": 0
+  }
+}

@@ -1,0 +1,49 @@
+--- a/nucleo/Src/multi_native.c
++++ b/nucleo/Src/multi_native.c
+@@ -177,7 +177,7 @@
+ static volatile uint32_t bin_control_sequence,bin_control_adc_cycles;
+ static void ma_observer_record(const ma_current_sample*s,uint32_t stamp,uint32_t seq,uint32_t adc,
+  float id,float iq,float idref,float iqref,float reference,float va,float vb,float dt,int fault,int published,const ow_bin*w){
+- if(observer_trace.frozen||!running||!LL_TIM_IsEnabledAllOutputs(TIM1))return;
++ if(observer_trace.frozen||(!fault&&(!running||!LL_TIM_IsEnabledAllOutputs(TIM1))))return;
+  od_sample r;
+  r.cycles=DWT->CYCCNT;r.steps=observer.steps;
+  r.reasons=od_reasons(running,fe_profile_allowed(selected),observer.steps,run_fault||fault,
+@@ -315,11 +315,22 @@
+   int replay_staged=od_replay_stage_pairs(&observer_trace,&observer,&model,window.ia,window.ib,va,vb,dt,window.pair_counts);
+   const uint32_t history_fpscr=od_fpscr();
+   int fault=mic_observer_step(&observer,&model,input,&noise);
+-  int history_event=nh_step(&observer_history,&observer,input,window.pair_counts,history_fpscr,fault,window.center,stamp);
++  nh_step(&observer_history,&observer,input,window.pair_counts,history_fpscr,fault,window.center,stamp);
+   const int replay_was_latched=observer_trace.replay_latched;
+   od_replay_commit(&observer_trace,&observer,fault,replay_staged);
+-  if(history_event||(!replay_was_latched&&observer_trace.replay_latched))
++  /* The startup journal retains early crossings. Reserve the raw NIS
++   * request for the same post-warmup event as the full x/P replay. */
++  if(!replay_was_latched&&observer_trace.replay_latched)
+     mic_current_request_observer_capture(window.first,window.end,observer.steps);
++  /* A numerically successful EKF step can still fail the existing NIS
++   * criterion. Latch the usual observer fault before TIM can consume
++   * this state. Preserve x/P and the rejected sample for replay. */
++  if(!fault&&observer.steps>=500U&&!(observer.nis<25.f)){
++    fault=MA_OBSERVER;
++    ma_fail(MA_OBSERVER);
++    ma_observer_record(&sample,stamp,trace_seq,trace_adc,trace_id,trace_iq,
++      trace_idref,trace_iqref,trace_ref,va,vb,dt,fault,0,&window);
++  }
+   float endpoint_estimate[6];
+   if(!fault)fault=ow_forecast(&model,observer.x,window.tail_va,window.tail_vb,
+     (float)(stamp-window.center)/SystemCoreClock,endpoint_estimate);
+--- a/nucleo/Inc/observer_trace_core.h
++++ b/nucleo/Inc/observer_trace_core.h
+@@ -77,7 +77,9 @@
+  if(!r->reasons){++c->blob.header.valid;c->seen_valid=1;}
+  else{
+   ++c->blob.header.invalid;
+-  if(c->seen_valid&&!c->blob.header.first_loss_present){
++  const int nis_stop=r->observer_fault==MA_OBSERVER&&
++    (r->reasons&(OD_WARMUP|OD_NIS))==OD_NIS;
++  if((c->seen_valid||nis_stop)&&!c->blob.header.first_loss_present){
+    c->blob.first_loss=*r;c->blob.header.first_loss_present=1;c->blob.header.first_loss_step=r->steps;
+   }
+  }

@@ -1,0 +1,31 @@
+{
+  "schema": "mic_ai.passive_working_bus_plan.v1",
+  "tool": "tools/verify_vbus_preserved_points.py",
+  "tool_sha256": "053f7fe085b88c358135eb5617ecec203acaf7b3ec2c59d3d08ae7bb448d63ad",
+  "offline_guard_cases": 20,
+  "installed_pair": [
+    2026101411,
+    2026101410
+  ],
+  "samples": 20,
+  "operator_meter_range_v": [
+    250,
+    360
+  ],
+  "meter_is_new_working_reference_required": true,
+  "old_meter_322_7_must_not_be_reused": true,
+  "original_calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "calibration_writes": 0,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "firmware_writes": 0,
+  "hv_release_approved": false,
+  "physical_preparation_pending": true,
+  "stage": "Observe working DC bus with motor disconnected; no automatic motor start",
+  "unresolved": [
+    "Physical discharge after J4 off must be checked independently",
+    "Saleae remains connected by probes/GND; do not energize HV in this configuration",
+    "Old calibration identity remains unaccepted in HMI; verification does not bypass it"
+  ]
+}

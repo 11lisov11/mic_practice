@@ -1,0 +1,38 @@
+{
+  "stage": "ready_for_operator_powerbank_transition_only",
+  "pair": [
+    2026102709,
+    2026102710
+  ],
+  "target_hz": 5,
+  "mcu_runlimit_ms": 5000,
+  "manual_run": false,
+  "sensor_feedback_control": false,
+  "sensor_owner": "Nucleo I2C1 PB8/PB9",
+  "old_capture_files_sha_verified": 22,
+  "existing_installed_image_sha_verified": true,
+  "motor_commands_so_far": 0,
+  "clear_commands_so_far": 0,
+  "reset_commands_so_far": 0,
+  "flash_commands_so_far": 0,
+  "archive_before_switching": "status_before_switching.json",
+  "next_physical_state": "Both boards on powerbanks, PC USB and all Saleae connections removed,15V ON,J1 OFF; no RESET/START",
+  "check_autonomous_boot_before_J1": true,
+  "powered_trial_command_after_fresh_power_confirmation": [
+    "python",
+    "tools/run_persistent_pe_as5600_5hz.py",
+    "--confirm-powered-ready",
+    "--outdir",
+    "artifacts/live_bench_20261027/i2c_persistent_pe_r1/powered_as5600_5hz_r1"
+  ],
+  "automatic_clear_in_trial": false,
+  "current_transport_latch": 7,
+  "pending_start_requires_clean_UART_and_faults": true,
+  "drive_sd_current_temperature_uart_checks_unchanged": true,
+  "source_file_sha256": {
+    "tools/run_persistent_pe_as5600_5hz.py": "e71231cc55423978f160a33e15767407235db207fd4e9aca5c6535289deb972a",
+    "tools/run_as5600_bounded_5hz.py": "cd18a7a0ac20718a33270ece33b8286adf41d5bb1854b8940740e4bd6909b48f",
+    "tools/current_zero_quality.py": "875ee0d8446171e13d0bf57ae3f19600a64a93ef891821532df3be357a589437",
+    "tools/persistent_pe_trial_selftest.py": "86b9a3141aee3bc55b016e46ae9e528038f47f54fb3419b464fd330921e5c11f"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "installed": false,
+  "physical_noise_source_identified": false,
+  "physical_zero_verified": false,
+  "synthetic_old_failure_reproduced": true,
+  "actual_raw_time_series_available": false,
+  "zero_checks": 9071,
+  "independent_long_double_variance_trials": 3000,
+  "actual_irq_and_peak_checks": 42624,
+  "display_checks": 94539,
+  "frontend_checks": 22,
+  "production_rpc_parser_roundtrip": true,
+  "nucleo_ram_above_min_heap_stack_bytes": 4096,
+  "adc_irq_stack_bytes": 320,
+  "current_packet_stack_bytes": 376,
+  "control_and_running_current_math_unchanged": true,
+  "adc_queue_published_before_statistics": true,
+  "source_changes_beyond_identity": [
+    "nucleo/Inc/current_core.h",
+    "nucleo/Inc/current_shunt.h",
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Src/main.c",
+    "nucleo/STM32CubeIDE/.settings/language.settings.xml",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino",
+    "web_hmi/server.py",
+    "web_hmi/static/app.js"
+  ],
+  "limitation": "Mean uncertainty is an engineering estimate using raw and64-sample-group variances plus three-block consistency; hardware calibration/current scale and actual ISR timing still require measurement.",
+  "sources": [
+    "https://www.st.com/resource/en/application_note/cd00211314-how-to-optimize-the-adc-accuracy-in-the-stm32-mcus-stmicroelectronics.pdf",
+    "https://www.st.com/resource/en/application_note/an5346-stm32g4-adc-use-tips-and-recommendations-stmicroelectronics.pdf"
+  ]
+}

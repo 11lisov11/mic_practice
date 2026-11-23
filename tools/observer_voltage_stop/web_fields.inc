@@ -1,0 +1,1 @@
+                **{k:int(kv.get(k,"0")) for k in ("uno_local_fault","uno_stop_ready","uno_stop_origin","uno_stop_ms","uno_stop_run_id","uno_stop_local_fault","uno_stop_peer_status","uno_stop_peer_fault","uno_stop_reply_age_ms","uno_stop_superseded")},

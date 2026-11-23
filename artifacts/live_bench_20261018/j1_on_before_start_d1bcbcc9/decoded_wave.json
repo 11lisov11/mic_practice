@@ -1,0 +1,120 @@
+{
+  "schema": "mic_ai.offline_bkin_wave_decode.v1",
+  "checks": {
+    "magic": true,
+    "schema": true,
+    "size": true,
+    "period": true,
+    "counts": true,
+    "flags": true,
+    "dma_no_error": true
+  },
+  "header": {
+    "magic": 827214658,
+    "schema": 2,
+    "bytes": 160,
+    "tick_ms": 211254,
+    "sample_period_ns": 1000,
+    "valid_count": 1024,
+    "dma_remaining": 981,
+    "flags": 23
+  },
+  "immutable_record_decoded_offline": true,
+  "received_age_ms": 13927,
+  "complete_ring": true,
+  "sample_count": 1024,
+  "high_samples": 1023,
+  "low_samples": 1,
+  "transition_count": 1,
+  "runs": [
+    {
+      "level": 1,
+      "first_index": 0,
+      "last_index": 1022,
+      "sample_count": 1023,
+      "sample_span_us": 1022,
+      "touches_left_boundary": true,
+      "touches_right_boundary": false
+    },
+    {
+      "level": 0,
+      "first_index": 1023,
+      "last_index": 1023,
+      "sample_count": 1,
+      "sample_span_us": 0,
+      "touches_left_boundary": false,
+      "touches_right_boundary": true
+    }
+  ],
+  "snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": true,
+      "age_ms": 1049,
+      "reason": "recorded",
+      "raw": {
+        "magic": 827019842,
+        "schema": 2,
+        "bytes": 92,
+        "tick_ms": 211254,
+        "tim_sr": 223,
+        "tim_dier": 128,
+        "tim_bdtr": 36911218,
+        "tim_cnt": 752,
+        "tim_arr": 5312,
+        "tim_ccr1": 2656,
+        "tim_ccr2": 2656,
+        "tim_ccr3": 2656,
+        "gpioa_idr": 40964,
+        "context_valid": 1,
+        "context_tick_ms": 211239,
+        "reference_speed_unit": 0,
+        "motor_state": 11,
+        "current_faults": 0,
+        "occurred_faults": 4,
+        "vbus_v": 10,
+        "temperature_deci_c": 480,
+        "command_sequence": 116,
+        "start_window": 0
+      },
+      "event": {
+        "bif": true,
+        "b2if": false,
+        "pa6_high_at_irq": false,
+        "bke_at_irq": true,
+        "moe_at_irq": false,
+        "during_start_request_window": false,
+        "start_window_flag_raw": false,
+        "start_window_flag_stale_after_run": false
+      },
+      "cached_context": {
+        "context_tick_ms": 211239,
+        "reference_speed_unit": 0,
+        "motor_state": 11,
+        "current_faults": 0,
+        "occurred_faults": 4,
+        "vbus_v": 10,
+        "temperature_deci_c": 480,
+        "command_sequence": 116,
+        "age_at_irq_ms": 15,
+        "reference_electrical_hz": 0.0,
+        "temperature_c": 48.0
+      }
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 246,
+      "reason": "no_recorded_break"
+    }
+  ],
+  "commands_sent_during_j1_stage": 0,
+  "limits": [
+    "Times are relative to the final DMA sample before the Break handler; IRQ latency is not measured",
+    "Boundary-truncated LOW intervals do not establish a complete pulse width",
+    "1-us sampling does not resolve sub-microsecond pulses",
+    "This record does not measure J4 supply or phase current and does not identify the physical source"
+  ]
+}

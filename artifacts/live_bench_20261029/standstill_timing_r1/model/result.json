@@ -1,0 +1,29 @@
+{
+  "schema": "mic_ai.acim_standstill_result.v1",
+  "accepted": true,
+  "hardware_commands": 0,
+  "eligible_for_foc_start": false,
+  "mechanical_parameters_identified": false,
+  "errors": [],
+  "source_kind": "synthetic",
+  "absolute_current_scale_qualified": false,
+  "fit_relative_error": 0.0008837099406527663,
+  "validation_relative_error": 0.0018262823246086907,
+  "jacobian_condition": 4.64413559385689,
+  "assumed_relative_impedance_uncertainty": 0.02,
+  "observable_model": {
+    "Rs_ohm": 12.229999542236328,
+    "L_transient_h": 0.023641004703125343,
+    "K_h": 0.439142323210016,
+    "tau_r_s": 0.051547035716389376
+  },
+  "equivalent_mcsdk_model": {
+    "RS": 12.229999542236328,
+    "RR": 8.97788440172127,
+    "LLS": 0.01197544670137779,
+    "LLR": 0.01197544670137779,
+    "LMS": 0.30053858747450907
+  },
+  "assumption": "LLS=LLR selects an equivalent T-model; physical leakage split is not identified",
+  "deployment_note": "Electrical fit only; current phase/polarity, inverter voltage, flux current, observer tuning and mechanical behavior still require validation"
+}

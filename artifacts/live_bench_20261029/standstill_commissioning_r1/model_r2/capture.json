@@ -1,0 +1,216 @@
+{
+  "schema": "mic_ai.acim_standstill_impedance.v1",
+  "source_kind": "synthetic",
+  "stator_resistance_ohm": 12.229999542236328,
+  "stator_resistance_convention": "balanced_star_equivalent",
+  "voltage_source": "calibrated_pwm_reconstruction",
+  "current_scale": "nominal_datasheet",
+  "rotating_field": false,
+  "rotor_stationary_verified": true,
+  "points": [
+    {
+      "frequency_hz": 1.0,
+      "voltage_rms_phasor_v": [
+        -0.003446869069547728,
+        -1.8791837583593387
+      ],
+      "current_rms_phasor_a": [
+        -0.028269924067259287,
+        -0.13844671022805521
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-1",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 16000.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 8.0,
+      "voltage_rms_phasor_v": [
+        -0.02466422652562392,
+        -2.834590067700544
+      ],
+      "current_rms_phasor_a": [
+        -0.02976705304668335,
+        -0.13821187692677392
+      ],
+      "role": "validation",
+      "run_id": "synthetic-ac-10",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 2000.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 30.0,
+      "voltage_rms_phasor_v": [
+        -0.09223945760106138,
+        -3.017646399438603
+      ],
+      "current_rms_phasor_a": [
+        -0.03950806861733316,
+        -0.13583549866614936
+      ],
+      "role": "validation",
+      "run_id": "synthetic-ac-11",
+      "coverage_pct": 99.97500000000001,
+      "settled_cycles": 5,
+      "samples_per_cycle": 533.3333333333334,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 80.0,
+      "voltage_rms_phasor_v": [
+        -0.2237172399350921,
+        -3.4085444020597757
+      ],
+      "current_rms_phasor_a": [
+        -0.08002220205368774,
+        -0.11695363208716696
+      ],
+      "role": "validation",
+      "run_id": "synthetic-ac-12",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 200.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 2.0,
+      "voltage_rms_phasor_v": [
+        -0.0061847366484726815,
+        -2.15630269291162
+      ],
+      "current_rms_phasor_a": [
+        -0.0386994818670084,
+        -0.13521334705974056
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-2",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 8000.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 5.0,
+      "voltage_rms_phasor_v": [
+        -0.01511985128128876,
+        -2.6770473940548447
+      ],
+      "current_rms_phasor_a": [
+        -0.034723378040987976,
+        -0.13697210192218742
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-3",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 3200.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 10.0,
+      "voltage_rms_phasor_v": [
+        -0.030721834939688792,
+        -2.882450989944464
+      ],
+      "current_rms_phasor_a": [
+        -0.028221572609571862,
+        -0.13860100152029234
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-4",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 1600.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 20.0,
+      "voltage_rms_phasor_v": [
+        -0.061881260339266365,
+        -2.9673117156856805
+      ],
+      "current_rms_phasor_a": [
+        -0.03152897536842748,
+        -0.137859538398527
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-5",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 800.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 50.0,
+      "voltage_rms_phasor_v": [
+        -0.14861447621296345,
+        -3.137411290149945
+      ],
+      "current_rms_phasor_a": [
+        -0.05685018034597531,
+        -0.12955829755484768
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-6",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 320.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 100.0,
+      "voltage_rms_phasor_v": [
+        -0.2671476091228436,
+        -3.614714850015928
+      ],
+      "current_rms_phasor_a": [
+        -0.09131786013151069,
+        -0.10778334302760088
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-7",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 160.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 200.0,
+      "voltage_rms_phasor_v": [
+        -0.45179664190393604,
+        -5.1084092661302
+      ],
+      "current_rms_phasor_a": [
+        -0.12244320921542692,
+        -0.06994591326474535
+      ],
+      "role": "fit",
+      "run_id": "synthetic-ac-8",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 80.0,
+      "synchronized_voltage_current": true
+    },
+    {
+      "frequency_hz": 3.0,
+      "voltage_rms_phasor_v": [
+        -0.008795069202558665,
+        -2.3766249048276444
+      ],
+      "current_rms_phasor_a": [
+        -0.039103521463872803,
+        -0.13402151364740789
+      ],
+      "role": "validation",
+      "run_id": "synthetic-ac-9",
+      "coverage_pct": 100,
+      "settled_cycles": 5,
+      "samples_per_cycle": 5333.333333333333,
+      "synchronized_voltage_current": true
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "status": "Design and pin mapping reviewed; firmware not implemented or flashed",
+  "current_pair": [
+    2026102518,
+    2026102510
+  ],
+  "hardware_commands": 0,
+  "current_sensor_host": "UnoQ I2C2/PB10-PB11 SW25",
+  "proposed_sensor_host": "NucleoG431 I2C1/PB8-PB9",
+  "target_wiring": {
+    "SCL": "Nucleo PB8 / CN10-3 / CN5-10(D15)",
+    "SDA": "Nucleo PB9 / CN10-5 / CN5-9(D14)",
+    "VCC": "Nucleo3V3 / CN6-4",
+    "GND": "NucleoGND / CN6-6"
+  },
+  "code_findings": [
+    "Installed Nucleo2510 has HAL_I2C_MODULE_ENABLED disabled and no AS5600 reader found",
+    "PB8/PB9 not assigned by installed project GPIO definitions/initialization inspected",
+    "IHM09M2 schematic/user manual leave CN10-3/CN10-5 without motor signal mapping",
+    "Legacy AS5600 reader found in BluePillF103 project, not directly interchangeable with current MCSDKG431 code"
+  ],
+  "required_implementation": [
+    "Bounded nonblocking Nucleo I2C acquisition below PWM/ADC/protection priority",
+    "Fresh raw angle/magnetic validity/error counters/timeouts from Nucleo to Uno",
+    "Disable Uno sensor polling when Nucleo sensor source selected",
+    "HMI source/freshness/speed validity from selected source; no invalid angle0 as measured zero",
+    "Preserve ADC zero/calibration/SD captures and all drive thresholds",
+    "Verify PB8BOOT0 option configuration before deploying pullups; no unverified option byte changes"
+  ],
+  "limitations": [
+    "Moving host does not guarantee immunity to interference in power/sensor wiring",
+    "Sensor remains observation-only scalar until separately qualified for control"
+  ],
+  "references": [
+    "https://www.st.com/resource/en/user_manual/dm00556337.pdf",
+    "https://www.st.com/resource/en/user_manual/um3030-getting-started-with-the-xnucleoihm09m2-motor-control-connector-expansion-board-for-stm32-nucleo-stmicroelectronics.pdf",
+    "https://www.st.com/resource/en/schematic_pack/x-nucleo-ihm09m2_schematic.pdf"
+  ]
+}

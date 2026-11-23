@@ -1,0 +1,35 @@
+{
+  "image_sha256": "72d1dfa5dee4e4d03642338e4b115f557e3b151cf6a48e51b1dcf7d7613e75aa",
+  "image_is_unwired_module_reference": true,
+  "image_observed_labels": [
+    "VCC",
+    "OUT",
+    "GND",
+    "DIR",
+    "SCL",
+    "SDA",
+    "GPO",
+    "C1",
+    "C2",
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+  ],
+  "DIR_position_on_supplied_image": "top right header contact",
+  "internal_DIR_bias_on_actual_instance_verified": false,
+  "floating_DIR_root_cause_proven": false,
+  "R1_0ohm_supply_mode_role_source": "https://www.mechasolution.com/goods/goods_view.php?goodsNo=605131",
+  "module_VCC_remains3V3": true,
+  "suggested_controlled_change": "DIR through1kohm to logical GND Nucleo CN7-19; retain existing4sensor wires and TP23 resistor; power down J1/J4/controllers before wiring",
+  "reason_for_series_resistor": "Limits current if an existing board bias opposes the test; no direct DIR-to-supply short advised",
+  "references": [
+    "https://github.com/simplefoc/Arduino-FOC-drivers/blob/master/src/encoders/as5600/README.md",
+    "https://www.fabian.com.mt/viewer/40285/pdf.pdf",
+    "https://www.st.com/resource/en/user_manual/um2505-stm32g4-nucleo64-boards-mb1367-stmicroelectronics.pdf"
+  ],
+  "hardware_operations": 0,
+  "firmware_changes": 0,
+  "operator_poweroff_confirmation_received": false,
+  "last_confirmed_power_state": "J1 and15V ON,controllers powerbanks,PC/Saleae removed,outputs OFF after5s trial"
+}

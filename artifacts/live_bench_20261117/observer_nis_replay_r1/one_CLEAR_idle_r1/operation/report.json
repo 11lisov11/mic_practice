@@ -1,0 +1,93 @@
+{
+  "passed": false,
+  "CLEAR": 1,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "SWD": 0,
+  "operator_state": "User requests one CLEAR, no START; unchanged power/wiring; fresh observed low bus and USB, no inferred J1 switch position",
+  "thresholds_changed": false,
+  "CLEAR_HTTP_acknowledged": true,
+  "diagnostic_received": true,
+  "diagnostic": {
+    "available": true,
+    "stored_record": true,
+    "first_since_boot": true,
+    "firmware": 2026111714,
+    "tick_ms": 4731911,
+    "tx_head": 484919,
+    "tx_tail": 484916,
+    "tx_pending": 3,
+    "tx_started_ms": 4731907,
+    "tx_active": true,
+    "tx_hard_error": false,
+    "tx_late": false,
+    "sd_high_at_attempt": true,
+    "BIE_at_attempt": false,
+    "MOE_at_attempt": false,
+    "command_sequence": 70,
+    "timer_SR": 223,
+    "current_faults_at_attempt": 4,
+    "occurred_faults_at_attempt": 1028,
+    "motor_state_at_attempt": 10,
+    "result_code": 4,
+    "result": "MCSDK_ACK_REJECTED",
+    "summary_ru": "CLEAR отклонён: MCSDK не принял подтверждение аварии",
+    "protection_readiness_confirmed": false,
+    "limitation": "Stored first attempt; live SD, masks and BIE remain mandatory"
+  },
+  "Break_restored": true,
+  "transport_restored": false,
+  "MCSDK_ready": false,
+  "expected_under_voltage_block": true,
+  "SD_first_record_unchanged": true,
+  "samples": 16,
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "729e8859-69e1-4e75-a808-ff46493c67b1",
+      [
+        2026111714,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        3000129704
+      ]
+    ],
+    "samples": 19,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 21.46899999998277,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "final_SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 22,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "final_faults": {
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "mc_transport_fault": 7,
+    "mc_bad_cnt": 1
+  },
+  "zero_ready": 1,
+  "full_start_readiness_confirmed": false,
+  "final_outputs_off": true,
+  "preserved_files_verified": 5664
+}

@@ -1,0 +1,42 @@
+{
+  "pair": [
+    2026102705,
+    2026102706
+  ],
+  "installed": false,
+  "root_cause_proven": false,
+  "scope": "Capture extension only; no changes to recovery algorithm, PWM, ADC, motor protection or timed-stop policy",
+  "sample_schedule": "Immediately after existing PE0 readback/DSB, then first actual main-loop observation at or after5us/20us; timestamps are actual observations, not guaranteed trigger instants",
+  "registers": [
+    "DWTcycles",
+    "I2C_ISR",
+    "I2C_CR1",
+    "I2C_CR2",
+    "GPIOB_IDR"
+  ],
+  "record_contract": {
+    "primary_bytes": 160,
+    "primary_format": 2,
+    "unchanged": true,
+    "extension_bytes": 100,
+    "extension_format": 1,
+    "wire_type": "0xDD",
+    "pages": 5,
+    "crc32c_payload": true,
+    "crc32c_pages": true,
+    "parent_crc32c_link": true,
+    "slots": [
+      "first_since_boot",
+      "first_with_pwm"
+    ]
+  },
+  "publication": "Only with outputs OFF and fresh exact peer2706; incomplete or mixed records are not published; archived primary snapshots remain separate and frozen",
+  "classification": "Observed HIGH/LOW/mixed/unknown after PE0; never claims which device caused LOW; missing or delayed samples remain explicit",
+  "preservation": "10 historical hardware records copied byte-for-byte with SHA256. Installer passively archives complete current RAM records before any firmware write and fails closed if incomplete. No CLEAR/START/reset in the archive step. A future firmware reset naturally starts new RAM records; prior captures remain in archived files.",
+  "programming": "Both boards are currently detected; last read-only status10V SAFE/PWM0/ARM0. USB availability alone does not certify J1 isolated. Installation requires J1OFF and independent DMM<20V; 15V may remainON; wiring unchanged.",
+  "limitations": [
+    "No powered trial was run in preparation",
+    "This diagnostic package does not claim to fix the physical cause of SCL LOW",
+    "Native MMIO and source isolation checks do not qualify sensor speed under PWM"
+  ]
+}

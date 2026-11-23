@@ -1,0 +1,876 @@
+{
+  "schema": 1,
+  "firmware": 2026102938,
+  "capture_id": 1,
+  "sample_count": 12,
+  "threshold_counts": 626,
+  "threshold_nominal_a": 6.005582,
+  "total_samples": 5973,
+  "trigger_sequence": 0,
+  "frozen_sequence": 5973,
+  "frozen_ms": 316755,
+  "peak_seen": false,
+  "post_short": false,
+  "no_peak": true,
+  "trigger_reference_hz": null,
+  "cpu_hz": 170000000,
+  "adc_hz": 42500000,
+  "max_queue_publish_cycles": 798,
+  "max_queue_publish_us": 4.694117647058824,
+  "samples": [
+    {
+      "index": 0,
+      "slot": 9,
+      "cycles": 2308654283,
+      "sequence": 5962,
+      "epoch_before": 3043688,
+      "epoch_after": 3043688,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2685,
+        2627,
+        2627,
+        5184
+      ],
+      "ccr_preload": [
+        2684,
+        2628,
+        2628,
+        5184
+      ],
+      "timer_cnt_entry": 5112,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2066,
+        2070
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4392,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 104,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5512,
+      "counts_uvw": [
+        -1,
+        2,
+        -1
+      ],
+      "nominal_currents_a": [
+        -0.009594,
+        0.019187,
+        -0.009594
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 1,
+      "slot": 10,
+      "cycles": 2308664905,
+      "sequence": 5963,
+      "epoch_before": 3043689,
+      "epoch_after": 3043689,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2684,
+        2628,
+        2628,
+        5184
+      ],
+      "ccr_preload": [
+        2681,
+        2631,
+        2631,
+        5184
+      ],
+      "timer_cnt_entry": 5114,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2062,
+        2072
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4387,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 104,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5510,
+      "counts_uvw": [
+        -3,
+        6,
+        -3
+      ],
+      "nominal_currents_a": [
+        -0.028781,
+        0.057561,
+        -0.028781
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 2,
+      "slot": 11,
+      "cycles": 2308675531,
+      "sequence": 5964,
+      "epoch_before": 3043690,
+      "epoch_after": 3043690,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2681,
+        2631,
+        2631,
+        5184
+      ],
+      "ccr_preload": [
+        2682,
+        2630,
+        2630,
+        5184
+      ],
+      "timer_cnt_entry": 5112,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2062,
+        2056
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4385,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 106,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5512,
+      "counts_uvw": [
+        -19,
+        6,
+        13
+      ],
+      "nominal_currents_a": [
+        -0.182278,
+        0.057561,
+        0.124717
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 3,
+      "slot": 0,
+      "cycles": 2308686156,
+      "sequence": 5965,
+      "epoch_before": 3043691,
+      "epoch_after": 3043691,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2682,
+        2630,
+        2630,
+        5184
+      ],
+      "ccr_preload": [
+        2692,
+        2620,
+        2620,
+        5184
+      ],
+      "timer_cnt_entry": 5111,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2074,
+        2072
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4384,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 104,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5513,
+      "counts_uvw": [
+        9,
+        -6,
+        -3
+      ],
+      "nominal_currents_a": [
+        0.086342,
+        -0.057561,
+        -0.028781
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 4,
+      "slot": 1,
+      "cycles": 2308696780,
+      "sequence": 5966,
+      "epoch_before": 3043692,
+      "epoch_after": 3043692,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2692,
+        2620,
+        2620,
+        5184
+      ],
+      "ccr_preload": [
+        2675,
+        2637,
+        2637,
+        5184
+      ],
+      "timer_cnt_entry": 5111,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2073,
+        2071
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4384,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 107,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5513,
+      "counts_uvw": [
+        7,
+        -5,
+        -2
+      ],
+      "nominal_currents_a": [
+        0.067155,
+        -0.047968,
+        -0.019187
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 5,
+      "slot": 2,
+      "cycles": 2308707402,
+      "sequence": 5967,
+      "epoch_before": 3043693,
+      "epoch_after": 3043693,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2675,
+        2637,
+        2637,
+        5184
+      ],
+      "ccr_preload": [
+        2676,
+        2636,
+        2636,
+        5184
+      ],
+      "timer_cnt_entry": 5113,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2068,
+        2069
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4386,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 103,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5511,
+      "counts_uvw": [
+        0,
+        0,
+        0
+      ],
+      "nominal_currents_a": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 6,
+      "slot": 3,
+      "cycles": 2308718026,
+      "sequence": 5968,
+      "epoch_before": 3043694,
+      "epoch_after": 3043694,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2676,
+        2636,
+        2636,
+        5184
+      ],
+      "ccr_preload": [
+        2680,
+        2632,
+        2632,
+        5184
+      ],
+      "timer_cnt_entry": 5113,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2066,
+        2066
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4386,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 107,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5511,
+      "counts_uvw": [
+        -5,
+        2,
+        3
+      ],
+      "nominal_currents_a": [
+        -0.047968,
+        0.019187,
+        0.028781
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 7,
+      "slot": 4,
+      "cycles": 2308728649,
+      "sequence": 5969,
+      "epoch_before": 3043695,
+      "epoch_after": 3043695,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2680,
+        2632,
+        2632,
+        5184
+      ],
+      "ccr_preload": [
+        2683,
+        2629,
+        2629,
+        5184
+      ],
+      "timer_cnt_entry": 5114,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2083,
+        2080
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4387,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 103,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5510,
+      "counts_uvw": [
+        26,
+        -15,
+        -11
+      ],
+      "nominal_currents_a": [
+        0.249433,
+        -0.143904,
+        -0.105529
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 8,
+      "slot": 5,
+      "cycles": 2308739274,
+      "sequence": 5970,
+      "epoch_before": 3043696,
+      "epoch_after": 3043696,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2683,
+        2629,
+        2629,
+        5184
+      ],
+      "ccr_preload": [
+        2665,
+        2647,
+        2647,
+        5184
+      ],
+      "timer_cnt_entry": 5113,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2068,
+        2074
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4386,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 103,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5511,
+      "counts_uvw": [
+        5,
+        0,
+        -5
+      ],
+      "nominal_currents_a": [
+        0.047968,
+        0.0,
+        -0.047968
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 9,
+      "slot": 6,
+      "cycles": 2308749899,
+      "sequence": 5971,
+      "epoch_before": 3043697,
+      "epoch_after": 3043697,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2665,
+        2647,
+        2647,
+        5184
+      ],
+      "ccr_preload": [
+        2677,
+        2635,
+        2635,
+        5184
+      ],
+      "timer_cnt_entry": 5112,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2073,
+        2062
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4385,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 103,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5512,
+      "counts_uvw": [
+        -2,
+        -5,
+        7
+      ],
+      "nominal_currents_a": [
+        -0.019187,
+        -0.047968,
+        0.067155
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 10,
+      "slot": 7,
+      "cycles": 2308760523,
+      "sequence": 5972,
+      "epoch_before": 3043698,
+      "epoch_after": 3043698,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2677,
+        2635,
+        2635,
+        5184
+      ],
+      "ccr_preload": [
+        2682,
+        2630,
+        2630,
+        5184
+      ],
+      "timer_cnt_entry": 5112,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2099,
+        2101
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 623,
+      "timer_cnt_after_queue": 4385,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 106,
+      "pair": 2,
+      "next_pair": 2,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": true,
+      "accepted_by_monitor": true,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5512,
+      "counts_uvw": [
+        63,
+        -31,
+        -32
+      ],
+      "nominal_currents_a": [
+        0.604396,
+        -0.297401,
+        -0.306995
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    },
+    {
+      "index": 11,
+      "slot": 8,
+      "cycles": 2308771145,
+      "sequence": 5973,
+      "epoch_before": 3043699,
+      "epoch_after": 3043699,
+      "epoch_consistent": true,
+      "adc_isr": [
+        107,
+        111
+      ],
+      "adc_jsqr_after_conversion": [
+        0,
+        0
+      ],
+      "ccr_at_update": [
+        2682,
+        2630,
+        2630,
+        5184
+      ],
+      "ccr_preload": [
+        2682,
+        2630,
+        2630,
+        4928
+      ],
+      "timer_cnt_entry": 5114,
+      "timer_arr": 5312,
+      "timer_dir_entry": 1,
+      "raw_adc": [
+        2063,
+        2067
+      ],
+      "offsets_adc": [
+        2069,
+        2068,
+        2067,
+        2069
+      ],
+      "flags": 558,
+      "timer_cnt_after_queue": 4397,
+      "timer_dir_after_queue": 1,
+      "reference_hz": 0.6,
+      "bus_v": 320,
+      "timer_cnt_at_update": 103,
+      "pair": 2,
+      "next_pair": 0,
+      "timer_dir_at_update": 0,
+      "accepted_by_existing_monitor": false,
+      "accepted_by_monitor": false,
+      "three_leg_window_rejected": false,
+      "queue_overflow_observed": false,
+      "publish_deadline_missed": false,
+      "pending_epoch_mismatch": false,
+      "injected_queue_not_empty": false,
+      "timer_phase_entry_ticks": 5510,
+      "counts_uvw": [
+        -7,
+        5,
+        2
+      ],
+      "nominal_currents_a": [
+        -0.067155,
+        0.047968,
+        0.019187
+      ],
+      "excluded_compare_inside_assumed_acquisition": false,
+      "is_trigger": false
+    }
+  ],
+  "scale_qualified": false,
+  "limitation": "CCR-at-update is a software latch at the update IRQ, not direct active-register readback; epoch races are explicit. Raw ADC alone cannot certify actual motor current."
+}

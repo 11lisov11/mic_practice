@@ -358,6 +358,10 @@ def generated_motor_configuration_errors(project: Path, profile: dict[str, Any])
         field: parse_ioc_numeric_value(ioc_path, ioc_key)
         for field, ioc_key in MEASURED_MODEL_IOC_KEYS.items()
     }
+    # Workbench's WB_UI_INERTIA is micro-kg*m^2; profiles are always SI.
+    # Its ACIM speed-PI calculation divides the UI mechanical values by 1e6.
+    if measured_values["rotor_inertia_kg_m2"] is not None:
+        measured_values["rotor_inertia_kg_m2"] /= 1e6
     values = {
         "pole_pairs": parse_numeric_define(acim_path, "POLE_PAIR_NUM") if acim_path else None,
         "rated_phase_voltage_v": parse_numeric_define(acim_path, "NOMINAL_PHASE_VOLTAGE") if acim_path else None,

@@ -1,0 +1,109 @@
+{
+  "date": "2026-11-22",
+  "python_tests_passed": 56,
+  "watchdog_firmware_built": true,
+  "firmware_flash_bytes": 10864,
+  "firmware_ram_bytes": 3032,
+  "native_lease_test_passed": true,
+  "ui_api_checks": {
+    "status_200": true,
+    "red_backend_selected": true,
+    "stock_firmware_not_admitted": true,
+    "hardware_not_ready": true,
+    "live_blocked": true,
+    "cross_origin_denied": true,
+    "bad_profile_denied": true,
+    "simulation_accepted": true,
+    "simulation_completed": true,
+    "simulation_labelled": true,
+    "red_probe_accepted": true,
+    "red_probe_read_only": true,
+    "red_probe_correct_serial": true,
+    "red_probe_firmware_unchanged": true
+  },
+  "ui_desktop_and_mobile_visual_review": true,
+  "physical_serial_commands_sent": 0,
+  "air_commands_sent": 0,
+  "firmware_uploads": 0,
+  "hardware_ready": false,
+  "missing": [
+    "motor_nameplate_checked",
+    "driver_revision_checked",
+    "mode_and_sign_tested",
+    "parameter_readback_checked",
+    "independent_czero_watchdog_tested",
+    "stop_chain_tested",
+    "parking_brake_timing_tested",
+    "coupling_and_guard_checked",
+    "air_loaded_trial_authorized_and_qualified",
+    "usb_isolation_checked",
+    "red_board_mcu_confirmed",
+    "red_board_gpio_map_verified",
+    "red_board_firmware_installed_and_verified",
+    "validated_regen_power_w",
+    "validated_regen_energy_j",
+    "actual_rated_torque_nm",
+    "watchdog_measured_drop_s",
+    "di_conducting_bit",
+    "do_conducting_bit",
+    "expected_algorithm",
+    "regen_power_including_dropout",
+    "regen_energy_including_dropout"
+  ],
+  "simulation_summary": [
+    {
+      "profile": "zero",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "nonzero_commands": 0,
+      "failure": null
+    },
+    {
+      "profile": "step",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "nonzero_commands": 4,
+      "failure": null
+    },
+    {
+      "profile": "ramp",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "nonzero_commands": 3,
+      "failure": null
+    },
+    {
+      "profile": "sine",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "nonzero_commands": 3,
+      "failure": null
+    },
+    {
+      "profile": "prbs",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "nonzero_commands": 4,
+      "failure": null
+    }
+  ],
+  "source_manuals_sha256": {
+    "T3D_EN_V2.3.pdf": "451d6c030d868ed64eb62e27eda75f45d3a0d40cfec7ae9a42bf36fd4604e834",
+    "T3D_MODBUS_V3_3_EN.pdf": "d5e04c73f3b2a6b687151de4e55d66d0c0d559a1d318151082f2d59cfd83bac7",
+    "T3D_RU.pdf": "000abd1fc05fb362162a72e752f7cb9c11cda1f1c1665453158fcc9af7f04cc5"
+  },
+  "protected_existing_firmware_modified": false,
+  "current_hardware_qualification_not_claimed": true,
+  "permit_controller": "red_board",
+  "separate_bluepill_required": false,
+  "stock_red_output_commands_tested": true,
+  "stock_red_host_watchdog_qualified": false,
+  "stock_red_host_loss_report": "stock_tests/host_process_loss.json",
+  "candidate_mcu": "AT32F403RCT6",
+  "candidate_physical_mcu_confirmed": false
+}

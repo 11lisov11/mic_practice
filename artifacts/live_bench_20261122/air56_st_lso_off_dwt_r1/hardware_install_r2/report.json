@@ -1,0 +1,61 @@
+{
+  "passed": false,
+  "programming_attempts": 1,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "old_flash_preserved": true,
+  "old_ram_preserved": true,
+  "before": {
+    "bus_V": 10.08642578125,
+    "tick": 288644,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 95
+  },
+  "readback_verified": true,
+  "readback_sha256": "05a69356c299e0c20d769da0822dfdeff9e33858fbe4d23e8ba63236ad2f180c",
+  "readback_bytes": 41260,
+  "erased_padding_offsets": [
+    38540,
+    38541,
+    38542,
+    38543
+  ],
+  "after": {
+    "bus_V": 17.595703125,
+    "tick": 455,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 94
+  },
+  "DWT": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "max_cycles": 4830,
+    "max_lso_cycles": 3750,
+    "failures": 64,
+    "passed": false
+  },
+  "motor_pilot_protocol_error": "RuntimeError('No complete ASPEP reply to 290000e00100')",
+  "final": {
+    "bus_V": 9.27392578125,
+    "tick": 2308,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BKF": 9,
+    "BIE": true,
+    "PA6_HIGH": true,
+    "TIM1_SR": 94
+  },
+  "preserved_files_verified": 1894
+}

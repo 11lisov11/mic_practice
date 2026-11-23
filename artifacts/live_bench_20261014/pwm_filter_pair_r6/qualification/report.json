@@ -1,0 +1,47 @@
+{
+  "pass": true,
+  "hardware_commands": 0,
+  "old_calibration_rejected": true,
+  "new_pair_hv_blocked": true,
+  "fixture_vectors_sha256": "f3481515a132f826613efe830cbad11bd0fcba6fafe2c029ceef1c14f9dda3f6",
+  "packages": {
+    "production": {
+      "pair": [
+        2026101409,
+        2026101408
+      ],
+      "artifacts_sha256": {
+        "production\\uno_build\\UNOQ_MOTOR.ino.elf": "527e147d31548672fdf8a1fecd5ca67dd3f802a1fbfc398e260eae38a506855e",
+        "production\\uno_build\\UNOQ_MOTOR.ino.hex": "853da63aa97ecaf34c1bbfdb2972e51fa78af466e3d0701fe909cce5986d3b3a",
+        "production\\uno_build\\UNOQ_MOTOR.ino.bin": "d672d45c7c56c2eee656074620b7958b22b00e993e932fa85cb9127fa6394468",
+        "production\\uno_build\\UNOQ_MOTOR.ino.elf-zsk.bin": "f876912d70fd06775612b41ffd9f29947161867c20d8bf4bdc6f4f12bf06560c",
+        "production\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "88d5e3c4323e15cc9c50d0919cf849a535668e288dbe9bc01b8040ebd3786315",
+        "production\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "ed44109b72152db25954398117ffbcb26d599566a32f88f541bb026c261fe4bb",
+        "production\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "2c4c18b1762aceb7562496667380c230113ff87202e5545ba32bdbc857f12d4b"
+      },
+      "manifest_sha256": "a899031b15100d3b6bb40a99942c31c18459471e7074f8a9e57eb53e1ca6c329"
+    },
+    "fixture": {
+      "pair": [
+        2026101494,
+        2026101495
+      ],
+      "artifacts_sha256": {
+        "fixture\\uno_build\\UNOQ_MOTOR.ino.elf": "80e9b268296ef5b5c0bc3a2233e23f7aba0ef54c8f88461ee919360c6c0d9c7e",
+        "fixture\\uno_build\\UNOQ_MOTOR.ino.hex": "0d8ccb7d9faab4fe9a3934c0dd68160ca015842f8a91c678b99ad7003f5c087d",
+        "fixture\\uno_build\\UNOQ_MOTOR.ino.bin": "44d8db606c4f0903cf53335200dd9bbc36ea6d981120c319071eebd64aa8ae9c",
+        "fixture\\uno_build\\UNOQ_MOTOR.ino.elf-zsk.bin": "e7778d67f5f7a744e1a1f1f7a9be427b2eec9e13a198cfe3222114ec159ec2a3",
+        "fixture\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "b21267ec0e27c711b945f09286f86f5d47e412cb20942a9ee10d2d51aaf47461",
+        "fixture\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "c5790f65994c6795e440d082764b87ff23e38aa7f2341983b34e43fd2cf1e555",
+        "fixture\\nucleo\\STM32CubeIDE\\Debug\\ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "68ae165a752e358ef229cac5da5ca1b42ed2ab21062da2af05a08ee731682069"
+      },
+      "manifest_sha256": "c405b5459de0d9293df0c0c87f30eb36a06c738976b37a38ab808fd5168bcb99"
+    }
+  },
+  "target_disassembly": {
+    "production_PWM_SetPhasePWMOutputs.asm": "24958ffb52fae1e5ca4ea9365bd3ad56628bbc21e69af1c5e5a3e17b48e7d1b8",
+    "production_ACIM_VF_Controller.asm": "dcd06e134c8b087fcae673b8e706873826902478b0d7738a497f704675d24a08",
+    "fixture_PWM_SetPhasePWMOutputs.asm": "a89df848152663b809eb597b1894d44a31be2977e709de2053ff3f3420d0add7",
+    "fixture_ACIM_VF_Controller.asm": "8ba9eed0f6d91ba40d8a44072a349abe4050c6cb681f12825e9057107297990f"
+  }
+}

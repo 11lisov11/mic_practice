@@ -1,0 +1,143 @@
+{
+  "peer_build": 2026102812,
+  "parent_crc32c": "085e5418",
+  "record_crc32c": "fbc4f568",
+  "manual": false,
+  "dma_error": false,
+  "full_history": true,
+  "samples": 4096,
+  "nominal_sample_hz": 8500000.0,
+  "nominal_history_us": 481.88235294117646,
+  "freeze_lag_us": 5.882352941176471,
+  "freeze_gpio": 0,
+  "freeze_cycles": 11000,
+  "request_cycles": 10000,
+  "starts": [
+    500
+  ],
+  "stops": [
+    1508
+  ],
+  "bytes": [
+    {
+      "sample": 1364,
+      "value": 108,
+      "ack": false
+    }
+  ],
+  "transitions": [
+    {
+      "sample": 500,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 548,
+      "scl": false,
+      "sda": false
+    },
+    {
+      "sample": 596,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 644,
+      "scl": false,
+      "sda": true
+    },
+    {
+      "sample": 692,
+      "scl": true,
+      "sda": true
+    },
+    {
+      "sample": 740,
+      "scl": false,
+      "sda": true
+    },
+    {
+      "sample": 788,
+      "scl": true,
+      "sda": true
+    },
+    {
+      "sample": 836,
+      "scl": false,
+      "sda": false
+    },
+    {
+      "sample": 884,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 932,
+      "scl": false,
+      "sda": true
+    },
+    {
+      "sample": 980,
+      "scl": true,
+      "sda": true
+    },
+    {
+      "sample": 1028,
+      "scl": false,
+      "sda": true
+    },
+    {
+      "sample": 1076,
+      "scl": true,
+      "sda": true
+    },
+    {
+      "sample": 1124,
+      "scl": false,
+      "sda": false
+    },
+    {
+      "sample": 1172,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 1220,
+      "scl": false,
+      "sda": false
+    },
+    {
+      "sample": 1268,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 1316,
+      "scl": false,
+      "sda": true
+    },
+    {
+      "sample": 1364,
+      "scl": true,
+      "sda": true
+    },
+    {
+      "sample": 1412,
+      "scl": false,
+      "sda": false
+    },
+    {
+      "sample": 1460,
+      "scl": true,
+      "sda": false
+    },
+    {
+      "sample": 1508,
+      "scl": true,
+      "sda": true
+    }
+  ],
+  "digital_record_valid": true,
+  "hardware_timing_qualified": false,
+  "limitation": "Digital GPIO samples at nominal timer cadence. DMA latency/jitter and analog voltage/rise time are not measured; sub-sample glitches may be missed."
+}

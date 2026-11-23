@@ -1,0 +1,26 @@
+{
+  "prepared": true,
+  "pair": [
+    2026103003,
+    2026103004
+  ],
+  "trial": {
+    "algorithm": "FOC",
+    "frequency_hz": 5,
+    "limit_ms": 5000,
+    "max_START": 1
+  },
+  "current_fault_mask": 4,
+  "occurred_fault_mask": 4,
+  "current_low_bus_under_J1_OFF": true,
+  "not_a_powered_start_approval": true,
+  "CLEAR_not_authorized": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "flash": 0,
+  "guard_2048_unchanged": true,
+  "preserved_files": 1007,
+  "next_step": "Both boards on powerbanks; PC USB and Saleae includingGND disconnected;15V remainsON;J1 stillOFF; noSTART/RESET. Verify autonomous before enablingJ1.",
+  "runner": "tools/run_foc_update_latency_trial.py"
+}

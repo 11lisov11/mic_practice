@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "unchanged_files": [
+    "Inc/drive_parameters.h",
+    "Inc/power_stage_parameters.h",
+    "Inc/identify_core.h",
+    "Inc/current_adc_window_plan.h",
+    "Inc/current_adc_deadline.h",
+    "Inc/peak_core.h",
+    "Src/multi_native.c",
+    "Src/stm32g4xx_mc_it.c",
+    "Src/stm32g4xx_hal_msp.c",
+    "Src/regular_conversion_manager.c"
+  ],
+  "unchanged_main_functions": [
+    "MX_TIM1_Init",
+    "MX_ADC1_Init",
+    "MX_ADC2_Init",
+    "SystemClock_Config",
+    "uno_clear_frame_is_safe",
+    "uno_latch_fault",
+    "uno_update_softstart_state"
+  ],
+  "calibration_and_raw_guards_unchanged": true,
+  "active_adc_clock_and_sampling_unchanged": true,
+  "no_filter_in_raw_protection": true,
+  "latest_preserved_evidence_files": 20,
+  "current_noise_cause_identified": false,
+  "physical_noise_reduction_verified": false
+}

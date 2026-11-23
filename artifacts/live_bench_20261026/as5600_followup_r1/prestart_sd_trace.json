@@ -1,0 +1,211 @@
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "reason": "complete_window",
+    "schema": 5,
+    "stored_record": true,
+    "event_tick_ms": 116386,
+    "age_since_delivery_ms": 33615,
+    "live_peer_fresh": true,
+    "live_sd": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 17,
+      "break_irq_enabled": false,
+      "capture_running": false,
+      "first_record_ready": true,
+      "config_ok": true,
+      "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+      "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+    },
+    "sample_period_us": 0.2,
+    "sample_rate_hz": 5000000,
+    "trigger_index": 2048,
+    "sample_count": 2385,
+    "runs": [
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 2040,
+        "from_us": -409.6,
+        "to_us": -1.6
+      },
+      {
+        "state": 2,
+        "pa6": 0,
+        "tp23_pa4": 1,
+        "samples": 1,
+        "from_us": -1.6,
+        "to_us": -1.4000000000000001
+      },
+      {
+        "state": 0,
+        "pa6": 0,
+        "tp23_pa4": 0,
+        "samples": 9,
+        "from_us": -1.4000000000000001,
+        "to_us": 0.4
+      },
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 1,
+        "from_us": 0.4,
+        "to_us": 0.6000000000000001
+      },
+      {
+        "state": 2,
+        "pa6": 0,
+        "tp23_pa4": 1,
+        "samples": 1,
+        "from_us": 0.6000000000000001,
+        "to_us": 0.8
+      },
+      {
+        "state": 0,
+        "pa6": 0,
+        "tp23_pa4": 0,
+        "samples": 5,
+        "from_us": 0.8,
+        "to_us": 1.8
+      },
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 3,
+        "from_us": 1.8,
+        "to_us": 2.4000000000000004
+      },
+      {
+        "state": 1,
+        "pa6": 1,
+        "tp23_pa4": 0,
+        "samples": 4,
+        "from_us": 2.4000000000000004,
+        "to_us": 3.2
+      },
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 321,
+        "from_us": 3.2,
+        "to_us": 67.4
+      }
+    ],
+    "channels": {
+      "pa6_bkin": {
+        "low_intervals": [
+          {
+            "fall_sample": 2040,
+            "rise_sample": 2050,
+            "from_us": -1.6,
+            "to_us": 0.4,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 10,
+            "width_us": 2.0
+          },
+          {
+            "fall_sample": 2051,
+            "rise_sample": 2057,
+            "from_us": 0.6000000000000001,
+            "to_us": 1.8,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 6,
+            "width_us": 1.2000000000000002
+          }
+        ],
+        "selected_pulse": {
+          "fall_sample": 2040,
+          "rise_sample": 2050,
+          "from_us": -1.6,
+          "to_us": 0.4,
+          "left_censored": false,
+          "right_censored": false,
+          "pulse_complete": true,
+          "width_samples": 10,
+          "width_us": 2.0
+        },
+        "low_observed": true
+      },
+      "tp23_pa4": {
+        "low_intervals": [
+          {
+            "fall_sample": 2041,
+            "rise_sample": 2050,
+            "from_us": -1.4000000000000001,
+            "to_us": 0.4,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 9,
+            "width_us": 1.8
+          },
+          {
+            "fall_sample": 2052,
+            "rise_sample": 2057,
+            "from_us": 0.8,
+            "to_us": 1.8,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 5,
+            "width_us": 1.0
+          },
+          {
+            "fall_sample": 2060,
+            "rise_sample": 2064,
+            "from_us": 2.4000000000000004,
+            "to_us": 3.2,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 4,
+            "width_us": 0.8
+          }
+        ],
+        "selected_pulse": {
+          "fall_sample": 2041,
+          "rise_sample": 2050,
+          "from_us": -1.4000000000000001,
+          "to_us": 0.4,
+          "left_censored": false,
+          "right_censored": false,
+          "pulse_complete": true,
+          "width_samples": 9,
+          "width_us": 1.8
+        },
+        "low_observed": true
+      }
+    },
+    "mismatch_samples": 6,
+    "mismatch_us": 1.2000000000000002,
+    "post_complete": true,
+    "timeout": false,
+    "dma_error": false,
+    "sampling_overrun": false,
+    "run_overflow": false,
+    "flags": 513,
+    "dma_flags_raw": 0,
+    "dma_remaining": 4721,
+    "input_configuration_verified": true,
+    "summary_ru": "PA6/BKIN: LOW 2.0 \u043c\u043a\u0441; TP23\u2192PA4: LOW 1.8 \u043c\u043a\u0441; \u043d\u0435\u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435 \u0443\u0440\u043e\u0432\u043d\u0435\u0439: 6 \u043e\u0442\u0441\u0447.",
+    "trace_reference": "Both bits from one GPIOA IDR DMA read; relative to Break IRQ publication",
+    "limitations": [
+      "Requested sample step 200 ns; hardware timing is not electrically qualified",
+      "TP23 requires external wiring to PA4; firmware cannot detect an absent or wrong wire",
+      "A LOW on both inputs does not prove intrinsic IPM fault; common-reference noise remains possible",
+      "32 joint runs maximum; overflow and missing edges never imply a complete pulse",
+      "First Break since boot; STOP/CLEAR do not overwrite evidence"
+    ]
+  }
+}

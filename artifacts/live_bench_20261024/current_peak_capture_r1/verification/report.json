@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "installed": false,
+  "physical_measurements_verified": false,
+  "physical_display_verified": false,
+  "hardware_irq_timing_verified": false,
+  "capture_irq_checks": 42624,
+  "core_checks": 649655,
+  "display_checks": 94539,
+  "frontend_checks": 20,
+  "production_rpc_parser_roundtrip": true,
+  "source_predecessor_hashes_verified": 1420,
+  "changed_files_beyond_identity": [
+    "nucleo/Inc/current_shunt.h",
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Src/main.c",
+    "nucleo/Src/stm32g4xx_mc_it.c",
+    "nucleo/STM32CubeIDE/.settings/language.settings.xml",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino",
+    "web_hmi/server.py",
+    "web_hmi/static/app.js"
+  ],
+  "nucleo_ram_above_min_heap_stack_bytes": 4280,
+  "adc_irq_stack_bytes": 296,
+  "scale_qualified": false,
+  "limitations": [
+    "Raw ADC is not an independent measurement of actual current.",
+    "CCR-at-update is a software latch; epoch races are recorded.",
+    "First threshold crossing only; STOP may freeze a shorter/no-peak record.",
+    "Host checks do not qualify actual ISR execution time or motor current scale.",
+    "Build preflight remains non-gating and is not an HV release approval."
+  ]
+}

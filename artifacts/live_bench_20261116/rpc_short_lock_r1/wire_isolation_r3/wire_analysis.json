@@ -1,0 +1,48 @@
+{
+  "raw_harness_passed": false,
+  "GET_calls": 616,
+  "GET_requests_on_wire": 617,
+  "unanswered_GET_ids": [],
+  "MCU_bytes": 5055819,
+  "Linux_bytes_logged": 15458,
+  "startup_invalid_objects": 2899,
+  "post_first_RPC_invalid_objects": [],
+  "Linux_invalid_objects": [],
+  "proxy_errors": [],
+  "harness_error": null,
+  "post_handshake_transport_passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "MCU_reset": 0,
+  "scope": "GET-only transport test. Not motor qualification.",
+  "baseline_serial": {
+    "tx": {
+      "put": [
+        5274,
+        5274,
+        5248
+      ],
+      "get": [
+        5218,
+        5222,
+        5184
+      ],
+      "pending": 56,
+      "last64_hex": "362062705f7072656368617267655f6d616e616765643d302062705f7068746172745f72656164793d302062705f66775f6275696c643d323032363131313630"
+    },
+    "rx": {
+      "put": [
+        43839,
+        43839,
+        43776
+      ],
+      "get": [
+        43839,
+        43839,
+        43776
+      ],
+      "pending": 0,
+      "last64_hex": "616c7265616479206578697374733a20636d64c09401cd03ef9205b9726f75746520616c7265616479206578697374733a20676574c09400cd0169a367657490"
+    }
+  }
+}

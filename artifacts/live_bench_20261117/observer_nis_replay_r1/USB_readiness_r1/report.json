@@ -1,0 +1,35 @@
+{
+  "hardware_mutations": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "USB": {
+    "Uno": "COM10",
+    "Nucleo": "COM13"
+  },
+  "status": {
+    "fw_build": 2026111611,
+    "mc_fw_build": 2026111612,
+    "state": "SAFE",
+    "pwm": 0,
+    "vdc": 10.0,
+    "bp_vdc": 10.0,
+    "bp_vbus_valid": 1,
+    "mc_age_ms": 34,
+    "bp_vbus_age_ms": 35,
+    "hmi_hv_armed": 0,
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 34,
+      "break_irq_enabled": true,
+      "capture_running": true,
+      "first_record_ready": false,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "mc_fault_current_mask": 0
+  }
+}

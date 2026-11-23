@@ -1,0 +1,25 @@
+{
+  "source_run": "sd_dual_motor_to_25_r1",
+  "stop_mechanism_proven": "Installed parser rejected a complete CRC-valid 43-byte command with two NE-marked bytes while its discard budget was already 2/2.",
+  "physical_noise_source_identified": false,
+  "recovered_crc_corruption_present": true,
+  "fix": "Withhold one CRC-valid multi-NE ENABLE packet only on an already running qualified link. Never execute it or refresh watchdog. Require a later clean fresh command within 100 ms; repeated noise or timeout stops. Existing 2/1000ms damaged-packet budget and 300ms watchdog retained.",
+  "sources": [
+    {
+      "title": "ST ES0431 Rev9 section2.12.2",
+      "url": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+      "finding": "Short low glitches in the second half of a stop bit may corrupt reception. ST specifies a noise-free line or external filtering.",
+      "applicability": "Potential mechanism only; not demonstrated on this stand."
+    },
+    {
+      "title": "ST RM0440 USART data sampling",
+      "url": "https://www.st.com/resource/en/reference_manual/dm00355726.pdf",
+      "finding": "With majority sampling, disagreement between central samples sets NE. The hardware flag does not locate the external source.",
+      "implementation": "16x oversampling, three-sample majority and NE detection unchanged."
+    }
+  ],
+  "physical_programming_preparation_confirmed": true,
+  "operator_reply": "готово",
+  "confirmed_preparation": "J1 off, independently measured bus below20V, both USB connected; motor and TP23/1k/PA4 retained; J4 may stay on",
+  "hardware_test_to_50hz_completed": false
+}

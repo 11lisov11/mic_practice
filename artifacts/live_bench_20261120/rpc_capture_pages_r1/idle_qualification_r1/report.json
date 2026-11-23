@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "page_without_auth": 401,
+  "invalid_page": 400,
+  "page_from_Uno": {
+    "adc": {
+      "code": 409,
+      "payload": {
+        "ok": false,
+        "error": "ERR NOT_COMPLETE"
+      }
+    },
+    "observer": {
+      "code": 409,
+      "payload": {
+        "ok": false,
+        "error": "ERR NOT_COMPLETE"
+      }
+    }
+  },
+  "samples": 45,
+  "elapsed_s": 51.94,
+  "max_latency_ms": 656,
+  "rpc_uart_counters": {
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_route_failures": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "mc_uart_error_flags": 2,
+    "mc_bad_sequence": 0
+  }
+}

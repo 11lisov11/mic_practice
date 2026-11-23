@@ -1,0 +1,670 @@
+{
+  "status": "RESEARCH_REVIEW_NOT_RELEASED",
+  "donor": "Ninebot Max Pro (user identification); interior unmeasured",
+  "mass": {
+    "P2_HUB": {
+      "insert_kg": 4.529398063714129,
+      "external_fans_kg_estimate": 0.07,
+      "assumed_donor_metal_kg": 0.8652746685064339,
+      "comparable_no_tyre_kg": 5.464672732220563,
+      "not_in_mass": [
+        "tire",
+        "nuts/screws omitted from envelopes",
+        "wires/connectors",
+        "impregnation/slot insulation",
+        "fan mounts and duct redesign",
+        "inverter/battery"
+      ],
+      "active_assembly_outer_d_mm": 180.0,
+      "reference_rim_OD_mm": 192.0,
+      "main_axial_width_mm": 110.5,
+      "axial_bounds_mm": [
+        -47.0,
+        63.5
+      ],
+      "axle_length_mm": 155,
+      "with_cooling_axial_span_mm": 140.5,
+      "cooling_plenum_OD_mm": 160,
+      "donor_fit_verified": false,
+      "rows": [
+        {
+          "part": "01_STATOR_24S",
+          "quantity": 1,
+          "mass_kg": 1.1688419316223602,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u042d\u043b\u0435\u043a\u0442\u0440\u043e\u0441\u0442\u0430\u043b\u044c 0,35 \u043c\u043c, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "02_ROTOR_29B",
+          "quantity": 1,
+          "mass_kg": 0.4338868794192958,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u042d\u043b\u0435\u043a\u0442\u0440\u043e\u0441\u0442\u0430\u043b\u044c 0,35 \u043c\u043c, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "03_COPPER_CAGE",
+          "quantity": 1,
+          "mass_kg": 0.30331118093146936,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041c\u0435\u0434\u044c, \u043a\u043b\u0435\u0442\u043a\u0430 \u043f\u043e\u0434 \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "04_ROTOR_AL_HUB",
+          "quantity": 1,
+          "mass_kg": 0.08143669451623776,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "05_ROTOR_STACK_WASHER",
+          "quantity": 1,
+          "mass_kg": 0.008761245317997345,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "06_ROTOR_CIRCLIP_ENVELOPE",
+          "quantity": 1,
+          "mass_kg": 0.0025916772799311504,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "07_ROTOR_BEARING_6803",
+          "quantity": 2,
+          "mass_kg": 0.023860003504932777,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "08_STATOR_AL_JACKET",
+          "quantity": 1,
+          "mass_kg": 0.12115544999985584,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "09_STATOR_FRONT_CLAMP",
+          "quantity": 1,
+          "mass_kg": 0.022116155688407507,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "10_FIXED_HEAT_SPREADER",
+          "quantity": 1,
+          "mass_kg": 0.19938752131361165,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "11_MAIN_AXLE_HARDENED",
+          "quantity": 1,
+          "mass_kg": 0.24177520347440284,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "12_METAL_SUN_20T",
+          "quantity": 1,
+          "mass_kg": 0.07541125955553972,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "13_POLYMER_RING_100T",
+          "quantity": 1,
+          "mass_kg": 0.18823299082957123,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "POM, \u0437\u0430\u043a\u0430\u0437 / \u043a\u0432\u0430\u043b\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u043f\u0435\u0447\u0430\u0442\u043d\u044b\u0439 \u043f\u043e\u043b\u0438\u043c\u0435\u0440"
+        },
+        {
+          "part": "14_POLYMER_PLANET_40T",
+          "quantity": 4,
+          "mass_kg": 0.2833184794017385,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "POM, \u0437\u0430\u043a\u0430\u0437 / \u043a\u0432\u0430\u043b\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u043f\u0435\u0447\u0430\u0442\u043d\u044b\u0439 \u043f\u043e\u043b\u0438\u043c\u0435\u0440"
+        },
+        {
+          "part": "15_PLANET_BEARING_608",
+          "quantity": 8,
+          "mass_kg": 0.14500963370439765,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "16_PLANET_PIN_METAL",
+          "quantity": 4,
+          "mass_kg": 0.04103673987825131,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "17_PLANET_SPACERS",
+          "quantity": 4,
+          "mass_kg": 0.004557709524492548,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "18_CARRIER_REAR_AL",
+          "quantity": 1,
+          "mass_kg": 0.054880482065560135,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "19_CARRIER_FRONT_AL",
+          "quantity": 1,
+          "mass_kg": 0.08185313630176153,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "20_OUTPUT_NEEDLE_HOUSING",
+          "quantity": 1,
+          "mass_kg": 0.031320107959963435,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "21_OUTPUT_NEEDLE_NK17_16",
+          "quantity": 1,
+          "mass_kg": 0.03314505913243376,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "22_REAR_WHEEL_BEARING_6003",
+          "quantity": 1,
+          "mass_kg": 0.05770791545379094,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "23_TIE_ROD_TUBE_AL",
+          "quantity": 4,
+          "mass_kg": 0.024121541093344134,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "24_TIE_STUD_M4",
+          "quantity": 4,
+          "mass_kg": 0.03788006757992429,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "25_PRINTED_FIXED_CASE",
+          "quantity": 1,
+          "mass_kg": 0.07883889596036647,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041f\u043b\u0430\u0441\u0442\u0438\u043a, \u043f\u0435\u0447\u0430\u0442\u044c; \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0442\u0440\u0435\u0431\u0443\u0435\u0442 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438"
+        },
+        {
+          "part": "26_PRINTED_COOLING_PLENUM",
+          "quantity": 1,
+          "mass_kg": 0.04826887466237432,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041f\u043b\u0430\u0441\u0442\u0438\u043a, \u043f\u0435\u0447\u0430\u0442\u044c; \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0442\u0440\u0435\u0431\u0443\u0435\u0442 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438"
+        },
+        {
+          "part": "27_PRESSURE_FAN_ENVELOPE",
+          "quantity": 2,
+          "mass_kg": 0.07,
+          "scope": "cooling",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0414\u0432\u0430 \u043f\u043e\u043a\u0443\u043f\u043d\u044b\u0445 \u0432\u0435\u043d\u0442\u0438\u043b\u044f\u0442\u043e\u0440\u0430, \u043e\u0446\u0435\u043d\u043a\u0430"
+        },
+        {
+          "part": "90_DONOR_REAR_COVER_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.18160604652606552,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "91_DONOR_RIM_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.4953748119182033,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "92_DONOR_FRONT_COVER_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.18829381006216506,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "WINDING_COPPER",
+          "quantity": 1,
+          "mass_kg": 0.7366912275421165,
+          "scope": "insert",
+          "method": "wire length and copper area",
+          "material": "\u041c\u0435\u0434\u044c, \u043e\u0431\u043c\u043e\u0442\u043a\u0430; \u044d\u043c\u0430\u043b\u044c \u0438 \u043f\u0440\u043e\u043f\u0438\u0442\u043a\u0430 \u0441\u0432\u0435\u0440\u0445 \u043e\u0446\u0435\u043d\u043a\u0438"
+        }
+      ]
+    },
+    "P2_HUB_SMALL": {
+      "insert_kg": 4.239421284767671,
+      "external_fans_kg_estimate": 0.07,
+      "assumed_donor_metal_kg": 0.6440244715856371,
+      "comparable_no_tyre_kg": 4.953445756353308,
+      "not_in_mass": [
+        "tire",
+        "nuts/screws omitted from envelopes",
+        "wires/connectors",
+        "impregnation/slot insulation",
+        "fan mounts and duct redesign",
+        "inverter/battery"
+      ],
+      "active_assembly_outer_d_mm": 145.0,
+      "reference_rim_OD_mm": 157.0,
+      "main_axial_width_mm": 118.50000000000001,
+      "axial_bounds_mm": [
+        -47.0,
+        71.50000000000001
+      ],
+      "axle_length_mm": 155,
+      "with_cooling_axial_span_mm": 148.5,
+      "cooling_plenum_OD_mm": 160,
+      "donor_fit_verified": false,
+      "rows": [
+        {
+          "part": "01_STATOR_24S",
+          "quantity": 1,
+          "mass_kg": 1.1688419316223602,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u042d\u043b\u0435\u043a\u0442\u0440\u043e\u0441\u0442\u0430\u043b\u044c 0,35 \u043c\u043c, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "02_ROTOR_29B",
+          "quantity": 1,
+          "mass_kg": 0.433886879419296,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u042d\u043b\u0435\u043a\u0442\u0440\u043e\u0441\u0442\u0430\u043b\u044c 0,35 \u043c\u043c, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "03_COPPER_CAGE",
+          "quantity": 1,
+          "mass_kg": 0.30331118093146936,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041c\u0435\u0434\u044c, \u043a\u043b\u0435\u0442\u043a\u0430 \u043f\u043e\u0434 \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "04_ROTOR_AL_HUB",
+          "quantity": 1,
+          "mass_kg": 0.08143669451623775,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "05_ROTOR_STACK_WASHER",
+          "quantity": 1,
+          "mass_kg": 0.008761245317997343,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "06_ROTOR_CIRCLIP_ENVELOPE",
+          "quantity": 1,
+          "mass_kg": 0.0025916772799311504,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "07_ROTOR_BEARING_6803",
+          "quantity": 2,
+          "mass_kg": 0.023860003504932777,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "08_STATOR_AL_JACKET",
+          "quantity": 1,
+          "mass_kg": 0.12115544999985602,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "09_STATOR_FRONT_CLAMP",
+          "quantity": 1,
+          "mass_kg": 0.022116155688407507,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "10_FIXED_HEAT_SPREADER",
+          "quantity": 1,
+          "mass_kg": 0.13751048350739767,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "11_MAIN_AXLE_HARDENED",
+          "quantity": 1,
+          "mass_kg": 0.24177520347440284,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "12_METAL_SUN_20T",
+          "quantity": 1,
+          "mass_kg": 0.06300011129912789,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "13_POLYMER_RING_100T",
+          "quantity": 1,
+          "mass_kg": 0.14255625895722923,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "POM, \u0437\u0430\u043a\u0430\u0437 / \u043a\u0432\u0430\u043b\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u043f\u0435\u0447\u0430\u0442\u043d\u044b\u0439 \u043f\u043e\u043b\u0438\u043c\u0435\u0440"
+        },
+        {
+          "part": "14_POLYMER_PLANET_40T",
+          "quantity": 4,
+          "mass_kg": 0.15758889836901446,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "POM, \u0437\u0430\u043a\u0430\u0437 / \u043a\u0432\u0430\u043b\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u043f\u0435\u0447\u0430\u0442\u043d\u044b\u0439 \u043f\u043e\u043b\u0438\u043c\u0435\u0440"
+        },
+        {
+          "part": "15_PLANET_BEARING_608",
+          "quantity": 8,
+          "mass_kg": 0.14500963370439765,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "16_PLANET_PIN_METAL",
+          "quantity": 4,
+          "mass_kg": 0.04103673987825131,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "17_PLANET_SPACERS",
+          "quantity": 4,
+          "mass_kg": 0.004557709524492549,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "18_CARRIER_REAR_AL",
+          "quantity": 1,
+          "mass_kg": 0.032280453564257704,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "19_CARRIER_FRONT_AL",
+          "quantity": 1,
+          "mass_kg": 0.052595562458696135,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "20_OUTPUT_NEEDLE_HOUSING",
+          "quantity": 1,
+          "mass_kg": 0.05238103095036409,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "21_OUTPUT_NEEDLE_NK17_16",
+          "quantity": 1,
+          "mass_kg": 0.03314505913243377,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "22_REAR_WHEEL_BEARING_6003",
+          "quantity": 1,
+          "mass_kg": 0.05770791545379094,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "23_TIE_ROD_TUBE_AL",
+          "quantity": 4,
+          "mass_kg": 0.024121541093344138,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0410\u043b\u044e\u043c\u0438\u043d\u0438\u0439, \u0437\u0430\u043a\u0430\u0437"
+        },
+        {
+          "part": "24_TIE_STUD_M4",
+          "quantity": 4,
+          "mass_kg": 0.03788006757992429,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0421\u0442\u0430\u043b\u044c / \u043f\u043e\u043a\u0443\u043f\u043d\u043e\u0439 \u043c\u0435\u0442\u0430\u043b\u043b"
+        },
+        {
+          "part": "25_PRINTED_FIXED_CASE",
+          "quantity": 1,
+          "mass_kg": 0.06535329533556744,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041f\u043b\u0430\u0441\u0442\u0438\u043a, \u043f\u0435\u0447\u0430\u0442\u044c; \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0442\u0440\u0435\u0431\u0443\u0435\u0442 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438"
+        },
+        {
+          "part": "26_PRINTED_COOLING_PLENUM",
+          "quantity": 1,
+          "mass_kg": 0.04826887466237432,
+          "scope": "insert",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u041f\u043b\u0430\u0441\u0442\u0438\u043a, \u043f\u0435\u0447\u0430\u0442\u044c; \u0442\u0435\u043c\u043f\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u0442\u0440\u0435\u0431\u0443\u0435\u0442 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438"
+        },
+        {
+          "part": "27_PRESSURE_FAN_ENVELOPE",
+          "quantity": 2,
+          "mass_kg": 0.07,
+          "scope": "cooling",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0414\u0432\u0430 \u043f\u043e\u043a\u0443\u043f\u043d\u044b\u0445 \u0432\u0435\u043d\u0442\u0438\u043b\u044f\u0442\u043e\u0440\u0430, \u043e\u0446\u0435\u043d\u043a\u0430"
+        },
+        {
+          "part": "90_DONOR_REAR_COVER_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.11684898620624139,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "91_DONOR_RIM_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.40363873563705466,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "92_DONOR_FRONT_COVER_REFERENCE",
+          "quantity": 1,
+          "mass_kg": 0.1235367497423411,
+          "scope": "donor_reference",
+          "method": "nominal volume*density; bearings solid envelope upper estimate",
+          "material": "\u0423\u0421\u041b\u041e\u0412\u041d\u042b\u0419 \u0430\u043b\u044e\u043c\u0438\u043d\u0438\u0435\u0432\u044b\u0439 \u043a\u043e\u0440\u043f\u0443\u0441, \u043d\u0435 \u0437\u0430\u043c\u0435\u0440 Ninebot"
+        },
+        {
+          "part": "WINDING_COPPER",
+          "quantity": 1,
+          "mass_kg": 0.7366912275421165,
+          "scope": "insert",
+          "method": "wire length and copper area",
+          "material": "\u041c\u0435\u0434\u044c, \u043e\u0431\u043c\u043e\u0442\u043a\u0430; \u044d\u043c\u0430\u043b\u044c \u0438 \u043f\u0440\u043e\u043f\u0438\u0442\u043a\u0430 \u0441\u0432\u0435\u0440\u0445 \u043e\u0446\u0435\u043d\u043a\u0438"
+        }
+      ]
+    }
+  },
+  "mesh": [
+    {
+      "module_mm": 1.6,
+      "carrier_angles_checked": 91,
+      "full_repeat_deg": 90,
+      "max_overlap_area_mm2": 0,
+      "gears_valid": true
+    },
+    {
+      "module_mm": 1.25,
+      "carrier_angles_checked": 91,
+      "full_repeat_deg": 90,
+      "max_overlap_area_mm2": 0,
+      "gears_valid": true
+    }
+  ],
+  "mesh_refinement": [
+    {
+      "Hz": 1.0,
+      "L_complex_relative_change": 0.0012787174366897154,
+      "torque_relative_change": 0.002533474021357285
+    },
+    {
+      "Hz": 4.0,
+      "L_complex_relative_change": 0.00048173178526306676,
+      "torque_relative_change": 0.0007088046524396097
+    }
+  ],
+  "gear_load_screens": {
+    "1.6": {
+      "wheel_design_torque_Nm": 12,
+      "sun_torque_Nm": 2.127659574468085,
+      "Ft_per_mesh_nominal_N": 33.244680851063826,
+      "load_sharing_factor": 1.5,
+      "dynamic_factor": 1.2,
+      "planet_root_MPa_Lewis_screen": 7.561530996035565,
+      "screen_allowable_MPa_assumed_not_fatigue_data": 10,
+      "root_safety_to_assumed10MPa": 1.322483503042294,
+      "planet_pin_force_N_screen": 119.68085106382976,
+      "pin_bending_MPa": 13.690605560182153,
+      "planet_neighbour_tip_clearance_mm": 0.6822509939085677,
+      "assembly_tooth_condition": 30.0,
+      "limitations": [
+        "Lewis is not ISO6336/VDI2736 gear life rating",
+        "FDM root quality, anisotropy, wear, moisture and temperature require tests",
+        "Nominal root transitions require production rounding"
+      ]
+    },
+    "1.25": {
+      "wheel_design_torque_Nm": 12,
+      "sun_torque_Nm": 2.127659574468085,
+      "Ft_per_mesh_nominal_N": 42.5531914893617,
+      "load_sharing_factor": 1.5,
+      "dynamic_factor": 1.2,
+      "planet_root_MPa_Lewis_screen": 8.25920825593645,
+      "screen_allowable_MPa_assumed_not_fatigue_data": 10,
+      "root_safety_to_assumed10MPa": 1.210769808693506,
+      "planet_pin_force_N_screen": 153.19148936170214,
+      "pin_bending_MPa": 17.523975117033157,
+      "planet_neighbour_tip_clearance_mm": 0.5330085889910663,
+      "assembly_tooth_condition": 30.0,
+      "limitations": [
+        "Lewis is not ISO6336/VDI2736 gear life rating",
+        "FDM root quality, anisotropy, wear, moisture and temperature require tests",
+        "Nominal root transitions require production rounding"
+      ]
+    }
+  },
+  "gear_thermal": {
+    "ambient_C": 35,
+    "motor_stator_C": 69.992247734995,
+    "gear_loss_W": 10.283898082479652,
+    "Rmotor_gear_K_W_assumed": 6,
+    "Tgear_for_Rgear_ambient_C": {
+      "2": 59.17390905746823,
+      "4": 73.67825449194916
+    },
+    "rated": false
+  },
+  "compact_motor_thermal_if_Rsa1p5": {
+    "winding": 91.1904549637188,
+    "stator": 80.18573397031071,
+    "rotor": 82.52133014618192
+  },
+  "axle_screen": {
+    "radial_load_N_2p5g_full_mass": 2943.0,
+    "support_span_mm_assumed": 97.5,
+    "bending_moment_Nm": 70.36033846153846,
+    "bending_MPa": 148.17436159543493,
+    "torsion_MPa": 12.63561530561134,
+    "von_mises_MPa": 149.78190063111398,
+    "flats_threads_and_real_dropouts_not_included": true
+  },
+  "field_torque_identity_max_relative_error": 0.07180101361780455,
+  "continuous_motor_rating_measured": false,
+  "drive_hardware_modified": false,
+  "bench_peak_trip_A_unchanged": 1.35,
+  "nonlinear_hot_launch": {
+    "frequency_hz": 3.02617,
+    "current_peak_A": 9.98284,
+    "L_real_h": 0.005585986557617513,
+    "L_imag_h": -0.0046095460941446564,
+    "cage_loss_W": 13.10670683974042,
+    "torque_signed_Nm": 1.37661150074568,
+    "torque_mst_Nm": 1.37661150074568,
+    "torque_from_cage_Nm": 1.3786384645945482,
+    "Bg_fund_peak_t": 0.7750936032126313,
+    "steel_sample_max_T": 1.9390381134028944,
+    "nodes": 55089,
+    "elements": 109816,
+    "elapsed_s": 290.0274121761322
+  },
+  "nonlinear_hot_launch_wheel_torque_Nm": 7.718968864205635,
+  "nonlinear_hot_launch_acceleration_m_s2": 0.35201046853322415
+}

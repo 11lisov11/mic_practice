@@ -1,0 +1,166 @@
+{
+  "current_trace": {
+    "step": 567,
+    "reference_Hz": 0.9000000357627869,
+    "NIS": 28.04757308959961,
+    "bit_exact_ARM_words": 51,
+    "observer_speed_before_rpm": 243.7796876545912,
+    "observer_speed_after_rpm": 248.3031463623047,
+    "innovation_covariance_A2": [
+      [
+        0.000852564911439017,
+        -2.261491007558599e-06
+      ],
+      [
+        -2.261491007558599e-06,
+        0.00030822629871217916
+      ]
+    ],
+    "current_predicted_A": [
+      0.46319708228111267,
+      0.23912346363067627
+    ],
+    "current_measured_A": [
+      0.4862746000289917,
+      0.14712588489055634
+    ],
+    "conditional_NIS_terms": [
+      0.6246701048913764,
+      27.422901935809133
+    ],
+    "phase_residual_A": [
+      0.02307751774787903,
+      -0.09121099914954256,
+      0.06813348140166353
+    ],
+    "phase_standard_deviations": [
+      0.029198714208660236,
+      0.02112509078221593,
+      0.021032176378846596
+    ],
+    "phase_standardized_residual": [
+      0.7903607529757019,
+      -4.317661878467673,
+      3.239487924330538
+    ],
+    "pair_counts": [
+      0,
+      0,
+      16
+    ],
+    "measurement_epoch_cycles": 2152358095,
+    "counterfactual_ARM_NIS": {
+      "beta_voltage_minus_1V": 20.82071304321289,
+      "beta_voltage_plus_1V": 36.377838134765625,
+      "beta_current_minus_10mA": 34.337650299072266,
+      "beta_current_plus_10mA": 22.40638542175293
+    },
+    "terminal_voltage_independently_measured": false
+  },
+  "previous_trace": {
+    "step": 570,
+    "reference_Hz": 0.9000000357627869,
+    "NIS": 27.247812271118164,
+    "bit_exact_ARM_words": 51,
+    "observer_speed_before_rpm": -150.02034220074884,
+    "observer_speed_after_rpm": -150.25828552246094,
+    "innovation_covariance_A2": [
+      [
+        0.00044387606831250003,
+        0.0002362982014236441
+      ],
+      [
+        0.0002362982014236441,
+        0.0007099581115055763
+      ]
+    ],
+    "current_predicted_A": [
+      -0.754601001739502,
+      -0.1298629194498062
+    ],
+    "current_measured_A": [
+      -0.8220499753952026,
+      -0.06612009555101395
+    ],
+    "conditional_NIS_terms": [
+      10.249175941698459,
+      16.998635741239873
+    ],
+    "phase_residual_A": [
+      -0.06744897365570068,
+      0.08892739163316227,
+      -0.02147841797746159
+    ],
+    "phase_standard_deviations": [
+      0.021068366531663055,
+      0.020947490432170132,
+      0.02912177614790614
+    ],
+    "phase_standardized_residual": [
+      -3.2014334644469717,
+      4.245252762908149,
+      -0.7375380494779983
+    ],
+    "pair_counts": [
+      16,
+      0,
+      0
+    ],
+    "measurement_epoch_cycles": 3057232850,
+    "counterfactual_ARM_NIS": {
+      "beta_voltage_minus_1V": 31.995525360107422,
+      "beta_voltage_plus_1V": 23.083309173583984,
+      "beta_current_minus_10mA": 24.007308959960938,
+      "beta_current_plus_10mA": 30.8306941986084
+    },
+    "terminal_voltage_independently_measured": false
+  },
+  "ADC": {
+    "source_step": 79,
+    "source_first_cycles": 2069326224,
+    "source_end_cycles": 2069485584,
+    "source_center_cycles": 2069405903,
+    "raw_windows": 16,
+    "voltage_rows": 25,
+    "clean_quality_all_25": true,
+    "pairs": [
+      0,
+      16,
+      0
+    ],
+    "alpha_beta_mean_A": [
+      0.1427045177045177,
+      0.38633524684784615
+    ],
+    "alpha_beta_sample_std_A": [
+      0.036214974179303264,
+      0.061161952842799266
+    ],
+    "time_before_late_event_ms": 487.9540705882353,
+    "matches_late_event": false,
+    "nominal_current_scale": true,
+    "early_NIS": 27.925209045410156,
+    "early_journal_replay_words": 51,
+    "early_inputs_from_raw": [
+      0.14270451664924622,
+      0.38633522391319275,
+      1.954406499862671,
+      5.355923175811768
+    ],
+    "early_journal_inputs": [
+      0.14270451664924622,
+      0.38633522391319275,
+      1.9544062614440918,
+      5.355923175811768
+    ],
+    "raw_reconstruction_error": [
+      0.0,
+      0.0,
+      2.384185791015625e-07,
+      0.0
+    ]
+  },
+  "observed_physical_rotation": true,
+  "speed_independently_measured": false,
+  "physical_root_cause_uniquely_identified": false
+}

@@ -1,0 +1,120 @@
+{
+  "passed": true,
+  "checks": 21,
+  "details": [
+    {
+      "name": "actual old parser reproduces saved failure under captured receiver state",
+      "passed": true
+    },
+    {
+      "name": "new path withholds all 903 possible two-NE byte pairs until a clean command",
+      "passed": true
+    },
+    {
+      "name": "existing CRC/sequence/timeout/diagnostic transport contracts",
+      "passed": true
+    },
+    {
+      "name": "owner ignores withheld packet via existing DROPPED result",
+      "passed": true
+    },
+    {
+      "name": "no motor call from withheld packet",
+      "passed": true
+    },
+    {
+      "name": "only UART header and HMI identity allowlists change beyond build identities",
+      "passed": true
+    },
+    {
+      "name": "shared wire/transport header identical",
+      "passed": true
+    },
+    {
+      "name": "negative control detected publish_noisy",
+      "passed": true
+    },
+    {
+      "name": "negative control detected refresh_deadline",
+      "passed": true
+    },
+    {
+      "name": "negative control detected erase_crc_budget",
+      "passed": true
+    },
+    {
+      "name": "negative control detected accept_replayed_confirm",
+      "passed": true
+    },
+    {
+      "name": "negative control detected remove_pending_deadline",
+      "passed": true
+    },
+    {
+      "name": "negative control detected second_noisy_confirms",
+      "passed": true
+    },
+    {
+      "name": "negative control detected CRC_removed",
+      "passed": true
+    },
+    {
+      "name": "new exact pair supports manual scalar",
+      "passed": true
+    },
+    {
+      "name": "mixed old/new pair rejected",
+      "passed": true
+    },
+    {
+      "name": "existing calibration identity preserved",
+      "passed": true
+    },
+    {
+      "name": "SD diagnostics accept new image",
+      "passed": true
+    },
+    {
+      "name": "unchanged actual dual SD recorder and Uno receiver",
+      "passed": true
+    },
+    {
+      "name": "new pair dual waveform HMI decode",
+      "passed": true
+    },
+    {
+      "name": "new pair raw UART diagnostic decoder",
+      "passed": true
+    }
+  ],
+  "replay": {
+    "old": {
+      "pass": true,
+      "old_fatal_reproduced": true,
+      "checks": 7
+    },
+    "fixed": {
+      "pass": true,
+      "old_fatal_reproduced": false,
+      "checks": 7447,
+      "two_NE_position_pairs": 903,
+      "hardware_commands": 0
+    }
+  },
+  "contract": {
+    "pass": true,
+    "checks": 271,
+    "hardware_commands": 0
+  },
+  "host": {
+    "pass": true,
+    "host_cases": 1149,
+    "gpio_values_checked": 65536
+  },
+  "negative_controls": 7,
+  "hardware_commands": 0,
+  "limitations": [
+    "Captured fatal frame/state replayed; next clean confirming frame is a synthetic follow-up, not recorded physical traffic",
+    "No physical noise-source identification or motor operation to 50 Hz established"
+  ]
+}

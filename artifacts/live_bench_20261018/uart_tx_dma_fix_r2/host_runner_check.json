@@ -1,0 +1,37 @@
+{
+  "pass": true,
+  "checks": 18,
+  "negative_conditions": [
+    "pwm",
+    "vdc",
+    "bp_vdc",
+    "mc_age_ms",
+    "mc_bad_cnt",
+    "mc_bad_integrity",
+    "mc_transport_fault",
+    "mc_fault_occurred_mask",
+    "mc_uart_reject_bad_pages",
+    "fw_build",
+    "sd.level",
+    "sd.config_ok",
+    "sd.capture_running",
+    "sd.break_irq_enabled",
+    "sd.first_record_ready",
+    "sd.available"
+  ],
+  "plan_hz": [
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "stop_deadline_s": 100,
+  "D3_wait_s": 9,
+  "hardware_commands": 0
+}

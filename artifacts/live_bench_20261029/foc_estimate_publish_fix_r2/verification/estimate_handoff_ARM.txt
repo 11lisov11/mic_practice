@@ -1,0 +1,3817 @@
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_estimate_publish_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0800cd04 <ma_native_service>:
+ 800cd04:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 800cd08:	ed2d 8b06 	vpush	{d8-d10}
+ 800cd0c:	4c24      	ldr	r4, [pc, #144]	@ (800cda0 <ma_native_service+0x9c>)
+ 800cd0e:	7823      	ldrb	r3, [r4, #0]
+ 800cd10:	b0a7      	sub	sp, #156	@ 0x9c
+ 800cd12:	2b00      	cmp	r3, #0
+ 800cd14:	d15a      	bne.n	800cdcc <ma_native_service+0xc8>
+ 800cd16:	4b23      	ldr	r3, [pc, #140]	@ (800cda4 <ma_native_service+0xa0>)
+ 800cd18:	781b      	ldrb	r3, [r3, #0]
+ 800cd1a:	b983      	cbnz	r3, 800cd3e <ma_native_service+0x3a>
+ 800cd1c:	4b22      	ldr	r3, [pc, #136]	@ (800cda8 <ma_native_service+0xa4>)
+ 800cd1e:	f8d3 313c 	ldr.w	r3, [r3, #316]	@ 0x13c
+ 800cd22:	f433 037f 	bics.w	r3, r3, #16711680	@ 0xff0000
+ 800cd26:	d10a      	bne.n	800cd3e <ma_native_service+0x3a>
+ 800cd28:	4f20      	ldr	r7, [pc, #128]	@ (800cdac <ma_native_service+0xa8>)
+ 800cd2a:	6c7e      	ldr	r6, [r7, #68]	@ 0x44
+ 800cd2c:	f416 4600 	ands.w	r6, r6, #32768	@ 0x8000
+ 800cd30:	d105      	bne.n	800cd3e <ma_native_service+0x3a>
+ 800cd32:	481f      	ldr	r0, [pc, #124]	@ (800cdb0 <ma_native_service+0xac>)
+ 800cd34:	f008 ff28 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800cd38:	2814      	cmp	r0, #20
+ 800cd3a:	f240 8640 	bls.w	800d9be <ma_native_service+0xcba>
+ 800cd3e:	4d1d      	ldr	r5, [pc, #116]	@ (800cdb4 <ma_native_service+0xb0>)
+ 800cd40:	782b      	ldrb	r3, [r5, #0]
+ 800cd42:	2b00      	cmp	r3, #0
+ 800cd44:	f040 8560 	bne.w	800d808 <ma_native_service+0xb04>
+ 800cd48:	4b1b      	ldr	r3, [pc, #108]	@ (800cdb8 <ma_native_service+0xb4>)
+ 800cd4a:	781b      	ldrb	r3, [r3, #0]
+ 800cd4c:	2b80      	cmp	r3, #128	@ 0x80
+ 800cd4e:	d10a      	bne.n	800cd66 <ma_native_service+0x62>
+ 800cd50:	4d1a      	ldr	r5, [pc, #104]	@ (800cdbc <ma_native_service+0xb8>)
+ 800cd52:	4c1b      	ldr	r4, [pc, #108]	@ (800cdc0 <ma_native_service+0xbc>)
+ 800cd54:	782b      	ldrb	r3, [r5, #0]
+ 800cd56:	7822      	ldrb	r2, [r4, #0]
+ 800cd58:	4313      	orrs	r3, r2
+ 800cd5a:	d104      	bne.n	800cd66 <ma_native_service+0x62>
+ 800cd5c:	4e13      	ldr	r6, [pc, #76]	@ (800cdac <ma_native_service+0xa8>)
+ 800cd5e:	6c73      	ldr	r3, [r6, #68]	@ 0x44
+ 800cd60:	041f      	lsls	r7, r3, #16
+ 800cd62:	f140 8573 	bpl.w	800d84c <ma_native_service+0xb48>
+ 800cd66:	4b11      	ldr	r3, [pc, #68]	@ (800cdac <ma_native_service+0xa8>)
+ 800cd68:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800cd6a:	041b      	lsls	r3, r3, #16
+ 800cd6c:	f140 82c6 	bpl.w	800d2fc <ma_native_service+0x5f8>
+ 800cd70:	4b0e      	ldr	r3, [pc, #56]	@ (800cdac <ma_native_service+0xa8>)
+ 800cd72:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800cd74:	041f      	lsls	r7, r3, #16
+ 800cd76:	f140 81c7 	bpl.w	800d108 <ma_native_service+0x404>
+ 800cd7a:	4a12      	ldr	r2, [pc, #72]	@ (800cdc4 <ma_native_service+0xc0>)
+ 800cd7c:	7813      	ldrb	r3, [r2, #0]
+ 800cd7e:	2b04      	cmp	r3, #4
+ 800cd80:	4b0a      	ldr	r3, [pc, #40]	@ (800cdac <ma_native_service+0xa8>)
+ 800cd82:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800cd84:	f000 85a6 	beq.w	800d8d4 <ma_native_service+0xbd0>
+ 800cd88:	f413 4300 	ands.w	r3, r3, #32768	@ 0x8000
+ 800cd8c:	f040 82f4 	bne.w	800d378 <ma_native_service+0x674>
+ 800cd90:	4a0d      	ldr	r2, [pc, #52]	@ (800cdc8 <ma_native_service+0xc4>)
+ 800cd92:	7013      	strb	r3, [r2, #0]
+ 800cd94:	b027      	add	sp, #156	@ 0x9c
+ 800cd96:	ecbd 8b06 	vpop	{d8-d10}
+ 800cd9a:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 800cd9e:	bf00      	nop
+ 800cda0:	200055e8 	.word	0x200055e8
+ 800cda4:	200055ea 	.word	0x200055ea
+ 800cda8:	20006668 	.word	0x20006668
+ 800cdac:	40012c00 	.word	0x40012c00
+ 800cdb0:	20000154 	.word	0x20000154
+ 800cdb4:	200055e0 	.word	0x200055e0
+ 800cdb8:	20000339 	.word	0x20000339
+ 800cdbc:	200051b5 	.word	0x200051b5
+ 800cdc0:	2000542a 	.word	0x2000542a
+ 800cdc4:	2000033b 	.word	0x2000033b
+ 800cdc8:	200055a6 	.word	0x200055a6
+ 800cdcc:	4db5      	ldr	r5, [pc, #724]	@ (800d0a4 <ma_native_service+0x3a0>)
+ 800cdce:	782b      	ldrb	r3, [r5, #0]
+ 800cdd0:	2b00      	cmp	r3, #0
+ 800cdd2:	d0b5      	beq.n	800cd40 <ma_native_service+0x3c>
+ 800cdd4:	4bb4      	ldr	r3, [pc, #720]	@ (800d0a8 <ma_native_service+0x3a4>)
+ 800cdd6:	6c5c      	ldr	r4, [r3, #68]	@ 0x44
+ 800cdd8:	f414 4400 	ands.w	r4, r4, #32768	@ 0x8000
+ 800cddc:	f040 84fe 	bne.w	800d7dc <ma_native_service+0xad8>
+ 800cde0:	48b2      	ldr	r0, [pc, #712]	@ (800d0ac <ma_native_service+0x3a8>)
+ 800cde2:	f008 fed1 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800cde6:	2814      	cmp	r0, #20
+ 800cde8:	f200 84f8 	bhi.w	800d7dc <ma_native_service+0xad8>
+ 800cdec:	f8df 8310 	ldr.w	r8, [pc, #784]	@ 800d100 <ma_native_service+0x3fc>
+ 800cdf0:	f898 3000 	ldrb.w	r3, [r8]
+ 800cdf4:	2b00      	cmp	r3, #0
+ 800cdf6:	d1a3      	bne.n	800cd40 <ma_native_service+0x3c>
+ 800cdf8:	4ead      	ldr	r6, [pc, #692]	@ (800d0b0 <ma_native_service+0x3ac>)
+ 800cdfa:	7833      	ldrb	r3, [r6, #0]
+ 800cdfc:	2b00      	cmp	r3, #0
+ 800cdfe:	f000 856f 	beq.w	800d8e0 <ma_native_service+0xbdc>
+ 800ce02:	4bac      	ldr	r3, [pc, #688]	@ (800d0b4 <ma_native_service+0x3b0>)
+ 800ce04:	f8df a2fc 	ldr.w	sl, [pc, #764]	@ 800d104 <ma_native_service+0x400>
+ 800ce08:	6819      	ldr	r1, [r3, #0]
+ 800ce0a:	f8da 2000 	ldr.w	r2, [sl]
+ 800ce0e:	4291      	cmp	r1, r2
+ 800ce10:	bf84      	itt	hi
+ 800ce12:	681b      	ldrhi	r3, [r3, #0]
+ 800ce14:	f8ca 3000 	strhi.w	r3, [sl]
+ 800ce18:	4ba7      	ldr	r3, [pc, #668]	@ (800d0b8 <ma_native_service+0x3b4>)
+ 800ce1a:	6819      	ldr	r1, [r3, #0]
+ 800ce1c:	2900      	cmp	r1, #0
+ 800ce1e:	f040 869d 	bne.w	800db5c <ma_native_service+0xe58>
+ 800ce22:	4aa6      	ldr	r2, [pc, #664]	@ (800d0bc <ma_native_service+0x3b8>)
+ 800ce24:	7031      	strb	r1, [r6, #0]
+ 800ce26:	f892 9000 	ldrb.w	r9, [r2]
+ 800ce2a:	f109 0901 	add.w	r9, r9, #1
+ 800ce2e:	fa5f f389 	uxtb.w	r3, r9
+ 800ce32:	2b80      	cmp	r3, #128	@ 0x80
+ 800ce34:	7013      	strb	r3, [r2, #0]
+ 800ce36:	f040 8555 	bne.w	800d8e4 <ma_native_service+0xbe0>
+ 800ce3a:	4ba1      	ldr	r3, [pc, #644]	@ (800d0c0 <ma_native_service+0x3bc>)
+ 800ce3c:	7011      	strb	r1, [r2, #0]
+ 800ce3e:	781f      	ldrb	r7, [r3, #0]
+ 800ce40:	3701      	adds	r7, #1
+ 800ce42:	b2ff      	uxtb	r7, r7
+ 800ce44:	2f08      	cmp	r7, #8
+ 800ce46:	701f      	strb	r7, [r3, #0]
+ 800ce48:	f000 87e2 	beq.w	800de10 <ma_native_service+0x110c>
+ 800ce4c:	2234      	movs	r2, #52	@ 0x34
+ 800ce4e:	2100      	movs	r1, #0
+ 800ce50:	a819      	add	r0, sp, #100	@ 0x64
+ 800ce52:	f00a f94c 	bl	80170ee <memset>
+ 800ce56:	4a9b      	ldr	r2, [pc, #620]	@ (800d0c4 <ma_native_service+0x3c0>)
+ 800ce58:	eddf 7a9b 	vldr	s15, [pc, #620]	@ 800d0c8 <ma_native_service+0x3c4>
+ 800ce5c:	fba2 3207 	umull	r3, r2, r2, r7
+ 800ce60:	f002 03fe 	and.w	r3, r2, #254	@ 0xfe
+ 800ce64:	eb03 0352 	add.w	r3, r3, r2, lsr #1
+ 800ce68:	1afb      	subs	r3, r7, r3
+ 800ce6a:	ee08 3a10 	vmov	s16, r3
+ 800ce6e:	4b97      	ldr	r3, [pc, #604]	@ (800d0cc <ma_native_service+0x3c8>)
+ 800ce70:	931b      	str	r3, [sp, #108]	@ 0x6c
+ 800ce72:	4b97      	ldr	r3, [pc, #604]	@ (800d0d0 <ma_native_service+0x3cc>)
+ 800ce74:	931c      	str	r3, [sp, #112]	@ 0x70
+ 800ce76:	4b97      	ldr	r3, [pc, #604]	@ (800d0d4 <ma_native_service+0x3d0>)
+ 800ce78:	931e      	str	r3, [sp, #120]	@ 0x78
+ 800ce7a:	4b97      	ldr	r3, [pc, #604]	@ (800d0d8 <ma_native_service+0x3d4>)
+ 800ce7c:	9322      	str	r3, [sp, #136]	@ 0x88
+ 800ce7e:	eeb8 8ac8 	vcvt.f32.s32	s16, s16
+ 800ce82:	4b96      	ldr	r3, [pc, #600]	@ (800d0dc <ma_native_service+0x3d8>)
+ 800ce84:	931f      	str	r3, [sp, #124]	@ 0x7c
+ 800ce86:	2f01      	cmp	r7, #1
+ 800ce88:	f640 32b8 	movw	r2, #3000	@ 0xbb8
+ 800ce8c:	9320      	str	r3, [sp, #128]	@ 0x80
+ 800ce8e:	9321      	str	r3, [sp, #132]	@ 0x84
+ 800ce90:	f107 0301 	add.w	r3, r7, #1
+ 800ce94:	9317      	str	r3, [sp, #92]	@ 0x5c
+ 800ce96:	ee28 8a27 	vmul.f32	s16, s16, s15
+ 800ce9a:	bf8c      	ite	hi
+ 800ce9c:	2302      	movhi	r3, #2
+ 800ce9e:	2301      	movls	r3, #1
+ 800cea0:	921d      	str	r2, [sp, #116]	@ 0x74
+ 800cea2:	f04f 4280 	mov.w	r2, #1073741824	@ 0x40000000
+ 800cea6:	9223      	str	r2, [sp, #140]	@ 0x8c
+ 800cea8:	2b02      	cmp	r3, #2
+ 800ceaa:	f04f 4240 	mov.w	r2, #3221225472	@ 0xc0000000
+ 800ceae:	ed8d 8a1a 	vstr	s16, [sp, #104]	@ 0x68
+ 800ceb2:	9318      	str	r3, [sp, #96]	@ 0x60
+ 800ceb4:	9224      	str	r2, [sp, #144]	@ 0x90
+ 800ceb6:	f000 8684 	beq.w	800dbc2 <ma_native_service+0xebe>
+ 800ceba:	eddf 7a89 	vldr	s15, [pc, #548]	@ 800d0e0 <ma_native_service+0x3dc>
+ 800cebe:	eeb0 7ac8 	vabs.f32	s14, s16
+ 800cec2:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800cec6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ceca:	f200 8647 	bhi.w	800db5c <ma_native_service+0xe58>
+ 800cece:	eeb5 8ac0 	vcmpe.f32	s16, #0.0
+ 800ced2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ced6:	f100 8641 	bmi.w	800db5c <ma_native_service+0xe58>
+ 800ceda:	ed9f 7a82 	vldr	s14, [pc, #520]	@ 800d0e4 <ma_native_service+0x3e0>
+ 800cede:	eeb4 8ac7 	vcmpe.f32	s16, s14
+ 800cee2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cee6:	f280 8639 	bge.w	800db5c <ma_native_service+0xe58>
+ 800ceea:	f8dd 9074 	ldr.w	r9, [sp, #116]	@ 0x74
+ 800ceee:	f242 7210 	movw	r2, #10000	@ 0x2710
+ 800cef2:	4591      	cmp	r9, r2
+ 800cef4:	f200 8632 	bhi.w	800db5c <ma_native_service+0xe58>
+ 800cef8:	2b01      	cmp	r3, #1
+ 800cefa:	eddd 9a19 	vldr	s19, [sp, #100]	@ 0x64
+ 800cefe:	f000 8624 	beq.w	800db4a <ma_native_service+0xe46>
+ 800cf02:	eeb0 7ae9 	vabs.f32	s14, s19
+ 800cf06:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800cf0a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf0e:	f200 8625 	bhi.w	800db5c <ma_native_service+0xe58>
+ 800cf12:	eeb7 7a00 	vmov.f32	s14, #112	@ 0x3f800000  1.0
+ 800cf16:	eef4 9ac7 	vcmpe.f32	s19, s14
+ 800cf1a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf1e:	f100 861d 	bmi.w	800db5c <ma_native_service+0xe58>
+ 800cf22:	ed9f 7a71 	vldr	s14, [pc, #452]	@ 800d0e8 <ma_native_service+0x3e4>
+ 800cf26:	eef4 9ac7 	vcmpe.f32	s19, s14
+ 800cf2a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf2e:	f300 8615 	bgt.w	800db5c <ma_native_service+0xe58>
+ 800cf32:	aa1f      	add	r2, sp, #124	@ 0x7c
+ 800cf34:	2300      	movs	r3, #0
+ 800cf36:	ecb2 7a01 	vldmia	r2!, {s14}
+ 800cf3a:	eeb0 6ac7 	vabs.f32	s12, s14
+ 800cf3e:	eeb4 6a67 	vcmp.f32	s12, s15
+ 800cf42:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf46:	eef2 6a0e 	vmov.f32	s13, #46	@ 0x41700000  15.0
+ 800cf4a:	f103 0301 	add.w	r3, r3, #1
+ 800cf4e:	f200 8605 	bhi.w	800db5c <ma_native_service+0xe58>
+ 800cf52:	eeb5 7ac0 	vcmpe.f32	s14, #0.0
+ 800cf56:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf5a:	f100 85ff 	bmi.w	800db5c <ma_native_service+0xe58>
+ 800cf5e:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 800cf62:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf66:	f300 85f9 	bgt.w	800db5c <ma_native_service+0xe58>
+ 800cf6a:	2b03      	cmp	r3, #3
+ 800cf6c:	d1e3      	bne.n	800cf36 <ma_native_service+0x232>
+ 800cf6e:	eeb0 0a69 	vmov.f32	s0, s19
+ 800cf72:	f7fd fd39 	bl	800a9e8 <mi_settle_cycles.isra.0>
+ 800cf76:	ee07 9a90 	vmov	s15, r9
+ 800cf7a:	1d43      	adds	r3, r0, #5
+ 800cf7c:	eeb8 7ae7 	vcvt.f32.s32	s14, s15
+ 800cf80:	ee07 3a90 	vmov	s15, r3
+ 800cf84:	eddf 6a59 	vldr	s13, [pc, #356]	@ 800d0ec <ma_native_service+0x3e8>
+ 800cf88:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 800cf8c:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 800cf90:	eec7 6aa9 	vdiv.f32	s13, s15, s19
+ 800cf94:	eef4 6ac7 	vcmpe.f32	s13, s14
+ 800cf98:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800cf9c:	f200 85de 	bhi.w	800db5c <ma_native_service+0xe58>
+ 800cfa0:	9925      	ldr	r1, [sp, #148]	@ 0x94
+ 800cfa2:	f8df c150 	ldr.w	ip, [pc, #336]	@ 800d0f4 <ma_native_service+0x3f0>
+ 800cfa6:	f10d 0077 	add.w	r0, sp, #119	@ 0x77
+ 800cfaa:	f04f 33ff 	mov.w	r3, #4294967295
+ 800cfae:	f810 2f01 	ldrb.w	r2, [r0, #1]!
+ 800cfb2:	4053      	eors	r3, r2
+ 800cfb4:	2208      	movs	r2, #8
+ 800cfb6:	f013 0e01 	ands.w	lr, r3, #1
+ 800cfba:	bf18      	it	ne
+ 800cfbc:	46e6      	movne	lr, ip
+ 800cfbe:	3a01      	subs	r2, #1
+ 800cfc0:	ea8e 0353 	eor.w	r3, lr, r3, lsr #1
+ 800cfc4:	d1f7      	bne.n	800cfb6 <ma_native_service+0x2b2>
+ 800cfc6:	3401      	adds	r4, #1
+ 800cfc8:	2c1c      	cmp	r4, #28
+ 800cfca:	d1f0      	bne.n	800cfae <ma_native_service+0x2aa>
+ 800cfcc:	43db      	mvns	r3, r3
+ 800cfce:	4299      	cmp	r1, r3
+ 800cfd0:	f040 85c4 	bne.w	800db5c <ma_native_service+0xe58>
+ 800cfd4:	f44f 528a 	mov.w	r2, #4416	@ 0x1140
+ 800cfd8:	2100      	movs	r1, #0
+ 800cfda:	4845      	ldr	r0, [pc, #276]	@ (800d0f0 <ma_native_service+0x3ec>)
+ 800cfdc:	4e44      	ldr	r6, [pc, #272]	@ (800d0f0 <ma_native_service+0x3ec>)
+ 800cfde:	4c45      	ldr	r4, [pc, #276]	@ (800d0f4 <ma_native_service+0x3f0>)
+ 800cfe0:	f10d 0b5c 	add.w	fp, sp, #92	@ 0x5c
+ 800cfe4:	f00a f883 	bl	80170ee <memset>
+ 800cfe8:	e8bb 000f 	ldmia.w	fp!, {r0, r1, r2, r3}
+ 800cfec:	46b1      	mov	r9, r6
+ 800cfee:	e8a9 000f 	stmia.w	r9!, {r0, r1, r2, r3}
+ 800cff2:	e8bb 000f 	ldmia.w	fp!, {r0, r1, r2, r3}
+ 800cff6:	e8a9 000f 	stmia.w	r9!, {r0, r1, r2, r3}
+ 800cffa:	e8bb 000f 	ldmia.w	fp!, {r0, r1, r2, r3}
+ 800cffe:	e8a9 000f 	stmia.w	r9!, {r0, r1, r2, r3}
+ 800d002:	e89b 0007 	ldmia.w	fp, {r0, r1, r2}
+ 800d006:	e889 0007 	stmia.w	r9, {r0, r1, r2}
+ 800d00a:	f10d 0e5b 	add.w	lr, sp, #91	@ 0x5b
+ 800d00e:	f10d 0a97 	add.w	sl, sp, #151	@ 0x97
+ 800d012:	f04f 3cff 	mov.w	ip, #4294967295
+ 800d016:	f81e 3f01 	ldrb.w	r3, [lr, #1]!
+ 800d01a:	f04f 0908 	mov.w	r9, #8
+ 800d01e:	ea8c 0c03 	eor.w	ip, ip, r3
+ 800d022:	f34c 0300 	sbfx	r3, ip, #0, #1
+ 800d026:	4023      	ands	r3, r4
+ 800d028:	f1b9 0901 	subs.w	r9, r9, #1
+ 800d02c:	ea83 0c5c 	eor.w	ip, r3, ip, lsr #1
+ 800d030:	d1f7      	bne.n	800d022 <ma_native_service+0x31e>
+ 800d032:	45d6      	cmp	lr, sl
+ 800d034:	d1ef      	bne.n	800d016 <ma_native_service+0x312>
+ 800d036:	4c30      	ldr	r4, [pc, #192]	@ (800d0f8 <ma_native_service+0x3f4>)
+ 800d038:	ea6f 030c 	mvn.w	r3, ip
+ 800d03c:	f8c4 3100 	str.w	r3, [r4, #256]	@ 0x100
+ 800d040:	f04f 43ff 	mov.w	r3, #2139095040	@ 0x7f800000
+ 800d044:	f8c4 3128 	str.w	r3, [r4, #296]	@ 0x128
+ 800d048:	f04f 0a01 	mov.w	sl, #1
+ 800d04c:	f04f 33ff 	mov.w	r3, #4294967295
+ 800d050:	eeb0 0a48 	vmov.f32	s0, s16
+ 800d054:	f8c4 30f0 	str.w	r3, [r4, #240]	@ 0xf0
+ 800d058:	f884 a13c 	strb.w	sl, [r4, #316]	@ 0x13c
+ 800d05c:	f00a f8e6 	bl	801722c <cosf>
+ 800d060:	eef0 8a40 	vmov.f32	s17, s0
+ 800d064:	eeb0 0a48 	vmov.f32	s0, s16
+ 800d068:	edc4 8a4c 	vstr	s17, [r4, #304]	@ 0x130
+ 800d06c:	f00a f916 	bl	801729c <sinf>
+ 800d070:	eeb0 9a40 	vmov.f32	s18, s0
+ 800d074:	eeb0 0a69 	vmov.f32	s0, s19
+ 800d078:	ed84 9a4d 	vstr	s18, [r4, #308]	@ 0x134
+ 800d07c:	f00a f9f2 	bl	8017464 <ceilf>
+ 800d080:	eef0 0a08 	vmov.f32	s1, #8	@ 0x40400000  3.0
+ 800d084:	f00a f94e 	bl	8017324 <fmaxf>
+ 800d088:	4b1c      	ldr	r3, [pc, #112]	@ (800d0fc <ma_native_service+0x3f8>)
+ 800d08a:	f8c4 3108 	str.w	r3, [r4, #264]	@ 0x108
+ 800d08e:	eebc 0ac0 	vcvt.u32.f32	s0, s0
+ 800d092:	4b0e      	ldr	r3, [pc, #56]	@ (800d0cc <ma_native_service+0x3c8>)
+ 800d094:	ed84 0a4e 	vstr	s0, [r4, #312]	@ 0x138
+ 800d098:	4651      	mov	r1, sl
+ 800d09a:	f8c4 3118 	str.w	r3, [r4, #280]	@ 0x118
+ 800d09e:	f000 bc2f 	b.w	800d900 <ma_native_service+0xbfc>
+ 800d0a2:	bf00      	nop
+ 800d0a4:	200055e0 	.word	0x200055e0
+ 800d0a8:	40012c00 	.word	0x40012c00
+ 800d0ac:	20000154 	.word	0x20000154
+ 800d0b0:	2000535c 	.word	0x2000535c
+ 800d0b4:	20005358 	.word	0x20005358
+ 800d0b8:	20005354 	.word	0x20005354
+ 800d0bc:	2000535e 	.word	0x2000535e
+ 800d0c0:	2000535f 	.word	0x2000535f
+ 800d0c4:	aaaaaaab 	.word	0xaaaaaaab
+ 800d0c8:	40060a92 	.word	0x40060a92
+ 800d0cc:	3e99999a 	.word	0x3e99999a
+ 800d0d0:	4143ae14 	.word	0x4143ae14
+ 800d0d4:	3f733333 	.word	0x3f733333
+ 800d0d8:	3b03126f 	.word	0x3b03126f
+ 800d0dc:	41700000 	.word	0x41700000
+ 800d0e0:	7f7fffff 	.word	0x7f7fffff
+ 800d0e4:	40c90fdc 	.word	0x40c90fdc
+ 800d0e8:	43480000 	.word	0x43480000
+ 800d0ec:	447a0000 	.word	0x447a0000
+ 800d0f0:	20005668 	.word	0x20005668
+ 800d0f4:	82f63b78 	.word	0x82f63b78
+ 800d0f8:	20006668 	.word	0x20006668
+ 800d0fc:	406ad0e5 	.word	0x406ad0e5
+ 800d100:	2000535d 	.word	0x2000535d
+ 800d104:	20005350 	.word	0x20005350
+ 800d108:	4c89      	ldr	r4, [pc, #548]	@ (800d330 <ma_native_service+0x62c>)
+ 800d10a:	f894 313c 	ldrb.w	r3, [r4, #316]	@ 0x13c
+ 800d10e:	2b00      	cmp	r3, #0
+ 800d110:	f000 8391 	beq.w	800d836 <ma_native_service+0xb32>
+ 800d114:	4a87      	ldr	r2, [pc, #540]	@ (800d334 <ma_native_service+0x630>)
+ 800d116:	f894 313f 	ldrb.w	r3, [r4, #319]	@ 0x13f
+ 800d11a:	6852      	ldr	r2, [r2, #4]
+ 800d11c:	f8c4 20f8 	str.w	r2, [r4, #248]	@ 0xf8
+ 800d120:	f44f 7080 	mov.w	r0, #256	@ 0x100
+ 800d124:	2106      	movs	r1, #6
+ 800d126:	f8a4 013c 	strh.w	r0, [r4, #316]	@ 0x13c
+ 800d12a:	f884 113e 	strb.w	r1, [r4, #318]	@ 0x13e
+ 800d12e:	2b00      	cmp	r3, #0
+ 800d130:	f47f ae23 	bne.w	800cd7a <ma_native_service+0x76>
+ 800d134:	f894 313c 	ldrb.w	r3, [r4, #316]	@ 0x13c
+ 800d138:	2b00      	cmp	r3, #0
+ 800d13a:	f47f ae1e 	bne.w	800cd7a <ma_native_service+0x76>
+ 800d13e:	4b7e      	ldr	r3, [pc, #504]	@ (800d338 <ma_native_service+0x634>)
+ 800d140:	487e      	ldr	r0, [pc, #504]	@ (800d33c <ma_native_service+0x638>)
+ 800d142:	681d      	ldr	r5, [r3, #0]
+ 800d144:	4e7e      	ldr	r6, [pc, #504]	@ (800d340 <ma_native_service+0x63c>)
+ 800d146:	f44f 62d0 	mov.w	r2, #1664	@ 0x680
+ 800d14a:	2100      	movs	r1, #0
+ 800d14c:	f009 ffcf 	bl	80170ee <memset>
+ 800d150:	497c      	ldr	r1, [pc, #496]	@ (800d344 <ma_native_service+0x640>)
+ 800d152:	4b7d      	ldr	r3, [pc, #500]	@ (800d348 <ma_native_service+0x644>)
+ 800d154:	9319      	str	r3, [sp, #100]	@ 0x64
+ 800d156:	2001      	movs	r0, #1
+ 800d158:	e9cd 1017 	strd	r1, r0, [sp, #92]	@ 0x5c
+ 800d15c:	e9d6 3100 	ldrd	r3, r1, [r6]
+ 800d160:	f894 213e 	ldrb.w	r2, [r4, #318]	@ 0x13e
+ 800d164:	931a      	str	r3, [sp, #104]	@ 0x68
+ 800d166:	e9cd 121b 	strd	r1, r2, [sp, #108]	@ 0x6c
+ 800d16a:	fab2 f382 	clz	r3, r2
+ 800d16e:	e9d4 213a 	ldrd	r2, r1, [r4, #232]	@ 0xe8
+ 800d172:	095b      	lsrs	r3, r3, #5
+ 800d174:	e9cd 321d 	strd	r3, r2, [sp, #116]	@ 0x74
+ 800d178:	2240      	movs	r2, #64	@ 0x40
+ 800d17a:	e9cd 121f 	strd	r1, r2, [sp, #124]	@ 0x7c
+ 800d17e:	f44f 537a 	mov.w	r3, #16000	@ 0x3e80
+ 800d182:	9522      	str	r5, [sp, #136]	@ 0x88
+ 800d184:	9321      	str	r3, [sp, #132]	@ 0x84
+ 800d186:	af17      	add	r7, sp, #92	@ 0x5c
+ 800d188:	2500      	movs	r5, #0
+ 800d18a:	f606 2c5f 	addw	ip, r6, #2655	@ 0xa5f
+ 800d18e:	f857 0b04 	ldr.w	r0, [r7], #4
+ 800d192:	eb0c 0205 	add.w	r2, ip, r5
+ 800d196:	2300      	movs	r3, #0
+ 800d198:	fa20 f103 	lsr.w	r1, r0, r3
+ 800d19c:	3308      	adds	r3, #8
+ 800d19e:	2b20      	cmp	r3, #32
+ 800d1a0:	f802 1f01 	strb.w	r1, [r2, #1]!
+ 800d1a4:	d1f8      	bne.n	800d198 <ma_native_service+0x494>
+ 800d1a6:	3504      	adds	r5, #4
+ 800d1a8:	2d30      	cmp	r5, #48	@ 0x30
+ 800d1aa:	d1f0      	bne.n	800d18e <ma_native_service+0x48a>
+ 800d1ac:	edd4 7a4a 	vldr	s15, [r4, #296]	@ 0x128
+ 800d1b0:	68f3      	ldr	r3, [r6, #12]
+ 800d1b2:	ed9f 7a66 	vldr	s14, [pc, #408]	@ 800d34c <ma_native_service+0x648>
+ 800d1b6:	f8c6 3a94 	str.w	r3, [r6, #2708]	@ 0xa94
+ 800d1ba:	eef0 6ae7 	vabs.f32	s13, s15
+ 800d1be:	6933      	ldr	r3, [r6, #16]
+ 800d1c0:	f8c6 3a98 	str.w	r3, [r6, #2712]	@ 0xa98
+ 800d1c4:	eef4 6a47 	vcmp.f32	s13, s14
+ 800d1c8:	6973      	ldr	r3, [r6, #20]
+ 800d1ca:	f8c6 3a9c 	str.w	r3, [r6, #2716]	@ 0xa9c
+ 800d1ce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d1d2:	f8d4 30fc 	ldr.w	r3, [r4, #252]	@ 0xfc
+ 800d1d6:	f8c6 3aa4 	str.w	r3, [r6, #2724]	@ 0xaa4
+ 800d1da:	bf94      	ite	ls
+ 800d1dc:	ee17 3a90 	vmovls	r3, s15
+ 800d1e0:	2300      	movhi	r3, #0
+ 800d1e2:	f8c6 3aa8 	str.w	r3, [r6, #2728]	@ 0xaa8
+ 800d1e6:	6bb3      	ldr	r3, [r6, #56]	@ 0x38
+ 800d1e8:	69b2      	ldr	r2, [r6, #24]
+ 800d1ea:	f8c6 3ab8 	str.w	r3, [r6, #2744]	@ 0xab8
+ 800d1ee:	f8d4 30e4 	ldr.w	r3, [r4, #228]	@ 0xe4
+ 800d1f2:	4d57      	ldr	r5, [pc, #348]	@ (800d350 <ma_native_service+0x64c>)
+ 800d1f4:	f8c6 2aa0 	str.w	r2, [r6, #2720]	@ 0xaa0
+ 800d1f8:	f8c6 3abc 	str.w	r3, [r6, #2748]	@ 0xabc
+ 800d1fc:	f8d4 2124 	ldr.w	r2, [r4, #292]	@ 0x124
+ 800d200:	f8d4 30f4 	ldr.w	r3, [r4, #244]	@ 0xf4
+ 800d204:	68b1      	ldr	r1, [r6, #8]
+ 800d206:	f8c6 2ab0 	str.w	r2, [r6, #2736]	@ 0xab0
+ 800d20a:	f04f 0901 	mov.w	r9, #1
+ 800d20e:	f8c6 3ac0 	str.w	r3, [r6, #2752]	@ 0xac0
+ 800d212:	f8d4 2100 	ldr.w	r2, [r4, #256]	@ 0x100
+ 800d216:	f8d4 312c 	ldr.w	r3, [r4, #300]	@ 0x12c
+ 800d21a:	f8c6 1a90 	str.w	r1, [r6, #2704]	@ 0xa90
+ 800d21e:	f8c6 2ab4 	str.w	r2, [r6, #2740]	@ 0xab4
+ 800d222:	f8c6 9ac4 	str.w	r9, [r6, #2756]	@ 0xac4
+ 800d226:	f8c6 9ac8 	str.w	r9, [r6, #2760]	@ 0xac8
+ 800d22a:	f8c6 3aac 	str.w	r3, [r6, #2732]	@ 0xaac
+ 800d22e:	ed9f aa49 	vldr	s20, [pc, #292]	@ 800d354 <ma_native_service+0x650>
+ 800d232:	ed9f 8a49 	vldr	s16, [pc, #292]	@ 800d358 <ma_native_service+0x654>
+ 800d236:	ed9f 9a49 	vldr	s18, [pc, #292]	@ 800d35c <ma_native_service+0x658>
+ 800d23a:	eddf 9a49 	vldr	s19, [pc, #292]	@ 800d360 <ma_native_service+0x65c>
+ 800d23e:	eb05 0709 	add.w	r7, r5, r9
+ 800d242:	f6a5 2682 	subw	r6, r5, #2690	@ 0xa82
+ 800d246:	f505 68c0 	add.w	r8, r5, #1536	@ 0x600
+ 800d24a:	e007      	b.n	800d25c <ma_native_service+0x558>
+ 800d24c:	3518      	adds	r5, #24
+ 800d24e:	4545      	cmp	r5, r8
+ 800d250:	f107 0718 	add.w	r7, r7, #24
+ 800d254:	f106 0628 	add.w	r6, r6, #40	@ 0x28
+ 800d258:	f000 8498 	beq.w	800db8c <ma_native_service+0xe88>
+ 800d25c:	6a73      	ldr	r3, [r6, #36]	@ 0x24
+ 800d25e:	f805 3c02 	strb.w	r3, [r5, #-2]
+ 800d262:	6a73      	ldr	r3, [r6, #36]	@ 0x24
+ 800d264:	0a1b      	lsrs	r3, r3, #8
+ 800d266:	f805 3c01 	strb.w	r3, [r5, #-1]
+ 800d26a:	6a73      	ldr	r3, [r6, #36]	@ 0x24
+ 800d26c:	2b00      	cmp	r3, #0
+ 800d26e:	d0ed      	beq.n	800d24c <ma_native_service+0x548>
+ 800d270:	ee07 3a90 	vmov	s15, r3
+ 800d274:	46b3      	mov	fp, r6
+ 800d276:	eef8 8a67 	vcvt.f32.u32	s17, s15
+ 800d27a:	f04f 0a00 	mov.w	sl, #0
+ 800d27e:	e027      	b.n	800d2d0 <ma_native_service+0x5cc>
+ 800d280:	ee20 0a29 	vmul.f32	s0, s0, s19
+ 800d284:	eeb4 0a40 	vcmp.f32	s0, s0
+ 800d288:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d28c:	f180 8452 	bvs.w	800db34 <ma_native_service+0xe30>
+ 800d290:	eeb4 9ac0 	vcmpe.f32	s18, s0
+ 800d294:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d298:	bfc8      	it	gt
+ 800d29a:	eeb0 0a49 	vmovgt.f32	s0, s18
+ 800d29e:	eeb4 0ac8 	vcmpe.f32	s0, s16
+ 800d2a2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d2a6:	bfcc      	ite	gt
+ 800d2a8:	2301      	movgt	r3, #1
+ 800d2aa:	2300      	movle	r3, #0
+ 800d2ac:	2b00      	cmp	r3, #0
+ 800d2ae:	bf18      	it	ne
+ 800d2b0:	eeb0 0a48 	vmovne.f32	s0, s16
+ 800d2b4:	f00a f8a2 	bl	80173fc <lroundf>
+ 800d2b8:	f3c0 2307 	ubfx	r3, r0, #8, #8
+ 800d2bc:	f805 001a 	strb.w	r0, [r5, sl, lsl #1]
+ 800d2c0:	f807 301a 	strb.w	r3, [r7, sl, lsl #1]
+ 800d2c4:	f10a 0a01 	add.w	sl, sl, #1
+ 800d2c8:	f1ba 0f06 	cmp.w	sl, #6
+ 800d2cc:	f000 83e2 	beq.w	800da94 <ma_native_service+0xd90>
+ 800d2d0:	ecfb 7a01 	vldmia	fp!, {s15}
+ 800d2d4:	f1ba 0f01 	cmp.w	sl, #1
+ 800d2d8:	ee87 0aa8 	vdiv.f32	s0, s15, s17
+ 800d2dc:	d8d0      	bhi.n	800d280 <ma_native_service+0x57c>
+ 800d2de:	ee20 0a0a 	vmul.f32	s0, s0, s20
+ 800d2e2:	eeb4 0a40 	vcmp.f32	s0, s0
+ 800d2e6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d2ea:	d7d1      	bvc.n	800d290 <ma_native_service+0x58c>
+ 800d2ec:	2380      	movs	r3, #128	@ 0x80
+ 800d2ee:	f805 901a 	strb.w	r9, [r5, sl, lsl #1]
+ 800d2f2:	f807 301a 	strb.w	r3, [r7, sl, lsl #1]
+ 800d2f6:	f10a 0a01 	add.w	sl, sl, #1
+ 800d2fa:	e7e9      	b.n	800d2d0 <ma_native_service+0x5cc>
+ 800d2fc:	4819      	ldr	r0, [pc, #100]	@ (800d364 <ma_native_service+0x660>)
+ 800d2fe:	f008 fc43 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800d302:	2814      	cmp	r0, #20
+ 800d304:	f63f ad34 	bhi.w	800cd70 <ma_native_service+0x6c>
+ 800d308:	4b17      	ldr	r3, [pc, #92]	@ (800d368 <ma_native_service+0x664>)
+ 800d30a:	781b      	ldrb	r3, [r3, #0]
+ 800d30c:	b923      	cbnz	r3, 800d318 <ma_native_service+0x614>
+ 800d30e:	4b17      	ldr	r3, [pc, #92]	@ (800d36c <ma_native_service+0x668>)
+ 800d310:	781b      	ldrb	r3, [r3, #0]
+ 800d312:	2b00      	cmp	r3, #0
+ 800d314:	f43f ad2c 	beq.w	800cd70 <ma_native_service+0x6c>
+ 800d318:	4b15      	ldr	r3, [pc, #84]	@ (800d370 <ma_native_service+0x66c>)
+ 800d31a:	f04f 7200 	mov.w	r2, #33554432	@ 0x2000000
+ 800d31e:	f8c3 2100 	str.w	r2, [r3, #256]	@ 0x100
+ 800d322:	4b14      	ldr	r3, [pc, #80]	@ (800d374 <ma_native_service+0x670>)
+ 800d324:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800d326:	041f      	lsls	r7, r3, #16
+ 800d328:	f53f ad27 	bmi.w	800cd7a <ma_native_service+0x76>
+ 800d32c:	e6ec      	b.n	800d108 <ma_native_service+0x404>
+ 800d32e:	bf00      	nop
+ 800d330:	20006668 	.word	0x20006668
+ 800d334:	e0001000 	.word	0xe0001000
+ 800d338:	20000374 	.word	0x20000374
+ 800d33c:	200060c8 	.word	0x200060c8
+ 800d340:	20005668 	.word	0x20005668
+ 800d344:	3144494d 	.word	0x3144494d
+ 800d348:	78c3e0e2 	.word	0x78c3e0e2
+ 800d34c:	7f7fffff 	.word	0x7f7fffff
+ 800d350:	2000614a 	.word	0x2000614a
+ 800d354:	447a0000 	.word	0x447a0000
+ 800d358:	46fffe00 	.word	0x46fffe00
+ 800d35c:	c6fffe00 	.word	0xc6fffe00
+ 800d360:	42c80000 	.word	0x42c80000
+ 800d364:	20000154 	.word	0x20000154
+ 800d368:	2000535d 	.word	0x2000535d
+ 800d36c:	200051c1 	.word	0x200051c1
+ 800d370:	e000e100 	.word	0xe000e100
+ 800d374:	40012c00 	.word	0x40012c00
+ 800d378:	7813      	ldrb	r3, [r2, #0]
+ 800d37a:	2b01      	cmp	r3, #1
+ 800d37c:	f43f ad0a 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d380:	4bc7      	ldr	r3, [pc, #796]	@ (800d6a0 <ma_native_service+0x99c>)
+ 800d382:	781b      	ldrb	r3, [r3, #0]
+ 800d384:	2b00      	cmp	r3, #0
+ 800d386:	f43f ad05 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d38a:	4cc6      	ldr	r4, [pc, #792]	@ (800d6a4 <ma_native_service+0x9a0>)
+ 800d38c:	7823      	ldrb	r3, [r4, #0]
+ 800d38e:	2b00      	cmp	r3, #0
+ 800d390:	f47f ad00 	bne.w	800cd94 <ma_native_service+0x90>
+ 800d394:	a80f      	add	r0, sp, #60	@ 0x3c
+ 800d396:	f7f4 fa25 	bl	80017e4 <mic_current_fast>
+ 800d39a:	2800      	cmp	r0, #0
+ 800d39c:	f43f acfa 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d3a0:	f89d 304e 	ldrb.w	r3, [sp, #78]	@ 0x4e
+ 800d3a4:	2b00      	cmp	r3, #0
+ 800d3a6:	f43f acf5 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d3aa:	f89d 304f 	ldrb.w	r3, [sp, #79]	@ 0x4f
+ 800d3ae:	2b00      	cmp	r3, #0
+ 800d3b0:	f43f acf0 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d3b4:	4bbc      	ldr	r3, [pc, #752]	@ (800d6a8 <ma_native_service+0x9a4>)
+ 800d3b6:	48bd      	ldr	r0, [pc, #756]	@ (800d6ac <ma_native_service+0x9a8>)
+ 800d3b8:	49bd      	ldr	r1, [pc, #756]	@ (800d6b0 <ma_native_service+0x9ac>)
+ 800d3ba:	681a      	ldr	r2, [r3, #0]
+ 800d3bc:	f8d0 8000 	ldr.w	r8, [r0]
+ 800d3c0:	ed91 1a00 	vldr	s2, [r1]
+ 800d3c4:	49bb      	ldr	r1, [pc, #748]	@ (800d6b4 <ma_native_service+0x9b0>)
+ 800d3c6:	edd1 1a00 	vldr	s3, [r1]
+ 800d3ca:	f3bf 8f5f 	dmb	sy
+ 800d3ce:	681b      	ldr	r3, [r3, #0]
+ 800d3d0:	4293      	cmp	r3, r2
+ 800d3d2:	f47f acdf 	bne.w	800cd94 <ma_native_service+0x90>
+ 800d3d6:	07de      	lsls	r6, r3, #31
+ 800d3d8:	f53f acdc 	bmi.w	800cd94 <ma_native_service+0x90>
+ 800d3dc:	f8df a338 	ldr.w	sl, [pc, #824]	@ 800d718 <ma_native_service+0xa14>
+ 800d3e0:	f8da 3000 	ldr.w	r3, [sl]
+ 800d3e4:	4543      	cmp	r3, r8
+ 800d3e6:	f43f acd5 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d3ea:	f8da 3000 	ldr.w	r3, [sl]
+ 800d3ee:	eddf 6ab2 	vldr	s13, [pc, #712]	@ 800d6b8 <ma_native_service+0x9b4>
+ 800d3f2:	eba8 0303 	sub.w	r3, r8, r3
+ 800d3f6:	ee07 3a90 	vmov	s15, r3
+ 800d3fa:	4bb0      	ldr	r3, [pc, #704]	@ (800d6bc <ma_native_service+0x9b8>)
+ 800d3fc:	ed93 7a00 	vldr	s14, [r3]
+ 800d400:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 800d404:	eeb8 7a47 	vcvt.f32.u32	s14, s14
+ 800d408:	ee87 2a87 	vdiv.f32	s4, s15, s14
+ 800d40c:	eeb4 2ae6 	vcmpe.f32	s4, s13
+ 800d410:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d414:	f53f acbe 	bmi.w	800cd94 <ma_native_service+0x90>
+ 800d418:	eddf 7aa9 	vldr	s15, [pc, #676]	@ 800d6c0 <ma_native_service+0x9bc>
+ 800d41c:	eeb4 2ae7 	vcmpe.f32	s4, s15
+ 800d420:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d424:	f300 8507 	bgt.w	800de36 <ma_native_service+0x1132>
+ 800d428:	4fa6      	ldr	r7, [pc, #664]	@ (800d6c4 <ma_native_service+0x9c0>)
+ 800d42a:	4aa7      	ldr	r2, [pc, #668]	@ (800d6c8 <ma_native_service+0x9c4>)
+ 800d42c:	f04f 0904 	mov.w	r9, #4
+ 800d430:	683b      	ldr	r3, [r7, #0]
+ 800d432:	f3bf 8f5f 	dmb	sy
+ 800d436:	6856      	ldr	r6, [r2, #4]
+ 800d438:	6879      	ldr	r1, [r7, #4]
+ 800d43a:	68b8      	ldr	r0, [r7, #8]
+ 800d43c:	f3bf 8f5f 	dmb	sy
+ 800d440:	07dd      	lsls	r5, r3, #31
+ 800d442:	d403      	bmi.n	800d44c <ma_native_service+0x748>
+ 800d444:	683d      	ldr	r5, [r7, #0]
+ 800d446:	42ab      	cmp	r3, r5
+ 800d448:	f000 864d 	beq.w	800e0e6 <ma_native_service+0x13e2>
+ 800d44c:	f1b9 0901 	subs.w	r9, r9, #1
+ 800d450:	d1ee      	bne.n	800d430 <ma_native_service+0x72c>
+ 800d452:	4b9d      	ldr	r3, [pc, #628]	@ (800d6c8 <ma_native_service+0x9c4>)
+ 800d454:	e9cd 1007 	strd	r1, r0, [sp, #28]
+ 800d458:	685e      	ldr	r6, [r3, #4]
+ 800d45a:	9b10      	ldr	r3, [sp, #64]	@ 0x40
+ 800d45c:	4d9b      	ldr	r5, [pc, #620]	@ (800d6cc <ma_native_service+0x9c8>)
+ 800d45e:	489c      	ldr	r0, [pc, #624]	@ (800d6d0 <ma_native_service+0x9cc>)
+ 800d460:	6aaa      	ldr	r2, [r5, #40]	@ 0x28
+ 800d462:	499c      	ldr	r1, [pc, #624]	@ (800d6d4 <ma_native_service+0x9d0>)
+ 800d464:	eddf 6a9c 	vldr	s13, [pc, #624]	@ 800d6d8 <ma_native_service+0x9d4>
+ 800d468:	1af3      	subs	r3, r6, r3
+ 800d46a:	622b      	str	r3, [r5, #32]
+ 800d46c:	4b9b      	ldr	r3, [pc, #620]	@ (800d6dc <ma_native_service+0x9d8>)
+ 800d46e:	601e      	str	r6, [r3, #0]
+ 800d470:	eba6 0308 	sub.w	r3, r6, r8
+ 800d474:	4293      	cmp	r3, r2
+ 800d476:	61eb      	str	r3, [r5, #28]
+ 800d478:	bf88      	it	hi
+ 800d47a:	62ab      	strhi	r3, [r5, #40]	@ 0x28
+ 800d47c:	4b98      	ldr	r3, [pc, #608]	@ (800d6e0 <ma_native_service+0x9dc>)
+ 800d47e:	681a      	ldr	r2, [r3, #0]
+ 800d480:	9217      	str	r2, [sp, #92]	@ 0x5c
+ 800d482:	685a      	ldr	r2, [r3, #4]
+ 800d484:	9218      	str	r2, [sp, #96]	@ 0x60
+ 800d486:	695a      	ldr	r2, [r3, #20]
+ 800d488:	921c      	str	r2, [sp, #112]	@ 0x70
+ 800d48a:	2201      	movs	r2, #1
+ 800d48c:	7002      	strb	r2, [r0, #0]
+ 800d48e:	4895      	ldr	r0, [pc, #596]	@ (800d6e4 <ma_native_service+0x9e0>)
+ 800d490:	edd3 5a02 	vldr	s11, [r3, #8]
+ 800d494:	6002      	str	r2, [r0, #0]
+ 800d496:	ed93 3a03 	vldr	s6, [r3, #12]
+ 800d49a:	ed93 6a04 	vldr	s12, [r3, #16]
+ 800d49e:	ed93 4a08 	vldr	s8, [r3, #32]
+ 800d4a2:	edd3 7a09 	vldr	s15, [r3, #36]	@ 0x24
+ 800d4a6:	edd3 3a0a 	vldr	s7, [r3, #40]	@ 0x28
+ 800d4aa:	edd3 4a0b 	vldr	s9, [r3, #44]	@ 0x2c
+ 800d4ae:	ed93 5a0c 	vldr	s10, [r3, #48]	@ 0x30
+ 800d4b2:	f9bd 2048 	ldrsh.w	r2, [sp, #72]	@ 0x48
+ 800d4b6:	f8c1 8000 	str.w	r8, [r1]
+ 800d4ba:	ee00 2a10 	vmov	s0, r2
+ 800d4be:	edcd 5a19 	vstr	s11, [sp, #100]	@ 0x64
+ 800d4c2:	ed8d 3a1a 	vstr	s6, [sp, #104]	@ 0x68
+ 800d4c6:	ed8d 6a1b 	vstr	s12, [sp, #108]	@ 0x6c
+ 800d4ca:	ed8d 4a1d 	vstr	s8, [sp, #116]	@ 0x74
+ 800d4ce:	edcd 7a1e 	vstr	s15, [sp, #120]	@ 0x78
+ 800d4d2:	edcd 3a1f 	vstr	s7, [sp, #124]	@ 0x7c
+ 800d4d6:	edcd 4a20 	vstr	s9, [sp, #128]	@ 0x80
+ 800d4da:	ed8d 5a21 	vstr	s10, [sp, #132]	@ 0x84
+ 800d4de:	f9bd 204a 	ldrsh.w	r2, [sp, #74]	@ 0x4a
+ 800d4e2:	ee07 2a10 	vmov	s14, r2
+ 800d4e6:	ee17 0a10 	vmov	r0, s14
+ 800d4ea:	aa17      	add	r2, sp, #92	@ 0x5c
+ 800d4ec:	a922      	add	r1, sp, #136	@ 0x88
+ 800d4ee:	ecf2 2a01 	vldmia	r2!, {s5}
+ 800d4f2:	eeb0 7ae2 	vabs.f32	s14, s5
+ 800d4f6:	eeb4 7a66 	vcmp.f32	s14, s13
+ 800d4fa:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d4fe:	f200 83b2 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d502:	eef5 2ac0 	vcmpe.f32	s5, #0.0
+ 800d506:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d50a:	f240 83ac 	bls.w	800dc66 <ma_native_service+0xf62>
+ 800d50e:	428a      	cmp	r2, r1
+ 800d510:	d1ed      	bne.n	800d4ee <ma_native_service+0x7ea>
+ 800d512:	edd3 2a06 	vldr	s5, [r3, #24]
+ 800d516:	eef0 0ae2 	vabs.f32	s1, s5
+ 800d51a:	eef4 0a66 	vcmp.f32	s1, s13
+ 800d51e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d522:	ee07 0a10 	vmov	s14, r0
+ 800d526:	f200 839e 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d52a:	eef5 2ac0 	vcmpe.f32	s5, #0.0
+ 800d52e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d532:	f2c0 8398 	blt.w	800dc66 <ma_native_service+0xf62>
+ 800d536:	69db      	ldr	r3, [r3, #28]
+ 800d538:	3b01      	subs	r3, #1
+ 800d53a:	2b07      	cmp	r3, #7
+ 800d53c:	f200 8393 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d540:	eddf 6a69 	vldr	s13, [pc, #420]	@ 800d6e8 <ma_native_service+0x9e4>
+ 800d544:	ee66 6a26 	vmul.f32	s13, s12, s13
+ 800d548:	ee65 5a83 	vmul.f32	s11, s11, s6
+ 800d54c:	ee66 6a86 	vmul.f32	s13, s13, s12
+ 800d550:	eef4 5ae6 	vcmpe.f32	s11, s13
+ 800d554:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d558:	f340 8385 	ble.w	800dc66 <ma_native_service+0xf62>
+ 800d55c:	eef4 7ae3 	vcmpe.f32	s15, s7
+ 800d560:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d564:	f140 837f 	bpl.w	800dc66 <ma_native_service+0xf62>
+ 800d568:	eec4 6a06 	vdiv.f32	s13, s8, s12
+ 800d56c:	ed9f 6a5f 	vldr	s12, [pc, #380]	@ 800d6ec <ma_native_service+0x9e8>
+ 800d570:	ee67 7a86 	vmul.f32	s15, s15, s12
+ 800d574:	eef4 6ae7 	vcmpe.f32	s13, s15
+ 800d578:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d57c:	f140 8373 	bpl.w	800dc66 <ma_native_service+0xf62>
+ 800d580:	eddf 7a5b 	vldr	s15, [pc, #364]	@ 800d6f0 <ma_native_service+0x9ec>
+ 800d584:	eef4 4ae7 	vcmpe.f32	s9, s15
+ 800d588:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d58c:	f140 836b 	bpl.w	800dc66 <ma_native_service+0xf62>
+ 800d590:	eddf 7a58 	vldr	s15, [pc, #352]	@ 800d6f4 <ma_native_service+0x9f0>
+ 800d594:	eeb4 5ae7 	vcmpe.f32	s10, s15
+ 800d598:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d59c:	f140 8363 	bpl.w	800dc66 <ma_native_service+0xf62>
+ 800d5a0:	eddf 7a4d 	vldr	s15, [pc, #308]	@ 800d6d8 <ma_native_service+0x9d4>
+ 800d5a4:	eeb4 2a67 	vcmp.f32	s4, s15
+ 800d5a8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d5ac:	f200 835b 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d5b0:	eeb8 0ac0 	vcvt.f32.s32	s0, s0
+ 800d5b4:	eddf 6a50 	vldr	s13, [pc, #320]	@ 800d6f8 <ma_native_service+0x9f4>
+ 800d5b8:	ee20 0a26 	vmul.f32	s0, s0, s13
+ 800d5bc:	eeb0 6ac0 	vabs.f32	s12, s0
+ 800d5c0:	eeb4 6a67 	vcmp.f32	s12, s15
+ 800d5c4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d5c8:	f200 834d 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d5cc:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 800d5d0:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 800d5d4:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800d5d8:	eef0 0a40 	vmov.f32	s1, s0
+ 800d5dc:	eee7 0a06 	vfma.f32	s1, s14, s12
+ 800d5e0:	eddf 6a46 	vldr	s13, [pc, #280]	@ 800d6fc <ma_native_service+0x9f8>
+ 800d5e4:	ee60 0aa6 	vmul.f32	s1, s1, s13
+ 800d5e8:	eeb0 7ae0 	vabs.f32	s14, s1
+ 800d5ec:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800d5f0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d5f4:	f200 8337 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d5f8:	eeb0 7ac1 	vabs.f32	s14, s2
+ 800d5fc:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800d600:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d604:	f200 832f 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d608:	eeb0 7ae1 	vabs.f32	s14, s3
+ 800d60c:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800d610:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800d614:	f200 8327 	bhi.w	800dc66 <ma_native_service+0xf62>
+ 800d618:	4b39      	ldr	r3, [pc, #228]	@ (800d700 <ma_native_service+0x9fc>)
+ 800d61a:	9306      	str	r3, [sp, #24]
+ 800d61c:	4618      	mov	r0, r3
+ 800d61e:	f7fd f9ef 	bl	800aa00 <ma_observe.part.0.constprop.0>
+ 800d622:	4b29      	ldr	r3, [pc, #164]	@ (800d6c8 <ma_native_service+0x9c4>)
+ 800d624:	685a      	ldr	r2, [r3, #4]
+ 800d626:	4b37      	ldr	r3, [pc, #220]	@ (800d704 <ma_native_service+0xa00>)
+ 800d628:	9005      	str	r0, [sp, #20]
+ 800d62a:	601a      	str	r2, [r3, #0]
+ 800d62c:	2800      	cmp	r0, #0
+ 800d62e:	f040 8560 	bne.w	800e0f2 <ma_native_service+0x13ee>
+ 800d632:	7823      	ldrb	r3, [r4, #0]
+ 800d634:	2b00      	cmp	r3, #0
+ 800d636:	f040 84dc 	bne.w	800dff2 <ma_native_service+0x12ee>
+ 800d63a:	4b33      	ldr	r3, [pc, #204]	@ (800d708 <ma_native_service+0xa04>)
+ 800d63c:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800d63e:	041a      	lsls	r2, r3, #16
+ 800d640:	f140 84d7 	bpl.w	800dff2 <ma_native_service+0x12ee>
+ 800d644:	4b31      	ldr	r3, [pc, #196]	@ (800d70c <ma_native_service+0xa08>)
+ 800d646:	681b      	ldr	r3, [r3, #0]
+ 800d648:	f083 0201 	eor.w	r2, r3, #1
+ 800d64c:	4b30      	ldr	r3, [pc, #192]	@ (800d710 <ma_native_service+0xa0c>)
+ 800d64e:	f8dd e018 	ldr.w	lr, [sp, #24]
+ 800d652:	4824      	ldr	r0, [pc, #144]	@ (800d6e4 <ma_native_service+0x9e0>)
+ 800d654:	4611      	mov	r1, r2
+ 800d656:	221c      	movs	r2, #28
+ 800d658:	fb02 3b01 	mla	fp, r2, r1, r3
+ 800d65c:	2302      	movs	r3, #2
+ 800d65e:	9109      	str	r1, [sp, #36]	@ 0x24
+ 800d660:	6003      	str	r3, [r0, #0]
+ 800d662:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
+ 800d666:	46dc      	mov	ip, fp
+ 800d668:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 800d66c:	e89e 0003 	ldmia.w	lr, {r0, r1}
+ 800d670:	e88c 0003 	stmia.w	ip, {r0, r1}
+ 800d674:	f8cb 8018 	str.w	r8, [fp, #24]
+ 800d678:	f3bf 8f5f 	dmb	sy
+ 800d67c:	7823      	ldrb	r3, [r4, #0]
+ 800d67e:	2b00      	cmp	r3, #0
+ 800d680:	f040 84b7 	bne.w	800dff2 <ma_native_service+0x12ee>
+ 800d684:	4b20      	ldr	r3, [pc, #128]	@ (800d708 <ma_native_service+0xa04>)
+ 800d686:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800d688:	041b      	lsls	r3, r3, #16
+ 800d68a:	f140 84b2 	bpl.w	800dff2 <ma_native_service+0x12ee>
+ 800d68e:	4b0e      	ldr	r3, [pc, #56]	@ (800d6c8 <ma_native_service+0x9c4>)
+ 800d690:	685a      	ldr	r2, [r3, #4]
+ 800d692:	4b20      	ldr	r3, [pc, #128]	@ (800d714 <ma_native_service+0xa10>)
+ 800d694:	601a      	str	r2, [r3, #0]
+ 800d696:	f3bf 8f5b 	dmb	ish
+ 800d69a:	4b1c      	ldr	r3, [pc, #112]	@ (800d70c <ma_native_service+0xa08>)
+ 800d69c:	9a09      	ldr	r2, [sp, #36]	@ 0x24
+ 800d69e:	e03d      	b.n	800d71c <ma_native_service+0xa18>
+ 800d6a0:	200055a6 	.word	0x200055a6
+ 800d6a4:	200055a4 	.word	0x200055a4
+ 800d6a8:	20005478 	.word	0x20005478
+ 800d6ac:	20005474 	.word	0x20005474
+ 800d6b0:	20005470 	.word	0x20005470
+ 800d6b4:	2000546c 	.word	0x2000546c
+ 800d6b8:	38d1b717 	.word	0x38d1b717
+ 800d6bc:	20000374 	.word	0x20000374
+ 800d6c0:	3b03126f 	.word	0x3b03126f
+ 800d6c4:	20005418 	.word	0x20005418
+ 800d6c8:	e0001000 	.word	0xe0001000
+ 800d6cc:	200053e0 	.word	0x200053e0
+ 800d6d0:	20005360 	.word	0x20005360
+ 800d6d4:	2000547c 	.word	0x2000547c
+ 800d6d8:	7f7fffff 	.word	0x7f7fffff
+ 800d6dc:	20005364 	.word	0x20005364
+ 800d6e0:	2000033c 	.word	0x2000033c
+ 800d6e4:	20005488 	.word	0x20005488
+ 800d6e8:	3f800347 	.word	0x3f800347
+ 800d6ec:	3f733333 	.word	0x3f733333
+ 800d6f0:	44fa0000 	.word	0x44fa0000
+ 800d6f4:	42c80000 	.word	0x42c80000
+ 800d6f8:	3c1d2e65 	.word	0x3c1d2e65
+ 800d6fc:	3f13cd3a 	.word	0x3f13cd3a
+ 800d700:	200054f0 	.word	0x200054f0
+ 800d704:	20005484 	.word	0x20005484
+ 800d708:	40012c00 	.word	0x40012c00
+ 800d70c:	20005490 	.word	0x20005490
+ 800d710:	20005494 	.word	0x20005494
+ 800d714:	20005480 	.word	0x20005480
+ 800d718:	2000548c 	.word	0x2000548c
+ 800d71c:	601a      	str	r2, [r3, #0]
+ 800d71e:	48bb      	ldr	r0, [pc, #748]	@ (800da0c <ma_native_service+0xd08>)
+ 800d720:	f8ca 8000 	str.w	r8, [sl]
+ 800d724:	2303      	movs	r3, #3
+ 800d726:	6003      	str	r3, [r0, #0]
+ 800d728:	f04f 0b01 	mov.w	fp, #1
+ 800d72c:	2304      	movs	r3, #4
+ 800d72e:	4ab7      	ldr	r2, [pc, #732]	@ (800da0c <ma_native_service+0xd08>)
+ 800d730:	f8df e2dc 	ldr.w	lr, [pc, #732]	@ 800da10 <ma_native_service+0xd0c>
+ 800d734:	6013      	str	r3, [r2, #0]
+ 800d736:	9509      	str	r5, [sp, #36]	@ 0x24
+ 800d738:	2304      	movs	r3, #4
+ 800d73a:	6838      	ldr	r0, [r7, #0]
+ 800d73c:	f3bf 8f5f 	dmb	sy
+ 800d740:	f8de 2004 	ldr.w	r2, [lr, #4]
+ 800d744:	6879      	ldr	r1, [r7, #4]
+ 800d746:	f8d7 c008 	ldr.w	ip, [r7, #8]
+ 800d74a:	f3bf 8f5f 	dmb	sy
+ 800d74e:	07c5      	lsls	r5, r0, #31
+ 800d750:	d403      	bmi.n	800d75a <ma_native_service+0xa56>
+ 800d752:	683d      	ldr	r5, [r7, #0]
+ 800d754:	42a8      	cmp	r0, r5
+ 800d756:	f000 84a3 	beq.w	800e0a0 <ma_native_service+0x139c>
+ 800d75a:	3b01      	subs	r3, #1
+ 800d75c:	d1ed      	bne.n	800d73a <ma_native_service+0xa36>
+ 800d75e:	4bac      	ldr	r3, [pc, #688]	@ (800da10 <ma_native_service+0xd0c>)
+ 800d760:	9d09      	ldr	r5, [sp, #36]	@ 0x24
+ 800d762:	685a      	ldr	r2, [r3, #4]
+ 800d764:	6928      	ldr	r0, [r5, #16]
+ 800d766:	1b96      	subs	r6, r2, r6
+ 800d768:	602e      	str	r6, [r5, #0]
+ 800d76a:	6b6b      	ldr	r3, [r5, #52]	@ 0x34
+ 800d76c:	60ae      	str	r6, [r5, #8]
+ 800d76e:	3301      	adds	r3, #1
+ 800d770:	636b      	str	r3, [r5, #52]	@ 0x34
+ 800d772:	42b0      	cmp	r0, r6
+ 800d774:	f04f 0300 	mov.w	r3, #0
+ 800d778:	606b      	str	r3, [r5, #4]
+ 800d77a:	60eb      	str	r3, [r5, #12]
+ 800d77c:	d200      	bcs.n	800d780 <ma_native_service+0xa7c>
+ 800d77e:	612e      	str	r6, [r5, #16]
+ 800d780:	68a9      	ldr	r1, [r5, #8]
+ 800d782:	69ab      	ldr	r3, [r5, #24]
+ 800d784:	48a3      	ldr	r0, [pc, #652]	@ (800da14 <ma_native_service+0xd10>)
+ 800d786:	4299      	cmp	r1, r3
+ 800d788:	9b06      	ldr	r3, [sp, #24]
+ 800d78a:	bf88      	it	hi
+ 800d78c:	61a9      	strhi	r1, [r5, #24]
+ 800d78e:	f8d3 30ac 	ldr.w	r3, [r3, #172]	@ 0xac
+ 800d792:	49a1      	ldr	r1, [pc, #644]	@ (800da18 <ma_native_service+0xd14>)
+ 800d794:	632b      	str	r3, [r5, #48]	@ 0x30
+ 800d796:	2300      	movs	r3, #0
+ 800d798:	7003      	strb	r3, [r0, #0]
+ 800d79a:	680b      	ldr	r3, [r1, #0]
+ 800d79c:	42b3      	cmp	r3, r6
+ 800d79e:	9b05      	ldr	r3, [sp, #20]
+ 800d7a0:	bf38      	it	cc
+ 800d7a2:	600e      	strcc	r6, [r1, #0]
+ 800d7a4:	2b00      	cmp	r3, #0
+ 800d7a6:	f040 8467 	bne.w	800e078 <ma_native_service+0x1374>
+ 800d7aa:	f1bb 0f00 	cmp.w	fp, #0
+ 800d7ae:	f43f aaf1 	beq.w	800cd94 <ma_native_service+0x90>
+ 800d7b2:	7823      	ldrb	r3, [r4, #0]
+ 800d7b4:	2b00      	cmp	r3, #0
+ 800d7b6:	f47f aaed 	bne.w	800cd94 <ma_native_service+0x90>
+ 800d7ba:	4b98      	ldr	r3, [pc, #608]	@ (800da1c <ma_native_service+0xd18>)
+ 800d7bc:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800d7be:	041b      	lsls	r3, r3, #16
+ 800d7c0:	f57f aae8 	bpl.w	800cd94 <ma_native_service+0x90>
+ 800d7c4:	6aeb      	ldr	r3, [r5, #44]	@ 0x2c
+ 800d7c6:	eba2 0208 	sub.w	r2, r2, r8
+ 800d7ca:	429a      	cmp	r2, r3
+ 800d7cc:	626a      	str	r2, [r5, #36]	@ 0x24
+ 800d7ce:	bf88      	it	hi
+ 800d7d0:	62ea      	strhi	r2, [r5, #44]	@ 0x2c
+ 800d7d2:	4a8e      	ldr	r2, [pc, #568]	@ (800da0c <ma_native_service+0xd08>)
+ 800d7d4:	2300      	movs	r3, #0
+ 800d7d6:	6013      	str	r3, [r2, #0]
+ 800d7d8:	f7ff badc 	b.w	800cd94 <ma_native_service+0x90>
+ 800d7dc:	4990      	ldr	r1, [pc, #576]	@ (800da20 <ma_native_service+0xd1c>)
+ 800d7de:	4b91      	ldr	r3, [pc, #580]	@ (800da24 <ma_native_service+0xd20>)
+ 800d7e0:	4891      	ldr	r0, [pc, #580]	@ (800da28 <ma_native_service+0xd24>)
+ 800d7e2:	2400      	movs	r4, #0
+ 800d7e4:	700c      	strb	r4, [r1, #0]
+ 800d7e6:	f44f 528a 	mov.w	r2, #4416	@ 0x1140
+ 800d7ea:	702c      	strb	r4, [r5, #0]
+ 800d7ec:	701c      	strb	r4, [r3, #0]
+ 800d7ee:	4621      	mov	r1, r4
+ 800d7f0:	f009 fc7d 	bl	80170ee <memset>
+ 800d7f4:	4b8d      	ldr	r3, [pc, #564]	@ (800da2c <ma_native_service+0xd28>)
+ 800d7f6:	498e      	ldr	r1, [pc, #568]	@ (800da30 <ma_native_service+0xd2c>)
+ 800d7f8:	f04f 32ff 	mov.w	r2, #4294967295
+ 800d7fc:	601a      	str	r2, [r3, #0]
+ 800d7fe:	782b      	ldrb	r3, [r5, #0]
+ 800d800:	700c      	strb	r4, [r1, #0]
+ 800d802:	2b00      	cmp	r3, #0
+ 800d804:	f43f aaa0 	beq.w	800cd48 <ma_native_service+0x44>
+ 800d808:	4b84      	ldr	r3, [pc, #528]	@ (800da1c <ma_native_service+0xd18>)
+ 800d80a:	6c5b      	ldr	r3, [r3, #68]	@ 0x44
+ 800d80c:	041b      	lsls	r3, r3, #16
+ 800d80e:	f53f aac1 	bmi.w	800cd94 <ma_native_service+0x90>
+ 800d812:	4888      	ldr	r0, [pc, #544]	@ (800da34 <ma_native_service+0xd30>)
+ 800d814:	f008 f9b8 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800d818:	2814      	cmp	r0, #20
+ 800d81a:	f63f aabb 	bhi.w	800cd94 <ma_native_service+0x90>
+ 800d81e:	4b80      	ldr	r3, [pc, #512]	@ (800da20 <ma_native_service+0xd1c>)
+ 800d820:	781b      	ldrb	r3, [r3, #0]
+ 800d822:	2b00      	cmp	r3, #0
+ 800d824:	f000 8130 	beq.w	800da88 <ma_native_service+0xd84>
+ 800d828:	4b83      	ldr	r3, [pc, #524]	@ (800da38 <ma_native_service+0xd34>)
+ 800d82a:	f04f 7200 	mov.w	r2, #33554432	@ 0x2000000
+ 800d82e:	f8c3 2100 	str.w	r2, [r3, #256]	@ 0x100
+ 800d832:	f7ff baaf 	b.w	800cd94 <ma_native_service+0x90>
+ 800d836:	f894 313d 	ldrb.w	r3, [r4, #317]	@ 0x13d
+ 800d83a:	2b00      	cmp	r3, #0
+ 800d83c:	f43f aa9d 	beq.w	800cd7a <ma_native_service+0x76>
+ 800d840:	f894 313f 	ldrb.w	r3, [r4, #319]	@ 0x13f
+ 800d844:	2b00      	cmp	r3, #0
+ 800d846:	f47f aa98 	bne.w	800cd7a <ma_native_service+0x76>
+ 800d84a:	e478      	b.n	800d13e <ma_native_service+0x43a>
+ 800d84c:	4879      	ldr	r0, [pc, #484]	@ (800da34 <ma_native_service+0xd30>)
+ 800d84e:	f008 f99b 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800d852:	2814      	cmp	r0, #20
+ 800d854:	f63f aa87 	bhi.w	800cd66 <ma_native_service+0x62>
+ 800d858:	a80f      	add	r0, sp, #60	@ 0x3c
+ 800d85a:	f7f3 ffc3 	bl	80017e4 <mic_current_fast>
+ 800d85e:	2800      	cmp	r0, #0
+ 800d860:	f43f aa81 	beq.w	800cd66 <ma_native_service+0x62>
+ 800d864:	f89d 304f 	ldrb.w	r3, [sp, #79]	@ 0x4f
+ 800d868:	2b00      	cmp	r3, #0
+ 800d86a:	f43f aa7c 	beq.w	800cd66 <ma_native_service+0x62>
+ 800d86e:	4a73      	ldr	r2, [pc, #460]	@ (800da3c <ma_native_service+0xd38>)
+ 800d870:	7813      	ldrb	r3, [r2, #0]
+ 800d872:	b9b3      	cbnz	r3, 800d8a2 <ma_native_service+0xb9e>
+ 800d874:	f8df 820c 	ldr.w	r8, [pc, #524]	@ 800da84 <ma_native_service+0xd80>
+ 800d878:	4f71      	ldr	r7, [pc, #452]	@ (800da40 <ma_native_service+0xd3c>)
+ 800d87a:	f888 3000 	strb.w	r3, [r8]
+ 800d87e:	703b      	strb	r3, [r7, #0]
+ 800d880:	2301      	movs	r3, #1
+ 800d882:	7013      	strb	r3, [r2, #0]
+ 800d884:	6af1      	ldr	r1, [r6, #44]	@ 0x2c
+ 800d886:	4b6f      	ldr	r3, [pc, #444]	@ (800da44 <ma_native_service+0xd40>)
+ 800d888:	6af2      	ldr	r2, [r6, #44]	@ 0x2c
+ 800d88a:	6019      	str	r1, [r3, #0]
+ 800d88c:	3a80      	subs	r2, #128	@ 0x80
+ 800d88e:	f240 3103 	movw	r1, #771	@ 0x303
+ 800d892:	e9c3 2101 	strd	r2, r1, [r3, #4]
+ 800d896:	22f0      	movs	r2, #240	@ 0xf0
+ 800d898:	2170      	movs	r1, #112	@ 0x70
+ 800d89a:	e9c3 1203 	strd	r1, r2, [r3, #12]
+ 800d89e:	22e5      	movs	r2, #229	@ 0xe5
+ 800d8a0:	615a      	str	r2, [r3, #20]
+ 800d8a2:	4e69      	ldr	r6, [pc, #420]	@ (800da48 <ma_native_service+0xd44>)
+ 800d8a4:	7833      	ldrb	r3, [r6, #0]
+ 800d8a6:	f003 02ff 	and.w	r2, r3, #255	@ 0xff
+ 800d8aa:	2b00      	cmp	r3, #0
+ 800d8ac:	f47f aa5b 	bne.w	800cd66 <ma_native_service+0x62>
+ 800d8b0:	4b66      	ldr	r3, [pc, #408]	@ (800da4c <ma_native_service+0xd48>)
+ 800d8b2:	7819      	ldrb	r1, [r3, #0]
+ 800d8b4:	2900      	cmp	r1, #0
+ 800d8b6:	f040 81a7 	bne.w	800dc08 <ma_native_service+0xf04>
+ 800d8ba:	f8df 81c8 	ldr.w	r8, [pc, #456]	@ 800da84 <ma_native_service+0xd80>
+ 800d8be:	f898 3000 	ldrb.w	r3, [r8]
+ 800d8c2:	2b00      	cmp	r3, #0
+ 800d8c4:	f000 81df 	beq.w	800dc86 <ma_native_service+0xf82>
+ 800d8c8:	f3bf 8f5f 	dmb	sy
+ 800d8cc:	2301      	movs	r3, #1
+ 800d8ce:	7033      	strb	r3, [r6, #0]
+ 800d8d0:	f7ff ba49 	b.w	800cd66 <ma_native_service+0x62>
+ 800d8d4:	f413 4300 	ands.w	r3, r3, #32768	@ 0x8000
+ 800d8d8:	f47f aa5c 	bne.w	800cd94 <ma_native_service+0x90>
+ 800d8dc:	f7ff ba58 	b.w	800cd90 <ma_native_service+0x8c>
+ 800d8e0:	4b5b      	ldr	r3, [pc, #364]	@ (800da50 <ma_native_service+0xd4c>)
+ 800d8e2:	781b      	ldrb	r3, [r3, #0]
+ 800d8e4:	4a5b      	ldr	r2, [pc, #364]	@ (800da54 <ma_native_service+0xd50>)
+ 800d8e6:	7817      	ldrb	r7, [r2, #0]
+ 800d8e8:	2b00      	cmp	r3, #0
+ 800d8ea:	f43f aaaf 	beq.w	800ce4c <ma_native_service+0x148>
+ 800d8ee:	4c5a      	ldr	r4, [pc, #360]	@ (800da58 <ma_native_service+0xd54>)
+ 800d8f0:	edd4 8a4c 	vldr	s17, [r4, #304]	@ 0x130
+ 800d8f4:	ed94 9a4d 	vldr	s18, [r4, #308]	@ 0x134
+ 800d8f8:	1c59      	adds	r1, r3, #1
+ 800d8fa:	4699      	mov	r9, r3
+ 800d8fc:	f5a4 5680 	sub.w	r6, r4, #4096	@ 0x1000
+ 800d900:	f017 0701 	ands.w	r7, r7, #1
+ 800d904:	ed96 7a02 	vldr	s14, [r6, #8]
+ 800d908:	6870      	ldr	r0, [r6, #4]
+ 800d90a:	f000 8118 	beq.w	800db3e <ma_native_service+0xe3a>
+ 800d90e:	2801      	cmp	r0, #1
+ 800d910:	f000 8135 	beq.w	800db7e <ma_native_service+0xe7a>
+ 800d914:	edd4 6a4e 	vldr	s13, [r4, #312]	@ 0x138
+ 800d918:	eddf 7a50 	vldr	s15, [pc, #320]	@ 800da5c <ma_native_service+0xd58>
+ 800d91c:	4b50      	ldr	r3, [pc, #320]	@ (800da60 <ma_native_service+0xd5c>)
+ 800d91e:	4f51      	ldr	r7, [pc, #324]	@ (800da64 <ma_native_service+0xd60>)
+ 800d920:	eef8 6a66 	vcvt.f32.u32	s13, s13
+ 800d924:	2200      	movs	r2, #0
+ 800d926:	ee76 6aa7 	vadd.f32	s13, s13, s15
+ 800d92a:	601a      	str	r2, [r3, #0]
+ 800d92c:	eec6 7a87 	vdiv.f32	s15, s13, s14
+ 800d930:	4b4d      	ldr	r3, [pc, #308]	@ (800da68 <ma_native_service+0xd64>)
+ 800d932:	4a4e      	ldr	r2, [pc, #312]	@ (800da6c <ma_native_service+0xd68>)
+ 800d934:	681b      	ldr	r3, [r3, #0]
+ 800d936:	4c4e      	ldr	r4, [pc, #312]	@ (800da70 <ma_native_service+0xd6c>)
+ 800d938:	6127      	str	r7, [r4, #16]
+ 800d93a:	6061      	str	r1, [r4, #4]
+ 800d93c:	ee06 3a90 	vmov	s13, r3
+ 800d940:	eeb8 0a66 	vcvt.f32.u32	s0, s13
+ 800d944:	fba2 2303 	umull	r2, r3, r2, r3
+ 800d948:	ee60 7a27 	vmul.f32	s15, s0, s15
+ 800d94c:	0a9a      	lsrs	r2, r3, #10
+ 800d94e:	eefc 7ae7 	vcvt.u32.f32	s15, s15
+ 800d952:	4b48      	ldr	r3, [pc, #288]	@ (800da74 <ma_native_service+0xd70>)
+ 800d954:	ed96 8a04 	vldr	s16, [r6, #16]
+ 800d958:	681e      	ldr	r6, [r3, #0]
+ 800d95a:	8366      	strh	r6, [r4, #26]
+ 800d95c:	ee17 3a90 	vmov	r3, s15
+ 800d960:	fb09 3302 	mla	r3, r9, r2, r3
+ 800d964:	2201      	movs	r2, #1
+ 800d966:	4290      	cmp	r0, r2
+ 800d968:	6023      	str	r3, [r4, #0]
+ 800d96a:	7722      	strb	r2, [r4, #28]
+ 800d96c:	d00f      	beq.n	800d98e <ma_native_service+0xc8a>
+ 800d96e:	eddf 6a42 	vldr	s13, [pc, #264]	@ 800da78 <ma_native_service+0xd74>
+ 800d972:	ee07 3a90 	vmov	s15, r3
+ 800d976:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800d97a:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 800d97e:	ee27 7a27 	vmul.f32	s14, s14, s15
+ 800d982:	ee87 0a00 	vdiv.f32	s0, s14, s0
+ 800d986:	f009 fc89 	bl	801729c <sinf>
+ 800d98a:	ee28 8a00 	vmul.f32	s16, s16, s0
+ 800d98e:	f3c6 034f 	ubfx	r3, r6, #1, #16
+ 800d992:	2200      	movs	r2, #0
+ 800d994:	ee68 8a28 	vmul.f32	s17, s16, s17
+ 800d998:	f363 020f 	bfi	r2, r3, #0, #16
+ 800d99c:	ee28 8a09 	vmul.f32	s16, s16, s18
+ 800d9a0:	f363 421f 	bfi	r2, r3, #16, #16
+ 800d9a4:	edc4 8a02 	vstr	s17, [r4, #8]
+ 800d9a8:	ed84 8a03 	vstr	s16, [r4, #12]
+ 800d9ac:	6162      	str	r2, [r4, #20]
+ 800d9ae:	8323      	strh	r3, [r4, #24]
+ 800d9b0:	f3bf 8f5f 	dmb	sy
+ 800d9b4:	2301      	movs	r3, #1
+ 800d9b6:	f888 3000 	strb.w	r3, [r8]
+ 800d9ba:	f7ff b9c1 	b.w	800cd40 <ma_native_service+0x3c>
+ 800d9be:	a817      	add	r0, sp, #92	@ 0x5c
+ 800d9c0:	f7f3 ff10 	bl	80017e4 <mic_current_fast>
+ 800d9c4:	2800      	cmp	r0, #0
+ 800d9c6:	f43f a9ba 	beq.w	800cd3e <ma_native_service+0x3a>
+ 800d9ca:	f89d 306f 	ldrb.w	r3, [sp, #111]	@ 0x6f
+ 800d9ce:	4d2b      	ldr	r5, [pc, #172]	@ (800da7c <ma_native_service+0xd78>)
+ 800d9d0:	2b00      	cmp	r3, #0
+ 800d9d2:	f43f a9b5 	beq.w	800cd40 <ma_native_service+0x3c>
+ 800d9d6:	2301      	movs	r3, #1
+ 800d9d8:	7023      	strb	r3, [r4, #0]
+ 800d9da:	702b      	strb	r3, [r5, #0]
+ 800d9dc:	4b1d      	ldr	r3, [pc, #116]	@ (800da54 <ma_native_service+0xd50>)
+ 800d9de:	4a1c      	ldr	r2, [pc, #112]	@ (800da50 <ma_native_service+0xd4c>)
+ 800d9e0:	701e      	strb	r6, [r3, #0]
+ 800d9e2:	4b27      	ldr	r3, [pc, #156]	@ (800da80 <ma_native_service+0xd7c>)
+ 800d9e4:	7016      	strb	r6, [r2, #0]
+ 800d9e6:	601e      	str	r6, [r3, #0]
+ 800d9e8:	4b22      	ldr	r3, [pc, #136]	@ (800da74 <ma_native_service+0xd70>)
+ 800d9ea:	6af9      	ldr	r1, [r7, #44]	@ 0x2c
+ 800d9ec:	6afa      	ldr	r2, [r7, #44]	@ 0x2c
+ 800d9ee:	6019      	str	r1, [r3, #0]
+ 800d9f0:	f240 3003 	movw	r0, #771	@ 0x303
+ 800d9f4:	2170      	movs	r1, #112	@ 0x70
+ 800d9f6:	e9c3 0102 	strd	r0, r1, [r3, #8]
+ 800d9fa:	3a80      	subs	r2, #128	@ 0x80
+ 800d9fc:	20f0      	movs	r0, #240	@ 0xf0
+ 800d9fe:	21e5      	movs	r1, #229	@ 0xe5
+ 800da00:	e9c3 0104 	strd	r0, r1, [r3, #16]
+ 800da04:	605a      	str	r2, [r3, #4]
+ 800da06:	f7ff b9e5 	b.w	800cdd4 <ma_native_service+0xd0>
+ 800da0a:	bf00      	nop
+ 800da0c:	20005488 	.word	0x20005488
+ 800da10:	e0001000 	.word	0xe0001000
+ 800da14:	20005360 	.word	0x20005360
+ 800da18:	20005434 	.word	0x20005434
+ 800da1c:	40012c00 	.word	0x40012c00
+ 800da20:	2000535d 	.word	0x2000535d
+ 800da24:	2000535c 	.word	0x2000535c
+ 800da28:	20005668 	.word	0x20005668
+ 800da2c:	200055e4 	.word	0x200055e4
+ 800da30:	200055e9 	.word	0x200055e9
+ 800da34:	20000154 	.word	0x20000154
+ 800da38:	e000e100 	.word	0xe000e100
+ 800da3c:	200051b6 	.word	0x200051b6
+ 800da40:	20005429 	.word	0x20005429
+ 800da44:	20005228 	.word	0x20005228
+ 800da48:	200051c1 	.word	0x200051c1
+ 800da4c:	200051c0 	.word	0x200051c0
+ 800da50:	2000535e 	.word	0x2000535e
+ 800da54:	2000535f 	.word	0x2000535f
+ 800da58:	20006668 	.word	0x20006668
+ 800da5c:	3dcccccd 	.word	0x3dcccccd
+ 800da60:	2000534c 	.word	0x2000534c
+ 800da64:	437a0000 	.word	0x437a0000
+ 800da68:	20000374 	.word	0x20000374
+ 800da6c:	10624dd3 	.word	0x10624dd3
+ 800da70:	20005330 	.word	0x20005330
+ 800da74:	20005318 	.word	0x20005318
+ 800da78:	40c90fdb 	.word	0x40c90fdb
+ 800da7c:	200055e0 	.word	0x200055e0
+ 800da80:	20005350 	.word	0x20005350
+ 800da84:	200051b4 	.word	0x200051b4
+ 800da88:	4bbc      	ldr	r3, [pc, #752]	@ (800dd7c <ma_native_service+0x1078>)
+ 800da8a:	781b      	ldrb	r3, [r3, #0]
+ 800da8c:	2b00      	cmp	r3, #0
+ 800da8e:	f43f a981 	beq.w	800cd94 <ma_native_service+0x90>
+ 800da92:	e6c9      	b.n	800d828 <ma_native_service+0xb24>
+ 800da94:	edd6 7a06 	vldr	s15, [r6, #24]
+ 800da98:	ee87 0aa8 	vdiv.f32	s0, s15, s17
+ 800da9c:	ee20 0a08 	vmul.f32	s0, s0, s16
+ 800daa0:	eeb4 0a40 	vcmp.f32	s0, s0
+ 800daa4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800daa8:	d665      	bvs.n	800db76 <ma_native_service+0xe72>
+ 800daaa:	eeb4 9ac0 	vcmpe.f32	s18, s0
+ 800daae:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800dab2:	bfc8      	it	gt
+ 800dab4:	eeb0 0a49 	vmovgt.f32	s0, s18
+ 800dab8:	eeb4 0ac8 	vcmpe.f32	s0, s16
+ 800dabc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800dac0:	bfcc      	ite	gt
+ 800dac2:	2301      	movgt	r3, #1
+ 800dac4:	2300      	movle	r3, #0
+ 800dac6:	2b00      	cmp	r3, #0
+ 800dac8:	bf18      	it	ne
+ 800daca:	eeb0 0a48 	vmovne.f32	s0, s16
+ 800dace:	f009 fc95 	bl	80173fc <lroundf>
+ 800dad2:	7328      	strb	r0, [r5, #12]
+ 800dad4:	f3c0 2007 	ubfx	r0, r0, #8, #8
+ 800dad8:	7368      	strb	r0, [r5, #13]
+ 800dada:	edd6 7a07 	vldr	s15, [r6, #28]
+ 800dade:	ee87 0aa8 	vdiv.f32	s0, s15, s17
+ 800dae2:	ee20 0a08 	vmul.f32	s0, s0, s16
+ 800dae6:	eeb4 0a40 	vcmp.f32	s0, s0
+ 800daea:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800daee:	d63e      	bvs.n	800db6e <ma_native_service+0xe6a>
+ 800daf0:	eeb4 9ac0 	vcmpe.f32	s18, s0
+ 800daf4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800daf8:	bfc8      	it	gt
+ 800dafa:	eeb0 0a49 	vmovgt.f32	s0, s18
+ 800dafe:	eeb4 0ac8 	vcmpe.f32	s0, s16
+ 800db02:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800db06:	bfcc      	ite	gt
+ 800db08:	2301      	movgt	r3, #1
+ 800db0a:	2300      	movle	r3, #0
+ 800db0c:	2b00      	cmp	r3, #0
+ 800db0e:	bf18      	it	ne
+ 800db10:	eeb0 0a48 	vmovne.f32	s0, s16
+ 800db14:	f009 fc72 	bl	80173fc <lroundf>
+ 800db18:	73a8      	strb	r0, [r5, #14]
+ 800db1a:	f3c0 2007 	ubfx	r0, r0, #8, #8
+ 800db1e:	73e8      	strb	r0, [r5, #15]
+ 800db20:	ed96 0a08 	vldr	s0, [r6, #32]
+ 800db24:	ee80 0a28 	vdiv.f32	s0, s0, s17
+ 800db28:	f009 fc68 	bl	80173fc <lroundf>
+ 800db2c:	f8c5 0012 	str.w	r0, [r5, #18]
+ 800db30:	f7ff bb8c 	b.w	800d24c <ma_native_service+0x548>
+ 800db34:	eeb0 0a49 	vmov.f32	s0, s18
+ 800db38:	2300      	movs	r3, #0
+ 800db3a:	f7ff bbb7 	b.w	800d2ac <ma_native_service+0x5a8>
+ 800db3e:	4b90      	ldr	r3, [pc, #576]	@ (800dd80 <ma_native_service+0x107c>)
+ 800db40:	eddf 7a90 	vldr	s15, [pc, #576]	@ 800dd84 <ma_native_service+0x1080>
+ 800db44:	601f      	str	r7, [r3, #0]
+ 800db46:	4f90      	ldr	r7, [pc, #576]	@ (800dd88 <ma_native_service+0x1084>)
+ 800db48:	e6f2      	b.n	800d930 <ma_native_service+0xc2c>
+ 800db4a:	eef5 9a40 	vcmp.f32	s19, #0.0
+ 800db4e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800db52:	d103      	bne.n	800db5c <ma_native_service+0xe58>
+ 800db54:	f5b9 6ffa 	cmp.w	r9, #2000	@ 0x7d0
+ 800db58:	f4bf aa3c 	bcs.w	800cfd4 <ma_native_service+0x2d0>
+ 800db5c:	2400      	movs	r4, #0
+ 800db5e:	f888 4000 	strb.w	r4, [r8]
+ 800db62:	488a      	ldr	r0, [pc, #552]	@ (800dd8c <ma_native_service+0x1088>)
+ 800db64:	702c      	strb	r4, [r5, #0]
+ 800db66:	f44f 528a 	mov.w	r2, #4416	@ 0x1140
+ 800db6a:	7034      	strb	r4, [r6, #0]
+ 800db6c:	e63f      	b.n	800d7ee <ma_native_service+0xaea>
+ 800db6e:	eeb0 0a49 	vmov.f32	s0, s18
+ 800db72:	2300      	movs	r3, #0
+ 800db74:	e7ca      	b.n	800db0c <ma_native_service+0xe08>
+ 800db76:	eeb0 0a49 	vmov.f32	s0, s18
+ 800db7a:	2300      	movs	r3, #0
+ 800db7c:	e7a3      	b.n	800dac6 <ma_native_service+0xdc2>
+ 800db7e:	4b80      	ldr	r3, [pc, #512]	@ (800dd80 <ma_native_service+0x107c>)
+ 800db80:	eddf 7a83 	vldr	s15, [pc, #524]	@ 800dd90 <ma_native_service+0x108c>
+ 800db84:	4f83      	ldr	r7, [pc, #524]	@ (800dd94 <ma_native_service+0x1090>)
+ 800db86:	2200      	movs	r2, #0
+ 800db88:	601a      	str	r2, [r3, #0]
+ 800db8a:	e6d1      	b.n	800d930 <ma_native_service+0xc2c>
+ 800db8c:	4d82      	ldr	r5, [pc, #520]	@ (800dd98 <ma_native_service+0x1094>)
+ 800db8e:	4883      	ldr	r0, [pc, #524]	@ (800dd9c <ma_native_service+0x1098>)
+ 800db90:	f505 66d0 	add.w	r6, r5, #1664	@ 0x680
+ 800db94:	f04f 32ff 	mov.w	r2, #4294967295
+ 800db98:	f815 3f01 	ldrb.w	r3, [r5, #1]!
+ 800db9c:	2108      	movs	r1, #8
+ 800db9e:	405a      	eors	r2, r3
+ 800dba0:	f342 0300 	sbfx	r3, r2, #0, #1
+ 800dba4:	4003      	ands	r3, r0
+ 800dba6:	3901      	subs	r1, #1
+ 800dba8:	ea83 0252 	eor.w	r2, r3, r2, lsr #1
+ 800dbac:	d1f8      	bne.n	800dba0 <ma_native_service+0xe9c>
+ 800dbae:	42b5      	cmp	r5, r6
+ 800dbb0:	d1f2      	bne.n	800db98 <ma_native_service+0xe94>
+ 800dbb2:	43d2      	mvns	r2, r2
+ 800dbb4:	2301      	movs	r3, #1
+ 800dbb6:	f8c4 20e0 	str.w	r2, [r4, #224]	@ 0xe0
+ 800dbba:	f884 313f 	strb.w	r3, [r4, #319]	@ 0x13f
+ 800dbbe:	f7ff b8dc 	b.w	800cd7a <ma_native_service+0x76>
+ 800dbc2:	2f03      	cmp	r7, #3
+ 800dbc4:	d941      	bls.n	800dc4a <ma_native_service+0xf46>
+ 800dbc6:	2f05      	cmp	r7, #5
+ 800dbc8:	d859      	bhi.n	800dc7e <ma_native_service+0xf7a>
+ 800dbca:	4975      	ldr	r1, [pc, #468]	@ (800dda0 <ma_native_service+0x109c>)
+ 800dbcc:	f240 424d 	movw	r2, #1101	@ 0x44d
+ 800dbd0:	9119      	str	r1, [sp, #100]	@ 0x64
+ 800dbd2:	4972      	ldr	r1, [pc, #456]	@ (800dd9c <ma_native_service+0x1098>)
+ 800dbd4:	921d      	str	r2, [sp, #116]	@ 0x74
+ 800dbd6:	f10d 0c77 	add.w	ip, sp, #119	@ 0x77
+ 800dbda:	f10d 0e93 	add.w	lr, sp, #147	@ 0x93
+ 800dbde:	f04f 32ff 	mov.w	r2, #4294967295
+ 800dbe2:	f81c 0f01 	ldrb.w	r0, [ip, #1]!
+ 800dbe6:	f04f 0908 	mov.w	r9, #8
+ 800dbea:	4042      	eors	r2, r0
+ 800dbec:	f342 0000 	sbfx	r0, r2, #0, #1
+ 800dbf0:	4008      	ands	r0, r1
+ 800dbf2:	f1b9 0901 	subs.w	r9, r9, #1
+ 800dbf6:	ea80 0252 	eor.w	r2, r0, r2, lsr #1
+ 800dbfa:	d1f7      	bne.n	800dbec <ma_native_service+0xee8>
+ 800dbfc:	45f4      	cmp	ip, lr
+ 800dbfe:	d1f0      	bne.n	800dbe2 <ma_native_service+0xede>
+ 800dc00:	43d2      	mvns	r2, r2
+ 800dc02:	9225      	str	r2, [sp, #148]	@ 0x94
+ 800dc04:	f7ff b959 	b.w	800ceba <ma_native_service+0x1b6>
+ 800dc08:	701a      	strb	r2, [r3, #0]
+ 800dc0a:	4a66      	ldr	r2, [pc, #408]	@ (800dda4 <ma_native_service+0x10a0>)
+ 800dc0c:	4b66      	ldr	r3, [pc, #408]	@ (800dda8 <ma_native_service+0x10a4>)
+ 800dc0e:	6811      	ldr	r1, [r2, #0]
+ 800dc10:	6818      	ldr	r0, [r3, #0]
+ 800dc12:	4288      	cmp	r0, r1
+ 800dc14:	bf84      	itt	hi
+ 800dc16:	6819      	ldrhi	r1, [r3, #0]
+ 800dc18:	6011      	strhi	r1, [r2, #0]
+ 800dc1a:	4a64      	ldr	r2, [pc, #400]	@ (800ddac <ma_native_service+0x10a8>)
+ 800dc1c:	6811      	ldr	r1, [r2, #0]
+ 800dc1e:	b9c9      	cbnz	r1, 800dc54 <ma_native_service+0xf50>
+ 800dc20:	6818      	ldr	r0, [r3, #0]
+ 800dc22:	b1b8      	cbz	r0, 800dc54 <ma_native_service+0xf50>
+ 800dc24:	681b      	ldr	r3, [r3, #0]
+ 800dc26:	f5b3 6f7a 	cmp.w	r3, #4000	@ 0xfa0
+ 800dc2a:	d813      	bhi.n	800dc54 <ma_native_service+0xf50>
+ 800dc2c:	f8df 81d0 	ldr.w	r8, [pc, #464]	@ 800de00 <ma_native_service+0x10fc>
+ 800dc30:	f898 3000 	ldrb.w	r3, [r8]
+ 800dc34:	2b00      	cmp	r3, #0
+ 800dc36:	f000 810d 	beq.w	800de54 <ma_native_service+0x1150>
+ 800dc3a:	3301      	adds	r3, #1
+ 800dc3c:	b2db      	uxtb	r3, r3
+ 800dc3e:	2b08      	cmp	r3, #8
+ 800dc40:	f000 820c 	beq.w	800e05c <ma_native_service+0x1358>
+ 800dc44:	f888 3000 	strb.w	r3, [r8]
+ 800dc48:	e639      	b.n	800d8be <ma_native_service+0xbba>
+ 800dc4a:	f641 7241 	movw	r2, #8001	@ 0x1f41
+ 800dc4e:	f04f 517e 	mov.w	r1, #1065353216	@ 0x3f800000
+ 800dc52:	e7bd      	b.n	800dbd0 <ma_native_service+0xecc>
+ 800dc54:	6813      	ldr	r3, [r2, #0]
+ 800dc56:	2b00      	cmp	r3, #0
+ 800dc58:	f000 80d6 	beq.w	800de08 <ma_native_service+0x1104>
+ 800dc5c:	6813      	ldr	r3, [r2, #0]
+ 800dc5e:	b2db      	uxtb	r3, r3
+ 800dc60:	7023      	strb	r3, [r4, #0]
+ 800dc62:	f7ff b880 	b.w	800cd66 <ma_native_service+0x62>
+ 800dc66:	4b52      	ldr	r3, [pc, #328]	@ (800ddb0 <ma_native_service+0x10ac>)
+ 800dc68:	685a      	ldr	r2, [r3, #4]
+ 800dc6a:	4b52      	ldr	r3, [pc, #328]	@ (800ddb4 <ma_native_service+0x10b0>)
+ 800dc6c:	601a      	str	r2, [r3, #0]
+ 800dc6e:	4b52      	ldr	r3, [pc, #328]	@ (800ddb8 <ma_native_service+0x10b4>)
+ 800dc70:	9306      	str	r3, [sp, #24]
+ 800dc72:	2301      	movs	r3, #1
+ 800dc74:	9305      	str	r3, [sp, #20]
+ 800dc76:	f04f 0b00 	mov.w	fp, #0
+ 800dc7a:	2305      	movs	r3, #5
+ 800dc7c:	e557      	b.n	800d72e <ma_native_service+0xa2a>
+ 800dc7e:	494f      	ldr	r1, [pc, #316]	@ (800ddbc <ma_native_service+0x10b8>)
+ 800dc80:	f240 4202 	movw	r2, #1026	@ 0x402
+ 800dc84:	e7a4      	b.n	800dbd0 <ma_native_service+0xecc>
+ 800dc86:	4f4e      	ldr	r7, [pc, #312]	@ (800ddc0 <ma_native_service+0x10bc>)
+ 800dc88:	484e      	ldr	r0, [pc, #312]	@ (800ddc4 <ma_native_service+0x10c0>)
+ 800dc8a:	4d4f      	ldr	r5, [pc, #316]	@ (800ddc8 <ma_native_service+0x10c4>)
+ 800dc8c:	229c      	movs	r2, #156	@ 0x9c
+ 800dc8e:	2100      	movs	r1, #0
+ 800dc90:	f009 fa2d 	bl	80170ee <memset>
+ 800dc94:	2224      	movs	r2, #36	@ 0x24
+ 800dc96:	2100      	movs	r1, #0
+ 800dc98:	484c      	ldr	r0, [pc, #304]	@ (800ddcc <ma_native_service+0x10c8>)
+ 800dc9a:	f009 fa28 	bl	80170ee <memset>
+ 800dc9e:	f8df e164 	ldr.w	lr, [pc, #356]	@ 800de04 <ma_native_service+0x1100>
+ 800dca2:	e8be 000f 	ldmia.w	lr!, {r0, r1, r2, r3}
+ 800dca6:	f10d 0c5c 	add.w	ip, sp, #92	@ 0x5c
+ 800dcaa:	4664      	mov	r4, ip
+ 800dcac:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 800dcb0:	e89e 0003 	ldmia.w	lr, {r0, r1}
+ 800dcb4:	e88c 0003 	stmia.w	ip, {r0, r1}
+ 800dcb8:	f10d 0874 	add.w	r8, sp, #116	@ 0x74
+ 800dcbc:	f854 3b04 	ldr.w	r3, [r4], #4
+ 800dcc0:	61ab      	str	r3, [r5, #24]
+ 800dcc2:	4544      	cmp	r4, r8
+ 800dcc4:	f105 051c 	add.w	r5, r5, #28
+ 800dcc8:	d1f8      	bne.n	800dcbc <ma_native_service+0xfb8>
+ 800dcca:	783f      	ldrb	r7, [r7, #0]
+ 800dccc:	eddf 7a40 	vldr	s15, [pc, #256]	@ 800ddd0 <ma_native_service+0x10cc>
+ 800dcd0:	f007 030f 	and.w	r3, r7, #15
+ 800dcd4:	ee08 3a90 	vmov	s17, r3
+ 800dcd8:	eef8 8a68 	vcvt.f32.u32	s17, s17
+ 800dcdc:	ee68 8aa7 	vmul.f32	s17, s17, s15
+ 800dce0:	eeb0 0a68 	vmov.f32	s0, s17
+ 800dce4:	f009 faa2 	bl	801722c <cosf>
+ 800dce8:	eeb0 8a40 	vmov.f32	s16, s0
+ 800dcec:	eeb0 0a68 	vmov.f32	s0, s17
+ 800dcf0:	f009 fad4 	bl	801729c <sinf>
+ 800dcf4:	06fd      	lsls	r5, r7, #27
+ 800dcf6:	4a37      	ldr	r2, [pc, #220]	@ (800ddd4 <ma_native_service+0x10d0>)
+ 800dcf8:	bf58      	it	pl
+ 800dcfa:	ed9f 7a37 	vldrpl	s14, [pc, #220]	@ 800ddd8 <ma_native_service+0x10d4>
+ 800dcfe:	ed92 6a08 	vldr	s12, [r2, #32]
+ 800dd02:	4936      	ldr	r1, [pc, #216]	@ (800dddc <ma_native_service+0x10d8>)
+ 800dd04:	4a36      	ldr	r2, [pc, #216]	@ (800dde0 <ma_native_service+0x10dc>)
+ 800dd06:	4b37      	ldr	r3, [pc, #220]	@ (800dde4 <ma_native_service+0x10e0>)
+ 800dd08:	4d36      	ldr	r5, [pc, #216]	@ (800dde4 <ma_native_service+0x10e0>)
+ 800dd0a:	bf48      	it	mi
+ 800dd0c:	eeb6 7a08 	vmovmi.f32	s14, #104	@ 0x3f400000  0.750
+ 800dd10:	ee68 6a07 	vmul.f32	s13, s16, s14
+ 800dd14:	ee20 7a07 	vmul.f32	s14, s0, s14
+ 800dd18:	06bc      	lsls	r4, r7, #26
+ 800dd1a:	ee28 8a06 	vmul.f32	s16, s16, s12
+ 800dd1e:	ee60 7a06 	vmul.f32	s15, s0, s12
+ 800dd22:	ed82 7a00 	vstr	s14, [r2]
+ 800dd26:	edc1 6a00 	vstr	s13, [r1]
+ 800dd2a:	bf4c      	ite	mi
+ 800dd2c:	4a2e      	ldrmi	r2, [pc, #184]	@ (800dde8 <ma_native_service+0x10e4>)
+ 800dd2e:	4a2f      	ldrpl	r2, [pc, #188]	@ (800ddec <ma_native_service+0x10e8>)
+ 800dd30:	611a      	str	r2, [r3, #16]
+ 800dd32:	2100      	movs	r1, #0
+ 800dd34:	6159      	str	r1, [r3, #20]
+ 800dd36:	edc3 6a00 	vstr	s13, [r3]
+ 800dd3a:	ed83 7a01 	vstr	s14, [r3, #4]
+ 800dd3e:	ed83 8a02 	vstr	s16, [r3, #8]
+ 800dd42:	edc3 7a03 	vstr	s15, [r3, #12]
+ 800dd46:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800dd48:	4c1f      	ldr	r4, [pc, #124]	@ (800ddc8 <ma_native_service+0x10c4>)
+ 800dd4a:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800dd4c:	e895 0003 	ldmia.w	r5, {r0, r1}
+ 800dd50:	4a1e      	ldr	r2, [pc, #120]	@ (800ddcc <ma_native_service+0x10c8>)
+ 800dd52:	e884 0003 	stmia.w	r4, {r0, r1}
+ 800dd56:	0738      	lsls	r0, r7, #28
+ 800dd58:	bf54      	ite	pl
+ 800dd5a:	4b25      	ldrpl	r3, [pc, #148]	@ (800ddf0 <ma_native_service+0x10ec>)
+ 800dd5c:	f04f 537e 	movmi.w	r3, #1065353216	@ 0x3f800000
+ 800dd60:	60d3      	str	r3, [r2, #12]
+ 800dd62:	0779      	lsls	r1, r7, #29
+ 800dd64:	4a23      	ldr	r2, [pc, #140]	@ (800ddf4 <ma_native_service+0x10f0>)
+ 800dd66:	bf4c      	ite	mi
+ 800dd68:	4b0a      	ldrmi	r3, [pc, #40]	@ (800dd94 <ma_native_service+0x1090>)
+ 800dd6a:	4b07      	ldrpl	r3, [pc, #28]	@ (800dd88 <ma_native_service+0x1084>)
+ 800dd6c:	6013      	str	r3, [r2, #0]
+ 800dd6e:	07ba      	lsls	r2, r7, #30
+ 800dd70:	4a21      	ldr	r2, [pc, #132]	@ (800ddf8 <ma_native_service+0x10f4>)
+ 800dd72:	bf4c      	ite	mi
+ 800dd74:	4b0a      	ldrmi	r3, [pc, #40]	@ (800dda0 <ma_native_service+0x109c>)
+ 800dd76:	4b21      	ldrpl	r3, [pc, #132]	@ (800ddfc <ma_native_service+0x10f8>)
+ 800dd78:	6013      	str	r3, [r2, #0]
+ 800dd7a:	e5a5      	b.n	800d8c8 <ma_native_service+0xbc4>
+ 800dd7c:	200051c1 	.word	0x200051c1
+ 800dd80:	2000534c 	.word	0x2000534c
+ 800dd84:	3dcccccd 	.word	0x3dcccccd
+ 800dd88:	43af0000 	.word	0x43af0000
+ 800dd8c:	20005668 	.word	0x20005668
+ 800dd90:	40266666 	.word	0x40266666
+ 800dd94:	437a0000 	.word	0x437a0000
+ 800dd98:	200060c7 	.word	0x200060c7
+ 800dd9c:	82f63b78 	.word	0x82f63b78
+ 800dda0:	42480000 	.word	0x42480000
+ 800dda4:	20005430 	.word	0x20005430
+ 800dda8:	200051bc 	.word	0x200051bc
+ 800ddac:	200051b8 	.word	0x200051b8
+ 800ddb0:	e0001000 	.word	0xe0001000
+ 800ddb4:	20005484 	.word	0x20005484
+ 800ddb8:	200054f0 	.word	0x200054f0
+ 800ddbc:	43480000 	.word	0x43480000
+ 800ddc0:	20005429 	.word	0x20005429
+ 800ddc4:	20005258 	.word	0x20005258
+ 800ddc8:	20005240 	.word	0x20005240
+ 800ddcc:	200052f4 	.word	0x200052f4
+ 800ddd0:	3ec90fdb 	.word	0x3ec90fdb
+ 800ddd4:	2000033c 	.word	0x2000033c
+ 800ddd8:	3e4ccccd 	.word	0x3e4ccccd
+ 800dddc:	2000520c 	.word	0x2000520c
+ 800dde0:	20005208 	.word	0x20005208
+ 800dde4:	20005210 	.word	0x20005210
+ 800dde8:	439d1463 	.word	0x439d1463
+ 800ddec:	41fb53d1 	.word	0x41fb53d1
+ 800ddf0:	3d4ccccd 	.word	0x3d4ccccd
+ 800ddf4:	20005204 	.word	0x20005204
+ 800ddf8:	20005200 	.word	0x20005200
+ 800ddfc:	40a00000 	.word	0x40a00000
+ 800de00:	200051b4 	.word	0x200051b4
+ 800de04:	080185f0 	.word	0x080185f0
+ 800de08:	2303      	movs	r3, #3
+ 800de0a:	7023      	strb	r3, [r4, #0]
+ 800de0c:	f7fe bfab 	b.w	800cd66 <ma_native_service+0x62>
+ 800de10:	f44f 528a 	mov.w	r2, #4416	@ 0x1140
+ 800de14:	48ba      	ldr	r0, [pc, #744]	@ (800e100 <ma_native_service+0x13fc>)
+ 800de16:	f888 1000 	strb.w	r1, [r8]
+ 800de1a:	9105      	str	r1, [sp, #20]
+ 800de1c:	7029      	strb	r1, [r5, #0]
+ 800de1e:	7031      	strb	r1, [r6, #0]
+ 800de20:	f009 f965 	bl	80170ee <memset>
+ 800de24:	48b7      	ldr	r0, [pc, #732]	@ (800e104 <ma_native_service+0x1400>)
+ 800de26:	4bb8      	ldr	r3, [pc, #736]	@ (800e108 <ma_native_service+0x1404>)
+ 800de28:	f8da 2000 	ldr.w	r2, [sl]
+ 800de2c:	9905      	ldr	r1, [sp, #20]
+ 800de2e:	7001      	strb	r1, [r0, #0]
+ 800de30:	601a      	str	r2, [r3, #0]
+ 800de32:	f7fe bf85 	b.w	800cd40 <ma_native_service+0x3c>
+ 800de36:	4bb5      	ldr	r3, [pc, #724]	@ (800e10c <ma_native_service+0x1408>)
+ 800de38:	2100      	movs	r1, #0
+ 800de3a:	685a      	ldr	r2, [r3, #4]
+ 800de3c:	f8da 3000 	ldr.w	r3, [sl]
+ 800de40:	9300      	str	r3, [sp, #0]
+ 800de42:	e9cd 8101 	strd	r8, r1, [sp, #4]
+ 800de46:	ab0f      	add	r3, sp, #60	@ 0x3c
+ 800de48:	2105      	movs	r1, #5
+ 800de4a:	2003      	movs	r0, #3
+ 800de4c:	f7fc fd2a 	bl	800a8a4 <ma_fail_at>
+ 800de50:	f7fe bfa0 	b.w	800cd94 <ma_native_service+0x90>
+ 800de54:	a80b      	add	r0, sp, #44	@ 0x2c
+ 800de56:	f7fc fcdb 	bl	800a810 <ma_clock_snapshot>
+ 800de5a:	49ad      	ldr	r1, [pc, #692]	@ (800e110 <ma_native_service+0x140c>)
+ 800de5c:	4bad      	ldr	r3, [pc, #692]	@ (800e114 <ma_native_service+0x1410>)
+ 800de5e:	4aae      	ldr	r2, [pc, #696]	@ (800e118 <ma_native_service+0x1414>)
+ 800de60:	edd1 0a00 	vldr	s1, [r1]
+ 800de64:	49a9      	ldr	r1, [pc, #676]	@ (800e10c <ma_native_service+0x1408>)
+ 800de66:	48ad      	ldr	r0, [pc, #692]	@ (800e11c <ma_native_service+0x1418>)
+ 800de68:	ed92 1a00 	vldr	s2, [r2]
+ 800de6c:	edd2 1a01 	vldr	s3, [r2, #4]
+ 800de70:	681a      	ldr	r2, [r3, #0]
+ 800de72:	684d      	ldr	r5, [r1, #4]
+ 800de74:	ed93 6a02 	vldr	s12, [r3, #8]
+ 800de78:	edd3 3a03 	vldr	s7, [r3, #12]
+ 800de7c:	edd3 6a04 	vldr	s13, [r3, #16]
+ 800de80:	edd3 4a08 	vldr	s9, [r3, #32]
+ 800de84:	edd3 7a09 	vldr	s15, [r3, #36]	@ 0x24
+ 800de88:	ed93 4a0a 	vldr	s8, [r3, #40]	@ 0x28
+ 800de8c:	ed93 5a0b 	vldr	s10, [r3, #44]	@ 0x2c
+ 800de90:	edd3 5a0c 	vldr	s11, [r3, #48]	@ 0x30
+ 800de94:	9217      	str	r2, [sp, #92]	@ 0x5c
+ 800de96:	685a      	ldr	r2, [r3, #4]
+ 800de98:	9218      	str	r2, [sp, #96]	@ 0x60
+ 800de9a:	ed90 0a00 	vldr	s0, [r0]
+ 800de9e:	695a      	ldr	r2, [r3, #20]
+ 800dea0:	ed9f 3a9f 	vldr	s6, [pc, #636]	@ 800e120 <ma_native_service+0x141c>
+ 800dea4:	921c      	str	r2, [sp, #112]	@ 0x70
+ 800dea6:	ed8d 6a19 	vstr	s12, [sp, #100]	@ 0x64
+ 800deaa:	edcd 3a1a 	vstr	s7, [sp, #104]	@ 0x68
+ 800deae:	edcd 6a1b 	vstr	s13, [sp, #108]	@ 0x6c
+ 800deb2:	edcd 4a1d 	vstr	s9, [sp, #116]	@ 0x74
+ 800deb6:	edcd 7a1e 	vstr	s15, [sp, #120]	@ 0x78
+ 800deba:	ed8d 4a1f 	vstr	s8, [sp, #124]	@ 0x7c
+ 800debe:	ed8d 5a20 	vstr	s10, [sp, #128]	@ 0x80
+ 800dec2:	edcd 5a21 	vstr	s11, [sp, #132]	@ 0x84
+ 800dec6:	aa17      	add	r2, sp, #92	@ 0x5c
+ 800dec8:	a922      	add	r1, sp, #136	@ 0x88
+ 800deca:	ecb2 7a01 	vldmia	r2!, {s14}
+ 800dece:	eef0 2ac7 	vabs.f32	s5, s14
+ 800ded2:	eef4 2a43 	vcmp.f32	s5, s6
+ 800ded6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800deda:	d843      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800dedc:	eeb5 7ac0 	vcmpe.f32	s14, #0.0
+ 800dee0:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800dee4:	d93e      	bls.n	800df64 <ma_native_service+0x1260>
+ 800dee6:	428a      	cmp	r2, r1
+ 800dee8:	d1ef      	bne.n	800deca <ma_native_service+0x11c6>
+ 800deea:	ed93 7a06 	vldr	s14, [r3, #24]
+ 800deee:	eef0 2ac7 	vabs.f32	s5, s14
+ 800def2:	eef4 2a43 	vcmp.f32	s5, s6
+ 800def6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800defa:	d833      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800defc:	eeb5 7ac0 	vcmpe.f32	s14, #0.0
+ 800df00:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df04:	db2e      	blt.n	800df64 <ma_native_service+0x1260>
+ 800df06:	69db      	ldr	r3, [r3, #28]
+ 800df08:	3b01      	subs	r3, #1
+ 800df0a:	2b07      	cmp	r3, #7
+ 800df0c:	d82a      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800df0e:	ed9f 7a85 	vldr	s14, [pc, #532]	@ 800e124 <ma_native_service+0x1420>
+ 800df12:	ee26 7a87 	vmul.f32	s14, s13, s14
+ 800df16:	ee26 6a23 	vmul.f32	s12, s12, s7
+ 800df1a:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800df1e:	eeb4 6ac7 	vcmpe.f32	s12, s14
+ 800df22:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df26:	dd1d      	ble.n	800df64 <ma_native_service+0x1260>
+ 800df28:	eef4 7ac4 	vcmpe.f32	s15, s8
+ 800df2c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df30:	d518      	bpl.n	800df64 <ma_native_service+0x1260>
+ 800df32:	ee84 7aa6 	vdiv.f32	s14, s9, s13
+ 800df36:	eddf 6a7c 	vldr	s13, [pc, #496]	@ 800e128 <ma_native_service+0x1424>
+ 800df3a:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 800df3e:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 800df42:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df46:	d50d      	bpl.n	800df64 <ma_native_service+0x1260>
+ 800df48:	eddf 7a78 	vldr	s15, [pc, #480]	@ 800e12c <ma_native_service+0x1428>
+ 800df4c:	eeb4 5ae7 	vcmpe.f32	s10, s15
+ 800df50:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df54:	d506      	bpl.n	800df64 <ma_native_service+0x1260>
+ 800df56:	eddf 7a76 	vldr	s15, [pc, #472]	@ 800e130 <ma_native_service+0x142c>
+ 800df5a:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 800df5e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800df62:	d456      	bmi.n	800e012 <ma_native_service+0x130e>
+ 800df64:	2701      	movs	r7, #1
+ 800df66:	4b69      	ldr	r3, [pc, #420]	@ (800e10c <ma_native_service+0x1408>)
+ 800df68:	685b      	ldr	r3, [r3, #4]
+ 800df6a:	a817      	add	r0, sp, #92	@ 0x5c
+ 800df6c:	eba3 0905 	sub.w	r9, r3, r5
+ 800df70:	f7fc fc4e 	bl	800a810 <ma_clock_snapshot>
+ 800df74:	9b0b      	ldr	r3, [sp, #44]	@ 0x2c
+ 800df76:	9a17      	ldr	r2, [sp, #92]	@ 0x5c
+ 800df78:	4d6e      	ldr	r5, [pc, #440]	@ (800e134 <ma_native_service+0x1430>)
+ 800df7a:	f8dd b068 	ldr.w	fp, [sp, #104]	@ 0x68
+ 800df7e:	6928      	ldr	r0, [r5, #16]
+ 800df80:	1ad2      	subs	r2, r2, r3
+ 800df82:	9b0e      	ldr	r3, [sp, #56]	@ 0x38
+ 800df84:	602a      	str	r2, [r5, #0]
+ 800df86:	e9dd ea0c 	ldrd	lr, sl, [sp, #48]	@ 0x30
+ 800df8a:	e9dd 1c18 	ldrd	r1, ip, [sp, #96]	@ 0x60
+ 800df8e:	2b00      	cmp	r3, #0
+ 800df90:	d034      	beq.n	800dffc <ma_native_service+0x12f8>
+ 800df92:	f1bb 0f00 	cmp.w	fp, #0
+ 800df96:	d031      	beq.n	800dffc <ma_native_service+0x12f8>
+ 800df98:	eba1 030e 	sub.w	r3, r1, lr
+ 800df9c:	429a      	cmp	r2, r3
+ 800df9e:	d32d      	bcc.n	800dffc <ma_native_service+0x12f8>
+ 800dfa0:	1a51      	subs	r1, r2, r1
+ 800dfa2:	ebac 0c0a 	sub.w	ip, ip, sl
+ 800dfa6:	4471      	add	r1, lr
+ 800dfa8:	4282      	cmp	r2, r0
+ 800dfaa:	e9c5 3101 	strd	r3, r1, [r5, #4]
+ 800dfae:	f8c5 c00c 	str.w	ip, [r5, #12]
+ 800dfb2:	d900      	bls.n	800dfb6 <ma_native_service+0x12b2>
+ 800dfb4:	612a      	str	r2, [r5, #16]
+ 800dfb6:	696a      	ldr	r2, [r5, #20]
+ 800dfb8:	429a      	cmp	r2, r3
+ 800dfba:	bf38      	it	cc
+ 800dfbc:	616b      	strcc	r3, [r5, #20]
+ 800dfbe:	68ab      	ldr	r3, [r5, #8]
+ 800dfc0:	69aa      	ldr	r2, [r5, #24]
+ 800dfc2:	495d      	ldr	r1, [pc, #372]	@ (800e138 <ma_native_service+0x1434>)
+ 800dfc4:	4293      	cmp	r3, r2
+ 800dfc6:	bf88      	it	hi
+ 800dfc8:	61ab      	strhi	r3, [r5, #24]
+ 800dfca:	6b2b      	ldr	r3, [r5, #48]	@ 0x30
+ 800dfcc:	4a5b      	ldr	r2, [pc, #364]	@ (800e13c <ma_native_service+0x1438>)
+ 800dfce:	3301      	adds	r3, #1
+ 800dfd0:	632b      	str	r3, [r5, #48]	@ 0x30
+ 800dfd2:	6813      	ldr	r3, [r2, #0]
+ 800dfd4:	2001      	movs	r0, #1
+ 800dfd6:	4599      	cmp	r9, r3
+ 800dfd8:	7008      	strb	r0, [r1, #0]
+ 800dfda:	d959      	bls.n	800e090 <ma_native_service+0x138c>
+ 800dfdc:	f8c2 9000 	str.w	r9, [r2]
+ 800dfe0:	2f00      	cmp	r7, #0
+ 800dfe2:	d17c      	bne.n	800e0de <ma_native_service+0x13da>
+ 800dfe4:	4b56      	ldr	r3, [pc, #344]	@ (800e140 <ma_native_service+0x143c>)
+ 800dfe6:	4599      	cmp	r9, r3
+ 800dfe8:	d856      	bhi.n	800e098 <ma_native_service+0x1394>
+ 800dfea:	2301      	movs	r3, #1
+ 800dfec:	f888 3000 	strb.w	r3, [r8]
+ 800dff0:	e46a      	b.n	800d8c8 <ma_native_service+0xbc4>
+ 800dff2:	f04f 0b00 	mov.w	fp, #0
+ 800dff6:	2305      	movs	r3, #5
+ 800dff8:	f7ff bb99 	b.w	800d72e <ma_native_service+0xa2a>
+ 800dffc:	6b6b      	ldr	r3, [r5, #52]	@ 0x34
+ 800dffe:	60aa      	str	r2, [r5, #8]
+ 800e000:	3301      	adds	r3, #1
+ 800e002:	636b      	str	r3, [r5, #52]	@ 0x34
+ 800e004:	4282      	cmp	r2, r0
+ 800e006:	f04f 0300 	mov.w	r3, #0
+ 800e00a:	606b      	str	r3, [r5, #4]
+ 800e00c:	60eb      	str	r3, [r5, #12]
+ 800e00e:	d8d1      	bhi.n	800dfb4 <ma_native_service+0x12b0>
+ 800e010:	e7d5      	b.n	800dfbe <ma_native_service+0x12ba>
+ 800e012:	eddf 7a43 	vldr	s15, [pc, #268]	@ 800e120 <ma_native_service+0x141c>
+ 800e016:	eeb0 7ac0 	vabs.f32	s14, s0
+ 800e01a:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e01e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e022:	d89f      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800e024:	eeb0 7ae0 	vabs.f32	s14, s1
+ 800e028:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e02c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e030:	d898      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800e032:	eeb0 7ac1 	vabs.f32	s14, s2
+ 800e036:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e03a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e03e:	d891      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800e040:	eeb0 7ae1 	vabs.f32	s14, s3
+ 800e044:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e048:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e04c:	d88a      	bhi.n	800df64 <ma_native_service+0x1260>
+ 800e04e:	ed9f 2a3d 	vldr	s4, [pc, #244]	@ 800e144 <ma_native_service+0x1440>
+ 800e052:	483d      	ldr	r0, [pc, #244]	@ (800e148 <ma_native_service+0x1444>)
+ 800e054:	f7fc fcd4 	bl	800aa00 <ma_observe.part.0.constprop.0>
+ 800e058:	4607      	mov	r7, r0
+ 800e05a:	e784      	b.n	800df66 <ma_native_service+0x1262>
+ 800e05c:	4f3b      	ldr	r7, [pc, #236]	@ (800e14c <ma_native_service+0x1448>)
+ 800e05e:	f888 1000 	strb.w	r1, [r8]
+ 800e062:	783b      	ldrb	r3, [r7, #0]
+ 800e064:	3301      	adds	r3, #1
+ 800e066:	b2db      	uxtb	r3, r3
+ 800e068:	2b40      	cmp	r3, #64	@ 0x40
+ 800e06a:	703b      	strb	r3, [r7, #0]
+ 800e06c:	f47f ae0c 	bne.w	800dc88 <ma_native_service+0xf84>
+ 800e070:	2301      	movs	r3, #1
+ 800e072:	702b      	strb	r3, [r5, #0]
+ 800e074:	f7fe be77 	b.w	800cd66 <ma_native_service+0x62>
+ 800e078:	9602      	str	r6, [sp, #8]
+ 800e07a:	f8da 3000 	ldr.w	r3, [sl]
+ 800e07e:	9805      	ldr	r0, [sp, #20]
+ 800e080:	e9cd 3800 	strd	r3, r8, [sp]
+ 800e084:	2108      	movs	r1, #8
+ 800e086:	ab0f      	add	r3, sp, #60	@ 0x3c
+ 800e088:	f7fc fc0c 	bl	800a8a4 <ma_fail_at>
+ 800e08c:	f7fe be82 	b.w	800cd94 <ma_native_service+0x90>
+ 800e090:	bb2f      	cbnz	r7, 800e0de <ma_native_service+0x13da>
+ 800e092:	f1b9 0f00 	cmp.w	r9, #0
+ 800e096:	d1a5      	bne.n	800dfe4 <ma_native_service+0x12e0>
+ 800e098:	2703      	movs	r7, #3
+ 800e09a:	7027      	strb	r7, [r4, #0]
+ 800e09c:	f7fe be63 	b.w	800cd66 <ma_native_service+0x62>
+ 800e0a0:	9d09      	ldr	r5, [sp, #36]	@ 0x24
+ 800e0a2:	1b96      	subs	r6, r2, r6
+ 800e0a4:	6928      	ldr	r0, [r5, #16]
+ 800e0a6:	602e      	str	r6, [r5, #0]
+ 800e0a8:	f1b9 0f00 	cmp.w	r9, #0
+ 800e0ac:	f43f ab5d 	beq.w	800d76a <ma_native_service+0xa66>
+ 800e0b0:	9b07      	ldr	r3, [sp, #28]
+ 800e0b2:	1acf      	subs	r7, r1, r3
+ 800e0b4:	42be      	cmp	r6, r7
+ 800e0b6:	f4ff ab58 	bcc.w	800d76a <ma_native_service+0xa66>
+ 800e0ba:	9b08      	ldr	r3, [sp, #32]
+ 800e0bc:	ebac 0303 	sub.w	r3, ip, r3
+ 800e0c0:	60eb      	str	r3, [r5, #12]
+ 800e0c2:	9b07      	ldr	r3, [sp, #28]
+ 800e0c4:	1a71      	subs	r1, r6, r1
+ 800e0c6:	4419      	add	r1, r3
+ 800e0c8:	696b      	ldr	r3, [r5, #20]
+ 800e0ca:	4286      	cmp	r6, r0
+ 800e0cc:	bf88      	it	hi
+ 800e0ce:	612e      	strhi	r6, [r5, #16]
+ 800e0d0:	429f      	cmp	r7, r3
+ 800e0d2:	e9c5 7101 	strd	r7, r1, [r5, #4]
+ 800e0d6:	bf88      	it	hi
+ 800e0d8:	616f      	strhi	r7, [r5, #20]
+ 800e0da:	f7ff bb51 	b.w	800d780 <ma_native_service+0xa7c>
+ 800e0de:	b2ff      	uxtb	r7, r7
+ 800e0e0:	7027      	strb	r7, [r4, #0]
+ 800e0e2:	f7fe be40 	b.w	800cd66 <ma_native_service+0x62>
+ 800e0e6:	e9cd 1007 	strd	r1, r0, [sp, #28]
+ 800e0ea:	f04f 0901 	mov.w	r9, #1
+ 800e0ee:	f7ff b9b4 	b.w	800d45a <ma_native_service+0x756>
+ 800e0f2:	2305      	movs	r3, #5
+ 800e0f4:	9305      	str	r3, [sp, #20]
+ 800e0f6:	f04f 0b00 	mov.w	fp, #0
+ 800e0fa:	f7ff bb18 	b.w	800d72e <ma_native_service+0xa2a>
+ 800e0fe:	bf00      	nop
+ 800e100:	20005668 	.word	0x20005668
+ 800e104:	200055e9 	.word	0x200055e9
+ 800e108:	200055e4 	.word	0x200055e4
+ 800e10c:	e0001000 	.word	0xe0001000
+ 800e110:	20005208 	.word	0x20005208
+ 800e114:	2000033c 	.word	0x2000033c
+ 800e118:	200051c4 	.word	0x200051c4
+ 800e11c:	2000520c 	.word	0x2000520c
+ 800e120:	7f7fffff 	.word	0x7f7fffff
+ 800e124:	3f800347 	.word	0x3f800347
+ 800e128:	3f733333 	.word	0x3f733333
+ 800e12c:	44fa0000 	.word	0x44fa0000
+ 800e130:	42c80000 	.word	0x42c80000
+ 800e134:	200053e0 	.word	0x200053e0
+ 800e138:	20000338 	.word	0x20000338
+ 800e13c:	2000542c 	.word	0x2000542c
+ 800e140:	00014c08 	.word	0x00014c08
+ 800e144:	3a83126f 	.word	0x3a83126f
+ 800e148:	20005240 	.word	0x20005240
+ 800e14c:	20005429 	.word	0x20005429
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_estimate_publish_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0800e150 <ma_native_fast>:
+ 800e150:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 800e154:	ed2d 8b0e 	vpush	{d8-d14}
+ 800e158:	4bd7      	ldr	r3, [pc, #860]	@ (800e4b8 <ma_native_fast+0x368>)
+ 800e15a:	4fd8      	ldr	r7, [pc, #864]	@ (800e4bc <ma_native_fast+0x36c>)
+ 800e15c:	685c      	ldr	r4, [r3, #4]
+ 800e15e:	783a      	ldrb	r2, [r7, #0]
+ 800e160:	2a01      	cmp	r2, #1
+ 800e162:	b0cd      	sub	sp, #308	@ 0x134
+ 800e164:	f000 83e0 	beq.w	800e928 <ma_native_fast+0x7d8>
+ 800e168:	783a      	ldrb	r2, [r7, #0]
+ 800e16a:	2a04      	cmp	r2, #4
+ 800e16c:	f000 8410 	beq.w	800e990 <ma_native_fast+0x840>
+ 800e170:	7838      	ldrb	r0, [r7, #0]
+ 800e172:	eeb0 8a40 	vmov.f32	s16, s0
+ 800e176:	f7fd fd95 	bl	800bca4 <fe_profile_allowed>
+ 800e17a:	4606      	mov	r6, r0
+ 800e17c:	2800      	cmp	r0, #0
+ 800e17e:	f000 83b5 	beq.w	800e8ec <ma_native_fast+0x79c>
+ 800e182:	4bcf      	ldr	r3, [pc, #828]	@ (800e4c0 <ma_native_fast+0x370>)
+ 800e184:	781a      	ldrb	r2, [r3, #0]
+ 800e186:	2a00      	cmp	r2, #0
+ 800e188:	f040 83b0 	bne.w	800e8ec <ma_native_fast+0x79c>
+ 800e18c:	f8df 8374 	ldr.w	r8, [pc, #884]	@ 800e504 <ma_native_fast+0x3b4>
+ 800e190:	f898 2000 	ldrb.w	r2, [r8]
+ 800e194:	2a80      	cmp	r2, #128	@ 0x80
+ 800e196:	f000 84ac 	beq.w	800eaf2 <ma_native_fast+0x9a2>
+ 800e19a:	4dca      	ldr	r5, [pc, #808]	@ (800e4c4 <ma_native_fast+0x374>)
+ 800e19c:	782b      	ldrb	r3, [r5, #0]
+ 800e19e:	f003 01ff 	and.w	r1, r3, #255	@ 0xff
+ 800e1a2:	2b00      	cmp	r3, #0
+ 800e1a4:	f000 84da 	beq.w	800eb5c <ma_native_fast+0xa0c>
+ 800e1a8:	f8df a35c 	ldr.w	sl, [pc, #860]	@ 800e508 <ma_native_fast+0x3b8>
+ 800e1ac:	f8df 935c 	ldr.w	r9, [pc, #860]	@ 800e50c <ma_native_fast+0x3bc>
+ 800e1b0:	a835      	add	r0, sp, #212	@ 0xd4
+ 800e1b2:	f7f3 fb17 	bl	80017e4 <mic_current_fast>
+ 800e1b6:	2800      	cmp	r0, #0
+ 800e1b8:	f040 83bc 	bne.w	800e934 <ma_native_fast+0x7e4>
+ 800e1bc:	4dc2      	ldr	r5, [pc, #776]	@ (800e4c8 <ma_native_fast+0x378>)
+ 800e1be:	7cab      	ldrb	r3, [r5, #18]
+ 800e1c0:	2b00      	cmp	r3, #0
+ 800e1c2:	f000 84f6 	beq.w	800ebb2 <ma_native_fast+0xa62>
+ 800e1c6:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800e1c8:	f10d 0cd4 	add.w	ip, sp, #212	@ 0xd4
+ 800e1cc:	e8ac 000f 	stmia.w	ip!, {r0, r1, r2, r3}
+ 800e1d0:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
+ 800e1d4:	e88c 000f 	stmia.w	ip, {r0, r1, r2, r3}
+ 800e1d8:	f8da 3000 	ldr.w	r3, [sl]
+ 800e1dc:	f3bf 8f5b 	dmb	ish
+ 800e1e0:	ebc3 0cc3 	rsb	ip, r3, r3, lsl #3
+ 800e1e4:	eb09 0c8c 	add.w	ip, r9, ip, lsl #2
+ 800e1e8:	f10d 0eb4 	add.w	lr, sp, #180	@ 0xb4
+ 800e1ec:	f8dc 5018 	ldr.w	r5, [ip, #24]
+ 800e1f0:	f89d a0e6 	ldrb.w	sl, [sp, #230]	@ 0xe6
+ 800e1f4:	f89d 90e7 	ldrb.w	r9, [sp, #231]	@ 0xe7
+ 800e1f8:	e8bc 000f 	ldmia.w	ip!, {r0, r1, r2, r3}
+ 800e1fc:	e8ae 000f 	stmia.w	lr!, {r0, r1, r2, r3}
+ 800e200:	e89c 0003 	ldmia.w	ip, {r0, r1}
+ 800e204:	e88e 0003 	stmia.w	lr, {r0, r1}
+ 800e208:	f1ba 0f00 	cmp.w	sl, #0
+ 800e20c:	f000 8374 	beq.w	800e8f8 <ma_native_fast+0x7a8>
+ 800e210:	f1b9 0f00 	cmp.w	r9, #0
+ 800e214:	f000 835e 	beq.w	800e8d4 <ma_native_fast+0x784>
+ 800e218:	f8df b2f4 	ldr.w	fp, [pc, #756]	@ 800e510 <ma_native_fast+0x3c0>
+ 800e21c:	f8dd c0d8 	ldr.w	ip, [sp, #216]	@ 0xd8
+ 800e220:	f8db 3000 	ldr.w	r3, [fp]
+ 800e224:	48a9      	ldr	r0, [pc, #676]	@ (800e4cc <ma_native_fast+0x37c>)
+ 800e226:	eb03 0143 	add.w	r1, r3, r3, lsl #1
+ 800e22a:	fba0 2101 	umull	r2, r1, r0, r1
+ 800e22e:	eba4 0e0c 	sub.w	lr, r4, ip
+ 800e232:	ebbe 2f91 	cmp.w	lr, r1, lsr #10
+ 800e236:	ea4f 0243 	mov.w	r2, r3, lsl #1
+ 800e23a:	f080 8541 	bcs.w	800ecc0 <ma_native_fast+0xb70>
+ 800e23e:	fba0 1003 	umull	r1, r0, r0, r3
+ 800e242:	1b61      	subs	r1, r4, r5
+ 800e244:	ebb1 1f50 	cmp.w	r1, r0, lsr #5
+ 800e248:	f080 853a 	bcs.w	800ecc0 <ma_native_fast+0xb70>
+ 800e24c:	4ba0      	ldr	r3, [pc, #640]	@ (800e4d0 <ma_native_fast+0x380>)
+ 800e24e:	6ada      	ldr	r2, [r3, #44]	@ 0x2c
+ 800e250:	6adb      	ldr	r3, [r3, #44]	@ 0x2c
+ 800e252:	9307      	str	r3, [sp, #28]
+ 800e254:	f898 3000 	ldrb.w	r3, [r8]
+ 800e258:	9205      	str	r2, [sp, #20]
+ 800e25a:	2b80      	cmp	r3, #128	@ 0x80
+ 800e25c:	f000 8593 	beq.w	800ed86 <ma_native_fast+0xc36>
+ 800e260:	4b9c      	ldr	r3, [pc, #624]	@ (800e4d4 <ma_native_fast+0x384>)
+ 800e262:	eddf 6a9d 	vldr	s13, [pc, #628]	@ 800e4d8 <ma_native_fast+0x388>
+ 800e266:	681a      	ldr	r2, [r3, #0]
+ 800e268:	edd3 5a02 	vldr	s11, [r3, #8]
+ 800e26c:	ed93 3a03 	vldr	s6, [r3, #12]
+ 800e270:	ed93 6a04 	vldr	s12, [r3, #16]
+ 800e274:	ed93 4a08 	vldr	s8, [r3, #32]
+ 800e278:	edd3 7a09 	vldr	s15, [r3, #36]	@ 0x24
+ 800e27c:	edd3 3a0a 	vldr	s7, [r3, #40]	@ 0x28
+ 800e280:	edd3 4a0b 	vldr	s9, [r3, #44]	@ 0x2c
+ 800e284:	ed93 5a0c 	vldr	s10, [r3, #48]	@ 0x30
+ 800e288:	923d      	str	r2, [sp, #244]	@ 0xf4
+ 800e28a:	685a      	ldr	r2, [r3, #4]
+ 800e28c:	923e      	str	r2, [sp, #248]	@ 0xf8
+ 800e28e:	f10d 08f4 	add.w	r8, sp, #244	@ 0xf4
+ 800e292:	695a      	ldr	r2, [r3, #20]
+ 800e294:	9242      	str	r2, [sp, #264]	@ 0x108
+ 800e296:	edcd 5a3f 	vstr	s11, [sp, #252]	@ 0xfc
+ 800e29a:	ed8d 3a40 	vstr	s6, [sp, #256]	@ 0x100
+ 800e29e:	ed8d 6a41 	vstr	s12, [sp, #260]	@ 0x104
+ 800e2a2:	ed8d 4a43 	vstr	s8, [sp, #268]	@ 0x10c
+ 800e2a6:	edcd 7a44 	vstr	s15, [sp, #272]	@ 0x110
+ 800e2aa:	edcd 3a45 	vstr	s7, [sp, #276]	@ 0x114
+ 800e2ae:	edcd 4a46 	vstr	s9, [sp, #280]	@ 0x118
+ 800e2b2:	ed8d 5a47 	vstr	s10, [sp, #284]	@ 0x11c
+ 800e2b6:	4642      	mov	r2, r8
+ 800e2b8:	a948      	add	r1, sp, #288	@ 0x120
+ 800e2ba:	ecf2 2a01 	vldmia	r2!, {s5}
+ 800e2be:	eeb0 7ae2 	vabs.f32	s14, s5
+ 800e2c2:	eeb4 7a66 	vcmp.f32	s14, s13
+ 800e2c6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e2ca:	f200 852b 	bhi.w	800ed24 <ma_native_fast+0xbd4>
+ 800e2ce:	eef5 2ac0 	vcmpe.f32	s5, #0.0
+ 800e2d2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e2d6:	f240 8525 	bls.w	800ed24 <ma_native_fast+0xbd4>
+ 800e2da:	4291      	cmp	r1, r2
+ 800e2dc:	d1ed      	bne.n	800e2ba <ma_native_fast+0x16a>
+ 800e2de:	ed93 7a06 	vldr	s14, [r3, #24]
+ 800e2e2:	eef0 2ac7 	vabs.f32	s5, s14
+ 800e2e6:	eef4 2a66 	vcmp.f32	s5, s13
+ 800e2ea:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e2ee:	f200 8519 	bhi.w	800ed24 <ma_native_fast+0xbd4>
+ 800e2f2:	eeb5 7ac0 	vcmpe.f32	s14, #0.0
+ 800e2f6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e2fa:	f2c0 8513 	blt.w	800ed24 <ma_native_fast+0xbd4>
+ 800e2fe:	69db      	ldr	r3, [r3, #28]
+ 800e300:	3b01      	subs	r3, #1
+ 800e302:	2b07      	cmp	r3, #7
+ 800e304:	f200 850e 	bhi.w	800ed24 <ma_native_fast+0xbd4>
+ 800e308:	ed9f 7a74 	vldr	s14, [pc, #464]	@ 800e4dc <ma_native_fast+0x38c>
+ 800e30c:	ee26 7a07 	vmul.f32	s14, s12, s14
+ 800e310:	ee65 5a83 	vmul.f32	s11, s11, s6
+ 800e314:	ee27 7a06 	vmul.f32	s14, s14, s12
+ 800e318:	eef4 5ac7 	vcmpe.f32	s11, s14
+ 800e31c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e320:	f340 8500 	ble.w	800ed24 <ma_native_fast+0xbd4>
+ 800e324:	eef4 7ae3 	vcmpe.f32	s15, s7
+ 800e328:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e32c:	f140 84fa 	bpl.w	800ed24 <ma_native_fast+0xbd4>
+ 800e330:	ee84 7a06 	vdiv.f32	s14, s8, s12
+ 800e334:	eddf 6a6a 	vldr	s13, [pc, #424]	@ 800e4e0 <ma_native_fast+0x390>
+ 800e338:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 800e33c:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 800e340:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e344:	f140 84ee 	bpl.w	800ed24 <ma_native_fast+0xbd4>
+ 800e348:	eddf 7a66 	vldr	s15, [pc, #408]	@ 800e4e4 <ma_native_fast+0x394>
+ 800e34c:	eef4 4ae7 	vcmpe.f32	s9, s15
+ 800e350:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e354:	f140 84e6 	bpl.w	800ed24 <ma_native_fast+0xbd4>
+ 800e358:	eddf 7a63 	vldr	s15, [pc, #396]	@ 800e4e8 <ma_native_fast+0x398>
+ 800e35c:	eeb4 5ae7 	vcmpe.f32	s10, s15
+ 800e360:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e364:	f140 84de 	bpl.w	800ed24 <ma_native_fast+0xbd4>
+ 800e368:	783b      	ldrb	r3, [r7, #0]
+ 800e36a:	ed9f 7a60 	vldr	s14, [pc, #384]	@ 800e4ec <ma_native_fast+0x39c>
+ 800e36e:	eddf 6a72 	vldr	s13, [pc, #456]	@ 800e538 <ma_native_fast+0x3e8>
+ 800e372:	485f      	ldr	r0, [pc, #380]	@ (800e4f0 <ma_native_fast+0x3a0>)
+ 800e374:	b2db      	uxtb	r3, r3
+ 800e376:	9308      	str	r3, [sp, #32]
+ 800e378:	f9bd 30e0 	ldrsh.w	r3, [sp, #224]	@ 0xe0
+ 800e37c:	ee09 3a90 	vmov	s19, r3
+ 800e380:	f9bd 30e2 	ldrsh.w	r3, [sp, #226]	@ 0xe2
+ 800e384:	ee07 3a90 	vmov	s15, r3
+ 800e388:	eef8 9ae9 	vcvt.f32.s32	s19, s19
+ 800e38c:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 800e390:	ee69 9a87 	vmul.f32	s19, s19, s14
+ 800e394:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 800e398:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 800e39c:	eef0 8a69 	vmov.f32	s17, s19
+ 800e3a0:	eee7 8a86 	vfma.f32	s17, s15, s12
+ 800e3a4:	ee68 8aa6 	vmul.f32	s17, s17, s13
+ 800e3a8:	f007 fbee 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800e3ac:	ee07 0a90 	vmov	s15, r0
+ 800e3b0:	223c      	movs	r2, #60	@ 0x3c
+ 800e3b2:	4640      	mov	r0, r8
+ 800e3b4:	2100      	movs	r1, #0
+ 800e3b6:	eeb8 9a67 	vcvt.f32.u32	s18, s15
+ 800e3ba:	eef0 ea67 	vmov.f32	s29, s15
+ 800e3be:	f008 fe96 	bl	80170ee <memset>
+ 800e3c2:	eddf 7a45 	vldr	s15, [pc, #276]	@ 800e4d8 <ma_native_fast+0x388>
+ 800e3c6:	eeb0 7ae9 	vabs.f32	s14, s19
+ 800e3ca:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e3ce:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e3d2:	d81e      	bhi.n	800e412 <ma_native_fast+0x2c2>
+ 800e3d4:	eeb0 7ae8 	vabs.f32	s14, s17
+ 800e3d8:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e3dc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e3e0:	d817      	bhi.n	800e412 <ma_native_fast+0x2c2>
+ 800e3e2:	eeb0 7ac8 	vabs.f32	s14, s16
+ 800e3e6:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800e3ea:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e3ee:	d810      	bhi.n	800e412 <ma_native_fast+0x2c2>
+ 800e3f0:	eeb5 8ac0 	vcmpe.f32	s16, #0.0
+ 800e3f4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e3f8:	d40b      	bmi.n	800e412 <ma_native_fast+0x2c2>
+ 800e3fa:	ed9f 7a3e 	vldr	s14, [pc, #248]	@ 800e4f4 <ma_native_fast+0x3a4>
+ 800e3fe:	eeb4 8ac7 	vcmpe.f32	s16, s14
+ 800e402:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e406:	dc04      	bgt.n	800e412 <ma_native_fast+0x2c2>
+ 800e408:	9b08      	ldr	r3, [sp, #32]
+ 800e40a:	3b02      	subs	r3, #2
+ 800e40c:	2b01      	cmp	r3, #1
+ 800e40e:	f241 820f 	bls.w	800f830 <ma_native_fast+0x16e0>
+ 800e412:	ed9f 7a31 	vldr	s14, [pc, #196]	@ 800e4d8 <ma_native_fast+0x388>
+ 800e416:	ab2d      	add	r3, sp, #180	@ 0xb4
+ 800e418:	aa33      	add	r2, sp, #204	@ 0xcc
+ 800e41a:	ecf3 7a01 	vldmia	r3!, {s15}
+ 800e41e:	eef0 7ae7 	vabs.f32	s15, s15
+ 800e422:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 800e426:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e42a:	bfb8      	it	lt
+ 800e42c:	2605      	movlt	r6, #5
+ 800e42e:	4293      	cmp	r3, r2
+ 800e430:	d1f3      	bne.n	800e41a <ma_native_fast+0x2ca>
+ 800e432:	4b31      	ldr	r3, [pc, #196]	@ (800e4f8 <ma_native_fast+0x3a8>)
+ 800e434:	f8d3 8000 	ldr.w	r8, [r3]
+ 800e438:	2e00      	cmp	r6, #0
+ 800e43a:	f040 84a8 	bne.w	800ed8e <ma_native_fast+0xc3e>
+ 800e43e:	f8df 90d4 	ldr.w	r9, [pc, #212]	@ 800e514 <ma_native_fast+0x3c4>
+ 800e442:	eddf 7a2e 	vldr	s15, [pc, #184]	@ 800e4fc <ma_native_fast+0x3ac>
+ 800e446:	ed99 da03 	vldr	s26, [r9, #12]
+ 800e44a:	ed9d ba2f 	vldr	s22, [sp, #188]	@ 0xbc
+ 800e44e:	eddd aa30 	vldr	s21, [sp, #192]	@ 0xc0
+ 800e452:	ee3d da27 	vadd.f32	s26, s26, s15
+ 800e456:	eeb0 0a4b 	vmov.f32	s0, s22
+ 800e45a:	eef0 0a6a 	vmov.f32	s1, s21
+ 800e45e:	ed89 da03 	vstr	s26, [r9, #12]
+ 800e462:	f008 febb 	bl	80171dc <hypotf>
+ 800e466:	eddf 7a26 	vldr	s15, [pc, #152]	@ 800e500 <ma_native_fast+0x3b0>
+ 800e46a:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 800e46e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e472:	eeb0 aa40 	vmov.f32	s20, s0
+ 800e476:	f340 8497 	ble.w	800eda8 <ma_native_fast+0xc58>
+ 800e47a:	eecb ba00 	vdiv.f32	s23, s22, s0
+ 800e47e:	ee8a ba80 	vdiv.f32	s22, s21, s0
+ 800e482:	ee6b 6aa9 	vmul.f32	s13, s23, s19
+ 800e486:	ee2b 6aa8 	vmul.f32	s12, s23, s17
+ 800e48a:	eeb1 ca4b 	vneg.f32	s24, s22
+ 800e48e:	4b11      	ldr	r3, [pc, #68]	@ (800e4d4 <ma_native_fast+0x384>)
+ 800e490:	eddf 7a27 	vldr	s15, [pc, #156]	@ 800e530 <ma_native_fast+0x3e0>
+ 800e494:	ed93 4a04 	vldr	s8, [r3, #16]
+ 800e498:	edd3 5a08 	vldr	s11, [r3, #32]
+ 800e49c:	edd3 3a09 	vldr	s7, [r3, #36]	@ 0x24
+ 800e4a0:	ee85 7a84 	vdiv.f32	s14, s11, s8
+ 800e4a4:	eeeb 6a28 	vfma.f32	s13, s22, s17
+ 800e4a8:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800e4ac:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e4b0:	eea9 6a8c 	vfma.f32	s12, s19, s24
+ 800e4b4:	e044      	b.n	800e540 <ma_native_fast+0x3f0>
+ 800e4b6:	bf00      	nop
+ 800e4b8:	e0001000 	.word	0xe0001000
+ 800e4bc:	2000033b 	.word	0x2000033b
+ 800e4c0:	200055a4 	.word	0x200055a4
+ 800e4c4:	200055a6 	.word	0x200055a6
+ 800e4c8:	2000543c 	.word	0x2000543c
+ 800e4cc:	10624dd3 	.word	0x10624dd3
+ 800e4d0:	40012c00 	.word	0x40012c00
+ 800e4d4:	2000033c 	.word	0x2000033c
+ 800e4d8:	7f7fffff 	.word	0x7f7fffff
+ 800e4dc:	3f800347 	.word	0x3f800347
+ 800e4e0:	3f733333 	.word	0x3f733333
+ 800e4e4:	44fa0000 	.word	0x44fa0000
+ 800e4e8:	42c80000 	.word	0x42c80000
+ 800e4ec:	3c1d2e65 	.word	0x3c1d2e65
+ 800e4f0:	20000154 	.word	0x20000154
+ 800e4f4:	42480000 	.word	0x42480000
+ 800e4f8:	20005438 	.word	0x20005438
+ 800e4fc:	3883126f 	.word	0x3883126f
+ 800e500:	38d1b717 	.word	0x38d1b717
+ 800e504:	20000339 	.word	0x20000339
+ 800e508:	20005490 	.word	0x20005490
+ 800e50c:	20005494 	.word	0x20005494
+ 800e510:	20000374 	.word	0x20000374
+ 800e514:	200054cc 	.word	0x200054cc
+ 800e518:	3dcccccd 	.word	0x3dcccccd
+ 800e51c:	40c90fdb 	.word	0x40c90fdb
+ 800e520:	3ccccccd 	.word	0x3ccccccd
+ 800e524:	3eb33333 	.word	0x3eb33333
+ 800e528:	00000000 	.word	0x00000000
+ 800e52c:	c4160000 	.word	0xc4160000
+ 800e530:	3f666666 	.word	0x3f666666
+ 800e534:	44160000 	.word	0x44160000
+ 800e538:	3f13cd3a 	.word	0x3f13cd3a
+ 800e53c:	3089705f 	.word	0x3089705f
+ 800e540:	ee63 7aa7 	vmul.f32	s15, s7, s15
+ 800e544:	d60c      	bvs.n	800e560 <ma_native_fast+0x410>
+ 800e546:	eef4 7a67 	vcmp.f32	s15, s15
+ 800e54a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e54e:	f181 80f4 	bvs.w	800f73a <ma_native_fast+0x15ea>
+ 800e552:	eef4 7ac7 	vcmpe.f32	s15, s14
+ 800e556:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e55a:	bfc8      	it	gt
+ 800e55c:	eef0 7a47 	vmovgt.f32	s15, s14
+ 800e560:	ed5f 5a13 	vldr	s11, [pc, #-76]	@ 800e518 <ma_native_fast+0x3c8>
+ 800e564:	ee8d 7a25 	vdiv.f32	s14, s26, s11
+ 800e568:	eef7 5a00 	vmov.f32	s11, #112	@ 0x3f800000  1.0
+ 800e56c:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800e570:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e574:	d606      	bvs.n	800e584 <ma_native_fast+0x434>
+ 800e576:	eeb4 7ae5 	vcmpe.f32	s14, s11
+ 800e57a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e57e:	bfd8      	it	le
+ 800e580:	eef0 5a47 	vmovle.f32	s11, s14
+ 800e584:	ee65 aaa7 	vmul.f32	s21, s11, s15
+ 800e588:	ed1f 7a19 	vldr	s14, [pc, #-100]	@ 800e528 <ma_native_fast+0x3d8>
+ 800e58c:	ee6a 7aea 	vnmul.f32	s15, s21, s21
+ 800e590:	eee3 7aa3 	vfma.f32	s15, s7, s7
+ 800e594:	eef4 7a67 	vcmp.f32	s15, s15
+ 800e598:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e59c:	d606      	bvs.n	800e5ac <ma_native_fast+0x45c>
+ 800e59e:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 800e5a2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e5a6:	bfd8      	it	le
+ 800e5a8:	eeb0 7a67 	vmovle.f32	s14, s15
+ 800e5ac:	eef1 1ac7 	vsqrt.f32	s3, s14
+ 800e5b0:	edd3 7a07 	vldr	s15, [r3, #28]
+ 800e5b4:	ed1f 7a27 	vldr	s14, [pc, #-156]	@ 800e51c <ma_native_fast+0x3cc>
+ 800e5b8:	edd3 4a05 	vldr	s9, [r3, #20]
+ 800e5bc:	eddd ca31 	vldr	s25, [sp, #196]	@ 0xc4
+ 800e5c0:	ed93 5a0c 	vldr	s10, [r3, #48]	@ 0x30
+ 800e5c4:	ed93 2a03 	vldr	s4, [r3, #12]
+ 800e5c8:	ed1f 3a2b 	vldr	s6, [pc, #-172]	@ 800e520 <ma_native_fast+0x3d0>
+ 800e5cc:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 800e5d0:	ee28 7a07 	vmul.f32	s14, s16, s14
+ 800e5d4:	eef7 5a08 	vmov.f32	s11, #120	@ 0x3fc00000  1.5
+ 800e5d8:	eec7 0a27 	vdiv.f32	s1, s14, s15
+ 800e5dc:	ee67 5aa5 	vmul.f32	s11, s15, s11
+ 800e5e0:	ee74 2aa4 	vadd.f32	s5, s9, s9
+ 800e5e4:	ee65 5a84 	vmul.f32	s11, s11, s8
+ 800e5e8:	eeb4 aa4a 	vcmp.f32	s20, s20
+ 800e5ec:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e5f0:	ee85 7a82 	vdiv.f32	s14, s11, s4
+ 800e5f4:	ee70 0aec 	vsub.f32	s1, s1, s25
+ 800e5f8:	ee62 2a85 	vmul.f32	s5, s5, s10
+ 800e5fc:	d606      	bvs.n	800e60c <ma_native_fast+0x4bc>
+ 800e5fe:	eeb4 aac3 	vcmpe.f32	s20, s6
+ 800e602:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e606:	bfc8      	it	gt
+ 800e608:	eeb0 3a4a 	vmovgt.f32	s6, s20
+ 800e60c:	ed99 1a02 	vldr	s2, [r9, #8]
+ 800e610:	eef0 5a41 	vmov.f32	s11, s2
+ 800e614:	eee0 5aa2 	vfma.f32	s11, s1, s5
+ 800e618:	ee27 7a03 	vmul.f32	s14, s14, s6
+ 800e61c:	eef4 1a61 	vcmp.f32	s3, s3
+ 800e620:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e624:	ee85 8a87 	vdiv.f32	s16, s11, s14
+ 800e628:	eef1 2a61 	vneg.f32	s5, s3
+ 800e62c:	d614      	bvs.n	800e658 <ma_native_fast+0x508>
+ 800e62e:	eeb4 8a48 	vcmp.f32	s16, s16
+ 800e632:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e636:	d606      	bvs.n	800e646 <ma_native_fast+0x4f6>
+ 800e638:	eef4 2ac8 	vcmpe.f32	s5, s16
+ 800e63c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e640:	bfd8      	it	le
+ 800e642:	eef0 2a48 	vmovle.f32	s5, s16
+ 800e646:	eef4 2ae1 	vcmpe.f32	s5, s3
+ 800e64a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e64e:	bfd4      	ite	le
+ 800e650:	eeb0 8a62 	vmovle.f32	s16, s5
+ 800e654:	eeb0 8a61 	vmovgt.f32	s16, s3
+ 800e658:	ed5f 2a4e 	vldr	s5, [pc, #-312]	@ 800e524 <ma_native_fast+0x3d4>
+ 800e65c:	eeb4 dae2 	vcmpe.f32	s26, s5
+ 800e660:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e664:	f140 83ac 	bpl.w	800edc0 <ma_native_fast+0xc70>
+ 800e668:	ed1f 8a51 	vldr	s16, [pc, #-324]	@ 800e528 <ma_native_fast+0x3d8>
+ 800e66c:	ed89 8a02 	vstr	s16, [r9, #8]
+ 800e670:	edd3 5a01 	vldr	s11, [r3, #4]
+ 800e674:	edd3 4a02 	vldr	s9, [r3, #8]
+ 800e678:	ee85 7a82 	vdiv.f32	s14, s11, s4
+ 800e67c:	eec4 2a02 	vdiv.f32	s5, s8, s4
+ 800e680:	ee24 2a07 	vmul.f32	s4, s8, s14
+ 800e684:	ee3a 5ae6 	vsub.f32	s10, s21, s13
+ 800e688:	ee22 2a06 	vmul.f32	s4, s4, s12
+ 800e68c:	ee78 5a46 	vsub.f32	s11, s16, s12
+ 800e690:	eec2 3a03 	vdiv.f32	s7, s4, s6
+ 800e694:	eee4 4a62 	vfms.f32	s9, s8, s5
+ 800e698:	eee7 3aac 	vfma.f32	s7, s15, s25
+ 800e69c:	ed8d 5a10 	vstr	s10, [sp, #64]	@ 0x40
+ 800e6a0:	eef4 3a63 	vcmp.f32	s7, s7
+ 800e6a4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e6a8:	edcd 5a11 	vstr	s11, [sp, #68]	@ 0x44
+ 800e6ac:	f181 803d 	bvs.w	800f72a <ma_native_fast+0x15da>
+ 800e6b0:	ed1f 3a62 	vldr	s6, [pc, #-392]	@ 800e52c <ma_native_fast+0x3dc>
+ 800e6b4:	eeb4 3ae3 	vcmpe.f32	s6, s7
+ 800e6b8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e6bc:	bfc8      	it	gt
+ 800e6be:	eef0 3a43 	vmovgt.f32	s7, s6
+ 800e6c2:	ed93 ea00 	vldr	s28, [r3]
+ 800e6c6:	ed93 da0b 	vldr	s26, [r3, #44]	@ 0x2c
+ 800e6ca:	ed5f da67 	vldr	s27, [pc, #-412]	@ 800e530 <ma_native_fast+0x3e0>
+ 800e6ce:	ee22 7a87 	vmul.f32	s14, s5, s14
+ 800e6d2:	ee67 0aa2 	vmul.f32	s1, s15, s5
+ 800e6d6:	eef0 7a4e 	vmov.f32	s15, s28
+ 800e6da:	eee4 7a07 	vfma.f32	s15, s8, s14
+ 800e6de:	ee60 0aac 	vmul.f32	s1, s1, s25
+ 800e6e2:	ee27 0a4a 	vnmul.f32	s0, s14, s20
+ 800e6e6:	ee60 0a8a 	vmul.f32	s1, s1, s20
+ 800e6ea:	eea6 0aa7 	vfma.f32	s0, s13, s15
+ 800e6ee:	eee6 0a27 	vfma.f32	s1, s12, s15
+ 800e6f2:	ed5f 7a70 	vldr	s15, [pc, #-448]	@ 800e534 <ma_native_fast+0x3e4>
+ 800e6f6:	ed99 7a01 	vldr	s14, [r9, #4]
+ 800e6fa:	eef4 3ae7 	vcmpe.f32	s7, s15
+ 800e6fe:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e702:	bfd8      	it	le
+ 800e704:	eef0 7a63 	vmovle.f32	s15, s7
+ 800e708:	ee64 7aa7 	vmul.f32	s15, s9, s15
+ 800e70c:	ee64 4a8d 	vmul.f32	s9, s9, s26
+ 800e710:	eee6 0aa7 	vfma.f32	s1, s13, s15
+ 800e714:	eea6 0a67 	vfms.f32	s0, s12, s15
+ 800e718:	eee5 0aa4 	vfma.f32	s1, s11, s9
+ 800e71c:	eef0 7a40 	vmov.f32	s15, s0
+ 800e720:	eee5 7a24 	vfma.f32	s15, s10, s9
+ 800e724:	ee70 0a87 	vadd.f32	s1, s1, s14
+ 800e728:	ed99 7a00 	vldr	s14, [r9]
+ 800e72c:	edcd 0a13 	vstr	s1, [sp, #76]	@ 0x4c
+ 800e730:	ee37 0a87 	vadd.f32	s0, s15, s14
+ 800e734:	ee69 da2d 	vmul.f32	s27, s18, s27
+ 800e738:	ed5f 7a81 	vldr	s15, [pc, #-516]	@ 800e538 <ma_native_fast+0x3e8>
+ 800e73c:	ed8d 0a12 	vstr	s0, [sp, #72]	@ 0x48
+ 800e740:	ee6d daa7 	vmul.f32	s27, s27, s15
+ 800e744:	f008 fd4a 	bl	80171dc <hypotf>
+ 800e748:	eeb4 0a40 	vcmp.f32	s0, s0
+ 800e74c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e750:	f180 87e1 	bvs.w	800f716 <ma_native_fast+0x15c6>
+ 800e754:	ed5f 7a87 	vldr	s15, [pc, #-540]	@ 800e53c <ma_native_fast+0x3ec>
+ 800e758:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 800e75c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e760:	bfd8      	it	le
+ 800e762:	eeb0 0a67 	vmovle.f32	s0, s15
+ 800e766:	eecd 7a80 	vdiv.f32	s15, s27, s0
+ 800e76a:	eeb7 6a00 	vmov.f32	s12, #112	@ 0x3f800000  1.0
+ 800e76e:	eef4 7a67 	vcmp.f32	s15, s15
+ 800e772:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e776:	d606      	bvs.n	800e786 <ma_native_fast+0x636>
+ 800e778:	eef4 7ac6 	vcmpe.f32	s15, s12
+ 800e77c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e780:	bfd8      	it	le
+ 800e782:	eeb0 6a67 	vmovle.f32	s12, s15
+ 800e786:	ee2e ea0d 	vmul.f32	s28, s28, s26
+ 800e78a:	4a75      	ldr	r2, [pc, #468]	@ (800e960 <ma_native_fast+0x810>)
+ 800e78c:	eddf 4a75 	vldr	s9, [pc, #468]	@ 800e964 <ma_native_fast+0x814>
+ 800e790:	eef1 5a6d 	vneg.f32	s11, s27
+ 800e794:	ab12      	add	r3, sp, #72	@ 0x48
+ 800e796:	a910      	add	r1, sp, #64	@ 0x40
+ 800e798:	f10d 0a50 	add.w	sl, sp, #80	@ 0x50
+ 800e79c:	ecb3 7a01 	vldmia	r3!, {s14}
+ 800e7a0:	ecb1 5a01 	vldmia	r1!, {s10}
+ 800e7a4:	ecf2 7a01 	vldmia	r2!, {s15}
+ 800e7a8:	ee67 6a06 	vmul.f32	s13, s14, s12
+ 800e7ac:	eef4 da6d 	vcmp.f32	s27, s27
+ 800e7b0:	ee36 7ac7 	vsub.f32	s14, s13, s14
+ 800e7b4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e7b8:	ee27 7a0d 	vmul.f32	s14, s14, s26
+ 800e7bc:	eeae 7a05 	vfma.f32	s14, s28, s10
+ 800e7c0:	eee7 7a24 	vfma.f32	s15, s14, s9
+ 800e7c4:	d613      	bvs.n	800e7ee <ma_native_fast+0x69e>
+ 800e7c6:	eef4 7a67 	vcmp.f32	s15, s15
+ 800e7ca:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e7ce:	f180 872a 	bvs.w	800f626 <ma_native_fast+0x14d6>
+ 800e7d2:	eef4 5ae7 	vcmpe.f32	s11, s15
+ 800e7d6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e7da:	bfc8      	it	gt
+ 800e7dc:	eef0 7a65 	vmovgt.f32	s15, s11
+ 800e7e0:	eef4 7aed 	vcmpe.f32	s15, s27
+ 800e7e4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e7e8:	bfc8      	it	gt
+ 800e7ea:	eef0 7a6d 	vmovgt.f32	s15, s27
+ 800e7ee:	4553      	cmp	r3, sl
+ 800e7f0:	ed42 7a01 	vstr	s15, [r2, #-4]
+ 800e7f4:	ed43 6a01 	vstr	s13, [r3, #-4]
+ 800e7f8:	d1d0      	bne.n	800e79c <ma_native_fast+0x64c>
+ 800e7fa:	ed9f 7a5b 	vldr	s14, [pc, #364]	@ 800e968 <ma_native_fast+0x818>
+ 800e7fe:	edcd aa42 	vstr	s21, [sp, #264]	@ 0x108
+ 800e802:	eec9 7a87 	vdiv.f32	s15, s19, s14
+ 800e806:	ed8d 8a43 	vstr	s16, [sp, #268]	@ 0x10c
+ 800e80a:	eef4 7a67 	vcmp.f32	s15, s15
+ 800e80e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e812:	edcd ca44 	vstr	s25, [sp, #272]	@ 0x110
+ 800e816:	ed8d aa45 	vstr	s20, [sp, #276]	@ 0x114
+ 800e81a:	f180 878a 	bvs.w	800f732 <ma_native_fast+0x15e2>
+ 800e81e:	eebf 7a00 	vmov.f32	s14, #240	@ 0xbf800000 -1.0
+ 800e822:	eeb4 7ae7 	vcmpe.f32	s14, s15
+ 800e826:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e82a:	bfd4      	ite	le
+ 800e82c:	eef0 5a67 	vmovle.f32	s11, s15
+ 800e830:	eef0 5a47 	vmovgt.f32	s11, s14
+ 800e834:	eddf 6a4d 	vldr	s13, [pc, #308]	@ 800e96c <ma_native_fast+0x81c>
+ 800e838:	ed9f 7a4b 	vldr	s14, [pc, #300]	@ 800e968 <ma_native_fast+0x818>
+ 800e83c:	eefe 7a00 	vmov.f32	s15, #224	@ 0xbf000000 -0.5
+ 800e840:	ee69 7aa7 	vmul.f32	s15, s19, s15
+ 800e844:	ee68 6aa6 	vmul.f32	s13, s17, s13
+ 800e848:	ee37 5aa6 	vadd.f32	s10, s15, s13
+ 800e84c:	ee85 6a07 	vdiv.f32	s12, s10, s14
+ 800e850:	eebf 7a00 	vmov.f32	s14, #240	@ 0xbf800000 -1.0
+ 800e854:	eeb4 6a46 	vcmp.f32	s12, s12
+ 800e858:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e85c:	d606      	bvs.n	800e86c <ma_native_fast+0x71c>
+ 800e85e:	eeb4 7ac6 	vcmpe.f32	s14, s12
+ 800e862:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e866:	bfd8      	it	le
+ 800e868:	eeb0 7a46 	vmovle.f32	s14, s12
+ 800e86c:	ee77 7ae6 	vsub.f32	s15, s15, s13
+ 800e870:	ed9f 6a3d 	vldr	s12, [pc, #244]	@ 800e968 <ma_native_fast+0x818>
+ 800e874:	eec7 6a86 	vdiv.f32	s13, s15, s12
+ 800e878:	eeff 7a00 	vmov.f32	s15, #240	@ 0xbf800000 -1.0
+ 800e87c:	eef4 6a66 	vcmp.f32	s13, s13
+ 800e880:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e884:	d606      	bvs.n	800e894 <ma_native_fast+0x744>
+ 800e886:	eef4 7ae6 	vcmpe.f32	s15, s13
+ 800e88a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800e88e:	bfd8      	it	le
+ 800e890:	eef0 7a66 	vmovle.f32	s15, s13
+ 800e894:	9b05      	ldr	r3, [sp, #20]
+ 800e896:	1e5a      	subs	r2, r3, #1
+ 800e898:	f64f 73fe 	movw	r3, #65534	@ 0xfffe
+ 800e89c:	429a      	cmp	r2, r3
+ 800e89e:	f240 8313 	bls.w	800eec8 <ma_native_fast+0xd78>
+ 800e8a2:	2004      	movs	r0, #4
+ 800e8a4:	4b32      	ldr	r3, [pc, #200]	@ (800e970 <ma_native_fast+0x820>)
+ 800e8a6:	f8d9 201c 	ldr.w	r2, [r9, #28]
+ 800e8aa:	685b      	ldr	r3, [r3, #4]
+ 800e8ac:	1b1b      	subs	r3, r3, r4
+ 800e8ae:	3201      	adds	r2, #1
+ 800e8b0:	4543      	cmp	r3, r8
+ 800e8b2:	f8c9 201c 	str.w	r2, [r9, #28]
+ 800e8b6:	d901      	bls.n	800e8bc <ma_native_fast+0x76c>
+ 800e8b8:	4a2e      	ldr	r2, [pc, #184]	@ (800e974 <ma_native_fast+0x824>)
+ 800e8ba:	6013      	str	r3, [r2, #0]
+ 800e8bc:	2107      	movs	r1, #7
+ 800e8be:	4622      	mov	r2, r4
+ 800e8c0:	4c2d      	ldr	r4, [pc, #180]	@ (800e978 <ma_native_fast+0x828>)
+ 800e8c2:	9302      	str	r3, [sp, #8]
+ 800e8c4:	9500      	str	r5, [sp, #0]
+ 800e8c6:	6824      	ldr	r4, [r4, #0]
+ 800e8c8:	9401      	str	r4, [sp, #4]
+ 800e8ca:	ab35      	add	r3, sp, #212	@ 0xd4
+ 800e8cc:	f7fb ffea 	bl	800a8a4 <ma_fail_at>
+ 800e8d0:	2001      	movs	r0, #1
+ 800e8d2:	e00c      	b.n	800e8ee <ma_native_fast+0x79e>
+ 800e8d4:	2102      	movs	r1, #2
+ 800e8d6:	ab35      	add	r3, sp, #212	@ 0xd4
+ 800e8d8:	4a27      	ldr	r2, [pc, #156]	@ (800e978 <ma_native_fast+0x828>)
+ 800e8da:	9500      	str	r5, [sp, #0]
+ 800e8dc:	6812      	ldr	r2, [r2, #0]
+ 800e8de:	2000      	movs	r0, #0
+ 800e8e0:	e9cd 2001 	strd	r2, r0, [sp, #4]
+ 800e8e4:	4622      	mov	r2, r4
+ 800e8e6:	2003      	movs	r0, #3
+ 800e8e8:	f7fb ffdc 	bl	800a8a4 <ma_fail_at>
+ 800e8ec:	2080      	movs	r0, #128	@ 0x80
+ 800e8ee:	b04d      	add	sp, #308	@ 0x134
+ 800e8f0:	ecbd 8b0e 	vpop	{d8-d14}
+ 800e8f4:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 800e8f8:	f1b9 0f00 	cmp.w	r9, #0
+ 800e8fc:	d0ea      	beq.n	800e8d4 <ma_native_fast+0x784>
+ 800e8fe:	4b1f      	ldr	r3, [pc, #124]	@ (800e97c <ma_native_fast+0x82c>)
+ 800e900:	4a1f      	ldr	r2, [pc, #124]	@ (800e980 <ma_native_fast+0x830>)
+ 800e902:	681b      	ldr	r3, [r3, #0]
+ 800e904:	6812      	ldr	r2, [r2, #0]
+ 800e906:	491f      	ldr	r1, [pc, #124]	@ (800e984 <ma_native_fast+0x834>)
+ 800e908:	1ae3      	subs	r3, r4, r3
+ 800e90a:	fba1 1202 	umull	r1, r2, r1, r2
+ 800e90e:	ebb3 1f92 	cmp.w	r3, r2, lsr #6
+ 800e912:	d2df      	bcs.n	800e8d4 <ma_native_fast+0x784>
+ 800e914:	4b1c      	ldr	r3, [pc, #112]	@ (800e988 <ma_native_fast+0x838>)
+ 800e916:	6ada      	ldr	r2, [r3, #44]	@ 0x2c
+ 800e918:	0852      	lsrs	r2, r2, #1
+ 800e91a:	635a      	str	r2, [r3, #52]	@ 0x34
+ 800e91c:	6ada      	ldr	r2, [r3, #44]	@ 0x2c
+ 800e91e:	0852      	lsrs	r2, r2, #1
+ 800e920:	639a      	str	r2, [r3, #56]	@ 0x38
+ 800e922:	6ada      	ldr	r2, [r3, #44]	@ 0x2c
+ 800e924:	0852      	lsrs	r2, r2, #1
+ 800e926:	63da      	str	r2, [r3, #60]	@ 0x3c
+ 800e928:	2000      	movs	r0, #0
+ 800e92a:	b04d      	add	sp, #308	@ 0x134
+ 800e92c:	ecbd 8b0e 	vpop	{d8-d14}
+ 800e930:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 800e934:	f89d 30e6 	ldrb.w	r3, [sp, #230]	@ 0xe6
+ 800e938:	2b00      	cmp	r3, #0
+ 800e93a:	f43f ac4d 	beq.w	800e1d8 <ma_native_fast+0x88>
+ 800e93e:	f89d 30e7 	ldrb.w	r3, [sp, #231]	@ 0xe7
+ 800e942:	2b00      	cmp	r3, #0
+ 800e944:	f43f ac48 	beq.w	800e1d8 <ma_native_fast+0x88>
+ 800e948:	f10d 0cd4 	add.w	ip, sp, #212	@ 0xd4
+ 800e94c:	e8bc 000f 	ldmia.w	ip!, {r0, r1, r2, r3}
+ 800e950:	4d0e      	ldr	r5, [pc, #56]	@ (800e98c <ma_native_fast+0x83c>)
+ 800e952:	c50f      	stmia	r5!, {r0, r1, r2, r3}
+ 800e954:	e89c 000f 	ldmia.w	ip, {r0, r1, r2, r3}
+ 800e958:	e885 000f 	stmia.w	r5, {r0, r1, r2, r3}
+ 800e95c:	e43c      	b.n	800e1d8 <ma_native_fast+0x88>
+ 800e95e:	bf00      	nop
+ 800e960:	200054cc 	.word	0x200054cc
+ 800e964:	3883126f 	.word	0x3883126f
+ 800e968:	3d4ccccd 	.word	0x3d4ccccd
+ 800e96c:	3f5db3d7 	.word	0x3f5db3d7
+ 800e970:	e0001000 	.word	0xe0001000
+ 800e974:	20005438 	.word	0x20005438
+ 800e978:	20005474 	.word	0x20005474
+ 800e97c:	2000545c 	.word	0x2000545c
+ 800e980:	20000374 	.word	0x20000374
+ 800e984:	10624dd3 	.word	0x10624dd3
+ 800e988:	40012c00 	.word	0x40012c00
+ 800e98c:	2000543c 	.word	0x2000543c
+ 800e990:	4aae      	ldr	r2, [pc, #696]	@ (800ec4c <ma_native_fast+0xafc>)
+ 800e992:	6c52      	ldr	r2, [r2, #68]	@ 0x44
+ 800e994:	0412      	lsls	r2, r2, #16
+ 800e996:	d5c7      	bpl.n	800e928 <ma_native_fast+0x7d8>
+ 800e998:	a82d      	add	r0, sp, #180	@ 0xb4
+ 800e99a:	685e      	ldr	r6, [r3, #4]
+ 800e99c:	f7f2 ff22 	bl	80017e4 <mic_current_fast>
+ 800e9a0:	2800      	cmp	r0, #0
+ 800e9a2:	f040 811a 	bne.w	800ebda <ma_native_fast+0xa8a>
+ 800e9a6:	4daa      	ldr	r5, [pc, #680]	@ (800ec50 <ma_native_fast+0xb00>)
+ 800e9a8:	7caf      	ldrb	r7, [r5, #18]
+ 800e9aa:	2f00      	cmp	r7, #0
+ 800e9ac:	f000 8140 	beq.w	800ec30 <ma_native_fast+0xae0>
+ 800e9b0:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800e9b2:	ac2d      	add	r4, sp, #180	@ 0xb4
+ 800e9b4:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800e9b6:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
+ 800e9ba:	f8df c2cc 	ldr.w	ip, [pc, #716]	@ 800ec88 <ma_native_fast+0xb38>
+ 800e9be:	f89c e000 	ldrb.w	lr, [ip]
+ 800e9c2:	e884 000f 	stmia.w	r4, {r0, r1, r2, r3}
+ 800e9c6:	f1be 0f00 	cmp.w	lr, #0
+ 800e9ca:	d104      	bne.n	800e9d6 <ma_native_fast+0x886>
+ 800e9cc:	4ba1      	ldr	r3, [pc, #644]	@ (800ec54 <ma_native_fast+0xb04>)
+ 800e9ce:	2201      	movs	r2, #1
+ 800e9d0:	f88c 2000 	strb.w	r2, [ip]
+ 800e9d4:	601e      	str	r6, [r3, #0]
+ 800e9d6:	f89d 30c7 	ldrb.w	r3, [sp, #199]	@ 0xc7
+ 800e9da:	2b00      	cmp	r3, #0
+ 800e9dc:	f000 8118 	beq.w	800ec10 <ma_native_fast+0xac0>
+ 800e9e0:	4c9d      	ldr	r4, [pc, #628]	@ (800ec58 <ma_native_fast+0xb08>)
+ 800e9e2:	f894 313c 	ldrb.w	r3, [r4, #316]	@ 0x13c
+ 800e9e6:	2b00      	cmp	r3, #0
+ 800e9e8:	f040 81cb 	bne.w	800ed82 <ma_native_fast+0xc32>
+ 800e9ec:	f894 313d 	ldrb.w	r3, [r4, #317]	@ 0x13d
+ 800e9f0:	2b00      	cmp	r3, #0
+ 800e9f2:	f47f af7b 	bne.w	800e8ec <ma_native_fast+0x79c>
+ 800e9f6:	4a99      	ldr	r2, [pc, #612]	@ (800ec5c <ma_native_fast+0xb0c>)
+ 800e9f8:	7812      	ldrb	r2, [r2, #0]
+ 800e9fa:	2a00      	cmp	r2, #0
+ 800e9fc:	f43f af76 	beq.w	800e8ec <ma_native_fast+0x79c>
+ 800ea00:	4a97      	ldr	r2, [pc, #604]	@ (800ec60 <ma_native_fast+0xb10>)
+ 800ea02:	7811      	ldrb	r1, [r2, #0]
+ 800ea04:	2900      	cmp	r1, #0
+ 800ea06:	f43f af71 	beq.w	800e8ec <ma_native_fast+0x79c>
+ 800ea0a:	7013      	strb	r3, [r2, #0]
+ 800ea0c:	9b2e      	ldr	r3, [sp, #184]	@ 0xb8
+ 800ea0e:	f8c4 30e4 	str.w	r3, [r4, #228]	@ 0xe4
+ 800ea12:	2201      	movs	r2, #1
+ 800ea14:	f884 213c 	strb.w	r2, [r4, #316]	@ 0x13c
+ 800ea18:	9335      	str	r3, [sp, #212]	@ 0xd4
+ 800ea1a:	f9bd 30c0 	ldrsh.w	r3, [sp, #192]	@ 0xc0
+ 800ea1e:	eddf 6a91 	vldr	s13, [pc, #580]	@ 800ec64 <ma_native_fast+0xb14>
+ 800ea22:	ee07 3a90 	vmov	s15, r3
+ 800ea26:	f9bd 30c2 	ldrsh.w	r3, [sp, #194]	@ 0xc2
+ 800ea2a:	ee07 3a10 	vmov	s14, r3
+ 800ea2e:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 800ea32:	eeb8 7ac7 	vcvt.f32.s32	s14, s14
+ 800ea36:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 800ea3a:	9b2f      	ldr	r3, [sp, #188]	@ 0xbc
+ 800ea3c:	9336      	str	r3, [sp, #216]	@ 0xd8
+ 800ea3e:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800ea42:	f8bd 30d0 	ldrh.w	r3, [sp, #208]	@ 0xd0
+ 800ea46:	edcd 7a37 	vstr	s15, [sp, #220]	@ 0xdc
+ 800ea4a:	eef0 6a67 	vmov.f32	s13, s15
+ 800ea4e:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 800ea52:	eee7 6a06 	vfma.f32	s13, s14, s12
+ 800ea56:	2100      	movs	r1, #0
+ 800ea58:	913c      	str	r1, [sp, #240]	@ 0xf0
+ 800ea5a:	ee07 3a10 	vmov	s14, r3
+ 800ea5e:	9b32      	ldr	r3, [sp, #200]	@ 0xc8
+ 800ea60:	933a      	str	r3, [sp, #232]	@ 0xe8
+ 800ea62:	4b7a      	ldr	r3, [pc, #488]	@ (800ec4c <ma_native_fast+0xafc>)
+ 800ea64:	f88d 70f0 	strb.w	r7, [sp, #240]	@ 0xf0
+ 800ea68:	6ada      	ldr	r2, [r3, #44]	@ 0x2c
+ 800ea6a:	9226      	str	r2, [sp, #152]	@ 0x98
+ 800ea6c:	6adb      	ldr	r3, [r3, #44]	@ 0x2c
+ 800ea6e:	ed9f 6a7e 	vldr	s12, [pc, #504]	@ 800ec68 <ma_native_fast+0xb18>
+ 800ea72:	9a33      	ldr	r2, [sp, #204]	@ 0xcc
+ 800ea74:	923b      	str	r2, [sp, #236]	@ 0xec
+ 800ea76:	3b80      	subs	r3, #128	@ 0x80
+ 800ea78:	9327      	str	r3, [sp, #156]	@ 0x9c
+ 800ea7a:	f240 3503 	movw	r5, #771	@ 0x303
+ 800ea7e:	2370      	movs	r3, #112	@ 0x70
+ 800ea80:	e9cd 5328 	strd	r5, r3, [sp, #160]	@ 0xa0
+ 800ea84:	27f0      	movs	r7, #240	@ 0xf0
+ 800ea86:	23e5      	movs	r3, #229	@ 0xe5
+ 800ea88:	e9cd 732a 	strd	r7, r3, [sp, #168]	@ 0xa8
+ 800ea8c:	4b77      	ldr	r3, [pc, #476]	@ (800ec6c <ma_native_fast+0xb1c>)
+ 800ea8e:	ee66 6a86 	vmul.f32	s13, s13, s12
+ 800ea92:	eeb8 7a47 	vcvt.f32.u32	s14, s14
+ 800ea96:	681d      	ldr	r5, [r3, #0]
+ 800ea98:	edcd 6a38 	vstr	s13, [sp, #224]	@ 0xe0
+ 800ea9c:	ab3d      	add	r3, sp, #244	@ 0xf4
+ 800ea9e:	223c      	movs	r2, #60	@ 0x3c
+ 800eaa0:	4618      	mov	r0, r3
+ 800eaa2:	ed8d 7a39 	vstr	s14, [sp, #228]	@ 0xe4
+ 800eaa6:	f008 fb22 	bl	80170ee <memset>
+ 800eaaa:	462b      	mov	r3, r5
+ 800eaac:	9000      	str	r0, [sp, #0]
+ 800eaae:	a935      	add	r1, sp, #212	@ 0xd4
+ 800eab0:	4632      	mov	r2, r6
+ 800eab2:	a826      	add	r0, sp, #152	@ 0x98
+ 800eab4:	f7fc fb5c 	bl	800b170 <mi_step.part.0.constprop.0>
+ 800eab8:	2801      	cmp	r0, #1
+ 800eaba:	f000 80c2 	beq.w	800ec42 <ma_native_fast+0xaf2>
+ 800eabe:	2800      	cmp	r0, #0
+ 800eac0:	f47f af14 	bne.w	800e8ec <ma_native_fast+0x79c>
+ 800eac4:	4b6a      	ldr	r3, [pc, #424]	@ (800ec70 <ma_native_fast+0xb20>)
+ 800eac6:	4a6b      	ldr	r2, [pc, #428]	@ (800ec74 <ma_native_fast+0xb24>)
+ 800eac8:	685b      	ldr	r3, [r3, #4]
+ 800eaca:	6811      	ldr	r1, [r2, #0]
+ 800eacc:	1b9b      	subs	r3, r3, r6
+ 800eace:	428b      	cmp	r3, r1
+ 800ead0:	bf88      	it	hi
+ 800ead2:	6013      	strhi	r3, [r2, #0]
+ 800ead4:	4a68      	ldr	r2, [pc, #416]	@ (800ec78 <ma_native_fast+0xb28>)
+ 800ead6:	fba2 2505 	umull	r2, r5, r2, r5
+ 800eada:	ebb3 2fd5 	cmp.w	r3, r5, lsr #11
+ 800eade:	f200 81bc 	bhi.w	800ee5a <ma_native_fast+0xd0a>
+ 800eae2:	4b5a      	ldr	r3, [pc, #360]	@ (800ec4c <ma_native_fast+0xafc>)
+ 800eae4:	9a47      	ldr	r2, [sp, #284]	@ 0x11c
+ 800eae6:	635a      	str	r2, [r3, #52]	@ 0x34
+ 800eae8:	9a48      	ldr	r2, [sp, #288]	@ 0x120
+ 800eaea:	639a      	str	r2, [r3, #56]	@ 0x38
+ 800eaec:	9a49      	ldr	r2, [sp, #292]	@ 0x124
+ 800eaee:	63da      	str	r2, [r3, #60]	@ 0x3c
+ 800eaf0:	e71a      	b.n	800e928 <ma_native_fast+0x7d8>
+ 800eaf2:	4a62      	ldr	r2, [pc, #392]	@ (800ec7c <ma_native_fast+0xb2c>)
+ 800eaf4:	7811      	ldrb	r1, [r2, #0]
+ 800eaf6:	2900      	cmp	r1, #0
+ 800eaf8:	f040 80a3 	bne.w	800ec42 <ma_native_fast+0xaf2>
+ 800eafc:	eddf 7a60 	vldr	s15, [pc, #384]	@ 800ec80 <ma_native_fast+0xb30>
+ 800eb00:	eeb0 7ac8 	vabs.f32	s14, s16
+ 800eb04:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800eb08:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800eb0c:	d85d      	bhi.n	800ebca <ma_native_fast+0xa7a>
+ 800eb0e:	eeb5 8ac0 	vcmpe.f32	s16, #0.0
+ 800eb12:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800eb16:	d458      	bmi.n	800ebca <ma_native_fast+0xa7a>
+ 800eb18:	eddf 7a5a 	vldr	s15, [pc, #360]	@ 800ec84 <ma_native_fast+0xb34>
+ 800eb1c:	eeb4 8ae7 	vcmpe.f32	s16, s15
+ 800eb20:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800eb24:	dc51      	bgt.n	800ebca <ma_native_fast+0xa7a>
+ 800eb26:	4d58      	ldr	r5, [pc, #352]	@ (800ec88 <ma_native_fast+0xb38>)
+ 800eb28:	782b      	ldrb	r3, [r5, #0]
+ 800eb2a:	b90b      	cbnz	r3, 800eb30 <ma_native_fast+0x9e0>
+ 800eb2c:	4b57      	ldr	r3, [pc, #348]	@ (800ec8c <ma_native_fast+0xb3c>)
+ 800eb2e:	601c      	str	r4, [r3, #0]
+ 800eb30:	782b      	ldrb	r3, [r5, #0]
+ 800eb32:	2b00      	cmp	r3, #0
+ 800eb34:	f43f ab32 	beq.w	800e19c <ma_native_fast+0x4c>
+ 800eb38:	4b4c      	ldr	r3, [pc, #304]	@ (800ec6c <ma_native_fast+0xb1c>)
+ 800eb3a:	4954      	ldr	r1, [pc, #336]	@ (800ec8c <ma_native_fast+0xb3c>)
+ 800eb3c:	681b      	ldr	r3, [r3, #0]
+ 800eb3e:	6809      	ldr	r1, [r1, #0]
+ 800eb40:	eb03 0383 	add.w	r3, r3, r3, lsl #2
+ 800eb44:	1a61      	subs	r1, r4, r1
+ 800eb46:	428b      	cmp	r3, r1
+ 800eb48:	f63f ab28 	bhi.w	800e19c <ma_native_fast+0x4c>
+ 800eb4c:	2301      	movs	r3, #1
+ 800eb4e:	4850      	ldr	r0, [pc, #320]	@ (800ec90 <ma_native_fast+0xb40>)
+ 800eb50:	7013      	strb	r3, [r2, #0]
+ 800eb52:	f007 fb03 	bl	801615c <PWM_SwitchOffPWM>
+ 800eb56:	2300      	movs	r3, #0
+ 800eb58:	702b      	strb	r3, [r5, #0]
+ 800eb5a:	e6e5      	b.n	800e928 <ma_native_fast+0x7d8>
+ 800eb5c:	4a3d      	ldr	r2, [pc, #244]	@ (800ec54 <ma_native_fast+0xb04>)
+ 800eb5e:	4b4d      	ldr	r3, [pc, #308]	@ (800ec94 <ma_native_fast+0xb44>)
+ 800eb60:	6014      	str	r4, [r2, #0]
+ 800eb62:	2201      	movs	r2, #1
+ 800eb64:	702a      	strb	r2, [r5, #0]
+ 800eb66:	f8df a150 	ldr.w	sl, [pc, #336]	@ 800ecb8 <ma_native_fast+0xb68>
+ 800eb6a:	601c      	str	r4, [r3, #0]
+ 800eb6c:	f8da 3000 	ldr.w	r3, [sl]
+ 800eb70:	f8df 9148 	ldr.w	r9, [pc, #328]	@ 800ecbc <ma_native_fast+0xb6c>
+ 800eb74:	4a48      	ldr	r2, [pc, #288]	@ (800ec98 <ma_native_fast+0xb48>)
+ 800eb76:	ebc3 03c3 	rsb	r3, r3, r3, lsl #3
+ 800eb7a:	eb09 0383 	add.w	r3, r9, r3, lsl #2
+ 800eb7e:	619c      	str	r4, [r3, #24]
+ 800eb80:	6813      	ldr	r3, [r2, #0]
+ 800eb82:	3301      	adds	r3, #1
+ 800eb84:	6013      	str	r3, [r2, #0]
+ 800eb86:	f3bf 8f5f 	dmb	sy
+ 800eb8a:	4844      	ldr	r0, [pc, #272]	@ (800ec9c <ma_native_fast+0xb4c>)
+ 800eb8c:	6004      	str	r4, [r0, #0]
+ 800eb8e:	4844      	ldr	r0, [pc, #272]	@ (800eca0 <ma_native_fast+0xb50>)
+ 800eb90:	2300      	movs	r3, #0
+ 800eb92:	6003      	str	r3, [r0, #0]
+ 800eb94:	4843      	ldr	r0, [pc, #268]	@ (800eca4 <ma_native_fast+0xb54>)
+ 800eb96:	6003      	str	r3, [r0, #0]
+ 800eb98:	4843      	ldr	r0, [pc, #268]	@ (800eca8 <ma_native_fast+0xb58>)
+ 800eb9a:	6003      	str	r3, [r0, #0]
+ 800eb9c:	4843      	ldr	r0, [pc, #268]	@ (800ecac <ma_native_fast+0xb5c>)
+ 800eb9e:	6003      	str	r3, [r0, #0]
+ 800eba0:	4b43      	ldr	r3, [pc, #268]	@ (800ecb0 <ma_native_fast+0xb60>)
+ 800eba2:	6019      	str	r1, [r3, #0]
+ 800eba4:	f3bf 8f5f 	dmb	sy
+ 800eba8:	6813      	ldr	r3, [r2, #0]
+ 800ebaa:	3301      	adds	r3, #1
+ 800ebac:	6013      	str	r3, [r2, #0]
+ 800ebae:	f7ff baff 	b.w	800e1b0 <ma_native_fast+0x60>
+ 800ebb2:	f8da 2000 	ldr.w	r2, [sl]
+ 800ebb6:	f3bf 8f5b 	dmb	ish
+ 800ebba:	ebc2 02c2 	rsb	r2, r2, r2, lsl #3
+ 800ebbe:	eb09 0982 	add.w	r9, r9, r2, lsl #2
+ 800ebc2:	2101      	movs	r1, #1
+ 800ebc4:	f8d9 5018 	ldr.w	r5, [r9, #24]
+ 800ebc8:	e686      	b.n	800e8d8 <ma_native_fast+0x788>
+ 800ebca:	4a3a      	ldr	r2, [pc, #232]	@ (800ecb4 <ma_native_fast+0xb64>)
+ 800ebcc:	7811      	ldrb	r1, [r2, #0]
+ 800ebce:	b909      	cbnz	r1, 800ebd4 <ma_native_fast+0xa84>
+ 800ebd0:	2101      	movs	r1, #1
+ 800ebd2:	7011      	strb	r1, [r2, #0]
+ 800ebd4:	2201      	movs	r2, #1
+ 800ebd6:	701a      	strb	r2, [r3, #0]
+ 800ebd8:	e688      	b.n	800e8ec <ma_native_fast+0x79c>
+ 800ebda:	f89d 70c6 	ldrb.w	r7, [sp, #198]	@ 0xc6
+ 800ebde:	2f00      	cmp	r7, #0
+ 800ebe0:	f040 8083 	bne.w	800ecea <ma_native_fast+0xb9a>
+ 800ebe4:	4b28      	ldr	r3, [pc, #160]	@ (800ec88 <ma_native_fast+0xb38>)
+ 800ebe6:	781a      	ldrb	r2, [r3, #0]
+ 800ebe8:	b91a      	cbnz	r2, 800ebf2 <ma_native_fast+0xaa2>
+ 800ebea:	4a1a      	ldr	r2, [pc, #104]	@ (800ec54 <ma_native_fast+0xb04>)
+ 800ebec:	2101      	movs	r1, #1
+ 800ebee:	7019      	strb	r1, [r3, #0]
+ 800ebf0:	6016      	str	r6, [r2, #0]
+ 800ebf2:	f89d 30c7 	ldrb.w	r3, [sp, #199]	@ 0xc7
+ 800ebf6:	b15b      	cbz	r3, 800ec10 <ma_native_fast+0xac0>
+ 800ebf8:	4b16      	ldr	r3, [pc, #88]	@ (800ec54 <ma_native_fast+0xb04>)
+ 800ebfa:	4a1c      	ldr	r2, [pc, #112]	@ (800ec6c <ma_native_fast+0xb1c>)
+ 800ebfc:	681b      	ldr	r3, [r3, #0]
+ 800ebfe:	6812      	ldr	r2, [r2, #0]
+ 800ec00:	491d      	ldr	r1, [pc, #116]	@ (800ec78 <ma_native_fast+0xb28>)
+ 800ec02:	1af3      	subs	r3, r6, r3
+ 800ec04:	fba1 1202 	umull	r1, r2, r1, r2
+ 800ec08:	ebb3 1f92 	cmp.w	r3, r2, lsr #6
+ 800ec0c:	f4ff ae82 	bcc.w	800e914 <ma_native_fast+0x7c4>
+ 800ec10:	4b11      	ldr	r3, [pc, #68]	@ (800ec58 <ma_native_fast+0xb08>)
+ 800ec12:	f893 213c 	ldrb.w	r2, [r3, #316]	@ 0x13c
+ 800ec16:	2a00      	cmp	r2, #0
+ 800ec18:	f43f ae68 	beq.w	800e8ec <ma_native_fast+0x79c>
+ 800ec1c:	f44f 7180 	mov.w	r1, #256	@ 0x100
+ 800ec20:	2203      	movs	r2, #3
+ 800ec22:	f8a3 113c 	strh.w	r1, [r3, #316]	@ 0x13c
+ 800ec26:	f883 213e 	strb.w	r2, [r3, #318]	@ 0x13e
+ 800ec2a:	f8c3 60f8 	str.w	r6, [r3, #248]	@ 0xf8
+ 800ec2e:	e65d      	b.n	800e8ec <ma_native_fast+0x79c>
+ 800ec30:	4b15      	ldr	r3, [pc, #84]	@ (800ec88 <ma_native_fast+0xb38>)
+ 800ec32:	781a      	ldrb	r2, [r3, #0]
+ 800ec34:	2a00      	cmp	r2, #0
+ 800ec36:	d1eb      	bne.n	800ec10 <ma_native_fast+0xac0>
+ 800ec38:	4a06      	ldr	r2, [pc, #24]	@ (800ec54 <ma_native_fast+0xb04>)
+ 800ec3a:	2101      	movs	r1, #1
+ 800ec3c:	7019      	strb	r1, [r3, #0]
+ 800ec3e:	6016      	str	r6, [r2, #0]
+ 800ec40:	e7e6      	b.n	800ec10 <ma_native_fast+0xac0>
+ 800ec42:	4813      	ldr	r0, [pc, #76]	@ (800ec90 <ma_native_fast+0xb40>)
+ 800ec44:	f007 fa8a 	bl	801615c <PWM_SwitchOffPWM>
+ 800ec48:	e66e      	b.n	800e928 <ma_native_fast+0x7d8>
+ 800ec4a:	bf00      	nop
+ 800ec4c:	40012c00 	.word	0x40012c00
+ 800ec50:	2000543c 	.word	0x2000543c
+ 800ec54:	2000545c 	.word	0x2000545c
+ 800ec58:	20006668 	.word	0x20006668
+ 800ec5c:	200055ea 	.word	0x200055ea
+ 800ec60:	200055e9 	.word	0x200055e9
+ 800ec64:	3c1d2e65 	.word	0x3c1d2e65
+ 800ec68:	3f13cd3a 	.word	0x3f13cd3a
+ 800ec6c:	20000374 	.word	0x20000374
+ 800ec70:	e0001000 	.word	0xe0001000
+ 800ec74:	20005438 	.word	0x20005438
+ 800ec78:	10624dd3 	.word	0x10624dd3
+ 800ec7c:	20005428 	.word	0x20005428
+ 800ec80:	7f7fffff 	.word	0x7f7fffff
+ 800ec84:	40a00831 	.word	0x40a00831
+ 800ec88:	200055a6 	.word	0x200055a6
+ 800ec8c:	20005424 	.word	0x20005424
+ 800ec90:	20000070 	.word	0x20000070
+ 800ec94:	2000548c 	.word	0x2000548c
+ 800ec98:	20005478 	.word	0x20005478
+ 800ec9c:	20005474 	.word	0x20005474
+ 800eca0:	2000546c 	.word	0x2000546c
+ 800eca4:	20005470 	.word	0x20005470
+ 800eca8:	20005464 	.word	0x20005464
+ 800ecac:	20005468 	.word	0x20005468
+ 800ecb0:	20005460 	.word	0x20005460
+ 800ecb4:	200055a5 	.word	0x200055a5
+ 800ecb8:	20005490 	.word	0x20005490
+ 800ecbc:	20005494 	.word	0x20005494
+ 800ecc0:	496d      	ldr	r1, [pc, #436]	@ (800ee78 <ma_native_fast+0xd28>)
+ 800ecc2:	6808      	ldr	r0, [r1, #0]
+ 800ecc4:	496d      	ldr	r1, [pc, #436]	@ (800ee7c <ma_native_fast+0xd2c>)
+ 800ecc6:	1a20      	subs	r0, r4, r0
+ 800ecc8:	fba1 7603 	umull	r7, r6, r1, r3
+ 800eccc:	ebb0 1f96 	cmp.w	r0, r6, lsr #6
+ 800ecd0:	f4ff ae20 	bcc.w	800e914 <ma_native_fast+0x7c4>
+ 800ecd4:	441a      	add	r2, r3
+ 800ecd6:	fba1 1202 	umull	r1, r2, r1, r2
+ 800ecda:	eba4 0c0c 	sub.w	ip, r4, ip
+ 800ecde:	ebbc 2f92 	cmp.w	ip, r2, lsr #10
+ 800ece2:	d31c      	bcc.n	800ed1e <ma_native_fast+0xbce>
+ 800ece4:	2103      	movs	r1, #3
+ 800ece6:	ab35      	add	r3, sp, #212	@ 0xd4
+ 800ece8:	e5f6      	b.n	800e8d8 <ma_native_fast+0x788>
+ 800ecea:	f89d 30c7 	ldrb.w	r3, [sp, #199]	@ 0xc7
+ 800ecee:	2b00      	cmp	r3, #0
+ 800ecf0:	d09e      	beq.n	800ec30 <ma_native_fast+0xae0>
+ 800ecf2:	ad2d      	add	r5, sp, #180	@ 0xb4
+ 800ecf4:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+ 800ecf6:	4c62      	ldr	r4, [pc, #392]	@ (800ee80 <ma_native_fast+0xd30>)
+ 800ecf8:	f8df c1a8 	ldr.w	ip, [pc, #424]	@ 800eea4 <ma_native_fast+0xd54>
+ 800ecfc:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+ 800ecfe:	e895 000f 	ldmia.w	r5, {r0, r1, r2, r3}
+ 800ed02:	f89c e000 	ldrb.w	lr, [ip]
+ 800ed06:	e884 000f 	stmia.w	r4, {r0, r1, r2, r3}
+ 800ed0a:	f1be 0f00 	cmp.w	lr, #0
+ 800ed0e:	f47f ae67 	bne.w	800e9e0 <ma_native_fast+0x890>
+ 800ed12:	4b59      	ldr	r3, [pc, #356]	@ (800ee78 <ma_native_fast+0xd28>)
+ 800ed14:	2201      	movs	r2, #1
+ 800ed16:	f88c 2000 	strb.w	r2, [ip]
+ 800ed1a:	601e      	str	r6, [r3, #0]
+ 800ed1c:	e660      	b.n	800e9e0 <ma_native_fast+0x890>
+ 800ed1e:	2104      	movs	r1, #4
+ 800ed20:	ab35      	add	r3, sp, #212	@ 0xd4
+ 800ed22:	e5d9      	b.n	800e8d8 <ma_native_fast+0x788>
+ 800ed24:	783b      	ldrb	r3, [r7, #0]
+ 800ed26:	ed9f 7a57 	vldr	s14, [pc, #348]	@ 800ee84 <ma_native_fast+0xd34>
+ 800ed2a:	eddf 6a61 	vldr	s13, [pc, #388]	@ 800eeb0 <ma_native_fast+0xd60>
+ 800ed2e:	4856      	ldr	r0, [pc, #344]	@ (800ee88 <ma_native_fast+0xd38>)
+ 800ed30:	b2db      	uxtb	r3, r3
+ 800ed32:	9308      	str	r3, [sp, #32]
+ 800ed34:	f9bd 30e0 	ldrsh.w	r3, [sp, #224]	@ 0xe0
+ 800ed38:	ee09 3a90 	vmov	s19, r3
+ 800ed3c:	f9bd 30e2 	ldrsh.w	r3, [sp, #226]	@ 0xe2
+ 800ed40:	ee07 3a90 	vmov	s15, r3
+ 800ed44:	eef8 9ae9 	vcvt.f32.s32	s19, s19
+ 800ed48:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+ 800ed4c:	ee69 9a87 	vmul.f32	s19, s19, s14
+ 800ed50:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 800ed54:	eeb0 6a00 	vmov.f32	s12, #0	@ 0x40000000  2.0
+ 800ed58:	eef0 8a69 	vmov.f32	s17, s19
+ 800ed5c:	eee7 8a86 	vfma.f32	s17, s15, s12
+ 800ed60:	ee68 8aa6 	vmul.f32	s17, s17, s13
+ 800ed64:	f006 ff10 	bl	8015b88 <VBS_GetAvBusVoltage_V>
+ 800ed68:	ee07 0a90 	vmov	s15, r0
+ 800ed6c:	223c      	movs	r2, #60	@ 0x3c
+ 800ed6e:	4640      	mov	r0, r8
+ 800ed70:	2100      	movs	r1, #0
+ 800ed72:	eeb8 9a67 	vcvt.f32.u32	s18, s15
+ 800ed76:	eef0 ea67 	vmov.f32	s29, s15
+ 800ed7a:	f008 f9b8 	bl	80170ee <memset>
+ 800ed7e:	f7ff bb48 	b.w	800e412 <ma_native_fast+0x2c2>
+ 800ed82:	9b2e      	ldr	r3, [sp, #184]	@ 0xb8
+ 800ed84:	e648      	b.n	800ea18 <ma_native_fast+0x8c8>
+ 800ed86:	f10d 08f4 	add.w	r8, sp, #244	@ 0xf4
+ 800ed8a:	f7ff baed 	b.w	800e368 <ma_native_fast+0x218>
+ 800ed8e:	4b3f      	ldr	r3, [pc, #252]	@ (800ee8c <ma_native_fast+0xd3c>)
+ 800ed90:	493f      	ldr	r1, [pc, #252]	@ (800ee90 <ma_native_fast+0xd40>)
+ 800ed92:	685b      	ldr	r3, [r3, #4]
+ 800ed94:	69ca      	ldr	r2, [r1, #28]
+ 800ed96:	1b1b      	subs	r3, r3, r4
+ 800ed98:	3201      	adds	r2, #1
+ 800ed9a:	4543      	cmp	r3, r8
+ 800ed9c:	61ca      	str	r2, [r1, #28]
+ 800ed9e:	d901      	bls.n	800eda4 <ma_native_fast+0xc54>
+ 800eda0:	4a3c      	ldr	r2, [pc, #240]	@ (800ee94 <ma_native_fast+0xd44>)
+ 800eda2:	6013      	str	r3, [r2, #0]
+ 800eda4:	4630      	mov	r0, r6
+ 800eda6:	e589      	b.n	800e8bc <ma_native_fast+0x76c>
+ 800eda8:	ed9f ca3b 	vldr	s24, [pc, #236]	@ 800ee98 <ma_native_fast+0xd48>
+ 800edac:	ed9f ba44 	vldr	s22, [pc, #272]	@ 800eec0 <ma_native_fast+0xd70>
+ 800edb0:	eeb0 6a68 	vmov.f32	s12, s17
+ 800edb4:	eef0 6a69 	vmov.f32	s13, s19
+ 800edb8:	eef7 ba00 	vmov.f32	s23, #112	@ 0x3f800000  1.0
+ 800edbc:	f7ff bb67 	b.w	800e48e <ma_native_fast+0x33e>
+ 800edc0:	eddf 2a3f 	vldr	s5, [pc, #252]	@ 800eec0 <ma_native_fast+0xd70>
+ 800edc4:	eef4 cae2 	vcmpe.f32	s25, s5
+ 800edc8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800edcc:	dd06      	ble.n	800eddc <ma_native_fast+0xc8c>
+ 800edce:	eef4 2ac8 	vcmpe.f32	s5, s16
+ 800edd2:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800edd6:	bfc8      	it	gt
+ 800edd8:	eeb0 8a62 	vmovgt.f32	s16, s5
+ 800eddc:	eddf 2a2f 	vldr	s5, [pc, #188]	@ 800ee9c <ma_native_fast+0xd4c>
+ 800ede0:	eeb4 dae2 	vcmpe.f32	s26, s5
+ 800ede4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ede8:	f6ff ac42 	blt.w	800e670 <ma_native_fast+0x520>
+ 800edec:	eed7 5a08 	vfnms.f32	s11, s14, s16
+ 800edf0:	eef0 2a65 	vmov.f32	s5, s11
+ 800edf4:	ee64 5a85 	vmul.f32	s11, s9, s10
+ 800edf8:	eddf 4a29 	vldr	s9, [pc, #164]	@ 800eea0 <ma_native_fast+0xd50>
+ 800edfc:	ee65 5a85 	vmul.f32	s11, s11, s10
+ 800ee00:	ee25 5a22 	vmul.f32	s10, s10, s5
+ 800ee04:	eea0 5aa5 	vfma.f32	s10, s1, s11
+ 800ee08:	eef8 5a00 	vmov.f32	s11, #128	@ 0xc0000000 -2.0
+ 800ee0c:	ee27 7a25 	vmul.f32	s14, s14, s11
+ 800ee10:	eef0 5a41 	vmov.f32	s11, s2
+ 800ee14:	ee27 7a23 	vmul.f32	s14, s14, s7
+ 800ee18:	eee5 5a24 	vfma.f32	s11, s10, s9
+ 800ee1c:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800ee20:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ee24:	eeb1 5a47 	vneg.f32	s10, s14
+ 800ee28:	d614      	bvs.n	800ee54 <ma_native_fast+0xd04>
+ 800ee2a:	eef4 5a65 	vcmp.f32	s11, s11
+ 800ee2e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ee32:	d606      	bvs.n	800ee42 <ma_native_fast+0xcf2>
+ 800ee34:	eeb4 7ae5 	vcmpe.f32	s14, s11
+ 800ee38:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ee3c:	bfd8      	it	le
+ 800ee3e:	eeb0 7a65 	vmovle.f32	s14, s11
+ 800ee42:	eeb4 7ac5 	vcmpe.f32	s14, s10
+ 800ee46:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ee4a:	bfd4      	ite	le
+ 800ee4c:	eef0 5a47 	vmovle.f32	s11, s14
+ 800ee50:	eef0 5a45 	vmovgt.f32	s11, s10
+ 800ee54:	edc9 5a02 	vstr	s11, [r9, #8]
+ 800ee58:	e40a      	b.n	800e670 <ma_native_fast+0x520>
+ 800ee5a:	f894 313c 	ldrb.w	r3, [r4, #316]	@ 0x13c
+ 800ee5e:	2b00      	cmp	r3, #0
+ 800ee60:	f43f ad36 	beq.w	800e8d0 <ma_native_fast+0x780>
+ 800ee64:	f44f 7280 	mov.w	r2, #256	@ 0x100
+ 800ee68:	2308      	movs	r3, #8
+ 800ee6a:	f8a4 213c 	strh.w	r2, [r4, #316]	@ 0x13c
+ 800ee6e:	f884 313e 	strb.w	r3, [r4, #318]	@ 0x13e
+ 800ee72:	f8c4 60f8 	str.w	r6, [r4, #248]	@ 0xf8
+ 800ee76:	e52b      	b.n	800e8d0 <ma_native_fast+0x780>
+ 800ee78:	2000545c 	.word	0x2000545c
+ 800ee7c:	10624dd3 	.word	0x10624dd3
+ 800ee80:	2000543c 	.word	0x2000543c
+ 800ee84:	3c1d2e65 	.word	0x3c1d2e65
+ 800ee88:	20000154 	.word	0x20000154
+ 800ee8c:	e0001000 	.word	0xe0001000
+ 800ee90:	200054cc 	.word	0x200054cc
+ 800ee94:	20005438 	.word	0x20005438
+ 800ee98:	80000000 	.word	0x80000000
+ 800ee9c:	3eb33333 	.word	0x3eb33333
+ 800eea0:	3883126f 	.word	0x3883126f
+ 800eea4:	200055a6 	.word	0x200055a6
+ 800eea8:	43650000 	.word	0x43650000
+ 800eeac:	7f7fffff 	.word	0x7f7fffff
+ 800eeb0:	3f13cd3a 	.word	0x3f13cd3a
+ 800eeb4:	43700000 	.word	0x43700000
+ 800eeb8:	3f5db3d7 	.word	0x3f5db3d7
+ 800eebc:	3b03126f 	.word	0x3b03126f
+ 800eec0:	00000000 	.word	0x00000000
+ 800eec4:	bb03126f 	.word	0xbb03126f
+ 800eec8:	9b07      	ldr	r3, [sp, #28]
+ 800eeca:	f1a3 0180 	sub.w	r1, r3, #128	@ 0x80
+ 800eece:	9b05      	ldr	r3, [sp, #20]
+ 800eed0:	428b      	cmp	r3, r1
+ 800eed2:	f67f ace6 	bls.w	800e8a2 <ma_native_fast+0x752>
+ 800eed6:	f5b3 7f41 	cmp.w	r3, #772	@ 0x304
+ 800eeda:	f4ff ace2 	bcc.w	800e8a2 <ma_native_fast+0x752>
+ 800eede:	ee06 3a90 	vmov	s13, r3
+ 800eee2:	ed1f 6a0f 	vldr	s12, [pc, #-60]	@ 800eea8 <ma_native_fast+0xd58>
+ 800eee6:	ed9d 3a13 	vldr	s6, [sp, #76]	@ 0x4c
+ 800eeea:	eef8 3ae6 	vcvt.f32.s32	s7, s13
+ 800eeee:	ee29 6a06 	vmul.f32	s12, s18, s12
+ 800eef2:	ee33 5aa3 	vadd.f32	s10, s7, s7
+ 800eef6:	eef7 1a00 	vmov.f32	s3, #112	@ 0x3f800000  1.0
+ 800eefa:	eec6 6a05 	vdiv.f32	s13, s12, s10
+ 800eefe:	eeb4 7ae1 	vcmpe.f32	s14, s3
+ 800ef02:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ef06:	eef4 7ae1 	vcmpe.f32	s15, s3
+ 800ef0a:	bfc8      	it	gt
+ 800ef0c:	eeb0 7a61 	vmovgt.f32	s14, s3
+ 800ef10:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ef14:	eef4 5ae1 	vcmpe.f32	s11, s3
+ 800ef18:	bfc8      	it	gt
+ 800ef1a:	eef0 7a61 	vmovgt.f32	s15, s3
+ 800ef1e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ef22:	bfd4      	ite	le
+ 800ef24:	eeb0 6a65 	vmovle.f32	s12, s11
+ 800ef28:	eeb0 6a61 	vmovgt.f32	s12, s3
+ 800ef2c:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800ef30:	ee26 6a26 	vmul.f32	s12, s12, s13
+ 800ef34:	eeb0 5a00 	vmov.f32	s10, #0	@ 0x40000000  2.0
+ 800ef38:	ee67 6aa6 	vmul.f32	s13, s15, s13
+ 800ef3c:	eef0 7a47 	vmov.f32	s15, s14
+ 800ef40:	eed6 7a05 	vfnms.f32	s15, s12, s10
+ 800ef44:	eeb0 6a08 	vmov.f32	s12, #8	@ 0x40400000  3.0
+ 800ef48:	ee77 7ae6 	vsub.f32	s15, s15, s13
+ 800ef4c:	eddd 5a12 	vldr	s11, [sp, #72]	@ 0x48
+ 800ef50:	ee87 5a86 	vdiv.f32	s10, s15, s12
+ 800ef54:	ee2b 4aa5 	vmul.f32	s8, s23, s11
+ 800ef58:	ed5f 7a2c 	vldr	s15, [pc, #-176]	@ 800eeac <ma_native_fast+0xd5c>
+ 800ef5c:	eeab 4a43 	vfms.f32	s8, s22, s6
+ 800ef60:	ee74 4a05 	vadd.f32	s9, s8, s10
+ 800ef64:	eeb0 6ae4 	vabs.f32	s12, s9
+ 800ef68:	eeb4 6a67 	vcmp.f32	s12, s15
+ 800ef6c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ef70:	f63f ac97 	bhi.w	800e8a2 <ma_native_fast+0x752>
+ 800ef74:	ee6b 5a25 	vmul.f32	s11, s22, s11
+ 800ef78:	ee37 7a66 	vsub.f32	s14, s14, s13
+ 800ef7c:	eeeb 5a83 	vfma.f32	s11, s23, s6
+ 800ef80:	ed5f 6a35 	vldr	s13, [pc, #-212]	@ 800eeb0 <ma_native_fast+0xd60>
+ 800ef84:	ee27 6a26 	vmul.f32	s12, s14, s13
+ 800ef88:	ee35 3a86 	vadd.f32	s6, s11, s12
+ 800ef8c:	eeb0 7ac3 	vabs.f32	s14, s6
+ 800ef90:	eeb4 7a67 	vcmp.f32	s14, s15
+ 800ef94:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800ef98:	f63f ac83 	bhi.w	800e8a2 <ma_native_fast+0x752>
+ 800ef9c:	ee1e 3a90 	vmov	r3, s29
+ 800efa0:	3b1e      	subs	r3, #30
+ 800efa2:	b29b      	uxth	r3, r3
+ 800efa4:	f5b3 7fa0 	cmp.w	r3, #320	@ 0x140
+ 800efa8:	f63f ac7b 	bhi.w	800e8a2 <ma_native_fast+0x752>
+ 800efac:	ed5f 7a3f 	vldr	s15, [pc, #-252]	@ 800eeb4 <ma_native_fast+0xd64>
+ 800efb0:	f8d9 0020 	ldr.w	r0, [r9, #32]
+ 800efb4:	ed99 0a04 	vldr	s0, [r9, #16]
+ 800efb8:	ed5f 0a41 	vldr	s1, [pc, #-260]	@ 800eeb8 <ma_native_fast+0xd68>
+ 800efbc:	ed1f 1a41 	vldr	s2, [pc, #-260]	@ 800eebc <ma_native_fast+0xd6c>
+ 800efc0:	eec7 2aa3 	vdiv.f32	s5, s15, s7
+ 800efc4:	2200      	movs	r2, #0
+ 800efc6:	2305      	movs	r3, #5
+ 800efc8:	9206      	str	r2, [sp, #24]
+ 800efca:	f10d 0e8c 	add.w	lr, sp, #140	@ 0x8c
+ 800efce:	4622      	mov	r2, r4
+ 800efd0:	4604      	mov	r4, r0
+ 800efd2:	4618      	mov	r0, r3
+ 800efd4:	eef0 7a61 	vmov.f32	s15, s3
+ 800efd8:	ee31 2ae2 	vsub.f32	s4, s3, s5
+ 800efdc:	ed5f 1a48 	vldr	s3, [pc, #-288]	@ 800eec0 <ma_native_fast+0xd70>
+ 800efe0:	eeb0 8a43 	vmov.f32	s16, s6
+ 800efe4:	eeb0 7a64 	vmov.f32	s14, s9
+ 800efe8:	ee28 8a20 	vmul.f32	s16, s16, s1
+ 800efec:	eefe 9a00 	vmov.f32	s19, #224	@ 0xbf000000 -0.5
+ 800eff0:	eef0 6a48 	vmov.f32	s13, s16
+ 800eff4:	eee7 6a29 	vfma.f32	s13, s14, s19
+ 800eff8:	ab20      	add	r3, sp, #128	@ 0x80
+ 800effa:	4676      	mov	r6, lr
+ 800effc:	ee97 8a29 	vfnms.f32	s16, s14, s19
+ 800f000:	edcd 6a21 	vstr	s13, [sp, #132]	@ 0x84
+ 800f004:	eef4 6ac8 	vcmpe.f32	s13, s16
+ 800f008:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f00c:	eeb4 8ae6 	vcmpe.f32	s16, s13
+ 800f010:	bfd4      	ite	le
+ 800f012:	eef0 8a48 	vmovle.f32	s17, s16
+ 800f016:	eef0 8a66 	vmovgt.f32	s17, s13
+ 800f01a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f01e:	bfd8      	it	le
+ 800f020:	eef0 6a48 	vmovle.f32	s13, s16
+ 800f024:	eeb4 7ae8 	vcmpe.f32	s14, s17
+ 800f028:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f02c:	eef4 6ac7 	vcmpe.f32	s13, s14
+ 800f030:	bfc8      	it	gt
+ 800f032:	eef0 8a47 	vmovgt.f32	s17, s14
+ 800f036:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f03a:	bfc8      	it	gt
+ 800f03c:	eef0 6a47 	vmovgt.f32	s13, s14
+ 800f040:	ee78 8aa6 	vadd.f32	s17, s17, s13
+ 800f044:	ed8d 7a20 	vstr	s14, [sp, #128]	@ 0x80
+ 800f048:	ee68 8aa9 	vmul.f32	s17, s17, s19
+ 800f04c:	ed8d 8a22 	vstr	s16, [sp, #136]	@ 0x88
+ 800f050:	eef7 6a00 	vmov.f32	s13, #112	@ 0x3f800000  1.0
+ 800f054:	eeff ca00 	vmov.f32	s25, #240	@ 0xbf800000 -1.0
+ 800f058:	eef6 9a00 	vmov.f32	s19, #96	@ 0x3f000000  0.5
+ 800f05c:	ecb3 8a01 	vldmia	r3!, {s16}
+ 800f060:	ee38 8a88 	vadd.f32	s16, s17, s16
+ 800f064:	eef4 ca6c 	vcmp.f32	s25, s25
+ 800f068:	ee88 7a09 	vdiv.f32	s14, s16, s18
+ 800f06c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f070:	ee37 7a29 	vadd.f32	s14, s14, s19
+ 800f074:	ee32 8ac7 	vsub.f32	s16, s5, s14
+ 800f078:	eca6 7a01 	vstmia	r6!, {s14}
+ 800f07c:	f180 8352 	bvs.w	800f724 <ma_native_fast+0x15d4>
+ 800f080:	eeb4 8a48 	vcmp.f32	s16, s16
+ 800f084:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f088:	d606      	bvs.n	800f098 <ma_native_fast+0xf48>
+ 800f08a:	eef4 cac8 	vcmpe.f32	s25, s16
+ 800f08e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f092:	bfd8      	it	le
+ 800f094:	eef0 ca48 	vmovle.f32	s25, s16
+ 800f098:	eef4 6a66 	vcmp.f32	s13, s13
+ 800f09c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0a0:	ee32 7a47 	vsub.f32	s14, s4, s14
+ 800f0a4:	f180 833b 	bvs.w	800f71e <ma_native_fast+0x15ce>
+ 800f0a8:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800f0ac:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0b0:	d606      	bvs.n	800f0c0 <ma_native_fast+0xf70>
+ 800f0b2:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 800f0b6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0ba:	bfd8      	it	le
+ 800f0bc:	eef0 6a47 	vmovle.f32	s13, s14
+ 800f0c0:	4573      	cmp	r3, lr
+ 800f0c2:	d1cb      	bne.n	800f05c <ma_native_fast+0xf0c>
+ 800f0c4:	eef4 cae6 	vcmpe.f32	s25, s13
+ 800f0c8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0cc:	f300 8185 	bgt.w	800f3da <ma_native_fast+0x128a>
+ 800f0d0:	9b08      	ldr	r3, [sp, #32]
+ 800f0d2:	2b03      	cmp	r3, #3
+ 800f0d4:	f000 81f0 	beq.w	800f4b8 <ma_native_fast+0x1368>
+ 800f0d8:	f10e 030c 	add.w	r3, lr, #12
+ 800f0dc:	eeb0 8a61 	vmov.f32	s16, s3
+ 800f0e0:	930c      	str	r3, [sp, #48]	@ 0x30
+ 800f0e2:	ee78 8a40 	vsub.f32	s17, s16, s0
+ 800f0e6:	ed1f 7a89 	vldr	s14, [pc, #-548]	@ 800eec4 <ma_native_fast+0xd74>
+ 800f0ea:	eef4 8a68 	vcmp.f32	s17, s17
+ 800f0ee:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0f2:	d606      	bvs.n	800f102 <ma_native_fast+0xfb2>
+ 800f0f4:	eeb4 7ae8 	vcmpe.f32	s14, s17
+ 800f0f8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f0fc:	bfd8      	it	le
+ 800f0fe:	eeb0 7a68 	vmovle.f32	s14, s17
+ 800f102:	eeb4 7ac1 	vcmpe.f32	s14, s2
+ 800f106:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f10a:	eef4 ca6c 	vcmp.f32	s25, s25
+ 800f10e:	bfc8      	it	gt
+ 800f110:	eeb0 7a41 	vmovgt.f32	s14, s2
+ 800f114:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f118:	ee37 7a00 	vadd.f32	s14, s14, s0
+ 800f11c:	f180 83b0 	bvs.w	800f880 <ma_native_fast+0x1730>
+ 800f120:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800f124:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f128:	f180 83a1 	bvs.w	800f86e <ma_native_fast+0x171e>
+ 800f12c:	eef4 cac7 	vcmpe.f32	s25, s14
+ 800f130:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f134:	eef4 6a66 	vcmp.f32	s13, s13
+ 800f138:	bfc8      	it	gt
+ 800f13a:	eeb0 7a6c 	vmovgt.f32	s14, s25
+ 800f13e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f142:	d606      	bvs.n	800f152 <ma_native_fast+0x1002>
+ 800f144:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 800f148:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f14c:	bfc8      	it	gt
+ 800f14e:	eeb0 7a66 	vmovgt.f32	s14, s13
+ 800f152:	e9cd 2409 	strd	r2, r4, [sp, #36]	@ 0x24
+ 800f156:	2302      	movs	r3, #2
+ 800f158:	930e      	str	r3, [sp, #56]	@ 0x38
+ 800f15a:	900d      	str	r0, [sp, #52]	@ 0x34
+ 800f15c:	9a0c      	ldr	r2, [sp, #48]	@ 0x30
+ 800f15e:	f8cd a02c 	str.w	sl, [sp, #44]	@ 0x2c
+ 800f162:	4657      	mov	r7, sl
+ 800f164:	4676      	mov	r6, lr
+ 800f166:	ecf6 6a01 	vldmia	r6!, {s13}
+ 800f16a:	ee76 6a87 	vadd.f32	s13, s13, s14
+ 800f16e:	ee66 6aa3 	vmul.f32	s13, s13, s7
+ 800f172:	ee16 3a90 	vmov	r3, s13
+ 800f176:	f1b3 4f00 	cmp.w	r3, #2147483648	@ 0x80000000
+ 800f17a:	ea4f 50d3 	mov.w	r0, r3, lsr #23
+ 800f17e:	f000 815a 	beq.w	800f436 <ma_native_fast+0x12e6>
+ 800f182:	4cbb      	ldr	r4, [pc, #748]	@ (800f470 <ma_native_fast+0x1320>)
+ 800f184:	42a3      	cmp	r3, r4
+ 800f186:	f200 8125 	bhi.w	800f3d4 <ma_native_fast+0x1284>
+ 800f18a:	f1b3 5f7c 	cmp.w	r3, #1056964608	@ 0x3f000000
+ 800f18e:	f3c3 0316 	ubfx	r3, r3, #0, #23
+ 800f192:	f443 0300 	orr.w	r3, r3, #8388608	@ 0x800000
+ 800f196:	f0c0 814e 	bcc.w	800f436 <ma_native_fast+0x12e6>
+ 800f19a:	f1c0 0495 	rsb	r4, r0, #149	@ 0x95
+ 800f19e:	f04f 0c01 	mov.w	ip, #1
+ 800f1a2:	fa0c f404 	lsl.w	r4, ip, r4
+ 800f1a6:	f1c0 0096 	rsb	r0, r0, #150	@ 0x96
+ 800f1aa:	4423      	add	r3, r4
+ 800f1ac:	40c3      	lsrs	r3, r0
+ 800f1ae:	9805      	ldr	r0, [sp, #20]
+ 800f1b0:	603b      	str	r3, [r7, #0]
+ 800f1b2:	4298      	cmp	r0, r3
+ 800f1b4:	f0c0 810e 	bcc.w	800f3d4 <ma_native_fast+0x1284>
+ 800f1b8:	4296      	cmp	r6, r2
+ 800f1ba:	f107 0704 	add.w	r7, r7, #4
+ 800f1be:	d1d2      	bne.n	800f166 <ma_native_fast+0x1016>
+ 800f1c0:	9e14      	ldr	r6, [sp, #80]	@ 0x50
+ 800f1c2:	9a15      	ldr	r2, [sp, #84]	@ 0x54
+ 800f1c4:	9f16      	ldr	r7, [sp, #88]	@ 0x58
+ 800f1c6:	961c      	str	r6, [sp, #112]	@ 0x70
+ 800f1c8:	4296      	cmp	r6, r2
+ 800f1ca:	921d      	str	r2, [sp, #116]	@ 0x74
+ 800f1cc:	971e      	str	r7, [sp, #120]	@ 0x78
+ 800f1ce:	4633      	mov	r3, r6
+ 800f1d0:	f0c0 8140 	bcc.w	800f454 <ma_native_fast+0x1304>
+ 800f1d4:	42b7      	cmp	r7, r6
+ 800f1d6:	f200 813d 	bhi.w	800f454 <ma_native_fast+0x1304>
+ 800f1da:	4613      	mov	r3, r2
+ 800f1dc:	2002      	movs	r0, #2
+ 800f1de:	2400      	movs	r4, #0
+ 800f1e0:	42bb      	cmp	r3, r7
+ 800f1e2:	bf38      	it	cc
+ 800f1e4:	463b      	movcc	r3, r7
+ 800f1e6:	4299      	cmp	r1, r3
+ 800f1e8:	f240 812c 	bls.w	800f444 <ma_native_fast+0x12f4>
+ 800f1ec:	eba1 0c03 	sub.w	ip, r1, r3
+ 800f1f0:	f5bc 7f41 	cmp.w	ip, #772	@ 0x304
+ 800f1f4:	f0c0 8126 	bcc.w	800f444 <ma_native_fast+0x12f4>
+ 800f1f8:	f5b1 7f41 	cmp.w	r1, #772	@ 0x304
+ 800f1fc:	f0c0 82a1 	bcc.w	800f742 <ma_native_fast+0x15f2>
+ 800f200:	2800      	cmp	r0, #0
+ 800f202:	9728      	str	r7, [sp, #160]	@ 0xa0
+ 800f204:	f1a0 0702 	sub.w	r7, r0, #2
+ 800f208:	e9cd 6226 	strd	r6, r2, [sp, #152]	@ 0x98
+ 800f20c:	bf14      	ite	ne
+ 800f20e:	2202      	movne	r2, #2
+ 800f210:	2201      	moveq	r2, #1
+ 800f212:	427e      	negs	r6, r7
+ 800f214:	417e      	adcs	r6, r7
+ 800f216:	af4c      	add	r7, sp, #304	@ 0x130
+ 800f218:	eb07 0686 	add.w	r6, r7, r6, lsl #2
+ 800f21c:	f856 7c98 	ldr.w	r7, [r6, #-152]
+ 800f220:	9e07      	ldr	r6, [sp, #28]
+ 800f222:	f2a6 3683 	subw	r6, r6, #899	@ 0x383
+ 800f226:	42b7      	cmp	r7, r6
+ 800f228:	f080 82bb 	bcs.w	800f7a2 <ma_native_fast+0x1652>
+ 800f22c:	f50d 7c98 	add.w	ip, sp, #304	@ 0x130
+ 800f230:	eb0c 0282 	add.w	r2, ip, r2, lsl #2
+ 800f234:	f852 2c98 	ldr.w	r2, [r2, #-152]
+ 800f238:	4296      	cmp	r6, r2
+ 800f23a:	f240 82b2 	bls.w	800f7a2 <ma_native_fast+0x1652>
+ 800f23e:	9f07      	ldr	r7, [sp, #28]
+ 800f240:	ae26      	add	r6, sp, #152	@ 0x98
+ 800f242:	2200      	movs	r2, #0
+ 800f244:	3f10      	subs	r7, #16
+ 800f246:	469c      	mov	ip, r3
+ 800f248:	960f      	str	r6, [sp, #60]	@ 0x3c
+ 800f24a:	9e0f      	ldr	r6, [sp, #60]	@ 0x3c
+ 800f24c:	f856 3b04 	ldr.w	r3, [r6], #4
+ 800f250:	960f      	str	r6, [sp, #60]	@ 0x3c
+ 800f252:	42bb      	cmp	r3, r7
+ 800f254:	f102 0201 	add.w	r2, r2, #1
+ 800f258:	eba1 0603 	sub.w	r6, r1, r3
+ 800f25c:	d806      	bhi.n	800f26c <ma_native_fast+0x111c>
+ 800f25e:	4299      	cmp	r1, r3
+ 800f260:	f240 829e 	bls.w	800f7a0 <ma_native_fast+0x1650>
+ 800f264:	f5b6 7f41 	cmp.w	r6, #772	@ 0x304
+ 800f268:	f0c0 829a 	bcc.w	800f7a0 <ma_native_fast+0x1650>
+ 800f26c:	2a03      	cmp	r2, #3
+ 800f26e:	d1ec      	bne.n	800f24a <ma_native_fast+0x10fa>
+ 800f270:	9b06      	ldr	r3, [sp, #24]
+ 800f272:	9c09      	ldr	r4, [sp, #36]	@ 0x24
+ 800f274:	f8dd c02c 	ldr.w	ip, [sp, #44]	@ 0x2c
+ 800f278:	4686      	mov	lr, r0
+ 800f27a:	980a      	ldr	r0, [sp, #40]	@ 0x28
+ 800f27c:	b10b      	cbz	r3, 800f282 <ma_native_fast+0x1132>
+ 800f27e:	f8c9 0020 	str.w	r0, [r9, #32]
+ 800f282:	914a      	str	r1, [sp, #296]	@ 0x128
+ 800f284:	f88d e12c 	strb.w	lr, [sp, #300]	@ 0x12c
+ 800f288:	ed89 7a04 	vstr	s14, [r9, #16]
+ 800f28c:	ed8d 7a46 	vstr	s14, [sp, #280]	@ 0x118
+ 800f290:	f10a 010c 	add.w	r1, sl, #12
+ 800f294:	aa3f      	add	r2, sp, #252	@ 0xfc
+ 800f296:	f85c 3b04 	ldr.w	r3, [ip], #4
+ 800f29a:	6213      	str	r3, [r2, #32]
+ 800f29c:	ee07 3a90 	vmov	s15, r3
+ 800f2a0:	eef8 7a67 	vcvt.f32.u32	s15, s15
+ 800f2a4:	4561      	cmp	r1, ip
+ 800f2a6:	ee87 7aa3 	vdiv.f32	s14, s15, s7
+ 800f2aa:	eca2 7a01 	vstmia	r2!, {s14}
+ 800f2ae:	d1f2      	bne.n	800f296 <ma_native_fast+0x1146>
+ 800f2b0:	eddd 6a3f 	vldr	s13, [sp, #252]	@ 0xfc
+ 800f2b4:	eddd 7a40 	vldr	s15, [sp, #256]	@ 0x100
+ 800f2b8:	eddd 4a41 	vldr	s9, [sp, #260]	@ 0x104
+ 800f2bc:	4b6d      	ldr	r3, [pc, #436]	@ (800f474 <ma_native_fast+0x1324>)
+ 800f2be:	ee36 7aa7 	vadd.f32	s14, s13, s15
+ 800f2c2:	eeb0 3a08 	vmov.f32	s6, #8	@ 0x40400000  3.0
+ 800f2c6:	ee37 7a24 	vadd.f32	s14, s14, s9
+ 800f2ca:	ee77 7ae4 	vsub.f32	s15, s15, s9
+ 800f2ce:	eec7 3a03 	vdiv.f32	s7, s14, s6
+ 800f2d2:	2201      	movs	r2, #1
+ 800f2d4:	f88d 212d 	strb.w	r2, [sp, #301]	@ 0x12d
+ 800f2d8:	685b      	ldr	r3, [r3, #4]
+ 800f2da:	1b1b      	subs	r3, r3, r4
+ 800f2dc:	4543      	cmp	r3, r8
+ 800f2de:	ee67 7a89 	vmul.f32	s15, s15, s18
+ 800f2e2:	eddf 4a65 	vldr	s9, [pc, #404]	@ 800f478 <ma_native_fast+0x1328>
+ 800f2e6:	ed9f 7a65 	vldr	s14, [pc, #404]	@ 800f47c <ma_native_fast+0x132c>
+ 800f2ea:	ee97 6aa4 	vfnms.f32	s12, s15, s9
+ 800f2ee:	ee76 6ae3 	vsub.f32	s13, s13, s7
+ 800f2f2:	ee76 5a65 	vsub.f32	s11, s12, s11
+ 800f2f6:	ee96 5a89 	vfnms.f32	s10, s13, s18
+ 800f2fa:	ee2b ba25 	vmul.f32	s22, s22, s11
+ 800f2fe:	ee35 4a44 	vsub.f32	s8, s10, s8
+ 800f302:	ee6b 5aa5 	vmul.f32	s11, s23, s11
+ 800f306:	eeab ba84 	vfma.f32	s22, s23, s8
+ 800f30a:	eee4 5a0c 	vfma.f32	s11, s8, s24
+ 800f30e:	edd9 4a00 	vldr	s9, [r9]
+ 800f312:	ed8d 6a3e 	vstr	s12, [sp, #248]	@ 0xf8
+ 800f316:	ee6d 7a07 	vmul.f32	s15, s26, s14
+ 800f31a:	ed99 7a01 	vldr	s14, [r9, #4]
+ 800f31e:	ed89 6a06 	vstr	s12, [r9, #24]
+ 800f322:	eef0 6a64 	vmov.f32	s13, s9
+ 800f326:	eee7 6a8b 	vfma.f32	s13, s15, s22
+ 800f32a:	eea7 7aa5 	vfma.f32	s14, s15, s11
+ 800f32e:	ed8d 5a3d 	vstr	s10, [sp, #244]	@ 0xf4
+ 800f332:	ed89 5a05 	vstr	s10, [r9, #20]
+ 800f336:	edc9 6a00 	vstr	s13, [r9]
+ 800f33a:	ed89 7a01 	vstr	s14, [r9, #4]
+ 800f33e:	d901      	bls.n	800f344 <ma_native_fast+0x11f4>
+ 800f340:	4a4f      	ldr	r2, [pc, #316]	@ (800f480 <ma_native_fast+0x1330>)
+ 800f342:	6013      	str	r3, [r2, #0]
+ 800f344:	f8db 2000 	ldr.w	r2, [fp]
+ 800f348:	494e      	ldr	r1, [pc, #312]	@ (800f484 <ma_native_fast+0x1334>)
+ 800f34a:	fba1 1202 	umull	r1, r2, r1, r2
+ 800f34e:	ebb3 2fd2 	cmp.w	r3, r2, lsr #11
+ 800f352:	d873      	bhi.n	800f43c <ma_native_fast+0x12ec>
+ 800f354:	4b4c      	ldr	r3, [pc, #304]	@ (800f488 <ma_native_fast+0x1338>)
+ 800f356:	9a47      	ldr	r2, [sp, #284]	@ 0x11c
+ 800f358:	635a      	str	r2, [r3, #52]	@ 0x34
+ 800f35a:	9a48      	ldr	r2, [sp, #288]	@ 0x120
+ 800f35c:	639a      	str	r2, [r3, #56]	@ 0x38
+ 800f35e:	9849      	ldr	r0, [sp, #292]	@ 0x124
+ 800f360:	63d8      	str	r0, [r3, #60]	@ 0x3c
+ 800f362:	4a4a      	ldr	r2, [pc, #296]	@ (800f48c <ma_native_fast+0x133c>)
+ 800f364:	494a      	ldr	r1, [pc, #296]	@ (800f490 <ma_native_fast+0x1340>)
+ 800f366:	484b      	ldr	r0, [pc, #300]	@ (800f494 <ma_native_fast+0x1344>)
+ 800f368:	ed92 7a00 	vldr	s14, [r2]
+ 800f36c:	edd1 7a00 	vldr	s15, [r1]
+ 800f370:	6803      	ldr	r3, [r0, #0]
+ 800f372:	ee37 7a05 	vadd.f32	s14, s14, s10
+ 800f376:	3301      	adds	r3, #1
+ 800f378:	ee77 7a86 	vadd.f32	s15, s15, s12
+ 800f37c:	2b10      	cmp	r3, #16
+ 800f37e:	ed82 7a00 	vstr	s14, [r2]
+ 800f382:	edc1 7a00 	vstr	s15, [r1]
+ 800f386:	6003      	str	r3, [r0, #0]
+ 800f388:	f47f aace 	bne.w	800e928 <ma_native_fast+0x7d8>
+ 800f38c:	4b42      	ldr	r3, [pc, #264]	@ (800f498 <ma_native_fast+0x1348>)
+ 800f38e:	681d      	ldr	r5, [r3, #0]
+ 800f390:	3501      	adds	r5, #1
+ 800f392:	601d      	str	r5, [r3, #0]
+ 800f394:	f3bf 8f5f 	dmb	sy
+ 800f398:	eddf 6a40 	vldr	s13, [pc, #256]	@ 800f49c <ma_native_fast+0x134c>
+ 800f39c:	ed92 7a00 	vldr	s14, [r2]
+ 800f3a0:	edd1 7a00 	vldr	s15, [r1]
+ 800f3a4:	4d3e      	ldr	r5, [pc, #248]	@ (800f4a0 <ma_native_fast+0x1350>)
+ 800f3a6:	ee27 7a26 	vmul.f32	s14, s14, s13
+ 800f3aa:	ee67 7aa6 	vmul.f32	s15, s15, s13
+ 800f3ae:	ed85 7a00 	vstr	s14, [r5]
+ 800f3b2:	4d3c      	ldr	r5, [pc, #240]	@ (800f4a4 <ma_native_fast+0x1354>)
+ 800f3b4:	edc5 7a00 	vstr	s15, [r5]
+ 800f3b8:	4d3b      	ldr	r5, [pc, #236]	@ (800f4a8 <ma_native_fast+0x1358>)
+ 800f3ba:	602c      	str	r4, [r5, #0]
+ 800f3bc:	f3bf 8f5f 	dmb	sy
+ 800f3c0:	681c      	ldr	r4, [r3, #0]
+ 800f3c2:	3401      	adds	r4, #1
+ 800f3c4:	601c      	str	r4, [r3, #0]
+ 800f3c6:	2300      	movs	r3, #0
+ 800f3c8:	2400      	movs	r4, #0
+ 800f3ca:	600b      	str	r3, [r1, #0]
+ 800f3cc:	6013      	str	r3, [r2, #0]
+ 800f3ce:	6004      	str	r4, [r0, #0]
+ 800f3d0:	f7ff baaa 	b.w	800e928 <ma_native_fast+0x7d8>
+ 800f3d4:	e9dd 2409 	ldrd	r2, r4, [sp, #36]	@ 0x24
+ 800f3d8:	980d      	ldr	r0, [sp, #52]	@ 0x34
+ 800f3da:	ed9f 7a34 	vldr	s14, [pc, #208]	@ 800f4ac <ma_native_fast+0x135c>
+ 800f3de:	3801      	subs	r0, #1
+ 800f3e0:	ee67 7a87 	vmul.f32	s15, s15, s14
+ 800f3e4:	d01e      	beq.n	800f424 <ma_native_fast+0x12d4>
+ 800f3e6:	ee27 7aa4 	vmul.f32	s14, s15, s9
+ 800f3ea:	eddf 6a31 	vldr	s13, [pc, #196]	@ 800f4b0 <ma_native_fast+0x1360>
+ 800f3ee:	eeb0 8ac7 	vabs.f32	s16, s14
+ 800f3f2:	eeb4 8a66 	vcmp.f32	s16, s13
+ 800f3f6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f3fa:	d809      	bhi.n	800f410 <ma_native_fast+0x12c0>
+ 800f3fc:	ee23 8a27 	vmul.f32	s16, s6, s15
+ 800f400:	eef0 8ac8 	vabs.f32	s17, s16
+ 800f404:	eef4 8a66 	vcmp.f32	s17, s13
+ 800f408:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f40c:	f67f adec 	bls.w	800efe8 <ma_native_fast+0xe98>
+ 800f410:	9b06      	ldr	r3, [sp, #24]
+ 800f412:	4620      	mov	r0, r4
+ 800f414:	4614      	mov	r4, r2
+ 800f416:	2b00      	cmp	r3, #0
+ 800f418:	f43f aa43 	beq.w	800e8a2 <ma_native_fast+0x752>
+ 800f41c:	f8c9 0020 	str.w	r0, [r9, #32]
+ 800f420:	f7ff ba3f 	b.w	800e8a2 <ma_native_fast+0x752>
+ 800f424:	9b06      	ldr	r3, [sp, #24]
+ 800f426:	4620      	mov	r0, r4
+ 800f428:	4614      	mov	r4, r2
+ 800f42a:	b10b      	cbz	r3, 800f430 <ma_native_fast+0x12e0>
+ 800f42c:	f8c9 0020 	str.w	r0, [r9, #32]
+ 800f430:	2006      	movs	r0, #6
+ 800f432:	f7ff ba37 	b.w	800e8a4 <ma_native_fast+0x754>
+ 800f436:	2300      	movs	r3, #0
+ 800f438:	603b      	str	r3, [r7, #0]
+ 800f43a:	e6bd      	b.n	800f1b8 <ma_native_fast+0x1068>
+ 800f43c:	2003      	movs	r0, #3
+ 800f43e:	2106      	movs	r1, #6
+ 800f440:	f7ff ba3d 	b.w	800e8be <ma_native_fast+0x76e>
+ 800f444:	9b0e      	ldr	r3, [sp, #56]	@ 0x38
+ 800f446:	2b01      	cmp	r3, #1
+ 800f448:	d0c4      	beq.n	800f3d4 <ma_native_fast+0x1284>
+ 800f44a:	2301      	movs	r3, #1
+ 800f44c:	eeb0 7a48 	vmov.f32	s14, s16
+ 800f450:	930e      	str	r3, [sp, #56]	@ 0x38
+ 800f452:	e683      	b.n	800f15c <ma_native_fast+0x100c>
+ 800f454:	4297      	cmp	r7, r2
+ 800f456:	d802      	bhi.n	800f45e <ma_native_fast+0x130e>
+ 800f458:	2001      	movs	r0, #1
+ 800f45a:	4604      	mov	r4, r0
+ 800f45c:	e6c0      	b.n	800f1e0 <ma_native_fast+0x1090>
+ 800f45e:	4296      	cmp	r6, r2
+ 800f460:	4633      	mov	r3, r6
+ 800f462:	f04f 0000 	mov.w	r0, #0
+ 800f466:	bf38      	it	cc
+ 800f468:	4613      	movcc	r3, r2
+ 800f46a:	2402      	movs	r4, #2
+ 800f46c:	e6bb      	b.n	800f1e6 <ma_native_fast+0x1096>
+ 800f46e:	bf00      	nop
+ 800f470:	477fff00 	.word	0x477fff00
+ 800f474:	e0001000 	.word	0xe0001000
+ 800f478:	3f13cd3a 	.word	0x3f13cd3a
+ 800f47c:	3883126f 	.word	0x3883126f
+ 800f480:	20005438 	.word	0x20005438
+ 800f484:	10624dd3 	.word	0x10624dd3
+ 800f488:	40012c00 	.word	0x40012c00
+ 800f48c:	20005468 	.word	0x20005468
+ 800f490:	20005464 	.word	0x20005464
+ 800f494:	20005460 	.word	0x20005460
+ 800f498:	20005478 	.word	0x20005478
+ 800f49c:	3d800000 	.word	0x3d800000
+ 800f4a0:	20005470 	.word	0x20005470
+ 800f4a4:	2000546c 	.word	0x2000546c
+ 800f4a8:	20005474 	.word	0x20005474
+ 800f4ac:	3f59999a 	.word	0x3f59999a
+ 800f4b0:	7f7fffff 	.word	0x7f7fffff
+ 800f4b4:	ff800000 	.word	0xff800000
+ 800f4b8:	eef4 ca6c 	vcmp.f32	s25, s25
+ 800f4bc:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f4c0:	f180 81f1 	bvs.w	800f8a6 <ma_native_fast+0x1756>
+ 800f4c4:	eef5 cac0 	vcmpe.f32	s25, #0.0
+ 800f4c8:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f4cc:	bfd4      	ite	le
+ 800f4ce:	eeb0 7a61 	vmovle.f32	s14, s3
+ 800f4d2:	eeb0 7a6c 	vmovgt.f32	s14, s25
+ 800f4d6:	eef4 6a66 	vcmp.f32	s13, s13
+ 800f4da:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f4de:	d606      	bvs.n	800f4ee <ma_native_fast+0x139e>
+ 800f4e0:	eeb4 7ae6 	vcmpe.f32	s14, s13
+ 800f4e4:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f4e8:	bfc8      	it	gt
+ 800f4ea:	eeb0 7a66 	vmovgt.f32	s14, s13
+ 800f4ee:	e9cd 2409 	strd	r2, r4, [sp, #36]	@ 0x24
+ 800f4f2:	e9cd 080d 	strd	r0, r8, [sp, #52]	@ 0x34
+ 800f4f6:	f10e 030c 	add.w	r3, lr, #12
+ 800f4fa:	ed5f 9a12 	vldr	s19, [pc, #-72]	@ 800f4b4 <ma_native_fast+0x1364>
+ 800f4fe:	ed8d 7a26 	vstr	s14, [sp, #152]	@ 0x98
+ 800f502:	edcd ca27 	vstr	s25, [sp, #156]	@ 0x9c
+ 800f506:	edcd 6a28 	vstr	s13, [sp, #160]	@ 0xa0
+ 800f50a:	eeb0 aa61 	vmov.f32	s20, s3
+ 800f50e:	f10d 0c98 	add.w	ip, sp, #152	@ 0x98
+ 800f512:	930c      	str	r3, [sp, #48]	@ 0x30
+ 800f514:	950b      	str	r5, [sp, #44]	@ 0x2c
+ 800f516:	ecbc 8a01 	vldmia	ip!, {s16}
+ 800f51a:	980c      	ldr	r0, [sp, #48]	@ 0x30
+ 800f51c:	46d0      	mov	r8, sl
+ 800f51e:	4654      	mov	r4, sl
+ 800f520:	4672      	mov	r2, lr
+ 800f522:	ecb2 7a01 	vldmia	r2!, {s14}
+ 800f526:	ee37 7a08 	vadd.f32	s14, s14, s16
+ 800f52a:	ee27 7a23 	vmul.f32	s14, s14, s7
+ 800f52e:	ee17 3a10 	vmov	r3, s14
+ 800f532:	f1b3 4f00 	cmp.w	r3, #2147483648	@ 0x80000000
+ 800f536:	ea4f 55d3 	mov.w	r5, r3, lsr #23
+ 800f53a:	d064      	beq.n	800f606 <ma_native_fast+0x14b6>
+ 800f53c:	4eb8      	ldr	r6, [pc, #736]	@ (800f820 <ma_native_fast+0x16d0>)
+ 800f53e:	42b3      	cmp	r3, r6
+ 800f540:	d875      	bhi.n	800f62e <ma_native_fast+0x14de>
+ 800f542:	f1b3 5f7c 	cmp.w	r3, #1056964608	@ 0x3f000000
+ 800f546:	f3c3 0316 	ubfx	r3, r3, #0, #23
+ 800f54a:	f443 0300 	orr.w	r3, r3, #8388608	@ 0x800000
+ 800f54e:	d35a      	bcc.n	800f606 <ma_native_fast+0x14b6>
+ 800f550:	f1c5 0695 	rsb	r6, r5, #149	@ 0x95
+ 800f554:	2701      	movs	r7, #1
+ 800f556:	fa07 f606 	lsl.w	r6, r7, r6
+ 800f55a:	f1c5 0596 	rsb	r5, r5, #150	@ 0x96
+ 800f55e:	4433      	add	r3, r6
+ 800f560:	40eb      	lsrs	r3, r5
+ 800f562:	9d05      	ldr	r5, [sp, #20]
+ 800f564:	6023      	str	r3, [r4, #0]
+ 800f566:	429d      	cmp	r5, r3
+ 800f568:	d361      	bcc.n	800f62e <ma_native_fast+0x14de>
+ 800f56a:	4282      	cmp	r2, r0
+ 800f56c:	f104 0404 	add.w	r4, r4, #4
+ 800f570:	d1d7      	bne.n	800f522 <ma_native_fast+0x13d2>
+ 800f572:	9c14      	ldr	r4, [sp, #80]	@ 0x50
+ 800f574:	9815      	ldr	r0, [sp, #84]	@ 0x54
+ 800f576:	9e16      	ldr	r6, [sp, #88]	@ 0x58
+ 800f578:	9418      	str	r4, [sp, #96]	@ 0x60
+ 800f57a:	4284      	cmp	r4, r0
+ 800f57c:	9019      	str	r0, [sp, #100]	@ 0x64
+ 800f57e:	961a      	str	r6, [sp, #104]	@ 0x68
+ 800f580:	4623      	mov	r3, r4
+ 800f582:	d34b      	bcc.n	800f61c <ma_native_fast+0x14cc>
+ 800f584:	42a6      	cmp	r6, r4
+ 800f586:	d849      	bhi.n	800f61c <ma_native_fast+0x14cc>
+ 800f588:	4603      	mov	r3, r0
+ 800f58a:	2202      	movs	r2, #2
+ 800f58c:	2500      	movs	r5, #0
+ 800f58e:	42b3      	cmp	r3, r6
+ 800f590:	bf38      	it	cc
+ 800f592:	4633      	movcc	r3, r6
+ 800f594:	4299      	cmp	r1, r3
+ 800f596:	d939      	bls.n	800f60c <ma_native_fast+0x14bc>
+ 800f598:	1acf      	subs	r7, r1, r3
+ 800f59a:	f5b7 7f41 	cmp.w	r7, #772	@ 0x304
+ 800f59e:	d335      	bcc.n	800f60c <ma_native_fast+0x14bc>
+ 800f5a0:	f5b1 7f41 	cmp.w	r1, #772	@ 0x304
+ 800f5a4:	d35a      	bcc.n	800f65c <ma_native_fast+0x150c>
+ 800f5a6:	e9cd 401c 	strd	r4, r0, [sp, #112]	@ 0x70
+ 800f5aa:	2a00      	cmp	r2, #0
+ 800f5ac:	f1a2 0402 	sub.w	r4, r2, #2
+ 800f5b0:	bf14      	ite	ne
+ 800f5b2:	2002      	movne	r0, #2
+ 800f5b4:	2001      	moveq	r0, #1
+ 800f5b6:	4262      	negs	r2, r4
+ 800f5b8:	4162      	adcs	r2, r4
+ 800f5ba:	ac4c      	add	r4, sp, #304	@ 0x130
+ 800f5bc:	eb04 0282 	add.w	r2, r4, r2, lsl #2
+ 800f5c0:	961e      	str	r6, [sp, #120]	@ 0x78
+ 800f5c2:	9e07      	ldr	r6, [sp, #28]
+ 800f5c4:	f852 4cc0 	ldr.w	r4, [r2, #-192]
+ 800f5c8:	f2a6 3283 	subw	r2, r6, #899	@ 0x383
+ 800f5cc:	4294      	cmp	r4, r2
+ 800f5ce:	d245      	bcs.n	800f65c <ma_native_fast+0x150c>
+ 800f5d0:	ac4c      	add	r4, sp, #304	@ 0x130
+ 800f5d2:	eb04 0080 	add.w	r0, r4, r0, lsl #2
+ 800f5d6:	f850 0cc0 	ldr.w	r0, [r0, #-192]
+ 800f5da:	4282      	cmp	r2, r0
+ 800f5dc:	d93e      	bls.n	800f65c <ma_native_fast+0x150c>
+ 800f5de:	ac1c      	add	r4, sp, #112	@ 0x70
+ 800f5e0:	2200      	movs	r2, #0
+ 800f5e2:	3e10      	subs	r6, #16
+ 800f5e4:	f854 0b04 	ldr.w	r0, [r4], #4
+ 800f5e8:	42b0      	cmp	r0, r6
+ 800f5ea:	f102 0201 	add.w	r2, r2, #1
+ 800f5ee:	eba1 0700 	sub.w	r7, r1, r0
+ 800f5f2:	d804      	bhi.n	800f5fe <ma_native_fast+0x14ae>
+ 800f5f4:	4281      	cmp	r1, r0
+ 800f5f6:	d931      	bls.n	800f65c <ma_native_fast+0x150c>
+ 800f5f8:	f5b7 7f41 	cmp.w	r7, #772	@ 0x304
+ 800f5fc:	d32e      	bcc.n	800f65c <ma_native_fast+0x150c>
+ 800f5fe:	2a03      	cmp	r2, #3
+ 800f600:	d1f0      	bne.n	800f5e4 <ma_native_fast+0x1494>
+ 800f602:	460b      	mov	r3, r1
+ 800f604:	e058      	b.n	800f6b8 <ma_native_fast+0x1568>
+ 800f606:	2300      	movs	r3, #0
+ 800f608:	6023      	str	r3, [r4, #0]
+ 800f60a:	e7ae      	b.n	800f56a <ma_native_fast+0x141a>
+ 800f60c:	eeb0 8a4a 	vmov.f32	s16, s20
+ 800f610:	ab29      	add	r3, sp, #164	@ 0xa4
+ 800f612:	4563      	cmp	r3, ip
+ 800f614:	d019      	beq.n	800f64a <ma_native_fast+0x14fa>
+ 800f616:	eeb0 aa48 	vmov.f32	s20, s16
+ 800f61a:	e77c      	b.n	800f516 <ma_native_fast+0x13c6>
+ 800f61c:	4286      	cmp	r6, r0
+ 800f61e:	d80c      	bhi.n	800f63a <ma_native_fast+0x14ea>
+ 800f620:	2201      	movs	r2, #1
+ 800f622:	4615      	mov	r5, r2
+ 800f624:	e7b3      	b.n	800f58e <ma_native_fast+0x143e>
+ 800f626:	eef0 7a65 	vmov.f32	s15, s11
+ 800f62a:	f7ff b8d9 	b.w	800e7e0 <ma_native_fast+0x690>
+ 800f62e:	e9dd 2409 	ldrd	r2, r4, [sp, #36]	@ 0x24
+ 800f632:	e9dd 080d 	ldrd	r0, r8, [sp, #52]	@ 0x34
+ 800f636:	9d0b      	ldr	r5, [sp, #44]	@ 0x2c
+ 800f638:	e6cf      	b.n	800f3da <ma_native_fast+0x128a>
+ 800f63a:	4284      	cmp	r4, r0
+ 800f63c:	4623      	mov	r3, r4
+ 800f63e:	f04f 0200 	mov.w	r2, #0
+ 800f642:	bf38      	it	cc
+ 800f644:	4603      	movcc	r3, r0
+ 800f646:	2502      	movs	r5, #2
+ 800f648:	e7a4      	b.n	800f594 <ma_native_fast+0x1444>
+ 800f64a:	e9dd 2409 	ldrd	r2, r4, [sp, #36]	@ 0x24
+ 800f64e:	2301      	movs	r3, #1
+ 800f650:	e9dd 080d 	ldrd	r0, r8, [sp, #52]	@ 0x34
+ 800f654:	9d0b      	ldr	r5, [sp, #44]	@ 0x2c
+ 800f656:	9306      	str	r3, [sp, #24]
+ 800f658:	3401      	adds	r4, #1
+ 800f65a:	e542      	b.n	800f0e2 <ma_native_fast+0xf92>
+ 800f65c:	aa4c      	add	r2, sp, #304	@ 0x130
+ 800f65e:	eb02 0585 	add.w	r5, r2, r5, lsl #2
+ 800f662:	f503 7341 	add.w	r3, r3, #772	@ 0x304
+ 800f666:	f855 0cd0 	ldr.w	r0, [r5, #-208]
+ 800f66a:	2870      	cmp	r0, #112	@ 0x70
+ 800f66c:	f240 80bb 	bls.w	800f7e6 <ma_native_fast+0x1696>
+ 800f670:	f1a0 0271 	sub.w	r2, r0, #113	@ 0x71
+ 800f674:	428a      	cmp	r2, r1
+ 800f676:	bf28      	it	cs
+ 800f678:	460a      	movcs	r2, r1
+ 800f67a:	4293      	cmp	r3, r2
+ 800f67c:	f200 80b3 	bhi.w	800f7e6 <ma_native_fast+0x1696>
+ 800f680:	4281      	cmp	r1, r0
+ 800f682:	d916      	bls.n	800f6b2 <ma_native_fast+0x1562>
+ 800f684:	1a0c      	subs	r4, r1, r0
+ 800f686:	f5b4 7f41 	cmp.w	r4, #772	@ 0x304
+ 800f68a:	d312      	bcc.n	800f6b2 <ma_native_fast+0x1562>
+ 800f68c:	461d      	mov	r5, r3
+ 800f68e:	2401      	movs	r4, #1
+ 800f690:	f500 7041 	add.w	r0, r0, #772	@ 0x304
+ 800f694:	4283      	cmp	r3, r0
+ 800f696:	bf38      	it	cc
+ 800f698:	4603      	movcc	r3, r0
+ 800f69a:	4299      	cmp	r1, r3
+ 800f69c:	f0c0 80ba 	bcc.w	800f814 <ma_native_fast+0x16c4>
+ 800f6a0:	2c00      	cmp	r4, #0
+ 800f6a2:	f000 8103 	beq.w	800f8ac <ma_native_fast+0x175c>
+ 800f6a6:	1b54      	subs	r4, r2, r5
+ 800f6a8:	1ac8      	subs	r0, r1, r3
+ 800f6aa:	4284      	cmp	r4, r0
+ 800f6ac:	bf2c      	ite	cs
+ 800f6ae:	462b      	movcs	r3, r5
+ 800f6b0:	460a      	movcc	r2, r1
+ 800f6b2:	1ad2      	subs	r2, r2, r3
+ 800f6b4:	eb03 0352 	add.w	r3, r3, r2, lsr #1
+ 800f6b8:	1aca      	subs	r2, r1, r3
+ 800f6ba:	ee07 2a10 	vmov	s14, r2
+ 800f6be:	eeb8 7a47 	vcvt.f32.u32	s14, s14
+ 800f6c2:	2000      	movs	r0, #0
+ 800f6c4:	f858 2b04 	ldr.w	r2, [r8], #4
+ 800f6c8:	4293      	cmp	r3, r2
+ 800f6ca:	bf98      	it	ls
+ 800f6cc:	1ad2      	subls	r2, r2, r3
+ 800f6ce:	f2a3 3403 	subw	r4, r3, #771	@ 0x303
+ 800f6d2:	bf8c      	ite	hi
+ 800f6d4:	1aa2      	subhi	r2, r4, r2
+ 800f6d6:	3a70      	subls	r2, #112	@ 0x70
+ 800f6d8:	ee08 2a90 	vmov	s17, r2
+ 800f6dc:	eef8 8a68 	vcvt.f32.u32	s17, s17
+ 800f6e0:	3001      	adds	r0, #1
+ 800f6e2:	eeb4 7ae8 	vcmpe.f32	s14, s17
+ 800f6e6:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f6ea:	bfc8      	it	gt
+ 800f6ec:	eeb0 7a68 	vmovgt.f32	s14, s17
+ 800f6f0:	2803      	cmp	r0, #3
+ 800f6f2:	d1e7      	bne.n	800f6c4 <ma_native_fast+0x1574>
+ 800f6f4:	eddf 8a4b 	vldr	s17, [pc, #300]	@ 800f824 <ma_native_fast+0x16d4>
+ 800f6f8:	ee68 8ae3 	vnmul.f32	s17, s17, s7
+ 800f6fc:	eef0 aac8 	vabs.f32	s21, s16
+ 800f700:	eea8 7aaa 	vfma.f32	s14, s17, s21
+ 800f704:	eef4 9ac7 	vcmpe.f32	s19, s14
+ 800f708:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f70c:	f57f af7e 	bpl.w	800f60c <ma_native_fast+0x14bc>
+ 800f710:	eef0 9a47 	vmov.f32	s19, s14
+ 800f714:	e77c      	b.n	800f610 <ma_native_fast+0x14c0>
+ 800f716:	ed9f 0a44 	vldr	s0, [pc, #272]	@ 800f828 <ma_native_fast+0x16d8>
+ 800f71a:	f7ff b824 	b.w	800e766 <ma_native_fast+0x616>
+ 800f71e:	eef0 6a47 	vmov.f32	s13, s14
+ 800f722:	e4cd      	b.n	800f0c0 <ma_native_fast+0xf70>
+ 800f724:	eef0 ca48 	vmov.f32	s25, s16
+ 800f728:	e4b6      	b.n	800f098 <ma_native_fast+0xf48>
+ 800f72a:	eddf 3a40 	vldr	s7, [pc, #256]	@ 800f82c <ma_native_fast+0x16dc>
+ 800f72e:	f7fe bfc8 	b.w	800e6c2 <ma_native_fast+0x572>
+ 800f732:	eeff 5a00 	vmov.f32	s11, #240	@ 0xbf800000 -1.0
+ 800f736:	f7ff b87d 	b.w	800e834 <ma_native_fast+0x6e4>
+ 800f73a:	eef0 7a47 	vmov.f32	s15, s14
+ 800f73e:	f7fe bf0f 	b.w	800e560 <ma_native_fast+0x410>
+ 800f742:	aa4c      	add	r2, sp, #304	@ 0x130
+ 800f744:	eb02 0284 	add.w	r2, r2, r4, lsl #2
+ 800f748:	f503 7341 	add.w	r3, r3, #772	@ 0x304
+ 800f74c:	f852 2cc0 	ldr.w	r2, [r2, #-192]
+ 800f750:	4291      	cmp	r1, r2
+ 800f752:	f67f ae77 	bls.w	800f444 <ma_native_fast+0x12f4>
+ 800f756:	1a8e      	subs	r6, r1, r2
+ 800f758:	f5b6 7f41 	cmp.w	r6, #772	@ 0x304
+ 800f75c:	f4ff ae72 	bcc.w	800f444 <ma_native_fast+0x12f4>
+ 800f760:	2700      	movs	r7, #0
+ 800f762:	463e      	mov	r6, r7
+ 800f764:	46bc      	mov	ip, r7
+ 800f766:	f502 7241 	add.w	r2, r2, #772	@ 0x304
+ 800f76a:	4293      	cmp	r3, r2
+ 800f76c:	bf38      	it	cc
+ 800f76e:	4613      	movcc	r3, r2
+ 800f770:	4299      	cmp	r1, r3
+ 800f772:	d344      	bcc.n	800f7fe <ma_native_fast+0x16ae>
+ 800f774:	9705      	str	r7, [sp, #20]
+ 800f776:	9f06      	ldr	r7, [sp, #24]
+ 800f778:	9c09      	ldr	r4, [sp, #36]	@ 0x24
+ 800f77a:	4662      	mov	r2, ip
+ 800f77c:	4686      	mov	lr, r0
+ 800f77e:	f8dd c02c 	ldr.w	ip, [sp, #44]	@ 0x2c
+ 800f782:	980a      	ldr	r0, [sp, #40]	@ 0x28
+ 800f784:	b10f      	cbz	r7, 800f78a <ma_native_fast+0x163a>
+ 800f786:	f8c9 0020 	str.w	r0, [r9, #32]
+ 800f78a:	9805      	ldr	r0, [sp, #20]
+ 800f78c:	1ac9      	subs	r1, r1, r3
+ 800f78e:	b120      	cbz	r0, 800f79a <ma_native_fast+0x164a>
+ 800f790:	1b92      	subs	r2, r2, r6
+ 800f792:	428a      	cmp	r2, r1
+ 800f794:	bf24      	itt	cs
+ 800f796:	4633      	movcs	r3, r6
+ 800f798:	4611      	movcs	r1, r2
+ 800f79a:	eb03 0151 	add.w	r1, r3, r1, lsr #1
+ 800f79e:	e570      	b.n	800f282 <ma_native_fast+0x1132>
+ 800f7a0:	4663      	mov	r3, ip
+ 800f7a2:	aa4c      	add	r2, sp, #304	@ 0x130
+ 800f7a4:	eb02 0284 	add.w	r2, r2, r4, lsl #2
+ 800f7a8:	f503 7341 	add.w	r3, r3, #772	@ 0x304
+ 800f7ac:	f852 2cc0 	ldr.w	r2, [r2, #-192]
+ 800f7b0:	2a70      	cmp	r2, #112	@ 0x70
+ 800f7b2:	d9d0      	bls.n	800f756 <ma_native_fast+0x1606>
+ 800f7b4:	f1a2 0c71 	sub.w	ip, r2, #113	@ 0x71
+ 800f7b8:	458c      	cmp	ip, r1
+ 800f7ba:	bf28      	it	cs
+ 800f7bc:	468c      	movcs	ip, r1
+ 800f7be:	459c      	cmp	ip, r3
+ 800f7c0:	d3c6      	bcc.n	800f750 <ma_native_fast+0x1600>
+ 800f7c2:	4291      	cmp	r1, r2
+ 800f7c4:	d903      	bls.n	800f7ce <ma_native_fast+0x167e>
+ 800f7c6:	1a8e      	subs	r6, r1, r2
+ 800f7c8:	f5b6 7f41 	cmp.w	r6, #772	@ 0x304
+ 800f7cc:	d270      	bcs.n	800f8b0 <ma_native_fast+0x1760>
+ 800f7ce:	4662      	mov	r2, ip
+ 800f7d0:	4686      	mov	lr, r0
+ 800f7d2:	9c09      	ldr	r4, [sp, #36]	@ 0x24
+ 800f7d4:	f8dd c02c 	ldr.w	ip, [sp, #44]	@ 0x2c
+ 800f7d8:	980a      	ldr	r0, [sp, #40]	@ 0x28
+ 800f7da:	9906      	ldr	r1, [sp, #24]
+ 800f7dc:	b109      	cbz	r1, 800f7e2 <ma_native_fast+0x1692>
+ 800f7de:	f8c9 0020 	str.w	r0, [r9, #32]
+ 800f7e2:	1ad1      	subs	r1, r2, r3
+ 800f7e4:	e7d9      	b.n	800f79a <ma_native_fast+0x164a>
+ 800f7e6:	4281      	cmp	r1, r0
+ 800f7e8:	f67f af10 	bls.w	800f60c <ma_native_fast+0x14bc>
+ 800f7ec:	1a0a      	subs	r2, r1, r0
+ 800f7ee:	f5b2 7f41 	cmp.w	r2, #772	@ 0x304
+ 800f7f2:	f4ff af0b 	bcc.w	800f60c <ma_native_fast+0x14bc>
+ 800f7f6:	2400      	movs	r4, #0
+ 800f7f8:	4622      	mov	r2, r4
+ 800f7fa:	4625      	mov	r5, r4
+ 800f7fc:	e748      	b.n	800f690 <ma_native_fast+0x1540>
+ 800f7fe:	2f00      	cmp	r7, #0
+ 800f800:	f43f ae20 	beq.w	800f444 <ma_native_fast+0x12f4>
+ 800f804:	4662      	mov	r2, ip
+ 800f806:	4686      	mov	lr, r0
+ 800f808:	9c09      	ldr	r4, [sp, #36]	@ 0x24
+ 800f80a:	f8dd c02c 	ldr.w	ip, [sp, #44]	@ 0x2c
+ 800f80e:	980a      	ldr	r0, [sp, #40]	@ 0x28
+ 800f810:	4633      	mov	r3, r6
+ 800f812:	e7e2      	b.n	800f7da <ma_native_fast+0x168a>
+ 800f814:	2c00      	cmp	r4, #0
+ 800f816:	f43f aef9 	beq.w	800f60c <ma_native_fast+0x14bc>
+ 800f81a:	462b      	mov	r3, r5
+ 800f81c:	e749      	b.n	800f6b2 <ma_native_fast+0x1562>
+ 800f81e:	bf00      	nop
+ 800f820:	477fff00 	.word	0x477fff00
+ 800f824:	3ca3d70a 	.word	0x3ca3d70a
+ 800f828:	3089705f 	.word	0x3089705f
+ 800f82c:	c4160000 	.word	0xc4160000
+ 800f830:	eeb4 9a67 	vcmp.f32	s18, s15
+ 800f834:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f838:	d832      	bhi.n	800f8a0 <ma_native_fast+0x1750>
+ 800f83a:	ee1e 3a90 	vmov	r3, s29
+ 800f83e:	3b1e      	subs	r3, #30
+ 800f840:	b29b      	uxth	r3, r3
+ 800f842:	f5b3 7fa0 	cmp.w	r3, #320	@ 0x140
+ 800f846:	d82b      	bhi.n	800f8a0 <ma_native_fast+0x1750>
+ 800f848:	eef0 0a68 	vmov.f32	s1, s17
+ 800f84c:	eeb0 0a69 	vmov.f32	s0, s19
+ 800f850:	f007 fcc4 	bl	80171dc <hypotf>
+ 800f854:	4b18      	ldr	r3, [pc, #96]	@ (800f8b8 <ma_native_fast+0x1768>)
+ 800f856:	edd3 7a0a 	vldr	s15, [r3, #40]	@ 0x28
+ 800f85a:	eeb4 0ae7 	vcmpe.f32	s0, s15
+ 800f85e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f862:	bfcc      	ite	gt
+ 800f864:	2601      	movgt	r6, #1
+ 800f866:	2600      	movle	r6, #0
+ 800f868:	0076      	lsls	r6, r6, #1
+ 800f86a:	f7fe bdd2 	b.w	800e412 <ma_native_fast+0x2c2>
+ 800f86e:	eef4 6a66 	vcmp.f32	s13, s13
+ 800f872:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f876:	eeb0 7a6c 	vmov.f32	s14, s25
+ 800f87a:	f5ff ac63 	bvc.w	800f144 <ma_native_fast+0xff4>
+ 800f87e:	e468      	b.n	800f152 <ma_native_fast+0x1002>
+ 800f880:	eef4 6a66 	vcmp.f32	s13, s13
+ 800f884:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f888:	f5bf ac63 	bvs.w	800f152 <ma_native_fast+0x1002>
+ 800f88c:	eeb4 7a47 	vcmp.f32	s14, s14
+ 800f890:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+ 800f894:	bf68      	it	vs
+ 800f896:	eeb0 7a66 	vmovvs.f32	s14, s13
+ 800f89a:	f5bf ac5a 	bvs.w	800f152 <ma_native_fast+0x1002>
+ 800f89e:	e451      	b.n	800f144 <ma_native_fast+0xff4>
+ 800f8a0:	2604      	movs	r6, #4
+ 800f8a2:	f7fe bdb6 	b.w	800e412 <ma_native_fast+0x2c2>
+ 800f8a6:	ed9f 7a05 	vldr	s14, [pc, #20]	@ 800f8bc <ma_native_fast+0x176c>
+ 800f8aa:	e614      	b.n	800f4d6 <ma_native_fast+0x1386>
+ 800f8ac:	460a      	mov	r2, r1
+ 800f8ae:	e700      	b.n	800f6b2 <ma_native_fast+0x1562>
+ 800f8b0:	461e      	mov	r6, r3
+ 800f8b2:	2701      	movs	r7, #1
+ 800f8b4:	e757      	b.n	800f766 <ma_native_fast+0x1616>
+ 800f8b6:	bf00      	nop
+ 800f8b8:	2000033c 	.word	0x2000033c
+ 800f8bc:	00000000 	.word	0x00000000
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_estimate_publish_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0800a8a4 <ma_fail_at>:
+ 800a8a4:	b4f0      	push	{r4, r5, r6, r7}
+ 800a8a6:	4e3f      	ldr	r6, [pc, #252]	@ (800a9a4 <ma_fail_at+0x100>)
+ 800a8a8:	7835      	ldrb	r5, [r6, #0]
+ 800a8aa:	b2c4      	uxtb	r4, r0
+ 800a8ac:	b905      	cbnz	r5, 800a8b0 <ma_fail_at+0xc>
+ 800a8ae:	7034      	strb	r4, [r6, #0]
+ 800a8b0:	4d3d      	ldr	r5, [pc, #244]	@ (800a9a8 <ma_fail_at+0x104>)
+ 800a8b2:	702c      	strb	r4, [r5, #0]
+ 800a8b4:	4c3d      	ldr	r4, [pc, #244]	@ (800a9ac <ma_fail_at+0x108>)
+ 800a8b6:	f3bf 8f5b 	dmb	ish
+ 800a8ba:	f04f 0c01 	mov.w	ip, #1
+ 800a8be:	e854 5f00 	ldrex	r5, [r4]
+ 800a8c2:	2d00      	cmp	r5, #0
+ 800a8c4:	d105      	bne.n	800a8d2 <ma_fail_at+0x2e>
+ 800a8c6:	e844 c600 	strex	r6, ip, [r4]
+ 800a8ca:	2e00      	cmp	r6, #0
+ 800a8cc:	d1f7      	bne.n	800a8be <ma_fail_at+0x1a>
+ 800a8ce:	f3bf 8f5b 	dmb	ish
+ 800a8d2:	d159      	bne.n	800a988 <ma_fail_at+0xe4>
+ 800a8d4:	4d36      	ldr	r5, [pc, #216]	@ (800a9b0 <ma_fail_at+0x10c>)
+ 800a8d6:	6061      	str	r1, [r4, #4]
+ 800a8d8:	4936      	ldr	r1, [pc, #216]	@ (800a9b4 <ma_fail_at+0x110>)
+ 800a8da:	60a0      	str	r0, [r4, #8]
+ 800a8dc:	680e      	ldr	r6, [r1, #0]
+ 800a8de:	60e2      	str	r2, [r4, #12]
+ 800a8e0:	e9d5 0100 	ldrd	r0, r1, [r5]
+ 800a8e4:	68aa      	ldr	r2, [r5, #8]
+ 800a8e6:	2b00      	cmp	r3, #0
+ 800a8e8:	d050      	beq.n	800a98c <ma_fail_at+0xe8>
+ 800a8ea:	685f      	ldr	r7, [r3, #4]
+ 800a8ec:	6127      	str	r7, [r4, #16]
+ 800a8ee:	e9c4 6007 	strd	r6, r0, [r4, #28]
+ 800a8f2:	e9c4 1209 	strd	r1, r2, [r4, #36]	@ 0x24
+ 800a8f6:	9804      	ldr	r0, [sp, #16]
+ 800a8f8:	6160      	str	r0, [r4, #20]
+ 800a8fa:	9805      	ldr	r0, [sp, #20]
+ 800a8fc:	61a0      	str	r0, [r4, #24]
+ 800a8fe:	7cd9      	ldrb	r1, [r3, #19]
+ 800a900:	7c9a      	ldrb	r2, [r3, #18]
+ 800a902:	681b      	ldr	r3, [r3, #0]
+ 800a904:	ea42 0241 	orr.w	r2, r2, r1, lsl #1
+ 800a908:	62e3      	str	r3, [r4, #44]	@ 0x2c
+ 800a90a:	9b06      	ldr	r3, [sp, #24]
+ 800a90c:	6363      	str	r3, [r4, #52]	@ 0x34
+ 800a90e:	492a      	ldr	r1, [pc, #168]	@ (800a9b8 <ma_fail_at+0x114>)
+ 800a910:	4b2a      	ldr	r3, [pc, #168]	@ (800a9bc <ma_fail_at+0x118>)
+ 800a912:	7809      	ldrb	r1, [r1, #0]
+ 800a914:	781b      	ldrb	r3, [r3, #0]
+ 800a916:	00db      	lsls	r3, r3, #3
+ 800a918:	ea43 0381 	orr.w	r3, r3, r1, lsl #2
+ 800a91c:	4928      	ldr	r1, [pc, #160]	@ (800a9c0 <ma_fail_at+0x11c>)
+ 800a91e:	4313      	orrs	r3, r2
+ 800a920:	f8d1 20ac 	ldr.w	r2, [r1, #172]	@ 0xac
+ 800a924:	6323      	str	r3, [r4, #48]	@ 0x30
+ 800a926:	63a2      	str	r2, [r4, #56]	@ 0x38
+ 800a928:	4b26      	ldr	r3, [pc, #152]	@ (800a9c4 <ma_fail_at+0x120>)
+ 800a92a:	681a      	ldr	r2, [r3, #0]
+ 800a92c:	f3bf 8f5b 	dmb	ish
+ 800a930:	f8d1 10ac 	ldr.w	r1, [r1, #172]	@ 0xac
+ 800a934:	6661      	str	r1, [r4, #100]	@ 0x64
+ 800a936:	4924      	ldr	r1, [pc, #144]	@ (800a9c8 <ma_fail_at+0x124>)
+ 800a938:	64e2      	str	r2, [r4, #76]	@ 0x4c
+ 800a93a:	6809      	ldr	r1, [r1, #0]
+ 800a93c:	6421      	str	r1, [r4, #64]	@ 0x40
+ 800a93e:	4923      	ldr	r1, [pc, #140]	@ (800a9cc <ma_fail_at+0x128>)
+ 800a940:	4a23      	ldr	r2, [pc, #140]	@ (800a9d0 <ma_fail_at+0x12c>)
+ 800a942:	6809      	ldr	r1, [r1, #0]
+ 800a944:	6461      	str	r1, [r4, #68]	@ 0x44
+ 800a946:	4923      	ldr	r1, [pc, #140]	@ (800a9d4 <ma_fail_at+0x130>)
+ 800a948:	6b28      	ldr	r0, [r5, #48]	@ 0x30
+ 800a94a:	6809      	ldr	r1, [r1, #0]
+ 800a94c:	6620      	str	r0, [r4, #96]	@ 0x60
+ 800a94e:	64a1      	str	r1, [r4, #72]	@ 0x48
+ 800a950:	6990      	ldr	r0, [r2, #24]
+ 800a952:	6b51      	ldr	r1, [r2, #52]	@ 0x34
+ 800a954:	4a20      	ldr	r2, [pc, #128]	@ (800a9d8 <ma_fail_at+0x134>)
+ 800a956:	4d21      	ldr	r5, [pc, #132]	@ (800a9dc <ma_fail_at+0x138>)
+ 800a958:	6812      	ldr	r2, [r2, #0]
+ 800a95a:	6561      	str	r1, [r4, #84]	@ 0x54
+ 800a95c:	65a2      	str	r2, [r4, #88]	@ 0x58
+ 800a95e:	4920      	ldr	r1, [pc, #128]	@ (800a9e0 <ma_fail_at+0x13c>)
+ 800a960:	4a20      	ldr	r2, [pc, #128]	@ (800a9e4 <ma_fail_at+0x140>)
+ 800a962:	6520      	str	r0, [r4, #80]	@ 0x50
+ 800a964:	6808      	ldr	r0, [r1, #0]
+ 800a966:	6829      	ldr	r1, [r5, #0]
+ 800a968:	6812      	ldr	r2, [r2, #0]
+ 800a96a:	65e0      	str	r0, [r4, #92]	@ 0x5c
+ 800a96c:	e9c4 121a 	strd	r1, r2, [r4, #104]	@ 0x68
+ 800a970:	2201      	movs	r2, #1
+ 800a972:	63e2      	str	r2, [r4, #60]	@ 0x3c
+ 800a974:	681b      	ldr	r3, [r3, #0]
+ 800a976:	f3bf 8f5b 	dmb	ish
+ 800a97a:	6723      	str	r3, [r4, #112]	@ 0x70
+ 800a97c:	f3bf 8f5f 	dmb	sy
+ 800a980:	2302      	movs	r3, #2
+ 800a982:	f3bf 8f5b 	dmb	ish
+ 800a986:	6023      	str	r3, [r4, #0]
+ 800a988:	bcf0      	pop	{r4, r5, r6, r7}
+ 800a98a:	4770      	bx	lr
+ 800a98c:	e9c4 6007 	strd	r6, r0, [r4, #28]
+ 800a990:	9804      	ldr	r0, [sp, #16]
+ 800a992:	6160      	str	r0, [r4, #20]
+ 800a994:	9805      	ldr	r0, [sp, #20]
+ 800a996:	6123      	str	r3, [r4, #16]
+ 800a998:	e9c4 1209 	strd	r1, r2, [r4, #36]	@ 0x24
+ 800a99c:	61a0      	str	r0, [r4, #24]
+ 800a99e:	461a      	mov	r2, r3
+ 800a9a0:	e7b2      	b.n	800a908 <ma_fail_at+0x64>
+ 800a9a2:	bf00      	nop
+ 800a9a4:	200055a5 	.word	0x200055a5
+ 800a9a8:	200055a4 	.word	0x200055a4
+ 800a9ac:	20005368 	.word	0x20005368
+ 800a9b0:	200053e0 	.word	0x200053e0
+ 800a9b4:	20005364 	.word	0x20005364
+ 800a9b8:	200055a6 	.word	0x200055a6
+ 800a9bc:	20005360 	.word	0x20005360
+ 800a9c0:	200054f0 	.word	0x200054f0
+ 800a9c4:	20005490 	.word	0x20005490
+ 800a9c8:	20005488 	.word	0x20005488
+ 800a9cc:	20005484 	.word	0x20005484
+ 800a9d0:	20005494 	.word	0x20005494
+ 800a9d4:	20005480 	.word	0x20005480
+ 800a9d8:	2000547c 	.word	0x2000547c
+ 800a9dc:	20005474 	.word	0x20005474
+ 800a9e0:	2000548c 	.word	0x2000548c
+ 800a9e4:	20005478 	.word	0x20005478
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_estimate_publish_fix_r2\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+0800be28 <ma_native_regular_fault>:
+ 800be28:	b430      	push	{r4, r5}
+ 800be2a:	4926      	ldr	r1, [pc, #152]	@ (800bec4 <ma_native_regular_fault+0x9c>)
+ 800be2c:	f3bf 8f5b 	dmb	ish
+ 800be30:	2301      	movs	r3, #1
+ 800be32:	e851 2f00 	ldrex	r2, [r1]
+ 800be36:	2a00      	cmp	r2, #0
+ 800be38:	d105      	bne.n	800be46 <ma_native_regular_fault+0x1e>
+ 800be3a:	e841 3400 	strex	r4, r3, [r1]
+ 800be3e:	2c00      	cmp	r4, #0
+ 800be40:	d1f7      	bne.n	800be32 <ma_native_regular_fault+0xa>
+ 800be42:	f3bf 8f5b 	dmb	ish
+ 800be46:	d13b      	bne.n	800bec0 <ma_native_regular_fault+0x98>
+ 800be48:	3804      	subs	r0, #4
+ 800be4a:	1d0b      	adds	r3, r1, #4
+ 800be4c:	f101 0c3c 	add.w	ip, r1, #60	@ 0x3c
+ 800be50:	f850 2f04 	ldr.w	r2, [r0, #4]!
+ 800be54:	f843 2b04 	str.w	r2, [r3], #4
+ 800be58:	4563      	cmp	r3, ip
+ 800be5a:	d1f9      	bne.n	800be50 <ma_native_regular_fault+0x28>
+ 800be5c:	4b1a      	ldr	r3, [pc, #104]	@ (800bec8 <ma_native_regular_fault+0xa0>)
+ 800be5e:	681c      	ldr	r4, [r3, #0]
+ 800be60:	f3bf 8f5b 	dmb	ish
+ 800be64:	4819      	ldr	r0, [pc, #100]	@ (800becc <ma_native_regular_fault+0xa4>)
+ 800be66:	4a1a      	ldr	r2, [pc, #104]	@ (800bed0 <ma_native_regular_fault+0xa8>)
+ 800be68:	6800      	ldr	r0, [r0, #0]
+ 800be6a:	6408      	str	r0, [r1, #64]	@ 0x40
+ 800be6c:	4819      	ldr	r0, [pc, #100]	@ (800bed4 <ma_native_regular_fault+0xac>)
+ 800be6e:	64cc      	str	r4, [r1, #76]	@ 0x4c
+ 800be70:	6804      	ldr	r4, [r0, #0]
+ 800be72:	6990      	ldr	r0, [r2, #24]
+ 800be74:	6b52      	ldr	r2, [r2, #52]	@ 0x34
+ 800be76:	644c      	str	r4, [r1, #68]	@ 0x44
+ 800be78:	6508      	str	r0, [r1, #80]	@ 0x50
+ 800be7a:	654a      	str	r2, [r1, #84]	@ 0x54
+ 800be7c:	4c16      	ldr	r4, [pc, #88]	@ (800bed8 <ma_native_regular_fault+0xb0>)
+ 800be7e:	4817      	ldr	r0, [pc, #92]	@ (800bedc <ma_native_regular_fault+0xb4>)
+ 800be80:	4a17      	ldr	r2, [pc, #92]	@ (800bee0 <ma_native_regular_fault+0xb8>)
+ 800be82:	6824      	ldr	r4, [r4, #0]
+ 800be84:	6800      	ldr	r0, [r0, #0]
+ 800be86:	6812      	ldr	r2, [r2, #0]
+ 800be88:	648c      	str	r4, [r1, #72]	@ 0x48
+ 800be8a:	e9c1 0216 	strd	r0, r2, [r1, #88]	@ 0x58
+ 800be8e:	4c15      	ldr	r4, [pc, #84]	@ (800bee4 <ma_native_regular_fault+0xbc>)
+ 800be90:	4a15      	ldr	r2, [pc, #84]	@ (800bee8 <ma_native_regular_fault+0xc0>)
+ 800be92:	6b24      	ldr	r4, [r4, #48]	@ 0x30
+ 800be94:	f8d2 20ac 	ldr.w	r2, [r2, #172]	@ 0xac
+ 800be98:	4814      	ldr	r0, [pc, #80]	@ (800beec <ma_native_regular_fault+0xc4>)
+ 800be9a:	e9c1 4218 	strd	r4, r2, [r1, #96]	@ 0x60
+ 800be9e:	4a14      	ldr	r2, [pc, #80]	@ (800bef0 <ma_native_regular_fault+0xc8>)
+ 800bea0:	6800      	ldr	r0, [r0, #0]
+ 800bea2:	6812      	ldr	r2, [r2, #0]
+ 800bea4:	6688      	str	r0, [r1, #104]	@ 0x68
+ 800bea6:	2501      	movs	r5, #1
+ 800bea8:	63cd      	str	r5, [r1, #60]	@ 0x3c
+ 800beaa:	66ca      	str	r2, [r1, #108]	@ 0x6c
+ 800beac:	681b      	ldr	r3, [r3, #0]
+ 800beae:	f3bf 8f5b 	dmb	ish
+ 800beb2:	670b      	str	r3, [r1, #112]	@ 0x70
+ 800beb4:	f3bf 8f5f 	dmb	sy
+ 800beb8:	2302      	movs	r3, #2
+ 800beba:	f3bf 8f5b 	dmb	ish
+ 800bebe:	600b      	str	r3, [r1, #0]
+ 800bec0:	bc30      	pop	{r4, r5}
+ 800bec2:	4770      	bx	lr
+ 800bec4:	20005368 	.word	0x20005368
+ 800bec8:	20005490 	.word	0x20005490
+ 800becc:	20005488 	.word	0x20005488
+ 800bed0:	20005494 	.word	0x20005494
+ 800bed4:	20005484 	.word	0x20005484
+ 800bed8:	20005480 	.word	0x20005480
+ 800bedc:	2000547c 	.word	0x2000547c
+ 800bee0:	2000548c 	.word	0x2000548c
+ 800bee4:	200053e0 	.word	0x200053e0
+ 800bee8:	200054f0 	.word	0x200054f0
+ 800beec:	20005474 	.word	0x20005474
+ 800bef0:	20005478 	.word	0x20005478

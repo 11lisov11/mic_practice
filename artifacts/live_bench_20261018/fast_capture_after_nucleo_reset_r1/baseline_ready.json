@@ -1,0 +1,20 @@
+{
+  "pass": true,
+  "checks": {
+    "exact_pair": true,
+    "outputs_off": true,
+    "fresh_uart": true,
+    "clean_faults_uart": true,
+    "empty_wave_cache": true,
+    "empty_first_and_start_slots": true,
+    "calibration_preserved": true,
+    "service_outputs_off": true
+  },
+  "samples": 7,
+  "vbus_v": 10.0,
+  "temperature_c": 48.0,
+  "last_uart_age_ms": 33,
+  "old_startup_wave_cleared_automatically": true,
+  "new_control_commands": 0,
+  "scope": "post-reset J4-only baseline; no motor run or mains-on qualification"
+}

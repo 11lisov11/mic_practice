@@ -1,0 +1,11 @@
+{
+  "hardware_wave_capture_passed": true,
+  "record_bytes": 1072,
+  "record_crc32c": "bf326e4f",
+  "UART_matches_frozen_GPIO_DMA": true,
+  "SCL_SDA_constant_HIGH_in_this_manual_record": true,
+  "external_timing_qualified": false,
+  "original_trial_passed": false,
+  "failure": "AS errors19 during native reset startup; subsequent epoch predicate exposed earlier ct_reset branch clearing old quality timestamp before fallback. No additional motor command was sent.",
+  "next": "Uno-only2813 routes the existing bkw_peer_reset branch through the same pe_reset before ct_reset; hardware trace remains frozen in host archive."
+}

@@ -1,0 +1,135 @@
+{
+  "passed": true,
+  "checks": {
+    "nominal_reaches_5Hz": true,
+    "capture_disturbance_reaches_5Hz": true,
+    "capture_disturbance_reduces_PWM_voltage_variation": true,
+    "NIS_at_25_stops_at_injected_step": true,
+    "just_below_25_can_continue": true,
+    "raw_overcurrent_obeys_trip": true,
+    "old_estimate_obeys_2ms_limit": true,
+    "field_rate_guard_still_stops": true
+  },
+  "nominal": {
+    "installed": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.51121869,
+      "rpm_true_end": 300.277894,
+      "rpm_est_end": 300.101938,
+      "speed_RMSE_after1s_rpm": 0.338747904,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 0.468332946,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 600,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 6.54464984,
+      "handover_step": 599,
+      "maximum_plant_rpm": 306.54465,
+      "IF_delta_voltage_rms_V": 0.0306216504,
+      "IF_delta_voltage_samples": 1600
+    },
+    "filtered_IF": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.51127207,
+      "rpm_true_end": 300.397771,
+      "rpm_est_end": 300.236592,
+      "speed_RMSE_after1s_rpm": 0.341786647,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 0.460507691,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 600,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 6.5365757,
+      "handover_step": 599,
+      "maximum_plant_rpm": 306.536576,
+      "IF_delta_voltage_rms_V": 0.0218534336,
+      "IF_delta_voltage_samples": 1600
+    }
+  },
+  "capture_disturbance": {
+    "installed": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.517990272,
+      "rpm_true_end": 302.654002,
+      "rpm_est_end": 302.862809,
+      "speed_RMSE_after1s_rpm": 4.97002904,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 19.3274384,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 600,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 10.8440047,
+      "handover_step": 599,
+      "maximum_plant_rpm": 310.844005,
+      "IF_delta_voltage_rms_V": 2.116597,
+      "IF_delta_voltage_samples": 1600
+    },
+    "filtered_IF": {
+      "completed_5s": true,
+      "PWM_duration_s": 5.00002936,
+      "frames": 80009,
+      "observer_calls": 5000,
+      "fault": 0,
+      "reason": 0,
+      "peak_plant_A": 0.524645437,
+      "rpm_true_end": 302.524647,
+      "rpm_est_end": 301.483111,
+      "speed_RMSE_after1s_rpm": 5.02063007,
+      "native_valid_fraction_after1s": 1,
+      "peak_NIS": 19.2743607,
+      "prequalification_Iq_ref_max_A": 0,
+      "first_torque_step": 600,
+      "maximum_reference_Hz": 5,
+      "peak_hold_speed_error_rpm": 11.4106718,
+      "handover_step": 600,
+      "maximum_plant_rpm": 311.410672,
+      "IF_delta_voltage_rms_V": 1.33301129,
+      "IF_delta_voltage_samples": 1600
+    }
+  },
+  "protected_files_verified": 1562,
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        8652,
+        8620
+      ],
+      "ma_native_service": [
+        8380,
+        8400
+      ],
+      "ma_native_profile_tick": [
+        3960,
+        3956
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2
+  },
+  "NIS": 25,
+  "OFF_cycles_limit": 4000,
+  "estimate_age_ms": 2,
+  "new_powered_starts": 0,
+  "target_DWT_measured": false
+}

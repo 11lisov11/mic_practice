@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "source": "passive ST-Link HotPlug reads",
+  "ports": [
+    "COM10",
+    "COM13"
+  ],
+  "physical_authorization_context": "User J1OFF/meter below20V/bothUSB/15V unchanged; independent post-install readback",
+  "native_image_sha256": "4f13cf07ac01c6fbbd1effd967eef65b71b02673013fe45c3a9133d074935c5d",
+  "image_comparison": "exact HEX with erased FF padding",
+  "hex_erased_padding_offsets": [
+    97812,
+    97813,
+    97814,
+    97815
+  ],
+  "sealed_binary_sha256": "bd3f9b075f51653dd2aa15f0583e01e3d0c9f2e4b085cc8e526e2c1e20e8277a",
+  "layout_from_actual_dwarf": {
+    "SensorType": 0,
+    "ConversionFactor": 2,
+    "LatestConv": 4,
+    "AvBusVoltage_d": 6,
+    "FaultState": 8
+  },
+  "rows": [
+    {
+      "tick_ms": 64962,
+      "bus_volts": 3.25634765625,
+      "conversion_factor": 416,
+      "digital_bus": 513,
+      "bdtr": 37304434,
+      "moe": false
+    },
+    {
+      "tick_ms": 65421,
+      "bus_volts": 3.29443359375,
+      "conversion_factor": 416,
+      "digital_bus": 519,
+      "bdtr": 37304434,
+      "moe": false
+    }
+  ],
+  "tick_delta_ms": 459,
+  "flash_writes": 0,
+  "reset_commands": 0,
+  "halt_commands": 0,
+  "motor_commands": 0
+}

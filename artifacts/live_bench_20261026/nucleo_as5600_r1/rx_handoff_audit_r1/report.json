@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "model_only": true,
+  "hardware_commands": 0,
+  "installed_package_changed": false,
+  "firmware_writes": 0,
+  "results": {
+    "installed": {
+      "frame_cases": 43,
+      "exact_crc_valid": 0,
+      "one_byte_erased": 43,
+      "overflow_checks": 1
+    },
+    "candidate": {
+      "frame_cases": 43,
+      "exact_crc_valid": 43,
+      "one_byte_erased": 0,
+      "overflow_checks": 1
+    }
+  },
+  "limitation": "Reproduces an actual code race; physical attribution of every captured CRC failure remains unproven. Candidate requires target build and hardware verification."
+}

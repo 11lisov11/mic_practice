@@ -1,0 +1,74 @@
+{
+  "operator_confirmed": {
+    "J1": "OFF",
+    "J4_15V": "OFF",
+    "cable_STEVAL_end": "unplugged",
+    "cable_IHM09M2_end": "connected",
+    "controllers": "powerbanks",
+    "RESET": "not pressed"
+  },
+  "read_only": true,
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "register_writes": 0
+  },
+  "fresh_samples": 8,
+  "levels": [
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "native_age_ms": [
+    47,
+    43,
+    28,
+    20,
+    7,
+    18,
+    35,
+    30
+  ],
+  "native_builds": [
+    2026103016
+  ],
+  "uart_errors": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "integrity_errors": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "boot_ids": [
+    "a59e82ff-a261-4b51-8447-925d95773b26"
+  ],
+  "native_first_uptime_ms": 46419,
+  "native_last_uptime_ms": 58159,
+  "boot_continuity_with_previous_connected_test": false,
+  "initial_HTTP_503": "Linux was booting; SSH uptime0min; GET recovered without service restart or reset",
+  "conclusion": "Current LOW persists without electrical connection to STEVAL through cable. Investigate cable/adapter/Nucleo side. Does not establish cause of all earlier powered SD pulses.",
+  "exact_cause_proven": false,
+  "next_requested_action": "Remove remaining 34-pin cable end from IHM09M2; keep adapter on Nucleo; J1/J4 OFF; controllers powered; no RESET",
+  "old_captures_modified": false
+}

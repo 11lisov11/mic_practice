@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": 9,
+  "actual_functions_extracted_without_logic_changes": [
+    "PWMC_DP_Handler",
+    "PWMC_IsFaultOccurred",
+    "uno_rearm_break_irq",
+    "TIMx_BRK_M1_IRQHandler"
+  ],
+  "firmware_sources_changed": false,
+  "hardware_commands": 0,
+  "source_sha256": {
+    "artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\main.c": "2861e95f5a665a89de728489003823369ef014d047c5abdfeaac1dda62120020",
+    "artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\stm32g4xx_mc_it.c": "62c48a19b9d066a4a255ad09e646fffdd90440204e4cf9fbc9f950d4507b4b24",
+    "artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Src\\pwm_curr_fdbk.c": "32291e3ba0a0d07002a2f0d0f0b2b658279958309eb7042ae97ac2a195d35200"
+  },
+  "limitation": "Register stubs validate handler decisions and stale-flag paths, not physical SD or every MCU fault mechanism."
+}

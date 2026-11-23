@@ -1,0 +1,82 @@
+{
+  "pair": [
+    2026111405,
+    2026111406
+  ],
+  "base_pair": [
+    2026111403,
+    2026111404
+  ],
+  "built": true,
+  "installed": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "thresholds_changed": false,
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "frequency_max_hz": 5,
+  "runlimit_ms": 5000,
+  "peer_reply_timeout_ms": 500,
+  "send_cadence_us": 50000,
+  "reply_guard_us": 8000,
+  "observer_tuning_changed": false,
+  "first_fault_trace_schema": 2,
+  "trace_bytes": 1832,
+  "physical_NIS_root_cause_proven": false,
+  "stop_path_reproduction_required": false,
+  "target_timing_requalification_required": true,
+  "hardware_validated": false,
+  "host_tests_passed": true,
+  "model_tests_passed": true,
+  "native_flash_bytes": 107744,
+  "hex_padding_offsets": [
+    103404,
+    103405,
+    103406,
+    103407
+  ],
+  "artifacts": {
+    "release/nucleo_2026111406_expected_readback.bin": "e37321e4314c397af451eb74574ee78d5bfcc045da8b5251d0c5423711e5873c",
+    "release/nucleo_2026111406_observer_voltage_stop.hex": "56b8544c5fca4cdab9d26f428989ea3e07d93cb0614fc384b574d7239831bb06",
+    "release/uno_2026111405_observer_voltage_stop.elf-zsk.bin": "305a79764e4b4a2ef4fccad9b9c071a6598867c87e12d9e5c09d7a99158fe1de"
+  },
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 28504,
+    ".noinit": 32,
+    "._user_heap_stack": 1536
+  },
+  "RAM_allocated": 31048,
+  "RAM_unallocated": 1720,
+  "preserved_files_verified": 2395,
+  "source_files": 161,
+  "target_timing_measured": false,
+  "stop_path_reproduced": true,
+  "applied_voltage_source_corrected": true,
+  "accepted_reply_lifecycle_corrected": true,
+  "local_stop_provenance_available": true,
+  "NIS_residual_and_variance_available": true,
+  "verification_reports": {
+    "verification/report.json": "6e031b053eb1f84fc2aa5e321ed7b3b4e0807fe461e2e0add5529e40cc7d71c9",
+    "verification/HMI_record_validation.json": "d0f43bd8e7fb3840ef1fde430bee5b32e9168762c4d51ef266320e2660af6311",
+    "model_verification/model_report.json": "8d8b6d3f066c943a4b96b6af0b1619df4ad060b38936d457d14585fb4bcd164e",
+    "recorded_842ms_analysis.json": "3111f4424e3db91c78c3dbd0b86043f261ab9d54b7d15be31d585906bd9df0c1"
+  },
+  "both_readbacks_verified": true,
+  "OFF_CPU_qualified": false,
+  "target_timing_measured_OFF": true,
+  "hardware_PWM_trial_performed": false,
+  "FOC_start_ready": false,
+  "timing_block": {
+    "measured_cycles": 4007,
+    "budget_cycles": 4000,
+    "completed_cases": 10,
+    "required_cases": 64
+  },
+  "installation_report": "hardware_install_r1/report.json",
+  "idle_timing_report": "timing_blocked_idle_r1/report.json"
+}

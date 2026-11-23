@@ -1,0 +1,25 @@
+{
+  "passed": false,
+  "CLEAR_commands": 1,
+  "START_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "snapshots_erased": false,
+  "commands": [
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-10-28T17:44:12.880747+00:00",
+      "elapsed_s": 0.574,
+      "request_timeout_s": 8.0,
+      "transport": "direct_wifi_http"
+    }
+  ],
+  "used_source_sha256": "75a77a017c149ca33fd8e05f8d5fd5e87420458f139fc8afbc2721213d3ef94a",
+  "error": "Single ACK did not establish protected ready OFF"
+}

@@ -1,0 +1,45 @@
+{
+  "pair": [
+    2026112201,
+    2026112202
+  ],
+  "base_pair": [
+    2026112111,
+    2026112112
+  ],
+  "installed": false,
+  "hardware_commands": 0,
+  "NIS": 25,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "raw_current_trip_A": 1.35,
+  "ADC_UPDATE_ticks": 2048,
+  "ARM_OFF": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "DWT_on_target_measured": false,
+    "max_ARM_instructions_before_after": {
+      "firmware_fixture": [
+        1571,
+        1563
+      ],
+      "speed_jump_stress": [
+        1571,
+        2301
+      ]
+    }
+  },
+  "step_756_replay": {
+    "exact_words": 51,
+    "original_NIS": 30.997943878173828,
+    "same_CCR_prior_and_current_NIS_with_filtered_polarity": 32.51095962524414
+  },
+  "preserved_files": 1762,
+  "artifacts": {
+    "release/nucleo_2026112202_expected_readback.bin": "856c8eb4346f0509387477633c94fe77ce0f8758bef53efe46c90cea89f064ff",
+    "release/nucleo_2026112202_if_foc.bin": "856c8eb4346f0509387477633c94fe77ce0f8758bef53efe46c90cea89f064ff",
+    "release/nucleo_2026112202_if_foc.elf": "b60b6d29cdeb16c293131b6ed8159d4f02615824424c47e111f337de4f6bbbea",
+    "release/nucleo_2026112202_if_foc.hex": "7a14390370800bc3559b113a053ad3c7e73d02c18be2e82e028502dd4ead4a9c",
+    "release/uno_2026112201_if_foc.elf-zsk.bin": "51d3c1fd22814e64745f32f835dbae1b3839d2787f8259bee4946a3eafa398fe"
+  }
+}

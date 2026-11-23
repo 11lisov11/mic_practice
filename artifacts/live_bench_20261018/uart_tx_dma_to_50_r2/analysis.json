@@ -1,0 +1,129 @@
+{
+  "run_completed_to_50_hz": false,
+  "start_requests": 1,
+  "clear_commands": 0,
+  "outputs_off_confirmed": true,
+  "settled_controller_field_targets_hz": [
+    5,
+    10,
+    15,
+    20
+  ],
+  "requested_target_at_trip_hz": 25.0,
+  "max_active_http_reference_hz": 21.2,
+  "cached_reference_before_break_hz": 22.0,
+  "context_age_before_break_ms": 23,
+  "active_samples": 42,
+  "active_vbus_range_v": [
+    320.0,
+    324.0
+  ],
+  "active_reported_temperature_range_c": [
+    48.0,
+    51.0
+  ],
+  "cached_vbus_v": 321,
+  "cached_temperature_c": 52.0,
+  "transport_counters": {
+    "mc_bad_cnt": {
+      "before": 0,
+      "after": 0
+    },
+    "mc_bad_integrity": {
+      "before": 0,
+      "after": 0
+    },
+    "mc_bad_sequence": {
+      "before": 0,
+      "after": 0
+    },
+    "mc_uart_error_flags": {
+      "before": 0,
+      "after": 0
+    },
+    "mc_last_uart_error_flags": {
+      "before": 0,
+      "after": 0
+    },
+    "mc_transport_fault": {
+      "before": 0,
+      "after": 0
+    },
+    "uno_rx_dropped": {
+      "before": 0,
+      "after": 0
+    },
+    "uno_tx_short_writes": {
+      "before": 0,
+      "after": 0
+    }
+  },
+  "transport_counters_zero": true,
+  "uno_noise_advisory": {
+    "uno_rx_hw_errors": {
+      "before": 0,
+      "after": 17
+    },
+    "uno_rx_hw_flags": {
+      "before": 0,
+      "after": 32
+    }
+  },
+  "fault_mask": 1024,
+  "fault_name": "MC_DP_FAULT / TIM1 Break",
+  "break_event": {
+    "bif": true,
+    "b2if": false,
+    "pa6_high_at_irq": true,
+    "bke_at_irq": true,
+    "moe_at_irq": false,
+    "during_start_request_window": false,
+    "start_window_flag_raw": true,
+    "start_window_flag_stale_after_run": true
+  },
+  "event_tick_matches": true,
+  "raw_wave_decode_matches": true,
+  "record_bytes": 320,
+  "sample_period_us": 0.2,
+  "low_runs_count": 15,
+  "low_run_samples": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2
+  ],
+  "nearest_recorded_low_to_irq_us": 0.4,
+  "pulse_complete": true,
+  "post_complete": true,
+  "wave_error_flags": {
+    "dma_error": false,
+    "sampling_overrun": false,
+    "run_overflow": false,
+    "timeout": false
+  },
+  "physical_source_identified": false,
+  "physical_rotation_confirmed": true,
+  "limitations": [
+    "Field reference is not independently measured rotor speed.",
+    "The nearest sampled LOW is not independently proven to be the unique electrical cause of Break.",
+    "The prehistory contains one-sample LOW runs at nominal 200-ns sampling; their true analog widths are not measured.",
+    "The DMA sample rate is nominal; missed individual timer requests are not all detectable by flags.",
+    "No qualified phase current, IPM VCC/CIN or internal junction temperature measurement is available.",
+    "A 52-C cached temperature and DP mask do not identify or categorically exclude an internal thermal cause."
+  ],
+  "speed_changes_confirmed": true,
+  "smooth_rotation_reported": true,
+  "operator_statement_ru": "Да, ровно, ускорение заметно",
+  "independent_rotor_speed_measurement": false
+}

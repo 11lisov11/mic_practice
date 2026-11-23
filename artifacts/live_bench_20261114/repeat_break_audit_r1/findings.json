@@ -1,0 +1,44 @@
+{
+  "software_checks": "host_report.json",
+  "live_fault_observation": {
+    "last_clear_state_unix_s": 1794658824.633366,
+    "first_fault_state_unix_s": 1794658825.6741204,
+    "host_observation_window_s": 1.0407543182373047,
+    "clear_log_time_utc": "2026-11-14 12:20:05",
+    "new_fault_log_time_utc": "2026-11-14 12:20:25",
+    "operator_timezone": "Europe/Moscow",
+    "pwm_before": 0,
+    "pwm_at": 0,
+    "vbus_before": 325.0,
+    "vbus_at": 324.0,
+    "masks_before": [
+      0,
+      0
+    ],
+    "masks_at": [
+      0,
+      1024
+    ]
+  },
+  "finding": "New break fault was observed about20s after successful CLEAR with PWM off. A stale vector without BIF/B2IF cannot produce driverProtectionFlag through the audited handlers. Physical signal source remains unresolved.",
+  "first_capture": {
+    "event_tick_ms": 14546,
+    "PA6_low_us": 0.8,
+    "separate_from_repeat_fault": true,
+    "PA4_TP23_wire_present": false,
+    "PA4_level_cannot_identify_IPM_SD": true
+  },
+  "diagnostic_limitation": "Capture freezes first event and CLEAR does not rearm the trace. Newest fault has no separate waveform.",
+  "next_required_evidence": "Separate next-event waveform after authorized CLEAR, retaining first event; PA6 and physically verified TP23 needed to localize pad path versus module. No automatic CLEAR, filter change, or motor trial.",
+  "physical_cause_identified": false,
+  "firmware_changed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "thresholds_changed": false,
+  "references": {
+    "RM0440": "https://www.st.com/resource/en/reference_manual/dm00355726-stm32g4-series-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf",
+    "ES0431": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf"
+  },
+  "errata_scope_note": "Documented short-pulse issue concerns bidirectional BKBID mode; this build configures input-only. This does not exclude every hardware fault."
+}

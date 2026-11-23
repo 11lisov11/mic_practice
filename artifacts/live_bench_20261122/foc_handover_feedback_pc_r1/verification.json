@@ -1,0 +1,333 @@
+{
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        8620,
+        8580
+      ],
+      "ma_native_service": [
+        8400,
+        8400
+      ],
+      "ma_native_profile_tick": [
+        3956,
+        3832
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2,
+    "step_756_replay_exact_words": 51
+  },
+  "hardware_commands": 0,
+  "limits": [
+    25,
+    4000,
+    2
+  ],
+  "preserved_files": 1762,
+  "previous_report_keys": [
+    "passed",
+    "actual_release_ARM_replay",
+    "observer_kernel_bit_identical",
+    "native_readback_bytes",
+    "hex_erased_padding_offsets",
+    "page_contract",
+    "physical_timing_measured",
+    "protected_files_verified",
+    "hardware_commands"
+  ],
+  "quick_results": {
+    "nominal": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "filtered": [
+        0,
+        5,
+        723
+      ],
+      "voltage_tracking": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    },
+    "captured_deviations": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "filtered": [
+        0,
+        5,
+        723
+      ],
+      "voltage_tracking": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        5,
+        2.11267996,
+        723
+      ]
+    },
+    "double_deviations": {
+      "baseline": [
+        5,
+        1.04278076,
+        723
+      ],
+      "filtered": [
+        5,
+        1.6977191,
+        723
+      ],
+      "voltage_tracking": [
+        5,
+        1.07277787,
+        723
+      ],
+      "candidate": [
+        5,
+        1.72771621,
+        723
+      ]
+    },
+    "deviations_plus_offset": {
+      "baseline": [
+        5,
+        2.19267249,
+        723
+      ],
+      "filtered": [
+        5,
+        2.19267249,
+        723
+      ],
+      "voltage_tracking": [
+        5,
+        2.27266502,
+        723
+      ],
+      "candidate": [
+        5,
+        2.27266502,
+        723
+      ]
+    },
+    "Rs_plus20pct": {
+      "baseline": [
+        5,
+        2.11267996,
+        723
+      ],
+      "filtered": [
+        5,
+        2.11267996,
+        723
+      ],
+      "voltage_tracking": [
+        5,
+        2.11267996,
+        723
+      ],
+      "candidate": [
+        5,
+        2.11267996,
+        723
+      ]
+    },
+    "Rr_plus20pct": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "filtered": [
+        0,
+        5,
+        723
+      ],
+      "voltage_tracking": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    },
+    "voltage_mismatch_1V": {
+      "baseline": [
+        5,
+        1.95269501,
+        723
+      ],
+      "filtered": [
+        5,
+        1.95269501,
+        723
+      ],
+      "voltage_tracking": [
+        5,
+        1.95269501,
+        723
+      ],
+      "candidate": [
+        5,
+        1.95269501,
+        723
+      ]
+    },
+    "voltage_mismatch_2V": {
+      "baseline": [
+        5,
+        0,
+        0
+      ],
+      "filtered": [
+        5,
+        0,
+        0
+      ],
+      "voltage_tracking": [
+        5,
+        0,
+        0
+      ],
+      "candidate": [
+        5,
+        0,
+        0
+      ]
+    },
+    "edge_minus250ns": {
+      "baseline": [
+        5,
+        3.87251425,
+        1284
+      ],
+      "filtered": [
+        5,
+        3.87251425,
+        1284
+      ],
+      "voltage_tracking": [
+        5,
+        3.95250678,
+        1284
+      ],
+      "candidate": [
+        5,
+        3.95250678,
+        1284
+      ]
+    },
+    "current_trip": {
+      "baseline": [
+        2,
+        0,
+        0
+      ],
+      "filtered": [
+        2,
+        0,
+        0
+      ],
+      "voltage_tracking": [
+        2,
+        0,
+        0
+      ],
+      "candidate": [
+        2,
+        0,
+        0
+      ]
+    },
+    "age_2_1ms": {
+      "baseline": [
+        3,
+        0,
+        0
+      ],
+      "filtered": [
+        3,
+        0,
+        0
+      ],
+      "voltage_tracking": [
+        3,
+        0,
+        0
+      ],
+      "candidate": [
+        3,
+        0,
+        0
+      ]
+    },
+    "NIS_exactly25": {
+      "baseline": [
+        5,
+        0.242855996,
+        0
+      ],
+      "filtered": [
+        5,
+        0.242855996,
+        0
+      ],
+      "voltage_tracking": [
+        5,
+        0.242855996,
+        0
+      ],
+      "candidate": [
+        5,
+        0.242855996,
+        0
+      ]
+    },
+    "NIS_below25": {
+      "baseline": [
+        0,
+        5,
+        723
+      ],
+      "filtered": [
+        0,
+        5,
+        723
+      ],
+      "voltage_tracking": [
+        0,
+        5,
+        723
+      ],
+      "candidate": [
+        0,
+        5,
+        723
+      ]
+    }
+  }
+}

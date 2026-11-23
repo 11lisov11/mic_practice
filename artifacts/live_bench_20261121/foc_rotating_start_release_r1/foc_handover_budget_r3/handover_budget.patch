@@ -1,0 +1,78 @@
+--- a/nucleo/Inc/motor_control.h
++++ b/nucleo/Inc/motor_control.h
+@@ -227,11 +227,11 @@
+   uint32_t bits;memcpy(&bits,&value,sizeof(bits));
+   if(bits==0x80000000U)return 0; /* negative zero */
+   if(bits>0x477fff00U)return UINT32_MAX; /* negative, NaN, Inf, or >65535 */
+-  unsigned exponent=bits>>23;
+-  if(exponent<126U)return 0;
+-  unsigned shift=150U-exponent;
+-  uint32_t mantissa=(bits&0x7fffffU)|0x800000U;
+-  return (mantissa+(1U<<(shift-1U)))>>shift;
++  /* The unsigned truncation fits 16 bits. Its conversion back to float is
++   * exact, as is subtraction of the integer part. This avoids the double
++   * rounding of adding 0.5f, and uses the M4's fixed-point conversion. */
++  const uint32_t whole=(uint32_t)value;
++  return whole+(uint32_t)(value-(float)whole>=.5f);
+ }
+ static inline int ma_modulate(ma_controller*c,const ma_geometry*g,int algorithm,
+                               float va,float vb,float bus,ma_output*out){
+@@ -270,7 +270,10 @@
+   }
+   if(!p.valid)return MA_WINDOW;
+   c->shift=shift;out->shift=shift;out->trigger=p.trigger;out->pair=p.pair;
+-  for(unsigned i=0;i<3;i++){out->ccr[i]=cc[i];out->duty[i]=(float)cc[i]/g->arr;}
++  /* The timer counts and ADC aperture are already fixed. Reuse the
++   * scale solely for float duty telemetry and anti-windup feedback. */
++  const float inv_arr=1.f/(float)g->arr;
++  for(unsigned i=0;i<3;i++){out->ccr[i]=cc[i];out->duty[i]=(float)cc[i]*inv_arr;}
+   /* Actual quantised average phase voltage, used by observer instead of request. */
+   const float mean=(out->duty[0]+out->duty[1]+out->duty[2])/3;
+   out->va=(out->duty[0]-mean)*bus;
+@@ -297,29 +300,29 @@
+   }
+   float c0=1.f,s=0.f,start_omega=0.f;
+   if(c->preflux==1U){
+-    /* Magnetize for 100 ms, then follow the bounded electrical reference in
+-     * a commanded current frame. Rotor speed is not used during I/f. */
+     const float start_hz=c->time_s<.10f?0.f:ma_min2(reference_hz,5.f);
+     start_omega=6.2831853072f*start_hz;
+-    const float delta=start_omega*dt;
+-    const float next_c=c->start_cos-delta*c->start_sin;
+-    const float next_s=c->start_sin+delta*c->start_cos;
+-    const float norm=1.5f-.5f*(next_c*next_c+next_s*next_s);
+-    c0=c->start_cos=next_c*norm;s=c->start_sin=next_s*norm;
+-    /* An accepted flux alone cannot authorize torque from an implausible
+-     * speed or a jump to an unrelated field axis. The existing NIS and age
+-     * checks remain independent and are still applied in I/f. */
++    c0=c->start_cos;s=c->start_sin;
++    /* At handover the PI integral is still in the currently applied frame.
++     * Check that frame against the estimate, without advancing an oscillator
++     * which will no longer be used. Keep the same admission criteria. */
+     const float projection=c0*x[2]+s*x[3];
+-    const float estimated_electrical_speed=m->poles*x[4];
+-    if(speed_ready&&start_hz>=1.f&&projection>=.92f*flux&&
+-       fabsf(estimated_electrical_speed-start_omega)<=6.2831853072f){
+-      const float d=projection/flux,q=(c0*x[3]-s*x[2])/flux;
++    if(speed_ready&&start_hz>=1.f&&flux>.0001f&&projection>=.92f*flux&&
++       fabsf(m->poles*x[4]-start_omega)<=6.2831853072f){
++      const float inv_flux=1.f/flux;
++      const float d=projection*inv_flux,q=(c0*x[3]-s*x[2])*inv_flux;
+       const float a=c->integral[0],b=c->integral[1];
+       c->integral[0]=d*a+q*b;c->integral[1]=-q*a+d*b;
++      c0=x[2]*inv_flux;s=x[3]*inv_flux;
+       c->preflux=2U;
+-    }else speed_ready=0;
+-  }
+-  if(c->preflux!=1U&&flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
++    }else{
++      const float delta=start_omega*dt;
++      const float next_c=c0-delta*s,next_s=s+delta*c0;
++      const float norm=1.5f-.5f*(next_c*next_c+next_s*next_s);
++      c0=c->start_cos=next_c*norm;s=c->start_sin=next_s*norm;
++      speed_ready=0;
++    }
++  }else if(flux>.0001f){c0=x[2]/flux;s=x[3]/flux;}
+   const float id=c0*ia+s*ib,iq=-s*ia+c0*ib;
+   const float idref=ma_min2(m->flux/m->lm,.9f*m->current_limit)*ma_min2(1,c->time_s/.10f);
+   /* A provisional flux can establish magnetization, but an unqualified

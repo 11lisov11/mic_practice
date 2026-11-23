@@ -1,0 +1,17 @@
+{
+  "operator_measurement": "15V between IPM pin13VCCL and pin16GND",
+  "confirmed_DC_voltages": {
+    "TP8_VCCH_to_TP21_V": 15,
+    "VCCL_pin13_to_GND_pin16_V": 15,
+    "STEVAL_3V3_C21_to_TP21_V": 3.292,
+    "TP23_SD_to_TP21_V": 0
+  },
+  "earlier_CIN": "ADC raw0 at TP17,J4ON; currently probe is TP23",
+  "conclusion": "Steady supply loss is not observed at the measured driver pins. This does not exclude brief dips, a shared SD sink outside IPM, or an internal fault.",
+  "next": "Power-off isolated STEVAL passive checks: R28 pull-up and TP23-to-GND resistance; do not infer component failure from an in-circuit resistance alone.",
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "old_captures_modified": false
+}

@@ -1,0 +1,75 @@
+{
+  "operator_confirmed_physical_offline": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "uno_firmware_changed": true,
+  "hv_release_approved": false,
+  "commands": [
+    {
+      "label": "usb_inventory",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_before",
+      "exit_code": 0
+    },
+    {
+      "label": "nucleo_backup",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_staging",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_recovery",
+      "exit_code": 0
+    },
+    {
+      "label": "install_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_nucleo",
+      "exit_code": 0
+    },
+    {
+      "label": "nucleo_readback",
+      "exit_code": 0
+    },
+    {
+      "label": "flash_verify_uno",
+      "exit_code": 0
+    },
+    {
+      "label": "remote_after",
+      "exit_code": 0
+    }
+  ],
+  "image_sha256": "27d7b1151ad69a0958043552ef53c840867edb1e0fd3ad145c2645f3922aa033",
+  "hmi_sha256": "27bb632e1c8b6636f9d5531e7c1b541565751757f13631c4c5b080912e0e3875",
+  "old_image_sha256": "49d38e84c2cc5ba581c9cf8d272f5578a962c187dd495c288c647d8d75f66f0a",
+  "hmi_install": {
+    "installed": true,
+    "sha256": "27bb632e1c8b6636f9d5531e7c1b541565751757f13631c4c5b080912e0e3875",
+    "calibration_unchanged": true,
+    "new_pid": 1118,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/router_recovery_c660be1df86f48e9969382bc615a7a76",
+    "actuation_commands": 0,
+    "mcu_flash_commands": 0,
+    "rpc_verified": false
+  },
+  "nucleo_programmer_verify_pass": true,
+  "nucleo_readback_sha256": "27d7b1151ad69a0958043552ef53c840867edb1e0fd3ad145c2645f3922aa033",
+  "nucleo_readback_matches": true,
+  "uno_flash_verify_pass": true,
+  "uno_image_sha256": "cf015e642fc1f3c54bb263cce3bebc70bfb801a3f2ff7b25a95b7e4b81b7c612",
+  "hmi_verified": true,
+  "calibration_unchanged": true,
+  "pass": true
+}

@@ -1,0 +1,3244 @@
+{
+  "kernel_symbols": {
+    "__llext_sym_analog_reference": {
+      "address": "0x801c5a0",
+      "size": 8
+    },
+    "k_is_preempt_thread": {
+      "address": "0x8015ee7",
+      "size": 4
+    },
+    "__llext_sym__device_list_end": {
+      "address": "0x801c590",
+      "size": 8
+    },
+    "__llext_sym__device_list_start": {
+      "address": "0x801c598",
+      "size": 8
+    },
+    "__llext_sym_device_from_handle": {
+      "address": "0x801c600",
+      "size": 8
+    },
+    "__llext_sym_SystemCoreClock": {
+      "address": "0x801c108",
+      "size": 8
+    },
+    "__llext_sym_arm_irq_priority_set": {
+      "address": "0x801c5d8",
+      "size": 8
+    },
+    "__llext_sym_arm_irq_is_enabled": {
+      "address": "0x801c5d0",
+      "size": 8
+    },
+    "__llext_sym_arm_irq_disable": {
+      "address": "0x801c5c0",
+      "size": 8
+    },
+    "__llext_sym_arm_irq_enable": {
+      "address": "0x801c5c8",
+      "size": 8
+    },
+    "__llext_sym_k_is_preempt_thread": {
+      "address": "0x801c658",
+      "size": 8
+    },
+    "__llext_sym_k_is_in_isr": {
+      "address": "0x801c650",
+      "size": 8
+    },
+    "__llext_sym_arch_irq_disconnect_dynamic": {
+      "address": "0x801c5b0",
+      "size": 8
+    },
+    "__llext_sym_arch_irq_connect_dynamic": {
+      "address": "0x801c5a8",
+      "size": 8
+    },
+    "__llext_sym_can_add_rx_filter": {
+      "address": "0x801c5f0",
+      "size": 8
+    },
+    "__llext_sym_flash_area_close": {
+      "address": "0x801c608",
+      "size": 8
+    },
+    "__llext_sym_flash_area_erase": {
+      "address": "0x801c610",
+      "size": 8
+    },
+    "__llext_sym_flash_area_write": {
+      "address": "0x801c628",
+      "size": 8
+    },
+    "__llext_sym_flash_area_read": {
+      "address": "0x801c620",
+      "size": 8
+    },
+    "__llext_sym_flash_area_open": {
+      "address": "0x801c618",
+      "size": 8
+    },
+    "__llext_sym_matrixEnd": {
+      "address": "0x801c700",
+      "size": 8
+    },
+    "__llext_sym_matrixSetGrayscaleBits": {
+      "address": "0x801c718",
+      "size": 8
+    },
+    "__llext_sym_matrixGrayscaleWrite": {
+      "address": "0x801c708",
+      "size": 8
+    },
+    "__llext_sym_matrixPlay": {
+      "address": "0x801c710",
+      "size": 8
+    },
+    "__llext_sym_matrixWrite": {
+      "address": "0x801c720",
+      "size": 8
+    },
+    "__llext_sym_matrixBegin": {
+      "address": "0x801c6f8",
+      "size": 8
+    },
+    "__llext_sym___cxa_pure_virtual": {
+      "address": "0x801c118",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_uldivmod": {
+      "address": "0x801c330",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_ldivmod": {
+      "address": "0x801c2f8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_uidivmod": {
+      "address": "0x801c318",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_idivmod": {
+      "address": "0x801c2e0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_uidiv": {
+      "address": "0x801c310",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_idiv": {
+      "address": "0x801c2d8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_ul2f": {
+      "address": "0x801c328",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_l2f": {
+      "address": "0x801c2f0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_f2d": {
+      "address": "0x801c2b8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_d2f": {
+      "address": "0x801c248",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_ul2d": {
+      "address": "0x801c320",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_l2d": {
+      "address": "0x801c2e8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_ui2d": {
+      "address": "0x801c308",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_i2d": {
+      "address": "0x801c2d0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_d2lz": {
+      "address": "0x801c258",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_d2uiz": {
+      "address": "0x801c260",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_d2iz": {
+      "address": "0x801c250",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_fcmpun": {
+      "address": "0x801c2c8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_fcmple": {
+      "address": "0x801c2c0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmpun": {
+      "address": "0x801c298",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmpge": {
+      "address": "0x801c278",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmpgt": {
+      "address": "0x801c280",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmple": {
+      "address": "0x801c288",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmplt": {
+      "address": "0x801c290",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dcmpeq": {
+      "address": "0x801c270",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_ddiv": {
+      "address": "0x801c2a0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dmul": {
+      "address": "0x801c2a8",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dsub": {
+      "address": "0x801c2b0",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_dadd": {
+      "address": "0x801c268",
+      "size": 8
+    },
+    "__llext_sym___real___aeabi_read_tp": {
+      "address": "0x801c300",
+      "size": 8
+    },
+    "__llext_sym_sys_clock_cycle_get_32": {
+      "address": "0x801c7f8",
+      "size": 8
+    },
+    "__llext_sym_ring_buf_area_finish": {
+      "address": "0x801c770",
+      "size": 8
+    },
+    "__llext_sym_ring_buf_area_claim": {
+      "address": "0x801c768",
+      "size": 8
+    },
+    "__llext_sym_ring_buf_put": {
+      "address": "0x801c788",
+      "size": 8
+    },
+    "__llext_sym_ring_buf_peek": {
+      "address": "0x801c780",
+      "size": 8
+    },
+    "__llext_sym_ring_buf_get": {
+      "address": "0x801c778",
+      "size": 8
+    },
+    "__llext_sym_stderr": {
+      "address": "0x801c7a8",
+      "size": 8
+    },
+    "__llext_sym_stdout": {
+      "address": "0x801c7b8",
+      "size": 8
+    },
+    "__llext_sym_stdin": {
+      "address": "0x801c7b0",
+      "size": 8
+    },
+    "__llext_sym___assert_no_args": {
+      "address": "0x801c110",
+      "size": 8
+    },
+    "__llext_sym_sscanf": {
+      "address": "0x801c7a0",
+      "size": 8
+    },
+    "__llext_sym_cbvprintf": {
+      "address": "0x801c5f8",
+      "size": 8
+    },
+    "__llext_sym_snprintf": {
+      "address": "0x801c790",
+      "size": 8
+    },
+    "__llext_sym_sprintf": {
+      "address": "0x801c798",
+      "size": 8
+    },
+    "__llext_sym_printf": {
+      "address": "0x801c758",
+      "size": 8
+    },
+    "__llext_sym_gmtime": {
+      "address": "0x801c630",
+      "size": 8
+    },
+    "__llext_sym_mktime": {
+      "address": "0x801c740",
+      "size": 8
+    },
+    "__llext_sym_sys_clock_settime": {
+      "address": "0x801c808",
+      "size": 8
+    },
+    "__llext_sym_time": {
+      "address": "0x801c810",
+      "size": 8
+    },
+    "__llext_sym_k_work_submit_to_queue": {
+      "address": "0x801c6e8",
+      "size": 8
+    },
+    "__llext_sym_k_work_queue_start": {
+      "address": "0x801c6c8",
+      "size": 8
+    },
+    "__llext_sym_k_work_reschedule_for_queue": {
+      "address": "0x801c6d0",
+      "size": 8
+    },
+    "__llext_sym_k_work_schedule_for_queue": {
+      "address": "0x801c6e0",
+      "size": 8
+    },
+    "__llext_sym_k_work_init_delayable": {
+      "address": "0x801c6c0",
+      "size": 8
+    },
+    "__llext_sym_k_work_schedule": {
+      "address": "0x801c6d8",
+      "size": 8
+    },
+    "__llext_sym_k_work_init": {
+      "address": "0x801c6b8",
+      "size": 8
+    },
+    "__llext_sym_k_fatal_halt": {
+      "address": "0x801c638",
+      "size": 8
+    },
+    "__llext_sym_k_timer_init": {
+      "address": "0x801c6b0",
+      "size": 8
+    },
+    "__llext_sym_stm32_backup_domain_disable_access": {
+      "address": "0x801c7c0",
+      "size": 8
+    },
+    "__llext_sym_stm32_backup_domain_enable_access": {
+      "address": "0x801c7c8",
+      "size": 8
+    },
+    "__llext_sym_log_const_sketch": {
+      "address": "0x801c6f0",
+      "size": 8
+    },
+    "__llext_sym_z_log_msg_runtime_vcreate": {
+      "address": "0x801d080",
+      "size": 8
+    },
+    "__llext_sym_pinctrl_configure_pins": {
+      "address": "0x801c748",
+      "size": 8
+    },
+    "__llext_sym_pinctrl_lookup_state": {
+      "address": "0x801c750",
+      "size": 8
+    },
+    "__llext_sym_k_mem_slab_free": {
+      "address": "0x801c668",
+      "size": 8
+    },
+    "__llext_sym_k_mem_slab_init": {
+      "address": "0x801c670",
+      "size": 8
+    },
+    "__llext_sym_k_sys_work_q": {
+      "address": "0x801c6a8",
+      "size": 8
+    },
+    "__llext_sym_k_msgq_num_used_get": {
+      "address": "0x801c688",
+      "size": 8
+    },
+    "__llext_sym_k_msgq_get": {
+      "address": "0x801c678",
+      "size": 8
+    },
+    "__llext_sym_k_msgq_put": {
+      "address": "0x801c690",
+      "size": 8
+    },
+    "__llext_sym_k_msgq_init": {
+      "address": "0x801c680",
+      "size": 8
+    },
+    "__llext_sym_k_sched_unlock": {
+      "address": "0x801c6a0",
+      "size": 8
+    },
+    "__llext_sym_k_sched_lock": {
+      "address": "0x801c698",
+      "size": 8
+    },
+    "__llext_sym_k_free": {
+      "address": "0x801c640",
+      "size": 8
+    },
+    "__llext_sym_k_malloc": {
+      "address": "0x801c660",
+      "size": 8
+    },
+    "__llext_sym___real_vsnprintf": {
+      "address": "0x801c588",
+      "size": 8
+    },
+    "__llext_sym___real_putchar": {
+      "address": "0x801c4a0",
+      "size": 8
+    },
+    "__llext_sym___real_puts": {
+      "address": "0x801c4a8",
+      "size": 8
+    },
+    "__llext_sym___real_ldexp": {
+      "address": "0x801c438",
+      "size": 8
+    },
+    "__llext_sym___real_tanf": {
+      "address": "0x801c570",
+      "size": 8
+    },
+    "__llext_sym___real_tan": {
+      "address": "0x801c568",
+      "size": 8
+    },
+    "__llext_sym___real_sqrtf": {
+      "address": "0x801c4d8",
+      "size": 8
+    },
+    "__llext_sym___real_sqrt": {
+      "address": "0x801c4d0",
+      "size": 8
+    },
+    "__llext_sym___real_sinf": {
+      "address": "0x801c4c8",
+      "size": 8
+    },
+    "__llext_sym___real_sin": {
+      "address": "0x801c4c0",
+      "size": 8
+    },
+    "__llext_sym___real_pow": {
+      "address": "0x801c498",
+      "size": 8
+    },
+    "__llext_sym___real_log10": {
+      "address": "0x801c440",
+      "size": 8
+    },
+    "__llext_sym___real_log2": {
+      "address": "0x801c448",
+      "size": 8
+    },
+    "__llext_sym___real_logf": {
+      "address": "0x801c458",
+      "size": 8
+    },
+    "__llext_sym___real_log": {
+      "address": "0x801c450",
+      "size": 8
+    },
+    "__llext_sym___real_fmod": {
+      "address": "0x801c3d8",
+      "size": 8
+    },
+    "__llext_sym___real_exp2": {
+      "address": "0x801c3c8",
+      "size": 8
+    },
+    "__llext_sym___real_exp": {
+      "address": "0x801c3d0",
+      "size": 8
+    },
+    "__llext_sym___real_cosf": {
+      "address": "0x801c3b8",
+      "size": 8
+    },
+    "__llext_sym___real_cos": {
+      "address": "0x801c3b0",
+      "size": 8
+    },
+    "__llext_sym___real_atanf": {
+      "address": "0x801c380",
+      "size": 8
+    },
+    "__llext_sym___real_atan2f": {
+      "address": "0x801c370",
+      "size": 8
+    },
+    "__llext_sym___real_atan2": {
+      "address": "0x801c368",
+      "size": 8
+    },
+    "__llext_sym___real_atan": {
+      "address": "0x801c378",
+      "size": 8
+    },
+    "__llext_sym___real_asinf": {
+      "address": "0x801c360",
+      "size": 8
+    },
+    "__llext_sym___real_asin": {
+      "address": "0x801c358",
+      "size": 8
+    },
+    "__llext_sym___real_acosf": {
+      "address": "0x801c350",
+      "size": 8
+    },
+    "__llext_sym___real_acos": {
+      "address": "0x801c348",
+      "size": 8
+    },
+    "__llext_sym___real_isxdigit": {
+      "address": "0x801c430",
+      "size": 8
+    },
+    "__llext_sym___real_islower": {
+      "address": "0x801c410",
+      "size": 8
+    },
+    "__llext_sym___real_isupper": {
+      "address": "0x801c428",
+      "size": 8
+    },
+    "__llext_sym___real_isprint": {
+      "address": "0x801c418",
+      "size": 8
+    },
+    "__llext_sym___real_isgraph": {
+      "address": "0x801c408",
+      "size": 8
+    },
+    "__llext_sym___real_isdigit": {
+      "address": "0x801c400",
+      "size": 8
+    },
+    "__llext_sym___real_iscntrl": {
+      "address": "0x801c3f8",
+      "size": 8
+    },
+    "__llext_sym___real_isalpha": {
+      "address": "0x801c3f0",
+      "size": 8
+    },
+    "__llext_sym___real_toupper": {
+      "address": "0x801c580",
+      "size": 8
+    },
+    "__llext_sym___real_tolower": {
+      "address": "0x801c578",
+      "size": 8
+    },
+    "__llext_sym___real_isalnum": {
+      "address": "0x801c3e8",
+      "size": 8
+    },
+    "__llext_sym___real_isspace": {
+      "address": "0x801c420",
+      "size": 8
+    },
+    "__llext_sym___real__exit": {
+      "address": "0x801c338",
+      "size": 8
+    },
+    "__llext_sym___real_atexit": {
+      "address": "0x801c388",
+      "size": 8
+    },
+    "__llext_sym___real_exit": {
+      "address": "0x801c3c0",
+      "size": 8
+    },
+    "__llext_sym___real_abort": {
+      "address": "0x801c340",
+      "size": 8
+    },
+    "__llext_sym___real_atol": {
+      "address": "0x801c3a0",
+      "size": 8
+    },
+    "__llext_sym___real_atof": {
+      "address": "0x801c390",
+      "size": 8
+    },
+    "__llext_sym___real_atoi": {
+      "address": "0x801c398",
+      "size": 8
+    },
+    "__llext_sym___real_strtoul": {
+      "address": "0x801c560",
+      "size": 8
+    },
+    "__llext_sym___real_strtol": {
+      "address": "0x801c558",
+      "size": 8
+    },
+    "__llext_sym___real_strtod": {
+      "address": "0x801c548",
+      "size": 8
+    },
+    "__llext_sym___real_srand": {
+      "address": "0x801c4e0",
+      "size": 8
+    },
+    "__llext_sym___real_rand": {
+      "address": "0x801c4b0",
+      "size": 8
+    },
+    "__llext_sym___real_free": {
+      "address": "0x801c3e0",
+      "size": 8
+    },
+    "__llext_sym___real_calloc": {
+      "address": "0x801c3a8",
+      "size": 8
+    },
+    "__llext_sym___real_realloc": {
+      "address": "0x801c4b8",
+      "size": 8
+    },
+    "__llext_sym___real_malloc": {
+      "address": "0x801c460",
+      "size": 8
+    },
+    "__llext_sym___real_memmem": {
+      "address": "0x801c480",
+      "size": 8
+    },
+    "__llext_sym___real_strdup": {
+      "address": "0x801c510",
+      "size": 8
+    },
+    "__llext_sym___real_memchr": {
+      "address": "0x801c468",
+      "size": 8
+    },
+    "__llext_sym___real_strtok": {
+      "address": "0x801c550",
+      "size": 8
+    },
+    "__llext_sym___real_memset": {
+      "address": "0x801c490",
+      "size": 8
+    },
+    "__llext_sym___real_memcmp": {
+      "address": "0x801c470",
+      "size": 8
+    },
+    "__llext_sym___real_strcpy": {
+      "address": "0x801c508",
+      "size": 8
+    },
+    "__llext_sym___real_strcat": {
+      "address": "0x801c4f0",
+      "size": 8
+    },
+    "__llext_sym___real_strchr": {
+      "address": "0x801c4f8",
+      "size": 8
+    },
+    "__llext_sym___real_strnlen": {
+      "address": "0x801c530",
+      "size": 8
+    },
+    "__llext_sym___real_strlen": {
+      "address": "0x801c518",
+      "size": 8
+    },
+    "__llext_sym___real_strcmp": {
+      "address": "0x801c500",
+      "size": 8
+    },
+    "__llext_sym___real_strcasecmp": {
+      "address": "0x801c4e8",
+      "size": 8
+    },
+    "__llext_sym___real_strncpy": {
+      "address": "0x801c528",
+      "size": 8
+    },
+    "__llext_sym___real_strncmp": {
+      "address": "0x801c520",
+      "size": 8
+    },
+    "__llext_sym___real_strstr": {
+      "address": "0x801c540",
+      "size": 8
+    },
+    "__llext_sym___real_strrchr": {
+      "address": "0x801c538",
+      "size": 8
+    },
+    "__llext_sym___real_memmove": {
+      "address": "0x801c488",
+      "size": 8
+    },
+    "__llext_sym___real_memcpy": {
+      "address": "0x801c478",
+      "size": 8
+    },
+    "__llext_sym_printk": {
+      "address": "0x801c760",
+      "size": 8
+    },
+    "__llext_sym_vprintk": {
+      "address": "0x801c818",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_150": {
+      "address": "0x801c158",
+      "size": 8
+    },
+    "llext_copy_region": {
+      "address": "0x8007df5",
+      "size": 332
+    },
+    "llext_read": {
+      "address": "0x8017175",
+      "size": 4
+    },
+    "llext_seek": {
+      "address": "0x8017179",
+      "size": 4
+    },
+    "llext_peek": {
+      "address": "0x801717d",
+      "size": 10
+    },
+    "llext_alloc": {
+      "address": "0x8007f79",
+      "size": 16
+    },
+    "llext_find_extension_sym_iterate": {
+      "address": "0x80171c9",
+      "size": 24
+    },
+    "__llext_sym___device_dts_ord_149": {
+      "address": "0x801c150",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_17": {
+      "address": "0x801c178",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_55": {
+      "address": "0x801c1b0",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_9": {
+      "address": "0x801c240",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_215": {
+      "address": "0x801c190",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_212": {
+      "address": "0x801c188",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_58": {
+      "address": "0x801c1b8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_157": {
+      "address": "0x801c170",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_155": {
+      "address": "0x801c160",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_182": {
+      "address": "0x801c180",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_60": {
+      "address": "0x801c1c8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_92": {
+      "address": "0x801c230",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_91": {
+      "address": "0x801c228",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_59": {
+      "address": "0x801c1c0",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_90": {
+      "address": "0x801c220",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_89": {
+      "address": "0x801c218",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_88": {
+      "address": "0x801c210",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_87": {
+      "address": "0x801c208",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_86": {
+      "address": "0x801c200",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_35": {
+      "address": "0x801c1a8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_29": {
+      "address": "0x801c1a0",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_25": {
+      "address": "0x801c198",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_120": {
+      "address": "0x801c140",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_111": {
+      "address": "0x801c130",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_106": {
+      "address": "0x801c128",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_102": {
+      "address": "0x801c120",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_97": {
+      "address": "0x801c238",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_117": {
+      "address": "0x801c138",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_156": {
+      "address": "0x801c168",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_72": {
+      "address": "0x801c1e8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_64": {
+      "address": "0x801c1d8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_67": {
+      "address": "0x801c1e0",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_85": {
+      "address": "0x801c1f8",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_80": {
+      "address": "0x801c1f0",
+      "size": 8
+    },
+    "bg_thread_main": {
+      "address": "0x800fa2d",
+      "size": 220
+    },
+    "unpend_thread_no_timeout": {
+      "address": "0x801a0d7",
+      "size": 20
+    },
+    "ready_thread": {
+      "address": "0x8010871",
+      "size": 132
+    },
+    "unready_thread": {
+      "address": "0x80108f5",
+      "size": 84
+    },
+    "add_thread_timeout": {
+      "address": "0x8010949",
+      "size": 28
+    },
+    "z_thread_alloc_helper": {
+      "address": "0x801196d",
+      "size": 56
+    },
+    "__llext_sym_assert_print": {
+      "address": "0x801c5e8",
+      "size": 8
+    },
+    "__llext_sym_assert_post_action": {
+      "address": "0x801c5e0",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_146": {
+      "address": "0x801c148",
+      "size": 8
+    },
+    "__llext_sym___device_dts_ord_63": {
+      "address": "0x801c1d0",
+      "size": 8
+    },
+    "__llext_sym_arch_spin_relax": {
+      "address": "0x801c5b8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_zephyr_write_stdout": {
+      "address": "0x801d070",
+      "size": 8
+    },
+    "__llext_sym_z_impl_zephyr_read_stdin": {
+      "address": "0x801d068",
+      "size": 8
+    },
+    "__llext_sym_z_impl_zephyr_fwrite": {
+      "address": "0x801d060",
+      "size": 8
+    },
+    "__llext_sym_z_impl_zephyr_fputc": {
+      "address": "0x801d058",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_sys_mutex_kernel_unlock": {
+      "address": "0x801d050",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_sys_mutex_kernel_lock": {
+      "address": "0x801d048",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_log_msg_static_create": {
+      "address": "0x801d040",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_log_msg_simple_create_2": {
+      "address": "0x801d038",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_log_msg_simple_create_1": {
+      "address": "0x801d030",
+      "size": 8
+    },
+    "__llext_sym_z_impl_z_log_msg_simple_create_0": {
+      "address": "0x801d028",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_tx_u16": {
+      "address": "0x801d020",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_tx_abort": {
+      "address": "0x801d018",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_tx": {
+      "address": "0x801d010",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_rx_enable_u16": {
+      "address": "0x801d008",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_rx_enable": {
+      "address": "0x801d000",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_rx_disable": {
+      "address": "0x801cff8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_poll_out_u16": {
+      "address": "0x801cff0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_poll_out": {
+      "address": "0x801cfe8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_poll_in_u16": {
+      "address": "0x801cfe0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_poll_in": {
+      "address": "0x801cfd8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_line_ctrl_set": {
+      "address": "0x801cfd0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_line_ctrl_get": {
+      "address": "0x801cfc8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_update": {
+      "address": "0x801cfc0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_tx_enable": {
+      "address": "0x801cfb8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_tx_disable": {
+      "address": "0x801cfb0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_rx_enable": {
+      "address": "0x801cfa8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_rx_disable": {
+      "address": "0x801cfa0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_is_pending": {
+      "address": "0x801cf98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_err_enable": {
+      "address": "0x801cf90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_irq_err_disable": {
+      "address": "0x801cf88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_err_check": {
+      "address": "0x801cf80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_drv_cmd": {
+      "address": "0x801cf78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_configure": {
+      "address": "0x801cf70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_uart_config_get": {
+      "address": "0x801cf68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_rand_get": {
+      "address": "0x801cf60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_csrand_get": {
+      "address": "0x801cf58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_clock_settime": {
+      "address": "0x801cf50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_clock_nanosleep": {
+      "address": "0x801cf48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_clock_hw_cycles_per_sec_runtime_get": {
+      "address": "0x801cf40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_clock_getrtoffset": {
+      "address": "0x801cf38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_cache_data_invd_range": {
+      "address": "0x801cf30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_cache_data_flush_range": {
+      "address": "0x801cf28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_sys_cache_data_flush_and_invd_range": {
+      "address": "0x801cf20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_spi_transceive": {
+      "address": "0x801cf18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_spi_release": {
+      "address": "0x801cf10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_set_time": {
+      "address": "0x801cf08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_set_calibration": {
+      "address": "0x801cf00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_get_time": {
+      "address": "0x801cef8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_get_calibration": {
+      "address": "0x801cef0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_alarm_set_time": {
+      "address": "0x801cee8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_alarm_is_pending": {
+      "address": "0x801cee0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_alarm_get_time": {
+      "address": "0x801ced8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_rtc_alarm_get_supported_fields": {
+      "address": "0x801ced0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_reset_status": {
+      "address": "0x801cec8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_reset_line_toggle": {
+      "address": "0x801cec0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_reset_line_deassert": {
+      "address": "0x801ceb8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_reset_line_assert": {
+      "address": "0x801ceb0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_pwm_set_cycles": {
+      "address": "0x801cea8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_pwm_get_cycles_per_sec": {
+      "address": "0x801cea0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_pwm_enable_capture": {
+      "address": "0x801ce98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_pwm_disable_capture": {
+      "address": "0x801ce90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_pwm_capture_cycles": {
+      "address": "0x801ce88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_log_process": {
+      "address": "0x801ce80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_log_panic": {
+      "address": "0x801ce78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_log_frontend_filter_set": {
+      "address": "0x801ce70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_log_filter_set": {
+      "address": "0x801ce68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_log_buffered_cnt": {
+      "address": "0x801ce60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_llext_get_fn_table": {
+      "address": "0x801ce58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_yield": {
+      "address": "0x801ce50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_wakeup": {
+      "address": "0x801ce48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_usleep": {
+      "address": "0x801ce40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_uptime_ticks": {
+      "address": "0x801ce38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_user_data_set": {
+      "address": "0x801ce30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_user_data_get": {
+      "address": "0x801ce28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_stop": {
+      "address": "0x801ce20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_status_sync": {
+      "address": "0x801ce18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_status_get": {
+      "address": "0x801ce10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_start": {
+      "address": "0x801ce08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_remaining_ticks": {
+      "address": "0x801ce00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_timer_expires_ticks": {
+      "address": "0x801cdf8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_timeout_remaining_ticks": {
+      "address": "0x801cdf0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_timeout_expires_ticks": {
+      "address": "0x801cde8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_suspend": {
+      "address": "0x801cde0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_stack_space_get": {
+      "address": "0x801cdd8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_stack_free": {
+      "address": "0x801cdd0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_stack_alloc": {
+      "address": "0x801cdc8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_resume": {
+      "address": "0x801cdc0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_priority_set": {
+      "address": "0x801cdb8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_priority_get": {
+      "address": "0x801cdb0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_name_set": {
+      "address": "0x801cda8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_name_copy": {
+      "address": "0x801cda0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_join": {
+      "address": "0x801cd98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_deadline_set": {
+      "address": "0x801cd90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_custom_data_set": {
+      "address": "0x801cd88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_custom_data_get": {
+      "address": "0x801cd80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_create": {
+      "address": "0x801cd78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_thread_abort": {
+      "address": "0x801cd70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_str_out": {
+      "address": "0x801cd68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_stack_push": {
+      "address": "0x801cd60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_stack_pop": {
+      "address": "0x801cd58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_stack_alloc_init": {
+      "address": "0x801cd50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sleep": {
+      "address": "0x801cd48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sem_take": {
+      "address": "0x801cd40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sem_reset": {
+      "address": "0x801cd38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sem_init": {
+      "address": "0x801cd30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sem_give": {
+      "address": "0x801cd28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sem_count_get": {
+      "address": "0x801cd20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_sched_current_thread_query": {
+      "address": "0x801cd18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_reschedule": {
+      "address": "0x801cd10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_peek_tail": {
+      "address": "0x801cd08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_peek_head": {
+      "address": "0x801cd00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_is_empty": {
+      "address": "0x801ccf8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_init": {
+      "address": "0x801ccf0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_get": {
+      "address": "0x801cce8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_cancel_wait": {
+      "address": "0x801cce0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_alloc_prepend": {
+      "address": "0x801ccd8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_queue_alloc_append": {
+      "address": "0x801ccd0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_poll_signal_reset": {
+      "address": "0x801ccc8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_poll_signal_raise": {
+      "address": "0x801ccc0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_poll_signal_init": {
+      "address": "0x801ccb8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_poll_signal_check": {
+      "address": "0x801ccb0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_poll": {
+      "address": "0x801cca8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_write_avail": {
+      "address": "0x801cca0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_write": {
+      "address": "0x801cc98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_reset": {
+      "address": "0x801cc90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_read_avail": {
+      "address": "0x801cc88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_read": {
+      "address": "0x801cc80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_put": {
+      "address": "0x801cc78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_init": {
+      "address": "0x801cc70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_get": {
+      "address": "0x801cc68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_flush": {
+      "address": "0x801cc60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_close": {
+      "address": "0x801cc58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_buffer_flush": {
+      "address": "0x801cc50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_pipe_alloc_init": {
+      "address": "0x801cc48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_object_release": {
+      "address": "0x801cc40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_object_alloc_size": {
+      "address": "0x801cc38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_object_alloc": {
+      "address": "0x801cc30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_object_access_grant": {
+      "address": "0x801cc28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_mutex_unlock": {
+      "address": "0x801cc20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_mutex_lock": {
+      "address": "0x801cc18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_mutex_init": {
+      "address": "0x801cc10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_put": {
+      "address": "0x801cc08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_purge": {
+      "address": "0x801cc00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_peek_at": {
+      "address": "0x801cbf8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_peek": {
+      "address": "0x801cbf0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_num_used_get": {
+      "address": "0x801cbe8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_num_free_get": {
+      "address": "0x801cbe0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_get_attrs": {
+      "address": "0x801cbd8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_get": {
+      "address": "0x801cbd0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_msgq_alloc_init": {
+      "address": "0x801cbc8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_is_preempt_thread": {
+      "address": "0x801cbc0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_futex_wake": {
+      "address": "0x801cbb8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_futex_wait": {
+      "address": "0x801cbb0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_float_enable": {
+      "address": "0x801cba8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_float_disable": {
+      "address": "0x801cba0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_wait_all": {
+      "address": "0x801cb98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_wait": {
+      "address": "0x801cb90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_set_masked": {
+      "address": "0x801cb88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_set": {
+      "address": "0x801cb80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_post": {
+      "address": "0x801cb78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_init": {
+      "address": "0x801cb70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_event_clear": {
+      "address": "0x801cb68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_condvar_wait": {
+      "address": "0x801cb60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_condvar_signal": {
+      "address": "0x801cb58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_condvar_init": {
+      "address": "0x801cb50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_condvar_broadcast": {
+      "address": "0x801cb48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_k_busy_wait": {
+      "address": "0x801cb40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_transfer": {
+      "address": "0x801cb38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_target_driver_unregister": {
+      "address": "0x801cb30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_target_driver_register": {
+      "address": "0x801cb28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_recover_bus": {
+      "address": "0x801cb20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_get_config": {
+      "address": "0x801cb18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_i2c_configure": {
+      "address": "0x801cb10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_toggle_bits": {
+      "address": "0x801cb08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_set_masked_raw": {
+      "address": "0x801cb00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_set_bits_raw": {
+      "address": "0x801caf8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_get_raw": {
+      "address": "0x801caf0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_get_direction": {
+      "address": "0x801cae8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_port_clear_bits_raw": {
+      "address": "0x801cae0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_pin_interrupt_configure": {
+      "address": "0x801cad8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_pin_get_config": {
+      "address": "0x801cad0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_pin_configure": {
+      "address": "0x801cac8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_gpio_get_pending_int": {
+      "address": "0x801cac0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_write": {
+      "address": "0x801cab8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_sfdp_read": {
+      "address": "0x801cab0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_read_jedec_id": {
+      "address": "0x801caa8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_read": {
+      "address": "0x801caa0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_write_block_size": {
+      "address": "0x801ca98",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_size": {
+      "address": "0x801ca90",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_parameters": {
+      "address": "0x801ca88",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_page_info_by_offs": {
+      "address": "0x801ca80",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_page_info_by_idx": {
+      "address": "0x801ca78",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_get_page_count": {
+      "address": "0x801ca70",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_flatten": {
+      "address": "0x801ca68",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_fill": {
+      "address": "0x801ca60",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_ex_op": {
+      "address": "0x801ca58",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_erase": {
+      "address": "0x801ca50",
+      "size": 8
+    },
+    "__llext_sym_z_impl_flash_copy": {
+      "address": "0x801ca48",
+      "size": 8
+    },
+    "__llext_sym_z_impl_entropy_get_entropy": {
+      "address": "0x801ca40",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_suspend": {
+      "address": "0x801ca38",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_stop": {
+      "address": "0x801ca30",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_start": {
+      "address": "0x801ca28",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_resume": {
+      "address": "0x801ca20",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_request_channel": {
+      "address": "0x801ca18",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_release_channel": {
+      "address": "0x801ca10",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dma_chan_filter": {
+      "address": "0x801ca08",
+      "size": 8
+    },
+    "__llext_sym_z_impl_device_is_ready": {
+      "address": "0x801ca00",
+      "size": 8
+    },
+    "__llext_sym_z_impl_device_init": {
+      "address": "0x801c9f8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_device_get_by_dt_nodelabel": {
+      "address": "0x801c9f0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_device_get_binding": {
+      "address": "0x801c9e8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_device_deinit": {
+      "address": "0x801c9e0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dac_write_value": {
+      "address": "0x801c9d8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_dac_channel_setup": {
+      "address": "0x801c9d0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_us_to_ticks": {
+      "address": "0x801c9c8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_ticks_to_us": {
+      "address": "0x801c9c0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_stop": {
+      "address": "0x801c9b8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_start": {
+      "address": "0x801c9b0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_set_top_value": {
+      "address": "0x801c9a8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_set_guard_period": {
+      "address": "0x801c9a0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_set_channel_alarm": {
+      "address": "0x801c998",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_reset": {
+      "address": "0x801c990",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_is_counting_up": {
+      "address": "0x801c988",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_value_64": {
+      "address": "0x801c980",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_value": {
+      "address": "0x801c978",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_top_value": {
+      "address": "0x801c970",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_pending_int": {
+      "address": "0x801c968",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_num_of_channels": {
+      "address": "0x801c960",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_max_top_value": {
+      "address": "0x801c958",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_guard_period": {
+      "address": "0x801c950",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_get_frequency": {
+      "address": "0x801c948",
+      "size": 8
+    },
+    "__llext_sym_z_impl_counter_cancel_channel_alarm": {
+      "address": "0x801c940",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stop": {
+      "address": "0x801c938",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_stuff_errors": {
+      "address": "0x801c930",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_rx_overruns": {
+      "address": "0x801c928",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_form_errors": {
+      "address": "0x801c920",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_crc_errors": {
+      "address": "0x801c918",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_bit_errors": {
+      "address": "0x801c910",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_bit1_errors": {
+      "address": "0x801c908",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_bit0_errors": {
+      "address": "0x801c900",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_stats_get_ack_errors": {
+      "address": "0x801c8f8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_start": {
+      "address": "0x801c8f0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_set_timing_data": {
+      "address": "0x801c8e8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_set_timing": {
+      "address": "0x801c8e0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_set_mode": {
+      "address": "0x801c8d8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_set_bitrate_data": {
+      "address": "0x801c8d0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_set_bitrate": {
+      "address": "0x801c8c8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_send": {
+      "address": "0x801c8c0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_remove_rx_filter": {
+      "address": "0x801c8b8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_recover": {
+      "address": "0x801c8b0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_transceiver": {
+      "address": "0x801c8a8",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_timing_min": {
+      "address": "0x801c8a0",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_timing_max": {
+      "address": "0x801c898",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_timing_data_min": {
+      "address": "0x801c890",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_timing_data_max": {
+      "address": "0x801c888",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_state": {
+      "address": "0x801c880",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_mode": {
+      "address": "0x801c878",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_max_filters": {
+      "address": "0x801c870",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_core_clock": {
+      "address": "0x801c868",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_capabilities": {
+      "address": "0x801c860",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_bitrate_min": {
+      "address": "0x801c858",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_get_bitrate_max": {
+      "address": "0x801c850",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_calc_timing_data": {
+      "address": "0x801c848",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_calc_timing": {
+      "address": "0x801c840",
+      "size": 8
+    },
+    "__llext_sym_z_impl_can_add_rx_filter_msgq": {
+      "address": "0x801c838",
+      "size": 8
+    },
+    "__llext_sym_z_impl_adc_read_async": {
+      "address": "0x801c830",
+      "size": 8
+    },
+    "__llext_sym_z_impl_adc_read": {
+      "address": "0x801c828",
+      "size": 8
+    },
+    "__llext_sym_z_impl_adc_channel_setup": {
+      "address": "0x801c820",
+      "size": 8
+    },
+    "__llext_sym_memset": {
+      "address": "0x801c738",
+      "size": 8
+    },
+    "__llext_sym_memcpy": {
+      "address": "0x801c730",
+      "size": 8
+    },
+    "__llext_sym_memcmp": {
+      "address": "0x801c728",
+      "size": 8
+    },
+    "__llext_sym_strncmp": {
+      "address": "0x801c7e8",
+      "size": 8
+    },
+    "__llext_sym_strcmp": {
+      "address": "0x801c7d0",
+      "size": 8
+    },
+    "__llext_sym_strlen": {
+      "address": "0x801c7e0",
+      "size": 8
+    },
+    "__llext_sym_strncpy": {
+      "address": "0x801c7f0",
+      "size": 8
+    },
+    "__llext_sym_strcpy": {
+      "address": "0x801c7d8",
+      "size": 8
+    },
+    "__llext_sym_sys_clock_cycle_get_64": {
+      "address": "0x801c800",
+      "size": 8
+    },
+    "z_impl_k_thread_timeout_expires_ticks": {
+      "address": "0x0",
+      "size": 4
+    },
+    "z_init_thread_base": {
+      "address": "0x801a0b3",
+      "size": 20
+    },
+    "z_impl_z_sys_mutex_kernel_lock": {
+      "address": "0x0",
+      "size": 4
+    },
+    "z_impl_k_is_preempt_thread": {
+      "address": "0x80106b1",
+      "size": 32
+    },
+    "move_thread_to_end_of_prio_q": {
+      "address": "0x8010965",
+      "size": 144
+    },
+    "llext_list": {
+      "address": "0x20001780",
+      "size": 8
+    },
+    "z_impl_k_thread_create": {
+      "address": "0x80107c5",
+      "size": 88
+    },
+    "z_unpend_thread_no_timeout": {
+      "address": "0x801a159",
+      "size": 34
+    },
+    "_kernel_thread_info_offsets": {
+      "address": "0x801c0cc",
+      "size": 60
+    },
+    "llext_iterate": {
+      "address": "0x8007c29",
+      "size": 60
+    },
+    "z_impl_k_thread_name_set": {
+      "address": "0x80106d1",
+      "size": 32
+    },
+    "llext_file_offset": {
+      "address": "0x8017201",
+      "size": 50
+    },
+    "z_thread_entry": {
+      "address": "0x8005ef9",
+      "size": 52
+    },
+    "z_impl_k_thread_timeout_remaining_ticks": {
+      "address": "0x0",
+      "size": 4
+    },
+    "z_impl_k_thread_stack_free": {
+      "address": "0x8011a29",
+      "size": 160
+    },
+    "k_thread_foreach": {
+      "address": "0x8011315",
+      "size": 52
+    },
+    "llext_heap": {
+      "address": "0x20001174",
+      "size": 24
+    },
+    "z_dummy_thread_init": {
+      "address": "0x801081d",
+      "size": 32
+    },
+    "z_impl_k_thread_stack_space_get": {
+      "address": "0x0",
+      "size": 4
+    },
+    "z_impl_k_thread_priority_get": {
+      "address": "0x801a097",
+      "size": 6
+    },
+    "z_do_kernel_oops": {
+      "address": "0x8017013",
+      "size": 8
+    },
+    "llext_buf_seek": {
+      "address": "0x8017285",
+      "size": 20
+    },
+    "z_sched_wake_thread": {
+      "address": "0x801a17b",
+      "size": 70
+    },
+    "z_thread_malloc": {
+      "address": "0x80119d1",
+      "size": 16
+    },
+    "z_impl_k_thread_join": {
+      "address": "0x801104d",
+      "size": 108
+    },
+    "_kernel_openocd_offsets": {
+      "address": "0x801c0cc",
+      "size": 60
+    },
+    "z_impl_k_thread_name_copy": {
+      "address": "0x801a0a1",
+      "size": 18
+    },
+    "__kernel_cos": {
+      "address": "0x8004379",
+      "size": 380
+    },
+    "z_impl_k_thread_custom_data_get": {
+      "address": "0x0",
+      "size": 4
+    },
+    "llext_free_inspection_data": {
+      "address": "0x8007f89",
+      "size": 52
+    },
+    "__kernel_sin": {
+      "address": "0x8004bb1",
+      "size": 364
+    },
+    "_kernel_thread_info_num_offsets": {
+      "address": "0x801c0c8",
+      "size": 4
+    },
+    "llext_find_sym": {
+      "address": "0x8007c65",
+      "size": 92
+    },
+    "__kernel_sinf": {
+      "address": "0x8015a75",
+      "size": 144
+    },
+    "z_thread_monitor_exit": {
+      "address": "0x80112d1",
+      "size": 68
+    },
+    "llext_buf_peek": {
+      "address": "0x8017299",
+      "size": 8
+    },
+    "__kernel_rem_pio2": {
+      "address": "0x80044f9",
+      "size": 1718
+    },
+    "log_const_llext_fs_loader": {
+      "address": "0x801c044",
+      "size": 8
+    },
+    "__kernel_cosf": {
+      "address": "0x80154c5",
+      "size": 176
+    },
+    "kheap_llext_heap": {
+      "address": "0x20002028",
+      "size": 262144
+    },
+    "arch_switch_to_main_thread": {
+      "address": "0x800789d",
+      "size": 84
+    },
+    "_kernel": {
+      "address": "0x20001e30",
+      "size": 40
+    },
+    "_kernel_openocd_num_offsets": {
+      "address": "0x801c0c8",
+      "size": 4
+    },
+    "z_impl_k_thread_abort": {
+      "address": "0x8007641",
+      "size": 44
+    },
+    "llext_bringup": {
+      "address": "0x801710d",
+      "size": 6
+    },
+    "k_thread_name_get": {
+      "address": "0x801a09d",
+      "size": 4
+    },
+    "z_main_thread": {
+      "address": "0x20001360",
+      "size": 264
+    },
+    "z_impl_k_thread_deadline_set": {
+      "address": "0x0",
+      "size": 4
+    },
+    "do_llext_load": {
+      "address": "0x8007fbd",
+      "size": 2800
+    },
+    "thread_is_sliceable": {
+      "address": "0x80111e5",
+      "size": 60
+    },
+    "llext_by_name": {
+      "address": "0x8007bf1",
+      "size": 56
+    },
+    "z_thread_timeout": {
+      "address": "0x801a1c1",
+      "size": 8
+    },
+    "z_thread_prio_set": {
+      "address": "0x8010b29",
+      "size": 228
+    },
+    "z_thread_abort": {
+      "address": "0x8010f09",
+      "size": 324
+    },
+    "llext_adjust_mmu_permissions": {
+      "address": "0x8017173",
+      "size": 2
+    },
+    "llext_read_symbol": {
+      "address": "0x8017233",
+      "size": 40
+    },
+    "z_thread_aligned_alloc": {
+      "address": "0x80119c5",
+      "size": 12
+    },
+    "llext_copy_regions": {
+      "address": "0x801713d",
+      "size": 54
+    },
+    "llext_lock": {
+      "address": "0x200000f0",
+      "size": 20
+    },
+    "z_impl_k_thread_priority_set": {
+      "address": "0x8010d35",
+      "size": 44
+    },
+    "z_impl_k_thread_stack_alloc": {
+      "address": "0x80119e1",
+      "size": 72
+    },
+    "llext_buf_read": {
+      "address": "0x801725b",
+      "size": 42
+    },
+    "__kernel_tanf": {
+      "address": "0x8015b05",
+      "size": 444
+    },
+    "llext_copy_strings": {
+      "address": "0x8017119",
+      "size": 36
+    },
+    "z_impl_k_thread_custom_data_set": {
+      "address": "0x0",
+      "size": 4
+    },
+    "_kernel_openocd_size_t_size": {
+      "address": "0x801c0c4",
+      "size": 1
+    },
+    "_kernel_thread_info_size_t_size": {
+      "address": "0x801c0c4",
+      "size": 1
+    },
+    "z_impl_k_thread_suspend": {
+      "address": "0x80109f5",
+      "size": 240
+    },
+    "z_idle_threads": {
+      "address": "0x20001258",
+      "size": 264
+    },
+    "z_sys_post_kernel": {
+      "address": "0x20002000",
+      "size": 1
+    },
+    "z_ready_thread": {
+      "address": "0x801a13b",
+      "size": 30
+    },
+    "llext_free_regions": {
+      "address": "0x8007f41",
+      "size": 56
+    },
+    "llext_loaded_sect_ptr": {
+      "address": "0x80171a7",
+      "size": 34
+    },
+    "z_impl_k_thread_resume": {
+      "address": "0x8010c31",
+      "size": 60
+    },
+    "z_unpend_thread": {
+      "address": "0x801a1f5",
+      "size": 16
+    },
+    "z_impl_llext_get_fn_table": {
+      "address": "0x8008d85",
+      "size": 172
+    },
+    "arch_new_thread": {
+      "address": "0x8007815",
+      "size": 64
+    },
+    "llext_bootstrap": {
+      "address": "0x8007d85",
+      "size": 76
+    },
+    "k_thread_system_pool_assign": {
+      "address": "0x80119b9",
+      "size": 12
+    },
+    "z_setup_new_thread": {
+      "address": "0x80106f1",
+      "size": 212
+    },
+    "log_const_llext": {
+      "address": "0x801c03c",
+      "size": 8
+    },
+    "llext_lookup_symbol": {
+      "address": "0x8008aad",
+      "size": 240
+    },
+    "z_impl_z_sys_mutex_kernel_unlock": {
+      "address": "0x0",
+      "size": 4
+    },
+    "_thread_dummy": {
+      "address": "0x20001590",
+      "size": 264
+    },
+    "llext_load": {
+      "address": "0x8007cc1",
+      "size": 196
+    },
+    "__kernel_rem_pio2f": {
+      "address": "0x8015575",
+      "size": 1278
+    },
+    "z_impl_k_sched_current_thread_query": {
+      "address": "0x8010efd",
+      "size": 12
+    },
+    "llext_link": {
+      "address": "0x8008b9d",
+      "size": 452
+    },
+    "llext_teardown": {
+      "address": "0x8017113",
+      "size": 6
+    },
+    "__kernel_tan": {
+      "address": "0x8004d21",
+      "size": 1020
+    }
+  },
+  "types": {
+    "k_thread": {
+      "die": 779139,
+      "size": 264,
+      "fields": {
+        "base": {
+          "offset": 0,
+          "type": 780599
+        },
+        "callee_saved": {
+          "offset": 48,
+          "type": 779664
+        },
+        "init_data": {
+          "offset": 84,
+          "type": 778893
+        },
+        "join_queue": {
+          "offset": 88,
+          "type": 779427
+        },
+        "poller": {
+          "offset": 96,
+          "type": 780749
+        },
+        "next_event_link": {
+          "offset": 100,
+          "type": 779384
+        },
+        "events": {
+          "offset": 104,
+          "type": 778845
+        },
+        "event_options": {
+          "offset": 108,
+          "type": 778845
+        },
+        "no_wake_on_timeout": {
+          "offset": 112,
+          "type": 779083
+        },
+        "entry": {
+          "offset": 116,
+          "type": 780436
+        },
+        "next_thread": {
+          "offset": 132,
+          "type": 779384
+        },
+        "name": {
+          "offset": 136,
+          "type": 780789
+        },
+        "stack_info": {
+          "offset": 168,
+          "type": 780696
+        },
+        "resource_pool": {
+          "offset": 180,
+          "type": 780862
+        },
+        "tls": {
+          "offset": 184,
+          "type": 778874
+        },
+        "arch": {
+          "offset": 188,
+          "type": 780092
+        }
+      }
+    },
+    "_timeout": {
+      "die": 779476,
+      "size": 24,
+      "fields": {
+        "node": {
+          "offset": 0,
+          "type": 779007
+        },
+        "fn": {
+          "offset": 8,
+          "type": 779440
+        },
+        "dticks": {
+          "offset": 16,
+          "type": 778862
+        }
+      }
+    },
+    "_callee_saved": {
+      "die": 779664,
+      "size": 36,
+      "fields": {
+        "v1": {
+          "offset": 0,
+          "type": 778845
+        },
+        "v2": {
+          "offset": 4,
+          "type": 778845
+        },
+        "v3": {
+          "offset": 8,
+          "type": 778845
+        },
+        "v4": {
+          "offset": 12,
+          "type": 778845
+        },
+        "v5": {
+          "offset": 16,
+          "type": 778845
+        },
+        "v6": {
+          "offset": 20,
+          "type": 778845
+        },
+        "v7": {
+          "offset": 24,
+          "type": 778845
+        },
+        "v8": {
+          "offset": 28,
+          "type": 778845
+        },
+        "psp": {
+          "offset": 32,
+          "type": 778845
+        }
+      }
+    },
+    "_thread_arch": {
+      "die": 780092,
+      "size": 76,
+      "fields": {
+        "basepri": {
+          "offset": 0,
+          "type": 778845
+        },
+        "swap_return_value": {
+          "offset": 4,
+          "type": 778845
+        },
+        "preempt_float": {
+          "offset": 8,
+          "type": 779787
+        }
+      }
+    },
+    "_thread_base": {
+      "die": 780599,
+      "size": 48,
+      "fields": {
+        "pended_on": {
+          "offset": 8,
+          "type": 780690
+        },
+        "user_options": {
+          "offset": 12,
+          "type": 778816
+        },
+        "thread_state": {
+          "offset": 13,
+          "type": 778816
+        },
+        "swap_data": {
+          "offset": 16,
+          "type": 778893
+        },
+        "timeout": {
+          "offset": 24,
+          "type": 779476
+        }
+      }
+    },
+    "k_mutex": {
+      "die": 677154,
+      "size": 20,
+      "fields": {
+        "wait_q": {
+          "offset": 0,
+          "type": 675741
+        },
+        "owner": {
+          "offset": 8,
+          "type": 675703
+        },
+        "lock_count": {
+          "offset": 12,
+          "type": 675169
+        },
+        "owner_orig_prio": {
+          "offset": 16,
+          "type": 674974
+        }
+      }
+    },
+    "llext": {
+      "die": 244931,
+      "size": 196,
+      "fields": {
+        "llext_list": {
+          "offset": 0,
+          "type": 244067
+        },
+        "name": {
+          "offset": 4,
+          "type": 245127
+        },
+        "mem": {
+          "offset": 20,
+          "type": 245143
+        },
+        "mem_on_heap": {
+          "offset": 68,
+          "type": 245159
+        },
+        "mem_size": {
+          "offset": 80,
+          "type": 245175
+        },
+        "alloc_size": {
+          "offset": 128,
+          "type": 243979
+        },
+        "sym_tab": {
+          "offset": 132,
+          "type": 244337
+        },
+        "exp_tab": {
+          "offset": 140,
+          "type": 244337
+        },
+        "use_count": {
+          "offset": 148,
+          "type": 243944
+        },
+        "dependency": {
+          "offset": 152,
+          "type": 245191
+        },
+        "sect_cnt": {
+          "offset": 184,
+          "type": 243944
+        },
+        "sect_hdrs": {
+          "offset": 188,
+          "type": 245213
+        },
+        "sect_hdrs_on_heap": {
+          "offset": 192,
+          "type": 244383
+        },
+        "mmu_permissions_set": {
+          "offset": 193,
+          "type": 244383
+        }
+      }
+    },
+    "_cpu": {
+      "die": 774128,
+      "size": 24,
+      "fields": {
+        "nested": {
+          "offset": 0,
+          "type": 773544
+        },
+        "irq_stack": {
+          "offset": 4,
+          "type": 774232
+        },
+        "current": {
+          "offset": 8,
+          "type": 774122
+        },
+        "idle_thread": {
+          "offset": 12,
+          "type": 774122
+        },
+        "id": {
+          "offset": 16,
+          "type": 773515
+        },
+        "fp_ctx": {
+          "offset": 20,
+          "type": 773587
+        },
+        "arch": {
+          "offset": 24,
+          "type": 773777
+        }
+      }
+    },
+    "z_kernel": {
+      "die": 774245,
+      "size": 40,
+      "fields": {
+        "cpus": {
+          "offset": 0,
+          "type": 774298
+        },
+        "ready_q": {
+          "offset": 24,
+          "type": 773842
+        },
+        "threads": {
+          "offset": 36,
+          "type": 774122
+        }
+      }
+    }
+  },
+  "app_sections": [
+    {
+      "name": ".rodata",
+      "size": 1408,
+      "address": "0x0"
+    },
+    {
+      "name": ".llext.rodata.noreloc",
+      "size": 8533,
+      "address": "0x580"
+    },
+    {
+      "name": ".text",
+      "size": 72250,
+      "address": "0x0"
+    },
+    {
+      "name": ".data",
+      "size": 60,
+      "address": "0x11a3c"
+    },
+    {
+      "name": ".bss",
+      "size": 27560,
+      "address": "0x11a78"
+    },
+    {
+      "name": ".exported_sym",
+      "size": 8,
+      "address": "0x18620"
+    },
+    {
+      "name": ".init_array",
+      "size": 16,
+      "address": "0x18628"
+    },
+    {
+      "name": ".fini_array",
+      "size": 12,
+      "address": "0x18638"
+    }
+  ],
+  "app_symbols": {
+    "_ZL15g_control_mutex": {
+      "offset": 5548,
+      "size": 20,
+      "section": 8
+    },
+    "_ZL11g_timed_run": {
+      "offset": 4220,
+      "size": 24,
+      "section": 8
+    },
+    "_ZL12g_rpc_routes": {
+      "offset": 8964,
+      "size": 20,
+      "section": 8
+    },
+    "_ZN13BridgeMonitorILj512EE5beginEmt.isra.0": {
+      "offset": 60165,
+      "size": 268,
+      "section": 4
+    },
+    "_GLOBAL__sub_I_Bridge": {
+      "offset": 67841,
+      "size": 252,
+      "section": 4
+    },
+    "_GLOBAL__sub_D_Bridge": {
+      "offset": 68093,
+      "size": 44,
+      "section": 4
+    },
+    "_ZN11BridgeClass4callIJRKN7arduino6StringEEEE7RpcCallIJDpT_EES4_DpOS6_": {
+      "offset": 47821,
+      "size": 136,
+      "section": 4
+    },
+    "_ZGVN12RouterBridge3HCIE": {
+      "offset": 8,
+      "size": 4,
+      "section": 8
+    },
+    "_ZN11BridgeClass6notifyIJRN7arduino6StringEEEEvS2_DpOT_": {
+      "offset": 64329,
+      "size": 160,
+      "section": 4
+    },
+    "_ZN11BridgeClass7provideIRFbN7arduino6StringEEEEbRKS2_OT_": {
+      "offset": 58825,
+      "size": 284,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE12is_connectedEv": {
+      "offset": 48009,
+      "size": 44,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE5_readEj": {
+      "offset": 67089,
+      "size": 684,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE5writeEPKhj": {
+      "offset": 64989,
+      "size": 1084,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE4peekEv": {
+      "offset": 62793,
+      "size": 68,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE5writeEh": {
+      "offset": 62535,
+      "size": 24,
+      "section": 4
+    },
+    "_ZN11BridgeClass7provideIRFN7arduino6StringEvEEEbRKS2_OT_": {
+      "offset": 59109,
+      "size": 284,
+      "section": 4
+    },
+    "_ZN11BridgeClass4callIJEEE7RpcCallIJDpT_EERKN7arduino6StringEDpOS2_": {
+      "offset": 47569,
+      "size": 136,
+      "section": 4
+    },
+    "_ZN11BridgeClass10is_startedEv": {
+      "offset": 6205,
+      "size": 44,
+      "section": 4
+    },
+    "_ZN11BridgeClass15refreshProvidedERKN7arduino6StringE": {
+      "offset": 59393,
+      "size": 304,
+      "section": 4
+    },
+    "_ZN12RouterBridge3HCIE": {
+      "offset": 20988,
+      "size": 40,
+      "section": 8
+    },
+    "Bridge": {
+      "offset": 21712,
+      "size": 376,
+      "section": 8
+    },
+    "_ZN11BridgeClass6notifyIJiEEEvN7arduino6StringEDpOT_": {
+      "offset": 51209,
+      "size": 164,
+      "section": 4
+    },
+    "_ZN11BridgeClass6updateEv": {
+      "offset": 56245,
+      "size": 180,
+      "section": 4
+    },
+    "mic_rpc_health": {
+      "offset": 21124,
+      "size": 16,
+      "section": 8
+    },
+    "_ZN11BridgeClass5beginEm": {
+      "offset": 57905,
+      "size": 488,
+      "section": 4
+    },
+    "_ZN13BridgeMonitorILj512EE9availableEv": {
+      "offset": 67773,
+      "size": 68,
+      "section": 4
+    },
+    "_ZTV13BridgeMonitorILj512EE": {
+      "offset": 1136,
+      "size": 36,
+      "section": 1
+    },
+    "_ZN13BridgeMonitorILj512EE4readEv": {
+      "offset": 62689,
+      "size": 104,
+      "section": 4
+    }
+  },
+  "threads": [
+    {
+      "address": "0x20014eb0",
+      "name": "",
+      "current": false,
+      "state": 4,
+      "pended_on": "0x0",
+      "base": "0000000000000000000000000004040000000000000000007813002020030020c1a10108000000002500000000000000",
+      "psp": "0x2001ac58",
+      "stack_start": "0x20019d98",
+      "stack_size": 4096,
+      "saved_regs": [
+        "0x6513dc",
+        "0x20001e30",
+        "0x32",
+        "0x0",
+        "0x20014fcd",
+        "0x20019484",
+        "0x2001528d",
+        "0x2001528c",
+        "0x2001ac58"
+      ],
+      "stack_words": [
+        "0x20053998",
+        "0x200196d0",
+        "0x200196e4",
+        "0x2001ac64",
+        "0x2001ac64",
+        "0x0",
+        "0x0",
+        "0x4",
+        "0x2001970c",
+        "0x2001acc4",
+        "0x2001acc4",
+        "0x200164f4",
+        "0x0",
+        "0x20014fce",
+        "0x20014fcf",
+        "0x20014fcd",
+        "0x20019484",
+        "0x20010fad",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x200544c8",
+        "0x22",
+        "0x22",
+        "0x200551e0",
+        "0x8",
+        "0x8",
+        "0x200539b8",
+        "0x3",
+        "0x3",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "address": "0x20019728",
+      "name": "bridge",
+      "current": false,
+      "state": 4,
+      "pended_on": "0x0",
+      "base": "00000000000000000000000000040500000000000000000020030020c84e0120c1a10108000000000100000000000000",
+      "psp": "0x2004be88",
+      "stack_start": "0x2004b0d0",
+      "stack_size": 4096,
+      "saved_regs": [
+        "0x6545bc",
+        "0x20001e30",
+        "0xa",
+        "0x0",
+        "0x2000272d",
+        "0x10",
+        "0x0",
+        "0x0",
+        "0x2004be88"
+      ],
+      "stack_words": [
+        "0x0",
+        "0xe000ed00",
+        "0x20001e30",
+        "0x0",
+        "0x0",
+        "0x8010e8b",
+        "0x8010860",
+        "0x61000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x358637bd",
+        "0x0",
+        "0x4099999a",
+        "0x3e800000",
+        "0x0",
+        "0x3dcccccc",
+        "0x42c80000",
+        "0x0",
+        "0x0",
+        "0x60000010",
+        "0x8010e79",
+        "0x801a22b",
+        "0xa",
+        "0x0",
+        "0x200196d0",
+        "0x0",
+        "0x801a235",
+        "0x801a22b",
+        "0x200196c0",
+        "0x20003585",
+        "0x2000fddf",
+        "0xf992db5d",
+        "0x20055158",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "address": "0x20001468",
+      "name": "sysworkq",
+      "current": false,
+      "state": 2,
+      "pended_on": "0x2000157c",
+      "base": "7c1500207c1500207c1500200102ff000000000000000000000000000000000000000000000000000000000000000000",
+      "psp": "0x2004afe0",
+      "stack_start": "0x2004ac88",
+      "stack_size": 1024,
+      "saved_regs": [
+        "0x0",
+        "0x0",
+        "0xffffffff",
+        "0xffffffff",
+        "0x0",
+        "0x10",
+        "0x0",
+        "0x0",
+        "0x2004afe0"
+      ],
+      "stack_words": [
+        "0x0",
+        "0xe000ed00",
+        "0x20001e30",
+        "0x0",
+        "0x3e80",
+        "0x80110c9",
+        "0x8010860",
+        "0x61000000",
+        "0xffffffff",
+        "0xffffffff",
+        "0x20001468",
+        "0x20001e58",
+        "0x10",
+        "0x80102b5",
+        "0xffffffff",
+        "0xffffffff",
+        "0x0",
+        "0x20001468",
+        "0x2004b048",
+        "0x801025d",
+        "0x20001468",
+        "0x0",
+        "0x0",
+        "0x8005f1f",
+        "0x0",
+        "0xa38bc505",
+        "0xbee4c265",
+        "0x5787c228",
+        "0x1",
+        "0x0",
+        "0x20001468",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0"
+      ]
+    },
+    {
+      "address": "0x20001258",
+      "name": "idle",
+      "current": true,
+      "state": 0,
+      "pended_on": "0x0",
+      "base": "00000000000000000000000001000f000000000000000000000000000000000000000000000000000000000000000000",
+      "psp": "0x200428f8",
+      "stack_start": "0x20042828",
+      "stack_size": 320,
+      "saved_regs": [
+        "0x10",
+        "0x8019b1f",
+        "0x20001e30",
+        "0x0",
+        "0x0",
+        "0x10",
+        "0x0",
+        "0x0",
+        "0x200428f8"
+      ],
+      "stack_words": [
+        "0x20001e30",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x280ff370",
+        "0x8019b33",
+        "0x80170be",
+        "0x41000000",
+        "0x20001258",
+        "0x8005f1f",
+        "0x0",
+        "0xeacbc041",
+        "0x1ffa68e6",
+        "0xe0901d36",
+        "0x1",
+        "0x0",
+        "0x20001258",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0xcd3d079f",
+        "0xc1810e00",
+        "0xe6bcb6f0",
+        "0x9420fd89",
+        "0xb6db2dfc",
+        "0x98926278",
+        "0x52f54c2f",
+        "0xbb41bcc0",
+        "0x592c65fb",
+        "0xa0d5f4d5",
+        "0xe79b12db",
+        "0xf8453408"
+      ]
+    },
+    {
+      "address": "0x20001360",
+      "name": "main",
+      "current": false,
+      "state": 4,
+      "pended_on": "0x0",
+      "base": "0000000000000000000000000104040000000000000000004097012020030020c1a10108000000000a00000000000000",
+      "psp": "0x2004a538",
+      "stack_start": "0x20042968",
+      "stack_size": 32768,
+      "saved_regs": [
+        "0x643a3e",
+        "0x20001e30",
+        "0xa",
+        "0x0",
+        "0xa350",
+        "0x10",
+        "0xffffffff",
+        "0x200151cc",
+        "0x2004a538"
+      ],
+      "stack_words": [
+        "0x0",
+        "0xe000ed00",
+        "0x20001e30",
+        "0x0",
+        "0x0",
+        "0x8010e8b",
+        "0x8010860",
+        "0x49000000",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x358637bd",
+        "0x0",
+        "0x4099999a",
+        "0x3e800000",
+        "0x40533333",
+        "0x457ff000",
+        "0x3f800000",
+        "0x0",
+        "0x0",
+        "0x20000010",
+        "0x8010e79",
+        "0x801a22b",
+        "0xa",
+        "0x0",
+        "0xa5691",
+        "0x5",
+        "0x801a235",
+        "0x801a22b",
+        "0xffffffff",
+        "0x2001371d",
+        "0x2000c955",
+        "0x2000c3c4",
+        "0x49007200",
+        "0x20015798",
+        "0x0"
+      ]
+    }
+  ],
+  "extensions": [
+    {
+      "address": "0x2000207c",
+      "name": "736b6574636800000000000000000000",
+      "mem": [
+        "0x200021e0",
+        "0x20013c24",
+        "0x20013c64",
+        "0x200141f0",
+        "0x2001ad9c",
+        "0x81141ac",
+        "0x811c64c",
+        "0x8129d64",
+        "0x0",
+        "0x2001adac",
+        "0x2001adc4",
+        "0x81005b4"
+      ],
+      "sizes": [
+        72250,
+        60,
+        1408,
+        27560,
+        8,
+        33952,
+        29376,
+        157,
+        0,
+        16,
+        12,
+        8533
+      ]
+    }
+  ]
+}

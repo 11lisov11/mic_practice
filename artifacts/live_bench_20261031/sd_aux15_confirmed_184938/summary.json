@@ -1,0 +1,55 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "status": {
+    "fw_build": 2026103013,
+    "mc_fw_build": 2026103014,
+    "state": "SAFE",
+    "pwm": 0,
+    "vdc": 10.0,
+    "mc_age_ms": 8,
+    "mc_current_zero_ready": 1,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 1024,
+    "mc_fault_reason": 8,
+    "mc_last_uart_error_flags": 0,
+    "mc_bad_integrity": 0,
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "LOW",
+      "age_ms": 8,
+      "break_irq_enabled": false,
+      "capture_running": true,
+      "first_record_ready": false,
+      "config_ok": true,
+      "summary_ru": "SD сейчас LOW: вход защиты активен",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "hmi_hv_armed": 0,
+    "native_boot": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026103014,
+      "retained_sequence": 5,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 67108864,
+      "previous_csr_raw": 67108864,
+      "flags": 7,
+      "causes": [
+        "NRST_FLAG"
+      ],
+      "previous_flags_cleared": true,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": true,
+      "software_request_tag": 0,
+      "early_record_crc": 1122513160,
+      "native_tick_ms": 121177,
+      "summary_ru": "флаг NRST",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    }
+  }
+}

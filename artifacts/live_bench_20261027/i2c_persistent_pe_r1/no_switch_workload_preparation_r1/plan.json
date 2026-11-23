@@ -1,0 +1,62 @@
+{
+  "stage": "prepared_controlled_no_switch_workload_plan",
+  "preparation_complete": true,
+  "hardware_test_run": false,
+  "hardware_commands": 0,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "clear_commands": 0,
+  "operator_setup": {
+    "J1": "OFF",
+    "J4_15V": "OFF",
+    "controllers": "Remain on powerbanks",
+    "PC_and_Saleae": "Remain disconnected",
+    "motor_sensor_TP23_wiring": "Unchanged",
+    "START_RESET": "Do not press",
+    "independent_meter_DC_bus_before_next_stage": "Below20V; do not reconnect measurement leads while energized"
+  },
+  "last_observed_state": {
+    "state": "SAFE",
+    "PWM": 0,
+    "ARM": 0,
+    "DC_bus_v": 45,
+    "I2C_errors": 387
+  },
+  "planned_sequence": {
+    "baseline": "Read-only idle counters and immutable records after operator confirms power off",
+    "workload": "One5000ms diagnostic computation/ADC schedule with TIM1 outputs forced disabled; no MCSDK motor START",
+    "sensor": "Same installed encoder_core state machine and HSI16/TIMINGR/ANF/DNF configuration",
+    "timing": "Same carrier/IRQ timing must be verified on target, not assumed from source",
+    "stop": "MCU-local5000ms bound plus host STOP/fresh OFF verification"
+  },
+  "protection_contract": {
+    "undervoltage": "Unchanged; never mask MC_UNDER_VOLT",
+    "softstart": "Unchanged; never forge ready for motor START",
+    "vbus_telemetry": "Real measured DC bus; any replay normalization belongs to an explicitly separate diagnostic copy",
+    "BKIN_SD": "Configuration, thresholds, event capture and latch retained",
+    "MOE": "Never enable actual outputs in computation test",
+    "motor_START": "Forbidden for this mode",
+    "saved_records": "Archive before programming; no CLEAR/reset to free first-event slot"
+  },
+  "implementation_review": {
+    "ordinary_5Hz_START_usable": false,
+    "reason": "Ordinary START requires real DC bus and softstart; historical isolated fixture masks MC_UNDER_VOLT and is excluded by this task",
+    "diagnostic_firmware_built": false,
+    "diagnostic_firmware_installed": false,
+    "needed": "Separate computation/ADC diagnostic mode; cannot label a zero-bus idle observation an equivalent PWM workload"
+  },
+  "interpretation": {
+    "errors_with_outputs_disabled": "Workload/peripheral/software or low-voltage interference remains possible; does not uniquely prove software bug",
+    "no_errors_with_outputs_disabled": "Makes energized-switching-related cause more plausible; does not prove it without comparable timing",
+    "not_qualified": "No analog electrical waveform or motor-current qualification from this test"
+  },
+  "source_sha256": {
+    "Src/stm32g4xx_mc_it.c": "ae278cf802d75ba3728ab3d6bde365ce82ea8322ad7cbb98fb836883ec770cc4",
+    "Src/mc_tasks.c": "5846c8202dbfd75d98d5e105cdff0529e231d70e751b0f1bd5d63e7bf92cccf5",
+    "Src/current_shunt.c": "5969e5e1cc3e1f468b4bb2ff7a03a04a1b2db69da6ad6cf19e186dcec8a9e889",
+    "Src/nucleo_encoder.c": "02d8bfad81cd6359b00e6f8213951bfd3f439bb834086480825d6abc159f679a",
+    "Inc/encoder_core.h": "59113cc6f37d1edad550b2d7970840f346882f8aa23d99c6a516efb3d8c658e0",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/acim_vf_control.c": "02e24bbe11747a23da031977a4bf03735a90e90ff0fd7a18e11a9a8da7441c0d",
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c": "51f0b0ac889afb64b93861f8546923d385cbe61eb9db86deb607bc5d421cf23a"
+  }
+}

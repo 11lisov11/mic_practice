@@ -1,0 +1,73 @@
+{
+  "schema": "mic_ai.connected_lowbus_edges_assessment.v1",
+  "tested_build": 2026102805,
+  "installed_pair_now": [
+    2026102709,
+    2026102710
+  ],
+  "J1_physically_disconnected_operator_confirmed": true,
+  "auxiliary15_on_operator_confirmed": true,
+  "ribbon_connected_operator_confirmed": true,
+  "no_probe_moves_required": true,
+  "D4_UART_probe_connected": false,
+  "raw_files_preserved": true,
+  "test_passed": true,
+  "elapsed_ms": 5000.02554117647,
+  "PWM_window_s": 4.000499125,
+  "qualified_PWM_outputs": 4,
+  "all_six_outputs_observed": false,
+  "I2C_complete_reads_during_PWM": 800,
+  "I2C_error_delta": 0,
+  "UART_healthy": true,
+  "ADC_conversions_during5s": 80008,
+  "ADC_bad": 0,
+  "native_tasks": {
+    "MC_Run": 10000,
+    "Safety": 10000,
+    "Medium": 2500,
+    "HighFrequency": 80008
+  },
+  "production_restored_readback_verified": true,
+  "production_startup_fault": {
+    "tick_ms": 8,
+    "cause_code": 11,
+    "stage": 4,
+    "state": 0,
+    "PE_enabled": false,
+    "CR2": 0,
+    "SCL": true,
+    "SDA": false,
+    "saved_errors_total": 15,
+    "bus_clear": {
+      "result": 2,
+      "pulses": 9,
+      "before_lines": 1,
+      "gpio_release_lines": 1,
+      "after_lines": 3,
+      "duration_us": 300,
+      "begin_cycles": 2061564363,
+      "parent_crc32c": "8bf87345",
+      "summary_ru": "I\u00b2C: \u0448\u0438\u043d\u0430 \u043e\u0441\u0432\u043e\u0431\u043e\u0436\u0434\u0435\u043d\u0430 \u0442\u0430\u043a\u0442\u0430\u043c\u0438 SCL",
+      "read_only_target_registers": true
+    }
+  },
+  "production_idle_read_delta": 1952,
+  "production_idle_error_delta": 0,
+  "production_idle_UART_error_delta": 0,
+  "guards_relaxed": false,
+  "motor_START_commands_this_stage": 0,
+  "CLEAR_commands_this_stage": 0,
+  "diagnostic_software_reset_commands": 1,
+  "Nucleo_restore_flash_commands": 1,
+  "Uno_flash_commands": 0,
+  "powered_AS5600_problem_fixed_or_proven": false,
+  "limitations": [
+    "No mains energy or physical motor rotation in this stage",
+    "MCSDK OFF/FAULT tasks concurrent with separate TIM1 diagnostic; production RUN not exercised",
+    "Digital 125ns samples do not qualify analog ringing",
+    "Past isolated-ribbon labels depend on operator confirmation; user later clarified ribbon usually remains connected",
+    "15 startup BUSY events in restored2710 are real saved events; subsequent counter delta is zero",
+    "Package restore folder contains diagnostic2792; production was sourced from original sealed2710 instead"
+  ],
+  "next_required_physical_state": "both controllers powerbank, PC USB disconnected, Saleae probes including GND removed,15V ON,J1 OFF; awaiting user confirmation"
+}

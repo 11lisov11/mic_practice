@@ -1,0 +1,31 @@
+{
+  "pass": true,
+  "retained_artifacts_verified": [
+    {
+      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+      "sha256": "a01864f606c8ff4728303910d11a0d6debc363dc243298b9f81634e30c5ac2ec",
+      "bytes": 2106176
+    },
+    {
+      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+      "sha256": "f35dfb3c583b1e6f4822d62f3e7971f3a7cac0e3beed76565f273dbfa203e949",
+      "bytes": 44660
+    },
+    {
+      "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+      "sha256": "3aeaf11f047faaf8433b3e2f62fc83a21526835df30518f22f7eaa70e698dee6",
+      "bytes": 125698
+    }
+  ],
+  "retained_fixture_code_equivalence_sha256": "1a1c7041f43a4367a2cc125cd2826ce0a4313b212aeb0df803142a20c287895f",
+  "equivalent_code_sections": 10,
+  "disassembled_symbols": [
+    "main",
+    "PWM_SetPhasePWMOutputs",
+    "ACIM_VF_Controller",
+    "RVBS_CalcAvVbus"
+  ],
+  "timer_initializer_note": "MX_TIM1_Init has no separate linked symbol; initialization is in main",
+  "scope": "Retained manifest hashes and ELF disassembly; no new live flash readback or PWM capture",
+  "hardware_access": false
+}

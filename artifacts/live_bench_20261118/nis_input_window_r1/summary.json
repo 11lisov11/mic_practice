@@ -1,0 +1,40 @@
+{
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "MCU_reset": 0,
+  "flash": 0,
+  "math_NIS_confirmed": 25.66880037670338,
+  "ARM_replay_words_bit_exact": 51,
+  "physical_NIS_root_cause_uniquely_identified": false,
+  "NIS_algorithm_fixed": false,
+  "proven_raw_capture_defects_fixed": true,
+  "exact_source_capture_tests": 108,
+  "native_adapter_checks": 29,
+  "OFF_model_cases": 64,
+  "unchanged_guard_tests": 32,
+  "wire_checks": 71,
+  "HMI_tests": 5,
+  "ARM_objects_compiled": 4,
+  "critical_ARM_sections_unchanged": {
+    "ma_native_fast": true,
+    "mic_observer_step": true,
+    "mic_observer_noise": true
+  },
+  "linkcheck_RAM_after_reserved_stack_bytes": 1056,
+  "actual_target_CPU_cycles_measured": false,
+  "CPU_limit_cycles_unchanged": 4000,
+  "estimate_age_limit_ms_unchanged": 2,
+  "Q_R_NIS_limits_unchanged": true,
+  "raw_current_trip_A_unchanged": 1.35,
+  "ADC_UPDATE_ticks_unchanged": 2048,
+  "protected_files_reverified": 6128,
+  "installed_pair": [
+    2026111715,
+    2026111716
+  ],
+  "flashable_release_ready": false,
+  "overlay_only": true,
+  "qualification": "PC/ARM compilation, synthetic replay and debug-only linkcheck. No physical motor correction or on-target new ADC-IRQ timing is claimed."
+}

@@ -1,0 +1,79 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "requested_only_if_ready": true,
+  "GET_only": true,
+  "last": {
+    "fw_build": 2026112101,
+    "mc_fw_build": 2026112102,
+    "state": "SAFE",
+    "pwm": 0,
+    "bp_vdc": 324.0,
+    "mc_age_ms": 48,
+    "bp_temp_c": 50.0,
+    "hmi_hv_armed": 0,
+    "run_id": 0,
+    "mc_transport_fault": 0,
+    "mc_bad_cnt": 0,
+    "mc_fault_reason": 8,
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 4,
+    "mc_current_zero_ready": 1,
+    "mc_adc_peak_complete": 0,
+    "mc_observer_trace_complete": 0,
+    "mc_uart_error_flags": 0,
+    "mc_last_uart_error_flags": 0,
+    "rpc_route_failures": 0,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0
+  },
+  "bus_range": [
+    324.0,
+    324.0
+  ],
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 48,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "saved_Break_wave": false,
+  "capture_ready": true,
+  "start_ready": false,
+  "old_files_verified": 664,
+  "samples": 8,
+  "RPC": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "f90b1f88-c2ed-48d6-ade2-d4850251b0e1",
+      [
+        2026112102,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3500516566
+      ]
+    ],
+    "samples": 8,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 8.23399999999674,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

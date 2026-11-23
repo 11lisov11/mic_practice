@@ -1,0 +1,45 @@
+{
+  "pass": true,
+  "checks": {
+    "both_verified_images": true,
+    "calibration_unchanged": true,
+    "programming_timeout_archived": true,
+    "single_install_completion_reset": true,
+    "idle_60s_clean_UART": true,
+    "live_DMA_frames_complete_without_stalls": true,
+    "SD_HIGH_matches_GPIO": true,
+    "capture_free": true,
+    "no_motor_or_clear": true
+  },
+  "pair": [
+    2026101813,
+    2026101812
+  ],
+  "idle_elapsed_s": 60.17200000000594,
+  "idle_good_reply_delta": 1184,
+  "last_TX_state": {
+    "head": 3704,
+    "tail": 3704,
+    "active": 0,
+    "started_ms": 175846,
+    "late_reported": 0,
+    "hard_error": 0,
+    "queued": 3704,
+    "completed": 3704,
+    "timeouts": 0,
+    "full_errors": 0,
+    "dma_errors": 0,
+    "last_status": 0,
+    "early_tc": 0
+  },
+  "physical_state": {
+    "J1_on": false,
+    "J4_15V_on": true,
+    "both_USB_to_PC": true,
+    "motor_connected": true
+  },
+  "limitations": [
+    "Motor PWM/load and 50 Hz not yet tested on final pair",
+    "Existing hardware Break cause at 20 Hz is separate and must remain protected"
+  ]
+}

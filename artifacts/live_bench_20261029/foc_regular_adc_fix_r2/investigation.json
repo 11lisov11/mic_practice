@@ -1,0 +1,198 @@
+{
+  "classification": "measurement error suspected, not proven",
+  "measured_raw_step_ADC1": 83,
+  "measured_raw_step_ADC2": 3,
+  "normal_regular_EOC_sequence": 2089,
+  "trip_regular_EOC_sequence": 2097,
+  "regular_EOC_not_sufficient_to_classify": true,
+  "raw_previous": {
+    "index": 9,
+    "slot": 7,
+    "cycles": 4161016216,
+    "sequence": 2096,
+    "epoch_before": 12905,
+    "epoch_after": 12905,
+    "epoch_consistent": true,
+    "adc_isr": [
+      107,
+      111
+    ],
+    "adc_jsqr_after_conversion": [
+      0,
+      0
+    ],
+    "ccr_at_update": [
+      2544,
+      2864,
+      2448,
+      5184
+    ],
+    "ccr_preload": [
+      2549,
+      2860,
+      2452,
+      5184
+    ],
+    "timer_cnt_entry": 5065,
+    "timer_arr": 5312,
+    "timer_dir_entry": 1,
+    "raw_adc": [
+      2077,
+      2115
+    ],
+    "offsets_adc": [
+      2069,
+      2066,
+      2066,
+      2069
+    ],
+    "flags": 623,
+    "timer_cnt_after_queue": 4275,
+    "timer_dir_after_queue": 1,
+    "reference_hz": 0.2,
+    "bus_v": 324,
+    "timer_cnt_at_update": 137,
+    "pair": 1,
+    "next_pair": 1,
+    "timer_dir_at_update": 0,
+    "accepted_by_existing_monitor": true,
+    "accepted_by_monitor": true,
+    "three_leg_window_rejected": false,
+    "queue_overflow_observed": false,
+    "publish_deadline_missed": false,
+    "pending_epoch_mismatch": false,
+    "injected_queue_not_empty": false,
+    "timer_phase_entry_ticks": 5559,
+    "counts_uvw": [
+      -8,
+      54,
+      -46
+    ],
+    "nominal_currents_a": [
+      -0.076749,
+      0.518053,
+      -0.441305
+    ],
+    "excluded_compare_inside_assumed_acquisition": false,
+    "is_trigger": false
+  },
+  "raw_bad": {
+    "index": 10,
+    "slot": 8,
+    "cycles": 4161026805,
+    "sequence": 2097,
+    "epoch_before": 12906,
+    "epoch_after": 12906,
+    "epoch_consistent": true,
+    "adc_isr": [
+      111,
+      111
+    ],
+    "adc_jsqr_after_conversion": [
+      0,
+      0
+    ],
+    "ccr_at_update": [
+      2549,
+      2860,
+      2452,
+      5184
+    ],
+    "ccr_preload": [
+      2546,
+      2862,
+      2450,
+      5184
+    ],
+    "timer_cnt_entry": 5100,
+    "timer_arr": 5312,
+    "timer_dir_entry": 1,
+    "raw_adc": [
+      2160,
+      2118
+    ],
+    "offsets_adc": [
+      2069,
+      2066,
+      2066,
+      2069
+    ],
+    "flags": 623,
+    "timer_cnt_after_queue": 4310,
+    "timer_dir_after_queue": 1,
+    "reference_hz": 0.2,
+    "bus_v": 324,
+    "timer_cnt_at_update": 120,
+    "pair": 1,
+    "next_pair": 1,
+    "timer_dir_at_update": 0,
+    "accepted_by_existing_monitor": true,
+    "accepted_by_monitor": true,
+    "three_leg_window_rejected": false,
+    "queue_overflow_observed": false,
+    "publish_deadline_missed": false,
+    "pending_epoch_mismatch": false,
+    "injected_queue_not_empty": false,
+    "timer_phase_entry_ticks": 5524,
+    "counts_uvw": [
+      -91,
+      140,
+      -49
+    ],
+    "nominal_currents_a": [
+      -0.873016,
+      1.343101,
+      -0.470085
+    ],
+    "excluded_compare_inside_assumed_acquisition": false,
+    "is_trigger": false
+  },
+  "unique_real_vs_ADC_classification_not_possible_from_two_sensors_and_reconstruction": true,
+  "independent_current_reference_recorded": false,
+  "physical_model_is_estimated_not_identified": true,
+  "concrete_source_defect": "MCSDK RCM_ExecRegularConv used synchronously on ADC1 while injected current conversions active, contrary to its source API contract.",
+  "correction": "RUN: launch one regular conversion from ADC IRQ tail only in middle down-count window. SysTick uses completed caches; TIM1 checks safety freshness and stops on failure.",
+  "launch_guard_ticks": {
+    "after_apex": 512,
+    "before_bottom": 1024
+  },
+  "regular_conversion_nominal_ticks": 240,
+  "setup_budget_before_bottom_ticks": 784,
+  "safety_sampling_per_channel_nominal_Hz": 8000,
+  "original_safety_task_Hz": 2000,
+  "cache_watchdog_ms": 1,
+  "unknown_exact_hardware_setup_cycles": true,
+  "unchanged": {
+    "current_trip_A": 1.35,
+    "ADC_guard_ticks": 2048,
+    "ADC_feedback_math": true,
+    "window_guards": true,
+    "IRQ_priorities": true,
+    "observer_and_motor_profile": true,
+    "hardware_BKIN": true
+  },
+  "no_smoothing_or_spike_discard_added": true,
+  "verified": {
+    "actual_C_manager_frames": 80000,
+    "simulated_seconds": 5,
+    "physical_seconds_tested": 0,
+    "timer_policy_cases": 10626,
+    "missing_EOC_stale_cache_and_wrap": true,
+    "source_safety_task_still_checks_bus_and_temperature": true,
+    "actual_fault_still_returns_MA_CURRENT": true
+  },
+  "silicon_revision": "X; CubeProgrammer readback log",
+  "errata_review": "Commonly suggested ADC errata either excludeRevX or do not meet mode/clock/time conditions. Cannot use them to prove this event.",
+  "official_source": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf",
+  "pair": [
+    2026103005,
+    2026103006
+  ],
+  "built": true,
+  "installed": false,
+  "new_START": 0,
+  "new_CLEAR": 0,
+  "new_flash": 0,
+  "discarded_offline_draft": "foc_regular_adc_fix_r1 is unbuilt and never installed; use onlyr2",
+  "hardware_confirmation_pending": true
+}

@@ -1,0 +1,96 @@
+{
+  "powered_preflight_passed": true,
+  "GETs": 12,
+  "CLEAR": 0,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "final": {
+    "fw_build": 2026111713,
+    "mc_fw_build": 2026111714,
+    "state": "SAFE",
+    "pwm": 0,
+    "run_id": 0,
+    "vdc": 321.0,
+    "bp_vdc": 321.0,
+    "mc_age_ms": 4,
+    "bp_temp_c": 51.0,
+    "mc_current_zero_ready": 1,
+    "mc_current_zero_stable": 3,
+    "foc_timing_ready": true,
+    "foc_timing_cases": 64,
+    "foc_timing_fault": 0,
+    "algorithm_fast_cycles": 3811,
+    "algorithm_observer_cycles": 24061,
+    "algorithm_selected": 1,
+    "algorithm_qualification": 128,
+    "algorithm_fault": 0,
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "estop": 0,
+    "mc_fault_reason": 8,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 1028,
+    "mc_transport_fault": 0,
+    "mc_bad_cnt": 0,
+    "mc_uart_error_flags": 0,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_response_timeouts": 0,
+    "observer_trace": {
+      "available": false,
+      "reason": "not_received"
+    },
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 4,
+      "break_irq_enabled": false,
+      "capture_running": false,
+      "first_record_ready": true,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "clear_recovery": {
+      "available": false,
+      "reason": "not_received"
+    }
+  },
+  "full_START_ready": false,
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "28483d85-66c8-42a0-88cd-46c401fe978b",
+      [
+        2026111714,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        833613169
+      ]
+    ],
+    "samples": 12,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 13.061999999976251,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "SD_before_J1_and_after_J1_identical": true,
+  "SD_before_CLEAR_sha256": "cd702f961185f286a96c97bef31e736f47e6b142b667820da0647c11bad953d9",
+  "no_START_sent": true,
+  "configuration_not_changed": true,
+  "first_SD_MOE": false,
+  "first_SD_during_START": false,
+  "pending_authorization": "One new CLEAR and one bounded FOC5Hz5000ms only if all guards restore; old USB CLEAR authorization already consumed"
+}

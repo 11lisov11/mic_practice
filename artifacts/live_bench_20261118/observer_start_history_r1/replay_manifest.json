@@ -1,0 +1,19 @@
+{
+  "schema": "mic_ai.observer_start_history_replay.v1",
+  "firmware": 2026111804,
+  "elf": "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+  "elf_sha256": "b3daf7524f5bcae08da7b8db26842073a50a8e316ee55a73b7909924a2910be3",
+  "ABI": "observer: R0=o,R1=model,R2=input,R3=noise; noise: R0=counts,R1=out",
+  "capture_schema": 1,
+  "input_row_bytes": 22,
+  "capacity": 5120,
+  "checkpoint_stride": 16,
+  "record_files": [
+    "meta.bin",
+    "rows.bin",
+    "checkpoints.bin"
+  ],
+  "FPSCR_control_bits": "22..26: rounding, FZ, DN, AHP; sticky exception flags do not alter this non-trapping kernel",
+  "initial_and_terminal_state_words": 51,
+  "exact_replay_requires_all_rows_and_checkpoints": true
+}

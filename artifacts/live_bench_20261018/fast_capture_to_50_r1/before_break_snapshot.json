@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "data": {
+    "mc_break_wave_hex": "-",
+    "mc_break_wave_age_ms": 999999,
+    "mc_break_wave_good_pages": 0,
+    "mc_break_wave_bad_pages": 0,
+    "mc_break_snapshots": [
+      {
+        "kind": "first_since_boot",
+        "available": true,
+        "captured": false,
+        "age_ms": 3033,
+        "reason": "no_recorded_break"
+      },
+      {
+        "kind": "first_start_window",
+        "available": true,
+        "captured": false,
+        "age_ms": 2232,
+        "reason": "no_recorded_break"
+      }
+    ],
+    "mc_break_transport": "passive_off_only_v1",
+    "mc_break_limitations": [
+      "Not live telemetry: delivery occurs only with outputs off",
+      "Reference frequency is not measured rotor speed; context is cached",
+      "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+      "J4 voltage and qualified phase current are not measured",
+      "Cannot uniquely identify overcurrent, undervoltage, or interference"
+    ],
+    "mc_break_reject_valid": 0,
+    "mc_break_reject_code": 0,
+    "mc_break_reject_ms": 0,
+    "mc_break_reject_peer_fw": 0,
+    "mc_break_reject_fresh_off": 0,
+    "mc_break_reject_bp_status": 0,
+    "mc_break_reject_pwm": 0,
+    "mc_break_reject_rsp_age_ms": 0,
+    "mc_break_reject_good_before": 0,
+    "mc_break_reject_packet_hex": "-",
+    "mc_break_reject_record_valid": 0,
+    "mc_break_reject_reason": "UNAVAILABLE",
+    "mc_break_rx_good": 656,
+    "mc_break_rx_bad": 0
+  }
+}

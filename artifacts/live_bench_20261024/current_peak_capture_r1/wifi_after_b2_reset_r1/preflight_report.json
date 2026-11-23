@@ -1,0 +1,59 @@
+{
+  "passed": false,
+  "read_only": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "reset_commands": 0,
+  "clear_commands": 0,
+  "flash_commands": 0,
+  "operator_reported_b2_reset": true,
+  "controller_restart_observed": true,
+  "previous_uptime_ms": 196160,
+  "first_new_uptime_ms": 9819,
+  "last_new_uptime_ms": 20047,
+  "live_pair": [
+    2026102501,
+    2026102502
+  ],
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 10.0,
+  "uart_crc": 0,
+  "uart_sequence": 0,
+  "uart_flags": 0,
+  "transport": 0,
+  "zero_ready": 0,
+  "zero_flags": 16,
+  "zero_stable": 1,
+  "zero_attempts": 8,
+  "zero_last_reject": 0,
+  "zero_spans": [
+    28,
+    33,
+    32,
+    25
+  ],
+  "zero_offsets": [
+    2069,
+    2068,
+    2067,
+    2069
+  ],
+  "sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 15,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+    "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+  },
+  "sd_capture_free": true,
+  "adc_peak_free": true,
+  "error": "New autonull failed8attempts with1stable block; earlier rejection history is not retained by D7",
+  "inference_from_current_core": "With attempts8/stable1/lastreject0, block7 must have cleared stable count because span>40 or mean outside1600..2500; exact path/value not recorded",
+  "no_further_reset_requested": true
+}

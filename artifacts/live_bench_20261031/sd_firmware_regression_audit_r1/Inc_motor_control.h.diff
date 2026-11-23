@@ -1,0 +1,20 @@
+diff --git "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Inc\\motor_control.h" "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Inc\\motor_control.h"
+index 70546e5..2f83c6d 100644
+--- "a/artifacts\\live_bench_20261030\\boot_reset_capture_r1\\nucleo\\Inc\\motor_control.h"
++++ "b/artifacts\\live_bench_20261030\\observer_trace_r1\\nucleo\\Inc\\motor_control.h"
+@@ -30,6 +30,7 @@ typedef struct {
+ typedef struct {
+   float va,vb,duty[3],id_ref,iq_ref,omega_est,flux,shift;
+   uint32_t ccr[3],trigger; uint8_t pair,valid,fault;
++  float id_measured,iq_measured; /* Observational taps of already computed values. */
+ } ma_output;
+ /* Same finite/NaN selection as newlib fminf/fmaxf, without two fpclassify
+  * calls and library stack saves per clamp. Raw overcurrent hypotf is unchanged.
+@@ -258,6 +259,7 @@ static inline int ma_control_checked(ma_controller*c,const ma_motor*m,const floa
+     c->integral[i]=ma_clip(c->integral[i],-limit,limit);dq[i]=limited;
+   }
+   out->id_ref=idref;out->iq_ref=iqref;out->omega_est=x[4];out->flux=flux;
++  out->id_measured=id;out->iq_measured=iq;
+   const float requested_a=c0*dq[0]-s*dq[1],requested_b=s*dq[0]+c0*dq[1];
+   const float loss=bus*g->deadtime_ticks/(2.f*g->arr);
+   const float loss_phase[3]={loss*ma_clip(ia/.05f,-1,1),

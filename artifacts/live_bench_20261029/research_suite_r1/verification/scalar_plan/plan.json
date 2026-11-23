@@ -1,0 +1,26 @@
+{
+  "schema": "mic_ai.research_plan.v1",
+  "pair": [
+    2026102911,
+    2026102912
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "algorithm": "VF_FIXED",
+      "label": "Скалярный V/f — старт/стоп и задания частоты",
+      "status": "ready",
+      "reason_code": "",
+      "reason": "Алгоритм доступен; перед пуском проверяются питание, токи и защиты.",
+      "cycles": 3,
+      "target_hz": 5,
+      "native_runlimit_s": 5,
+      "off_dwell_s": 10,
+      "rotation_measurement_available": false
+    }
+  ],
+  "executable": true,
+  "incomplete_stage_policy": "stop_before_any_start_no_silent_skip",
+  "autonomous_boot_or_reset_start": false,
+  "protection_threshold_changes": false
+}

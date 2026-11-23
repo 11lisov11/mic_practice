@@ -1,0 +1,35 @@
+{
+  "schema": "mic_ai.adc_noise_rpc_fix.v1",
+  "pair": [
+    2026102941,
+    2026102940
+  ],
+  "base_pair": [
+    2026102939,
+    2026102940
+  ],
+  "built": true,
+  "installed": true,
+  "native_image_changed": false,
+  "thresholds_changed": false,
+  "noise_cause_fully_identified": false,
+  "start_commands": 0,
+  "native_image_unchanged_verified": true,
+  "artifacts": {
+    "release/nucleo_2026102940_unchanged.bin": "6306beb790e3b58fde5d04d78f2d3825430f7482f5dee0800b0201bc647d89e2",
+    "release/unoq_2026102941_noise_rpc.elf-zsk.bin": "a4617f5bae228a8c52ab88a35d80d3ba987de5c263f97833939b6ce8c10bc2c5"
+  },
+  "readback_verified": true,
+  "installation_report": "hardware_install_r1/install_report.json",
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 0,
+  "clear_commands": 0,
+  "calibration_unchanged": true,
+  "physical_noise_reduction_verified": false,
+  "live_rpc_page_export_verified": true,
+  "hardware_noise_capture": "idle_noise_hardware_r1/capture.bin",
+  "hardware_noise_crc": 3641272629,
+  "comparison_15v_on_off_completed": true,
+  "comparison_report": "compare_15v_on_off_r1/report.json",
+  "noise_persists_with_15v_off": true
+}

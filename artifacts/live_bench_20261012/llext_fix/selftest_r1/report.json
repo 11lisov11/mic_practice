@@ -1,0 +1,58 @@
+{
+  "historical_elf_checks": [
+    {
+      "pass_": true,
+      "file": "C:\\mic_practice\\artifacts\\live_bench_20261011\\idle_deadline_fix\\candidate_r2\\uno_build\\UNOQ_MOTOR.ino.elf",
+      "sha256": "da739e0200719ff7368115f820f25194cd883dc5570fff9274a22d3c76aa1025",
+      "relocations": 2391,
+      "issues": [],
+      "hardware_validated": false
+    },
+    {
+      "pass_": false,
+      "file": "C:\\mic_practice\\artifacts\\live_bench_20261011\\rpc_priority_fix\\candidate_r2\\uno_build\\UNOQ_MOTOR.ino.elf",
+      "sha256": "bf419d442ba3537d08cc0fa941f82c479d860ae0cae33450890b5f0aef13db04",
+      "relocations": 2383,
+      "issues": [
+        {
+          "section": ".rel.text",
+          "offset": 38920,
+          "type": "R_ARM_ABS32",
+          "symbol": "_ZTH13z_tls_current"
+        },
+        {
+          "section": ".rel.text",
+          "offset": 38924,
+          "type": "R_ARM_TLS_LE32",
+          "symbol": "z_tls_current"
+        }
+      ],
+      "hardware_validated": false
+    },
+    {
+      "pass_": false,
+      "file": "C:\\mic_practice\\artifacts\\live_bench_20261012\\bridge_boot_fix\\candidate_r1\\uno_build\\UNOQ_MOTOR.ino.elf",
+      "sha256": "07196f498da8328c21acad0db6be4ed4d5a475b3c488b0d192802dd0ce437e1d",
+      "relocations": 2386,
+      "issues": [
+        {
+          "section": ".rel.text",
+          "offset": 38812,
+          "type": "R_ARM_ABS32",
+          "symbol": "_ZTH13z_tls_current"
+        },
+        {
+          "section": ".rel.text",
+          "offset": 38816,
+          "type": "R_ARM_TLS_LE32",
+          "symbol": "z_tls_current"
+        }
+      ],
+      "hardware_validated": false
+    }
+  ],
+  "cases": 7,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "pass": true
+}

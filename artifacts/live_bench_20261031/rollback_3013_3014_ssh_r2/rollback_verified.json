@@ -1,0 +1,34 @@
+{
+  "installed": true,
+  "images_readback_verified": true,
+  "communication_verified": true,
+  "pair": [
+    2026103013,
+    2026103014
+  ],
+  "calibration_unchanged": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "SD_HIGH_direct": false,
+  "BKE": true,
+  "MOE": false,
+  "SD_samples": [
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "old_capture_files_untouched": true,
+  "thresholds_changed": false,
+  "powered_motor_test_performed": false,
+  "remaining": "Reconnect isolated power-stage ribbon with J1/J4OFF; autonomous supply and PC/Saleae disconnection before powered test; require SD recovered before START",
+  "evidence": [
+    "install/verify_uno.log",
+    "install/native_flash_readback.bin",
+    "hmi_finish_r2/report.json",
+    "hmi_finish_r2/fresh_status_samples.json",
+    "hmi_finish_r2/gpio_after.log"
+  ]
+}

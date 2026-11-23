@@ -13,12 +13,20 @@ import time
 import urllib.request
 
 
-def precheck(s):
+def precheck(s, max_vdc=2, *, lso_verified_idle=False):
     try:
+        if type(max_vdc) is not int or max_vdc not in (2, 10):
+            return False, 'unreviewed update voltage limit'
         if (s['state'] != 'SAFE' or s['pwm'] != 0 or s['hmi_hv_armed'] != 0
                 or s['estop'] != 0 or int(s['bp_status']) & 0x22):
             return False, 'outputs are not disarmed SAFE'
-        if ((s['fw_build'], s['mc_fw_build']) not in (
+        pair = s['fw_build'], s['mc_fw_build']
+        if lso_verified_idle and (
+                max_vdc != 10 or pair != (2026112305, 2026112306)
+                or s['bp_softstart_ready'] != 0 or s['research_native_valid'] != 1
+                or s['research_native_caps'] != 2):
+            return False, 'LSO idle and discharged power stage not verified'
+        if ((not lso_verified_idle and pair not in (
                 (2026100612, 2026100601), (2026100701, 2026100601), (2026100701, 2026100701),
                 (2026100702, 2026100601), (2026100702, 2026100701), (2026100702, 2026100702),
                 (2026100703, 2026100601), (2026100703, 2026100701),
@@ -28,7 +36,11 @@ def precheck(s):
                 (2026100705, 2026100704), (2026100705, 2026100705), (2026100706, 2026100705),
                 (2026100707, 2026100707), (2026100708, 2026100707), (2026100708, 2026100708),
                 (2026100709, 2026100708), (2026100709, 2026100710), (2026100709, 2026100801),
-                (2026100802, 2026100801), (2026100803, 2026100801), (2026100804, 2026100801))
+                (2026100802, 2026100801), (2026100803, 2026100801), (2026100804, 2026100801),
+                (2026101001, 2026100801), (2026101002, 2026100801),
+                (2026101004, 2026101003), (2026101005, 2026101003), (2026101007, 2026101006),
+                (2026101008, 2026101006), (2026101108, 2026101102),
+                (2026101507, 2026101506), (2026101703, 2026101702)))
                 or s['rpc_schema_version'] != 3 or s['mc_capabilities'] != 1
                 or s['bp_mcsdk_telemetry'] != 1 or s['bp_vbus_valid'] != 1):
             return False, 'unsupported measurement contract'
@@ -38,9 +50,9 @@ def precheck(s):
                 return False, 'stale telemetry: ' + key
         for key in ('vdc', 'bp_vdc'):
             v = float(s[key])
-            if not math.isfinite(v) or not 0 <= v <= 2:
+            if not math.isfinite(v) or not 0 <= v <= max_vdc:
                 return False, 'bus not discharged: ' + key
-        if not 0 <= int(s['bp_vbus_raw']) <= 20:
+        if not 0 <= int(s['bp_vbus_raw']) <= max_vdc * 10:
             return False, 'bus word is not in the zero-voltage range'
         if (s['bp_temp_valid'] != 1 or s['bp_temp_fault'] != 0
                 or not math.isfinite(float(s['bp_temp_c']))
@@ -69,9 +81,18 @@ def main():
     parser.add_argument('--sha256', required=True)
     parser.add_argument('--wait-sec', type=int, default=0)
     parser.add_argument('--check-only', action='store_true')
+    parser.add_argument('--max-vdc', type=int, choices=(2, 10), default=2)
+    parser.add_argument('--confirm-mains-off', action='store_true',
+                        help='Required for HMI-only update with auxiliary supply on; never MCU programming')
+    parser.add_argument('--lso-verified-idle', action='store_true',
+                        help='Require live discharged telemetry from the exact 2305/2306 LSO pair')
     parser.add_argument('--app-js', type=Path)
     parser.add_argument('--app-js-sha256')
     args = parser.parse_args()
+    if args.lso_verified_idle and (args.max_vdc != 10 or args.app_js):
+        parser.error('LSO idle mode requires the 10-V server-only update path')
+    if args.max_vdc == 10 and not (args.confirm_mains_off or args.lso_verified_idle):
+        parser.error('auxiliary-only HMI update requires mains-off confirmation')
     if not 0 <= args.wait_sec <= 3600:
         parser.error('wait-sec outside 0..3600')
     root = Path('/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi')
@@ -94,7 +115,7 @@ def main():
     deadline = time.monotonic() + args.wait_sec
     while True:
         current = status()
-        safe, reason = precheck(current)
+        safe, reason = precheck(current, args.max_vdc, lso_verified_idle=args.lso_verified_idle)
         print(json.dumps({'precheck': safe, 'reason': reason,
                           'vdc': current.get('vdc')}), flush=True)
         if safe or time.monotonic() >= deadline:
@@ -127,7 +148,7 @@ def main():
         (backup / 'app.js').write_bytes((root / 'static/app.js').read_bytes())
     # Copy atomically only after the last live safety check. Never change tokens,
     # calibration, startup arguments, or either MCU image.
-    safe, reason = precheck(status())
+    safe, reason = precheck(status(), args.max_vdc, lso_verified_idle=args.lso_verified_idle)
     if not safe:
         raise RuntimeError(reason)
     pending = root / 'server.py.vbus-pending'
@@ -146,7 +167,8 @@ def main():
         time.sleep(1)
         try:
             s = status()
-            if (precheck(s)[0] and s.get('hmi_vbus_hv_calibrated') == 1
+            if (precheck(s, args.max_vdc, lso_verified_idle=args.lso_verified_idle)[0]
+                    and s.get('hmi_vbus_hv_calibrated') == 1
                     and int(subprocess.check_output(
                         ['systemctl', 'show', '-p', 'MainPID', '--value', 'unoq-hmi.service'],
                         text=True).strip()) != pid):

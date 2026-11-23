@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "pair": [
+    2026112313,
+    2026112314
+  ],
+  "hardware_commands": 0,
+  "installed": false,
+  "replay_scope": "saved 10 ms current samples held to the next row, plus exact START handoff sample",
+  "first_fault_on_bench": {
+    "start_ms": 335383,
+    "reason": "rotor_rate",
+    "samples": 256,
+    "field_hz": -5.480410099029541,
+    "rotor_hz": -3.3396286964416504,
+    "reference_hz": 0.0,
+    "measured_slip_hz": 0.0,
+    "current_equivalent_flux_counts": 438.8743591308594
+  },
+  "torque_pi": {
+    "error_counts": -1816,
+    "old_output_counts": -19858,
+    "corrected_output_counts": -5009,
+    "old_kp_divisor": 2048,
+    "corrected_kp_divisor": 8192
+  },
+  "run_handoff": {
+    "old_replay_entered_run_at_ms": 110,
+    "new_replay_blocked": true,
+    "qualified_after_recovery_ms": 240,
+    "record": {
+      "start_ms": 3514,
+      "peak_time_ms": 3588,
+      "samples": 120,
+      "iq_blocked_checks": 79,
+      "iq_limit_counts": 133,
+      "iq_peak_counts": 1849,
+      "id_at_peak_counts": 703,
+      "adc_jdr_pair": [
+        30600,
+        34969
+      ],
+      "adc_sampling_sector": 5,
+      "vq_at_peak_command_counts": -3000,
+      "vd_at_peak_command_counts": 1050
+    }
+  },
+  "closed_loop_plant": {
+    "handoff_ms": 58,
+    "simulated_peak_A": 0.5150891485111496,
+    "handoff_flux_equivalent_A": 0.3574120104312897,
+    "speed_checkpoints": [
+      {
+        "time_ms": 1000,
+        "simulated_rpm": 258.0260016153861,
+        "observer_rpm": 252.0
+      },
+      {
+        "time_ms": 2000,
+        "simulated_rpm": 305.32305504235705,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 3000,
+        "simulated_rpm": 305.89993201505166,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 4000,
+        "simulated_rpm": 305.4163345059809,
+        "observer_rpm": 300.0
+      },
+      {
+        "time_ms": 5000,
+        "simulated_rpm": 305.07965424702655,
+        "observer_rpm": 300.0
+      }
+    ],
+    "stop_ms": 5000,
+    "scope": "calculated unloaded motor, averaged voltage"
+  },
+  "field_cases": "15 guard cases passed",
+  "first_fault_export_with_estop": {
+    "start_ms": 3514,
+    "reason": "rotor_rate",
+    "samples": 256,
+    "field_hz": 2.0000030994415283,
+    "rotor_hz": 2.0000030994415283,
+    "reference_hz": 0.0,
+    "measured_slip_hz": 0.0,
+    "current_equivalent_flux_counts": 835.2678833007812
+  },
+  "off_cases": 64,
+  "off_max_emulator_instructions": 975,
+  "actual_target_DWT_pending": true,
+  "stack_headroom_bytes": 3124,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "guards": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "preserved_files": 906,
+  "web_hmi_sha256": "764f6c2aed7564bc639414682e787cb73f354f4e39284b10c6ea09c56b6e76b8",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "60085b7352bbc3d26332ef1a30b888b41b093b8c0ed098ccbee81addf29232ef",
+    "ACIM-AIR56B2-LSO_FOC.elf": "4cc43b5b88338f0bbd981e6aee466f4180e837210469b50718779466dfc990ed",
+    "ACIM-AIR56B2-LSO_FOC.hex": "3a4270bcae63ca3a9262b7fc21d68c5e471605eb173536fddf298d26f5ed8006",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "641edde4c7ca7dc93d46206e9883595c9853d1d37ef39324f9aff882b1409821"
+  }
+}

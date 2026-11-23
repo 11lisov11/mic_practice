@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "clear_commands": 1,
+  "motor_commands": 0,
+  "arm_commands": 0,
+  "reset_commands": 0,
+  "pair": [
+    2026102509,
+    2026102510
+  ],
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 322.0,
+  "sd_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 10,
+    "break_irq_enabled": true,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "current_fault_mask": 0,
+  "occurred_fault_mask": 0,
+  "sd_wave_preserved": true,
+  "sd_wave_capture_free": false,
+  "adc_peak_capture_free": true,
+  "post_ack_statuses": 17,
+  "max_mc_age_ms": 50
+}

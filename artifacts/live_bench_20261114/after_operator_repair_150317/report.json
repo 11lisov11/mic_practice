@@ -1,0 +1,81 @@
+{
+  "samples": [
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "fw_build": 2026103101,
+      "mc_fw_build": 2026103102,
+      "mc_good_cnt": 6868,
+      "mc_bad_cnt": 0,
+      "mc_age_ms": 36,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "mc_sd_live": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 36,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "cin_diagnostic_only": 1
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "fw_build": 2026103101,
+      "mc_fw_build": 2026103102,
+      "mc_good_cnt": 6895,
+      "mc_bad_cnt": 0,
+      "mc_age_ms": 13,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "mc_sd_live": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 13,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "cin_diagnostic_only": 1
+    },
+    {
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "fw_build": 2026103101,
+      "mc_fw_build": 2026103102,
+      "mc_good_cnt": 6921,
+      "mc_bad_cnt": 0,
+      "mc_age_ms": 38,
+      "mc_current_zero_ready": 1,
+      "mc_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0004[MC_UNDER_VOLT] MCSDK_occurred=0x0404[MC_UNDER_VOLT|MC_DP_FAULT] state=10 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "mc_sd_live": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 38,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "cin_diagnostic_only": 1
+    }
+  ],
+  "commands_sent": 0,
+  "operator_repair_not_independently_verified": true
+}

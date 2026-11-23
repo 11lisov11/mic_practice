@@ -1,0 +1,10 @@
+  s += " uno_local_fault=";s += String((unsigned)g_fault);
+  s += " uno_stop_ready=";s += String((unsigned long)g_stop_evidence.ready);
+  s += " uno_stop_origin=";s += String((unsigned long)g_stop_evidence.origin);
+  s += " uno_stop_ms=";s += String((unsigned long)g_stop_evidence.at_ms);
+  s += " uno_stop_run_id=";s += String((unsigned long)g_stop_evidence.run_id);
+  s += " uno_stop_local_fault=";s += String((unsigned long)g_stop_evidence.local_fault);
+  s += " uno_stop_peer_status=";s += String((unsigned long)g_stop_evidence.peer_status);
+  s += " uno_stop_peer_fault=";s += String((unsigned long)g_stop_evidence.peer_fault);
+  s += " uno_stop_reply_age_ms=";s += String((unsigned long)g_stop_evidence.reply_age_ms);
+  s += " uno_stop_superseded=";s += String((unsigned long)g_stop_evidence.superseded);

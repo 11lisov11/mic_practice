@@ -1,0 +1,102 @@
+2026-10-30T12:50:09+00:00 uno-q kernel: Booting Linux on physical CPU 0x0000000000 [0x51af8014]
+2026-10-30T12:50:09+00:00 uno-q kernel: Linux version 6.16.7-g0dd6551ae96b (root@e30145dbdc20) (aarch64-linux-gnu-gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44) #1 SMP PREEMPT Tue Sep 23 12:46:06 UTC 2025
+2026-10-30T12:50:09+00:00 uno-q kernel: KASLR enabled
+2026-10-30T12:50:09+00:00 uno-q kernel: Machine model: Arduino SA,Imola
+2026-10-30T12:50:09+00:00 uno-q kernel: efi: EFI v2.11 by Das U-Boot
+2026-10-30T12:50:09+00:00 uno-q kernel: efi: ESRT=0xaed1a040 RTPROP=0xaed1c040 SMBIOS 3.0=0xafe18000 RNG=0xaecff040 INITRD=0xaed00040 MEMRESERVE=0xaed09040 
+2026-10-30T12:50:09+00:00 uno-q kernel: random: crng init done
+2026-10-30T12:50:09+00:00 uno-q kernel: esrt: Reserving ESRT space from 0x00000000aed1a040 to 0x00000000aed1a078.
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000045700000..0x0000000045cfffff (6144 KiB) nomap non-reusable hyp@45700000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000045e00000..0x0000000045f3ffff (1280 KiB) nomap non-reusable xbl-aop@45e00000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000045fff000..0x0000000045ffffff (4 KiB) nomap non-reusable sec-apps@45fff000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000046000000..0x00000000461fffff (2048 KiB) nomap non-reusable smem@46000000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x000000004ab00000..0x00000000513fffff (107520 KiB) nomap non-reusable modem@4ab00000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000051400000..0x00000000518fffff (5120 KiB) nomap non-reusable video@51400000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000051900000..0x00000000519fffff (1024 KiB) nomap non-reusable wlan-msa@51900000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000051a00000..0x00000000535fffff (28672 KiB) nomap non-reusable adsp@51a00000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000053600000..0x000000005360ffff (64 KiB) nomap non-reusable ipa-fw@53600000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000053610000..0x0000000053614fff (20 KiB) nomap non-reusable ipa-gsi@53610000
+2026-10-30T12:50:09+00:00 uno-q kernel: Reserved memory: created DMA memory pool at 0x0000000053615000, size 0 MiB
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: initialized node zap@53615000, compatible id shared-dma-pool
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000053615000..0x0000000053616fff (8 KiB) nomap non-reusable zap@53615000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x000000005cf00000..0x000000005cffffff (1024 KiB) nomap non-reusable dpfs-data@5cf00000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000060000000..0x00000000638fffff (58368 KiB) nomap non-reusable reserved@60000000
+2026-10-30T12:50:09+00:00 uno-q kernel: OF: reserved mem: 0x0000000089b01000..0x0000000089d00fff (2048 KiB) nomap non-reusable memory@89b01000
+2026-10-30T12:50:09+00:00 uno-q kernel: NUMA: Faking a node at [mem 0x0000000040000000-0x00000000bfffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel: NODE_DATA(0) allocated [mem 0xbfbfbac0-0xbfbfe23f]
+2026-10-30T12:50:09+00:00 uno-q kernel: Zone ranges:
+2026-10-30T12:50:09+00:00 uno-q kernel:   DMA      [mem 0x0000000040000000-0x00000000bfffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   DMA32    empty
+2026-10-30T12:50:09+00:00 uno-q kernel:   Normal   empty
+2026-10-30T12:50:09+00:00 uno-q kernel: Movable zone start for each node
+2026-10-30T12:50:09+00:00 uno-q kernel: Early memory node ranges
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000040000000-0x00000000456fffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000045700000-0x0000000045cfffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000045d00000-0x0000000045dfffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000045e00000-0x0000000045f3ffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000045f40000-0x0000000045ffefff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000045fff000-0x00000000461fffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000046200000-0x000000004aafffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x000000004ab00000-0x0000000053616fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000053617000-0x000000005cefffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x000000005cf00000-0x000000005cffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x000000005d000000-0x000000005fffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000060000000-0x00000000638fffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000063900000-0x000000007eafffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000080000000-0x0000000089b00fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000089b01000-0x0000000089d00fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x0000000089d01000-0x00000000aed1bfff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000aed1c000-0x00000000aed1cfff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000aed1d000-0x00000000aed1ffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000aed20000-0x00000000aed41fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000aed42000-0x00000000afe17fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000afe18000-0x00000000afe18fff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000afe19000-0x00000000bfdeffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000bfdf0000-0x00000000bfdfffff]
+2026-10-30T12:50:09+00:00 uno-q kernel:   node   0: [mem 0x00000000bfe00000-0x00000000bfffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel: Initmem setup node 0 [mem 0x0000000040000000-0x00000000bfffffff]
+2026-10-30T12:50:09+00:00 uno-q kernel: On node 0, zone DMA: 5376 pages in unavailable ranges
+2026-10-30T12:50:09+00:00 uno-q kernel: cma: Reserved 32 MiB at 0x00000000bba00000
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: probing for conduit method from DT.
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: PSCIv1.0 detected in firmware.
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: Using standard PSCI v0.2 function IDs
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: MIGRATE_INFO_TYPE not supported.
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: SMC Calling Convention v1.1
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: OSI mode supported.
+2026-10-30T12:50:09+00:00 uno-q kernel: psci: [Firmware Bug]: failed to set PC mode: -3
+2026-10-30T12:50:09+00:00 uno-q kernel: percpu: Embedded 25 pages/cpu s62296 r8192 d31912 u102400
+2026-10-30T12:50:09+00:00 uno-q kernel: pcpu-alloc: s62296 r8192 d31912 u102400 alloc=25*4096
+2026-10-30T12:50:09+00:00 uno-q kernel: pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+2026-10-30T12:50:09+00:00 uno-q kernel: Detected VIPT I-cache on CPU0
+2026-10-30T12:50:09+00:00 uno-q kernel: CPU features: detected: GIC system register CPU interface
+2026-10-30T12:50:09+00:00 uno-q kernel: CPU features: kernel page table isolation forced ON by KASLR
+2026-10-30T12:50:09+00:00 uno-q kernel: CPU features: detected: Kernel page table isolation (KPTI)
+2026-10-30T12:50:09+00:00 uno-q kernel: CPU features: detected: ARM erratum 845719
+2026-10-30T12:50:09+00:00 uno-q kernel: alternatives: applying boot alternatives
+2026-10-30T12:50:09+00:00 uno-q kernel: Kernel command line: initrd=\faf85d76d22f49f992fa0cac38953b0b\6.16.7-g0dd6551ae96b\initrd.img-6.16.7-g0dd6551ae96b root=UUID=278f16dc-2d93-4331-972f-e8640e33e44a clk_ignore_unused pd_ignore_unused audit=0 deferred_probe_timeout=30 systemd.machine_id=faf85d76d22f49f992fa0cac38953b0b
+2026-10-30T12:50:09+00:00 uno-q kernel: audit: disabled (until reboot)
+2026-10-30T12:50:09+00:00 uno-q kernel: printk: log buffer data + meta data: 131072 + 458752 = 589824 bytes
+2026-10-30T12:50:09+00:00 uno-q kernel: Dentry cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+2026-10-30T12:50:09+00:00 uno-q kernel: Inode-cache hash table entries: 131072 (order: 8, 1048576 bytes, linear)
+2026-10-30T12:50:09+00:00 uno-q kernel: software IO TLB: SWIOTLB bounce buffer size adjusted to 1MB
+2026-10-30T12:50:09+00:00 uno-q kernel: software IO TLB: area num 4.
+2026-10-30T12:50:09+00:00 uno-q kernel: software IO TLB: mapped [mem 0x00000000bb600000-0x00000000bb800000] (2MB)
+2026-10-30T12:50:09+00:00 uno-q kernel: Fallback order for Node 0: 0 
+2026-10-30T12:50:09+00:00 uno-q kernel: Built 1 zonelists, mobility grouping on.  Total pages: 518912
+2026-10-30T12:50:09+00:00 uno-q kernel: Policy zone: DMA
+2026-10-30T12:50:09+00:00 uno-q kernel: mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+2026-10-30T12:50:09+00:00 uno-q kernel: SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+2026-10-30T12:50:09+00:00 uno-q kernel: rcu: Preemptible hierarchical RCU implementation.
+2026-10-30T12:50:09+00:00 uno-q kernel: rcu:         RCU event tracing is enabled.
+2026-10-30T12:50:09+00:00 uno-q kernel: rcu:         RCU restricting CPUs from NR_CPUS=512 to nr_cpu_ids=4.
+2026-10-30T12:50:09+00:00 uno-q kernel:         Trampoline variant of Tasks RCU enabled.
+2026-10-30T12:50:09+00:00 uno-q kernel:         Tracing variant of Tasks RCU enabled.
+2026-10-30T12:50:09+00:00 uno-q kernel: rcu: RCU calculated value of scheduler-enlistment delay is 25 jiffies.
+2026-10-30T12:50:09+00:00 uno-q kernel: rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=4
+2026-10-30T12:50:09+00:00 uno-q kernel: RCU Tasks: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=4.
+2026-10-30T12:50:09+00:00 uno-q kernel: RCU Tasks Trace: Setting shift to 2 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=4.
+2026-10-30T12:50:09+00:00 uno-q kernel: NR_IRQS: 64, nr_irqs: 64, preallocated irqs: 0
+2026-10-30T12:50:09+00:00 uno-q kernel: GICv3: 640 SPIs implemented
+2026-10-30T12:50:09+00:00 uno-q kernel: GICv3: 0 Extended SPIs implemented
+
+STDERR:

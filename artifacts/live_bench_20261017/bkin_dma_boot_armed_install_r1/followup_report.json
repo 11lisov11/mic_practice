@@ -1,0 +1,37 @@
+{
+  "schema": "mic_ai.bkin_boot_armed_install_followup.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_boot_armed_r1",
+  "pair": [
+    2026101711,
+    2026101710
+  ],
+  "mains_j1": "off per user report",
+  "aux_j4": "15 V on per user report",
+  "last_hmi_bus_v": 2.0,
+  "last_hmi_state": "SAFE",
+  "last_hmi_pwm": 0,
+  "mcu_flash_commands": 3,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "uno_readback_verified": true,
+  "nucleo_final_readback_verified": true,
+  "uno_image_sha256": "82219b6748ffcaa0c2a411ac52fb1d387e63fc1a98cc1dc84219024ee77fc19a",
+  "nucleo_final_image_sha256": "68868bb69d4bb78c9c1e986f77cf638f079ba29e3146a615c185bea208b7e716",
+  "hmi_server_deployed": true,
+  "hmi_server_sha256": "fbcfcad2fd351ef9ab8a18862917cee4469b41fa369aec9993bfb7299cad28b3",
+  "vbus_calibration_unchanged": true,
+  "nucleo_capture_state_after_final_flash": 1,
+  "nucleo_good_bad_uart_counters_after_final_flash": 0,
+  "uno_hmi_rpc_restored": false,
+  "read_only_recovery_checks": {
+    "uno_stm32u5_reset_run": true,
+    "uno_stm32u5_core_state": "running",
+    "uno_rpc_direct_get": "timeout",
+    "hmi_http_api_status": "timeout",
+    "hmi_service": "active",
+    "arduino_router_service": "active",
+    "router_restart_attempt": "not performed: sudo requires a password"
+  },
+  "required_next_action": "cold USB power cycle of Uno Q only; leave J1 off. Nucleo remains running with PA6 DMA capture armed.",
+  "hv_release_approved": false
+}

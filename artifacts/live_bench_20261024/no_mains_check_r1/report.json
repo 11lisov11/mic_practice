@@ -1,0 +1,67 @@
+{
+  "passed_for_executed_scope": true,
+  "operator_statement": "я просто пока отключил инвертор поэтому так",
+  "exact_disconnection_scope_not_confirmed": true,
+  "live_pair": [
+    2026102103,
+    2026102104
+  ],
+  "live_idle_frequency_settings_passed": true,
+  "live_samples": 26,
+  "live_frequency_settings_hz": [
+    5,
+    9.9,
+    10,
+    15,
+    20,
+    23,
+    25,
+    50,
+    25,
+    10,
+    5,
+    0
+  ],
+  "outputs_remained_disabled": true,
+  "live_uart_crc_sequence_hardware_errors_zero": true,
+  "start_commands": 0,
+  "arm_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "actual_pwm_waveform_measured": false,
+  "powered_motor_test_performed": false,
+  "host_exact_controller_calls": 1082160,
+  "host_uart_checks": 7447,
+  "vf_discontinuity_phase_peak_v": [
+    20.0,
+    35.921024
+  ],
+  "break_snapshot_existed_before_tests": true,
+  "break_snapshot_tick_ms": 0,
+  "break_snapshot_unchanged": true,
+  "break_irq_enabled": false,
+  "vbus_controller_readings_v": [
+    138.0,
+    0.0
+  ],
+  "vbus_independently_verified": false,
+  "final_state": {
+    "state": "SAFE",
+    "pwm": 0,
+    "freq_cmd": 0.0,
+    "hmi_hv_armed": 0,
+    "mc_good": 4096,
+    "mc_transport_fault": 0,
+    "mc_uart_error_flags": 0,
+    "mc_age_ms": 20
+  },
+  "limitations": [
+    "Live SET FREQ acknowledgements prove HMI/Uno settings, not active Nucleo PWM frequency.",
+    "Host duty/CCR arithmetic does not qualify real pin timing or physical current.",
+    "UART idle success does not prove immunity to switching interference.",
+    "Boot Break at tick0 was already present; BIE disabled and no complete dual waveform. No claim of zero subsequent SD impulses.",
+    "User statement does not identify whether J1 only or control ribbon is disconnected; no active pin PWM test authorized through ambiguous isolation state."
+  ]
+}

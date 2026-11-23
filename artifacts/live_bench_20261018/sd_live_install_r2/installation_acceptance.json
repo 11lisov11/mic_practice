@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "checks": {
+    "both_writes_verified": true,
+    "calibration_unchanged": true,
+    "isolated_programming_timeout_saved": true,
+    "one_completion_reset_only": true,
+    "current_sd_matches_registers": true,
+    "fast_dma_running_untriggered": true,
+    "no_motor_commands": true
+  },
+  "pair": [
+    2026101809,
+    2026101808
+  ],
+  "physical_state": {
+    "j1_on": false,
+    "j4_on": false,
+    "both_usb_pc": true,
+    "motor_connected": true
+  },
+  "limitations": [
+    "SD HIGH proved with J4 off only; J4 on/reset test still required",
+    "No motor or 50 Hz run performed",
+    "Physical cause of earlier long LOW remains unproven"
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "channel_map": {
+    "0": "UH",
+    "1": "UL",
+    "2": "VH",
+    "3": "VL",
+    "4": "WH",
+    "5": "WL",
+    "6": "SDA",
+    "7": "SCL"
+  },
+  "sample_rate_hz": 8000000,
+  "resolution_ns": 125,
+  "PWM_rising_edges": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "median_carrier_hz": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "PWM_first_edge_s": null,
+  "PWM_last_edge_s": null,
+  "PWM_window_s": null,
+  "complementary_overlap_intervals": [
+    0,
+    0,
+    0
+  ],
+  "six_PWM_outputs_verified": false,
+  "SCL_edges": 112,
+  "SDA_edges": 34,
+  "I2C_parts": 2,
+  "AS5600_valid_reads": 1,
+  "AS5600_target_NACK": [],
+  "normal_controller_final_read_NACKs": 1,
+  "unexpected_frames": [],
+  "partial_frames": [],
+  "last_sensor_bytes": [
+    [
+      103,
+      15,
+      129
+    ]
+  ],
+  "first_parts": [
+    {
+      "start_s": 2e-06,
+      "end_s": 0.00012199999999999985,
+      "end": "repeated_start",
+      "bytes": [
+        {
+          "value": 108,
+          "ack": true
+        },
+        {
+          "value": 11,
+          "ack": true
+        }
+      ]
+    },
+    {
+      "start_s": 0.00012199999999999985,
+      "end_s": 0.0003599999999999992,
+      "end": "stop",
+      "bytes": [
+        {
+          "value": 109,
+          "ack": true
+        },
+        {
+          "value": 103,
+          "ack": true
+        },
+        {
+          "value": 15,
+          "ack": true
+        },
+        {
+          "value": 129,
+          "ack": false
+        }
+      ]
+    }
+  ],
+  "analog_ringing_or_sub125ns_glitches_qualified": false
+}

@@ -1,0 +1,33 @@
+
+C:\mic_practice\artifacts\live_bench_20261114\current_polarity_budget_r1\verification\polarity_variants_ARM.o:     file format elf32-littlearm
+
+
+Disassembly of section .text.ordered_bounds:
+
+Disassembly of section .text.absolute_bound:
+
+Disassembly of section .text.copy_sign_bound:
+
+00000000 <copy_sign_bound>:
+   0:	eddf 7a11 	vldr	s15, [pc, #68]	@ 48 <copy_sign_bound+0x48>
+   4:	eef0 6ac0 	vabs.f32	s13, s0
+   8:	eef4 6ae7 	vcmpe.f32	s13, s15
+   c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+  10:	eeb0 7a40 	vmov.f32	s14, s0
+  14:	da0b      	bge.n	2e <copy_sign_bound+0x2e>
+  16:	ee87 0a27 	vdiv.f32	s0, s14, s15
+  1a:	eeff 7a00 	vmov.f32	s15, #240	@ 0xbf800000 -1.0
+  1e:	eeb4 0a40 	vcmp.f32	s0, s0
+  22:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+  26:	bf68      	it	vs
+  28:	eeb0 0a67 	vmovvs.f32	s0, s15
+  2c:	4770      	bx	lr
+  2e:	ee10 3a10 	vmov	r3, s0
+  32:	eef7 7a00 	vmov.f32	s15, #112	@ 0x3f800000  1.0
+  36:	eeff 6a00 	vmov.f32	s13, #240	@ 0xbf800000 -1.0
+  3a:	2b00      	cmp	r3, #0
+  3c:	bfb4      	ite	lt
+  3e:	eeb0 0a66 	vmovlt.f32	s0, s13
+  42:	eeb0 0a67 	vmovge.f32	s0, s15
+  46:	4770      	bx	lr
+  48:	3d4ccccd 	.word	0x3d4ccccd

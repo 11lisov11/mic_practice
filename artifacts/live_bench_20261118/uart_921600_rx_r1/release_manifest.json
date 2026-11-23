@@ -1,0 +1,74 @@
+{
+  "schema": "mic_ai.uart_921600_rx_release.v1",
+  "pair": [
+    2026111805,
+    2026111806
+  ],
+  "built": true,
+  "installed": false,
+  "offline_acceptance_passed": true,
+  "tests": [
+    "verification/native_RX_r4/report.json",
+    "verification/Uno_RX_r3/report.json",
+    "verification/guards_r3/report.json",
+    "verification/negative_controls/report.json",
+    "verification/history_link_r2/report.json",
+    "verification/final_build_identity.json",
+    "nucleo_build_report.json"
+  ],
+  "hardware_commands": 0,
+  "bench_GET": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "OFF_fast_limit_cycles": 4000,
+  "estimate_age_ms": 2,
+  "raw_current_trip_A": 1.35,
+  "ADC_UPDATE_ticks": 2048,
+  "native_RX_DMA_channel": "DMA1 channel2 / DMAMUX1 channel1, USART1_RX",
+  "native_DMA_ring_bytes": 128,
+  "native_RX_IRQ_priority": 3,
+  "motor_IRQ_priorities_unchanged": true,
+  "native_RX_FIFO": true,
+  "Uno_RX_FIFO": true,
+  "Uno_vendor_ISR_not_called": true,
+  "Uno_KERNEL_ASYNC_DMA_API_not_enabled": true,
+  "native_TX_DMA_and_UART_TC_completion_guard_unchanged": true,
+  "RX_error_policy": "DMA cannot attribute NE per byte, so all hardware NE/PE/FE/ORE are fatal; Uno loss latches until boot",
+  "native_DMA_wrap_and_copy_overlap_fail_closed": true,
+  "Nucleo_RAM_free_after_original_heap_stack_reserve_bytes": 240,
+  "Nucleo_heap_reserve_bytes": 512,
+  "Nucleo_stack_reserve_bytes": 1024,
+  "Uno_RAM_static_bytes": 219174,
+  "Uno_RAM_remaining_bytes": 42970,
+  "Uno_compiler_low_memory_warning": true,
+  "ARM_fast_and_EKF_byte_identical": true,
+  "target_timing_measured": false,
+  "UART_hardware_qualified": false,
+  "physical_NIS_root_cause_fixed": false,
+  "prior_file_hashes_verified": [
+    2057,
+    2220,
+    8349
+  ],
+  "native_HEX_erased_padding_offsets": [
+    117124,
+    117125,
+    117126,
+    117127
+  ],
+  "artifacts": {
+    "release/nucleo_2026111806_expected_readback.bin": "1b0a3a03d9ef440fc0e790fc8519e6074c54a8fb80bcacb246ee72361081bad4",
+    "release/nucleo_2026111806_uart_rx_dma.bin": "c673ed952451b4e69b454ff3e0d3b94105f71f0dbb58c19e0d4219c6b0fef115",
+    "release/nucleo_2026111806_uart_rx_dma.elf": "252661366db088593620d21596edb92fa0a40263ec86c608500e1d218ce0e5a0",
+    "release/nucleo_2026111806_uart_rx_dma.hex": "cedd540b95bc23495565fdee851a29d806c932f22d37521bd3ec240b843cf425",
+    "release/uno_2026111805_fifo_uart.elf-zsk.bin": "b89b2ea964831dbdbc98f2cb61f43b38cbb34535286dfcef4556001a991e819b"
+  },
+  "actual_installed_pair_still": [
+    2026111803,
+    2026111804
+  ],
+  "next_validation": "After separately authorized programming: independent readback, FIFO/DMA register proof, quiet and loaded UART OFF, OFF DWT CPU; no automatic motor run"
+}

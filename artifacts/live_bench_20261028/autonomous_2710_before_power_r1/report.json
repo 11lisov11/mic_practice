@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "motor_START_commands": 0,
+  "CLEAR_commands": 0,
+  "RESET_commands": 0,
+  "flash_commands": 0,
+  "old_records_erased": false,
+  "samples": 10,
+  "reads_delta": 2236,
+  "I2C_errors": 0,
+  "counter_deltas": {
+    "enc_errors": 0,
+    "enc_health_nack": 0,
+    "enc_health_busy": 0,
+    "enc_health_deadline": 0,
+    "enc_health_arlo": 0,
+    "enc_health_berr_clears": 0,
+    "enc_diag_controller_resets": 0,
+    "enc_health_normal_parks": 0,
+    "mc_bad_cnt": 0,
+    "mc_uart_error_flags": 0,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0
+  },
+  "SD_level": "HIGH",
+  "break_irq_enabled": false,
+  "native_active_fault": 4,
+  "native_saved_fault": 1028,
+  "vdc": 10.0,
+  "saved_waveform_bytes": 320,
+  "break_snapshots": [
+    {
+      "kind": "first_since_boot",
+      "available": true,
+      "captured": true,
+      "age_ms": 4094,
+      "reason": "recorded",
+      "raw": {
+        "magic": 827019842,
+        "schema": 2,
+        "bytes": 92,
+        "tick_ms": 2382,
+        "tim_sr": 223,
+        "tim_dier": 128,
+        "tim_bdtr": 37304434,
+        "tim_cnt": 3228,
+        "tim_arr": 5312,
+        "tim_ccr1": 2656,
+        "tim_ccr2": 2656,
+        "tim_ccr3": 2656,
+        "gpioa_idr": 40980,
+        "context_valid": 0,
+        "context_tick_ms": 0,
+        "reference_speed_unit": 0,
+        "motor_state": 0,
+        "current_faults": 0,
+        "occurred_faults": 0,
+        "vbus_v": 0,
+        "temperature_deci_c": 0,
+        "command_sequence": 0,
+        "start_window": 0
+      },
+      "event": {
+        "bif": true,
+        "b2if": false,
+        "pa6_high_at_irq": false,
+        "bke_at_irq": true,
+        "moe_at_irq": false,
+        "during_start_request_window": false,
+        "start_window_flag_raw": false,
+        "start_window_flag_stale_after_run": false
+      },
+      "cached_context": null
+    },
+    {
+      "kind": "first_start_window",
+      "available": true,
+      "captured": false,
+      "age_ms": 3293,
+      "reason": "no_recorded_break"
+    }
+  ]
+}

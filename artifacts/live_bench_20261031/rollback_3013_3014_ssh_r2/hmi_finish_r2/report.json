@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "flash_commands": 0,
+  "deployment": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/rollback_3014_20261031_150312",
+    "calibration_unchanged": true,
+    "runtime_verified": false,
+    "hmi_restarts": 1,
+    "flash_commands": 0,
+    "motor_commands": 0
+  },
+  "calibration_unchanged": true,
+  "pair": [
+    2026103013,
+    2026103014
+  ],
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "LOW",
+    "age_ms": 50,
+    "break_irq_enabled": false,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас LOW: вход защиты активен",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "pwm": 0
+}

@@ -1,0 +1,40 @@
+{
+  "scalar_duration_ms": 5001,
+  "FOC_duration_ms": 5000,
+  "scalar_RMS_nominal_A": [
+    0.411,
+    0.416,
+    0.409
+  ],
+  "FOC_RMS_nominal_A": [
+    0.366,
+    0.365,
+    0.362
+  ],
+  "scalar_mean_RMS_nominal_A": 0.412,
+  "FOC_mean_RMS_nominal_A": 0.36433333333333334,
+  "FOC_RMS_lower_percent_relative_to_VF": 11.569579288025883,
+  "scalar_window_ms": 200,
+  "FOC_window_ms": 184,
+  "scalar_window_coverage_pct": 100,
+  "FOC_window_coverage_pct": 100,
+  "scalar_peak_nominal_A": [
+    0.777,
+    0.931,
+    0.777
+  ],
+  "FOC_peak_nominal_A": [
+    0.748,
+    0.825,
+    0.787
+  ],
+  "absolute_scale_qualified": false,
+  "efficiency_measured": false,
+  "rotor_speeds_matched_by_measurement": false,
+  "limitations": [
+    "One run per algorithm; unloaded.",
+    "Window lengths differ:200ms scalar versus184ms FOC.",
+    "Only current comparison at the same5Hz command; no electrical-input or mechanical-power measurement.",
+    "Frozen first-run raw ADC belongs to FOC and was retained, not relabeled as scalar."
+  ]
+}

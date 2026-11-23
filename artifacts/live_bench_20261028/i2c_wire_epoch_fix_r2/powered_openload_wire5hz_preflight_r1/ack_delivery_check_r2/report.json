@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "CLEAR_commands_this_check": 1,
+  "total_CLEAR_commands": 2,
+  "START_commands": 0,
+  "flash_commands": 0,
+  "reset_commands": 0,
+  "commands": [
+    {
+      "label": "CLEAR",
+      "path": "/api/cmd",
+      "body": {
+        "cmd": "CLEAR"
+      },
+      "http_status": 200,
+      "ok": true,
+      "host_utc": "2026-10-28T17:57:34.119569+00:00",
+      "elapsed_s": 0.498,
+      "request_timeout_s": 8.0,
+      "transport": "direct_wifi_http"
+    }
+  ],
+  "mc_fault": 0,
+  "mc_fault_reason": 0,
+  "mc_fault_sequence": 0,
+  "current_mask": 0,
+  "occurred_mask": 0,
+  "enc_errors": 0,
+  "state": "SAFE",
+  "pwm": 0,
+  "vdc": 322.0
+}

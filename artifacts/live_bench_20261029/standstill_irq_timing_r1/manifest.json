@@ -1,0 +1,43 @@
+{
+  "schema": "mic_ai.standstill_irq_timing.v1",
+  "pair": [
+    2026102937,
+    2026102938
+  ],
+  "base_pair": [
+    2026102935,
+    2026102936
+  ],
+  "built": true,
+  "installed": true,
+  "physical_qualification": false,
+  "thresholds_changed": false,
+  "adc_guard_changed": false,
+  "start_commands": 1,
+  "native_timing_measured": true,
+  "deadline_cycles": 5312,
+  "additional_preflight_kernel_limit_cycles": 4800,
+  "rpc_updater_stack_bytes": 4096,
+  "cpu_test_context": "normal TIM1 update IRQ, MOE=0; no CCR writes or IRQ masks",
+  "adc_irq_changed": false,
+  "adc_window_geometry_changed": false,
+  "artifacts": {
+    "release/nucleo_2026102938_irq_timing.bin": "971d0bf6f440b4fc12bdc501d90d7bcafd9765b8a286cd4981d73620728d997b",
+    "release/unoq_2026102937_irq_timing.elf-zsk.bin": "1bef3e1782d7bf59fd9cca7c882b9a5f132d5234b740779dfbcc157cd831c85b"
+  },
+  "readback_verified": true,
+  "installation_report": "hardware_install_r1/install_report.json",
+  "hardware_configuration_switch_verified": true,
+  "native_cpu_qualification_cycles": 3720,
+  "physical_fast_adapter_max_cycles": 1923,
+  "startup_clear_commands": 1,
+  "clear_after_current_fault_commands": 0,
+  "physical_measurement_valid": false,
+  "physical_measurement_fault": "MI_BAD_CURRENT (2)",
+  "physical_measurement_report": "first_dc_point_r1/report.json",
+  "physical_capture_analysis": "first_dc_point_r1/current_abort_analysis/report.json",
+  "inductance_identified": false,
+  "hardware_report": "HARDWARE_REPORT_RU.md",
+  "physical_current_scale_qualified": false,
+  "additional_images_flashed_after_point": false
+}

@@ -87,6 +87,43 @@ def main():
               "diagnostic decoder identity update preserves Vbus measurement fields")
         check(reloaded.is_valid(dict(high, fw_build=2026100803, mc_fw_build=2026100801)),
               "passive sender timing counters preserve Vbus measurement fields")
+        check(reloaded.is_valid(dict(high, fw_build=2026101001, mc_fw_build=2026100801)),
+              "serialized control ownership preserves unchanged Vbus measurement fields")
+        check(reloaded.is_valid(dict(high, fw_build=2026101002, mc_fw_build=2026100801)),
+              "runtime mutex initialization preserves unchanged Vbus measurement fields")
+        v3 = dict(high, fw_build=2026101004, mc_fw_build=2026101003)
+        check(reloaded.is_valid(v3), "paired CRC32C transport retains unchanged Vbus scaling")
+        pending_gate = mod.HvArmConfig(enabled=True, ttl_sec=30.0, min_vdc=250.0, max_vdc=385.0)
+        ok, reason = mod.hv_arm_precheck(v3, pending_gate, vbus_calibrated=True)
+        check(not ok and "explicitly prepared bounded powered trial" in reason,
+              "retained calibration does not authorize unqualified v3 powered start")
+        v3_timing = dict(high, fw_build=2026101005, mc_fw_build=2026101003)
+        check(reloaded.is_valid(v3_timing), "length-aware UART diagnostic update keeps calibration")
+        ok, reason = mod.hv_arm_precheck(v3_timing, pending_gate, vbus_calibrated=True)
+        check(not ok and "explicitly prepared bounded powered trial" in reason, "v3 timing correction cannot bypass HV gate")
+        v3_estop = dict(high, fw_build=2026101007, mc_fw_build=2026101006)
+        check(reloaded.is_valid(v3_estop), "latched-ESTOP watchdog fix preserves Vbus scaling")
+        ok, reason = mod.hv_arm_precheck(v3_estop, pending_gate, vbus_calibrated=True)
+        check(not ok and "explicitly prepared bounded powered trial" in reason, "v3 ESTOP fix keeps powered start blocked")
+        sender_fix = dict(high, fw_build=2026101008, mc_fw_build=2026101006)
+        check(reloaded.is_valid(sender_fix), "sender-only fix preserves Vbus measurement contract")
+        ok, reason = mod.hv_arm_precheck(sender_fix, pending_gate, vbus_calibrated=True)
+        check(not ok and "explicitly prepared bounded powered trial" in reason,
+              "sender-only fix does not grant general powered-start permission")
+        check(not reloaded.is_valid(dict(sender_fix, mc_fw_build=2026101007)),
+              "sender fix cannot authorize an unknown motor-controller image")
+        for uno, nucleo in ((2026101004, 2026100801), (2026101002, 2026101003),
+                            (2026101006, 2026101003), (2026101004, 2026101099)):
+            check(not reloaded.is_valid(dict(high, fw_build=uno, mc_fw_build=nucleo)),
+                  "mixed, future and diagnostic v3 peers remain rejected")
+        check(path.read_bytes() == original_bytes,
+              "ownership update compatibility never rewrites stored measurements")
+        check(not reloaded.is_valid(dict(high, fw_build=2026101003, mc_fw_build=2026100801)),
+              "future supervisory firmware is not implicitly approved")
+        check(not reloaded.is_valid(dict(high, fw_build=2026101001, mc_fw_build=2026100899)),
+              "ownership update cannot authorize logic fixture calibration")
+        check(not reloaded.is_valid(dict(high, fw_build=2026101002, mc_fw_build=2026100899)),
+              "runtime mutex update cannot authorize fixture calibration")
         check(not reloaded.is_valid(dict(high, fw_build=2026100802, mc_fw_build=2026100899)),
               "logic-only fixture never inherits HV calibration approval")
         check(not reloaded.is_valid(dict(high, fw_build=2026100709, mc_fw_build=2026100802)),

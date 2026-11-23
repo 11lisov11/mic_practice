@@ -1,0 +1,106 @@
+{
+  "passed": true,
+  "flash_commands": 2,
+  "pin_requests": 1,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "isolation_operator_confirmed": true,
+  "restored": true,
+  "disconnected_Vbus_ADC_reading": 135.0,
+  "Vbus_sensor_connected": false,
+  "physical_isolation_authority": "User confirmed J1/J4 OFF and STEVAL ribbon disconnected",
+  "boot": {
+    "build": 2026102990,
+    "state": 0,
+    "reason": 0,
+    "attempted": 0,
+    "elapsed_ms": 0.0,
+    "clock_hz": 170000000,
+    "updates": 0,
+    "phase": 0,
+    "BDTR": 37305458,
+    "ARR": 5312,
+    "CCR": [
+      1328,
+      2656,
+      3984
+    ],
+    "GPIOA_IDR": 41024,
+    "local_stop": 0,
+    "CCER": 1365,
+    "SMCR": 0,
+    "SysTick_LOAD": 169999,
+    "CR1": 289,
+    "PSC": 0
+  },
+  "after": {
+    "build": 2026102990,
+    "state": 2,
+    "reason": 0,
+    "attempted": 1,
+    "elapsed_ms": 5000.002264705882,
+    "clock_hz": 170000000,
+    "updates": 80007,
+    "phase": 2,
+    "BDTR": 37305458,
+    "ARR": 5312,
+    "CCR": [
+      1328,
+      2656,
+      3984
+    ],
+    "GPIOA_IDR": 49216,
+    "local_stop": 0,
+    "CCER": 1365,
+    "SMCR": 0,
+    "SysTick_LOAD": 169999,
+    "CR1": 289,
+    "PSC": 0
+  },
+  "native_auto_stop_verified": true,
+  "capture_saved": true,
+  "restore_sha256": "3c3f530bfe815fb20650688b67f655000cd1651c85060498ba84e1e96af8de56",
+  "restored_native_build": 2026103016,
+  "channels": {
+    "0": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.22853549437861168,
+      "rising_edges": 80007,
+      "active_duration_s": 5.000567
+    },
+    "1": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.7285292135170512,
+      "rising_edges": 80008,
+      "active_duration_s": 5.0006502500000005
+    },
+    "2": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.4785078883099223,
+      "rising_edges": 80009,
+      "active_duration_s": 5.0006502500000005
+    },
+    "3": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.4785282101443183,
+      "rising_edges": 80008,
+      "active_duration_s": 5.000645167
+    },
+    "4": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.7285436525112378,
+      "rising_edges": 80009,
+      "active_duration_s": 5.0006502500000005
+    },
+    "5": {
+      "frequency_hz": 15999.999999994658,
+      "duty_cycle": 0.22853727719682398,
+      "rising_edges": 80008,
+      "active_duration_s": 5.0006295000000005
+    }
+  },
+  "D6_level_logged_without_asserting_probe_mapping": false,
+  "waveform_analysis_passed": true,
+  "deadtime_s": 1.3411764705882353e-06,
+  "production_live_restored": true
+}

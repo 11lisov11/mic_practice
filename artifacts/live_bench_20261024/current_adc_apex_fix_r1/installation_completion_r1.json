@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "images_written": true,
+  "readback_verified": true,
+  "live_pair": [
+    2026102509,
+    2026102510
+  ],
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "clear_commands": 1,
+  "clear_reason": "Archived historical UART framing/watchdog latch; actual USART error bits0 and stable counters proved no ongoing error before a single acknowledgement on J1OFF/bus10V/PWM0/ARM0/ESTOP0.",
+  "rpc_verified": true,
+  "calibration_unchanged": true,
+  "autozero_ready": true,
+  "zero_stable_blocks": 3,
+  "zero_attempts": 7,
+  "zero_history_hmi_and_ram_match": true,
+  "zero_history_rejected_blocks_preserved": [
+    2,
+    4
+  ],
+  "sd_capture_free": true,
+  "adc_capture_free": true,
+  "motor_commands": 0,
+  "arm_commands": 0,
+  "additional_reset_commands": 0,
+  "physical_high_frequency_coverage_verified": false,
+  "report": "runtime_idle_usb_r1/report.json"
+}

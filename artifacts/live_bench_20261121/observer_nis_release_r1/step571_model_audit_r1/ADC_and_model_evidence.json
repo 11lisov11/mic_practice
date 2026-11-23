@@ -1,0 +1,177 @@
+{
+  "step": 571,
+  "baseline": {
+    "step": 571,
+    "reference_Hz": 0.9000000357627869,
+    "NIS": 27.091480255126953,
+    "bit_exact_ARM_words": 51,
+    "observer_speed_before_rpm": -134.6520978260589,
+    "observer_speed_after_rpm": -132.85304260253906,
+    "innovation_covariance_A2": [
+      [
+        0.0004386823776692391,
+        0.00023127035955547432
+      ],
+      [
+        0.00023127035955547432,
+        0.0007148151095665305
+      ]
+    ],
+    "current_predicted_A": [
+      -0.1508634388446808,
+      -0.6717303395271301
+    ],
+    "current_measured_A": [
+      -0.2596262991428375,
+      -0.7377064824104309
+    ],
+    "conditional_NIS_terms": [
+      26.965659359248388,
+      0.12582244547805924
+    ],
+    "phase_residual_A": [
+      -0.10876286029815674,
+      -0.002755585631572008,
+      0.11151844592972875
+    ],
+    "phase_standard_deviations": [
+      0.02094474582488981,
+      0.021106774269764806,
+      0.029087246915265277
+    ],
+    "phase_standardized_residual": [
+      -5.19284698928682,
+      -0.1305545601783097,
+      3.833929221785605
+    ],
+    "pair_counts": [
+      16,
+      0,
+      0
+    ],
+    "measurement_epoch_cycles": 1110445255,
+    "counterfactual_ARM_NIS": {
+      "beta_voltage_minus_1V": 26.998680114746094,
+      "beta_voltage_plus_1V": 27.758180618286133,
+      "beta_current_minus_10mA": 27.55150032043457,
+      "beta_current_plus_10mA": 26.968791961669922
+    },
+    "terminal_voltage_independently_measured": false
+  },
+  "previous_window_centers_apart_ms": 1,
+  "three_ADC_means_A": [
+    [
+      -0.26262428048142333,
+      -0.7449762107675311
+    ],
+    [
+      -0.2602258852258852,
+      -0.7345908546694709
+    ],
+    [
+      -0.25962628641200064,
+      -0.7377064614988889
+    ]
+  ],
+  "three_ADC_sample_std_A": [
+    [
+      0.05241467719383396,
+      0.07283824559687763
+    ],
+    [
+      0.05636313899350032,
+      0.05523603728426047
+    ],
+    [
+      0.05897972052720973,
+      0.06588581856665351
+    ]
+  ],
+  "previous_window_minus_prior_EKF_A": [
+    -0.09177825660859851,
+    -0.0620804095515205
+  ],
+  "sample_source_pairs": "U1/V2",
+  "offsets_from_ADC_record": [
+    2069,
+    2066,
+    2066,
+    2068
+  ],
+  "voltage_window_alignment": {
+    "installed_right_endpoint": {
+      "inputs": [
+        -0.2596262991428375,
+        -0.7377064824104309,
+        0.3550594449043274,
+        -10.282690048217773
+      ],
+      "NIS": 27.09147834777832,
+      "prediction_A": [
+        -0.1508634388446808,
+        -0.6717303991317749
+      ]
+    },
+    "centered_interval": {
+      "inputs": [
+        -0.2596262991428375,
+        -0.7377064824104309,
+        0.34244704246520996,
+        -10.284721374511719
+      ],
+      "NIS": 27.01168441772461,
+      "prediction_A": [
+        -0.15102803707122803,
+        -0.6717569828033447
+      ]
+    }
+  },
+  "fixed_prior_sensitivity": {
+    "effective_deadtime_0_25us_shorter": {
+      "NIS": 21.735313415527344,
+      "prediction_A": [
+        -0.16206911206245422,
+        -0.6911374926567078
+      ]
+    },
+    "effective_deadtime_0_25us_longer": {
+      "NIS": 33.63487243652344,
+      "prediction_A": [
+        -0.13965776562690735,
+        -0.6523231863975525
+      ]
+    },
+    "omit_half_deadtime_correction": {
+      "NIS": 15.37065601348877,
+      "prediction_A": [
+        -0.18105284869670868,
+        -0.724015474319458
+      ]
+    },
+    "phase_U_plus_one_ADC_count": {
+      "NIS": 22.530569076538086,
+      "prediction_A": [
+        -0.1508634388446808,
+        -0.6717303395271301
+      ]
+    },
+    "Rs_minus_2_ohm": {
+      "NIS": 24.93798828125,
+      "prediction_A": [
+        -0.15506680309772491,
+        -0.6895224452018738
+      ]
+    },
+    "prior_currents_from_previous_16_ADC_samples": {
+      "NIS": 4.237029075622559,
+      "prediction_A": [
+        -0.21652647852897644,
+        -0.7162109017372131
+      ]
+    }
+  },
+  "prior_bias_existed_before_window": true,
+  "physical_bias_cause_identified": false,
+  "NIS_threshold_changed": false,
+  "hardware_commands": 0
+}

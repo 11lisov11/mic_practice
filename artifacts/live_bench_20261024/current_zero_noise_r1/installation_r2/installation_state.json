@@ -1,0 +1,90 @@
+{
+  "passed": false,
+  "images_written": true,
+  "uno_flash_commands": 1,
+  "nucleo_flash_commands": 1,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "nucleo_extra_reset_commands": 0,
+  "uno_verify_restart_only_extra": 1,
+  "uno_diagnostic_halt_resume": 1,
+  "uno_hmi_owned_process_restart": 1,
+  "nucleo_readback_verified": true,
+  "uno_readback_verified": true,
+  "calibration_unchanged": true,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "autonull_direct_memory_passed": true,
+  "zero_stable": 3,
+  "zero_offsets": [
+    2067,
+    2068,
+    2067,
+    2070
+  ],
+  "history_blocks": [
+    {
+      "block": 1,
+      "means_adc": [
+        2067,
+        2067,
+        2067,
+        2069
+      ],
+      "raw_spans_adc": [
+        30,
+        35,
+        34,
+        30
+      ],
+      "stable": 1,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.9304306514350627,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    },
+    {
+      "block": 2,
+      "means_adc": [
+        2067,
+        2068,
+        2067,
+        2070
+      ],
+      "raw_spans_adc": [
+        30,
+        35,
+        40,
+        28
+      ],
+      "stable": 2,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.5687375497513916,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    },
+    {
+      "block": 3,
+      "means_adc": [
+        2068,
+        2068,
+        2068,
+        2070
+      ],
+      "raw_spans_adc": [
+        36,
+        38,
+        36,
+        30
+      ],
+      "stable": 3,
+      "reject": 0,
+      "estimated_3sigma_mean_counts": 1.299038105676658,
+      "failed_paths_mask": 0,
+      "raw_spans_lower_bound_mask": 0
+    }
+  ],
+  "rpc_verified": false,
+  "physical_powerbank_noise_case_verified": false,
+  "error": "Uno RPC timeout persists after verify/restart and owned HMI restart; cold Linux restart requested; no extra flash needed",
+  "next_step": "Disconnect only UnoQUSB5seconds and reconnect toPC; keep NucleoUSB/J415V/J1OFF/wiring; then verify RPC/D9 history/read-only idle"
+}

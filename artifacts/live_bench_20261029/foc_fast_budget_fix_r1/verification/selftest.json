@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "rounding_cases": 2393218,
+  "boundary_and_invalid_inputs": true,
+  "actual_C_control_bitwise_equivalent_cases": 180000,
+  "actual_C_modulator_bitwise_equivalent_cases": 75000,
+  "recorded_cases": 12,
+  "native_adapter_regressions_passed": true,
+  "per_frame_invalid_model_tests": 26,
+  "stale_reasons_first_fault_and_autostop_unchanged": true,
+  "unchanged_protection_sources": [
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Inc/current_adc_window_plan.h",
+    "nucleo/Inc/current_adc_deadline.h",
+    "nucleo/Inc/local_stop.h",
+    "nucleo/Inc/foc_timing_core.h",
+    "nucleo/Inc/foc_timing_irq.h"
+  ],
+  "target_timing_measured": false,
+  "hardware_commands": 0
+}

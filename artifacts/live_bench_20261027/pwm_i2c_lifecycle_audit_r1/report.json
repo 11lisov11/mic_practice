@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "source_patch_only": true,
+  "installed_firmware_unchanged": true,
+  "regression": {
+    "passed": true,
+    "checks": 32767,
+    "event_cases": 400,
+    "exact_record_entry": true,
+    "modeled_continuation": true,
+    "hardware_validated": false
+  },
+  "ab": {
+    "installed": {
+      "healthy_reads": 200,
+      "healthy_enables": 200,
+      "healthy_pe_disables": 200,
+      "false_busy_errors": 1,
+      "nack_errors": 1
+    },
+    "persistent_pe": {
+      "healthy_reads": 200,
+      "healthy_enables": 1,
+      "healthy_pe_disables": 0,
+      "false_busy_errors": 0,
+      "nack_errors": 1
+    }
+  },
+  "confirmed_unnecessary_pe_reset_after_healthy_read": true,
+  "pe_reset_frequency_at_200_reads_per_second": 200,
+  "initial_pwm_nack_fixed_or_reproduced": false,
+  "physical_cause_proven": false,
+  "limits": [
+    "A/B false BUSY is injected by the model only on PE enable; no recorded analog waveform proves that origin",
+    "The recorded first NACK remains an error in both implementations",
+    "This is an offline source patch; target build, full integration and hardware validation are outstanding"
+  ]
+}

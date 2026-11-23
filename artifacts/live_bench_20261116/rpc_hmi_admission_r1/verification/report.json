@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "cases": {
+    "old_admission": {
+      "reply": [
+        1,
+        1,
+        null,
+        "1"
+      ],
+      "elapsed_s": 0.1720000000204891,
+      "wire_requests": 1
+    },
+    "new_admission": {
+      "reply": null,
+      "elapsed_s": 0.031000000017229468,
+      "wire_requests": 0
+    },
+    "old_fanout": {
+      "wire_requests": 16,
+      "all_replied": true,
+      "all_none": false,
+      "elapsed_s": 1.9369999999762513
+    },
+    "new_fanout": {
+      "wire_requests": 1,
+      "all_replied": true,
+      "all_none": false,
+      "elapsed_s": 0.125
+    },
+    "no_completed_reply_cache": true,
+    "command_fence_fresh_read": true,
+    "follower_has_own_deadline": true,
+    "command_never_implicitly_retried": true,
+    "failed_flight_fails_all_readers": {
+      "wire_requests": 1,
+      "all_replied": false,
+      "all_none": true,
+      "elapsed_s": 0.125
+    },
+    "failed_flight_does_not_cache_failure": true,
+    "large_fragmented_reply": true,
+    "transport_uses_monotonic_clock": true
+  },
+  "hardware_commands": 0,
+  "network_scope": "PC loopback fake peer only",
+  "motor_guards_identical": true,
+  "firmware_changes": 0,
+  "old_queue_stall_reproduced": true,
+  "whole_idle_UART_failure_fixed": false
+}

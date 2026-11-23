@@ -1,0 +1,69 @@
+{
+  "pass": true,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "flash_ready": false,
+  "installed_firmware_modified": false,
+  "scope": "integrated candidate parser/ISR/FIFO with mocked RDR read side effects and HAL/MCSDK",
+  "hypothesis": "isolated intact NE on unchanged RUN heartbeat can be accepted within a bounded budget",
+  "limitations": [
+    "No evidence that the recorded physical NE accompanied an intact byte",
+    "Physical per-byte flag association and MCU timing remain unqualified",
+    "8-bit sequence cannot protect against long-delayed replay across wrap",
+    "CRC is not authentication or a safety certification",
+    "Finite corruption sweep, not every possible multi-bit error"
+  ],
+  "source_sha256": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116",
+    "tools\\prepare_uart_v3_candidate.py": "14dcef63cdaf68409560a006d9caaebf938ff3342c007a5bee77eef778c6f795",
+    "research\\uart_v3\\nucleo_fifo.c.inc": "b67ea7d9ed0e602266d5b43a3cefccee017fee1e1f4bdb6db9ec80d8bb322c2a",
+    "research\\uart_v3\\nucleo_parser.c.inc": "c393d0ff94996626775a89f291a2a64eae08803117ddf71335e284cb66f5641e",
+    "research\\uart_v3\\uart_v3_transport.h": "97bcfdead8c725b84c93882d4d0057186419b4230d63360495648afe61f1fb45",
+    "research\\uart_v3\\host_scenarios.cpp": "59c410b3a3eac49a192a4cf1d7a2cb36382411289036f8c5aa2ca6c590039da4",
+    "tools\\uart_v3_candidate_selftest.py": "67c0eda4a46cf0bc74454db1049a8a3670e22855aab731b050c59101bd1f8df0"
+  },
+  "cases": 204551,
+  "assertions": 619633,
+  "intact_isolated_NE_accepted": 11008,
+  "strict_baseline_NE_rejected": 11008,
+  "mutations": [
+    {
+      "name": "CRC_guard_removed",
+      "detected": true,
+      "failure": "FAIL parser CRC rejects even unmarked corruption (check 91270)"
+    },
+    {
+      "name": "hard_error_guard_removed",
+      "detected": true,
+      "failure": "FAIL all hard UART/unknown flag combinations rejected at every byte (check 182613)"
+    },
+    {
+      "name": "NE_budget_unbounded",
+      "detected": true,
+      "failure": "FAIL third NE inside sliding second rejected including tick wrap (check 233796)"
+    },
+    {
+      "name": "changed_command_allowed",
+      "detected": true,
+      "failure": "FAIL NE cannot authorize any changed command field (check 183761)"
+    },
+    {
+      "name": "clean_recovery_removed",
+      "detected": true,
+      "failure": "FAIL adjacent noise frames forbidden until three clean commands (check 233783)"
+    },
+    {
+      "name": "frame_deadline_removed",
+      "detected": true,
+      "failure": "FAIL partial frame stopped at 16 ms without refreshing watchdog (check 495695)"
+    },
+    {
+      "name": "sequence_guard_removed",
+      "detected": true,
+      "failure": "FAIL sequence error retains explicit replay diagnosis (check 233807)"
+    }
+  ],
+  "sources_unchanged_during_tests": true
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "mic_ai.passive_break_decoder_install.v1",
+  "pass": true,
+  "hmi_sha256": "992b3c20c8573681f195de3a208a461359c22673b83e3f2d578f87e16ce212d1",
+  "base_sha256": "88f0764f881b5bbc7cb8e1e0b40954fe7d2e63450edd568cd8b92f83550d2d6b",
+  "mcu_flash_commands": 0,
+  "arm_commands": 0,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "calibration_file_modified": false,
+  "hv_release_approved": false,
+  "operations": [
+    {
+      "label": "precheck",
+      "exit_code": 0
+    },
+    {
+      "label": "stage_candidate",
+      "exit_code": 0
+    },
+    {
+      "label": "atomic_install",
+      "exit_code": 0
+    },
+    {
+      "label": "restart_owned_hmi",
+      "exit_code": 0
+    },
+    {
+      "label": "verify_install",
+      "exit_code": 0
+    }
+  ],
+  "offline_evidence_sha256": {
+    "selftest": "eac84f46aa5938a3482ee52fb85e9d91cb9c58af7fb4b5cf24cf98fe0994a1e0",
+    "guards": "26e89c11c0a8861b7954e0269bcb6735f698c90e00a6a54c7493a43b78e779a8"
+  },
+  "before_remote": {
+    "boot_id": "33ca73bb-edb9-4dab-a360-5a3f49be1d4c",
+    "pid": 549,
+    "hmi_sha256": "88f0764f881b5bbc7cb8e1e0b40954fe7d2e63450edd568cd8b92f83550d2d6b",
+    "ui_sha256": "42700af1d5aad3409f49b00ed64c0d615bb490640cad5c8f4139380a6d53aa27",
+    "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17"
+  },
+  "after_remote": {
+    "boot_id": "33ca73bb-edb9-4dab-a360-5a3f49be1d4c",
+    "pid": 1245,
+    "hmi_sha256": "992b3c20c8573681f195de3a208a461359c22673b83e3f2d578f87e16ce212d1",
+    "ui_sha256": "42700af1d5aad3409f49b00ed64c0d615bb490640cad5c8f4139380a6d53aa27",
+    "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17"
+  },
+  "first_fault_snapshot_preserved": true,
+  "uart_error_counters_preserved": true,
+  "samples": 20,
+  "span_s": 30.328999999997905,
+  "new_good_frames": 604,
+  "snapshot_reasons": [
+    "recorded",
+    "no_recorded_break"
+  ]
+}

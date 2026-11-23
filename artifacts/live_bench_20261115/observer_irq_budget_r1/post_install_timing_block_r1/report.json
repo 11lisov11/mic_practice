@@ -1,0 +1,189 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "halt": 0,
+  "method": "Passive SWD HOTPLUG plus HTTP GET",
+  "passed": false,
+  "RAM": [
+    {
+      "uwTick": 165761,
+      "fe_fast_cycles": 4229,
+      "fe_observer_cycles": 0,
+      "max_fast_cycles": 0,
+      "max_observer_cycles": 0,
+      "fe_case": 0,
+      "fe_fault": 3,
+      "fe_complete": 0,
+      "running": 0,
+      "run_fault": 0,
+      "fe_trial_done": 0,
+      "ma_perf_off": 1,
+      "BDTR": 37304434,
+      "DIER": 128
+    },
+    {
+      "uwTick": 166283,
+      "fe_fast_cycles": 4229,
+      "fe_observer_cycles": 0,
+      "max_fast_cycles": 0,
+      "max_observer_cycles": 0,
+      "fe_case": 0,
+      "fe_fault": 3,
+      "fe_complete": 0,
+      "running": 0,
+      "run_fault": 0,
+      "fe_trial_done": 0,
+      "ma_perf_off": 1,
+      "BDTR": 37304434,
+      "DIER": 128
+    }
+  ],
+  "pair": [
+    2026111501,
+    2026111502
+  ],
+  "vdc": 10.0,
+  "pwm": 0,
+  "run_id": 0,
+  "native_boot": {
+    "available": true,
+    "fresh": true,
+    "firmware": 2026111502,
+    "retained_sequence": 1,
+    "sequence_is_power_cycle_persistent": false,
+    "csr_raw": 67108864,
+    "previous_csr_raw": 0,
+    "flags": 4,
+    "causes": [
+      "NRST_FLAG"
+    ],
+    "previous_flags_cleared": false,
+    "current_flags_cleared": true,
+    "previous_boot_continuity": false,
+    "software_request_tag": 0,
+    "early_record_crc": 3107028002,
+    "native_tick_ms": 166099,
+    "summary_ru": "флаг NRST; предыдущая история не подтверждена",
+    "exact_physical_cause_identified": false,
+    "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+  },
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 50,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "FOC": {
+    "available": true,
+    "observer_measured": false,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 0.0,
+    "irq_body_lower_us": 0.0,
+    "cpu_upper_us": 0.0,
+    "irq_root_count": 0,
+    "max_wall_us": 0.0,
+    "max_irq_body_lower_us": 0.0,
+    "max_cpu_upper_us": 0.0,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 0,
+    "meter_errors": 0,
+    "first_fault": null,
+    "IRQ_breakdown": {
+      "available": false,
+      "scope": "last_completed_observer_window",
+      "window_us": 0.0,
+      "valid_mask": 0,
+      "handlers": [
+        {
+          "name": "DMA2_BKIN",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "DMA1_UART_TX",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART1_CONTROL",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "ADC1_2",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_UPDATE",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "TIM1_BREAK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "USART2_MCSDK",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "SysTick",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        },
+        {
+          "name": "EXTI_STOP",
+          "valid": false,
+          "completed_calls": 0,
+          "inclusive_body_us": 0.0
+        }
+      ],
+      "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+    },
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "zero_ready": 1,
+  "foc_timing_fault": 3,
+  "UART": {
+    "mc_bad_cnt": 1,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 2,
+    "mc_last_uart_error_flags": 2,
+    "mc_transport_fault": 4,
+    "mc_age_ms": 50,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0
+  },
+  "fault_masks": [
+    0,
+    0
+  ],
+  "error": "OFF CPU qualification failed at case0:4229 cycles > unchanged4000. No retry/reset/START.",
+  "fast_budget": 4000,
+  "first_failure_preserved": true
+}

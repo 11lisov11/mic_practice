@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "methods": [
+    "GET"
+  ],
+  "pair": [
+    2026111609,
+    2026111606
+  ],
+  "FOC_start_ready": false,
+  "vdc_before": 322.0,
+  "vdc_after": 323.0,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 33,
+    "break_irq_enabled": false,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "zero_ready": 1,
+  "CPU_fast_cycles": 3618,
+  "native_frames_added": 117,
+  "faults": {
+    "mc_transport_fault": 0,
+    "mc_fault": 5,
+    "bp_fault": 5,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 4,
+    "uno_rx_hw_errors": 0
+  },
+  "algorithm_selected": 1,
+  "limits": {
+    "OFF_fast_cycles": 4000,
+    "estimate_ms": 2,
+    "trip_A": 1.35,
+    "ADC_ticks": 2048
+  },
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "365dc016-dc82-406c-910c-d8035c860535",
+      [
+        2026111606,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        1812657868
+      ]
+    ],
+    "samples": 6,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 6.0939999999827705,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

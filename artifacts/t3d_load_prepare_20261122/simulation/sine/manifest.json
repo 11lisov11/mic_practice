@@ -1,0 +1,124 @@
+{
+  "schema": "mic.t3d.load.v1",
+  "run_id": "a059b11fb7134a638a73dbd1b2969416",
+  "started_utc": "2026-11-22T19:09:56.599394+00:00",
+  "completed": true,
+  "hardware_validated": false,
+  "hardware_session": false,
+  "simulation": true,
+  "profile": "sine",
+  "seed": 20261122,
+  "limits": {
+    "rated_torque_nm": 1.27,
+    "max_torque_nm": 0.12,
+    "max_power_w": 5.0,
+    "max_energy_j": 15.0,
+    "min_rpm": 80.0,
+    "max_rpm": 350.0,
+    "slew_nm_s": 0.12,
+    "duration_s": 4.0,
+    "cycle_s": 0.5,
+    "deadline_s": 0.45,
+    "nis_limit": 25.0
+  },
+  "configuration": {
+    "kit": "HLTNC-T3D-400W-3M-BRAKE",
+    "schema": "mic.t3d.commissioning.v1",
+    "bench_url": "http://192.168.1.138:8080",
+    "expected_firmware_pair": [
+      2026112013,
+      2026111810
+    ],
+    "expected_algorithm": 1,
+    "require_observer_valid": true,
+    "profile_seed": 20261122,
+    "modbus": {
+      "unit": 1,
+      "baud": 19200,
+      "parity": "E"
+    },
+    "servo_usb": {
+      "port": null,
+      "vid": null,
+      "pid": null,
+      "serial_number": null,
+      "location": null
+    },
+    "watchdog_usb": {
+      "port": null,
+      "vid": null,
+      "pid": null,
+      "serial_number": null,
+      "location": null
+    },
+    "limits": {
+      "rated_torque_nm": 1.27,
+      "max_torque_nm": 0.12,
+      "max_power_w": 5.0,
+      "max_energy_j": 15.0,
+      "min_rpm": 80.0,
+      "max_rpm": 350.0,
+      "slew_nm_s": 0.12,
+      "duration_s": 4.0,
+      "cycle_s": 0.5,
+      "deadline_s": 0.45,
+      "nis_limit": 25.0
+    },
+    "qualification": {
+      "motor_nameplate_checked": true,
+      "driver_revision_checked": true,
+      "mode_and_sign_tested": true,
+      "parameter_readback_checked": true,
+      "independent_czero_watchdog_tested": true,
+      "stop_chain_tested": true,
+      "parking_brake_timing_tested": true,
+      "coupling_and_guard_checked": true,
+      "air_loaded_trial_authorized_and_qualified": true,
+      "usb_isolation_checked": true,
+      "actual_rated_torque_nm": 1.27,
+      "di_conducting_bit": 0,
+      "do_conducting_bit": 1,
+      "watchdog_measured_drop_s": 0.75,
+      "validated_regen_power_w": 100.0,
+      "validated_regen_energy_j": 100.0
+    },
+    "fixture_only": true
+  },
+  "source_sha256": {
+    "control.py": "5849dca949d0f8f22bc9d7682e85b9a20d6a616c2c7d4cd39084a05a417dbb44",
+    "protocol.py": "31a0f2b6f6753fed0930693fa2c29169fce3477f0e0c4bbb351860ce849285e8",
+    "runner.py": "a841cda64a2167df31d3379ae22482b59818504b94530a3ac57d3a116e7fc971",
+    "simulation.py": "4c0a8ea15505818e9a9f20e3edddce488422ec4ed24d27e375be3163955aaed8",
+    "ui.py": "fb357f2b4c8f9d083fd6be1a017c6957a356166f0eeecfa84ba17a5fe48b74f9",
+    "watchdog.py": "3a00d0bcea6dc08a2caf6cc317afa1e1f3c6969705c6c209de2473da10995e96",
+    "__init__.py": "e928d9e28fe4862679a932f3ef56629fb1e35b7f76282c49d4ab33eed9b02f64",
+    "__main__.py": "f7fe52181636000cd23261d4a818899398e3c50f867338ccabc32106cacc4dea"
+  },
+  "commands_to_air_start": 0,
+  "torque_source": "volatile_P145_integer_percent",
+  "torque_ground_truth": false,
+  "encoder_reference_source": "T3D_FC04_rpm",
+  "time_alignment": "host_poll_intervals_only_not_synchronized_MCU_samples",
+  "nonzero_commands": 3,
+  "stop_results": {
+    "watchdog_disarm": {
+      "acknowledged": true
+    },
+    "zero_torque_readback": {
+      "acknowledged": true
+    },
+    "AIR_stop": {
+      "acknowledged": true
+    }
+  },
+  "failure": null,
+  "native_run_key": [
+    2026112013,
+    2026111810,
+    42,
+    1234
+  ],
+  "excitation_commanded": true,
+  "drive_torque_feedback_nonzero_samples": 3,
+  "energy_budget_used_j": 3.723834492055101
+}

@@ -1,0 +1,72 @@
+{
+  "pair": [
+    2026111403,
+    2026111404
+  ],
+  "base_pair": [
+    2026111401,
+    2026111402
+  ],
+  "built": true,
+  "installed": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "frequency_max_hz": 5,
+  "runlimit_ms": 5000,
+  "thresholds_changed": false,
+  "observer_tuning_changed": false,
+  "rotor_speed_independently_measured": false,
+  "OFF_only_bulk_trace": true,
+  "trace_bytes": 1696,
+  "coherent_bin_current": true,
+  "physical_cause_of_recorded_loss_proven": false,
+  "recorded_flux_NIS_IdIq_available": false,
+  "repeat_Break_capture_preserved": true,
+  "target_timing_requalification_required": true,
+  "hardware_validated": false,
+  "host_tests_passed": true,
+  "model_tests_passed": true,
+  "native_flash_bytes": 109312,
+  "hex_padding_offsets": [
+    104972,
+    104973,
+    104974,
+    104975
+  ],
+  "artifacts": {
+    "release/nucleo_2026111404_expected_readback.bin": "1e74bab38a1f6238a9a12be24c3d32367a215d5a557e0e084752e0e253f6b992",
+    "release/nucleo_2026111404_observer_input.hex": "27dd8c2cc65fc40642bf95367e5a4c43a22c1149a0022ba818b34ed6256f2544",
+    "release/uno_2026111403_observer_trace.elf-zsk.bin": "0756ac46a80868421b56852b214c7b45e2e3a7ac590bf3e949bb8006d93a6b0d"
+  },
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 28272,
+    ".noinit": 32,
+    "._user_heap_stack": 1536
+  },
+  "RAM_allocated": 30816,
+  "RAM_unallocated": 1952,
+  "preserved_files_verified": 2106,
+  "source_files": 159,
+  "target_timing_measured": false,
+  "verification_reports": {
+    "verification/report.json": "6738b590a6550684a6b64b79c8c2ccdb41e28104b63e9ffb3f08339ee0a9ea93",
+    "model_verification/model_report.json": "8a35b58198bd7e611f3fffab889009c9bd178e451667e04d67c0437c51aec2a3",
+    "recorded_run_analysis.json": "50697c21313a46aea6045a3d09af54130f3ca92dc061b96acb9dc89f5357e22b"
+  },
+  "both_readbacks_verified": true,
+  "OFF_CPU_qualified": true,
+  "target_timing_measured_OFF": true,
+  "full_adapter_under_PWM_measured": false,
+  "installation_report": "installation_acceptance.json",
+  "idle_verification_sha256": "a86b6147777109368e433532b5716325706be405c2944efab9a9c1fea9611d91",
+  "latched_transport_fault_retained": true,
+  "motor_start_ready": false
+}

@@ -1,0 +1,484 @@
+
+C:\mic_practice\artifacts\live_bench_20261030\boot_reset_capture_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+080122e0 <mic_boot_capture_early>:
+ 80122e0:	4a9b      	ldr	r2, [pc, #620]	@ (8012550 <mic_boot_capture_early+0x270>)
+ 80122e2:	4b9c      	ldr	r3, [pc, #624]	@ (8012554 <mic_boot_capture_early+0x274>)
+ 80122e4:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 80122e8:	f8d2 4094 	ldr.w	r4, [r2, #148]	@ 0x94
+ 80122ec:	6819      	ldr	r1, [r3, #0]
+ 80122ee:	f8d3 c004 	ldr.w	ip, [r3, #4]
+ 80122f2:	f8d3 e008 	ldr.w	lr, [r3, #8]
+ 80122f6:	68dd      	ldr	r5, [r3, #12]
+ 80122f8:	6918      	ldr	r0, [r3, #16]
+ 80122fa:	695e      	ldr	r6, [r3, #20]
+ 80122fc:	699f      	ldr	r7, [r3, #24]
+ 80122fe:	f8d3 801c 	ldr.w	r8, [r3, #28]
+ 8012302:	f1a2 626a 	sub.w	r2, r2, #245366784	@ 0xea00000
+ 8012306:	f5a2 227b 	sub.w	r2, r2, #1028096	@ 0xfb000
+ 801230a:	f6a2 32be 	subw	r2, r2, #3006	@ 0xbbe
+ 801230e:	4291      	cmp	r1, r2
+ 8012310:	b08b      	sub	sp, #44	@ 0x2c
+ 8012312:	f000 820a 	beq.w	801272a <mic_boot_capture_early+0x44a>
+ 8012316:	aa01      	add	r2, sp, #4
+ 8012318:	a908      	add	r1, sp, #32
+ 801231a:	f04f 0c00 	mov.w	ip, #0
+ 801231e:	46e0      	mov	r8, ip
+ 8012320:	4665      	mov	r5, ip
+ 8012322:	f04f 0e01 	mov.w	lr, #1
+ 8012326:	f20f 2b20 	addw	fp, pc, #544	@ 0x220
+ 801232a:	e9db ab00 	ldrd	sl, fp, [fp]
+ 801232e:	e9cd e404 	strd	lr, r4, [sp, #16]
+ 8012332:	e9cd 5806 	strd	r5, r8, [sp, #24]
+ 8012336:	e9cd ab02 	strd	sl, fp, [sp, #8]
+ 801233a:	4887      	ldr	r0, [pc, #540]	@ (8012558 <mic_boot_capture_early+0x278>)
+ 801233c:	f8cd c020 	str.w	ip, [sp, #32]
+ 8012340:	4691      	mov	r9, r2
+ 8012342:	f04f 36ff 	mov.w	r6, #4294967295
+ 8012346:	f859 7f04 	ldr.w	r7, [r9, #4]!
+ 801234a:	fa5f fa87 	uxtb.w	sl, r7
+ 801234e:	ea8a 0606 	eor.w	r6, sl, r6
+ 8012352:	f346 0a00 	sbfx	sl, r6, #0, #1
+ 8012356:	ea0a 0a00 	and.w	sl, sl, r0
+ 801235a:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 801235e:	f346 0640 	sbfx	r6, r6, #1, #1
+ 8012362:	4006      	ands	r6, r0
+ 8012364:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012368:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 801236c:	ea0a 0a00 	and.w	sl, sl, r0
+ 8012370:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 8012374:	f346 0640 	sbfx	r6, r6, #1, #1
+ 8012378:	4006      	ands	r6, r0
+ 801237a:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 801237e:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012382:	ea0a 0a00 	and.w	sl, sl, r0
+ 8012386:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 801238a:	f346 0640 	sbfx	r6, r6, #1, #1
+ 801238e:	4006      	ands	r6, r0
+ 8012390:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012394:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012398:	ea0a 0a00 	and.w	sl, sl, r0
+ 801239c:	ea8a 0656 	eor.w	r6, sl, r6, lsr #1
+ 80123a0:	ea4f 0b56 	mov.w	fp, r6, lsr #1
+ 80123a4:	f3c7 2a07 	ubfx	sl, r7, #8, #8
+ 80123a8:	f016 0601 	ands.w	r6, r6, #1
+ 80123ac:	bf18      	it	ne
+ 80123ae:	4606      	movne	r6, r0
+ 80123b0:	ea8a 0a0b 	eor.w	sl, sl, fp
+ 80123b4:	ea8a 0a06 	eor.w	sl, sl, r6
+ 80123b8:	f34a 0600 	sbfx	r6, sl, #0, #1
+ 80123bc:	4006      	ands	r6, r0
+ 80123be:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 80123c2:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 80123c6:	ea0a 0a00 	and.w	sl, sl, r0
+ 80123ca:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 80123ce:	f346 0640 	sbfx	r6, r6, #1, #1
+ 80123d2:	4006      	ands	r6, r0
+ 80123d4:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 80123d8:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 80123dc:	ea0a 0a00 	and.w	sl, sl, r0
+ 80123e0:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 80123e4:	f346 0640 	sbfx	r6, r6, #1, #1
+ 80123e8:	4006      	ands	r6, r0
+ 80123ea:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 80123ee:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 80123f2:	ea0a 0a00 	and.w	sl, sl, r0
+ 80123f6:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 80123fa:	f346 0640 	sbfx	r6, r6, #1, #1
+ 80123fe:	4006      	ands	r6, r0
+ 8012400:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012404:	ea4f 0b56 	mov.w	fp, r6, lsr #1
+ 8012408:	f3c7 4a07 	ubfx	sl, r7, #16, #8
+ 801240c:	f016 0601 	ands.w	r6, r6, #1
+ 8012410:	bf18      	it	ne
+ 8012412:	4606      	movne	r6, r0
+ 8012414:	ea8a 0a0b 	eor.w	sl, sl, fp
+ 8012418:	ea8a 0a06 	eor.w	sl, sl, r6
+ 801241c:	f34a 0600 	sbfx	r6, sl, #0, #1
+ 8012420:	4006      	ands	r6, r0
+ 8012422:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012426:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 801242a:	ea0a 0a00 	and.w	sl, sl, r0
+ 801242e:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 8012432:	f346 0640 	sbfx	r6, r6, #1, #1
+ 8012436:	4006      	ands	r6, r0
+ 8012438:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 801243c:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012440:	ea0a 0a00 	and.w	sl, sl, r0
+ 8012444:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 8012448:	f346 0640 	sbfx	r6, r6, #1, #1
+ 801244c:	4006      	ands	r6, r0
+ 801244e:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012452:	f34a 0a40 	sbfx	sl, sl, #1, #1
+ 8012456:	ea0a 0a00 	and.w	sl, sl, r0
+ 801245a:	ea8a 0a56 	eor.w	sl, sl, r6, lsr #1
+ 801245e:	f346 0640 	sbfx	r6, r6, #1, #1
+ 8012462:	4006      	ands	r6, r0
+ 8012464:	ea86 065a 	eor.w	r6, r6, sl, lsr #1
+ 8012468:	ea4f 0a56 	mov.w	sl, r6, lsr #1
+ 801246c:	f016 0601 	ands.w	r6, r6, #1
+ 8012470:	bf18      	it	ne
+ 8012472:	4606      	movne	r6, r0
+ 8012474:	ea8a 6717 	eor.w	r7, sl, r7, lsr #24
+ 8012478:	407e      	eors	r6, r7
+ 801247a:	f346 0700 	sbfx	r7, r6, #0, #1
+ 801247e:	4007      	ands	r7, r0
+ 8012480:	ea87 0756 	eor.w	r7, r7, r6, lsr #1
+ 8012484:	f346 0640 	sbfx	r6, r6, #1, #1
+ 8012488:	4006      	ands	r6, r0
+ 801248a:	ea86 0657 	eor.w	r6, r6, r7, lsr #1
+ 801248e:	f347 0740 	sbfx	r7, r7, #1, #1
+ 8012492:	4007      	ands	r7, r0
+ 8012494:	ea87 0756 	eor.w	r7, r7, r6, lsr #1
+ 8012498:	f346 0640 	sbfx	r6, r6, #1, #1
+ 801249c:	4006      	ands	r6, r0
+ 801249e:	ea86 0657 	eor.w	r6, r6, r7, lsr #1
+ 80124a2:	f347 0740 	sbfx	r7, r7, #1, #1
+ 80124a6:	4007      	ands	r7, r0
+ 80124a8:	ea87 0756 	eor.w	r7, r7, r6, lsr #1
+ 80124ac:	f346 0640 	sbfx	r6, r6, #1, #1
+ 80124b0:	4006      	ands	r6, r0
+ 80124b2:	ea86 0657 	eor.w	r6, r6, r7, lsr #1
+ 80124b6:	f347 0740 	sbfx	r7, r7, #1, #1
+ 80124ba:	4007      	ands	r7, r0
+ 80124bc:	ea87 0756 	eor.w	r7, r7, r6, lsr #1
+ 80124c0:	f346 0640 	sbfx	r6, r6, #1, #1
+ 80124c4:	4006      	ands	r6, r0
+ 80124c6:	4589      	cmp	r9, r1
+ 80124c8:	ea86 0657 	eor.w	r6, r6, r7, lsr #1
+ 80124cc:	f47f af3b 	bne.w	8012346 <mic_boot_capture_early+0x66>
+ 80124d0:	2000      	movs	r0, #0
+ 80124d2:	43f6      	mvns	r6, r6
+ 80124d4:	61d8      	str	r0, [r3, #28]
+ 80124d6:	f3bf 8f5f 	dmb	sy
+ 80124da:	4820      	ldr	r0, [pc, #128]	@ (801255c <mic_boot_capture_early+0x27c>)
+ 80124dc:	6018      	str	r0, [r3, #0]
+ 80124de:	f100 408e 	add.w	r0, r0, #1191182336	@ 0x47000000
+ 80124e2:	f500 00e3 	add.w	r0, r0, #7438336	@ 0x718000
+ 80124e6:	f600 40a4 	addw	r0, r0, #3236	@ 0xca4
+ 80124ea:	6058      	str	r0, [r3, #4]
+ 80124ec:	f8c3 e008 	str.w	lr, [r3, #8]
+ 80124f0:	60dc      	str	r4, [r3, #12]
+ 80124f2:	611d      	str	r5, [r3, #16]
+ 80124f4:	f8c3 8014 	str.w	r8, [r3, #20]
+ 80124f8:	f8c3 c018 	str.w	ip, [r3, #24]
+ 80124fc:	f3bf 8f5f 	dmb	sy
+ 8012500:	61de      	str	r6, [r3, #28]
+ 8012502:	f3bf 8f5f 	dmb	sy
+ 8012506:	4812      	ldr	r0, [pc, #72]	@ (8012550 <mic_boot_capture_early+0x270>)
+ 8012508:	f8d0 6094 	ldr.w	r6, [r0, #148]	@ 0x94
+ 801250c:	f446 0600 	orr.w	r6, r6, #8388608	@ 0x800000
+ 8012510:	f8c0 6094 	str.w	r6, [r0, #148]	@ 0x94
+ 8012514:	f3bf 8f4f 	dsb	sy
+ 8012518:	f8d0 0094 	ldr.w	r0, [r0, #148]	@ 0x94
+ 801251c:	4e0e      	ldr	r6, [pc, #56]	@ (8012558 <mic_boot_capture_early+0x278>)
+ 801251e:	f8cd c020 	str.w	ip, [sp, #32]
+ 8012522:	f20f 0b24 	addw	fp, pc, #36	@ 0x24
+ 8012526:	e9db ab00 	ldrd	sl, fp, [fp]
+ 801252a:	f1b0 7f00 	cmp.w	r0, #33554432	@ 0x2000000
+ 801252e:	bf38      	it	cc
+ 8012530:	f048 0804 	orrcc.w	r8, r8, #4
+ 8012534:	e9cd e404 	strd	lr, r4, [sp, #16]
+ 8012538:	e9cd 5806 	strd	r5, r8, [sp, #24]
+ 801253c:	e9cd ab02 	strd	sl, fp, [sp, #8]
+ 8012540:	f04f 30ff 	mov.w	r0, #4294967295
+ 8012544:	e00c      	b.n	8012560 <mic_boot_capture_early+0x280>
+ 8012546:	bf00      	nop
+ 8012548:	31525442 	.word	0x31525442
+ 801254c:	78c3e0e6 	.word	0x78c3e0e6
+ 8012550:	40021000 	.word	0x40021000
+ 8012554:	20006920 	.word	0x20006920
+ 8012558:	82f63b78 	.word	0x82f63b78
+ 801255c:	31525442 	.word	0x31525442
+ 8012560:	f852 7f04 	ldr.w	r7, [r2, #4]!
+ 8012564:	fa5f f987 	uxtb.w	r9, r7
+ 8012568:	ea89 0900 	eor.w	r9, r9, r0
+ 801256c:	f349 0000 	sbfx	r0, r9, #0, #1
+ 8012570:	4030      	ands	r0, r6
+ 8012572:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 8012576:	f349 0940 	sbfx	r9, r9, #1, #1
+ 801257a:	ea09 0906 	and.w	r9, r9, r6
+ 801257e:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 8012582:	f340 0040 	sbfx	r0, r0, #1, #1
+ 8012586:	4030      	ands	r0, r6
+ 8012588:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 801258c:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012590:	ea09 0906 	and.w	r9, r9, r6
+ 8012594:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 8012598:	f340 0040 	sbfx	r0, r0, #1, #1
+ 801259c:	4030      	ands	r0, r6
+ 801259e:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 80125a2:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80125a6:	ea09 0906 	and.w	r9, r9, r6
+ 80125aa:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 80125ae:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80125b2:	4030      	ands	r0, r6
+ 80125b4:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 80125b8:	ea4f 0a50 	mov.w	sl, r0, lsr #1
+ 80125bc:	f3c7 2907 	ubfx	r9, r7, #8, #8
+ 80125c0:	f010 0001 	ands.w	r0, r0, #1
+ 80125c4:	ea89 090a 	eor.w	r9, r9, sl
+ 80125c8:	bf18      	it	ne
+ 80125ca:	4630      	movne	r0, r6
+ 80125cc:	ea89 0000 	eor.w	r0, r9, r0
+ 80125d0:	f340 0900 	sbfx	r9, r0, #0, #1
+ 80125d4:	ea09 0906 	and.w	r9, r9, r6
+ 80125d8:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 80125dc:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80125e0:	f349 0a40 	sbfx	sl, r9, #1, #1
+ 80125e4:	4030      	ands	r0, r6
+ 80125e6:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 80125ea:	ea0a 0a06 	and.w	sl, sl, r6
+ 80125ee:	ea8a 0a50 	eor.w	sl, sl, r0, lsr #1
+ 80125f2:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80125f6:	ea00 0906 	and.w	r9, r0, r6
+ 80125fa:	f34a 0040 	sbfx	r0, sl, #1, #1
+ 80125fe:	ea89 095a 	eor.w	r9, r9, sl, lsr #1
+ 8012602:	4030      	ands	r0, r6
+ 8012604:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 8012608:	f349 0940 	sbfx	r9, r9, #1, #1
+ 801260c:	ea09 0906 	and.w	r9, r9, r6
+ 8012610:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 8012614:	f340 0040 	sbfx	r0, r0, #1, #1
+ 8012618:	4030      	ands	r0, r6
+ 801261a:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 801261e:	ea4f 0a50 	mov.w	sl, r0, lsr #1
+ 8012622:	f3c7 4907 	ubfx	r9, r7, #16, #8
+ 8012626:	f010 0001 	ands.w	r0, r0, #1
+ 801262a:	ea89 090a 	eor.w	r9, r9, sl
+ 801262e:	bf18      	it	ne
+ 8012630:	4630      	movne	r0, r6
+ 8012632:	ea89 0000 	eor.w	r0, r9, r0
+ 8012636:	f340 0900 	sbfx	r9, r0, #0, #1
+ 801263a:	ea09 0906 	and.w	r9, r9, r6
+ 801263e:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 8012642:	f340 0040 	sbfx	r0, r0, #1, #1
+ 8012646:	f349 0a40 	sbfx	sl, r9, #1, #1
+ 801264a:	4030      	ands	r0, r6
+ 801264c:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 8012650:	ea0a 0a06 	and.w	sl, sl, r6
+ 8012654:	ea8a 0a50 	eor.w	sl, sl, r0, lsr #1
+ 8012658:	f340 0040 	sbfx	r0, r0, #1, #1
+ 801265c:	ea00 0906 	and.w	r9, r0, r6
+ 8012660:	f34a 0040 	sbfx	r0, sl, #1, #1
+ 8012664:	ea89 095a 	eor.w	r9, r9, sl, lsr #1
+ 8012668:	4030      	ands	r0, r6
+ 801266a:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 801266e:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012672:	ea09 0906 	and.w	r9, r9, r6
+ 8012676:	ea89 0950 	eor.w	r9, r9, r0, lsr #1
+ 801267a:	f340 0040 	sbfx	r0, r0, #1, #1
+ 801267e:	4030      	ands	r0, r6
+ 8012680:	ea80 0059 	eor.w	r0, r0, r9, lsr #1
+ 8012684:	ea4f 0950 	mov.w	r9, r0, lsr #1
+ 8012688:	f010 0001 	ands.w	r0, r0, #1
+ 801268c:	bf18      	it	ne
+ 801268e:	4630      	movne	r0, r6
+ 8012690:	ea89 6917 	eor.w	r9, r9, r7, lsr #24
+ 8012694:	ea89 0900 	eor.w	r9, r9, r0
+ 8012698:	f349 0700 	sbfx	r7, r9, #0, #1
+ 801269c:	4037      	ands	r7, r6
+ 801269e:	f349 0040 	sbfx	r0, r9, #1, #1
+ 80126a2:	ea87 0759 	eor.w	r7, r7, r9, lsr #1
+ 80126a6:	4030      	ands	r0, r6
+ 80126a8:	ea80 0057 	eor.w	r0, r0, r7, lsr #1
+ 80126ac:	f347 0740 	sbfx	r7, r7, #1, #1
+ 80126b0:	4037      	ands	r7, r6
+ 80126b2:	ea87 0750 	eor.w	r7, r7, r0, lsr #1
+ 80126b6:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80126ba:	4030      	ands	r0, r6
+ 80126bc:	ea80 0057 	eor.w	r0, r0, r7, lsr #1
+ 80126c0:	f347 0740 	sbfx	r7, r7, #1, #1
+ 80126c4:	4037      	ands	r7, r6
+ 80126c6:	ea87 0750 	eor.w	r7, r7, r0, lsr #1
+ 80126ca:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80126ce:	4030      	ands	r0, r6
+ 80126d0:	ea80 0057 	eor.w	r0, r0, r7, lsr #1
+ 80126d4:	f347 0740 	sbfx	r7, r7, #1, #1
+ 80126d8:	4037      	ands	r7, r6
+ 80126da:	ea87 0750 	eor.w	r7, r7, r0, lsr #1
+ 80126de:	f340 0040 	sbfx	r0, r0, #1, #1
+ 80126e2:	4030      	ands	r0, r6
+ 80126e4:	428a      	cmp	r2, r1
+ 80126e6:	ea80 0057 	eor.w	r0, r0, r7, lsr #1
+ 80126ea:	f47f af39 	bne.w	8012560 <mic_boot_capture_early+0x280>
+ 80126ee:	2200      	movs	r2, #0
+ 80126f0:	43c0      	mvns	r0, r0
+ 80126f2:	61da      	str	r2, [r3, #28]
+ 80126f4:	f3bf 8f5f 	dmb	sy
+ 80126f8:	4a99      	ldr	r2, [pc, #612]	@ (8012960 <mic_boot_capture_early+0x680>)
+ 80126fa:	601a      	str	r2, [r3, #0]
+ 80126fc:	f102 428e 	add.w	r2, r2, #1191182336	@ 0x47000000
+ 8012700:	f502 02e3 	add.w	r2, r2, #7438336	@ 0x718000
+ 8012704:	f602 42a4 	addw	r2, r2, #3236	@ 0xca4
+ 8012708:	605a      	str	r2, [r3, #4]
+ 801270a:	f8c3 e008 	str.w	lr, [r3, #8]
+ 801270e:	60dc      	str	r4, [r3, #12]
+ 8012710:	611d      	str	r5, [r3, #16]
+ 8012712:	f8c3 8014 	str.w	r8, [r3, #20]
+ 8012716:	f8c3 c018 	str.w	ip, [r3, #24]
+ 801271a:	f3bf 8f5f 	dmb	sy
+ 801271e:	61d8      	str	r0, [r3, #28]
+ 8012720:	f3bf 8f5f 	dmb	sy
+ 8012724:	b00b      	add	sp, #44	@ 0x2c
+ 8012726:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 801272a:	4a8e      	ldr	r2, [pc, #568]	@ (8012964 <mic_boot_capture_early+0x684>)
+ 801272c:	4594      	cmp	ip, r2
+ 801272e:	f47f adf2 	bne.w	8012316 <mic_boot_capture_early+0x36>
+ 8012732:	f1be 0f00 	cmp.w	lr, #0
+ 8012736:	f43f adee 	beq.w	8012316 <mic_boot_capture_early+0x36>
+ 801273a:	2e0f      	cmp	r6, #15
+ 801273c:	f63f adeb 	bhi.w	8012316 <mic_boot_capture_early+0x36>
+ 8012740:	ed9f 7b85 	vldr	d7, [pc, #532]	@ 8012958 <mic_boot_capture_early+0x678>
+ 8012744:	e9cd e504 	strd	lr, r5, [sp, #16]
+ 8012748:	e9cd 6707 	strd	r6, r7, [sp, #28]
+ 801274c:	ed8d 7b02 	vstr	d7, [sp, #8]
+ 8012750:	aa01      	add	r2, sp, #4
+ 8012752:	9006      	str	r0, [sp, #24]
+ 8012754:	4884      	ldr	r0, [pc, #528]	@ (8012968 <mic_boot_capture_early+0x688>)
+ 8012756:	9201      	str	r2, [sp, #4]
+ 8012758:	4693      	mov	fp, r2
+ 801275a:	a908      	add	r1, sp, #32
+ 801275c:	f04f 3cff 	mov.w	ip, #4294967295
+ 8012760:	f85b af04 	ldr.w	sl, [fp, #4]!
+ 8012764:	fa5f f98a 	uxtb.w	r9, sl
+ 8012768:	ea89 0c0c 	eor.w	ip, r9, ip
+ 801276c:	f34c 0900 	sbfx	r9, ip, #0, #1
+ 8012770:	ea09 0900 	and.w	r9, r9, r0
+ 8012774:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012778:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 801277c:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012780:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 8012784:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012788:	ea09 0900 	and.w	r9, r9, r0
+ 801278c:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012790:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012794:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012798:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 801279c:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80127a0:	ea09 0900 	and.w	r9, r9, r0
+ 80127a4:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80127a8:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 80127ac:	ea0c 0c00 	and.w	ip, ip, r0
+ 80127b0:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 80127b4:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80127b8:	ea09 0900 	and.w	r9, r9, r0
+ 80127bc:	ea89 0c5c 	eor.w	ip, r9, ip, lsr #1
+ 80127c0:	ea4f 025c 	mov.w	r2, ip, lsr #1
+ 80127c4:	f3ca 2907 	ubfx	r9, sl, #8, #8
+ 80127c8:	f01c 0c01 	ands.w	ip, ip, #1
+ 80127cc:	ea89 0902 	eor.w	r9, r9, r2
+ 80127d0:	bf18      	it	ne
+ 80127d2:	4684      	movne	ip, r0
+ 80127d4:	ea89 0c0c 	eor.w	ip, r9, ip
+ 80127d8:	f34c 0900 	sbfx	r9, ip, #0, #1
+ 80127dc:	ea09 0900 	and.w	r9, r9, r0
+ 80127e0:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80127e4:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 80127e8:	ea0c 0c00 	and.w	ip, ip, r0
+ 80127ec:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 80127f0:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80127f4:	ea09 0900 	and.w	r9, r9, r0
+ 80127f8:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80127fc:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012800:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012804:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 8012808:	f349 0940 	sbfx	r9, r9, #1, #1
+ 801280c:	ea09 0900 	and.w	r9, r9, r0
+ 8012810:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012814:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012818:	ea0c 0c00 	and.w	ip, ip, r0
+ 801281c:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 8012820:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012824:	ea09 0900 	and.w	r9, r9, r0
+ 8012828:	ea89 0c5c 	eor.w	ip, r9, ip, lsr #1
+ 801282c:	ea4f 025c 	mov.w	r2, ip, lsr #1
+ 8012830:	f3ca 4907 	ubfx	r9, sl, #16, #8
+ 8012834:	f01c 0c01 	ands.w	ip, ip, #1
+ 8012838:	bf18      	it	ne
+ 801283a:	4684      	movne	ip, r0
+ 801283c:	ea89 0902 	eor.w	r9, r9, r2
+ 8012840:	ea89 0c0c 	eor.w	ip, r9, ip
+ 8012844:	f34c 0900 	sbfx	r9, ip, #0, #1
+ 8012848:	ea09 0900 	and.w	r9, r9, r0
+ 801284c:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012850:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012854:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012858:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 801285c:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012860:	ea09 0900 	and.w	r9, r9, r0
+ 8012864:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012868:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 801286c:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012870:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 8012874:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012878:	ea09 0900 	and.w	r9, r9, r0
+ 801287c:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012880:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012884:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012888:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 801288c:	f349 0940 	sbfx	r9, r9, #1, #1
+ 8012890:	ea09 0900 	and.w	r9, r9, r0
+ 8012894:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012898:	ea4f 0c59 	mov.w	ip, r9, lsr #1
+ 801289c:	f019 0901 	ands.w	r9, r9, #1
+ 80128a0:	bf18      	it	ne
+ 80128a2:	4681      	movne	r9, r0
+ 80128a4:	ea8c 6c1a 	eor.w	ip, ip, sl, lsr #24
+ 80128a8:	ea8c 0c09 	eor.w	ip, ip, r9
+ 80128ac:	f34c 0900 	sbfx	r9, ip, #0, #1
+ 80128b0:	ea09 0900 	and.w	r9, r9, r0
+ 80128b4:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80128b8:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 80128bc:	ea0c 0c00 	and.w	ip, ip, r0
+ 80128c0:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 80128c4:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80128c8:	ea09 0900 	and.w	r9, r9, r0
+ 80128cc:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80128d0:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 80128d4:	ea0c 0c00 	and.w	ip, ip, r0
+ 80128d8:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 80128dc:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80128e0:	ea09 0900 	and.w	r9, r9, r0
+ 80128e4:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 80128e8:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 80128ec:	ea0c 0c00 	and.w	ip, ip, r0
+ 80128f0:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 80128f4:	f349 0940 	sbfx	r9, r9, #1, #1
+ 80128f8:	ea09 0900 	and.w	r9, r9, r0
+ 80128fc:	ea89 095c 	eor.w	r9, r9, ip, lsr #1
+ 8012900:	f34c 0c40 	sbfx	ip, ip, #1, #1
+ 8012904:	ea0c 0c00 	and.w	ip, ip, r0
+ 8012908:	4559      	cmp	r1, fp
+ 801290a:	ea8c 0c59 	eor.w	ip, ip, r9, lsr #1
+ 801290e:	f47f af27 	bne.w	8012760 <mic_boot_capture_early+0x480>
+ 8012912:	ea6f 0c0c 	mvn.w	ip, ip
+ 8012916:	45e0      	cmp	r8, ip
+ 8012918:	9a01      	ldr	r2, [sp, #4]
+ 801291a:	f47f acfe 	bne.w	801231a <mic_boot_capture_early+0x3a>
+ 801291e:	0120      	lsls	r0, r4, #4
+ 8012920:	f53f acfb 	bmi.w	801231a <mic_boot_capture_early+0x3a>
+ 8012924:	f1be 3fff 	cmp.w	lr, #4294967295
+ 8012928:	bf14      	ite	ne
+ 801292a:	f10e 0e01 	addne.w	lr, lr, #1
+ 801292e:	f04f 0e01 	moveq.w	lr, #1
+ 8012932:	f016 0f04 	tst.w	r6, #4
+ 8012936:	bf0c      	ite	eq
+ 8012938:	f04f 0801 	moveq.w	r8, #1
+ 801293c:	f04f 0803 	movne.w	r8, #3
+ 8012940:	f014 5c80 	ands.w	ip, r4, #268435456	@ 0x10000000
+ 8012944:	f43f acef 	beq.w	8012326 <mic_boot_capture_early+0x46>
+ 8012948:	f016 0c08 	ands.w	ip, r6, #8
+ 801294c:	bf18      	it	ne
+ 801294e:	46bc      	movne	ip, r7
+ 8012950:	e4e9      	b.n	8012326 <mic_boot_capture_early+0x46>
+ 8012952:	bf00      	nop
+ 8012954:	f3af 8000 	nop.w
+ 8012958:	31525442 	.word	0x31525442
+ 801295c:	78c3e0e6 	.word	0x78c3e0e6
+ 8012960:	31525442 	.word	0x31525442
+ 8012964:	78c3e0e6 	.word	0x78c3e0e6
+ 8012968:	82f63b78 	.word	0x82f63b78

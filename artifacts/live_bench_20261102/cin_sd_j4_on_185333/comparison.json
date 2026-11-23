@@ -1,0 +1,65 @@
+{
+  "J4_OFF": {
+    "samples": 8,
+    "CIN_raw": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "SD": [
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW"
+    ]
+  },
+  "J4_ON": {
+    "samples": 6,
+    "CIN_raw": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "SD": [
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW",
+      "LOW"
+    ]
+  },
+  "measurements_valid": true,
+  "hardware_channel_verified": {
+    "PB11_mode": 3,
+    "PB11_pull": 0,
+    "ADC2_regular_channel": 14,
+    "ADC2_regular_sequence_length": 1,
+    "ADC2_CH14_sample_time_code": 6,
+    "ADC2_CFGR": 2129920,
+    "PA6_HIGH": false,
+    "BKE": true,
+    "MOE": false,
+    "ADC_DR_JDR_not_read": true,
+    "register_writes": 0,
+    "RESET": 0,
+    "halt": 0
+  },
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "conclusion": "No elevated CIN in these OFF samples. SD remains LOW. Analog wire continuity, internal VCCL and physical SD source are not established. Not proof of UVLO or a defective IPM."
+}

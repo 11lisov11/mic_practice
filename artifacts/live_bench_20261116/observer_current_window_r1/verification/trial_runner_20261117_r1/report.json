@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "network_fully_mocked": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "scenarios": {
+    "success": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 1
+    },
+    "BIE_blocked": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "CPU4001": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "RPC_new_timeout": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "runtime_fault": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 1
+    }
+  },
+  "observer_schema3_collected": true,
+  "all_protection_limits_unchanged": true,
+  "synthetic_ADC_fixture_not_physical_data": true,
+  "model_observer_fixture_not_physical_data": true
+}

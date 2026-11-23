@@ -1,0 +1,717 @@
+{
+  "available": true,
+  "schema": 2,
+  "firmware": 2026111606,
+  "count": 12,
+  "total_observer_samples": 4978,
+  "valid_samples": 2120,
+  "invalid_samples": 2858,
+  "first_loss": {
+    "cycles": 2474222931,
+    "steps": 503,
+    "reason_mask": 32,
+    "estimate_valid": false,
+    "reasons_ru": [
+      "NIS не меньше 25"
+    ],
+    "control_sample_sequence": 15019488,
+    "control_adc_cycles": 2474102647,
+    "observer_sample_sequence": 15019488,
+    "observer_adc_cycles": 2474102647,
+    "bin_cycles": 2474102647,
+    "rpm_est": -71.54388427734375,
+    "flux_alpha_wb": -0.20145660638809204,
+    "flux_beta_wb": -0.11077216267585754,
+    "flux_wb": 0.22990266697298944,
+    "nis": 42.40830993652344,
+    "id_A": 0.5667871236801147,
+    "iq_A": 0.36035454273223877,
+    "id_ref_A": 0.5055840611457825,
+    "iq_ref_A": 0.34369832277297974,
+    "reference_hz": 0.800000011920929,
+    "observer_ia_A": -0.3261817395687103,
+    "observer_ib_A": -0.5871188044548035,
+    "input_va_V": -1.6417229175567627,
+    "input_vb_V": -7.205112457275391,
+    "dt_s": 0.000999900046736002,
+    "observer_fault": 0,
+    "published": true,
+    "predicted_current_A": [
+      -0.2301156371831894,
+      -0.4900648295879364
+    ],
+    "innovation_A": [
+      -0.09606610238552094,
+      -0.09759891033172607
+    ],
+    "innovation_variance_A2": [
+      0.0004402225895319134,
+      0.00044419325422495604
+    ],
+    "NIS_components": [
+      20.96370392386774,
+      21.444601437184847
+    ],
+    "endpoint_active_CCR": [
+      2504,
+      2437,
+      2875
+    ],
+    "endpoint_bus_V": 322,
+    "endpoint_arr": 5312
+  },
+  "control_fault": 0,
+  "record_stride_steps": 455,
+  "samples": [
+    {
+      "cycles": 2388859865,
+      "steps": 1,
+      "reason_mask": 20,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "меньше 500 шагов",
+        "поток не выше половины задания"
+      ],
+      "control_sample_sequence": 15003424,
+      "control_adc_cycles": 2388770660,
+      "observer_sample_sequence": 15003424,
+      "observer_adc_cycles": 2388770660,
+      "bin_cycles": 2388770660,
+      "rpm_est": -8.71910050805275e-15,
+      "flux_alpha_wb": 0.0023776888847351074,
+      "flux_beta_wb": -0.012452397495508194,
+      "flux_wb": 0.012677365965323066,
+      "nis": 0.8388073444366455,
+      "id_A": 0.0,
+      "iq_A": -0.03323313966393471,
+      "id_ref_A": 0.0050558410584926605,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.0,
+      "observer_ia_A": 0.0,
+      "observer_ib_A": -0.03323313966393471,
+      "input_va_V": -0.5965232849121094,
+      "input_vb_V": 0.46309781074523926,
+      "dt_s": 0.0009677999769337475,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.007573884446173906,
+        0.005879819858819246
+      ],
+      "innovation_A": [
+        0.007573884446173906,
+        -0.03911295905709267
+      ],
+      "innovation_variance_A2": [
+        0.0018921953160315752,
+        0.0018921953160315752
+      ],
+      "NIS_components": [
+        0.030315964275982696,
+        0.8084913609289788
+      ],
+      "endpoint_active_CCR": [
+        2544,
+        2728,
+        2768
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2466223042,
+      "steps": 456,
+      "reason_mask": 36,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "меньше 500 шагов",
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15017984,
+      "control_adc_cycles": 2466113402,
+      "observer_sample_sequence": 15017984,
+      "observer_adc_cycles": 2466113402,
+      "bin_cycles": 2466113402,
+      "rpm_est": -87.00914764404297,
+      "flux_alpha_wb": -0.2202191799879074,
+      "flux_beta_wb": -0.0793287605047226,
+      "flux_wb": 0.23407165457987858,
+      "nis": 68.85221862792969,
+      "id_A": 0.5876166224479675,
+      "iq_A": 0.3737369477748871,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.2920737862586975,
+      "reference_hz": 0.699999988079071,
+      "observer_ia_A": -0.42211756110191345,
+      "observer_ib_A": -0.5538856387138367,
+      "input_va_V": -4.113147258758545,
+      "input_vb_V": -5.081201076507568,
+      "dt_s": 0.000999923562631011,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.3566266596317291,
+        -0.39194533228874207
+      ],
+      "innovation_A": [
+        -0.06549090147018433,
+        -0.1621253788471222
+      ],
+      "innovation_variance_A2": [
+        0.0004397192387841642,
+        0.00044476258335635066
+      ],
+      "NIS_components": [
+        9.754083508460434,
+        59.09813336357757
+      ],
+      "endpoint_active_CCR": [
+        2454,
+        2483,
+        2858
+      ],
+      "endpoint_bus_V": 322,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2543521786,
+      "steps": 911,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 15032544,
+      "control_adc_cycles": 2543456127,
+      "observer_sample_sequence": 15032544,
+      "observer_adc_cycles": 2543456127,
+      "bin_cycles": 2543456127,
+      "rpm_est": 358.805908203125,
+      "flux_alpha_wb": -0.01084363367408514,
+      "flux_beta_wb": 0.26693078875541687,
+      "flux_wb": 0.26715095054453153,
+      "nis": 11.07331657409668,
+      "id_A": 0.5096344947814941,
+      "iq_A": 0.017527377232909203,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 1.5,
+      "observer_ia_A": -0.019187161698937416,
+      "observer_ib_A": 0.5095747709274292,
+      "input_va_V": -12.174650192260742,
+      "input_vb_V": 7.342915058135986,
+      "dt_s": 0.0009999176254495978,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.06358665972948074,
+        0.5636808276176453
+      ],
+      "innovation_A": [
+        0.04439949989318848,
+        -0.054512739181518555
+      ],
+      "innovation_variance_A2": [
+        0.0004463230143301189,
+        0.00044642496504820883
+      ],
+      "NIS_components": [
+        4.416791264335693,
+        6.656524535430864
+      ],
+      "endpoint_active_CCR": [
+        2455,
+        2883,
+        2429
+      ],
+      "endpoint_bus_V": 322,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2620856905,
+      "steps": 1366,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15047104,
+      "control_adc_cycles": 2620798845,
+      "observer_sample_sequence": 15047104,
+      "observer_adc_cycles": 2620798845,
+      "bin_cycles": 2620798845,
+      "rpm_est": 391.2319641113281,
+      "flux_alpha_wb": 0.238583505153656,
+      "flux_beta_wb": 0.12258362770080566,
+      "flux_wb": 0.26823279947033757,
+      "nis": 58.123714447021484,
+      "id_A": 0.5309295058250427,
+      "iq_A": -0.08504163473844528,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 2.200000047683716,
+      "observer_ia_A": 0.5180533528327942,
+      "observer_ib_A": 0.1440102607011795,
+      "input_va_V": 0.41757145524024963,
+      "input_vb_V": 15.622159957885742,
+      "dt_s": 0.000999923562631011,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.47446876764297485,
+        0.29884472489356995
+      ],
+      "innovation_A": [
+        0.043584585189819336,
+        -0.15456627309322357
+      ],
+      "innovation_variance_A2": [
+        0.0004500127106439322,
+        0.00044322150642983615
+      ],
+      "NIS_components": [
+        4.221249803034275,
+        53.90246734724045
+      ],
+      "endpoint_active_CCR": [
+        2832,
+        2934,
+        2378
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2698199315,
+      "steps": 1821,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15061664,
+      "control_adc_cycles": 2698141562,
+      "observer_sample_sequence": 15061664,
+      "observer_adc_cycles": 2698141562,
+      "bin_cycles": 2698141562,
+      "rpm_est": 394.82000732421875,
+      "flux_alpha_wb": 0.24396847188472748,
+      "flux_beta_wb": -0.10848043113946915,
+      "flux_wb": 0.2669992869166024,
+      "nis": 36.7437858581543,
+      "id_A": 0.4667718708515167,
+      "iq_A": 0.008193638175725937,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 3.0,
+      "observer_ia_A": 0.42211756110191345,
+      "observer_ib_A": -0.19939881563186646,
+      "input_va_V": 12.75712776184082,
+      "input_vb_V": 9.296158790588379,
+      "dt_s": 0.0009999118046835065,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.5470659136772156,
+        -0.1739727109670639
+      ],
+      "innovation_A": [
+        -0.12494835257530212,
+        -0.02625557780265808
+      ],
+      "innovation_variance_A2": [
+        0.0004433599242474884,
+        0.0004503662639763206
+      ],
+      "NIS_components": [
+        35.213130365312786,
+        1.5306549821584254
+      ],
+      "endpoint_active_CCR": [
+        2932,
+        2517,
+        2380
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2775542457,
+      "steps": 2276,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15076224,
+      "control_adc_cycles": 2775484279,
+      "observer_sample_sequence": 15076224,
+      "observer_adc_cycles": 2775484279,
+      "bin_cycles": 2775484279,
+      "rpm_est": 397.55218505859375,
+      "flux_alpha_wb": -0.0025817733258008957,
+      "flux_beta_wb": -0.2696099877357483,
+      "flux_wb": 0.26962234892600456,
+      "nis": 75.47549438476562,
+      "id_A": 0.5209705829620361,
+      "iq_A": -0.09739554673433304,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 3.700000047683716,
+      "observer_ia_A": -0.12471655011177063,
+      "observer_ib_A": -0.5151135921478271,
+      "input_va_V": 13.552667617797852,
+      "input_vb_V": -8.473772048950195,
+      "dt_s": 0.000999900046736002,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.03899148479104042,
+        -0.5967571139335632
+      ],
+      "innovation_A": [
+        -0.16370803117752075,
+        0.08327066898345947
+      ],
+      "innovation_variance_A2": [
+        0.00044708052882924676,
+        0.0004464815719984472
+      ],
+      "NIS_components": [
+        59.94517261174651,
+        15.530325880901072
+      ],
+      "endpoint_active_CCR": [
+        2894,
+        2418,
+        2889
+      ],
+      "endpoint_bus_V": 322,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2852884713,
+      "steps": 2731,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15090784,
+      "control_adc_cycles": 2852827004,
+      "observer_sample_sequence": 15090784,
+      "observer_adc_cycles": 2852827004,
+      "bin_cycles": 2852827004,
+      "rpm_est": 403.3771667480469,
+      "flux_alpha_wb": -0.16848136484622955,
+      "flux_beta_wb": -0.20562033355236053,
+      "flux_wb": 0.2658301936775285,
+      "nis": 87.42349243164062,
+      "id_A": 0.37882304191589355,
+      "iq_A": 0.013899579644203186,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 4.5,
+      "observer_ia_A": -0.23983952403068542,
+      "observer_ib_A": -0.29355940222740173,
+      "input_va_V": 4.441545486450195,
+      "input_vb_V": -13.454002380371094,
+      "dt_s": 0.0009999118046835065,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.3371470272541046,
+        -0.4652569591999054
+      ],
+      "innovation_A": [
+        0.09730750322341919,
+        0.17148137092590332
+      ],
+      "innovation_variance_A2": [
+        0.00045145204057917,
+        0.0004425294464454055
+      ],
+      "NIS_components": [
+        20.973989111729853,
+        66.44950027806797
+      ],
+      "endpoint_active_CCR": [
+        2671,
+        2357,
+        2955
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 2930227665,
+      "steps": 3186,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15105344,
+      "control_adc_cycles": 2930169722,
+      "observer_sample_sequence": 15105344,
+      "observer_adc_cycles": 2930169722,
+      "bin_cycles": 2930169722,
+      "rpm_est": 391.24908447265625,
+      "flux_alpha_wb": -0.2656572759151459,
+      "flux_beta_wb": -0.0245665255934,
+      "flux_wb": 0.2667907465156674,
+      "nis": 51.41838073730469,
+      "id_A": 0.4481506943702698,
+      "iq_A": -0.06303546577692032,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.45089828968048096,
+      "observer_ib_A": 0.03877199441194534,
+      "input_va_V": -6.605668544769287,
+      "input_vb_V": -12.832545280456543,
+      "dt_s": 0.000999900046736002,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.5574573278427124,
+        -0.06795994192361832
+      ],
+      "innovation_A": [
+        0.10655903816223145,
+        0.10780573636293411
+      ],
+      "innovation_variance_A2": [
+        0.0004476812609937042,
+        0.00044606387382373214
+      ],
+      "NIS_components": [
+        25.363645082789343,
+        26.054736719941296
+      ],
+      "endpoint_active_CCR": [
+        2370,
+        2573,
+        2942
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 3007575862,
+      "steps": 3641,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15119904,
+      "control_adc_cycles": 3007512441,
+      "observer_sample_sequence": 15119904,
+      "observer_adc_cycles": 3007512441,
+      "bin_cycles": 3007512441,
+      "rpm_est": 377.79986572265625,
+      "flux_alpha_wb": -0.20779022574424744,
+      "flux_beta_wb": 0.16570986807346344,
+      "flux_wb": 0.26577535305548927,
+      "nis": 37.50227737426758,
+      "id_A": 0.4423185884952545,
+      "iq_A": -0.014441636390984058,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.3261817395687103,
+      "observer_ib_A": 0.29909828305244446,
+      "input_va_V": -13.498376846313477,
+      "input_vb_V": -5.351073265075684,
+      "dt_s": 0.0009999176254495978,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.45209550857543945,
+        0.32661551237106323
+      ],
+      "innovation_A": [
+        0.12591376900672913,
+        -0.02730730175971985
+      ],
+      "innovation_variance_A2": [
+        0.0004422643396537751,
+        0.0004507544217631221
+      ],
+      "NIS_components": [
+        35.84796648513737,
+        1.65431262211393
+      ],
+      "endpoint_active_CCR": [
+        2411,
+        2901,
+        2825
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 3084912292,
+      "steps": 4096,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15134464,
+      "control_adc_cycles": 3084855161,
+      "observer_sample_sequence": 15134464,
+      "observer_adc_cycles": 3084855161,
+      "bin_cycles": 3084855161,
+      "rpm_est": 395.5744934082031,
+      "flux_alpha_wb": -0.13679194450378418,
+      "flux_beta_wb": 0.22996872663497925,
+      "flux_wb": 0.26757737443819907,
+      "nis": 34.03815460205078,
+      "id_A": 0.44195613265037537,
+      "iq_A": -0.023001015186309814,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.19187161326408386,
+      "observer_ib_A": 0.3987976610660553,
+      "input_va_V": -13.884873390197754,
+      "input_vb_V": 0.634540319442749,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.27820801734924316,
+        0.4864369332790375
+      ],
+      "innovation_A": [
+        0.0863364040851593,
+        -0.08806711435317993
+      ],
+      "innovation_variance_A2": [
+        0.00044286163756623864,
+        0.0004507420817390084
+      ],
+      "NIS_components": [
+        16.831384879754964,
+        17.206772885667448
+      ],
+      "endpoint_active_CCR": [
+        2368,
+        2944,
+        2713
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 3162254557,
+      "steps": 4551,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15149024,
+      "control_adc_cycles": 3162197890,
+      "observer_sample_sequence": 15149024,
+      "observer_adc_cycles": 3162197890,
+      "bin_cycles": 3162197890,
+      "rpm_est": 394.1813049316406,
+      "flux_alpha_wb": -0.08709988743066788,
+      "flux_beta_wb": 0.2566547095775604,
+      "flux_wb": 0.2710314194678855,
+      "nis": 50.574440002441406,
+      "id_A": 0.4070065915584564,
+      "iq_A": -0.01160017866641283,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.10552939027547836,
+      "observer_ib_A": 0.39325881004333496,
+      "input_va_V": -13.473197937011719,
+      "input_vb_V": 3.545576810836792,
+      "dt_s": 0.0009999411413446069,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.19260281324386597,
+        0.5152656435966492
+      ],
+      "innovation_A": [
+        0.0870734229683876,
+        -0.12272113561630249
+      ],
+      "innovation_variance_A2": [
+        0.000444132398115471,
+        0.0004495202156249434
+      ],
+      "NIS_components": [
+        17.070992838177332,
+        33.50344790615735
+      ],
+      "endpoint_active_CCR": [
+        2347,
+        2965,
+        2627
+      ],
+      "endpoint_bus_V": 321,
+      "endpoint_arr": 5312
+    },
+    {
+      "cycles": 3234838137,
+      "steps": 4978,
+      "reason_mask": 32,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "NIS не меньше 25"
+      ],
+      "control_sample_sequence": 15162688,
+      "control_adc_cycles": 3234781051,
+      "observer_sample_sequence": 15162688,
+      "observer_adc_cycles": 3234781051,
+      "bin_cycles": 3234781051,
+      "rpm_est": 407.66412353515625,
+      "flux_alpha_wb": 0.18526826798915863,
+      "flux_beta_wb": 0.19658908247947693,
+      "flux_wb": 0.2701325572266795,
+      "nis": 116.05406188964844,
+      "id_A": 0.4954019784927368,
+      "iq_A": -0.16470745205879211,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.0,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.470085471868515,
+      "observer_ib_A": 0.22709311544895172,
+      "input_va_V": -3.34165620803833,
+      "input_vb_V": 14.23543930053711,
+      "dt_s": 0.0010000411421060562,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.3827715516090393,
+        0.4364975094795227
+      ],
+      "innovation_A": [
+        0.08731392025947571,
+        -0.20943720638751984
+      ],
+      "innovation_variance_A2": [
+        0.00045139907160773873,
+        0.00044233305379748344
+      ],
+      "NIS_components": [
+        16.88909249176086,
+        99.16496866519753
+      ],
+      "endpoint_active_CCR": [
+        2688,
+        2962,
+        2350
+      ],
+      "endpoint_bus_V": 322,
+      "endpoint_arr": 5312
+    }
+  ],
+  "summary_ru": "Первый отказ оценки: NIS не меньше 25",
+  "limitation": "Ток/Id/Iq относятся к ADC-кадру входного окна; напряжение оценено по активным CCR с прежней моделью dead-time; поток/NIS — после шага наблюдателя. Это разные явно помеченные моменты. Значения по номинальному масштабу; фактическая скорость независимо не измерена."
+}

@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "pair": [
+    2026112303,
+    2026112304
+  ],
+  "installed": false,
+  "hardware_commands": 0,
+  "previous_frozen_reason_ambiguous": true,
+  "diagnostics_checked": {
+    "available": true,
+    "qualified": true,
+    "waiting_for_quiet": false,
+    "first_in_cold_start": true,
+    "fault_latched": false,
+    "first_causes": [
+      "POLL_GAP"
+    ],
+    "first_latched_causes": [],
+    "last_causes": [
+      "POLL_GAP"
+    ],
+    "first_pending_bytes": 0,
+    "clean_off_frames": 3,
+    "first_tick_ms": 5,
+    "first_elapsed_cycles": 680000,
+    "first_usart_isr": 0,
+    "first_dma_isr": 0,
+    "first_dma_remaining": 512,
+    "cold_resyncs": 1,
+    "first_parser_index": 0,
+    "first_parser_result": 4
+  },
+  "cold_USART_resync": true,
+  "cold_crc_resync": true,
+  "cold_DMA_remains_latched": true,
+  "first_and_first_fatal_preserved": true,
+  "active_faults_force_PWM_off": [
+    "USART",
+    "DMA_RX",
+    "DMA_TX",
+    "POLL_GAP",
+    "RX_BATCH"
+  ],
+  "active_regressions": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "ASPEP_UART2": {
+    "baud": 1843200,
+    "consecutive_version_roundtrips": 360,
+    "wire_frames": 376,
+    "motor": "IEK_AIR56B2_D_CALCULATED",
+    "wrap_test": true,
+    "max_negotiated_payload": 64,
+    "invalid_header_length_and_crc": true,
+    "partial_timeout": true,
+    "uart_overrun_recovery": true,
+    "dma_transfer_error_recovery": true,
+    "late_scheduler_recovery": true,
+    "physically_tested": false,
+    "pin_output_enabled": false
+  },
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "off_cases": 64,
+  "off_max_emulator_instructions": 696,
+  "lso_max_emulator_instructions": 209,
+  "actual_target_DWT_pending": true,
+  "ccm_bytes": 5456,
+  "remaining_ram_before_stack": 3192,
+  "preserved_files": 2010,
+  "web_hmi_sha256": "440efb2192a1180380230f267b07a2a22af616c72324dcc3d4a064c498c4a719",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "362997961f33f28d20f83333a983d6bf7dc62c7b944409161d1c459688be45fc",
+    "ACIM-AIR56B2-LSO_FOC.elf": "bb758a5dec9ea905929505582ea8b2277c7f067c7bea8ad188607875436f804c",
+    "ACIM-AIR56B2-LSO_FOC.hex": "64c668f70f4ed77d37f798b08cf3894539225c96f89ee39eb54af2e2a18e61d6",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "1a8946110b8d259ac88cd9dc84e4ed6237f80d8c7b655e2c51fde0b810930683"
+  }
+}

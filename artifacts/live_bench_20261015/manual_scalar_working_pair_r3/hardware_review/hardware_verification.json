@@ -1,0 +1,186 @@
+{
+  "date_moscow": "2026-10-15",
+  "pair": [
+    2026101505,
+    2026101504
+  ],
+  "scope": "Aggregation of saved physical runs; no new START, CLEAR, flash, calibration, or measurement",
+  "hardware_commands": 0,
+  "full_0_to_50_hz_qualified": false,
+  "highest_settled_reference_hz_in_passed_profile": 10,
+  "field_reference_is_measured_rotor_speed": false,
+  "active_pwm_waveform_measured": false,
+  "qualified_phase_current_measured": false,
+  "cases": {
+    "basic": {
+      "report": "powered_manual_1792055829149795500\\report.json",
+      "report_sha256": "8993dc95de0400e4702b957df4313adfccac783560c73f27643ba89c178714f9",
+      "samples": "powered_manual_1792055829149795500\\samples.json",
+      "samples_sha256": "f82f3a4b744016d2b53ec6f7e729dc64e6904e02fc188b7e479636aebb966b18",
+      "pass": true,
+      "requested_targets_hz": [
+        5,
+        10,
+        5
+      ],
+      "settled_targets_hz": [
+        5,
+        10,
+        5
+      ],
+      "active_sample_count": 51,
+      "active_sample_observed_span_s": 34.531,
+      "request_to_end_observation_s": 36.358999999999924,
+      "active_vbus_range_v": [
+        315.0,
+        319.0
+      ],
+      "maximum_valid_active_field_reference_hz": 10.0,
+      "all_active_uart_fatal_bad_crc_sequence_zero": true,
+      "start_commands": 1,
+      "clear_commands": 1,
+      "firmware_writes": 0,
+      "calibration_writes": 0,
+      "outputs_off_confirmed": true,
+      "final_estop": 0,
+      "final_fault_detail": "first=NONE UART=NONE MCSDK_current=0x0000[NONE] MCSDK_occurred=0x0000[NONE] state=0 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0",
+      "operator_observation": "Да, вращался ровно, ускорение и снижение заметны",
+      "operator_observation_scope": "Basic 5->10->5 profile only; visual observation, no shaft RPM measurement",
+      "physical_rotation_confirmed": true,
+      "before_start_clear_scope": "One archived startup-only DP event, not a run-time fault acknowledgement"
+    },
+    "full50": {
+      "report": "powered_manual_1792056019094763800\\report.json",
+      "report_sha256": "f19750d318e9eff308db4ea1f904c94d7d03ebff87e882448b6e7b1aa09110e0",
+      "samples": "powered_manual_1792056019094763800\\samples.json",
+      "samples_sha256": "6a3358272da34560ca7c84bcca2158b0483029a699cf5b39cdfaba562cef542f",
+      "pass": false,
+      "requested_targets_hz": [
+        5,
+        20,
+        50,
+        20,
+        5
+      ],
+      "settled_targets_hz": [
+        5
+      ],
+      "active_sample_count": 14,
+      "active_sample_observed_span_s": 8.438,
+      "request_to_end_observation_s": null,
+      "active_vbus_range_v": [
+        315.0,
+        319.0
+      ],
+      "maximum_valid_active_field_reference_hz": 12.6,
+      "all_active_uart_fatal_bad_crc_sequence_zero": true,
+      "start_commands": 1,
+      "clear_commands": 0,
+      "firmware_writes": 0,
+      "calibration_writes": 0,
+      "outputs_off_confirmed": true,
+      "final_estop": 1,
+      "final_fault_detail": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0400[MC_DP_FAULT] MCSDK_occurred=0x0400[MC_DP_FAULT] state=6 seq=116 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0",
+      "failure": "RuntimeError: Active health or controller reference changed; STOP",
+      "physical_rotation_confirmed_for_this_attempt": false,
+      "run_time_break": {
+        "kind": "first_start_window",
+        "available": true,
+        "captured": true,
+        "age_ms": 710,
+        "reason": "recorded",
+        "raw": {
+          "magic": 827019842,
+          "schema": 2,
+          "bytes": 92,
+          "tick_ms": 291465,
+          "tim_sr": 222,
+          "tim_dier": 129,
+          "tim_bdtr": 36912242,
+          "tim_cnt": 3373,
+          "tim_arr": 5312,
+          "tim_ccr1": 3118,
+          "tim_ccr2": 2943,
+          "tim_ccr3": 1897,
+          "gpioa_idr": 41028,
+          "context_valid": 1,
+          "context_tick_ms": 291422,
+          "reference_speed_unit": 127,
+          "motor_state": 6,
+          "current_faults": 0,
+          "occurred_faults": 0,
+          "vbus_v": 317,
+          "temperature_deci_c": 520,
+          "command_sequence": 116,
+          "start_window": 1
+        },
+        "event": {
+          "bif": true,
+          "b2if": false,
+          "pa6_high_at_irq": true,
+          "bke_at_irq": true,
+          "moe_at_irq": false,
+          "during_start_request_window": true
+        },
+        "cached_context": {
+          "context_tick_ms": 291422,
+          "reference_speed_unit": 127,
+          "motor_state": 6,
+          "current_faults": 0,
+          "occurred_faults": 0,
+          "vbus_v": 317,
+          "temperature_deci_c": 520,
+          "command_sequence": 116,
+          "age_at_irq_ms": 43,
+          "reference_electrical_hz": 12.7,
+          "temperature_c": 52.0
+        }
+      },
+      "cached_context_age_at_irq_ms": 43,
+      "cached_field_reference_at_fault_hz": 12.7,
+      "fault_pulse_duration_measured": false,
+      "physical_fault_source_identified": false,
+      "no_post_fault_clear_or_restart": true
+    }
+  },
+  "static_vf_law_review": {
+    "scope": "Analytical calculation from installed source constants; not a motor simulation or measured waveform",
+    "source_sha256": "159f8efcbaaecf0b85c1023c2e6c942c65eca138efd51c54e58994abf4470686",
+    "vf_parameters_sha256": "061dcb4b2d0f2fb88c25860ae6c520994a57924ab221c83c89fc0b280ddad326",
+    "motor_parameters_sha256": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "threshold_hz": 10,
+    "voltage_amplitude_below_threshold_v_peak": 20,
+    "voltage_amplitude_at_threshold_v_peak": 35.92102694981346,
+    "jump_v_peak": 15.92102694981346,
+    "jump_percent": 79.6051347490673,
+    "cause_of_run_time_break_proven": false,
+    "reason_causality_unproven": "Basic profile reached 10 Hz successfully; no qualified phase current, J4 or SD waveform at later trip",
+    "firmware_changed_by_this_review": false
+  },
+  "post_fault_stopped_powered_observation": {
+    "report": "powered_stopped_after_break\\report.json",
+    "report_sha256": "098f61c71d2c3b6f4b74d82335b4bbc81fe2f00567309a3fac827a9f33089999",
+    "scope": "Stopped powered observation after run-time Break; user questioned power removal and did not confirm OFF",
+    "samples": 11,
+    "network_errors": [],
+    "no_clear_or_start_sent": true,
+    "operator_power_off_confirmed": false,
+    "first_start_break_preserved": true,
+    "all_observed_outputs_off": true,
+    "all_observed_uart_fresh_and_no_fatal_errors": true,
+    "observed_span_s": 10.969000000000051,
+    "bus_range_v": [
+      318.0,
+      318.0
+    ],
+    "valid_reply_increase": 221
+  },
+  "current_physical_state_from_operator": {
+    "mains_and_j4_remain_on": true,
+    "both_boards_on_powerbank": true,
+    "pc_usb_and_all_saleae_probes_gnd_removed": true,
+    "motor_connected": true,
+    "power_removal_tested_in_this_stage": false,
+    "runtime_fault_remains_latched": true
+  }
+}

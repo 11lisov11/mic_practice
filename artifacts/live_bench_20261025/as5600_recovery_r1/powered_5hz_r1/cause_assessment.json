@@ -1,0 +1,114 @@
+{
+  "drive_pass": true,
+  "sensor_bus_pass": false,
+  "physical_rotation_verified": true,
+  "firmware_pair": [
+    2026102518,
+    2026102510
+  ],
+  "clear_commands_total": 1,
+  "start_commands_total": 1,
+  "mcu_start_ms": 253273,
+  "mcu_stop_ms": 258273,
+  "mcu_elapsed_ms": 5000,
+  "mcu_reason": 1,
+  "host_backup_stop_sent": {
+    "http": 200,
+    "ok": true
+  },
+  "host_first_completed_observation_after_request_s": 10.344000000000051,
+  "start_http_response_s": 5.277,
+  "sensor_counter_deltas": {
+    "enc_errors": 48,
+    "enc_diag_nack_count": 23,
+    "enc_diag_timeout_count": 1,
+    "enc_diag_arlo_count": 21,
+    "enc_diag_busy_count": 3,
+    "enc_diag_berr_count": 14,
+    "enc_diag_controller_resets": 4,
+    "enc_diag_graceful_cleanups": 44,
+    "enc_diag_post_reset_busy": 0
+  },
+  "first_events": [
+    {
+      "tick_ms": 253320,
+      "mode_flags": 5,
+      "stage": 4,
+      "cause": 9,
+      "isr_before": 513,
+      "cr2_before": 65644,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 47
+    },
+    {
+      "tick_ms": 253421,
+      "mode_flags": 5,
+      "stage": 7,
+      "cause": 9,
+      "isr_before": 513,
+      "cr2_before": 33752172,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 148
+    },
+    {
+      "tick_ms": 253534,
+      "mode_flags": 5,
+      "stage": 4,
+      "cause": 9,
+      "isr_before": 513,
+      "cr2_before": 65644,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 261
+    },
+    {
+      "tick_ms": 253637,
+      "mode_flags": 5,
+      "stage": 7,
+      "cause": 9,
+      "isr_before": 513,
+      "cr2_before": 33752172,
+      "gpio_before": 3,
+      "isr_after": 1,
+      "ms_from_mcu_start": 364
+    }
+  ],
+  "post_stop_read_delta": 4071,
+  "post_stop_error_delta": 0,
+  "reference_5hz_windows": [
+    {
+      "mc_current_window_tick_ms": 253552,
+      "mc_current_rms_a": [
+        0.43,
+        0.436,
+        0.43
+      ],
+      "mc_current_coverage_pct": 100,
+      "mc_current_window_ms": 200,
+      "mc_current_scale_qualified": 0
+    },
+    {
+      "mc_current_window_tick_ms": 254552,
+      "mc_current_rms_a": [
+        0.429,
+        0.431,
+        0.427
+      ],
+      "mc_current_coverage_pct": 100,
+      "mc_current_window_ms": 200,
+      "mc_current_scale_qualified": 0
+    }
+  ],
+  "evidence_limits": [
+    "First retained SD waveform is pre-START, MOE off; motor cached context missing. It was archived and qualified by exact event identity and independent run_id=0.",
+    "First retained waveform remains occupied; a second waveform cannot be recorded without reboot, but hardware Break was rearmed and active masks checked.",
+    "BERR advisory counter is not an additional failed-sample count; failure categories total 48.",
+    "First ARLO observed 47ms after MCU START; GPIO HIGH snapshot is not an electrical waveform.",
+    "Successful-read deltas spanning preparation include idle samples; they are not a PWM sample success rate.",
+    "2517 had45 errors and45 controller resets;2518 has48 errors and4 resets in this one trial. No demonstrated bus-error improvement or statistical comparison.",
+    "MCU 5000ms record proves local supervisory timer; host backup STOP was also sent at10s from request after delayed START handling. No exact IGBT edge timing claim.",
+    "Magnetic MD+ML weak-field status persists; angle/speed invalid. Scalar operation only; no FOC feedback qualification."
+  ]
+}

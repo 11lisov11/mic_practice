@@ -1,0 +1,192 @@
+{
+  "schema": "mic_ai.uart_crc_capture_candidate.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\uart_crc_capture_candidate_r1",
+  "baseline": "C:\\mic_practice\\artifacts\\live_bench_20261015\\manual_scalar_bkin_trace_r3",
+  "baseline_pair": [
+    2026101507,
+    2026101506
+  ],
+  "candidate_pair": {
+    "uno": 2026101701,
+    "nucleo": 2026101702
+  },
+  "purpose": "Capture the first rejected Uno-to-Nucleo UART frame after fail-stop and expose it in the HMI fault detail.",
+  "installed": false,
+  "flash_ready": false,
+  "hardware_validated": false,
+  "hv_release_approved": false,
+  "hardware_commands": 0,
+  "flash_commands": 0,
+  "motor_start_commands": 0,
+  "motor_test_runs": 0,
+  "calibration_changed": false,
+  "installed_pair_changed": false,
+  "control_frame_layout_changed": false,
+  "fail_stop_threshold_changed": false,
+  "diagnostic_transport": {
+    "packet_version": "0xD3",
+    "pages": 5,
+    "aggregate_record_bytes": 104,
+    "record": [
+      "fault tick",
+      "parser detail",
+      "transport result",
+      "UART flags",
+      "NE byte count",
+      "captured length",
+      "raw frame bytes",
+      "per-byte UART marks"
+    ],
+    "transmit_gate": "last control reply safe-off, command disabled, timer outputs disabled, MCSDK not RUN",
+    "receive_gate": "matching Nucleo build and fresh outputs-off telemetry",
+    "checksum": "CRC-32C on each 43-byte page plus CRC-32C on complete record"
+  },
+  "source_changes": {
+    "nucleo/Inc/break_wire.h": {
+      "baseline_sha256": "D36D164D5D9F3A76B63402F1E936117E24C5F4836F3B21E630A516AD918D91B8",
+      "candidate_sha256": "75529D7A68AAA6FA14AD7A3BE23323577F7D74224C7B7230376FA3394ABF7E1A"
+    },
+    "nucleo/Inc/uart_fault_wire.h": {
+      "baseline_sha256": null,
+      "candidate_sha256": "C7B18AD1A2616806AC49D981D54AD94C118A8E64BCAEA586971232EA1ED0E1D9"
+    },
+    "nucleo/Inc/uart_v3_transport.h": {
+      "baseline_sha256": "B9EB6BE5BC74C62CCE6904DCB2C0AABC58FFA6D38BB47051F514521106FFF24C",
+      "candidate_sha256": "51DE0BCC4B95EA596602A42131A0DCAB241AD51D7548CEE8920386101960C204"
+    },
+    "nucleo/Src/main.c": {
+      "baseline_sha256": "2448738536CF0D37EBE7543CBC522955F0AE7845DE787428F848361281789A54",
+      "candidate_sha256": "77E747DE98505642DB7DE8B5B6B1EBDD011805F1949B59340F8E13121A1B1376"
+    },
+    "UNOQ_MOTOR/break_wire.h": {
+      "baseline_sha256": "D36D164D5D9F3A76B63402F1E936117E24C5F4836F3B21E630A516AD918D91B8",
+      "candidate_sha256": "75529D7A68AAA6FA14AD7A3BE23323577F7D74224C7B7230376FA3394ABF7E1A"
+    },
+    "UNOQ_MOTOR/nucleo_fault_diagnostics.h": {
+      "baseline_sha256": "D703DD09B86E0832433983F8100323D1EB4351E27655BF49651A01D1BC329904",
+      "candidate_sha256": "154D433BF77A7E92126151F5B3CAE6FA7DF503EDA0FA832560CEED1FF77BD6FD"
+    },
+    "UNOQ_MOTOR/uart_fault_wire.h": {
+      "baseline_sha256": null,
+      "candidate_sha256": "C7B18AD1A2616806AC49D981D54AD94C118A8E64BCAEA586971232EA1ED0E1D9"
+    },
+    "UNOQ_MOTOR/uart_v3_transport.h": {
+      "baseline_sha256": "B9EB6BE5BC74C62CCE6904DCB2C0AABC58FFA6D38BB47051F514521106FFF24C",
+      "candidate_sha256": "51DE0BCC4B95EA596602A42131A0DCAB241AD51D7548CEE8920386101960C204"
+    },
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": {
+      "baseline_sha256": "7850F320E24FA5FE2B5D422141012E4EF23C4AB1E85810AED1383BE95FFCA370",
+      "candidate_sha256": "92E5FCE340737BE9A7CBC8DB2F8D8B54F3D67026B1DDB91A2769B52D72E514F9"
+    },
+    "web_hmi/server.py": {
+      "baseline_sha256": "B5DE3B717A4FE02E12FF55A60D66E186C55AA435E8722B67AEE45D893C023476",
+      "candidate_sha256": "6969D17F2DC0E2F00FF5067382DA9967FEE9D54134A5EBE3682D5AEC671D46E3"
+    },
+    "web_hmi/static/app.js": {
+      "baseline_sha256": "8AA6E7694813121EC538B300E5A4E6CD9546E5B4C99C53B4E78BB81EF4A627E0",
+      "candidate_sha256": "178139A786D1653F5F431E906C0A92BD3164E84B23F7E4E64AE34BC24EDCB29C"
+    }
+  },
+  "builds": {
+    "nucleo": {
+      "passed": true,
+      "build_id": 2026101702,
+      "errors": 0,
+      "warnings": 0,
+      "artifacts": [
+        {
+          "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf",
+          "bytes": 2140800,
+          "sha256": "867FA4C91A64758FA703770A18DBFC431FF9DF8AF322A0375523FAAE6221BB38"
+        },
+        {
+          "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin",
+          "bytes": 50512,
+          "sha256": "D37A4B406E69521340EDD485E4BA053BC47CE05ACB57AD8635549321A6F322C9"
+        },
+        {
+          "file": "ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex",
+          "bytes": 142168,
+          "sha256": "8E39D68E6D451913631C335F68CD7372605C2AD7A28BBF4A6A292238F6B87461"
+        }
+      ],
+      "bss_bytes": 12736
+    },
+    "uno": {
+      "passed": true,
+      "build_id": 2026101701,
+      "rpc_schema": 3,
+      "artifacts": [
+        {
+          "file": "UNOQ_MOTOR.ino.elf",
+          "bytes": 142024,
+          "sha256": "397F889D3A761B1C710C421A79723BFC2461463A9F94847D473492C7FFA2D002"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.hex",
+          "bytes": 171057,
+          "sha256": "63FADA4A3FCA03412B0F01FFBDFF79A4C6B8E1C07AA26D9B1D7974282E188B56"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.bin",
+          "bytes": 70932,
+          "sha256": "8105666BD2D9D2E2F3D87655C3F0BEBEFB5FBE3A13FE5709E72D897E01068D33"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.elf-zsk.bin",
+          "bytes": 142024,
+          "sha256": "28395A9FF185014A21399FEFD463E5D8458E9DE0EEE2BEE04422D10C86E6D0E4"
+        }
+      ],
+      "llext_check": {
+        "file": "C:\\Users\\USER\\AppData\\Local\\Temp\\mic_practice_unoq_30e0db635ca24bd4b88239af25fe321d\\UNOQ_MOTOR.ino.elf",
+        "sha256": "397f889d3a761b1c710c421a79723bfc2461463a9f94847d473492c7ffa2d002",
+        "relocations": 2554,
+        "issues": [],
+        "hardware_validated": false,
+        "pass": true
+      }
+    },
+    "hmi": {
+      "python_syntax": "passed",
+      "javascript_syntax": "passed",
+      "status_and_fault_recorder_selftest": "passed"
+    }
+  },
+  "tests": {
+    "uart_fault_capture_selftest": {
+      "passed": true,
+      "cases": [
+        "CRC32C mismatch retains all 43 bytes",
+        "valid RUN heartbeat still advances sequence and replay still fail-stops",
+        "bad first sync byte",
+        "bad second sync byte",
+        "UART framing-error mark",
+        "partial frame deadline",
+        "two bounded drops remain recoverable and next loss remains fail-stop",
+        "passive D3 page round-trip, CRC, build, and outputs-off gates"
+      ]
+    },
+    "hmi_uart_fault_capture_selftest": {
+      "passed": true
+    }
+  },
+  "release_preflight": {
+    "passed": false,
+    "failed_checks": [
+      "external_softstart_hil_validated",
+      "ipm_sd_bkin_hardware_trip_validated"
+    ],
+    "note": "Offline firmware builds passed; physical soft-start and IPM SD/BKIN evidence is still missing."
+  },
+  "limitations": [
+    "No board was programmed.",
+    "No powered motor run or physical UART capture was performed.",
+    "This candidate does not identify the physical source of a future error by itself; it preserves evidence for diagnosis."
+  ],
+  "test_sources_sha256": {
+    "tests/hmi_uart_fault_capture_selftest.py": "9D9265F0C0849B85769774852AEF0256436A3FD1464AE9BC033A9D1C0F34AF1A",
+    "tests/package_integrity_selftest.py": "B88BE6181A0796AEC1372D2AA46E3FE4C505F4F5CE028AD19C263B85121B0321",
+    "tests/uart_fault_capture_selftest.cpp": "B6632326F875AB95886BF57C348A1965428FF744395CCFF2B61980E6EB76ADDA"
+  }
+}

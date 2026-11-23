@@ -1,0 +1,15 @@
+{
+  "scope": "isolated logic fixture host only",
+  "previous_attempt": "isolated_pwm_3016_run_r1; zero flash and zero PWM requests",
+  "reason": "Vbus ADC is physically disconnected and floating at137; it is not a live bus measurement",
+  "retained_guards": [
+    "explicit J1/J4OFF and ribbon-disconnected confirmation",
+    "production SAFE/PWM0/fresh peer",
+    "direct PA6HIGH and BKE1/MOE0",
+    "native pin checks and hardwareBreak",
+    "one request and5s auto-stop",
+    "unconditional verified3016 restore"
+  ],
+  "production_threshold_changes": false,
+  "hardware_commands_during_preparation": 0
+}

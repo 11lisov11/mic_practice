@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "native_report": "native_report.json",
+  "native_tests_pass": true,
+  "hmi_corruption_and_link_checks": 520,
+  "core_event_cases": 400,
+  "protection_source_isolation": true,
+  "original_160B_capture_preserved": true,
+  "extension_linked_by_parent_crc": true,
+  "off_only_delivery": true,
+  "historical_records_preserved": true,
+  "nucleo_static_growth_bytes": 160,
+  "nucleo_ram_margin_above_heap_stack": 3368,
+  "nucleo_stack_frames": {
+    "capture_before_reset": 24,
+    "capture_terminal": 40,
+    "mic_encoder_poll": 56,
+    "mic_encoder_release_packet": 144,
+    "park": 20
+  },
+  "adc_irq_stack_bytes": 376,
+  "nucleo_build_errors": 0,
+  "nucleo_build_warnings": 0,
+  "uno_loader_check": true,
+  "packaged_rpc_dependencies_verified": true,
+  "no_motor_starts": true,
+  "no_clear": true,
+  "no_resets": true,
+  "no_flash": true,
+  "sensor_under_pwm_qualified": false,
+  "hardware_validated": false,
+  "limitations": [
+    "Native peripheral behavior is modeled; not evidence of which component physically holds SCL",
+    "Late samples retain observed times; requested5/20us are thresholds, not guaranteed hardware-triggered sample times",
+    "Stack frame budgets are checked; a complete hardware worst-case stack watermark has not been measured"
+  ]
+}

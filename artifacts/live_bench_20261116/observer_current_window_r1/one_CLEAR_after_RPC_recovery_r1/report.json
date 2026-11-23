@@ -1,0 +1,84 @@
+{
+  "passed": true,
+  "CLEAR": 1,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "operator_authorized_one_CLEAR": true,
+  "Uno_only_power_cycle_confirmed": true,
+  "thresholds_4000_2ms_unchanged": true,
+  "retained_counters_before": {
+    "mc_bad_cnt": 58,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_last_bad_reason": 1,
+    "mc_transport_fault": 7,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0
+  },
+  "CLEAR_HTTP_acknowledged": true,
+  "UART_latch_cleared": true,
+  "Break_restored": true,
+  "MCSDK_faults_cleared": true,
+  "diagnostic": {
+    "available": true,
+    "stored_record": true,
+    "first_since_boot": true,
+    "firmware": 2026111612,
+    "tick_ms": 129945,
+    "tx_head": 12287,
+    "tx_tail": 12287,
+    "tx_pending": 0,
+    "tx_started_ms": 129928,
+    "tx_active": false,
+    "tx_hard_error": false,
+    "tx_late": false,
+    "sd_high_at_attempt": true,
+    "BIE_at_attempt": true,
+    "MOE_at_attempt": false,
+    "command_sequence": 215,
+    "timer_SR": 94,
+    "current_faults_at_attempt": 0,
+    "occurred_faults_at_attempt": 0,
+    "motor_state_at_attempt": 0,
+    "result_code": 1,
+    "result": "ACK_ACCEPTED",
+    "summary_ru": "Запрос CLEAR принят; готовность защит проверяется отдельно",
+    "protection_readiness_confirmed": false,
+    "limitation": "Stored first attempt; live SD, masks and BIE remain mandatory"
+  },
+  "SD_record_unchanged": true,
+  "remaining_faults": {
+    "mc_fault": 0,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0
+  },
+  "powered_start_readiness_evaluated": false,
+  "operator_must_keep_J1_OFF": true,
+  "outputs_off_confirmed": true,
+  "preserved_files_verified": 5691,
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "5ea017f8-a7a0-4516-8263-9c0a45745c22",
+      [
+        2026111612,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3713711204
+      ]
+    ],
+    "samples": 27,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 30.56200000003446,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  }
+}

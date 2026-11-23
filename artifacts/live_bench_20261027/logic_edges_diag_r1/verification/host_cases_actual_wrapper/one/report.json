@@ -1,0 +1,82 @@
+{
+  "hardware_tested": false,
+  "computation_requests": 1,
+  "motor_start_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "before_initial": {
+    "build": 2026102793,
+    "state": 0,
+    "attempted": 0,
+    "clock_hz": 170000000,
+    "actual_bus_v": 10,
+    "phase_pins_gpio_low": 1,
+    "TIM1_BDTR": 4096,
+    "TIM1_CR1": 1,
+    "adc_seen": 1000,
+    "guard_flags": 0,
+    "local_stop": 0,
+    "sequence": 2,
+    "encoder": {
+      "reads": 1000,
+      "errors": 0
+    }
+  },
+  "before": {
+    "build": 2026102793,
+    "state": 0,
+    "attempted": 0,
+    "clock_hz": 170000000,
+    "actual_bus_v": 10,
+    "phase_pins_gpio_low": 1,
+    "TIM1_BDTR": 4096,
+    "TIM1_CR1": 1,
+    "adc_seen": 5800,
+    "guard_flags": 0,
+    "local_stop": 0,
+    "sequence": 4,
+    "encoder": {
+      "reads": 1000,
+      "errors": 0
+    }
+  },
+  "after": {
+    "build": 2026102793,
+    "state": 2,
+    "attempted": 0,
+    "clock_hz": 170000000,
+    "actual_bus_v": 10,
+    "phase_pins_gpio_low": 1,
+    "TIM1_BDTR": 4096,
+    "TIM1_CR1": 1,
+    "adc_seen": 1000,
+    "guard_flags": 0,
+    "local_stop": 0,
+    "sequence": 2,
+    "encoder": {
+      "reads": 2000,
+      "errors": 0
+    },
+    "reason": 0,
+    "elapsed_ms": 5000.1,
+    "tim_updates": 80000,
+    "adc_calls": 80000,
+    "adc_accepted": 79999,
+    "medium_updates": 2500,
+    "adc_quality_flags": 1
+  },
+  "timed_done": true,
+  "outputs_disabled": true,
+  "timing_coverage_ok": true,
+  "full_current_processing_coverage": true,
+  "i2c_error_delta": 0,
+  "i2c_reads_delta": 1000,
+  "i2c_under_compute_load_ok": true,
+  "passed": true,
+  "full_ADC_processing_path_exercised": true,
+  "motor_current_measurement_qualified": false,
+  "root_cause_proven": false,
+  "selftest_with_fake_probe": true,
+  "actual_hardware_calls": 0
+}

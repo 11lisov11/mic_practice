@@ -1,0 +1,93 @@
+{
+  "passed": true,
+  "pair": [
+    2026103011,
+    2026103012
+  ],
+  "user_confirmed_J1_OFF_meter_below20_B2_RESET": true,
+  "fresh_epoch": {
+    "validated": true,
+    "fresh_detail_tick_ms": 163345,
+    "previous_frozen_ms": 121408,
+    "supervisor_run_id": 0,
+    "supervisor_also_restarted": true,
+    "reset_evidence": "immutable_fault_cleared_and_boot_OFF64"
+  },
+  "previous_current_first_fault_cleared_by_physical_reset": true,
+  "current_MC_masks": [
+    0,
+    0
+  ],
+  "estop": 0,
+  "zero_ready": 1,
+  "zero_spans": [
+    27,
+    37,
+    38,
+    32
+  ],
+  "OFF_cases": 64,
+  "fast_kernel_cycles": 3530,
+  "observer_max_cycles": 19269,
+  "CPU_IRQ": {
+    "available": true,
+    "observer_measured": true,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 94.79411764705883,
+    "irq_body_lower_us": 11.3,
+    "cpu_upper_us": 83.49411764705883,
+    "irq_root_count": 3,
+    "max_wall_us": 114.05882352941177,
+    "max_irq_body_lower_us": 29.6,
+    "max_cpu_upper_us": 84.55294117647058,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 64,
+    "meter_errors": 0,
+    "first_fault": null,
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "UART_RPC_errors_zero": true,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 13,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "ADC_capture_free": true,
+  "new_waveform_not_yet_recorded": true,
+  "old_ADC_sha256": "0c30042c6f0663125dfe6f802c96b9111636f8a539c511eafb6b60ec0eb94594",
+  "old_1_365A_fault_record_preserved": true,
+  "controller_Vbus_V": 10.0,
+  "selected": 2,
+  "profile_crc": 1354279011,
+  "supervisor_run_id": 0,
+  "no_new_pwm_or_motor_start": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "stopped_configuration_commands": [
+    "MODE VF",
+    "SET RUNMODE BOUNDED",
+    "SET ACCEL 5",
+    "SET DECEL 1",
+    "SET RUNLIMIT 5",
+    "SET FREQ 5",
+    "SET ALGORITHM FOC"
+  ],
+  "current_trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_limit_ms": 2,
+  "next_step": "Enable onlyJ1 through soft-start, leave15V/Uno/powerbanks/wiring, PC/Saleae disconnected, noSTART/RESET. Fresh powered guards before one explicitly requested repeat using --saved-previous-trial R2 --repeat-saved-current-trip. No automatic repeats or fault bypass."
+}

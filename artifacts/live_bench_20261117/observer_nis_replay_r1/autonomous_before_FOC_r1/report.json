@@ -1,0 +1,123 @@
+{
+  "passed": true,
+  "GETs": 12,
+  "CLEAR": 0,
+  "START": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "final": {
+    "fw_build": 2026111713,
+    "mc_fw_build": 2026111714,
+    "state": "SAFE",
+    "pwm": 0,
+    "run_id": 0,
+    "vdc": 9.0,
+    "mc_age_ms": 30,
+    "mc_current_zero_ready": 1,
+    "mc_current_zero_stable": 3,
+    "mc_current_zero_spans": [
+      21,
+      32,
+      25,
+      22
+    ],
+    "mc_zero_history_good": 3,
+    "mc_zero_history_bad": 0,
+    "foc_timing_ready": true,
+    "foc_timing_cases": 64,
+    "foc_timing_fault": 0,
+    "algorithm_fast_cycles": 3811,
+    "algorithm_observer_cycles": 24061,
+    "algorithm_fault": 0,
+    "mc_fault": 5,
+    "mc_fault_reason": 8,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 1028,
+    "mc_transport_fault": 0,
+    "mc_bad_cnt": 0,
+    "mc_last_bad_reason": 0,
+    "mc_uart_error_flags": 0,
+    "mc_last_uart_error_flags": 0,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_response_timeouts": 0,
+    "observer_trace": {
+      "available": false,
+      "reason": "not_received"
+    },
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 30,
+      "break_irq_enabled": false,
+      "capture_running": false,
+      "first_record_ready": true,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "native_boot": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026111714,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 201326592,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 833613169,
+      "native_tick_ms": 61131,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "linux_boot_id": "28483d85-66c8-42a0-88cd-46c401fe978b"
+  },
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "28483d85-66c8-42a0-88cd-46c401fe978b",
+      [
+        2026111714,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        833613169
+      ]
+    ],
+    "samples": 12,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 12.875,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "capture_preparation_confirmed": true,
+  "physical_RAM_read": false,
+  "capture_readiness_evidence": "fresh CRC-checked native boot; run_id0/PWM0 throughout; no observer record yet; exact installed schema4 release verified; initial RAM clearing verified in release tests",
+  "full_START_ready": false,
+  "readiness_blockers": [
+    "DC bus low MC_UNDER_VOLT",
+    "stored SD/Break latch, BIE not restored"
+  ],
+  "SD_current_boot_preserved": true,
+  "preserved_historic_files_verified": 5605,
+  "collector_schema4_helper_fixed_and_tested_offline": true
+}

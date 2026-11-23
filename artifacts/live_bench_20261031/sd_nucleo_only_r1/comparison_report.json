@@ -1,0 +1,84 @@
+{
+  "operator_confirmed": {
+    "IHM09M2": "removed",
+    "PA6_PA11": "free of external wires",
+    "Nucleo": "PC USB",
+    "J1_J4": "OFF"
+  },
+  "fresh_direct_register_samples": 3,
+  "PA6_levels": [
+    "HIGH",
+    "HIGH",
+    "HIGH"
+  ],
+  "previous_without_cable_with_adapter": "LOW",
+  "configuration_comparison": {
+    "PA6_mode": {
+      "IHM09M2_on": 2,
+      "IHM09M2_removed": 2,
+      "same": true
+    },
+    "PA6_pull": {
+      "IHM09M2_on": 1,
+      "IHM09M2_removed": 1,
+      "same": true
+    },
+    "PA6_AF": {
+      "IHM09M2_on": 6,
+      "IHM09M2_removed": 6,
+      "same": true
+    },
+    "PA6_locked": {
+      "IHM09M2_on": true,
+      "IHM09M2_removed": true,
+      "same": true
+    },
+    "PA11_mode": {
+      "IHM09M2_on": 3,
+      "IHM09M2_removed": 3,
+      "same": true
+    },
+    "BKBID": {
+      "IHM09M2_on": false,
+      "IHM09M2_removed": false,
+      "same": true
+    },
+    "BKE": {
+      "IHM09M2_on": true,
+      "IHM09M2_removed": true,
+      "same": true
+    },
+    "MOE": {
+      "IHM09M2_on": false,
+      "IHM09M2_removed": false,
+      "same": true
+    },
+    "core_halted": {
+      "IHM09M2_on": false,
+      "IHM09M2_removed": false,
+      "same": true
+    }
+  },
+  "PA6_readback": "GPIOA IDR bit6",
+  "MOE_off_all": true,
+  "BKE_on_all": true,
+  "core_running_all": true,
+  "inference": "The bare Nucleo input can read HIGH with the same checked BKIN configuration. A permanently stuck-low pin or constant-low software decode is not supported. Adapter and any removed auxiliary PA6/PA11 connections remain to be distinguished.",
+  "exact_component_fault_proven": false,
+  "test_changes": [
+    "IHM09M2 removed",
+    "PA6/PA11 auxiliary connections removed",
+    "controller power cycle was requested for safe physical removal; same-boot causality is not claimed"
+  ],
+  "next_control": "Power OFF controllers, remount IHM09M2 alone, no34pin cable or auxiliary PA6/PA11 wires; power up Nucleo via PC USB; read PA6 only.",
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "old_capture_files_modified": false
+}

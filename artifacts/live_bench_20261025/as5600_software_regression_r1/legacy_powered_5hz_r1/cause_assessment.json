@@ -1,0 +1,55 @@
+{
+  "schema": "mic_ai.as5600_legacy_powered_assessment.v1",
+  "one_start": true,
+  "normal_clear_commands_total": 1,
+  "drive_target_reached_hz": 5.0,
+  "outputs_off_confirmed": true,
+  "physical_rotation_verified": false,
+  "active_sensor_error_delta": 5,
+  "active_read_counter_delta": 163,
+  "maximum_observed_native_transfer_us": 553464,
+  "pin_config_before_after_match_all": true,
+  "failed_pin_cfg_before": 1114490,
+  "failed_pin_cfg_after": 1114490,
+  "legacy_priority_not_sufficient_fix": true,
+  "native_error_cause": "generic driver error; no wire-level NACK classification",
+  "post_stop_successful_reads": 70,
+  "post_stop_new_errors": 0,
+  "target_current_rms_nominal_a": [
+    [
+      0.436,
+      0.438,
+      0.437
+    ],
+    [
+      0.436,
+      0.439,
+      0.438
+    ],
+    [
+      0.435,
+      0.436,
+      0.434
+    ],
+    [
+      0.432,
+      0.435,
+      0.432
+    ]
+  ],
+  "target_coverage_pct": [
+    100,
+    100,
+    100,
+    100
+  ],
+  "current_scale_independently_qualified": false,
+  "no_start_window_break_snapshot": true,
+  "prestart_sd_wave_preserved": true,
+  "sd_wave_sha256": "390af98cc0f6bc51249b05a45d11f47a706fd529083d7182d1c7e256145715bf",
+  "final_estop_latched": 1,
+  "final_fault_reason": 4,
+  "stop_timing_limitation": "START HTTP response took5.167s; host STOP requested5s after response. Firmware7s runlimit reached first and latches ESTOP by installed code. Nominal host5s stop timing was not proven. No restart or second CLEAR issued.",
+  "root_cause_proven": false,
+  "comparison_to_previous_sw100": "PreviousSW100:68errors and address-write NACK with no successful reads in active snapshots. LEGACY:5errors and intermittent successful reads; differing scheduling/exposure prevents attributing improvement solely to priority."
+}

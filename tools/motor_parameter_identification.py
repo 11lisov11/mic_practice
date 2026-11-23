@@ -80,6 +80,17 @@ def _cmd_generate_synthetic(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_standstill(args: argparse.Namespace) -> int:
+    from motor_identification.standstill import identify
+    capture = json.loads(Path(args.input).read_text(encoding="utf-8-sig"))
+    if not isinstance(capture, dict):
+        raise ValueError("standstill capture must be a JSON object")
+    result = identify(capture)
+    _write_json(Path(args.output).resolve(), result)
+    print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
+    return 0 if result["accepted"] else 3
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Fail-closed offline identification of induction-motor parameters."
@@ -113,6 +124,10 @@ def build_parser() -> argparse.ArgumentParser:
     synthetic.add_argument("--seed", type=int, default=20260809)
     synthetic.add_argument("--steps", type=int, default=360)
     synthetic.set_defaults(func=_cmd_generate_synthetic)
+    standstill = sub.add_parser("standstill", help="Fit electrical standstill impedance data offline; never commands hardware.")
+    standstill.add_argument("--input", required=True)
+    standstill.add_argument("--output", required=True)
+    standstill.set_defaults(func=_cmd_standstill)
     return parser
 
 

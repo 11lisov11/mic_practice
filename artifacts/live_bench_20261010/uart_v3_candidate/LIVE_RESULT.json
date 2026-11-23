@@ -1,0 +1,42 @@
+{
+  "schema": "mic.uart_v3_live_result.v1",
+  "pass": true,
+  "checks": {
+    "regression_38": true,
+    "current_sources_match_regression": true,
+    "install_and_idle": true,
+    "nucleo_byte_verified": true,
+    "uno_byte_verified": true,
+    "calibration_unchanged": true,
+    "wifi_commands_and_estop": true,
+    "critical_code_unchanged": true
+  },
+  "installed_pair": {
+    "uno": 2026101007,
+    "nucleo": 2026101006
+  },
+  "images": {
+    "uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479"
+  },
+  "idle_samples": 60,
+  "new_controller_good_frames": 722,
+  "error_counters": {
+    "mc_bad_cnt": 0,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "uno_tx_short_writes": 0,
+    "bp_ne_accepted": 0,
+    "bp_ne_observed": 0,
+    "bp_transport_fault": 0
+  },
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "final_estop": 0,
+  "final_vdc": 0.0,
+  "active_pwm_qualified": false,
+  "motor_started": false,
+  "hv_release_approved": false,
+  "summary": "RESULT.md"
+}

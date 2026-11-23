@@ -1,0 +1,32 @@
+{
+  "core": {
+    "passed": true,
+    "checks": 15149,
+    "hardware_calls": 0
+  },
+  "platform": {
+    "passed": true,
+    "checks": 200038,
+    "hardware_calls": 0,
+    "scope": "adapter with fake MMIO; PWM math is stubbed"
+  },
+  "full_guard": {
+    "passed": true,
+    "checks": 17
+  },
+  "math": {
+    "passed": true,
+    "checks": 513505,
+    "actual_controller_calls": 80000,
+    "actual_medium_calls": 2500,
+    "ccr_min": 2330,
+    "ccr_max": 2980,
+    "physical_hardware": false
+  },
+  "passed": true,
+  "hardware_calls": 0,
+  "native_safety_and_command_validation_unchanged": true,
+  "ADC_I2C_sources_unchanged": true,
+  "full_MCSDK_routing_restored": true,
+  "archives_verified": true
+}

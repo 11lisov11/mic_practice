@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "patched": false,
+      "case": "baseline",
+      "passed": true,
+      "output": "PASS baseline simulated_ms=10001\n"
+    },
+    {
+      "patched": true,
+      "case": "lost",
+      "passed": true,
+      "output": "PASS lost simulated_ms=1500\n"
+    },
+    {
+      "patched": true,
+      "case": "late",
+      "passed": true,
+      "output": "PASS late simulated_ms=1501\n"
+    },
+    {
+      "patched": true,
+      "case": "unknown",
+      "passed": true,
+      "output": "PASS unknown simulated_ms=0\n"
+    },
+    {
+      "patched": true,
+      "case": "tagged",
+      "passed": true,
+      "output": "PASS tagged simulated_ms=1\n"
+    },
+    {
+      "patched": true,
+      "case": "generic",
+      "passed": true,
+      "output": "PASS generic simulated_ms=0\n"
+    },
+    {
+      "patched": true,
+      "case": "tx",
+      "passed": true,
+      "output": "PASS tx simulated_ms=2000\n"
+    },
+    {
+      "patched": true,
+      "case": "admission",
+      "passed": true,
+      "output": "PASS admission simulated_ms=1500\n"
+    },
+    {
+      "patched": true,
+      "case": "mutex",
+      "passed": true,
+      "output": "PASS mutex simulated_ms=1507\n"
+    },
+    {
+      "patched": true,
+      "case": "boot_retry",
+      "passed": true,
+      "output": "PASS boot_retry simulated_ms=1500\n"
+    }
+  ],
+  "hardware_commands": 0,
+  "scope": "Actual local vendor headers and MsgPack/dispatcher. UART, time, and kernel mocked. No proof of bank cold-boot root cause or hardware recovery."
+}

@@ -1,0 +1,102 @@
+{
+  "ok": true,
+  "data": {
+    "mc_break_wave_hex": "424b4e3105000000400100008d9a0400c80000000102000000080000770a0000030000005000000020a10700400100000008000000000000161200000100000003000000f7070000020000003f010000030000004101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "mc_break_wave_age_ms": 38460,
+    "mc_break_wave_good_pages": 14,
+    "mc_break_wave_bad_pages": 0,
+    "mc_break_snapshots": [
+      {
+        "kind": "first_since_boot",
+        "available": true,
+        "captured": true,
+        "age_ms": 10486,
+        "reason": "recorded",
+        "raw": {
+          "magic": 827019842,
+          "schema": 2,
+          "bytes": 92,
+          "tick_ms": 301709,
+          "tim_sr": 223,
+          "tim_dier": 128,
+          "tim_bdtr": 37304434,
+          "tim_cnt": 3597,
+          "tim_arr": 5312,
+          "tim_ccr1": 2656,
+          "tim_ccr2": 2656,
+          "tim_ccr3": 2656,
+          "gpioa_idr": 40980,
+          "context_valid": 1,
+          "context_tick_ms": 301685,
+          "reference_speed_unit": 0,
+          "motor_state": 11,
+          "current_faults": 0,
+          "occurred_faults": 4,
+          "vbus_v": 10,
+          "temperature_deci_c": 490,
+          "command_sequence": 206,
+          "start_window": 0
+        },
+        "event": {
+          "bif": true,
+          "b2if": false,
+          "pa6_high_at_irq": false,
+          "bke_at_irq": true,
+          "moe_at_irq": false,
+          "during_start_request_window": false,
+          "start_window_flag_raw": false,
+          "start_window_flag_stale_after_run": false
+        },
+        "cached_context": {
+          "context_tick_ms": 301685,
+          "reference_speed_unit": 0,
+          "motor_state": 11,
+          "current_faults": 0,
+          "occurred_faults": 4,
+          "vbus_v": 10,
+          "temperature_deci_c": 490,
+          "command_sequence": 206,
+          "age_at_irq_ms": 24,
+          "reference_electrical_hz": 0.0,
+          "temperature_c": 49.0
+        }
+      },
+      {
+        "kind": "first_start_window",
+        "available": true,
+        "captured": false,
+        "age_ms": 9688,
+        "reason": "no_recorded_break"
+      },
+      {
+        "kind": "first_after_CLEAR",
+        "available": true,
+        "captured": false,
+        "age_ms": 8888,
+        "reason": "no_recorded_break"
+      }
+    ],
+    "mc_break_transport": "passive_off_only_v1",
+    "mc_break_limitations": [
+      "Not live telemetry: delivery occurs only with outputs off",
+      "Reference frequency is not measured rotor speed; context is cached",
+      "PA6 is sampled at IRQ, not the electrical edge; pulse duration is unknown",
+      "J4 voltage and qualified phase current are not measured",
+      "Cannot uniquely identify overcurrent, undervoltage, or interference"
+    ],
+    "mc_break_reject_valid": 0,
+    "mc_break_reject_code": 0,
+    "mc_break_reject_ms": 0,
+    "mc_break_reject_peer_fw": 0,
+    "mc_break_reject_fresh_off": 0,
+    "mc_break_reject_bp_status": 0,
+    "mc_break_reject_pwm": 0,
+    "mc_break_reject_rsp_age_ms": 0,
+    "mc_break_reject_good_before": 0,
+    "mc_break_reject_packet_hex": "-",
+    "mc_break_reject_record_valid": 0,
+    "mc_break_reject_reason": "UNAVAILABLE",
+    "mc_break_rx_good": 374,
+    "mc_break_rx_bad": 0
+  }
+}

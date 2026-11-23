@@ -1,0 +1,86 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "halt": 0,
+  "operator_state": "Both boards PCUSB; J1 last confirmed OFF; J4 left ON",
+  "shared_powerbank_user_confirmed": true,
+  "status": {
+    "ok": true,
+    "values": {
+      "fw_build": 2026111605,
+      "mc_fw_build": 2026111606,
+      "state": "SAFE",
+      "pwm": 0,
+      "vdc": 10.0,
+      "run_id": 0,
+      "mc_fault": 5,
+      "mc_transport_fault": 0,
+      "mc_current_zero_ready": 1,
+      "algorithm_fast_cycles": 3618
+    },
+    "SD": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 24,
+      "break_irq_enabled": true,
+      "capture_running": true,
+      "first_record_ready": false,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    }
+  },
+  "native": {
+    "passed": true,
+    "source": "passive ST-Link HotPlug reads",
+    "ports": [
+      "COM10",
+      "COM13"
+    ],
+    "physical_authorization_context": "User connected both boards to PC; J1 last confirmed OFF; passive reads only",
+    "native_image_sha256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+    "image_comparison": "exact HEX with erased FF padding",
+    "hex_erased_padding_offsets": [
+      109564,
+      109565,
+      109566,
+      109567
+    ],
+    "sealed_binary_sha256": "041e0e21fe932189c779cab4500b1c66ef07d84cfac9853ff4b2509a387b6214",
+    "layout_from_actual_dwarf": {
+      "SensorType": 0,
+      "ConversionFactor": 2,
+      "LatestConv": 4,
+      "AvBusVoltage_d": 6,
+      "FaultState": 8
+    },
+    "rows": [
+      {
+        "tick_ms": 581501,
+        "bus_volts": 10.04833984375,
+        "conversion_factor": 416,
+        "digital_bus": 1583,
+        "bdtr": 37304434,
+        "moe": false
+      },
+      {
+        "tick_ms": 581946,
+        "bus_volts": 10.0546875,
+        "conversion_factor": 416,
+        "digital_bus": 1584,
+        "bdtr": 37304434,
+        "moe": false
+      }
+    ],
+    "tick_delta_ms": 445,
+    "flash_writes": 0,
+    "reset_commands": 0,
+    "halt_commands": 0,
+    "motor_commands": 0
+  },
+  "RAM_saved": true
+}

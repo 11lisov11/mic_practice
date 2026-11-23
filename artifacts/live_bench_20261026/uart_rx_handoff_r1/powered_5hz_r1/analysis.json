@@ -1,0 +1,64 @@
+{
+  "schema": "mic_ai.as5600_pwm_trial_analysis.v1",
+  "passed": false,
+  "pair": [
+    2026102603,
+    2026102602
+  ],
+  "start_commands": 1,
+  "clear_commands": 0,
+  "firmware_writes": 0,
+  "stop_controller": "Uno Q STM32U585 TimedRun/control_step",
+  "timed_stop_request_verified": true,
+  "timed_stop_request_elapsed_ms": 5000,
+  "nucleo_outputs_off_confirmed": true,
+  "exact_nucleo_gate_off_timestamp_measured": false,
+  "sensor_under_pwm_qualified": false,
+  "physical_rotation_verified": false,
+  "i2c_error_delta": 245,
+  "encoder_uart_rejected_delta": 0,
+  "observed_active_causes": [
+    11
+  ],
+  "observed_active_isr": [
+    32769
+  ],
+  "observed_active_scl_sda": [
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "observed_active_angle_valid_count": 0,
+  "observed_active_speed_valid_count": 0,
+  "post_stop_sensor_recovered": true,
+  "post_stop_error_count": 245,
+  "drive_fault": 0,
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "final_arm": 0,
+  "final_rms_before_stop_a": [
+    0.43,
+    0.432,
+    0.425
+  ],
+  "current_scale_reference_qualified": false,
+  "distinct_5hz_current_windows": 1,
+  "host_report_original_preserved": true,
+  "host_completion_observer_failed": true,
+  "host_completion_context": "First Uno SAFE/TimedRun LIMIT sample had Nucleo bp_status0x61 (MOE bit off but command request bit still on). Strict completion guard rejected this transitional sample. Later OFF status0x01 confirmed; host backup STOP also logged. Do not attribute this host report failure to a drive trip.",
+  "sensor_diagnosis": "Sampled cause11 EC_BUSY at stage4 with ISR0x8001, GPIO snapshots HIGH/HIGH, configuration valid and zero timeout count. This does not capture the initial triggering event or establish physical versus software cause.",
+  "next_capture_needed": "First I2C fault before peripheral reset: stage, ISR/CR1/CR2, simultaneous GPIO, timing/PWM context and main-loop gap. No new trial authorized/executed here."
+}

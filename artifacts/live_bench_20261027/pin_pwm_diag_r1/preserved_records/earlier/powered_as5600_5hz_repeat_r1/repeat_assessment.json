@@ -1,0 +1,46 @@
+{
+  "original_trial_exit": 1,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "first_capture_already_occupied": true,
+  "old_captures_preserved": true,
+  "retained_records_identical": {
+    "enc_fault_first_hex": true,
+    "enc_fault_pwm_hex": true,
+    "enc_release_first_hex": true,
+    "enc_release_pwm_hex": true,
+    "mc_break_wave_hex": true
+  },
+  "historical_sha_verified": 22,
+  "i2c_errors_delta": 195,
+  "i2c_error_counts_delta": {
+    "enc_health_nack": 20,
+    "enc_health_deadline": 13,
+    "enc_health_busy": 155,
+    "enc_health_arlo": 7,
+    "enc_health_berr_clears": 17,
+    "enc_health_forced_resets": 172
+  },
+  "final_state": {
+    "state": "SAFE",
+    "pwm": 0,
+    "hmi_hv_armed": 0,
+    "vdc": 325.0,
+    "mc_fault": 0,
+    "bp_fault": 0,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "enc_reads": 308707,
+    "enc_errors": 387,
+    "enc_ok": 1,
+    "enc_speed_ok": 1,
+    "run_id": 2,
+    "run_elapsed_ms": 5001,
+    "run_reason": 1
+  },
+  "physical_rotation_verified": true,
+  "physical_rotation_verification_source": "operator_confirmation_after_repeat",
+  "physical_rotation_operator_answer": "Вращался ровно",
+  "sensor_under_pwm_qualified": false
+}

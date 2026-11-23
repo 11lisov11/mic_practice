@@ -1,0 +1,80 @@
+{
+  "schema": "mic_ai.bkin_dma_verified_candidate.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_verified_pair_r1",
+  "predecessor": "C:\\mic_practice\\artifacts\\live_bench_20261015\\manual_scalar_bkin_trace_r3",
+  "pair": [
+    2026101703,
+    2026101702
+  ],
+  "predecessor_pair": [
+    2026101507,
+    2026101506
+  ],
+  "prepared": true,
+  "installed": false,
+  "operationally_qualified": false,
+  "hv_release_approved": false,
+  "calibration_changed": false,
+  "control_protocol_changed": false,
+  "pwm_or_motor_control_changed": false,
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "mcu_flash_commands": 0,
+  "change": "Use actual DMA CNDTR and DMA2 channel 1 ISR flags to derive valid samples; expose verified count and transfer errors in the simplified HMI.",
+  "files_sha256": {
+    "nucleo/Src/main.c": "552257925047f94ed82f027fb53e327ccb50f5213e7948bda7bed3548053c534",
+    "nucleo/Inc/bkin_wave_capture.h": "aa48b5b8e0564c0bbd911fcc31e7dc3c5739067b8da988d67a2e5d16e2b603f4",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": "015ba6d8f861f42966580d3f5f4c2a188d65a4b4af166f3057e8e74bd29c8212",
+    "UNOQ_MOTOR/bkin_wave_wire.h": "83bbf7a13ca3f2a548f03bfd2aad1fd9a96026102d7e37d74ba74c218f9acf8f",
+    "UNOQ_MOTOR/nucleo_fault_diagnostics.h": "56ffaa7947f6cb90b3e130d53a5275657e3c9cf7905be09ffd3b337af6581059",
+    "web_hmi/server.py": "b6b6f722162507366ade1f2b6e1568d4dbd1ede0b99fd2b2a997bb6816944d75",
+    "web_hmi/static/app.js": "68d2c99c108e4b6c4959fd0eae5abe63086e89bc8935e75b59960bab6fd2cbf6",
+    "web_hmi/static/index.html": "41636853532b1fb2512872e2e2cd47fd5bfddb4cc81406a05b9908f3253a743b",
+    "web_hmi/static/style.css": "a9ee1bbb27b27482609436d9f768a3953501679fc8ef1dfafcc7545e04c4697e"
+  },
+  "documentation_sha256": {
+    "README_RU.md": "74385113a40e5bdd609d0557264ead28da7fc8712e05e8460126f3a5b6e77bc3"
+  },
+  "build_verification": {
+    "unoq": {
+      "pass": true,
+      "build_id": 2026101703,
+      "llext_issues": [],
+      "artifacts": [
+        {
+          "file": "UNOQ_MOTOR.ino.elf",
+          "bytes": 140284,
+          "sha256": "981CACE343A04D61C1C2E345019C593089825180A94CA0822DD169845F3CFE6A"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.hex",
+          "bytes": 167473,
+          "sha256": "041B1B1B433A6FBE2D37B9AB85E8EAB22CB54D19C5E61B531635C5D485DCF2A8"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.bin",
+          "bytes": 69860,
+          "sha256": "19889307E7DFB081A7090C6D21CE3C71C30F855B3943BC4F72A07776F562F02F"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.elf-zsk.bin",
+          "bytes": 140284,
+          "sha256": "737F6FC3C73F5F35B5FF7981F956F08DB02F15400C7787481953431BB416F554"
+        }
+      ]
+    },
+    "nucleo": {
+      "pass": true,
+      "build_id": 2026101702,
+      "errors": 0,
+      "warnings": 0,
+      "elf_sha256": "422e8d55d08fc83c8a2b756ea26a4e8e78072434bc59fc1bd3501c6653430dd5",
+      "hex_sha256": "70c19b8d82e82cef69b29db840ca1844443813e3a9fd17e23f8fea203d8debb9",
+      "hex_bytes": 135013
+    },
+    "host_selftest": {
+      "pass": true,
+      "checks": 17
+    }
+  }
+}

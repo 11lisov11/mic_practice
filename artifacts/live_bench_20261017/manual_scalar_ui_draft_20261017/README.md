@@ -1,0 +1,3 @@
+# Simplified manual scalar HMI draft
+
+UI-only draft based on the current installed firmware pair. The main controls are Start, Stop, emergency stop, and a 0–50 Hz slider. Ramp/downshift settings are collapsed. The ARM phrase and separate ARM button are removed from the normal manual flow; Start invokes the existing authenticated, time-limited server preflight. The access-key field is hidden while a token is stored and reappears when the server rejects it. Server authentication, the timed HV permission, calibration, MCU protections, and firmware are unchanged. This draft has not been deployed.

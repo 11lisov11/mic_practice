@@ -1,0 +1,72 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "halt": 0,
+  "service_restart": 0,
+  "flash": 0,
+  "direct_reply": false,
+  "direct_error": null,
+  "direct_body_bytes": null,
+  "current_RPC_usable": false,
+  "FOC_start_ready": false,
+  "Uno_RAM_bytes": 786432,
+  "Uno_RAM_SHA256": "e43d5fc240f9502d6847d139af13547c64ee55ea974a189eae4220e2d0e9552f",
+  "Uno_RAM_snapshot_atomic": false,
+  "Uno_after_dump_core_state": "running",
+  "openocd_dump_reset_commands": 0,
+  "openocd_dump_halt_commands": 0,
+  "openocd_dump_flash_writes": 0,
+  "Nucleo_passive_state": {
+    "passed": true,
+    "source": "passive ST-Link HotPlug reads",
+    "ports": [
+      "COM10",
+      "COM13"
+    ],
+    "physical_authorization_context": "PC USB, J1 OFF; passive diagnosis only",
+    "native_image_sha256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+    "image_comparison": "exact HEX with erased FF padding",
+    "hex_erased_padding_offsets": [
+      109564,
+      109565,
+      109566,
+      109567
+    ],
+    "sealed_binary_sha256": "041e0e21fe932189c779cab4500b1c66ef07d84cfac9853ff4b2509a387b6214",
+    "layout_from_actual_dwarf": {
+      "SensorType": 0,
+      "ConversionFactor": 2,
+      "LatestConv": 4,
+      "AvBusVoltage_d": 6,
+      "FaultState": 8
+    },
+    "rows": [
+      {
+        "tick_ms": 7539378,
+        "bus_volts": 10.02294921875,
+        "conversion_factor": 416,
+        "digital_bus": 1579,
+        "bdtr": 37304434,
+        "moe": false
+      },
+      {
+        "tick_ms": 7539828,
+        "bus_volts": 10.04833984375,
+        "conversion_factor": 416,
+        "digital_bus": 1583,
+        "bdtr": 37304434,
+        "moe": false
+      }
+    ],
+    "tick_delta_ms": 450,
+    "flash_writes": 0,
+    "reset_commands": 0,
+    "halt_commands": 0,
+    "motor_commands": 0
+  },
+  "old_capture_files_verified": 5417,
+  "timing_of_RPC_loss": "After earlier successful OFF qualification and before this user-requested FOC preparation; no new PWM run",
+  "operator_next": "Keep both boards on PC,15V ON,J1 OFF. No motor run or CLEAR until RPC is restored.",
+  "conclusion": "Lost route recovery was verified earlier, but it does not cure every RPC failure. New direct GET timeout reproduced while idle; original cause unresolved."
+}

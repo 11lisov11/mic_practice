@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "unsafe_states_rejected": [
+    "vdc",
+    "bp_vdc",
+    "state",
+    "pwm",
+    "hmi_hv_armed",
+    "bp_status",
+    "mc_age_ms",
+    "mc_uart_error_flags",
+    "mc_last_uart_error_flags",
+    "mc_bad_integrity",
+    "mc_bad_sequence",
+    "precharge",
+    "pfc",
+    "brake",
+    "bp_ext",
+    "fw_build",
+    "mc_fw_build",
+    "rpc_schema_version",
+    "mc_capabilities",
+    "bp_mcsdk_telemetry"
+  ],
+  "OFF_CPU_negative_cases": 8,
+  "OFF_CPU_boundary4000_accepted": true,
+  "OFF_CPU4001_rejected": true,
+  "ordinary_freshness_UART_RPC_required": true,
+  "post_programming_CLEAR_record_must_be_empty": true,
+  "script_hashes": {
+    "prepare_clear_recovery_installer.py": "37f589e6581dae332740e2c1a4f94c765971c77025ba6ef1a32a2f53e376d37a",
+    "install_clear_recovery.py": "93fd677bf62404450f32b68d408a24b9ab4756169c2dedbdc03038573d15211e",
+    "verify_clear_recovery_idle.py": "31eebcde5d1c245f0e3abda3e3f3da3c8c16508bba9e7f1df890687deca4d1c8",
+    "record_clear_recovery_installation.py": "f9bcafe22c940a93e94c0c90fca7acb1d2463b6a921ce4910ee13662a6f07272",
+    "test_clear_recovery_installer.py": "1006a07335b47755d1fbf49db42f2136c7daa474e766a1d703fe1382547799ce"
+  },
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "package_pair": [
+    2026111605,
+    2026111606
+  ],
+  "preserved_files_verified": 3581
+}

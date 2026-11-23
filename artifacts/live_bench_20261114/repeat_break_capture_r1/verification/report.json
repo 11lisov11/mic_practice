@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "native_checks": 706,
+  "HMI_checks": 366,
+  "actual_arm_DMA_and_record_builders": true,
+  "first_snapshot_and_wave_immutable": true,
+  "second_slot_immutable": true,
+  "repeat_wave_separate_receiver": true,
+  "old_event_replay_does_not_become_repeat": true,
+  "CRC_bit_corruption_checks": 1032,
+  "partial_and_stale_records_not_qualified": true,
+  "control_and_protection_functions_unchanged": true,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "limitation": "Register stubs and host decoding do not validate electrical pulse timing or the physical TP23 wire."
+}

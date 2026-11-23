@@ -1,0 +1,116 @@
+{
+  "schema": "mic_ai.multi_algorithm.motor_profile.v1",
+  "purpose": "nameplate_estimated_motor_experimental",
+  "source_kind": "catalog_fit_plus_existing_DC_resistance",
+  "motor": {
+    "rs": 12.23,
+    "rr": 11.00442222558575,
+    "ls": 0.528093860573909,
+    "lr": 0.528093860573909,
+    "lm": 0.4944775988161633,
+    "j": 0.0002,
+    "b": 0.00014790613961630187,
+    "poles": 1,
+    "flux": 0.25,
+    "current_limit": 0.8,
+    "trip_current": 1.35,
+    "current_bw": 400.0,
+    "speed_bw": 12.0
+  },
+  "nominal": {
+    "output_power_w": 250.0,
+    "line_voltage_v": 220.0,
+    "line_current_a": 1.24,
+    "power_factor": 0.78,
+    "efficiency": 0.68,
+    "frequency_hz": 50.0,
+    "rated_speed_rpm": 2720.0,
+    "pole_pairs": 1,
+    "connection": "D",
+    "start_current_ratio": 5.3,
+    "start_torque_ratio": 2.2,
+    "max_torque_ratio": 2.2,
+    "source_url": "https://cdn-01.iek.ru/media/original/78c31060549010eaa9a1bb1f4f6d2d8cb3155062b138bfd13478f55521c38a47.pdf"
+  },
+  "estimate": {
+    "motor": {
+      "rs": 12.23,
+      "rr": 11.00442222558575,
+      "ls": 0.528093860573909,
+      "lr": 0.528093860573909,
+      "lm": 0.4944775988161633,
+      "j": 0.0002,
+      "b": 0.00014790613961630187,
+      "poles": 1,
+      "flux": 0.25,
+      "current_limit": 0.8,
+      "trip_current": 1.35,
+      "current_bw": 400.0,
+      "speed_bw": 12.0
+    },
+    "circuit": {
+      "Rs": 12.23,
+      "Rr": 11.00442222558575,
+      "Ls_sigma": 0.03361626175774557,
+      "Lr_sigma": 0.03361626175774557,
+      "Lm": 0.4944775988161633,
+      "J": 0.0002,
+      "B": 0.00014790613961630187,
+      "p": 1,
+      "I_n": 1.24,
+      "psi_sat": 0.0,
+      "sat_exp": 2.0,
+      "lm_min_scale": 0.2
+    },
+    "core_resistance_ohm": 1482.429794498818,
+    "prediction": {
+      "line_current_a": 1.240000000000404,
+      "power_factor": 0.7800000000001488,
+      "input_power_w": 368.55269903792635,
+      "output_power_w": 249.99999999995651,
+      "efficiency": 0.6783290439944112,
+      "output_torque_nm": 0.8776927008742701,
+      "stator_copper_loss_w": 56.41454400003676,
+      "rotor_copper_loss_w": 26.970588235289643,
+      "core_loss_w": 23.167566802643464,
+      "rotational_loss_w": 12.0,
+      "parallel_voltage_v": 106.99578074902516,
+      "magnetizing_current_a": 0.6887635531701816,
+      "rotor_branch_current_a": 0.9038595671117194,
+      "start_current_ratio": 3.384032800753022,
+      "start_torque_ratio": 1.8165252092802089,
+      "max_torque_ratio": 2.199999999999913,
+      "max_torque_slip": 0.4657660248255715
+    },
+    "assumptions": {
+      "rotational_loss_w": 12.0,
+      "leakage_split": 0.5,
+      "inertia_kg_m2": 0.0002
+    },
+    "fit_residuals": [
+      3.2573943542502093e-13,
+      1.907363156306019e-13,
+      -1.7397194795876203e-13,
+      -3.952393967665557e-14
+    ]
+  },
+  "physical_parameters_measured": false,
+  "installed": false,
+  "intended_experiment": {
+    "mode": "FOC",
+    "target_hz": 5,
+    "max_duration_s": 5,
+    "acceleration_hz_s": 5,
+    "load": "none",
+    "flux_wb": 0.25
+  },
+  "protection_thresholds_increased": false,
+  "limitations": [
+    "Calculated model is not a unique measurement of motor parameters.",
+    "Nominal current, power factor, output power and maximum torque are fit constraints; starting ratios remain independent residuals.",
+    "Single-cage model does not reproduce all catalog starting characteristics; no direct-on-line start is modeled as a validated result.",
+    "J, loss split and individual leakage split are explicit priors.",
+    "Core-loss resistor is used in the ratings fit; firmware dynamic model omits explicit core loss.",
+    "Existing firmware physical-profile gate and target timing are not modified by this offline tool."
+  ]
+}

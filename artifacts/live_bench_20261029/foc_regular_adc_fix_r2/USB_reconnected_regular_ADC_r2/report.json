@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "pair": [
+    2026103005,
+    2026103006
+  ],
+  "rows": [
+    {
+      "tick": 122909,
+      "MOE": false,
+      "registered": 2,
+      "fault": 0,
+      "pending": 0,
+      "valid": [
+        1,
+        1
+      ],
+      "stamps": [
+        3714548898,
+        3714548356
+      ],
+      "conversions": {
+        "VbusRegConv_M1": {
+          "regADC": 1342177280,
+          "samplingTime": 4,
+          "channel": 2,
+          "data": 0,
+          "id": 0,
+          "right_aligned_12bit": 0
+        },
+        "TempRegConv_M1": {
+          "regADC": 1342177280,
+          "samplingTime": 4,
+          "channel": 8,
+          "data": 11200,
+          "id": 1,
+          "right_aligned_12bit": 700
+        }
+      }
+    },
+    {
+      "tick": 123371,
+      "MOE": false,
+      "registered": 2,
+      "fault": 0,
+      "pending": 0,
+      "valid": [
+        1,
+        1
+      ],
+      "stamps": [
+        3793087328,
+        3793086835
+      ],
+      "conversions": {
+        "VbusRegConv_M1": {
+          "regADC": 1342177280,
+          "samplingTime": 4,
+          "channel": 2,
+          "data": 0,
+          "id": 0,
+          "right_aligned_12bit": 0
+        },
+        "TempRegConv_M1": {
+          "regADC": 1342177280,
+          "samplingTime": 4,
+          "channel": 8,
+          "data": 11200,
+          "id": 1,
+          "right_aligned_12bit": 700
+        }
+      }
+    }
+  ],
+  "layout_from_DWARF": {
+    "regADC": 0,
+    "samplingTime": 4,
+    "channel": 8,
+    "data": 10,
+    "id": 12
+  },
+  "regular_data_alignment": "12bit LEFT in 16bit, unchanged MCSDK representation",
+  "RAM_snapshot_not_atomic": true,
+  "exact_conversion_latency_not_measured": true,
+  "new_RUN_schedule_not_exercised": true,
+  "read_ADC_DR": false,
+  "source": "ST-Link HotPlug RAM and TIM1 BDTR reads, plus HTTP GET",
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "halt": 0
+}

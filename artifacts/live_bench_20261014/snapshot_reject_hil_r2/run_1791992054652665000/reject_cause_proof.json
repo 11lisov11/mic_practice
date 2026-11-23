@@ -1,0 +1,32 @@
+{
+  "pass": true,
+  "checks": {
+    "43_bytes": true,
+    "frame_crc_ok": true,
+    "peer_header_match": true,
+    "reason_is_off_policy": true,
+    "legacy_counter_increment": true,
+    "primary_uart_counters_zero": true
+  },
+  "observed_reject": {
+    "mc_break_reject_valid": 1,
+    "mc_break_reject_code": 5,
+    "mc_break_reject_ms": 264525,
+    "mc_break_reject_peer_fw": 2026101495,
+    "mc_break_reject_fresh_off": 0,
+    "mc_break_reject_bp_status": 109,
+    "mc_break_reject_pwm": 0,
+    "mc_break_reject_rsp_age_ms": 5,
+    "mc_break_reject_good_before": 1264,
+    "mc_break_reject_packet_hex": "55aad1000104f7dac378e8a92fec00000000000000000000000000000000000000000000000000bf73b3cd",
+    "mc_break_reject_record_valid": 1,
+    "mc_break_reject_reason": "NOT_FRESH_OFF"
+  },
+  "crc32c_stored": 3451089855,
+  "crc32c_calculated": 3451089855,
+  "peer_from_packet": 2026101495,
+  "raw_capture": "C:\\mic_practice\\artifacts\\live_bench_20261014\\snapshot_reject_hil_r2\\run_1791992054652665000",
+  "physical_12_oct_uart_noise_cause_proven": false,
+  "acceptance_guard_unchanged": true,
+  "hv_release_approved": false
+}

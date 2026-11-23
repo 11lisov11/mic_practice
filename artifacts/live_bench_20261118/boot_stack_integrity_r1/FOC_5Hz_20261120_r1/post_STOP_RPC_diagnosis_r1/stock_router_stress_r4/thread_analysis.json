@@ -1,0 +1,157 @@
+{
+  "scope": "Passive non-atomic sparse capture. Stack matches are evidence, not a complete unwind.",
+  "threads": [
+    {
+      "name": "worker",
+      "thread": "0x20015b78",
+      "psp": "0x200378f0",
+      "stack": "0x20036a30",
+      "size": 4096,
+      "matches": [
+        {
+          "at": "0x20037904",
+          "value": "0x8010e8b",
+          "symbol": "kernel:z_tick_sleep+0x4e"
+        },
+        {
+          "at": "0x20037908",
+          "value": "0x8010860",
+          "symbol": "kernel:z_swap_irqlock+0x24"
+        },
+        {
+          "at": "0x20037910",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x20037924",
+          "value": "0x801a235",
+          "symbol": "kernel:z_impl_k_sleep+0xa"
+        },
+        {
+          "at": "0x20037928",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x20037934",
+          "value": "0x200119c3",
+          "symbol": "app:_ZL21bridge_service_workerPvS_S_+0x10a"
+        },
+        {
+          "at": "0x200379c8",
+          "value": "0x200118b9",
+          "symbol": "app:_ZL21bridge_service_workerPvS_S_+0x0"
+        },
+        {
+          "at": "0x200379e4",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    },
+    {
+      "name": "bridge",
+      "thread": "0x200363c0",
+      "psp": "0x2004be88",
+      "stack": "0x2004b0d0",
+      "size": 4096,
+      "matches": [
+        {
+          "at": "0x2004be9c",
+          "value": "0x8010e8b",
+          "symbol": "kernel:z_tick_sleep+0x4e"
+        },
+        {
+          "at": "0x2004bea0",
+          "value": "0x8010860",
+          "symbol": "kernel:z_swap_irqlock+0x24"
+        },
+        {
+          "at": "0x2004bec4",
+          "value": "0x200021f3",
+          "symbol": "app:_ZN15SerialTransport9availableEv+0xa"
+        },
+        {
+          "at": "0x2004beec",
+          "value": "0x8010e79",
+          "symbol": "kernel:z_tick_sleep+0x3c"
+        },
+        {
+          "at": "0x2004bef0",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004bf04",
+          "value": "0x801a235",
+          "symbol": "kernel:z_impl_k_sleep+0xa"
+        },
+        {
+          "at": "0x2004bf08",
+          "value": "0x801a22b",
+          "symbol": "kernel:z_impl_k_sleep+0x0"
+        },
+        {
+          "at": "0x2004bf10",
+          "value": "0x20003851",
+          "symbol": "app:k_mutex_unlock.isra.0+0x0"
+        },
+        {
+          "at": "0x2004bf14",
+          "value": "0x200107d3",
+          "symbol": "app:_ZN11BridgeClass6updateEv+0x4a"
+        },
+        {
+          "at": "0x2004c064",
+          "value": "0x20010000",
+          "symbol": "app:_ZN7arduino7msgpack6object3extC2EaPKhj+0xc"
+        },
+        {
+          "at": "0x2004c06c",
+          "value": "0x20003cd1",
+          "symbol": "app:_ZN11BridgeClass10is_startedEv+0x0"
+        },
+        {
+          "at": "0x2004c070",
+          "value": "0x20010789",
+          "symbol": "app:_ZN11BridgeClass6updateEv+0x0"
+        },
+        {
+          "at": "0x2004c07c",
+          "value": "0x2001084f",
+          "symbol": "app:_Z16updateEntryPointPvS_S_+0x12"
+        },
+        {
+          "at": "0x2004c084",
+          "value": "0x8005f1f",
+          "symbol": "kernel:z_thread_entry+0x26"
+        }
+      ]
+    }
+  ],
+  "mutexes": {
+    "control": {
+      "owner": "0x0",
+      "count": 0
+    },
+    "read": {
+      "owner": "0x0",
+      "count": 0
+    },
+    "write": {
+      "owner": "0x0",
+      "count": 0
+    },
+    "outgoing": {
+      "owner": "0x0",
+      "count": 0
+    }
+  },
+  "health": [
+    799,
+    0,
+    0,
+    0
+  ]
+}

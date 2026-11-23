@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "compiler": "GNU Arm14.3 CortexM4F hard float",
+  "fast_math_not_enabled_for_native_control": true,
+  "control_always_inlined": true,
+  "fixed_model_folded": true,
+  "stack_usage": {
+    "ma_clock_snapshot": 16,
+    "ma_reset": 40,
+    "mi_settle_cycles.isra": 8,
+    "ma_observe.part.0.constprop": 744,
+    "ma_fail_at": 48,
+    "mi_step.part.0.constprop": 192,
+    "fe_profile_allowed": 56,
+    "ma_modulate": 152,
+    "ma_native_selected": 0,
+    "ma_native_regular_fault": 48,
+    "ma_observer_trace_packet": 24,
+    "ma_timing_diag": 56,
+    "ma_native_prepare": 72,
+    "ma_native_request": 40,
+    "ma_native_config": 80,
+    "ma_native_service": 288,
+    "ma_native_fast": 320,
+    "ma_native_diag": 24,
+    "ma_native_complete": 0,
+    "ma_id_status": 24,
+    "ma_id_page": 24,
+    "ma_native_profile_tick": 176,
+    "ma_native_reference_allowed": 0
+  },
+  "SRAM_sections": {
+    ".data": 976,
+    ".bss": 28860,
+    ".noinit": 32,
+    "._user_heap_stack": 1540
+  },
+  "RAM_unallocated": 1360,
+  "target_cycle_claim": false,
+  "full_nested_stack_high_water_measured": false
+}

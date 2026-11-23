@@ -1,0 +1,28 @@
+{
+  "pass": false,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "flash_ready": false,
+  "installed_firmware_modified": false,
+  "scope": "integrated candidate parser/ISR/FIFO with mocked RDR read side effects and HAL/MCSDK",
+  "hypothesis": "isolated intact NE on unchanged RUN heartbeat can be accepted within a bounded budget",
+  "limitations": [
+    "No evidence that the recorded physical NE accompanied an intact byte",
+    "Physical per-byte flag association and MCU timing remain unqualified",
+    "8-bit sequence cannot protect against long-delayed replay across wrap",
+    "CRC is not authentication or a safety certification",
+    "Finite corruption sweep, not every possible multi-bit error"
+  ],
+  "source_sha256": {
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Src\\main.c": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce",
+    "mcsdk_reference\\AIR56B2_025KW_220V_DELTA_NAMEPLATE_VF_NOT_FOR_HV\\Inc\\mc_stm_types.h": "37d22eb69b999a06a5161db940406d82fa764adb361264615edce36bc9858116",
+    "tools\\prepare_uart_v3_candidate.py": "51b2abcca51b0ac271db20a2378a47b5cfbfde0651d24500f4d94dd99b1e5c3d",
+    "research\\uart_v3\\nucleo_fifo.c.inc": "275a51f4e529bcc1e1d6b4c5dcb75d912c6331fc79ecf5bcc6c7c701bb7f0a06",
+    "research\\uart_v3\\nucleo_parser.c.inc": "bc85432d5f1a0484d260e29b48b50bd2502b6358e03615651277ed2a71290bf5",
+    "research\\uart_v3\\uart_v3_transport.h": "4e9c05df24403676539287c0709e0949e54e67e8d992168802a85708db67b49b",
+    "research\\uart_v3\\host_scenarios.cpp": "88600f2665603dd74d1dfcf85f4ac8504d95f45346bfcf7ed5d97e7f9673e6df",
+    "tools\\uart_v3_candidate_selftest.py": "19d50219984bd92fccdbdf72b0cc4d228be2cbd533ceb06b7333855dda885d47"
+  },
+  "error": "RuntimeError: candidate did not compile"
+}

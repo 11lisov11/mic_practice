@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "hardware_commands": 0,
+  "cases": {
+    "local_stop": {
+      "pass": true,
+      "stdout": "checks=1038"
+    },
+    "bus_and_run_limits": {
+      "pass": true,
+      "stdout": "fixture boundaries, 1000 diagnostic raw values, 451 filtered voltages, stale ADC and uint32 wrap passed"
+    },
+    "peer_decoder": {
+      "pass": true,
+      "stdout": ""
+    },
+    "fixture_hmi_guards": {
+      "pass": true,
+      "negative_cases": 9
+    }
+  },
+  "stop_source_matches_production": true
+}

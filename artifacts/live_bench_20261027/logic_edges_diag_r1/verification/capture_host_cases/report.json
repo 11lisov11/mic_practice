@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "actual_hardware_calls": 0,
+  "cases": [
+    {
+      "case": "preflight",
+      "exit": 0,
+      "mailbox_writes": 0,
+      "waveforms_saved": 0
+    },
+    {
+      "case": "capture_failure",
+      "exit": 1,
+      "mailbox_writes": 0,
+      "waveforms_saved": 0
+    },
+    {
+      "case": "absent",
+      "exit": 1,
+      "mailbox_writes": 0,
+      "waveforms_saved": 0
+    },
+    {
+      "case": "ambiguous",
+      "exit": 1,
+      "mailbox_writes": 1,
+      "waveforms_saved": 1
+    },
+    {
+      "case": "one",
+      "exit": 0,
+      "mailbox_writes": 1,
+      "waveforms_saved": 1
+    }
+  ],
+  "edge_CRC_negative_cases": 48,
+  "waveform_positive_and_negative_cases": 5,
+  "readout_during_load": false
+}

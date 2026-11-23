@@ -1,0 +1,1516 @@
+                                                                                                                       UM2014
+
+                                                                                                                     User manual
+
+ 1500 W motor control power board based on STGIB15CH60TS-L SLLIMM™ 2nd
+                                                               series IPM
+
+
+Introduction
+The STEVAL-IPM15B is a compact motor drive power board based on SLLIMM™ (small low-loss intelligent molded module)
+2nd series (STGIB15CH60TS-L). It provides an affordable and easy-to-use solution for driving high power motors for a wide
+range of applications such as power white goods, air conditioning, compressors, power fans, high-end power tools and 3-phase
+inverters for motor drives in general. The IPM itself consists of short-circuit rugged IGBTs and a wide range of features like
+undervoltage lockout, smart shutdown, embedded temperature sensor and NTC, and overcurrent protection.
+The main characteristics of this evaluation board are small size, minimal BOM and high efficiency. It consists of an interface
+circuit (BUS and VCC connectors), bootstrap capacitors, snubber capacitor, hardware short-circuit protection, fault event and
+temperature monitoring. In order to increase the flexibility, it is designed to work in single- or three-shunt configuration and with
+double current sensing options such as using three dedicated onboard op-amps, or op-amps embedded in the MCU. The Hall/
+Encoder part completes the circuit.
+Thanks to these advanced characteristics, the system has been specifically designed to achieve fast and accurate current
+feedback conditioning, satisfying the typical requirements for field-oriented control (FOC).
+The STEVAL-IPM15B is compatible with ST's STM32-based control board, enabling designers to build a complete platform for
+motor control.
+
+                                Figure 1. SLLIMM 2nd series motor control internal demo board (top view)
+
+
+
+
+UM2014 - Rev 3 - September 2019                                                                                              www.st.com
+For further information contact your local STMicroelectronics sales office.
+                                                                                                             UM2014
+                                                                                                             Key features
+
+
+
+
+1                Key features
+
+                 •   Input voltage: 125 - 400 VDC
+                 •   Nominal power: up to 700 W
+                 •   Nominal current: up to 9.0 A
+                 •   Input auxiliary voltage: up to 20 V DC
+                 •   Motor control connector (32 pins) interfacing with ST MCU boards
+                 •   Single- or three-shunt resistors for current sensing (with sensing network)
+                 •   Two options for current sensing: dedicated op-amps or through MCU
+                 •   Overcurrent hardware protection
+                 •   IPM temperature monitoring and protection
+                 •   Hall sensors (3.3 / 5 V)/encoder inputs (3.3 / 5 V)
+                 •   IGBT intelligent power module:
+                     –    SLLIMM™ 2nd series IPM (STGIB15CH60TS-L - Full molded package)
+                 •   Universal conception for further evaluation with bread board and testing pins
+                 •   Very compact size
+
+                              Figure 2. SLLIMM 2nd series motor control internal demo board: (bottom view)
+
+
+
+
+UM2014 - Rev 3                                                                                                   page 2/35
+                                                                                                                            UM2014
+                                                                                                                     Circuit schematics
+
+
+
+
+2                Circuit schematics
+
+                 The full schematics for the SLLIMM™ 2nd series card for STGIB8CH60TS-L IPM products is shown below. This
+                 card consists of an interface circuit (BUS and VCC connectors), bootstrap capacitors, snubber capacitor, short-
+                 circuit protection, fault output circuit, temperature monitoring, single-/three-shunt resistors and filters for input
+                 signals. It also includes bypass capacitors for VCC and bootstrap capacitors. The capacitors are located very
+                 close to the drive IC to avoid malfunction due to noise.
+                 Dual current sensing options are provided: three dedicated on-board op-amps or embedded MCU op-amps;
+                 selection is performed through three jumpers.
+                 The Hall/Encoder section (powered at 5 V or 3.3 V) completes the circuit.
+
+2.1              Schematic diagrams
+
+                                               Figure 3. STEVAL-IPM15B circuit schematic (1 of 6)
+
+
+
+
+                                                       STEVAL-IPMnmx decoder
+
+                                       RC1                         RC2                     RC3                       RC4
+                            N
+                                       0                           0                       0                         0
+
+
+
+
+                                       RC5                         RC6                     RC7                       RC8
+                            M
+                                       0                           0                       0                         0
+
+
+
+
+                                       RC9                     RC10
+                            X
+                                       0                       0
+
+
+
+
+UM2014 - Rev 3                                                                                                                 page 3/35
+                                                                                                                                                    UM2014
+                                                                                                                                      Schematic diagrams
+
+
+
+
+                                                     Figure 4. STEVAL-IPM15B circuit schematic (2 of 6)
+
+
+
+                                         E1
+                                                                                           Control Connector
+                                                     SW1
+
+
+
+
+                                                 3
+                                                                                                J2
+                                                     2      Current_A           EM_STOP     1             2
+                                                                                PWM-A-H     3             4
+                                                                                PWM-A-L     5             6
+                                                                                PWM-B-H     7             8
+                                                 1                              PWM-B-L     9             10
+                                                                                           11             12                                  TSO
+                             Current_A_amp                                      PWM-C-H
+                                                                                PWM-C-L    13             14            Bus_voltage
+                                                                                           15             16
+                            E2                                                             17             18
+                                                                                           19             20
+
+
+
+
+                                                                                                                                          1
+                                                                        NTC_bypass_relay   21             22
+                                     SW2
+                                 3
+
+
+
+
+                                                                                           23             24                                        SW3
+                                                                                           25             26                              2
+                                     2          Current_B                           +5V    27             28
+                                                                                           29             30        3.3V
+                                                                              PWM_Vref
+                                                                              M_phase_A    31             32
+
+
+
+
+                                                                                                                                          3
+                                                                                           33             34
+                                 1
+
+
+
+
+                                           E3
+                 Current_B_amp
+                                                                              M_phase_B                             M_phase_C
+                                                                                                                                          NTC
+                                                     SW4
+                                                 3
+
+
+
+
+                                                     2      Current_C
+                                                 1
+
+
+
+
+                           Current_C_amp
+
+
+
+
+                                                                                                               J3
+                                                                                                                                      phase_C
+                                                                                                                    3
+                                                                                                                    2                 phase_B
+                                                                                                                    1
+                                                                                                                                      phase_A
+                                                                                                               Motor Output
+
+
+
+
+UM2014 - Rev 3                                                                                                                                            page 4/35
+                                                                                                                                   UM2014
+                                                                                                                            Schematic diagrams
+
+
+
+
+                                            Figure 5. STEVAL-IPM15B circuit schematic (3 of 6)
+
+                                                         Input
+                  DC_bus_voltage
+                                                                                    +Bus
+
+                                                                       R1
+                                                                       470K
+                                                                                                            3.3V
+                 INPUT-dc
+                                       C1                              R2                            D1
+                       2           +                                   470K                          BAT48JFILM
+                       1
+
+                  J1
+                                                                                                              Bus_voltage
+                                                                                     R3 120R
+                                                                       R4                           C2
+                                                                       7k5                          10n
+
+
+
+
+                                                                                                          3.3V
+
+                                                                 R5
+                                                                 1k0                       U1D
+                                                                                    4
+                                                                             12 +
+                                                                                           14
+                                                                             13 -                             1.65V
+
+                                                  + C3           R6                                  + C4
+                                                                                    11
+
+
+
+
+                                                   47µ/35V       1k0                       TSV994     47µ/35V
+
+
+
+
+UM2014 - Rev 3                                                                                                                        page 5/35
+ UM2014 - Rev 3
+                                                                                         3.3V
+                                                                   C21
+                         1.65V
+
+
+
+
+                                                                   +
+                                         C22
+                                         10n                   4.7u 50V
+                                                                            C23
+                                                R29
+                                                2k1
+
+
+                                R30    1k0                                  100n
+                                                                   U1A
+
+
+
+
+                                                          4
+                  E1                                                                       TP24
+                                                                                   R31
+                                         C24      3   +
+                                         100p                     1                               Current_A_amp
+                                                  2   -
+                                R32    1k0
+                                                                                   1k    C25
+
+
+
+
+                                                          11
+                                                                   TSV994                330p
+
+
+                                                R33
+                                                                                                             1.65V
+                                                2k1
+                                                                                                                              C26
+                                                                                                                              10n
+                                                                                                                                     R34
+                                                                                                                                     2k1           3.3V
+
+                                                                                                                 R35   1k0
+                                                                                                                                                   U1C
+                                                                                                                                             4
+
+
+
+
+                                                                                                  E2                                                               TP25
+                                                                                                                                                           R36
+                                                                                                                        C27           10 +
+                                                                                                                       100p                        8                      Current_B_amp
+                                                                                                                                       9 -
+                                                                                                                 R37   1k0
+                        1.65V                                                                                                                              1k     C29
+                                                                                                                                             11
+
+
+
+
+                                         C28                                                                                                      TSV994         330p
+                                         10n
+                                                R38
+                                                2k1                                                                                  R39
+                                                                      3.3V                                                          2k1
+
+                                 R40     1k0
+                                                                   U1B
+
+
+
+
+                                                          4
+                   E3                                                                      TP26
+                                                                                                                                                                                          Figure 6. STEVAL-IPM15B circuit schematic (4 of 6)
+
+
+
+
+                                                                                   R41
+                                         C30      5   +
+                                         100p                     7                                    Current_C_amp
+                                                  6   -
+                                 R42     1k0
+                                                                                   1k    C31
+
+
+
+
+                                                          11
+                                                                                         330p
+                                                                  TSV994
+
+                                                R43
+                                                2k1
+
+
+
+
+page 6/35
+                                                                                                                                                                                                                                               Schematic diagrams
+                                                                                                                                                                                                                                                                    UM2014
+ UM2014 - Rev 3
+                                                                                                                         C5          C6            C7                                                      3.3V
+                  Phase A - input              R7
+                                               3k9
+                                                     R8 1k0                                                               2.2u       2.2u          2.2u             U2                                             TP1
+                                                                                                                                                                                IPM module
+                               PWM-A-L                                                                                                                                                                                       R10
+                                                                                                                                                          1
+                                                                                                                                                               NC                                     26
+                               PWM-A-H                                                                         TP2            TP3         TP4                                                  T1
+                                                                                                                                                          2                                                   C8             12k
+                                                     R9 1k0                                                                                                    VBOOTu                                         100n
+                                                                                                         TP5                                              3                                           25
+                                                                                                 TP6                                                           VBOOTv                          T2                                                     C9
+                                               R11             C10     C11
+                                                                                           TP7                                                                                                                                                        0,1 uF - 400V
+                                               3k3             10p     10p                                                                                4
+                                                                                                                                                               VBOOTw                                 24    NTC
+                                                                                                                                                          5                                     P                                                                                  +Bus
+                                D2                                                                                                                             HINu
+                                LED Red                                                                TP8                                                6                                                   TP9
+                  15V                                                                                                                                          HINv
+                                                                                                                                                          7                                           23
+                       2                                                                                                                                       HINw                             U                                                                                  phase_A
+                       1                                                                                                                                  8                                                   TP10
+                              R12
+                  J4                                                                             C13                     + C12                                 VCCH       STGIB15CH60TS-L
+                              5k6
+                                                                                                 100n                      4.7u 50V                       9                                           22
+                                                                                                                                                               GNDa                             V                                                                                  phase_B
+                                               R13                                                                            TP12                        10                                                  TP13
+                                                                TP11                                          TP14                                             LINu
+                  Phase B - input              3k9
+                                                     R14 1k0                                                                                              11                                          21
+                                                                                                 TP15                                                          LINv                            W                                                                                   phase_C
+                               PWM-B-L
+                                                                                                                                                          12
+                                                                                                                                                               LINw                                           TP16
+                               PWM-B-H
+                                                                                                                                                          13
+                                                     R15 1k0                                                                                                   VCCL                                   20
+                                                                                                              TP17                                        14                                  NU              TP18
+                                                               C14     C15                                                                                     SD
+                                               R16
+                                               3k3             10p     10p                                                                                15                                          19
+                                                                                                                                                               CIN                            NV              TP19
+                                                                                                                                            TP20                                                                                     SW5                SW6
+                                                                                                                                                          16
+                                                                                                                                                               GNDb                                   18
+                                                                                                                                                          17                                  NW
+                                                                                                                   TSO                                         TSO                                                                   1_SHUNT               1_SHUNT
+                                                                                                                                       C16
+                                                                                                                                       1nF                                                                                     SW7                                                  SW8
+                                                                                                                                                                                                                   3_SHUNT
+                                                                                                                                                                                                                                                                         3_SHUNT
+
+
+
+
+                                                                                                                     D6
+                                                                                                                                                                         BAT48JFILM         R18 1k0
+                  Phase C - input              R17                                                             BAT48JFILM                                                D3                                                                                                                  E3
+                                               3k9
+                                                     R19 1k0
+                               PWM-C-L                                                                                        3.3V
+                                                                                                                                                                         BAT48JFILM         R21 1k0
+                               PWM-C-H                                                                                                                                   D4                                                                                                                  E2
+                                                     R20 1k0
+
+                                               R22             C17     C18                                                             R23      1k0                      BAT48JFILM    R24      1k0
+                                               3k3             10p     10p                                                                                               D5                                                                                                                  E1
+
+                                                                                                       R53                       C19                                                                        R25                                R26                R27
+                                                                                                                                                                                                                                                                                                  Figure 7. STEVAL-IPM15B circuit schematic (5 of 6)
+
+
+
+
+                           TP22 TP21                                                                   4.7k                      1n                                                                         0.04                               0.04               0.04
+
+
+                                                                             3.3V
+
+                                                                R28
+                                                                10k
+
+                                          EM_STOP                                                             SD
+
+                                                               C20
+                                                               330p                 TP23
+
+
+
+
+page 7/35
+                                                                                                                                                                                                                                                                                                                                                       Schematic diagrams
+                                                                                                                                                                                                                                                                                                                                                                            UM2014
+ UM2014 - Rev 3
+                  3.3V
+
+
+
+
+                                                  3
+                                                      SW9
+                                      C32                           Hall/Encoder
+                                      100n            2
+
+
+
+
+                                                  1
+                                                             SW10
+                                                                             R44   R45   R46
+                                                                             4k7   4k7   4k7
+
+                                                             R47    2k4
+                         +5V
+                                                                                                                       M_phase_A
+                                                             SW11
+                                      C33
+                                      100n
+
+                                                             R48    2k4
+                                                                                                                       M_phase_B
+                                                             SW12
+                                             J5
+                                                      1
+                                 H1/A+            1   2      R49    2k4
+                                 H2/B+            2   3
+                                                  3                                                                    M_phase_C
+                                 H3/Z+                4
+                                 + 3.3/5V         4   5                                         SW13    SW14    SW15
+                                 GND              5
+                                                             C34
+                                      Encoder/Hall           100n
+
+                                                                             C35   C36   C37
+                                                                             10p   10p   10p
+                                                                                               R50     R51     R52
+                                                                                               4k7     4k7     4k7
+
+                          3.3V
+                                                                                                                                   Figure 8. STEVAL-IPM15B circuit schematic (6 of 6)
+
+
+
+
+                                                  3
+                                                      SW16
+
+                                                      2
+
+
+
+
+                                                  1
+                           +5V
+
+
+
+
+page 8/35
+                                                                                                                                                                                        Schematic diagrams
+                                                                                                                                                                                                             UM2014
+                                                                                                                             UM2014
+                                                                                                                    Main characteristics
+
+
+
+
+3                Main characteristics
+
+                 The board is designed to be compatible with DC supply from 125 VDC up to 400 VDC voltage.
+                 A bulk capacitor according to the power level of the application must be mounted. The footprint is already
+                 provided on the board.
+                 The SLLIMM integrates six IGBT switches with freewheeling diodes together with high voltage gate drivers.
+                 Thanks to this integrated module, the system is specifically designed to achieve power inversion in a reliable and
+                 compact design. Such integration reduces the required PCB area and the simplicity of the design increases
+                 reliability.
+                 In order to increase the flexibility, it can operate in single- or three-shunt configuration by modifying solder bridge
+                 jumper settings (see Section 4.3.5 Single- or three-shunt selection).
+
+                                                       Figure 9. STEVAL-IPM05F architecture
+
+
+
+
+UM2014 - Rev 3                                                                                                                  page 9/35
+                                                                                                                             UM2014
+                                                                                                              Filters and key parameters
+
+
+
+
+4                Filters and key parameters
+
+4.1              Input signals
+                 The input signals (LINx and HINx), able to drive the internal IGBTs, are active high. A 100 kΩ (typ.) pull-down
+                 resistor is built-in for each input signal. In order to prevent input signal oscillation, an RC filter was added on each
+                 input and placed as close as possible to the IPM. The filter is designed using a time constant of 10 ns (1 kΩ and
+                 10 pF).
+
+4.2              Bootstrap capacitor
+                 In the 3-phase inverter, the emitters of the low side IGBTs are connected to the negative DC bus (VDC-) as
+                 common reference ground, which allows all low side gate drivers to share the same power supply, while the
+                 emitter of high side IGBTs is alternately connected to the positive (VDC+) and negative (VDC-) DC bus during
+                 running conditions.
+                 A bootstrap method is a simple and cheap solution to supply the high voltage section. This function is normally
+                 accomplished by a high voltage fast recovery diode. The SLLIMM 2nd series family includes a patented integrated
+                 structure that replaces the external diode. It is realized with a high voltage DMOS functioning as diode with series
+                 resistor. An internal charge pump provides the DMOS driving voltage. The value of the CBOOT capacitor should be
+                 calculated according to the application condition.
+                 This curve is taken from application note AN4768 (available on www.st.com); calculations are based on the
+                 STGIB15CH60 device, which represents the worst case scenario for this kind of calculation.
+                 Figure 10. CBOOT graph selection shows the behavior of CBOOT (calculated) versus switching frequency (fsw), with
+                 different values of ∆VCBOOT for a continuous sinusoidal modulation and a duty cycle δ = 50%.
+                 The boot capacitor must be two or three times larger than the CBOOT calculated in the graph. For this design, a
+                 value of 2.2 µF was selected.
+
+                                                          Figure 10. CBOOT graph selection
+
+
+
+
+UM2014 - Rev 3                                                                                                                  page 10/35
+                                                                                                                         UM2014
+                                                                                                               Overcurrent protection
+
+
+
+
+4.3              Overcurrent protection
+                 The SLLIMM 2nd series integrates a comparator for fault sensing purposes. The comparator has an internal
+                 voltage reference VREF (510 mV typ.) connected to the inverting input, while the non-inverting input available on
+                 the CIN pin can be connected to an external shunt resistor to implement the overcurrent protection function.
+                 When the comparator triggers, the device enters the shutdown state.
+                 The comparator output is connected to the SD pin in order to send the fault message to the MCU.
+
+4.3.1            SD Pin
+                 The SD is an input/output pin (open drain type if used as output). Taking into account the voltage reference on SD
+                 (3.3 V), a pull up resistor of 10 kΩ (R28) is used to guarantee the right bias and consequently to keep the current
+                 on the open drain DMOS (Iod) lower than 3 mA.
+                 The filter on SD (R28 and C20) has to be sized to obtain the desired re-starting time after a fault event and placed
+                 as close as possible to the SD pin.
+                 A shutdown event can be managed by the MCU, in this case the SD functions as the input pin.
+                 Conversely, the SD functions as an output pin when an overcurrent or undervoltage condition is detected.
+
+4.3.2            Fault management
+                 The SLLIMM 2nd series integrates a specific kind of fault management, useful when SD is functioning as output,
+                 able to identify the type of fault event.
+                 As previously described, as soon as a fault occurs, the open-drain (DMOS) is activated and LVGx outputs are
+                 forced low.
+                 Two types of fault can be signaled:
+                 •     Overcurrent (OC) sensed by the internal comparator (CIN);
+                 •     Undervoltage (UVLO) on supply voltage (VCC).
+                 Each fault enables the SD open drain for a different time (see the table below).
+                 The duration of a shutdown event therefore tells us the type of failure that has occurred.
+
+
+                                                                Table 1. Fault timing
+
+                   Symbol                  Parameter                     Event time             SD open-drain enable time result
+
+                                                               ≤ 24 µs                     24 µs
+                 OC           Over current event
+                                                               > 24 µs                     OC time
+                                                               ≤ 70 µs                     70 µs
+                                                               > 70 µs until VCC_LS
+                 UVLO         Undervoltage lockout event
+                                                               exceeds the VCC_LS          UVLO time
+                                                               UV turn on threshold
+
+                 1. typical value (TJ = -40 °C to 125 °C)
+                 2. without contribution of RC network on SD
+
+                 Figure 11. SD failure due to overcurrent shows a shutdown as the result of an overcurrent event. During the
+                 overcurrent, the voltage on the comparator (CIN) exceeds the threshold (0.51 V typ.) and the shutdown is able to
+                 stop the application. In this case, the SD event time is about 24 µs (for OC event less than 24 µs).
+
+
+
+
+UM2014 - Rev 3                                                                                                              page 11/35
+                                                                                                                      UM2014
+                                                                                                            Overcurrent protection
+
+
+
+
+                                                    Figure 11. SD failure due to overcurrent
+
+
+
+
+                 Figure 12. SD failure due to undervoltage (UVLO below 70 µs) shows the shutdown event as the result of an
+                 undervoltage condition on the VCC supply. If VCC drops below the undervoltage threshold, the shutdown can stop
+                 the application. If the voltage on VCC rises above the VCC on threshold in less than 70 µs, the SD event time is
+                 about 70 µs.
+
+
+
+
+UM2014 - Rev 3                                                                                                           page 12/35
+                                                                                                                      UM2014
+                                                                                                            Overcurrent protection
+
+
+
+
+                                        Figure 12. SD failure due to undervoltage (UVLO below 70 µs)
+
+
+
+
+                 Figure 13. SD failure due to undervoltage (UVLO above 70 µs) shows the shutdown event as the result of an
+                 undervoltage condition on the VCC supply. In this case, the drop on VCC is greater than 70 µs. The SD event time
+                 is the same as the duration of drop.
+
+                                        Figure 13. SD failure due to undervoltage (UVLO above 70 µs)
+
+
+
+
+UM2014 - Rev 3                                                                                                           page 13/35
+                                                                                                                               UM2014
+                                                                                                                     Overcurrent protection
+
+
+
+
+4.3.3            Shunt resistor selection
+                 The value of the shunt resistor is calculated by the following equation:
+                                                                                Vref
+                                                                          RSH =                                                         (1)
+                                                                                IOC
+
+                 Where Vref is the internal comparator (CIN) (0.51 V typ.) and IOC is the overcurrent threshold detection level.
+                 The maximum OC protection level should be set to less than the pulsed collector current in the datasheet. In this
+                 design, the overcurrent threshold level is fixed at IOC = 19.5 A in order to select a commercial shunt resistor value.
+                                                         R23 + R53               1000 + 4700
+                                                Vref ⋅             + VF   0.51 ⋅             + 0.18
+                                                            R53                     4700
+                                       RSH =                            =                           = 0.041Ω                            (2)
+                                                           IOC                       19.5
+
+                 Where VF is the voltage drop across diodes D6, D7 and D8.
+                 For the power rating of the shunt resistor, the following parameters must be considered:
+                 •     Maximum load current of inverter (85% of Inom [Arms]): Iload(max)
+                 •    Shunt resistor value at TC = 25 °C
+                 •    Power derating ratio of shunt resistor at TSH =100 °C
+                 •    Safety margin
+                 The power rating is calculated by the following equation:
+                                                                    2
+                                                                 1 Iload max ⋅ RSH ⋅ margin
+                                                            PSH = ⋅                                                                     (3)
+                                                                 2      Derating gratio
+                 The commercial value chosen was 0.04 Ω to which corresponds an overcurrent level of 20 A.
+                 The power rating is:
+                                                                           Inom
+                 •                            Inom = 8A     Inom rms =             Iload max = 85 %                                     (4)
+                                                                             2
+                                              Inom rms     = 4.8 Arms
+
+                 •    Power derating ratio of shunt resistor at TSH = 100 °C: 80% (from datasheetmanufacturer)
+                 •    Safety margin: 30%
+                                                                  1 9.0² ⋅ 0.04 ⋅ 1.3
+                                                             PSH = ⋅                  = 2.63 W                                          (5)
+                                                                  2        0.8
+                 Considering the commercial value, a 1 W shunt resistor was selected.
+                 Based on the previous equations and conditions, the minimum shunt resistance and power rating is summarized
+                 below.
+
+
+                                                                     Table 2. Shunt selection
+
+                                                                                                                       Minimum shunt
+                         Device          Inom(peak) [A]          OCP(peak) [A]    Iload(max) [Arms]     RSHUNT [Ω]
+                                                                                                                     power rating PSH [W]
+
+                 STGIB15CH60TS-L         15                 20                    9.0                 0.04           2.63
+
+4.3.4            RC filter
+                 An RC filter network is required to prevent undesired short circuit operation due to the noise on the shunt resistor.
+                 In this design, the RC filter, composed of R23, R18, R21, R24 and C19, has a constant time of about 1.3 µs.
+                 Adding the turn-off propagation delay of the gate driver and the IGBT turn-off time (hundreds of nanoseconds in
+                 total), the total delay time is less than 5 µs of short circuit withstand IGBT time.
+
+4.3.5            Single- or three-shunt selection
+                 Single- or three-shunt resistor circuits can be adopted by setting the solder bridges SW5, SW6, SW7 and SW8.
+                 The figures below illustrate how to set up the two configurations.
+
+
+
+
+UM2014 - Rev 3                                                                                                                   page 14/35
+                                                                  UM2014
+                                                        Overcurrent protection
+
+
+
+
+                 Figure 14. One-shunt configuration
+
+
+
+
+                 Figure 15. Three-shunt configuration
+
+
+
+
+UM2014 - Rev 3                                                      page 15/35
+                                                                                                                           UM2014
+                                                                                                     Current sensing amplifying network
+
+
+
+
+5                Current sensing amplifying network
+
+                 The STEVAL-IPM15B motor control demonstration board can be configured to run in three-shunt or single-shunt
+                 configurations for field oriented control (FOC).
+                 The current can be sensed thanks to the shunt resistor and amplified by using the on board operational amplifiers
+                 or by the MCU (if equipped with op-amp).
+                 Once the shunt configuration is chosen by setting solder bridge on SW5, SW6, SW7 and SW8 (as described in
+                 Section 4.3.5 Single- or three-shunt selection), the user can choose to send the voltage shunt to the MCU
+                 amplified or unamplified.
+                 Single-shunt configuration requires a single op amp and three-shunt configuration requires three op amps;
+                 therefore, in single-shunt configuration, the only voltage which is sent to the MCU to control the sensing is
+                 connected to phase V through SW2.
+                 SW1, SW2, SW4 can select which signals are sent to micro, as described below:
+
+
+                                                      Table 3. Op-amp sensing configuration
+
+                       Symbol                    Configuration                    Bridge                      Sensing
+
+                                       Single                               1-2               open
+                                       Shunt                                2-3               open
+                 SW1
+                                       Three                                1-2               On-board op-amp
+                                       Shunt                                2-3               MCU op-amp
+
+                                       Single                               1-2               On board op-amp
+                                       Shunt                                2-3               MCU op-amp
+                 SW2
+                                       Three                                1-2               On-board op-amp
+                                       Shunt                                2-3               MCU op-amp
+
+                                       Single                               1-2               open
+                                       Shunt                                2-3               open
+                 SW4
+                                       Three                                1-2               On-board op-amp
+                                       Shunt                                2-3               MCU op-amp
+
+
+
+
+                 The operational amplifier TSV994 used on amplifying networks has a 20 MHz gain bandwidth and operates with a
+                 single positive supply of 3.3 V.
+                 The amplification network must allow bidirectional current sensing, so that an output offset VO = +1.65 V
+                 represents zero current.
+                 Referencing the STGIB15CH60TS-L (IOCP = 20 A; RSHUNT = 0.04 Ω), the maximum measurable phase current,
+                 considering that the output swings from +1.65 V to +3.3 V (MCU supply voltage) for positive currents and from
+                 +1.65 V to 0 for negative currents is:
+                 Equation 5
+                                                                          ∆V
+                                                          MaxMeasCurrent =    = 20 A                                                 (6)
+                                                                           rm
+                                                                ∆V          1.65
+                                                      rm =                =      = 0.08 Ω                                            (7)
+                                                           MaxMeasCurrent    20
+                 The overall trans-resistance of the two-port network is:
+                                                     rm = RSHUNT ∙ AMP = 0.04 ∙ AMP = 0.08 Ω                                         (8)
+                                                                    rm      0.08
+                                                          AMP =          =       = 2.0                                               (9)
+                                                                RSHUNT      0.04
+
+                 Finally choosing Ra=Rb and Rc=Rd, the differential gain of the circuit is:
+
+
+
+
+UM2014 - Rev 3                                                                                                                page 16/35
+                                                                                                                             UM2014
+                                                                                                  Current sensing amplifying network
+
+
+
+
+                                                                          Rc
+                                                                  AMP =      = 2.1                                                        (10)
+                                                                          Ra
+
+                 An amplification gain of 2.1 was chosen. The same amplification is obtained for all the other devices, taking into
+                 account the OCP current and the shunt resistance, as described in Table 1.
+                 The RC filter for output amplification is designed to have a time constant that matches noise parameters in the
+                 range of 1.5 µs:
+                                                             4 ∙ τ = 4 ∙ Re ∙ Cc = 1.5 μs                                                 (11)
+                                                           1.5 µs
+                                                     Cc =           = 375 pF 330 pF selected                                              (12)
+                                                          4 ∙ 1000
+
+
+
+                                                           Table 4. Amplifying networks
+
+                                                                  Amplifying network                                     RC filter
+                         Phase
+                                              Ra             Rb                        Rc               Rd          Re               Cc
+
+                 Phase U                R30         R32                     R29                   R33         R31             C25
+                 Phase V                R35         R37                     R34                   R39         R36             C29
+                 Phase W                R40         R42                     R38                   R43         R41             C31
+
+
+
+
+UM2014 - Rev 3                                                                                                                  page 17/35
+                                                                                                                       UM2014
+                                                                                                            Temperature monitoring
+
+
+
+
+6                Temperature monitoring
+
+                 The SLLIMM 2nd series family integrates a temperature sensor (VTSO) on the low side gate driver and an NTC
+                 thermistor placed close to the power stage.
+                 They can be selected via SW3.
+                 The board is designed to use both of them to monitor the internal IPM temperature through the MCU.
+
+6.1              Thermal sensor (VTSO)
+                 A voltage proportional to the temperature is available on the TSO pin (17) and easily measurable on the TP20 test
+                 pin.
+                 To improve noise immunity, a 1 nF (C16) capacitor filter is placed on this pin.
+                 The thermal sensor does not need any pull down resistors.
+                 The following graph shows typical voltage variation as a function of temperature.
+
+                                               Figure 16. Thermal sensor voltage vs temperature
+
+
+
+
+6.2              NTC Thermistor
+                 The embedded thermistor (85 kΩ at 25 °C) in the IPM is connected between pins T1 and T2 (26, 25).
+                 A12 kΩ pull up resistor (R10) ensures that the voltage variation on the NTC as a function of temperature is almost
+                 linear. This voltage is easily monitored on TP1 test pin.
+                 The figure below shows the typical voltage on T2 as function of temperature.
+
+
+
+
+UM2014 - Rev 3                                                                                                            page 18/35
+                                                            UM2014
+                                                         NTC Thermistor
+
+
+
+
+                 Figure 17. NTC voltage vs temperature
+
+
+
+
+UM2014 - Rev 3                                                page 19/35
+                                                                                                                           UM2014
+                                                                                         Firmware configuration for STM32 PMSM FOC SDK
+
+
+
+
+7                Firmware configuration for STM32 PMSM FOC SDK
+
+                 The following table summarizes the parameters which customize the latest version of the ST FW motor control
+                 library for permanent magnet synchronous motor (PMSM): STM32 PMSM FOC SDK for this STEVAL-IPM15B.
+
+
+                                                 Table 5. ST motor control workbench GUI parameters
+
+                         Block                    Parameter                                           Value
+
+                                                                                            R23 + R53
+                                           Comparator threshold                    Vref ∙             + VF = 0.83V                (13)
+                                                                                              R53
+                 Over current protection
+                                           Overcurrent network offset 0
+                                           Overcurrent network gain   0.1 V/A
+                 Bus voltage sensing       Bus voltage divider        1/125
+                                           Min rated voltage          125 V
+                 Rated bus voltage info    Max rated voltage          400 V
+                                           Nominal voltage            325 V
+                                           Current reading typology   Single- or three-shunt
+                 Current sensing           Shunt resistor value       0.04 Ω
+                                           Amplifying network gain    2.1
+                                           Phase U Driver             HS and LS: Active high
+                 Command stage             Phase V Driver             HS and LS: Active high
+                                           Phase W Driver             HS and LS: Active high
+
+
+
+
+UM2014 - Rev 3                                                                                                               page 20/35
+                                                                                                            UM2014
+                                                                                  Connectors, jumpers and test pins
+
+
+
+
+8                Connectors, jumpers and test pins
+
+                                            Table 6. Connectors
+
+                  Connector     Reference                                 Description / pinout
+
+                                                                         Motor control connector
+                                                 1 - emergency stop                   2 - GND
+                                                 3 - PWM-1H                           4 - GND
+                                                 5 - PWM-1L                           6 - GND
+                                                 7 - PWM-2H                           8 - GND
+                                                 9 - PWM-2L                           10 - GND
+                                                 11 - PWM-3H                          12 - GND
+                                                 13 - PWM-3L                          14 - HV bus voltage
+                                                 15 - current phase A                 16 - GND
+                 J2
+                                                 17 - current phase B                 18 - GND
+                                                 19 - current phase C                 20 - GND
+                                                 21 - NTC bypass relay                22 - GND
+                                                 23 - dissipative brake PWM           24 - GND
+                                                 25 - +V power                        26 - heat sink temperature
+                                                 27- PFC sync.                        28 - VDD_m
+                                                 29 - PWM VREF                        30 - GND
+                                                 31 - measure phase A                 32 - GND
+                                                 33 - measure phase B                 34 - measure phase C
+
+                                                 Motor connector
+                                                 •    phase A
+                 J3
+                                                 •    phase B
+                                                 •    phase C
+
+
+
+                                                 VCC supply (20 VDC max)
+                 J4                              •    positive
+                                                 •    negative
+
+
+
+
+                                                 Supply connector (DC – 125V to 400 V)
+                 J7                              1.   + (positive terminal)
+                                                 2.   - (negative terminal)
+
+
+
+                                                 Hall sensors / encoder input connector
+                                                 1.   Hall sensors input 1 / encoder A+
+                                                 2.   Hall sensors input 2 / encoder B+
+                 J9
+                                                 3.   Hall sensors input 3 / encoder Z+
+                                                 4.   3.3 or 5 Vdc
+                                                 5.   GND
+
+
+
+
+UM2014 - Rev 3                                                                                               page 21/35
+                                                                                                                     UM2014
+                                                                                             Connectors, jumpers and test pins
+
+
+
+
+                                                              Table 7. Jumpers
+
+                        Jumper                                                 Description
+
+                                   TSO/NTC
+                 SW3               TSO: jumper on 1-2
+                                   NTC: jumper on 2-3
+                                   To choose current U to send to control board:
+
+                 SW1               Jumper on 1-2: from amplification
+                                   Jumper on 2-3: directly from motor output
+                                   To choose current V to send to control board
+
+                 SW2               Jumper on 1-2: from amplification
+                                   Jumper on 2-3: directly from motor output
+                                   To choose current W to send to control board:
+
+                 SW4               Jumper on 1-2: from amplification
+                                   Jumper on 2-3: directly from motor output
+                 SW13              To modify phase A hall sensor network
+
+                 SW14              To modify phase B hall sensor network
+                 SW15              To modify phase C hall sensor network
+                                   To choose input power for Hall/Encoder
+                 SW9, SW16         Jumper on 1-2: 5 V
+                                   Jumper on 2-3: 3.3 V
+                                   To choose one-shunt or three-shunt configuration.
+                                   (Through solder bridge)
+
+                 SW5, SW6          SW5, SW6 closed
+                                                                                                         one shunt
+                 SW7, SW8          SW7, SW8 open
+                                   SW5, SW6 open
+                                                                                                         three shunt
+                                   SW7, SW8 closed
+
+
+
+
+                                                              Table 8. Test pins
+
+                        Test Pin                                               Description
+
+                 TP1               NTC (T2 pin)
+                 TP2               VBOOTw
+                 TP3               VBOOTv
+                 TP4               VBOOTu
+                 TP5               HinU (high side U control signal input)
+                 TP6               HinV (high side V control signal input)
+                 TP7               HinW (high side W control signal input)
+                 TP8               VCCH
+                 TP9               phase A (U pin)
+                 TP10              phase B (V pin)
+                 TP11              Ground
+                 TP12              LinU (high side U control signal input)
+
+
+
+
+UM2014 - Rev 3                                                                                                         page 22/35
+                                                                                                                UM2014
+                                                                                           Connectors, jumpers and test pins
+
+
+
+
+                        Test Pin                                             Description
+
+                 TP13              phase C (W pin)
+                 TP14              LinV (high side V control signal input)
+                 TP15              LinW (high side W control signal input)
+                 TP16              Negative DC input for U phase
+                 TP17              CIN
+                 TP18              Negative DC input for V phase
+                 TP19              Negative DC input for W phase
+                 TP20              TSO (TSO pin)
+                 TP21              Ground
+                 TP22              Ground
+                 TP23              SD (shutdown pin)
+                 TP24              Current_A_amp
+                 TP25              Current_B_amp
+                 TP26              Current_C_amp
+
+
+
+
+UM2014 - Rev 3                                                                                                     page 23/35
+                                                                                                                         UM2014
+                                                                                                                     Bill of materials
+
+
+
+
+9                Bill of material
+
+                 The components used to build the evaluation board are listed below. The majority of the active components used
+                 are available from STMicroelectronics.
+
+
+                                                             Table 9. Bill of materials
+
+                 Item Qty              Ref.                 Part / Value          Description         Manufacturer   Order code
+
+                                                                                Capacitor SMD
+                   1    4        C2,C22,C26,C28           10 nF 50 V ±10%                                 Any
+                                                                                    1206
+                             C10, C11, C14, C15, C17,                           Capacitor SMD
+                   2    9                                10 pF 100 V ±10%                                 Any
+                               C18, C35, C36, C37                                   1206
+                                                                                Capacitor SMD
+                   3    4       C20, C25, C29, C31       330 pF 50 V ±10%                                 Any
+                                                                                    1206
+                                                                                Capacitor SMD
+                   4    3           C5, C6, C7            2.2 µF 25 V ±10%                                Any
+                                                                                    1206
+                              C8, C13, C23, C32, C33,                           Capacitor SMD
+                   5    6                                100 nF 50 V ±10%                                 Any
+                                        C34                                         1206
+                   6    2            C12, C21             4.7 µF 50 V ±10%     Elyt. capacitor, 4x4       Any
+                                                                                Capacitor SMD
+                   7    2            C19, C16              1 nF 50 V ±10%                                 Any
+                                                                                    1206
+                                                                                Capacitor SMD
+                   8    1               C9               0.1 µF 630 V ±10%                                Any
+                                                                                    1812
+                                                                                Capacitor SMD
+                   9    3         C24, C27, C30          100 pF 100 V ±10%                                Any
+                                                                                    1206
+                  10    2             C3, C4              47 µF 50 V ±10%      Elyt. capacitor, 4x4       Any
+                                                                                Schottky Diode,
+                  11    5       D1, D3, D4, D5, D6                                                        ST          BAT48J
+                                                                                   SOD323
+                                                                               LED 3 mm, 2 mA,
+                  12    1               D2                    RED LED                                     Any
+                                                                                  universal
+                  13    1               J2                   Connector         Connector 34-pins          Any
+                                                                               Connector - 7 mm -
+                  14    1               J3                Connector 400 V                                 Any
+                                                                                    3 pole
+                                                                               Connector - 5 mm -
+                  15    1               J4                 Connector 50 V                                 Any
+                                                                                    2 pole
+                                                                               Connector - 7 mm -
+                  16    1               J1                Connector 300 V                                 Any
+                                                                                    2 pole
+                                                                                Five pins of pin
+                  17    1               J5                 Connector 63 V                                 Any
+                                                                                    header
+                                                          470 kΩ 400 V 1/8
+                  18    2             R1, R2                                   Resistor SMD 1206          Any
+                                                                ±1%
+                                                          7.5 kΩ 400 V 1/8
+                  19    1               R4                                     Resistor SMD 1206          Any
+                                                                ±1%
+                                                          120 Ω 400 V 1/8
+                  20    1               R3                                     Resistor SMD 1206          Any
+                                                               ±1%
+                  21    3          R7, R13, R17          3.9 kΩ 25 V 1/8 ±1%   Resistor SMD 1206          Any
+                             R5, R6, R8, R9, R14, R15,
+                             R19, R20, R23, R30, R32,
+                  22   21                                1 kΩ 25 V 1/8 ±1%     Resistor SMD 1206          Any
+                             R31, R18, R21, R24, R36,
+                             R35, R41, R42, R40, R37
+
+
+
+
+UM2014 - Rev 3                                                                                                             page 24/35
+                                                                                                                                UM2014
+                                                                                                                            Bill of materials
+
+
+
+
+                 Item Qty              Ref.                  Part / Value             Description         Manufacturer      Order code
+
+                 23    3          R11, R16, R22          3.3 kΩ 25 V 1/8 ±1%      Resistor SMD 1206           Any
+                 24    1               R28               10 kΩ 25 V 1/8 ±1%       Resistor SMD 1206           Any
+                 25    1               R10               12 kΩ 25 V 1/8 ±1%       Resistor SMD 1206           Any
+                            R29, R33, R34, R38, R39,
+                 26    6                                 2.1 kΩ 25 V 1/8 ±1%      Resistor SMD 1206           Any
+                                      R43
+                 27    1               R12               5.6 kΩ 25 V 1/8 ±1%      Resistor SMD 1206           Any
+                 28    3          R25, R26, R27                 0.08 Ω            Resistor SMD 2512          Vishay      WSL2816R0800FEH
+                            R44, R45, R46, R50, R51,
+                 29    6                                 4.7 kΩ 25 V 1/8 ±1%      Resistor SMD 1206           Any
+                                   R52, R53
+                 30    3          R47, R48, R49          2.4 kΩ 25 V 1/8 ±1%      Resistor SMD 1206           Any
+                             SW1, SW2, SW3, SW4,                                   Three pins of pin
+                 31    6                                     Jumper 2.54                                      Any
+                                  SW9, SW16                                            header
+                            SW10, SW11, SW12, SW13,                                 Two pins of pin
+                 32    6                                     Jumper 2.54                                      Any
+                                  SW14, SW15                                           header
+                 33   12                                       2.54 mm            low profile connector       Any
+                 34    2           SW7, SW8                 Solder bridge                                     NA
+                 35    2           SW5, SW6                      open                                         Any
+                            TP1, TP2, TP3, TP4, TP5,
+                            TP6, TP7, TP8, TP9, TP10,
+                             TP11, TP12, TP13, TP14,
+                 36   26                                 PCB terminal 1 mm              Test pin              Any
+                             TP15, TP16, TP17, TP18,
+                             TP19, TP20, TP21, TP22,
+                             TP23, TP24, TP25, TP26
+                                                                                    Rail-to-rail input/
+                 37    1               U1                    20 MHz GBP            output operational         ST             TSV994
+                                                                                    amplifiers, SO14
+                                                         3-phase inverter, 12     SLLIMM 2nd series
+                 38    1               U2                A, 600 V short-circuit    IPM, Full molded           ST         STGIB15CH60TS-L
+                                                             rugged IGBTs             package
+                 39    3         RC2,RC5,RC10                     0Ω              Resistor, SMD 0805          Any
+                               RC1,RC3,RC4,RC6,
+                 40    7                                   NOT MOUNTED             NOT MOUNTED                Any
+                                 RC7,RC8,RC9
+                             to close switch for: SW1,
+                 41    9      SW2, SW3, SW4, SW9,                                                             Any
+                            SW10, SW11, SW12, SW16
+
+
+
+
+UM2014 - Rev 3                                                                                                                    page 25/35
+                                                                                                                          UM2014
+                                                                                                                    PCB design guide
+
+
+
+
+10               PCB design guide
+
+                 Optimization of PCB layout for high voltage, high current and high switching frequency applications is a critical
+                 point. PCB layout is a complex matter as it includes several aspects, such as length and width of track and circuit
+                 areas, but also the proper routing of the traces and the optimized reciprocal arrangement of the various system
+                 elements in the PCB area.
+                 A good layout can help the application to properly function and achieve expected performance. On the other
+                 hand, a PCB without a careful layout can generate EMI issues, provide overvoltage spikes due to parasitic
+                 inductance along the PCB traces and produce higher power loss and even malfunction in the control and sensing
+                 stages.
+                 In general, these conditions were applied during the design of the board:
+                 •     PCB traces designed as short as possible and the area of the circuit (power or signal) minimized to avoid the
+                       sensitivity of such structures to surrounding noise.
+                 •     Good distance between switching lines with high voltage transitions and the signal line sensitive to electrical
+                       noise.
+                 •     The shunt resistors were placed as close as possible to the low side pins of the SLLIMM. To decrease the
+                       parasitic inductance, a low inductance type resistor (SMD) was used.
+                 •     RC filters were placed as close as possible to the SLLIMM pins in order to increase their efficiency.
+
+10.1             Layout of reference board
+                 All the components are inserted on the top of the board. Only the IPM module is inserted on the bottom to allow
+                 the insertion of a suitable heatsink for the application.
+
+                                                    Figure 18. Silk screen and etch - top side
+
+
+
+
+UM2014 - Rev 3                                                                                                              page 26/35
+                                                                              UM2014
+                                                                 Layout of reference board
+
+
+
+
+                 Figure 19. Silk screen and etch - bottom side
+
+
+
+
+UM2014 - Rev 3                                                                  page 27/35
+                                                                                                                        UM2014
+                                                                                                 Recommendations and suggestions
+
+
+
+
+11               Recommendations and suggestions
+
+                 •   The BOM list is not provided with a bulk capacitor already inserted in the PCB. However, the necessary
+                     space has been included (C1). In order to obtain a stable bus supply voltage, it is advisable to use an
+                     adequate bulk capacity. For general motor control applications, an electrolytic capacitor of at least 100 µF is
+                     suggested.
+                 •   Similarly, the PCB does not come with a heat sink. In case of need, place an heat sink on top of the PCB
+                     with thermal conductive foil and screws. RTH is an important factor for good thermal performance and
+                     depends on certain factors such as current phase, switching frequency, power factor and ambient
+                     temperature.
+                 •   The board requires +5 V and +3.3 V to be supplied externally through the 34-pin motor control connector J2.
+                     Please refer to the relevant board manuals for information on key connections and supplies.
+
+
+
+
+UM2014 - Rev 3                                                                                                             page 28/35
+                                                                                                                           UM2014
+                                                                                                            General safety instructions
+
+
+
+
+12               General safety instructions
+
+
+                        Danger:
+                             The evaluation board works with high voltage which could be deadly for the users. Furthermore all
+                             circuits on the board are not isolated from the line input. Due to the high power density, the
+                             components on the board as well as the heat sink can be heated to a very high temperature,
+                             which can cause a burning risk when touched directly. This board is intended for use by
+                             experienced power electronics professionals who understand the precautions that must be taken
+                             to ensure that no danger or risk may occur while operating this board.
+
+Caution:         After the operation of the evaluation board, the bulk capacitor C1 (if used) may still store a high energy for
+                 several minutes. So it must be first discharged before any direct touching of the board.
+Important:
+To protect the bulk capacitor C1, we strongly recommended using an external brake chopper after C1 (to discharge the high
+brake current back from the induction motor).
+
+
+
+
+UM2014 - Rev 3                                                                                                                page 29/35
+                                                                                                                        UM2014
+                                                                                                                        References
+
+
+
+
+13               References
+
+                 All of the following reference material is freely available on www.st.com
+                 1.    STGIB15CH60TS-L datasheet
+                 2.     TSV994 datasheet
+                 3.     STTH15R06 datasheet
+                 4.     User manual UM1052 STM32F PMSM single/dual FOC SDK v4.3
+                 5.     Application note AN4076 Two or three shunt resistor based current sensing circuit design in 3-phase
+                        inverters
+
+
+
+
+UM2014 - Rev 3                                                                                                            page 30/35
+                                                                                     UM2014
+
+
+
+
+Revision history
+
+                                         Table 10. Document revision history
+
+                    Date       Version      Changes
+
+                 09-Feb-2016     1          Initial release.
+                                            Updated cover page title
+                                            Updated key features
+                 09-Apr-2018     2
+                                            Updated figure 5
+                                            Updated bill of material
+                 18-Sep-2019     3          Updated Section 2.1 Schematic diagrams
+
+
+
+
+UM2014 - Rev 3                                                                        page 31/35
+                                                                                                                                                         UM2014
+                                                                                                                                                             Contents
+
+
+
+
+Contents
+1       Key features . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .2
+2       Circuit schematic . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .3
+        2.1        Schematic diagrams . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+3       Main characteristics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+4       Filters and key parameters. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .10
+        4.1        Input signals. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+        4.2        Bootstrap capacitor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+        4.3        Overcurrent protection . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+                   4.3.1         SD Pin . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+                   4.3.2        Fault management . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+
+                   4.3.3        Shunt resistor selection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+
+                   4.3.4        RC filter. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+                   4.3.5        Single- or three-shunt selection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+
+5       Current sensing amplifying network . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .16
+6       Temperature monitoring . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .18
+        6.1        Thermal sensor (VTSO) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+        6.2        NTC Thermistor . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+7       Firmware configuration for STM32 PMSM FOC SDK . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .20
+8       Connectors, jumpers and test pins. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .21
+9       Bill of material . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .24
+10      PCB design guide . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .26
+        10.1       Layout of reference board . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+
+11      Recommendations and suggestions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .28
+12      General safety instructions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .29
+13      References . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .30
+Revision history . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .31
+
+
+
+
+UM2014 - Rev 3                                                                                                                                              page 32/35
+                                                                                                                                                           UM2014
+                                                                                                                                                          List of tables
+
+
+
+
+List of tables
+Table 1.     Fault timing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+Table 2.     Shunt selection . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+Table 3.     Op-amp sensing configuration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+Table 4.     Amplifying networks . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+Table 5.     ST motor control workbench GUI parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+Table 6.     Connectors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+Table 7.     Jumpers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+Table 8.     Test pins . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+Table 9.     Bill of materials . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+Table 10.    Document revision history . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+
+
+
+
+UM2014 - Rev 3                                                                                                                                                page 33/35
+                                                                                                                                                     UM2014
+                                                                                                                                                  List of figures
+
+
+
+
+List of figures
+Figure 1.        SLLIMM 2nd series motor control internal demo board (top view) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+Figure 2.        SLLIMM 2nd series motor control internal demo board: (bottom view) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+Figure 3.        STEVAL-IPM15B circuit schematic (1 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+Figure 4.        STEVAL-IPM15B circuit schematic (2 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+Figure 5.        STEVAL-IPM15B circuit schematic (3 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+Figure 6.        STEVAL-IPM15B circuit schematic (4 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+Figure 7.        STEVAL-IPM15B circuit schematic (5 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+Figure 8.        STEVAL-IPM15B circuit schematic (6 of 6) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+Figure 9.        STEVAL-IPM05F architecture . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+Figure 10.       CBOOT graph selection. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+Figure 11.       SD failure due to overcurrent . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+Figure 12.       SD failure due to undervoltage (UVLO below 70 µs) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+Figure 13.       SD failure due to undervoltage (UVLO above 70 µs) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+Figure 14.       One-shunt configuration. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+Figure 15.       Three-shunt configuration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+Figure 16.       Thermal sensor voltage vs temperature . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+Figure 17.       NTC voltage vs temperature. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+Figure 18.       Silk screen and etch - top side . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+Figure 19.       Silk screen and etch - bottom side. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+
+
+
+UM2014 - Rev 3                                                                                                                                          page 34/35
+                                                                                                                                                  UM2014
+
+
+
+
+                                                     IMPORTANT NOTICE – PLEASE READ CAREFULLY
+STMicroelectronics NV and its subsidiaries (“ST”) reserve the right to make changes, corrections, enhancements, modifications, and improvements to ST
+products and/or to this document at any time without notice. Purchasers should obtain the latest relevant information on ST products before placing orders. ST
+products are sold pursuant to ST’s terms and conditions of sale in place at the time of order acknowledgement.
+Purchasers are solely responsible for the choice, selection, and use of ST products and ST assumes no liability for application assistance or the design of
+Purchasers’ products.
+No license, express or implied, to any intellectual property right is granted by ST herein.
+Resale of ST products with provisions different from the information set forth herein shall void any warranty granted by ST for such product.
+ST and the ST logo are trademarks of ST. For additional information about ST trademarks, please refer to www.st.com/trademarks. All other product or service
+names are the property of their respective owners.
+Information in this document supersedes and replaces information previously supplied in any prior versions of this document.
+                                                         © 2019 STMicroelectronics – All rights reserved
+
+
+
+
+UM2014 - Rev 3                                                                                                                                       page 35/35
+

@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "scope": "isolated original six-pin generator test; no motor-power operation or FOC application validation",
+  "checks": {
+    "six_channels_PWM": true,
+    "native_auto_stop": true,
+    "pair_no_overlap": true,
+    "cross_phase_identity": true,
+    "restored_3016_readback": true,
+    "production_live_pair": true,
+    "production_PWM_OFF": true
+  },
+  "active_request_count": 1,
+  "native_elapsed_ms": 5000.002264705882,
+  "timer_updates": 80007,
+  "frequency_Hz": {
+    "0": 15999.999999994658,
+    "1": 15999.999999994658,
+    "2": 15999.999999994658,
+    "3": 15999.999999994658,
+    "4": 15999.999999994658,
+    "5": 15999.999999994658
+  },
+  "deadtime_nominal_us": 1.3411764705882354,
+  "deadtime_measured_min_us": {
+    "U": 1.332999999270612,
+    "V": 1.332999999270612,
+    "W": 1.332999999270612
+  },
+  "cross_phase_violation_seconds": 0.0,
+  "SD_after_restore": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 3,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "flash_commands": 2,
+  "Uno_flash_commands": 0,
+  "motor_START_commands": 0,
+  "CLEAR_commands": 0,
+  "old_capture_files_modified": false,
+  "capture_sha256": "d408e280578ed9dd4cb44137cce25a92c2cbc82cb0ca01d40b95c0a48b61b49a",
+  "restored_native_sha256": "667c0ea45d997512e39612227154d0c630c1ec027d7a6ce8bf63c4d91d3c6298"
+}

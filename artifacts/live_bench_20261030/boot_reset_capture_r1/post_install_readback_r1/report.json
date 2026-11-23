@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "independent_native_readback": {
+    "passed": true,
+    "source": "passive ST-Link HotPlug reads",
+    "ports": [
+      "COM10",
+      "COM13"
+    ],
+    "physical_authorization_context": "after confirmed J1 OFF / meter below20 / both USB; GET/SWD only",
+    "native_image_sha256": "30232a36dccfb125afe89f4d23aab12d59a8c0d4f90b8b89c4f41be9ad1e3c18",
+    "image_comparison": "exact HEX with erased FF padding",
+    "hex_erased_padding_offsets": [
+      102004,
+      102005,
+      102006,
+      102007
+    ],
+    "sealed_binary_sha256": "77b097a146e515d2b11f4a5a07e245198d70ffdf0065ecbe069233ddfd676f69",
+    "layout_from_actual_dwarf": {
+      "SensorType": 0,
+      "ConversionFactor": 2,
+      "LatestConv": 4,
+      "AvBusVoltage_d": 6,
+      "FaultState": 8
+    },
+    "rows": [
+      {
+        "tick_ms": 37162,
+        "bus_volts": 12.466796875,
+        "conversion_factor": 416,
+        "digital_bus": 1964,
+        "bdtr": 37305458,
+        "moe": false
+      },
+      {
+        "tick_ms": 37626,
+        "bus_volts": 12.46044921875,
+        "conversion_factor": 416,
+        "digital_bus": 1963,
+        "bdtr": 37305458,
+        "moe": false
+      }
+    ],
+    "tick_delta_ms": 464,
+    "flash_writes": 0,
+    "reset_commands": 0,
+    "halt_commands": 0,
+    "motor_commands": 0
+  },
+  "retained_record_words": [
+    827479106,
+    2026103014,
+    1,
+    469762048,
+    0,
+    4,
+    0,
+    436601404
+  ],
+  "current_RCC_CSR": 0,
+  "pair": [
+    2026103013,
+    2026103014
+  ],
+  "samples": 12,
+  "fresh_boot_samples": 12,
+  "native_boot": {
+    "available": true,
+    "fresh": true,
+    "firmware": 2026103014,
+    "retained_sequence": 1,
+    "sequence_is_power_cycle_persistent": false,
+    "csr_raw": 469762048,
+    "previous_csr_raw": 0,
+    "flags": 4,
+    "causes": [
+      "NRST_FLAG",
+      "POWER_ON_OR_BROWNOUT",
+      "SOFTWARE"
+    ],
+    "previous_flags_cleared": false,
+    "current_flags_cleared": true,
+    "previous_boot_continuity": false,
+    "software_request_tag": 0,
+    "early_record_crc": 436601404,
+    "native_tick_ms": 50710,
+    "summary_ru": "флаг NRST, подача питания или просадка напряжения, программный сброс; предыдущая история не подтверждена",
+    "exact_physical_cause_identified": false,
+    "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+  },
+  "Linux_boot_id": "cdcc6f80-5954-4387-997e-4130627055d7",
+  "zero_ready": 1,
+  "zero_attempts": 3,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 16,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "fault_masks": [
+    0,
+    0
+  ],
+  "calibration_unchanged": true,
+  "motor_start_validated": false,
+  "programming_reset_must_not_be_interpreted_as_spontaneous": true
+}

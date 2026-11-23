@@ -1,0 +1,80 @@
+{
+  "START": 0,
+  "ARM": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "samples": 8,
+  "last": {
+    "fw_build": 2026112013,
+    "mc_fw_build": 2026111810,
+    "state": "SAFE",
+    "pwm": 0,
+    "hmi_hv_armed": 0,
+    "vdc": 324.0,
+    "bp_vdc": 324.0,
+    "bp_vbus_valid": 1,
+    "mc_age_ms": 41,
+    "mc_current_zero_ready": 1,
+    "mc_transport_fault": 0,
+    "bp_transport_fault": 0,
+    "mc_uart_error_flags": 0,
+    "mc_last_uart_error_flags": 0,
+    "mc_bad_cnt": 0,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_route_failures": 0,
+    "mc_fault": 5,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 4,
+    "run_id": 0,
+    "algorithm_fast_cycles": 3827,
+    "algorithm_selected": 1,
+    "bp_status": 9,
+    "bp_temp_valid": 1,
+    "bp_temp_fault": 0,
+    "bp_temp_c": 48.0,
+    "estop": 0,
+    "algorithm_fault": 0
+  },
+  "voltage_range": [
+    324.0,
+    324.0
+  ],
+  "SD_levels": [
+    "HIGH"
+  ],
+  "last_SD": {
+    "level": "HIGH",
+    "break_irq_enabled": false,
+    "config_ok": true,
+    "first_record_ready": true,
+    "age_ms": 41
+  },
+  "repeat_break": {
+    "state": "WAIT_FIRST_CLEAR",
+    "fresh": true,
+    "epoch_matches": true,
+    "first_wave_preserved": null
+  },
+  "prior_clear": null,
+  "run_time_source": "OFF_synthetic_CPU_probe",
+  "last_boot_fresh": true,
+  "rpc_counter_changes": {
+    "rpc_response_timeouts": [
+      0,
+      0
+    ],
+    "rpc_send_timeouts": [
+      0,
+      0
+    ],
+    "rpc_route_failures": [
+      0,
+      0
+    ]
+  },
+  "saved_captures": {
+    "SD_first.bin": "a09957a6fd4cbcae70b63a459120ac93fa99c14fcf60a6408e3aad06c21d5ea7"
+  },
+  "old_files_verified": 21
+}

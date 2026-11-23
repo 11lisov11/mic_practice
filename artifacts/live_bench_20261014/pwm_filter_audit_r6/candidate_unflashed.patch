@@ -1,0 +1,113 @@
+--- a/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c
++++ b/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c
+@@ -49,6 +49,7 @@
+ 
+ /* Includes ------------------------------------------------------------------*/
+ #include "pwm.h"
++#include <math.h>
+ #include "local_stop.h"
+ 
+ #include "mc_type.h"
+@@ -113,6 +114,15 @@
+   */
+ uint16_t PWM_SetPhasePWMOutputs(PWM_Handle_t *pHandle, float fDuty1, float fDuty2, float fDuty3)
+ {
++  /* Reject the whole update before conversion or any CCR publication. */
++  if (!isfinite(fDuty1) || !isfinite(fDuty2) || !isfinite(fDuty3) ||
++      fDuty1 < 0.0f || fDuty1 > 1.0f || fDuty2 < 0.0f || fDuty2 > 1.0f ||
++      fDuty3 < 0.0f || fDuty3 > 1.0f || pHandle->TIMx->ARR < 2U ||
++      pHandle->TIMx->ARR > 65535U)
++  {
++    return MC_SW_ERROR;
++  }
++
+ 
+   uint16_t hAux;
+   
+
+--- a/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/acim_vf_control.c
++++ b/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/acim_vf_control.c
+@@ -48,6 +48,7 @@
+ /* Includes ------------------------------------------------------------------*/
+ #include "mc_math.h"
+ #include "acim_vf_control.h"
++#include <math.h>
+ #include "math.h"    
+ #include "arm_math.h"
+ 
+@@ -243,6 +244,17 @@
+ 
+ uint16_t ACIM_VF_Controller(ACIM_VF_Handle_t *pHandle)
+ {
++  /* A zero/invalid normalizer must never reach duty conversion. */
++  if (!isfinite(pHandle->fVoutMax_PWM_Mod_V) || !(pHandle->fVoutMax_PWM_Mod_V > 0.0f) ||
++      !isfinite(pHandle->fFlux_Freq_Hz) || !isfinite(pHandle->fFlux_Angle_rad) ||
++      !isfinite(pHandle->fFlux_K) || pHandle->fFlux_K < 0.0f ||
++      !isfinite(pHandle->fMinFreq_TH_Hz) || pHandle->fMinFreq_TH_Hz < 0.0f ||
++      !isfinite(pHandle->fVoltage_Offset) || pHandle->fVoltage_Offset < 0.0f ||
++      !isfinite(pHandle->fNominalPhaseVoltagePeak_V) || !(pHandle->fNominalPhaseVoltagePeak_V > 0.0f))
++  {
++    return MC_SW_ERROR;
++  }
++
+   float vas, vbs, vcs;
+   float fdutyA, fdutyB, fdutyC;
+   
+
+--- a/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Src/r_divider_bus_voltage_sensor.c
++++ b/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Src/r_divider_bus_voltage_sensor.c
+@@ -68,6 +68,7 @@
+   {
+ #endif
+     pHandle->_Super.AvBusVoltage_d = (pHandle->OverVoltageThreshold + pHandle->UnderVoltageThreshold) / 2U;
++    pHandle->FilterRemainder = 0;
+ #ifdef NULL_PTR_CHECK_RDIV_BUS_VLT_SNS
+   }
+ #endif
+@@ -94,11 +95,16 @@
+ 
+     if (0xFFFFU == hAux)
+     {
+-      /* Nothing to do */
++      /* No new ADC result: do not erase a previously measured voltage fault. */
++      tempValue = pHandle->_Super.FaultState;
+     }
+     else
+     {
+-      pHandle->_Super.AvBusVoltage_d += (hAux - pHandle->_Super.AvBusVoltage_d) >> 8U;
++      const int32_t delta = (int32_t)hAux - (int32_t)pHandle->_Super.AvBusVoltage_d;
++      const int32_t total = delta + pHandle->FilterRemainder;
++      const int32_t step = total / 256;
++      pHandle->FilterRemainder = total - step * 256;
++      pHandle->_Super.AvBusVoltage_d = (uint16_t)((int32_t)pHandle->_Super.AvBusVoltage_d + step);
+       pHandle->_Super.FaultState = RVBS_CheckFaultState(pHandle);
+       tempValue = pHandle->_Super.FaultState;
+     }
+
+--- a/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Inc/r_divider_bus_voltage_sensor.h
++++ b/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Inc/r_divider_bus_voltage_sensor.h
+@@ -79,6 +79,7 @@
+                                                   Under Voltage Threshold (V) * 65536
+                                                   / hConversionFactor */
+ 
++  int32_t FilterRemainder; /* Fraction retained by the 1/256 IIR. */
+ } RDivider_Handle_t;
+ 
+ /* Exported functions ------------------------------------------------------- */
+
+--- a/Src/mc_tasks.c
++++ b/Src/mc_tasks.c
+@@ -514,11 +514,11 @@
+ 
+   returnValue = ACIM_VF_Controller(pACIM_VF[M1]);
+ 
+-  if(returnValue == MC_DURATION)
++  if(returnValue != MC_NO_ERROR)
+   {
+     // Induction motor  V/F
+     PWM_SwitchOffPWM(pwmHandle[M1]);
+-    MCI_FaultProcessing(&Mci[M1], MC_DURATION, 0);
++    MCI_FaultProcessing(&Mci[M1], returnValue, 0);
+   }
+ 
+   /* USER CODE BEGIN HighFrequencyTask SINGLEDRIVE_2 */

@@ -1,0 +1,69 @@
+{
+  "pair": [
+    2026103009,
+    2026103010
+  ],
+  "UART_errors_zero": true,
+  "samples": 12,
+  "observed_seconds": 22.92199999999866,
+  "SD_HIGH_all_samples": true,
+  "SD_capture_frozen_cannot_exclude_intermediate_pulses": true,
+  "SD_live": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 5,
+    "break_irq_enabled": false,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "fault_masks": [
+    4,
+    4
+  ],
+  "vdc_controller_V": 10.0,
+  "zero_ready": 1,
+  "zero_spans": [
+    25,
+    35,
+    31,
+    24
+  ],
+  "FOC_runtime": {
+    "available": true,
+    "observer_measured": true,
+    "source": "OFF_synthetic_CPU_probe",
+    "observer_wall_us": 133.59411764705882,
+    "irq_body_lower_us": 24.423529411764704,
+    "cpu_upper_us": 109.17058823529412,
+    "irq_root_count": 3,
+    "max_wall_us": 143.81764705882352,
+    "max_irq_body_lower_us": 33.96470588235294,
+    "max_cpu_upper_us": 110.14117647058823,
+    "window_queue_us": 0.0,
+    "input_age_us": 0.0,
+    "result_age_us": 0.0,
+    "max_window_queue_us": 0.0,
+    "max_result_age_us": 0.0,
+    "observer_steps": 64,
+    "meter_errors": 0,
+    "first_fault": null,
+    "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+  },
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "J1_OFF_user_confirmed": true,
+  "ready_for_START": false,
+  "SD_event_tick_ms": 37551,
+  "SD_PA6_pulse_us": 18240.0,
+  "SD_capture_complete": true,
+  "PA4_not_connected_no_TP23_inference": true,
+  "preserved_prior_files_verified": 1448,
+  "next_step": "One expressly authorized штатный CLEAR with J1 OFF, no START, then verify BIE rearmed and preserved SD record. Active UNDER_VOLT is expected while J1 OFF; do not attempt to clear repeatedly."
+}

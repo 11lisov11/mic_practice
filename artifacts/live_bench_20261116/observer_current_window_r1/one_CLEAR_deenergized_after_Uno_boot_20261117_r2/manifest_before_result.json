@@ -1,0 +1,56 @@
+{
+  "pair": [
+    2026111611,
+    2026111612
+  ],
+  "built": true,
+  "installed": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash": 0,
+  "physical_NIS_root_cause_fully_proven": false,
+  "source_hashes_file": "source_hashes.json",
+  "artifacts": {
+    "release/nucleo_2026111612_observer_mean16.bin": "00a2fe08697a095a1c883653267693c96b14cfe49ce0228175e169f532c04cf2",
+    "release/uno_2026111611_observer_schema3.elf-zsk.bin": "4b846a155abc5f8c0be0d1428fc3477df8dcc43185f532cc8e43eaad5a74d0a3"
+  },
+  "preserved_files_verified": 5605,
+  "control_and_observer_Q_R_math_unchanged": true,
+  "raw_trip_A": 1.35,
+  "ADC_UPDATE_limit_ticks": 2048,
+  "OFF_fast_budget_cycles": 4000,
+  "RUN_existing_deadline_cycles": 5312,
+  "estimate_age_limit_ms": 2,
+  "target_CPU_cycles_measured": false,
+  "target_OFF_64case_timing_required_before_START": true,
+  "qualification": "OFFLINE model-tested input-window correction; no speed/current-scale qualification",
+  "host_core_checks": 184,
+  "host_adapter_checks": 25,
+  "host_OFF_qualification_cases": 64,
+  "independent_model_cases_per_variant": 9,
+  "baseline_noisy_peak_NIS": 244.659622,
+  "candidate_noisy_peak_NIS": 4.87702179,
+  "candidate_noisy_valid_fraction_after1s": 1,
+  "observation": "noise contribution reduced in simulation; parameter/voltage-model and low-speed observability uncertainty remains",
+  "installed_reports": {
+    "installation_verified_r1/report.json": "a03fdb188c2ada2a2de7b431642bf9426b656a03679a5f626a276a0d7b8a41e1"
+  },
+  "OFF_CPU_qualified": true,
+  "target_timing_measured_OFF": true,
+  "measured_OFF_fast_cycles": 3811,
+  "measured_OFF_observer_cycles": 21512,
+  "FOC_start_ready": false,
+  "strict_idle_gate_passed": false,
+  "remaining_transport_latch": 0,
+  "installation_no_motor_commands": true,
+  "powered_NIS_root_cause_verified": false,
+  "idle_UART_recovered": true,
+  "latest_no_power_CLEAR_recovery_passed": true,
+  "latest_CLEAR_result_code": 1,
+  "strict_installation_idle_gate_passed": false,
+  "latest_CLEAR_report": {
+    "one_CLEAR_after_RPC_recovery_r1/acceptance.json": "df509b5080c034649d06557aa2f4b3a4af91d7ee1732b0ce1b56873de75b2f60"
+  }
+}

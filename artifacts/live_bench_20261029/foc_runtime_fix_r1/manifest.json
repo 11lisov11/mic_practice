@@ -1,0 +1,70 @@
+{
+  "schema": "mic_ai.foc_runtime_fix.v1",
+  "pair": [
+    2026102971,
+    2026102972
+  ],
+  "base_pair": [
+    2026102961,
+    2026102962
+  ],
+  "built": true,
+  "installed": true,
+  "current_model_changed": false,
+  "ADC_source_changed": false,
+  "thresholds_changed": false,
+  "age_limits_changed": false,
+  "IRQ_priorities_changed": false,
+  "IRQ_masking_added": false,
+  "observer_math_changed": false,
+  "native_autostop_seconds": 5,
+  "experimental_max_hz": 5,
+  "no_new_motor_tests": true,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "flash_commands": 2,
+  "selftests_passed": true,
+  "target_timing_measured": true,
+  "hardware_CPU_IRQ_split_measured": true,
+  "exact_prior_runtime_fault_branch_proven": false,
+  "constructed_schedule_regression_passed": true,
+  "original_2ms_and_ADC_guards_unchanged": true,
+  "no_IRQ_masking_or_priority_change": true,
+  "OFF_split_probe_available": true,
+  "preserved_files_verified": 769,
+  "reused_model_evidence": {
+    "report": "artifacts\\live_bench_20261029\\estimated_foc_trial_r5\\model_verification_final\\report.json",
+    "sha256": "36a0d9777fabc3013e693bfae93a001d27b022b65256a973bade1041e8280aa2",
+    "reused_not_rerun": true,
+    "kernel_sha256": "7922192e23e3abffa704fa3e873506f51867cc4252dad8f6c0261cd00cb0dfc5",
+    "central_passed": 4,
+    "sensitivity_passed": 54,
+    "sensitivity_total": 60
+  },
+  "artifacts": {
+    "release/nucleo_2026102972_foc_runtime.bin": "42e452964cbe10958784ddc5e7d3385097ce84923dcb95101b5d2513cb1d4083",
+    "release/unoq_2026102971_foc_runtime.elf-zsk.bin": "5df201c8f496ac6f1ec7f9b5996e0d430cc9aef2d713713c84548565bf17f55e"
+  },
+  "uno_readback_verified": true,
+  "nucleo_readback_verified": true,
+  "calibration_unchanged": true,
+  "hardware_CPU_IRQ_split_context": "OFF_synthetic_CPU_probe",
+  "hardware_under_PWM_validated": false,
+  "installation_report": "installation_verified_r1/report.json",
+  "boot_ORE_archived_before_one_reset": true,
+  "controlled_native_resets_after_install": 1,
+  "new_capture_files_preserved": 64,
+  "no_motor_starts_or_clears": true,
+  "autonomous_OFF_verified_20261030": true,
+  "autonomous_OFF_report": "autonomous_20261030_before_FOC_r1/autonomous_summary.json",
+  "powered_trial_20261030": {
+    "start_commands": 1,
+    "clear_commands": 0,
+    "completed_5s": false,
+    "first_fault_reason": 6,
+    "fast_cycles": 5317,
+    "limit_cycles": 5312,
+    "outputs_off": true,
+    "report": "powered_FOC_CPU_IRQ_20261030_r1/analysis.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "pass": true,
+  "scope": "real RAII header on host mutex; source placement checks",
+  "hardware_commands": 0,
+  "powered_CRC_cause_proven": false,
+  "sources": {
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": "61768feea9e7687e6c6946b5d5b848f2c4cf8e1a15e34a6077ad83da96d0ed30",
+    "UNOQ_MOTOR/scoped_control_lock.h": "a85472d0dbdf11febe8548e3b5357bbb64b8762cc620011def33550491b5de18"
+  },
+  "placement_checks": {
+    "all_shared_state_entrypoints_guarded": true,
+    "same_kernel_mutex": true,
+    "priority_inheriting_mutex_not_IRQ_mask": true,
+    "no_kernel_iterable_section": true,
+    "initialized_before_router": true,
+    "failed_lock_panics": true,
+    "release_before_yield": true
+  },
+  "removed_callback_guard_detected": true,
+  "assertions": 2008,
+  "frames": 2000
+}

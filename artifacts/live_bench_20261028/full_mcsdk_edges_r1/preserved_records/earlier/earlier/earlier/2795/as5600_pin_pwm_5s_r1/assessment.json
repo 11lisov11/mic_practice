@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "scope": "Physically isolated AS5600 + original TIM1 logic outputs; ADC/UART/motor-control scheduler not started",
+  "build": 2795,
+  "test_window_ms": 5000.004658823529,
+  "quiet_ms": 1000,
+  "PWM_observed_seconds": 4.00047,
+  "during_test_successful_reads": 1000,
+  "during_PWM_successful_reads": 799,
+  "phases": [
+    {
+      "stage": "quiet",
+      "reads": 201,
+      "errors": 0
+    },
+    {
+      "stage": "fixed_PWM",
+      "reads": 400,
+      "errors": 0
+    },
+    {
+      "stage": "modulated_PWM",
+      "reads": 399,
+      "errors": 0
+    }
+  ],
+  "new_error_deltas": {
+    "reads": 2420,
+    "errors": 0,
+    "NACK": 0,
+    "deadline": 0,
+    "BUSY": 0,
+    "ARLO": 0,
+    "BERR_clears": 0,
+    "forced_resets": 0,
+    "normal_parks": 0
+  },
+  "wire_decoded_reads_10s": 2010,
+  "wire_target_NACKs": 0,
+  "wire_unexpected_frames": 0,
+  "normal_controller_final_read_NACKs": 2010,
+  "right_censored_transaction_at_capture_end": true,
+  "SD_HIGH_throughout": true,
+  "PWM_off_confirmed": true,
+  "normal_faults_latched": 0,
+  "PWM_carrier_hz": {
+    "0": 15999.999999980446,
+    "1": 15999.999999980446,
+    "2": 15999.999999980446,
+    "3": 15999.999999980446,
+    "4": 15999.999999980446
+  },
+  "PWM_observed_channels": [
+    "UH",
+    "UL",
+    "VH",
+    "VL",
+    "WH"
+  ],
+  "WL_not_recorded": true,
+  "UIE_off_after_test": true,
+  "motor_commands": 0,
+  "flash_commands": 0,
+  "clear_commands": 0,
+  "I2C_forced_resets_delta": 0,
+  "original_motor_fault_root_cause_proven": false,
+  "AS5600_rotating_or_FOC_qualified": false,
+  "conclusions": [
+    "Real TIM1 output edges did not reproduce AS5600 errors in this isolated minimal firmware",
+    "Current measurement ADC and Uno UART were not running, and the inverter ribbon was physically disconnected",
+    "The earlier powered/full-firmware failure is not resolved or localized by this negative control alone"
+  ],
+  "limitations": [
+    "Five PWM outputs observed; WL probe was used for SDA",
+    "8MS/s125ns digital capture does not measure analog integrity/subsample disturbances"
+  ],
+  "capture": "run/pin_pwm_i2c.sal",
+  "raw_report": "run/report.json",
+  "waveform_analysis": "run/waveform.json"
+}

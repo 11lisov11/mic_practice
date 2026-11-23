@@ -1,0 +1,18 @@
+{
+  "schema": "mic_ai.observer_start_history_replay.v1",
+  "firmware": 2026111806,
+  "elf": "release/nucleo_2026111806_uart_rx_dma.elf",
+  "elf_sha256": "252661366db088593620d21596edb92fa0a40263ec86c608500e1d218ce0e5a0",
+  "capture_schema": 1,
+  "input_row_bytes": 22,
+  "capacity": 5120,
+  "checkpoint_stride": 16,
+  "record_files": [
+    "meta.bin",
+    "rows.bin",
+    "checkpoints.bin"
+  ],
+  "initial_and_terminal_state_words": 51,
+  "exact_replay_requires_all_rows_and_checkpoints": true,
+  "ABI": "observer: R0=o,R1=model,R2=input,R3=noise; noise: R0=counts,R1=out"
+}

@@ -1,0 +1,125 @@
+{
+  "available": true,
+  "observer_measured": true,
+  "source": "runtime_observer",
+  "observer_wall_us": 440.47058823529414,
+  "irq_body_lower_us": 314.0176470588235,
+  "cpu_upper_us": 126.45294117647059,
+  "irq_root_count": 14,
+  "max_wall_us": 504.1294117647059,
+  "max_irq_body_lower_us": 374.9764705882353,
+  "max_cpu_upper_us": 153.65882352941176,
+  "window_queue_us": 87.98823529411764,
+  "input_age_us": 87.98823529411764,
+  "result_age_us": 527.4470588235295,
+  "max_window_queue_us": 204.27058823529413,
+  "max_result_age_us": 651.1058823529412,
+  "observer_steps": 571,
+  "meter_errors": 0,
+  "first_fault": {
+    "reason_code": 8,
+    "reason_ru": "ошибка вычисления наблюдателя",
+    "algorithm_fault": 5,
+    "at_cycles": 1110614770,
+    "adc_cycles": 1110524932,
+    "estimate_cycles": 1110354957,
+    "bin_cycles": 1110524932,
+    "observer_begin_cycles": 1110539890,
+    "adc_age_us": 528.4588235294118,
+    "estimate_age_us": 1528.3117647058823,
+    "window_dt_us": 999.8529411764706,
+    "last_observer_wall_us": 440.47058823529414,
+    "last_irq_body_lower_us": 314.0176470588235,
+    "last_cpu_upper_us": 126.45294117647059,
+    "adc_sequence": 17188412,
+    "sample_flags": 7,
+    "observer_inflight": false,
+    "fast_elapsed_us": 440.47058823529414,
+    "observer_steps": 571,
+    "publication": {
+      "schema": 1,
+      "stage": 5,
+      "stage_name": "aborted",
+      "done_mark_cycles": 1110614717,
+      "commit_mark_cycles": 1110444550,
+      "published_index": 0,
+      "slot_stamps": [
+        1110354957,
+        1110184966
+      ],
+      "input_bin_cycles": 1110524932,
+      "foreground_stamp": 1110354957,
+      "measured_steps": 571,
+      "math_steps": 571,
+      "voltage_bin_cycles": 1110524932,
+      "voltage_sequence": 1144,
+      "index_after": 0,
+      "index_stable": true,
+      "limitation": "Diagnostic marks, not an exemption from the unchanged2ms age limit"
+    }
+  },
+  "IRQ_breakdown": {
+    "available": true,
+    "scope": "last_completed_observer_window",
+    "window_us": 440.47058823529414,
+    "valid_mask": 511,
+    "handlers": [
+      {
+        "name": "DMA2_BKIN",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "DMA1_UART_TX",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "USART1_CONTROL",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "ADC1_2",
+        "valid": true,
+        "completed_calls": 7,
+        "inclusive_body_us": 103.2235294117647
+      },
+      {
+        "name": "TIM1_UPDATE",
+        "valid": true,
+        "completed_calls": 8,
+        "inclusive_body_us": 214.61176470588236
+      },
+      {
+        "name": "TIM1_BREAK",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "USART2_MCSDK",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "SysTick",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      },
+      {
+        "name": "EXTI_STOP",
+        "valid": true,
+        "completed_calls": 0,
+        "inclusive_body_us": 0.0
+      }
+    ],
+    "limitation": "Inclusive body times overlap under nesting: do not sum them as CPU utilisation. An in-flight IRQ is not yet counted; early-fault capture may mark an interrupted counter invalid. No safety threshold uses these diagnostics."
+  },
+  "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+}

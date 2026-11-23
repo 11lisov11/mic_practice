@@ -1,0 +1,110 @@
+{
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "algorithm_configuration_commands": 0,
+  "reason": "Break latch present at fresh preflight; no motor command sent",
+  "comparison": {
+    "mc_fault_current_mask": {
+      "after_CLEAR": 0,
+      "before_attempted_START": 0
+    },
+    "mc_fault_occurred_mask": {
+      "after_CLEAR": 0,
+      "before_attempted_START": 1024
+    },
+    "mc_sd_live": {
+      "after_CLEAR": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 24,
+        "break_irq_enabled": true,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      },
+      "before_attempted_START": {
+        "available": true,
+        "reason": "observed",
+        "level": "HIGH",
+        "age_ms": 15,
+        "break_irq_enabled": false,
+        "capture_running": false,
+        "first_record_ready": true,
+        "config_ok": true,
+        "summary_ru": "SD сейчас HIGH: защита отпущена",
+        "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+      }
+    },
+    "mc_good_cnt": {
+      "after_CLEAR": 12494,
+      "before_attempted_START": 13615
+    },
+    "mc_bad_cnt": {
+      "after_CLEAR": 0,
+      "before_attempted_START": 0
+    },
+    "mc_fault_detail": {
+      "after_CLEAR": "first=NONE UART=NONE MCSDK_current=0x0000[NONE] MCSDK_occurred=0x0000[NONE] state=0 seq=0 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена",
+      "before_attempted_START": "first=MCSDK_FAULT UART=NONE MCSDK_current=0x0000[NONE] MCSDK_occurred=0x0400[MC_DP_FAULT] state=11 seq=24 TX_status=0 last_bad=NONE last_UART_flags=0x00 last_TX_status=0; SD сейчас HIGH: защита отпущена"
+    },
+    "linux_boot_id": {
+      "after_CLEAR": "ef5701eb-b33e-450a-a66b-3704c02d4a0b",
+      "before_attempted_START": "ef5701eb-b33e-450a-a66b-3704c02d4a0b"
+    },
+    "native_boot": {
+      "after_CLEAR": {
+        "available": true,
+        "fresh": true,
+        "firmware": 2026103014,
+        "retained_sequence": 1,
+        "sequence_is_power_cycle_persistent": false,
+        "csr_raw": 201326592,
+        "previous_csr_raw": 0,
+        "flags": 4,
+        "causes": [
+          "NRST_FLAG",
+          "POWER_ON_OR_BROWNOUT"
+        ],
+        "previous_flags_cleared": false,
+        "current_flags_cleared": true,
+        "previous_boot_continuity": false,
+        "software_request_tag": 0,
+        "early_record_crc": 420552575,
+        "native_tick_ms": 662698,
+        "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+        "exact_physical_cause_identified": false,
+        "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+      },
+      "before_attempted_START": {
+        "available": true,
+        "fresh": true,
+        "firmware": 2026103014,
+        "retained_sequence": 1,
+        "sequence_is_power_cycle_persistent": false,
+        "csr_raw": 201326592,
+        "previous_csr_raw": 0,
+        "flags": 4,
+        "causes": [
+          "NRST_FLAG",
+          "POWER_ON_OR_BROWNOUT"
+        ],
+        "previous_flags_cleared": false,
+        "current_flags_cleared": true,
+        "previous_boot_continuity": false,
+        "software_request_tag": 0,
+        "early_record_crc": 420552575,
+        "native_tick_ms": 719171,
+        "summary_ru": "флаг NRST, подача питания или просадка напряжения; предыдущая история не подтверждена",
+        "exact_physical_cause_identified": false,
+        "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+      }
+    }
+  },
+  "old_frozen_SD_unchanged": true,
+  "physical_cause_identified": false
+}

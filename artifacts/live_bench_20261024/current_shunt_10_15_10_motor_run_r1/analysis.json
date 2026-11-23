@@ -1,0 +1,97 @@
+{
+  "motor_trial_completed": true,
+  "raw_runner_passed": false,
+  "raw_report_preserved": true,
+  "physical_rotation_verified": true,
+  "speed_changes_verified": true,
+  "feedback_pending": false,
+  "start_commands": 1,
+  "clear_commands": 0,
+  "flash_commands": 0,
+  "outputs_off_confirmed": true,
+  "current_scale_qualified": false,
+  "rotor_speed_measured": false,
+  "steps": [
+    {
+      "step": 1,
+      "target_hz": 10,
+      "distinct_valid_full_windows": 4,
+      "latest_rms_a": [
+        0.565,
+        0.572,
+        0.566
+      ],
+      "latest_peak_a": [
+        1.027,
+        1.007,
+        1.036
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    },
+    {
+      "step": 2,
+      "target_hz": 15,
+      "distinct_valid_full_windows": 3,
+      "latest_rms_a": [
+        0.67,
+        0.679,
+        0.671
+      ],
+      "latest_peak_a": [
+        1.708,
+        1.295,
+        1.295
+      ],
+      "minimum_coverage_pct": 100,
+      "maximum_rejected_adc_samples_in_window": 0
+    },
+    {
+      "step": 3,
+      "target_hz": 10,
+      "distinct_valid_full_windows": 4,
+      "latest_rms_a": [
+        0.561,
+        0.569,
+        0.563
+      ],
+      "latest_peak_a": [
+        1.122,
+        0.998,
+        1.007
+      ],
+      "minimum_coverage_pct": 99,
+      "maximum_rejected_adc_samples_in_window": 1
+    }
+  ],
+  "timing_note": {
+    "raw_false_reason": "STOP raw response omits hmi_hv_armed; annotation-dependent check kept timer armed during redundant final STOP. Backup STOP dispatched after power outputs were already OFF. No drive fault. Raw report preserved.",
+    "first_observed_outputs_off_s_from_start_request": 34.297,
+    "backup_stop_dispatched_s_from_start_request": 35.0,
+    "fix": "Use fresh raw power bits to cancel deadline after successful STOP; final annotated GET still requires HMI arm=0. Regression checked against actual response and active/stale/armed mutations without hardware commands."
+  },
+  "sd_waveform_limit": "Retained pre-START waveform cannot record a second full wave; hardware Break remains enabled.",
+  "active_vdc_range": [
+    319.0,
+    324.0
+  ],
+  "active_temperature_channel_range_c": [
+    49.0,
+    53.0
+  ],
+  "counter_deltas": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_uart_error_flags": 0,
+    "mc_current_bad": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "uno_tx_short_writes": 0
+  },
+  "final_fault_masks": [
+    0,
+    0
+  ],
+  "final_vdc": 322.0,
+  "user_feedback": "Да, ровно, оба изменения заметны"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "mic_ai.bkin_boot_armed_candidate.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_boot_armed_r1",
+  "predecessor": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_dma_verified_pair_r1",
+  "pair": [
+    2026101711,
+    2026101710
+  ],
+  "predecessor_pair": [
+    2026101703,
+    2026101702
+  ],
+  "prepared": true,
+  "built": true,
+  "installed": false,
+  "operationally_qualified": false,
+  "hv_release_approved": false,
+  "calibration_changed": false,
+  "control_protocol_changed": false,
+  "pwm_or_motor_control_changed": false,
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "mcu_flash_commands": 3,
+  "change": "Arm the existing DMA PA6 circular trace after MCSDK boot synchronization so a BKIN event before START freezes a waveform; do not restart an already running trace on START.",
+  "files_sha256": {
+    "nucleo/Src/main.c": "12ceffdcc28c6795de7d9a4cb8674ac5577744e5d15d32e468b9ea38d6678101",
+    "nucleo/Inc/break_wire.h": "a8733ed99c0e282517231d712b5da4b880f35d2a53df153b1992bdf220a0aa84",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": "406babf1925e56ca9b74b53964dc70b7cf0e49baec1f3c009dbd3e259e6fc13c",
+    "UNOQ_MOTOR/break_wire.h": "a8733ed99c0e282517231d712b5da4b880f35d2a53df153b1992bdf220a0aa84",
+    "UNOQ_MOTOR/nucleo_fault_diagnostics.h": "16442aefd9d38d6394e2556bfc85bde88a9b11706a99cea402018cb4fa53947b",
+    "UNOQ_MOTOR/bkin_wave_wire.h": "83bbf7a13ca3f2a548f03bfd2aad1fd9a96026102d7e37d74ba74c218f9acf8f",
+    "web_hmi/server.py": "fbcfcad2fd351ef9ab8a18862917cee4469b41fa369aec9993bfb7299cad28b3",
+    "README_RU.md": "701a02683db8fe78b32329d575a14b7554680ad46a150e297418414b39967ce6"
+  },
+  "build_verification": {
+    "unoq": {
+      "pass": true,
+      "build_id": 2026101711,
+      "manifest": "build/uno/unoq_mcsdk_scalar.build-manifest.json",
+      "artifacts": [
+        {
+          "file": "UNOQ_MOTOR.ino.elf",
+          "bytes": 140300,
+          "sha256": "A0F8A8FC9E4729AC1B9E5F1085EA35F252B9FFE4E7952CCA805D85879B1B6922"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.hex",
+          "bytes": 167428,
+          "sha256": "65C8B32B9C1EA0A3906DF3794115B33ABA78E4913AB0F00CA81D896112D9710A"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.bin",
+          "bytes": 69844,
+          "sha256": "A76F20087C45F1AC6B66B4C33483D0491422EDAE9F3A3DF7A06A33B57B5BABE7"
+        },
+        {
+          "file": "UNOQ_MOTOR.ino.elf-zsk.bin",
+          "bytes": 140300,
+          "sha256": "82219B6748FFCAA0C2A411AC52FB1D387E63FC1A98CC1DC84219024EE77FC19A"
+        }
+      ],
+      "llext_issues": []
+    },
+    "nucleo": {
+      "pass": true,
+      "build_id": 2026101710,
+      "errors": 0,
+      "warnings": 0,
+      "elf_sha256": "7F240EAE15987F6B726DE4C0D0B7729D8FCD4349264E11352CE505B63D0F86B8",
+      "hex_sha256": "68868BB69D4BB78C9C1E986F77CF638F079BA29E3146A615C185BEA208B7E716",
+      "hex_bytes": 136093,
+      "manifest": "build/nucleo/ACIM-NUCLEOG431RB-IPM15B-VF_OL.build-manifest.json",
+      "non_gating_release_preflight_pass": false,
+      "release_preflight_pending": [
+        "external_softstart_hil_validated",
+        "ipm_sd_bkin_hardware_trip_validated"
+      ]
+    },
+    "host_selftest": {
+      "pass": true,
+      "checks": 11,
+      "failures": [],
+      "hardware_commands": 0,
+      "mcu_flash_commands": 0,
+      "motor_commands": 0,
+      "scope": "Offline source/build/parser checks only; no device access"
+    }
+  },
+  "documentation_sha256": {
+    "README_RU.md": "701a02683db8fe78b32329d575a14b7554680ad46a150e297418414b39967ce6"
+  },
+  "flash_readback_verification": {
+    "uno_q": {
+      "build_id": 2026101711,
+      "sha256": "82219b6748ffcaa0c2a411ac52fb1d387e63fc1a98cc1dc84219024ee77fc19a",
+      "readback_verified": true
+    },
+    "nucleo": {
+      "build_id": 2026101710,
+      "sha256": "68868bb69d4bb78c9c1e986f77cf638f079ba29e3146a615c185bea208b7e716",
+      "readback_verified": true
+    },
+    "hmi_server_sha256": "fbcfcad2fd351ef9ab8a18862917cee4469b41fa369aec9993bfb7299cad28b3",
+    "calibration_unchanged": true,
+    "runtime_pair_verified": false,
+    "reason": "HTTP /api/status and direct router get timed out after Uno readback; cold restart still required"
+  }
+}

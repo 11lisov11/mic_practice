@@ -1,0 +1,108 @@
+{
+  "ok": true,
+  "data": {
+    "available": true,
+    "reason": "complete_window",
+    "schema": 5,
+    "stored_record": true,
+    "event_tick_ms": 4910,
+    "age_since_delivery_ms": 2217721,
+    "live_peer_fresh": true,
+    "live_sd": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 10,
+      "break_irq_enabled": true,
+      "capture_running": true,
+      "first_record_ready": true,
+      "config_ok": true,
+      "summary_ru": "SD сейчас HIGH: защита отпущена",
+      "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+    },
+    "sample_period_us": 0.2,
+    "sample_rate_hz": 5000000,
+    "trigger_index": 2048,
+    "sample_count": 91178,
+    "runs": [
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 2039,
+        "from_us": -409.6,
+        "to_us": -1.8
+      },
+      {
+        "state": 2,
+        "pa6": 0,
+        "tp23_pa4": 1,
+        "samples": 88818,
+        "from_us": -1.8,
+        "to_us": 17761.8
+      },
+      {
+        "state": 3,
+        "pa6": 1,
+        "tp23_pa4": 1,
+        "samples": 321,
+        "from_us": 17761.8,
+        "to_us": 17826.0
+      }
+    ],
+    "channels": {
+      "pa6_bkin": {
+        "low_intervals": [
+          {
+            "fall_sample": 2039,
+            "rise_sample": 90857,
+            "from_us": -1.8,
+            "to_us": 17761.8,
+            "left_censored": false,
+            "right_censored": false,
+            "pulse_complete": true,
+            "width_samples": 88818,
+            "width_us": 17763.600000000002
+          }
+        ],
+        "selected_pulse": {
+          "fall_sample": 2039,
+          "rise_sample": 90857,
+          "from_us": -1.8,
+          "to_us": 17761.8,
+          "left_censored": false,
+          "right_censored": false,
+          "pulse_complete": true,
+          "width_samples": 88818,
+          "width_us": 17763.600000000002
+        },
+        "low_observed": true
+      },
+      "tp23_pa4": {
+        "low_intervals": [],
+        "selected_pulse": null,
+        "low_observed": false
+      }
+    },
+    "mismatch_samples": 88818,
+    "mismatch_us": 17763.600000000002,
+    "post_complete": true,
+    "timeout": false,
+    "dma_error": false,
+    "sampling_overrun": false,
+    "run_overflow": false,
+    "flags": 513,
+    "dma_flags_raw": 0,
+    "dma_remaining": 5696,
+    "input_configuration_verified": true,
+    "summary_ru": "PA6/BKIN: LOW 17763.6 мкс; TP23→PA4: LOW не обнаружен; несовпадение уровней: 88818 отсч.",
+    "trace_reference": "Both bits from one GPIOA IDR DMA read; relative to Break IRQ publication",
+    "limitations": [
+      "Requested sample step 200 ns; hardware timing is not electrically qualified",
+      "TP23 requires external wiring to PA4; firmware cannot detect an absent or wrong wire",
+      "A LOW on both inputs does not prove intrinsic IPM fault; common-reference noise remains possible",
+      "32 joint runs maximum; overflow and missing edges never imply a complete pulse",
+      "First Break since boot; STOP/CLEAR do not overwrite evidence"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "archival_files_verified_sha256": 1097,
+  "saved_run": {
+    "status": "saved observations, not a closed-loop replay of changed PWM",
+    "first_crossing": {
+      "step": 83,
+      "before_speed_loop": true,
+      "candidate_ARM_exact_rows": 83
+    },
+    "stop": {
+      "step": 571,
+      "reference_hz": 0.9000000357627869,
+      "NIS": 27.091480255126953,
+      "iq_reference_A": 0.5753154158592224,
+      "observer_rpm": -132.85304260253906,
+      "phase_U_prediction_error_A": -0.10876286029815674,
+      "candidate_ARM_exact_words": 51
+    }
+  },
+  "simulated_profiles": 14,
+  "nominal": {
+    "completed_5s": true,
+    "PWM_duration_s": 5.00002936,
+    "frames": 80009,
+    "observer_calls": 5000,
+    "fault": 0,
+    "reason": 0,
+    "peak_plant_A": 0.565488602,
+    "rpm_true_end": 300.278752,
+    "rpm_est_end": 299.914208,
+    "speed_RMSE_after1s_rpm": 0.311112901,
+    "native_valid_fraction_after1s": 1,
+    "peak_NIS": 0.51125592,
+    "prequalification_Iq_ref_max_A": 0,
+    "first_torque_step": 500,
+    "maximum_reference_Hz": 5,
+    "peak_hold_speed_error_rpm": 7.11495393
+  },
+  "recent_ramp_delay": {
+    "completed_5s": true,
+    "PWM_duration_s": 5.00002936,
+    "frames": 80009,
+    "observer_calls": 5000,
+    "fault": 0,
+    "reason": 0,
+    "peak_plant_A": 0.512393339,
+    "rpm_true_end": 300.300657,
+    "rpm_est_end": 299.980342,
+    "speed_RMSE_after1s_rpm": 0.344572655,
+    "native_valid_fraction_after1s": 1,
+    "peak_NIS": 0.51125592,
+    "prequalification_Iq_ref_max_A": 0,
+    "first_torque_step": 500,
+    "maximum_reference_Hz": 5,
+    "peak_hold_speed_error_rpm": 6.49957695
+  },
+  "recorded_controller_stimulus": {
+    "recorded_state_Iq_with_old_speed_feedback_A": 0.309173405,
+    "recorded_state_Iq_before_admission_A": 0,
+    "coordinate_handover": true
+  },
+  "ARM": {
+    "linked": true,
+    "byte_identical_observer_NIS_and_noise": {
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "code_sizes_bytes": {
+      "ma_native_fast": [
+        7536,
+        7824
+      ],
+      "ma_native_service": [
+        7568,
+        7768
+      ],
+      "ma_native_profile_tick": [
+        3292,
+        3464
+      ]
+    },
+    "measured_target_cycles": false,
+    "compiled_OFF_gate_cycles": 4000,
+    "age_limit_ms": 2
+  },
+  "hardware_commands": 0,
+  "hardware_timing_measured": false,
+  "NIS_threshold": 25,
+  "OFF_cycle_limit": 4000,
+  "estimate_age_limit_ms": 2
+}

@@ -1,0 +1,165 @@
+{
+  "baseline": {
+    "fe_profile_allowed": {
+      "lines": 126,
+      "calls": [
+        "memcmp"
+      ],
+      "vdiv": 1
+    },
+    "ma_native_profile_tick": {
+      "lines": 864,
+      "calls": [
+        "memset",
+        "mi_step.part.0.constprop.0",
+        "memcmp",
+        "memset",
+        "hypotf",
+        "memset",
+        "hypotf",
+        "hypotf",
+        "ma_modulate"
+      ],
+      "vdiv": 19
+    },
+    "ma_native_fast": {
+      "lines": 1973,
+      "calls": [
+        "fe_profile_allowed",
+        "mic_current_fast",
+        "ma_fail_at",
+        "mic_current_fast",
+        "memset",
+        "mi_step.part.0.constprop.0",
+        "PWM_SwitchOffPWM",
+        "PWM_SwitchOffPWM",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "hypotf",
+        "hypotf",
+        "ma_modulate",
+        "ma_fail_at",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "hypotf",
+        "hypotf",
+        "ma_modulate",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "hypotf",
+        "hypotf"
+      ],
+      "vdiv": 35
+    },
+    "__ieee754_hypotf": {
+      "lines": 86,
+      "calls": [
+        "__ieee754_sqrtf",
+        "__ieee754_sqrtf"
+      ],
+      "vdiv": 0
+    },
+    "hypotf": {
+      "lines": 26,
+      "calls": [
+        "__ieee754_hypotf",
+        "finitef",
+        "finitef",
+        "finitef",
+        "__errno"
+      ],
+      "vdiv": 0
+    },
+    "__ieee754_sqrtf": {
+      "lines": 4,
+      "calls": [],
+      "vdiv": 0
+    }
+  },
+  "candidate": {
+    "fe_profile_allowed": {
+      "lines": 97,
+      "calls": [],
+      "vdiv": 0
+    },
+    "ma_native_profile_tick": {
+      "lines": 837,
+      "calls": [
+        "memset",
+        "hypotf",
+        "memset",
+        "mi_step.part.0.constprop.0",
+        "hypotf",
+        "hypotf",
+        "ma_modulate",
+        "__ieee754_hypotf",
+        "__ieee754_hypotf"
+      ],
+      "vdiv": 18
+    },
+    "ma_native_fast": {
+      "lines": 2007,
+      "calls": [
+        "fe_profile_allowed",
+        "mic_current_fast",
+        "ma_fail_at",
+        "mic_current_fast",
+        "memset",
+        "mi_step.part.0.constprop.0",
+        "PWM_SwitchOffPWM",
+        "PWM_SwitchOffPWM",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "ma_fail_at",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "hypotf",
+        "hypotf",
+        "ma_modulate",
+        "VBS_GetAvBusVoltage_V",
+        "memset",
+        "hypotf",
+        "hypotf",
+        "ma_modulate",
+        "__ieee754_hypotf",
+        "__ieee754_hypotf",
+        "__ieee754_hypotf",
+        "hypotf",
+        "__ieee754_hypotf",
+        "hypotf"
+      ],
+      "vdiv": 35
+    },
+    "__ieee754_hypotf": {
+      "lines": 86,
+      "calls": [
+        "__ieee754_sqrtf",
+        "__ieee754_sqrtf"
+      ],
+      "vdiv": 0
+    },
+    "hypotf": {
+      "lines": 26,
+      "calls": [
+        "__ieee754_hypotf",
+        "finitef",
+        "finitef",
+        "finitef",
+        "__errno"
+      ],
+      "vdiv": 0
+    },
+    "__ieee754_sqrtf": {
+      "lines": 4,
+      "calls": [],
+      "vdiv": 0
+    }
+  },
+  "target_cycles_measured": false,
+  "original_sqrt_already_hardware": true,
+  "no_math_override_symbol": true,
+  "passed": true,
+  "library_math_instructions_identical": true,
+  "protection_current_hypot_call_preserved": true,
+  "target_cycle_claim": false
+}

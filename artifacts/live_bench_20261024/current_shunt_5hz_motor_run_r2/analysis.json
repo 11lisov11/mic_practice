@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "physical_rotation_verified": true,
+  "physical_rotation_evidence": "User confirmed: Да, вращался ровно",
+  "outputs_off_confirmed": true,
+  "distinct_valid_5hz_windows": 3,
+  "nominal_current_scale_only": true,
+  "phases": {
+    "U": {
+      "rms_range_a": [
+        0.411,
+        0.43
+      ],
+      "latest_rms_a": 0.43,
+      "maximum_observed_peak_a": 0.931
+    },
+    "V": {
+      "rms_range_a": [
+        0.431,
+        0.433
+      ],
+      "latest_rms_a": 0.433,
+      "maximum_observed_peak_a": 1.103
+    },
+    "W": {
+      "rms_range_a": [
+        0.416,
+        0.428
+      ],
+      "latest_rms_a": 0.428,
+      "maximum_observed_peak_a": 1.209
+    }
+  },
+  "counter_deltas": {
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "mc_current_bad": 0,
+    "uno_rx_dropped": 0,
+    "bp_bad_integrity": 0,
+    "bp_bad_sequence": 0
+  },
+  "final_fault_masks": [
+    0,
+    0
+  ],
+  "final_vdc": 322.0,
+  "timing_note": "START response took 6.875s. Hard STOP dispatched 10s after request, before scheduled 5s-after-confirmation STOP; no exact 5s plateau claim. Three distinct valid full 200ms windows at controller reference 5Hz were recorded.",
+  "sd_capture_note": "A retained pre-START SD waveform is saved; it cannot capture a second waveform until reboot. Hardware Break is rearmed and checked before START.",
+  "scope": "5Hz scalar current telemetry and physical rotation; not a 50Hz or FOC validation",
+  "active_vdc_range": [
+    321.0,
+    322.0
+  ],
+  "active_temperature_channel_range_c": [
+    49.0,
+    49.0
+  ]
+}

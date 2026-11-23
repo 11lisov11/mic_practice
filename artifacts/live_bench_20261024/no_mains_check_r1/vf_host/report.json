@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "controller_calls_in_sweep": 1082160,
+  "assertions": 6492983,
+  "minimum_calculated_duty": 1.198e-05,
+  "maximum_calculated_duty": 0.99998802,
+  "voltage_peak_below10hz_v": 20.0,
+  "voltage_peak_at10hz_v": 35.921024,
+  "bus_cases_voltage_limited_at50hz": 2,
+  "hardware_commands": 0,
+  "source_pair": [
+    2026102103,
+    2026102104
+  ],
+  "source_sha256": {
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\pwm.c": "51f0b0ac889afb64b93861f8546923d385cbe61eb9db86deb607bc5d421cf23a",
+    "MCSDK_v6.4.2-Full\\MotorControl\\MCSDK\\MCLibACIM\\Any\\Src\\acim_vf_control.c": "159f8efcbaaecf0b85c1023c2e6c942c65eca138efd51c54e58994abf4470686",
+    "Src\\mc_math.c": "9dec5a6e02cd505b5d90bb7355818f5d82ce34202438d6be959d5bdd4e9d028b",
+    "Inc\\acim_vf_parameters.h": "061dcb4b2d0f2fb88c25860ae6c520994a57924ab221c83c89fc0b280ddad326",
+    "Inc\\acim_motor_parameters.h": "4d461f61ba025aacc6b0813593cb98d00cad18b79ef73f0bca13f48c440ea2ce"
+  },
+  "sources_unchanged": true,
+  "scope": "Exact compiled installed V/f controller, sine lookup and duty-to-CCR conversion; peripheral writes are host stubs.",
+  "limitations": [
+    "Not a hardware PWM waveform or motor simulation",
+    "Zero-Hz stopping is enforced by the supervisory command owner, not by this voltage formula",
+    "At325V bus, sinusoidal PWM voltage clips before50Hz; this is voltage limitation, not a frequency cutoff",
+    "Passing arithmetic checks does not identify physical UART/SD noise"
+  ]
+}

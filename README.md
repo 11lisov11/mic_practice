@@ -1,5 +1,10 @@
 # MIC_AI: UNO Q + NUCLEO-G431RB + STEVAL-IPM15B
 
+> Эта ветка — архивный снимок рабочего каталога от 24.11.2026 на базе
+> `f21a43af`, а не новый проверенный аппаратный релиз. Актуальную опубликованную
+> версию смотрите в [main](https://github.com/11lisov11/mic_practice/tree/main).
+> Состав, проверки и ограничения снимка: [WORKSPACE_SNAPSHOT_20261124_RU.md](WORKSPACE_SNAPSHOT_20261124_RU.md).
+
 Текущая конфигурация проекта:
 
 `телефон/ноутбук <- Wi-Fi -> UNO Q -> прямой UART 3.3 В -> NUCLEO-G431RB -> X-NUCLEO-IHM09M2 -> FC-34P -> STEVAL-IPM15B -> AIR56B2`.

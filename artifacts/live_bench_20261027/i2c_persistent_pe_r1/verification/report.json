@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "pair": [
+    2026102709,
+    2026102710
+  ],
+  "native_tests_pass": true,
+  "healthy_reads_tested": 200,
+  "healthy_pe_enables": 1,
+  "healthy_pe_disables": 0,
+  "recovery_event_cases": 400,
+  "core_assertions": 32767,
+  "bus_clear_cases": 92,
+  "hmi_checks": 450,
+  "healthy_idle_config_verified": true,
+  "encoder_wire_with_idle_pe1_verified": true,
+  "error_cleanup_preserved": true,
+  "first_records_frozen": true,
+  "protection_source_isolation": true,
+  "timing_filters_and_timeouts_unchanged": true,
+  "adc_irq_stack_bytes": 376,
+  "nucleo_build_errors": 0,
+  "nucleo_build_warnings": 0,
+  "nucleo_ram_growth_bytes": 0,
+  "nucleo_ram_margin_above_heap_stack": 3320,
+  "nucleo_stack_frames": {
+    "mic_encoder_poll": 56,
+    "capture_terminal": 40,
+    "mic_encoder_bus_clear_packet": 16,
+    "mic_encoder_release_packet": 144
+  },
+  "uno_loader_pass": true,
+  "rpc_dependency_override_verified": true,
+  "calibration_identity_compatible": true,
+  "archived_files": 22,
+  "historical_records_sha_verified": true,
+  "installed_package_sha_verified_unchanged": true,
+  "flash_commands": 0,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "hardware_validated": false,
+  "initial_pwm_nack_fixed_or_proven": false,
+  "limitations": [
+    "Peripheral behavior is modeled; this is not a physical PWM test",
+    "The first recorded NACK remains an error, not a valid angle",
+    "Target image stack frames checked; full hardware worst-case stack watermark not measured"
+  ]
+}

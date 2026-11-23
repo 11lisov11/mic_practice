@@ -1,0 +1,79 @@
+{
+  "pair": [
+    2026112301,
+    2026112302
+  ],
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash": 1,
+  "nucleo_flash": 1,
+  "before_SWD": {
+    "tick": 2305957,
+    "bus_V": 9.2421875,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "saved_previous_native_and_uno_memory": true,
+  "web_preflight": {
+    "server_verified": true,
+    "calibration_valid_for_pair": true
+  },
+  "nucleo_hex_readback_sha256": "e397ebb480733d4e44bdd06cdb05af02573ca7165f00e6330f38a51c5ffd4b1e",
+  "after_SWD": {
+    "tick": 487,
+    "bus_V": 15.666015625,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "DWT": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "max_cycles": 2522,
+    "max_lso_cycles": 1692,
+    "failures": 0,
+    "passed": true
+  },
+  "uno_flash_readback_sha256": "7d95ad5f83da83bcefc82b3a57b36e23695e94c12ac30e545e485e7a0100fa4b",
+  "hmi": {
+    "deployed": true,
+    "backup": "/home/arduino/ArduinoApps/UNOQ_MOTOR/web_hmi/backups/lso_2302_235405850f7249e78427404c5a5558f2",
+    "server_sha256": "9332d558501ff175f47562b05015046fdfc2d2e4e4a4df6dd6cc8b1f2550bbe8",
+    "calibration_unchanged": true,
+    "calibration_valid_for_pair": true
+  },
+  "uno_live": true,
+  "final_SWD": {
+    "tick": 22527,
+    "bus_V": 9.2421875,
+    "MOE": false,
+    "AOE": false,
+    "BKE": true,
+    "BIE": true,
+    "SD_HIGH": true,
+    "BKF": 9
+  },
+  "preserved_files_verified": 1944,
+  "web_startup_transient_recovered": "RemoteDisconnected('Remote end closed connection without response')",
+  "link_recheck": {
+    "USB_ADB": {
+      "passed": true,
+      "frames_increment": 173,
+      "max_age_ms": 52
+    },
+    "LAN": {
+      "passed": true,
+      "frames_increment": 217,
+      "max_age_ms": 39
+    }
+  }
+}

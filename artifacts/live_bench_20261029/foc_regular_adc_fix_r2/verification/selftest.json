@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "simulated_5s_only": true,
+  "simulated_frames": 80000,
+  "timer_policy_cases": 10626,
+  "recorded_trip_preserved": true,
+  "trip_current_A": 1.35000002,
+  "stale_and_missing_safety_data_stops": true,
+  "physical_5s_not_proven": true,
+  "observations": {
+    "raw_delta_adc1": 83,
+    "raw_delta_adc2": 3,
+    "EOC_regular_rows": [
+      2089,
+      2097
+    ],
+    "EOC_does_not_always_mean_spike": true,
+    "regular_start_time_and_channel_not_recorded": true,
+    "physical_current_or_ADC_error_cannot_be_uniquely_decided": true,
+    "MCU_revision": "X from existing CubeProgrammer log",
+    "excluded_errata": [
+      "ES0431 2.5.8 onlyZ",
+      "ES0431 2.5.10 onlyY",
+      "2.5.9 needs>1ms; here62.5us",
+      "2.5.11 ADC1/2 asyncDIV1 same clock excluded"
+    ],
+    "source": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf"
+  }
+}

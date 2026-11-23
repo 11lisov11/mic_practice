@@ -1,0 +1,21 @@
+{
+  "software_ready": true,
+  "firmware_changes": false,
+  "tests_passed": 4,
+  "mode": "scalar_Vf_only",
+  "frequency_hz": 5,
+  "host_stop_after_start_confirmation_s": 5,
+  "independent_host_hard_deadline_s": 10,
+  "mcu_run_limit_s": 7,
+  "automatic_clear": false,
+  "sensor_error_policy": "STOP on invalid angle/stale I2C/new I2C errors/impossible RPM; require motion within 2.5 seconds",
+  "sd_record_policy": "preserve exact pre-START archived waveform; all hardware gates remain; no CLEAR or RESET",
+  "physical_preparation_operator_confirmed": true,
+  "j1_on_confirmation_received": true,
+  "motor_start_commands": 0,
+  "source_sha256": {
+    "tools\\run_as5600_low_speed.py": "6583fb50e7331fcbd3a2c15795328b05375d2b345c4a3dae1ce46ae36d353bc1",
+    "tests\\test_as5600_low_speed_policy.py": "a373530e5fbeb64438800d1128d9be121afa885a001bccd76d987c95db8313e7"
+  },
+  "powered_preflight_passed": false
+}

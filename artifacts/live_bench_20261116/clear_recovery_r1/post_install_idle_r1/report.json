@@ -1,0 +1,368 @@
+{
+  "passed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "halt": 0,
+  "observation_only": true,
+  "PWM_test": false,
+  "pair": [
+    2026111605,
+    2026111606
+  ],
+  "thresholds_changed": false,
+  "native_readback_verified": true,
+  "native_SHA256": "510e1a7a37f9d79abec5c30491193bff678ac96b60af0630bd1117b02744fadc",
+  "native_rows": [
+    {
+      "tick_ms": 42313,
+      "BKE": true,
+      "MOE": false,
+      "BIE": true,
+      "PA6_HIGH": true,
+      "running": 0,
+      "run_fault": 0,
+      "fe_trial_done": 0,
+      "fe_complete": 1,
+      "fe_case": 64,
+      "fe_fault": 0,
+      "fast_cycles": 3618,
+      "observer_cycles": 19860,
+      "OFF_source": 1,
+      "observer_steps": 64,
+      "meter_errors": 0,
+      "observer_max_wall_us": 117.5764705882353,
+      "observer_max_CPU_upper_us": 88.12352941176471,
+      "recorder_empty": true,
+      "clear_record_empty": true
+    },
+    {
+      "tick_ms": 42974,
+      "BKE": true,
+      "MOE": false,
+      "BIE": true,
+      "PA6_HIGH": true,
+      "running": 0,
+      "run_fault": 0,
+      "fe_trial_done": 0,
+      "fe_complete": 1,
+      "fe_case": 64,
+      "fe_fault": 0,
+      "fast_cycles": 3618,
+      "observer_cycles": 19860,
+      "OFF_source": 1,
+      "observer_steps": 64,
+      "meter_errors": 0,
+      "observer_max_wall_us": 117.5764705882353,
+      "observer_max_CPU_upper_us": 88.12352941176471,
+      "recorder_empty": true,
+      "clear_record_empty": true
+    }
+  ],
+  "CPU_qualified": true,
+  "fast_cycles": 3618,
+  "budget_cycles": 4000,
+  "predecessor_OFF_cycles": 3618,
+  "samples": 20,
+  "fresh_link": true,
+  "new_rejected_frames": false,
+  "bad_counts": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "integrity_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "sequence_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "uart_flags": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "transport_latches": [
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7,
+    7
+  ],
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 48,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "zero_ready": 1,
+  "active_fault_mask": 0,
+  "saved_fault_mask": 0,
+  "motor_start_readiness_evaluated": false,
+  "full_adapter_under_PWM_measured": false,
+  "UART_clean": false,
+  "RPC_stable": true,
+  "rpc_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "5c2139ea-1460-411e-9d24-27bed254cb67",
+      [
+        2026111606,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        4017570581
+      ]
+    ],
+    "samples": 20,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 28.046999999991385,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "preserved_files_verified": 3581,
+  "ordinary_telemetry_fresh": true,
+  "current_age_rows": [
+    {
+      "mc_current_age_ms": 187,
+      "mc_current_detail_age_ms": 386,
+      "mc_current_quality_age_ms": 986,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 260,
+      "mc_current_detail_age_ms": 861,
+      "mc_current_quality_age_ms": 461,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 139,
+      "mc_current_detail_age_ms": 338,
+      "mc_current_quality_age_ms": 938,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 214,
+      "mc_current_detail_age_ms": 814,
+      "mc_current_quality_age_ms": 413,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 95,
+      "mc_current_detail_age_ms": 294,
+      "mc_current_quality_age_ms": 894,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 169,
+      "mc_current_detail_age_ms": 769,
+      "mc_current_quality_age_ms": 369,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 44,
+      "mc_current_detail_age_ms": 244,
+      "mc_current_quality_age_ms": 844,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 119,
+      "mc_current_detail_age_ms": 718,
+      "mc_current_quality_age_ms": 318,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 599,
+      "mc_current_detail_age_ms": 199,
+      "mc_current_quality_age_ms": 798,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 74,
+      "mc_current_detail_age_ms": 674,
+      "mc_current_quality_age_ms": 275,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 550,
+      "mc_current_detail_age_ms": 150,
+      "mc_current_quality_age_ms": 751,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 24,
+      "mc_current_detail_age_ms": 624,
+      "mc_current_quality_age_ms": 224,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 499,
+      "mc_current_detail_age_ms": 99,
+      "mc_current_quality_age_ms": 699,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 373,
+      "mc_current_detail_age_ms": 574,
+      "mc_current_quality_age_ms": 174,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 448,
+      "mc_current_detail_age_ms": 48,
+      "mc_current_quality_age_ms": 648,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 323,
+      "mc_current_detail_age_ms": 524,
+      "mc_current_quality_age_ms": 122,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 398,
+      "mc_current_detail_age_ms": 995,
+      "mc_current_quality_age_ms": 595,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 273,
+      "mc_current_detail_age_ms": 472,
+      "mc_current_quality_age_ms": 72,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 354,
+      "mc_current_detail_age_ms": 953,
+      "mc_current_quality_age_ms": 554,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    },
+    {
+      "mc_current_age_ms": 229,
+      "mc_current_detail_age_ms": 428,
+      "mc_current_quality_age_ms": 28,
+      "mc_current_zero_ready": 1,
+      "mc_current_zero_stable": 3
+    }
+  ],
+  "limitation": "Synthetic OFF-DWT kernel, MOE=0, 64x8 cases; not a motor/PWM run or a stack high-water proof."
+}

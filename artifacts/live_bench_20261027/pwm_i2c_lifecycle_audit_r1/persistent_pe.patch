@@ -1,0 +1,87 @@
+--- nucleo/Inc/encoder_core.h
++++ nucleo/Inc/encoder_core.h
+@@ -27,6 +27,7 @@
+   void (*request_stop)(void*);
+   void (*flush_tx)(void*);
+   void (*terminal)(void*,uint8_t);
++  void (*completed)(void*);
+ 
+ } ec_io;
+ typedef struct {
+@@ -46,6 +47,7 @@
+   uint8_t recovering,cleanup_flags;
+   uint8_t prepare;
+   bool have_free_since;
++  bool pe_on;
+ 
+ } ec_state;
+ static inline void ec_inc32(uint32_t *n){if(*n!=UINT32_MAX)++*n;}
+@@ -84,6 +86,7 @@
+   io->terminal(io->ctx,e->cleanup_flags);
+   if(forced)io->reset(io->ctx);
+   else {io->clear(io->ctx);io->park(io->ctx);io->flush_tx(io->ctx);}
++  e->pe_on=false;
+   ec_elapsed(e,cycles,hz);ec_idle(e);
+ }
+ static inline void ec_recover(ec_state *e,ec_io *io,uint32_t ms,uint32_t cycles,uint32_t hz,uint32_t isr){
+@@ -117,7 +120,7 @@
+ static inline void ec_finish(ec_state *e,ec_io *io,uint32_t ms,uint32_t cycles,
+                              uint32_t hz,uint8_t cause,uint32_t isr){
+   if(!cause){
+-    io->clear(io->ctx);io->park(io->ctx);ec_inc32(&e->parks);ec_inc32(&e->reads);
++    io->clear(io->ctx);io->completed(io->ctx);ec_inc32(&e->reads);
+     ec_idle(e);ec_elapsed(e,cycles,hz);e->sample_ms=ms;e->cause=EC_NONE;e->bus_ok=true;e->stage=0;
+     e->raw=(uint16_t)(((e->bytes[1]&15U)<<8)|e->bytes[2]);e->status=e->bytes[0];
+     e->angle_ok=(e->status&0x38U)==0x20U && (e->bytes[1]&0xf0U)==0;
+@@ -152,7 +155,7 @@
+   uint32_t isr=io->status(io->ctx);
+   // Missing platform hooks cannot silently bypass physical-bus checks.
+   if(!io->lines||!io->enable||!io->park||!io->clear_berr||!io->clear_nack||
+-      !io->stop_ready||!io->request_stop||!io->flush_tx||!io->terminal){
++      !io->stop_ready||!io->request_stop||!io->flush_tx||!io->terminal||!io->completed){
+     e->configured=0;e->cause=EC_SETUP;e->bus_ok=false;e->angle_ok=false;ec_speed_reset(e);return;
+   }
+   if(e->recovering){ec_recover(e,io,ms,cycles,hz,isr);return;}
+@@ -160,7 +163,7 @@
+     uint32_t interval=e->cause?20U:5U;
+     if((uint32_t)(ms-e->last_start_ms)<interval)return;
+     e->last_start_ms=ms;e->begin_cycles=cycles;e->stage=4;
+-    e->prepare=1;e->have_free_since=false;
++    e->prepare=e->pe_on?2:1;e->have_free_since=false;
+     if(isr&EC_BUSYF)ec_inc32(&e->busy_waits);
+   }
+   if(!e->state && e->prepare){
+@@ -177,7 +180,7 @@
+     // level check does not claim to measure sub-poll electrical glitches.
+     if((uint32_t)(cycles-e->free_since_cycles)<(hz/1000000U)*EC_FREE_US)return;
+     e->have_free_since=false;
+-    if(e->prepare==1){io->enable(io->ctx);e->prepare=2;return;}
++    if(e->prepare==1){io->enable(io->ctx);e->pe_on=true;e->prepare=2;return;}
+     io->clear(io->ctx);memset(e->bytes,0,3);e->n=0;
+     io->begin_write(io->ctx);e->prepare=0;e->state=1;return;
+   }
+--- nucleo/Src/nucleo_encoder.c
++++ nucleo/Src/nucleo_encoder.c
+@@ -53,11 +53,12 @@
+ static bool stop_ready(void*x){(void)x;return (I2C1->CR2&(I2C_CR2_START|I2C_CR2_STOP))==0;}
+ static void request_stop(void*x){(void)x;SET_BIT(I2C1->CR2,I2C_CR2_STOP);}
+ static void reset(void*x){park(x);clear(x);flush_tx(x);}
++static void completed(void*x){(void)x;I2C1->CR2=0;}
+ static void begin_write(void*x){(void)x;LL_I2C_HandleTransfer(I2C1,0x6c,LL_I2C_ADDRSLAVE_7BIT,1,LL_I2C_MODE_SOFTEND,LL_I2C_GENERATE_START_WRITE);}
+ static void write_byte(void*x,uint8_t v){(void)x;LL_I2C_TransmitData8(I2C1,v);}
+ static void begin_read(void*x){(void)x;LL_I2C_HandleTransfer(I2C1,0x6c,LL_I2C_ADDRSLAVE_7BIT,3,LL_I2C_MODE_AUTOEND,LL_I2C_GENERATE_START_READ);}
+ static uint8_t read_byte(void*x){(void)x;return LL_I2C_ReceiveData8(I2C1);}
+-static ec_io io={0,status,begin_write,write_byte,begin_read,read_byte,clear,reset,capture_before_reset,lines,enable,park,clear_berr,clear_nack,stop_ready,request_stop,flush_tx,capture_terminal};
++static ec_io io={0,status,begin_write,write_byte,begin_read,read_byte,clear,reset,capture_before_reset,lines,enable,park,clear_berr,clear_nack,stop_ready,request_stop,flush_tx,capture_terminal,completed};
+ /* Main-loop diagnostics only. Never touches RXDR/TXDR, GPIO outputs, TIM1
+    configuration, interrupt enables or any motor protection. */
+ static uint32_t fault_record[2][FC_WORDS];
+@@ -149,7 +150,7 @@
+   return enc.configured && (GPIOB->MODER&(15U<<16))==(10U<<16) &&
+       (GPIOB->OTYPER&(3U<<8))==(3U<<8) &&
+       (GPIOB->AFR[1]&255U)==0x44U &&
+-      ((I2C1->CR1&I2C_CR1_PE)!=0)==(enc.state!=0 || enc.prepare==2) &&
++      ((I2C1->CR1&I2C_CR1_PE)!=0)==enc.pe_on &&
+       (I2C1->CR1&(I2C_CR1_ANFOFF|I2C_CR1_DNF))==(2U<<I2C_CR1_DNF_Pos) &&
+       I2C1->TIMINGR==MIC_ENC_TIMING;
+ }

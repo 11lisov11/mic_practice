@@ -1,0 +1,78 @@
+08011f94 <TIM1_UP_TIM16_IRQHandler>:
+ 8011f94:	b570      	push	{r4, r5, r6, lr}
+ 8011f96:	f3ef 8305 	mrs	r3, IPSR
+ 8011f9a:	2b29      	cmp	r3, #41	@ 0x29
+ 8011f9c:	d011      	beq.n	8011fc2 <TIM1_UP_TIM16_IRQHandler+0x2e>
+ 8011f9e:	4c2a      	ldr	r4, [pc, #168]	@ (8012048 <TIM1_UP_TIM16_IRQHandler+0xb4>)
+ 8011fa0:	6863      	ldr	r3, [r4, #4]
+ 8011fa2:	f3bf 8f5f 	dmb	sy
+ 8011fa6:	4b29      	ldr	r3, [pc, #164]	@ (801204c <TIM1_UP_TIM16_IRQHandler+0xb8>)
+ 8011fa8:	f06f 0201 	mvn.w	r2, #1
+ 8011fac:	611a      	str	r2, [r3, #16]
+ 8011fae:	f7ef fc51 	bl	8001854 <mic_current_update_epoch>
+ 8011fb2:	f7f8 f9ef 	bl	800a394 <TSK_HighFrequencyTask>
+ 8011fb6:	f3bf 8f5f 	dmb	sy
+ 8011fba:	6863      	ldr	r3, [r4, #4]
+ 8011fbc:	f3bf 8f5f 	dmb	sy
+ 8011fc0:	bd70      	pop	{r4, r5, r6, pc}
+ 8011fc2:	4b23      	ldr	r3, [pc, #140]	@ (8012050 <TIM1_UP_TIM16_IRQHandler+0xbc>)
+ 8011fc4:	685b      	ldr	r3, [r3, #4]
+ 8011fc6:	051b      	lsls	r3, r3, #20
+ 8011fc8:	d52c      	bpl.n	8012024 <TIM1_UP_TIM16_IRQHandler+0x90>
+ 8011fca:	4c22      	ldr	r4, [pc, #136]	@ (8012054 <TIM1_UP_TIM16_IRQHandler+0xc0>)
+ 8011fcc:	4d1e      	ldr	r5, [pc, #120]	@ (8012048 <TIM1_UP_TIM16_IRQHandler+0xb4>)
+ 8011fce:	686e      	ldr	r6, [r5, #4]
+ 8011fd0:	6823      	ldr	r3, [r4, #0]
+ 8011fd2:	3301      	adds	r3, #1
+ 8011fd4:	6023      	str	r3, [r4, #0]
+ 8011fd6:	f3bf 8f5f 	dmb	sy
+ 8011fda:	4b1c      	ldr	r3, [pc, #112]	@ (801204c <TIM1_UP_TIM16_IRQHandler+0xb8>)
+ 8011fdc:	f06f 0201 	mvn.w	r2, #1
+ 8011fe0:	611a      	str	r2, [r3, #16]
+ 8011fe2:	f7ef fc37 	bl	8001854 <mic_current_update_epoch>
+ 8011fe6:	f7f8 f9d5 	bl	800a394 <TSK_HighFrequencyTask>
+ 8011fea:	f3bf 8f5f 	dmb	sy
+ 8011fee:	686b      	ldr	r3, [r5, #4]
+ 8011ff0:	6862      	ldr	r2, [r4, #4]
+ 8011ff2:	1b9b      	subs	r3, r3, r6
+ 8011ff4:	441a      	add	r2, r3
+ 8011ff6:	6062      	str	r2, [r4, #4]
+ 8011ff8:	68a2      	ldr	r2, [r4, #8]
+ 8011ffa:	3201      	adds	r2, #1
+ 8011ffc:	60a2      	str	r2, [r4, #8]
+ 8011ffe:	6822      	ldr	r2, [r4, #0]
+ 8012000:	3201      	adds	r2, #1
+ 8012002:	6022      	str	r2, [r4, #0]
+ 8012004:	4a14      	ldr	r2, [pc, #80]	@ (8012058 <TIM1_UP_TIM16_IRQHandler+0xc4>)
+ 8012006:	6b11      	ldr	r1, [r2, #48]	@ 0x30
+ 8012008:	3101      	adds	r1, #1
+ 801200a:	6311      	str	r1, [r2, #48]	@ 0x30
+ 801200c:	6b51      	ldr	r1, [r2, #52]	@ 0x34
+ 801200e:	3101      	adds	r1, #1
+ 8012010:	6351      	str	r1, [r2, #52]	@ 0x34
+ 8012012:	6b91      	ldr	r1, [r2, #56]	@ 0x38
+ 8012014:	440b      	add	r3, r1
+ 8012016:	6393      	str	r3, [r2, #56]	@ 0x38
+ 8012018:	6b13      	ldr	r3, [r2, #48]	@ 0x30
+ 801201a:	3301      	adds	r3, #1
+ 801201c:	6313      	str	r3, [r2, #48]	@ 0x30
+ 801201e:	f3bf 8f5f 	dmb	sy
+ 8012022:	bd70      	pop	{r4, r5, r6, pc}
+ 8012024:	4c08      	ldr	r4, [pc, #32]	@ (8012048 <TIM1_UP_TIM16_IRQHandler+0xb4>)
+ 8012026:	6865      	ldr	r5, [r4, #4]
+ 8012028:	f3bf 8f5f 	dmb	sy
+ 801202c:	4b07      	ldr	r3, [pc, #28]	@ (801204c <TIM1_UP_TIM16_IRQHandler+0xb8>)
+ 801202e:	f06f 0201 	mvn.w	r2, #1
+ 8012032:	611a      	str	r2, [r3, #16]
+ 8012034:	f7ef fc0e 	bl	8001854 <mic_current_update_epoch>
+ 8012038:	f7f8 f9ac 	bl	800a394 <TSK_HighFrequencyTask>
+ 801203c:	f3bf 8f5f 	dmb	sy
+ 8012040:	6863      	ldr	r3, [r4, #4]
+ 8012042:	1b5b      	subs	r3, r3, r5
+ 8012044:	e7de      	b.n	8012004 <TIM1_UP_TIM16_IRQHandler+0x70>
+ 8012046:	bf00      	nop
+ 8012048:	e0001000 	.word	0xe0001000
+ 801204c:	40012c00 	.word	0x40012c00
+ 8012050:	e000ed00 	.word	0xe000ed00
+ 8012054:	20005f4c 	.word	0x20005f4c
+ 8012058:	20005ee0 	.word	0x20005ee0

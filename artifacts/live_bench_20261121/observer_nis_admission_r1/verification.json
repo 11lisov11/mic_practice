@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "native": {
+    "baseline": {
+      "passed": true,
+      "checks": 20,
+      "OFF_cases": 64,
+      "physical_NIS": 28.0475731
+    },
+    "candidate": {
+      "passed": true,
+      "checks": 21,
+      "OFF_cases": 64,
+      "physical_NIS": 28.0475731
+    }
+  },
+  "ARM": {
+    "byte_identical_ARM_sections": {
+      "ma_native_fast": true,
+      "mic_observer_step": true,
+      "mic_observer_noise": true
+    },
+    "full_link_passed": true,
+    "target_cycles_measured": false
+  },
+  "no_START_CLEAR_RESET_or_flash": true,
+  "protection_limits_unchanged": true,
+  "protected_files_verified": 212,
+  "installed": false,
+  "physical_NIS_corrected": false
+}

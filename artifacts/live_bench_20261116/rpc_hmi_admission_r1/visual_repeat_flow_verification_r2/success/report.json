@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "START": 1,
+  "CLEAR": 0,
+  "ARM": 1,
+  "RESET": 0,
+  "flash": 0,
+  "frequency_hz": 5,
+  "runlimit_ms": 5000,
+  "same_boot_OFF64_proof": "C:/mic_practice/artifacts/live_bench_20261116/rpc_hmi_admission_r1/FOC_trial_r1",
+  "OFF_fast_cycles": 3618,
+  "limits_unchanged": true,
+  "fresh_ADC_required": false,
+  "physical_rotation_verified": false,
+  "frequency_configuration": {
+    "ok": true
+  },
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "365dc016-dc82-406c-910c-d8035c860535",
+      [
+        2026111606,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        1812657868
+      ]
+    ],
+    "samples": 19,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 2.125,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "auto_stop_ms": 5000,
+  "run_id": 2,
+  "seen_PWM": true,
+  "heartbeat": {
+    "sent": 1,
+    "error": null,
+    "events": [
+      {
+        "at": 270744.0,
+        "ok": true
+      }
+    ],
+    "interval_s": 0.5,
+    "motor_commands": 0
+  },
+  "start_response": {
+    "ok": true
+  },
+  "final_STOP": {
+    "ok": true
+  },
+  "prior_SD_retained": true,
+  "ADC_record_is_new": false,
+  "observer_record_is_new": false
+}

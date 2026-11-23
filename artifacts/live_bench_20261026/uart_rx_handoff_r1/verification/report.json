@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "checks": [
+    "Actual candidate: late arrival at all43 positions preserves byte order/CRC and rescued count; overflow still counted",
+    "All motor/STOP/deadline/SD/PWM/ADC/protocol source unchanged; only adapter, identity and read-only counter differ",
+    "Encoder driver and wire guards: 511 checks",
+    "Real recorded zero history, calibration compatibility, manual scalar and MCU5s STOP guards preserved; corrupt and unknown data rejected; rescued field parsed"
+  ],
+  "rx": {
+    "frame_cases": 43,
+    "exact_crc_valid": 43,
+    "one_byte_erased": 0,
+    "overflow_checks": 1
+  },
+  "driver_checks": 511,
+  "hardware_validated": false
+}

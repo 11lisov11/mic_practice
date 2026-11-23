@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "one_CLEAR_sent": true,
+  "first_failed_preflight_CLEAR_sent": false,
+  "CLEAR": 1,
+  "START": 0,
+  "ARM": 0,
+  "software_MCU_RESET": 0,
+  "flash": 0,
+  "user_confirmed_Uno_power_cycle": true,
+  "owned_HMI_restart": 1,
+  "router_serial_reopen": 1,
+  "transport_latch_after": 0,
+  "bad_frame_count_after": 0,
+  "CRC_error_count_after": 0,
+  "Uno_UART_hw_errors_after": 0,
+  "current_fault_mask": 0,
+  "occurred_fault_mask": 0,
+  "BKE": true,
+  "BIE": true,
+  "MOE": false,
+  "SD": "HIGH",
+  "zero_ready": 1,
+  "zero_stable_blocks": 3,
+  "OFF_fast_cycles": 3811,
+  "OFF_budget_cycles": 4000,
+  "estimate_limit_ms": 2,
+  "source_files_unchanged": 236,
+  "prior_files_verified": 5691,
+  "first_attempt_diagnostic_result": "ACK_ACCEPTED",
+  "RPC_guard": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "5ea017f8-a7a0-4516-8263-9c0a45745c22",
+      [
+        2026111612,
+        1,
+        201326592,
+        0,
+        4,
+        0,
+        3713711204
+      ]
+    ],
+    "samples": 27,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 30.56200000003446,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "Linux_boot_changed": true,
+  "native_boot_identity_changed": true,
+  "native_reset_cause_not_proven_by_this_session": true,
+  "native_old_identity": [
+    2026111612,
+    1,
+    67108864,
+    0,
+    4,
+    0,
+    1579616701
+  ],
+  "native_current_identity": [
+    2026111612,
+    1,
+    201326592,
+    0,
+    4,
+    0,
+    3713711204
+  ],
+  "motor_start_readiness_evaluated": false,
+  "J1_must_remain_OFF": true
+}

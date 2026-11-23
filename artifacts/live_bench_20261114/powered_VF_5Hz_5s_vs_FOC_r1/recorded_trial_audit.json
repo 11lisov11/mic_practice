@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "source": "saved trial files only",
+  "hardware_commands": 0,
+  "actual_auto_stop_verified": true,
+  "elapsed_ms": 5001,
+  "terminal_status_preceded_host_final_STOP": true,
+  "terminal_mcu_deadline_evidence": {
+    "run_id": 2,
+    "run_start_ms": 1501311,
+    "run_stop_ms": 1506312,
+    "run_elapsed_ms": 5001,
+    "run_reason": 1,
+    "run_limit_ms": 5000,
+    "pwm": 0,
+    "bp_status": 99
+  },
+  "final_native_OFF_confirmed": true,
+  "faults_zero": true,
+  "supervisor_original_report_retained": true,
+  "supervisor_failure_was_early_OFF_ack_check": true,
+  "offline_ack_transition_checks": 6,
+  "FOC_raw_ADC_preserved": true,
+  "new_run_identity_and_current_window_confirmed": true,
+  "comparison": {
+    "scalar_duration_ms": 5001,
+    "FOC_duration_ms": 5000,
+    "scalar_RMS_nominal_A": [
+      0.411,
+      0.416,
+      0.409
+    ],
+    "FOC_RMS_nominal_A": [
+      0.366,
+      0.365,
+      0.362
+    ],
+    "scalar_mean_RMS_nominal_A": 0.412,
+    "FOC_mean_RMS_nominal_A": 0.36433333333333334,
+    "FOC_RMS_lower_percent_relative_to_VF": 11.569579288025883,
+    "scalar_window_ms": 200,
+    "FOC_window_ms": 184,
+    "scalar_window_coverage_pct": 100,
+    "FOC_window_coverage_pct": 100,
+    "scalar_peak_nominal_A": [
+      0.777,
+      0.931,
+      0.777
+    ],
+    "FOC_peak_nominal_A": [
+      0.748,
+      0.825,
+      0.787
+    ],
+    "absolute_scale_qualified": false,
+    "efficiency_measured": false,
+    "rotor_speeds_matched_by_measurement": false,
+    "limitations": [
+      "One run per algorithm; unloaded.",
+      "Window lengths differ:200ms scalar versus184ms FOC.",
+      "Only current comparison at the same5Hz command; no electrical-input or mechanical-power measurement.",
+      "Frozen first-run raw ADC belongs to FOC and was retained, not relabeled as scalar."
+    ]
+  }
+}

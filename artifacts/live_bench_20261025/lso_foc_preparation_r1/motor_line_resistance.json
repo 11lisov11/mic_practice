@@ -1,0 +1,30 @@
+{
+  "schema": "mic_ai.motor_line_resistance_observation.v1",
+  "source": "operator_multimeter_report",
+  "operator_messages": [
+    "24.7 ома",
+    "везде все одинаковое",
+    "0.24 ома"
+  ],
+  "interpretation": "all three motor line-to-line pairs reported equal",
+  "line_resistance_ohm": {
+    "U_V": 24.7,
+    "V_W": 24.7,
+    "W_U": 24.7
+  },
+  "shorted_leads_ohm": 0.24,
+  "temperature_c": null,
+  "preliminary_star_equivalent_rs_ohm": 12.35,
+  "lead_corrected_rs_ohm": 12.23,
+  "conversion": "Rs_star_equivalent=(mean(R_line)-R_shorted_leads)/2 for balanced three-phase motor",
+  "measurement_accuracy_qualified": false,
+  "physical_power_state_not_independently_verified": true,
+  "hardware_commands": 0,
+  "firmware_modified": false,
+  "lead_corrected_line_resistance_ohm": {
+    "U_V": 24.46,
+    "V_W": 24.46,
+    "W_U": 24.46
+  },
+  "provenance": "operator-reported DMM line readings and shorted-lead reading; temperature and instrument accuracy unspecified"
+}

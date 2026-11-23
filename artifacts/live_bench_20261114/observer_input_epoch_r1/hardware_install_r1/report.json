@@ -1,0 +1,42 @@
+{
+  "passed": false,
+  "pair": [
+    2026111403,
+    2026111404
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "uno_flash_commands": 0,
+  "nucleo_flash_commands": 0,
+  "thresholds_changed": false,
+  "operator_confirmation": "J1 OFF, meter below20V, both boards PCUSB; 15V and wiring unchanged; no START/CLEAR",
+  "physical_TP23_connection_independently_verified": false,
+  "commands": [
+    {
+      "label": "adb_state",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_18080",
+      "exit_code": 0
+    },
+    {
+      "label": "forward_12222",
+      "exit_code": 0
+    },
+    {
+      "label": "registers_before",
+      "exit_code": 0
+    },
+    {
+      "label": "save_RAM_before",
+      "exit_code": 0
+    }
+  ],
+  "before_pair": [
+    2026111401,
+    2026111402
+  ],
+  "error": "[WinError 2] Не удается найти указанный файл: 'C:\\\\mic_practice\\\\artifacts\\\\live_bench_20261114\\\\repeat_break_capture_r1\\\\release\\\\nucleo_2026111404_expected_readback.bin'"
+}

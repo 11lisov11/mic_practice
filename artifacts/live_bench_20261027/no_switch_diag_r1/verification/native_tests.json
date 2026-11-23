@@ -1,0 +1,53 @@
+{
+  "core": {
+    "passed": true,
+    "checks": 15149,
+    "hardware_calls": 0
+  },
+  "platform": {
+    "passed": true,
+    "checks": 160032,
+    "hardware_calls": 0,
+    "scope": "adapter with fake MMIO; PWM math is stubbed"
+  },
+  "adc": {
+    "passed": true,
+    "checks": 240008,
+    "adc_calls": 80000,
+    "accepted": 79999,
+    "actual_target_irq_body": true,
+    "physical_MOE": 0
+  },
+  "i2c": [
+    {
+      "passed": true,
+      "mode": "normal",
+      "healthy_reads_before_fault": 200,
+      "healthy_pe_enables": 1,
+      "healthy_pe_disables": 0,
+      "clean_and_forced_cleanup_verified": true,
+      "first_records_frozen": true
+    },
+    {
+      "passed": true,
+      "mode": "lost_pe"
+    },
+    {
+      "passed": true,
+      "mode": "missing_hook"
+    }
+  ],
+  "passed": true,
+  "hardware_calls": 0,
+  "changed_existing_files": [
+    "MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLibACIM/Any/Src/pwm.c",
+    "STM32CubeIDE/.project",
+    "Src/current_shunt.c",
+    "Src/main.c",
+    "Src/mc_tasks.c",
+    "Src/nucleo_encoder.c"
+  ],
+  "protection_functions_unchanged": true,
+  "clocks_timer_ADC_initializers_unchanged": true,
+  "old_images_and_captures_unchanged": true
+}

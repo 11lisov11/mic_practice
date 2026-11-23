@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "actual_adapter_interleavings": {
+    "baseline": {
+      "checks": 13,
+      "summed_endpoint_error_A": 2.30245972
+    },
+    "candidate": {
+      "checks": 13,
+      "summed_endpoint_error_A": 0
+    }
+  },
+  "recorder_and_actuator_checks": {
+    "recorder_wire_checks": 5415,
+    "actuator": {
+      "bit_exact_actuator_cases": 20000
+    }
+  },
+  "torn_snapshot_rejected": true,
+  "DWT_wrap_checked": true,
+  "old_voltage_and_new_current_mismatch_reproduced": true,
+  "candidate_current_and_timestamp_same_endpoint": true,
+  "protection_sources_unchanged": [
+    "nucleo/Src/current_shunt.c",
+    "nucleo/Inc/foc_experiment.h",
+    "nucleo/Inc/current_adc_window_plan.h",
+    "nucleo/Inc/current_adc_deadline.h",
+    "nucleo/Inc/local_stop.h",
+    "nucleo/Inc/first_break_snapshot.h",
+    "nucleo/Inc/repeat_state.h"
+  ],
+  "observer_tuning_unchanged": true,
+  "hardware_commands": 0,
+  "physical_record_replay": false,
+  "limitation": "Recorded run has no flux/NIS/IdIq capture; exact past loss cause is unproven."
+}

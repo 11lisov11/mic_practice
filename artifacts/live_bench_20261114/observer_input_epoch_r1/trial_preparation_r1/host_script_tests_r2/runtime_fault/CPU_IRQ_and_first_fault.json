@@ -1,0 +1,24 @@
+{
+  "available": true,
+  "observer_measured": true,
+  "source": "runtime_observer",
+  "observer_wall_us": 100.82941176470588,
+  "irq_body_lower_us": 17.32941176470588,
+  "cpu_upper_us": 83.5,
+  "irq_root_count": 3,
+  "max_wall_us": 113.71764705882353,
+  "max_irq_body_lower_us": 28.841176470588234,
+  "max_cpu_upper_us": 85.51176470588236,
+  "window_queue_us": 0.0,
+  "input_age_us": 0.0,
+  "result_age_us": 0.0,
+  "max_window_queue_us": 0.0,
+  "max_result_age_us": 0.0,
+  "observer_steps": 5000,
+  "meter_errors": 0,
+  "first_fault": {
+    "reason_code": 4,
+    "reason_ru": "synthetic estimate age"
+  },
+  "limitation": "CPU upper includes exception entry/return and profiler edge overhead; IRQ body time is a lower bound."
+}

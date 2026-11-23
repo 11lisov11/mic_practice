@@ -1,0 +1,47 @@
+{
+  "schema": "mic_ai.startup_link_clear.v1",
+  "firmware_pair": [2026101703, 2026101702],
+  "command": "CLEAR",
+  "http_status": 200,
+  "accepted": true,
+  "reason": "single startup LINK_TIMEOUT after verified firmware restart",
+  "precondition": {
+    "state": "SAFE",
+    "pwm": 0,
+    "estop": 0,
+    "hmi_hv_armed": 0,
+    "hmi_hv_started": 0,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "faults": [2, 2],
+    "fault_reasons": [13, 13],
+    "transport_faults": [7, 7],
+    "bad_counters": [1, 1],
+    "integrity_errors": [0, 0],
+    "sequence_errors": [0, 0],
+    "hardware_uart_flags": [0, 0],
+    "good_frames": [3412, 3412]
+  },
+  "immediate_result": {
+    "state": "SAFE",
+    "pwm": 0,
+    "faults": [0, 0],
+    "transport_faults": [0, 0],
+    "bad_counters": [0, 0],
+    "good_frames": [3429, 3429]
+  },
+  "settled_power_off_result": {
+    "state": "SAFE",
+    "pwm": 0,
+    "vdc": 10.0,
+    "ipm_temp_c": 48.0,
+    "faults": [5, 5],
+    "fault_reasons": [8, 8],
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 4,
+    "transport_faults": [0, 0],
+    "bad_counters": [0, 0]
+  },
+  "motor_commands": 0,
+  "calibration_changed": false
+}

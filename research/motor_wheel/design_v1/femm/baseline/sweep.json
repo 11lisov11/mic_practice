@@ -1,0 +1,98 @@
+{
+  "end_factor": 2.3139356272702996,
+  "rows": [
+    {
+      "frequency_hz": 0.5,
+      "current_peak_a": 1,
+      "L_real_h": 0.00726705906272418,
+      "L_imag_h": -0.001640891330823552,
+      "effective_cage_loss_w": 0.007745468769077058,
+      "torque_mst_nm": 0.009858116085905127,
+      "torque_from_rotor_loss_nm": 0.009861837129300095,
+      "Bg_fund_peak_t": 0.04674561214226581,
+      "steel_sample_max_t": 0.13548992586478215,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 31.299097776412964
+    },
+    {
+      "frequency_hz": 1,
+      "current_peak_a": 1,
+      "L_real_h": 0.006278447154038315,
+      "L_imag_h": -0.002793557437479052,
+      "effective_cage_loss_w": 0.02631628909249645,
+      "torque_mst_nm": 0.01668325830872762,
+      "torque_from_rotor_loss_nm": 0.016753469971624555,
+      "Bg_fund_peak_t": 0.04309066092608941,
+      "steel_sample_max_t": 0.1254715117833655,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 29.4776349067688
+    },
+    {
+      "frequency_hz": 2,
+      "current_peak_a": 1,
+      "L_real_h": 0.004180290739386289,
+      "L_imag_h": -0.003489780334701005,
+      "effective_cage_loss_w": 0.06570054155926452,
+      "torque_mst_nm": 0.02075589643921977,
+      "torque_from_rotor_loss_nm": 0.020913131905942902,
+      "Bg_fund_peak_t": 0.03406914496715983,
+      "steel_sample_max_t": 0.10045697909057452,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 24.950847864151
+    },
+    {
+      "frequency_hz": 4,
+      "current_peak_a": 1,
+      "L_real_h": 0.002088388349254594,
+      "L_imag_h": -0.00278897138141052,
+      "effective_cage_loss_w": 0.1050006356153925,
+      "torque_mst_nm": 0.01651091436526637,
+      "torque_from_rotor_loss_nm": 0.016711370185980633,
+      "Bg_fund_peak_t": 0.021603509173898874,
+      "steel_sample_max_t": 0.06593971832651045,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 18.681983470916748
+    },
+    {
+      "frequency_hz": 8,
+      "current_peak_a": 1,
+      "L_real_h": 0.001105695270702149,
+      "L_imag_h": -0.001641333229238978,
+      "effective_cage_loss_w": 0.1235380290199188,
+      "torque_mst_nm": 0.009670851174316904,
+      "torque_from_rotor_loss_nm": 0.009830843989175046,
+      "Bg_fund_peak_t": 0.011867964102065151,
+      "steel_sample_max_t": 0.039359239352012555,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 16.815997838974
+    },
+    {
+      "frequency_hz": 16,
+      "current_peak_a": 1,
+      "L_real_h": 0.000802765399870168,
+      "L_imag_h": -0.0008609682266526764,
+      "effective_cage_loss_w": 0.1294882298835504,
+      "torque_mst_nm": 0.005057705227597703,
+      "torque_from_rotor_loss_nm": 0.005152172964546682,
+      "Bg_fund_peak_t": 0.006378456327394654,
+      "steel_sample_max_t": 0.02516396719695818,
+      "nodes": 60335,
+      "elements": 120308,
+      "elapsed_s": 13.491572856903076
+    }
+  ],
+  "fit": {
+    "L_leak_total_2d_h": 0.0006956781416893462,
+    "M_effective_h": 0.006980664634327943,
+    "tau_rotor_s": 0.07966335483084797,
+    "Rr_effective_20_ohm": 0.08762704820993587,
+    "relative_complex_fit_rms": 0.00021383013302414108,
+    "fit_success": true
+  },
+  "postprocess_correction": "Travelling complex space wave: remove the erroneous factor 2 from Bg. Inductances, torques, powers and native solver files unchanged."
+}

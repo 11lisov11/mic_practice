@@ -1,0 +1,102 @@
+{
+  "schema": "mic_ai.as5600_software_regression.v1",
+  "predecessor": "C:\\mic_practice\\artifacts\\live_bench_20261025\\as5600_i2c_diag_r1",
+  "pair_compatibility_ids": [
+    2026102515,
+    2026102510
+  ],
+  "uno_only": true,
+  "nucleo_firmware_unchanged": true,
+  "built": true,
+  "selftest_pass": true,
+  "installed": true,
+  "hardware_validated": true,
+  "root_cause_proven": false,
+  "calibration_changed": false,
+  "motor_control_changed": false,
+  "uart_protocol_changed": false,
+  "thresholds_changed": false,
+  "sd_capture_changed": false,
+  "sensor_feedback_control": false,
+  "calibration_sha256": "a89603c26f3dfa6287c304134121028db6ebdb9adeda4b58d99040530ffeea17",
+  "experiment": "LEGACY native100k priority14 vs native100k priority4, same wires and motor firmware",
+  "mode_map": {
+    "0": "HW100/priority4",
+    "1": "SW100/priority4",
+    "2": "SW25/priority4",
+    "3": "LEGACY/priority14"
+  },
+  "readback_scope": "SDA sampled at MCU during each transmitted bit; no proof of waveform at sensor",
+  "pin_cfg_encoding": {
+    "moder_bits": "0..3",
+    "otyper_bits": "4..5",
+    "pupdr_bits": "6..9",
+    "ospeedr_bits": "10..13",
+    "afr_bits": "14..21"
+  },
+  "source_sha256": {
+    "UNOQ_MOTOR/as5600_i2c_reader.h": "89e5bf283be00e5c5f52c4a6fc7fe1f288b46cc61f9967528346c37b5eae348c",
+    "UNOQ_MOTOR/as5600_teacher.cpp": "554fc0af2445bb6aaa7c4ceba3cf3a39a8386a7e454f987898240f9cfe0334a7",
+    "UNOQ_MOTOR/as5600_teacher.h": "f1656cb39e9ad58742310cf70dec3f7864fa9d7e35360afa33757318f730a1e5",
+    "UNOQ_MOTOR/bkin_wave_wire.h": "d2686973f7b25f9a8050b5eb26990fc85804514a31fd6dc36c6b7f71f318697a",
+    "UNOQ_MOTOR/bounded_rx.h": "032bab1982d08d193e6451352320083c2a839f9826a88c092c7246e0d20ccad5",
+    "UNOQ_MOTOR/break_wire.h": "3346c44b3d3fdd58a667babf0a222a8a9896ccc20159785c4bfe904eab8e6c08",
+    "UNOQ_MOTOR/current_wire.h": "36b4ac57d0c8614f3b06036ac036ab495938beaa02c3b09c7985c0833f55582d",
+    "UNOQ_MOTOR/deferred_log.h": "a81e7da29748a29afbc628bff1bd290d29b91ae76e758cf36f9d4ef7dc3b85e9",
+    "UNOQ_MOTOR/id_ref_lut_motor1.h": "b2a7b76a7a0ce0f04f4ff9f79ed752b4b148d4ea44b44e9d76d08f7b930efabc",
+    "UNOQ_MOTOR/link_timing.h": "13452f3ecef71627eac65436c71832207ea69292a5f7ce87a59193340c11ee5e",
+    "UNOQ_MOTOR/manual_scalar_control.h": "15c6aa9f84350dcddb4346dd76bc482209a81cf220c99cc5263979bad0db9cee",
+    "UNOQ_MOTOR/mcsdk_supervisory.h": "20e7ecdac00f7ab7ca8a9389d329ca2ea5bb1fa2484cd59928a6f4568330d53c",
+    "UNOQ_MOTOR/nucleo_buffered_serial.h": "adfc28b1b78ded2ffd65d0d246afa366a37026af50226cfa523d9c2e4ec48c7e",
+    "UNOQ_MOTOR/nucleo_fault_diagnostics.h": "2bff9073efc43508b8669e5e7aa68fe441b8c8d8c9786207c8254a08252d7a44",
+    "UNOQ_MOTOR/peak_wire.h": "9d10623eda05acb2620d3af5a8902d99f81591a836520dd4af1b5e1997461566",
+    "UNOQ_MOTOR/pulse_core.h": "867dcbd67fc0b50e9b4c45c853bdb3ac8beb27c0745c542be53ae7785723289b",
+    "UNOQ_MOTOR/pulse_record.h": "f8affcc66a680c869faa61b93d2179084bc68c1445914e55260a2625226af1a5",
+    "UNOQ_MOTOR/scoped_control_lock.h": "a85472d0dbdf11febe8548e3b5357bbb64b8762cc620011def33550491b5de18",
+    "UNOQ_MOTOR/superseded_reply.h": "a53d0c8164975def71c2ef4c7cadd7ffc6d89df9fb82eba826bf64f12eac034a",
+    "UNOQ_MOTOR/uart_reject_record.h": "cbd5a8cbba093984d262f5900af811cb4afbfd1f925edf4481c13018c7ce3711",
+    "UNOQ_MOTOR/uart_reject_wire.h": "cefe3155c580616eb614d0c6b43bdfc5d9c6cdb0cfd4fefe28d09905ce6609bd",
+    "UNOQ_MOTOR/uart_v3_transport.h": "13c263c4b932cb2cddeedab656e487ba1e058edb003e4f989c7ebc1e20374265",
+    "UNOQ_MOTOR/UNOQ_MOTOR.ino": "a9b34468b8e46937c810686bccd9f3e35ee3d0634236ddfdbda276f75990f117",
+    "UNOQ_MOTOR/uno_q_control.h": "6301d872ffae4965fe9aeaae12ddabb04e79b067d998b0fbcdc310f87e3dc77b",
+    "UNOQ_MOTOR/zero_wire.h": "8c7f8d963055090bd40524774c0f7f0627551b2d5c4a4ba6851a2610cd9e06d7",
+    "web_hmi/server.py": "188bd9b56541d7f9dbb21b1c52331f13d9e04855ebfd97041e15e053e36ad40e",
+    "web_hmi/static/app.js": "08257888720091e8561bdcb5fdd20b45ae279bd021610ff519d1275b6df1c2d3",
+    "web_hmi/static/index.html": "41636853532b1fb2512872e2e2cd47fd5bfddb4cc81406a05b9908f3253a743b",
+    "web_hmi/static/style.css": "a9ee1bbb27b27482609436d9f768a3953501679fc8ef1dfafcc7545e04c4697e"
+  },
+  "cpp_reader_cases": 14,
+  "pin_config_host_selftest_pass": true,
+  "installation_runtime_pair_verified": true,
+  "firmware_programming_commands": 1,
+  "last_display_probe": {
+    "successful_reads": 11430,
+    "new_errors": 0,
+    "commands": [
+      "DISPLAY TEST"
+    ],
+    "motor_starts": 0,
+    "report": "../as5600_i2c_diag_r1/software_display_isolation_r1/report.json"
+  },
+  "build_sha256": {
+    "build/uno/UNOQ_MOTOR.ino.elf": "688bb73d99b3a7dc651d3d49d914c3fb42918531c6d8741bf71f77b5b5ad0801",
+    "build/uno/UNOQ_MOTOR.ino.hex": "cf3a5c9fab0aa0d19c88f302ef4af6d38a7b3d145215982406842586f4b42d49",
+    "build/uno/UNOQ_MOTOR.ino.bin": "5b25804c057037ca8c447ac264d4969d319054c20a262e8b3bf9d410667f2f9e",
+    "build/uno/UNOQ_MOTOR.ino.elf-zsk.bin": "1872592d056ee8bdd5510fa38f4bfd22b22877d18332904aa44a3a0bbf31c37c"
+  },
+  "verification_sha256": {
+    "offline-checks.json": "60a17d839367e35dcc60d62452b73c619dab33356970a1785cdbeedfd35af5d0",
+    "historical_comparison.json": "923453dfd5a5af81595e8ca6a3a4687c0ed99c3b4c688425958e84180826108b",
+    "build/uno/llext-check.json": "c264aa0bec7986173a26a15afd0d97b9aa5814046f99a03797956e3b9b81cac4"
+  },
+  "programming_state_required": "J1 OFF, independent DMM<20V, Uno USB to PC. Nucleo/15V may remain powered. No START/CLEAR.",
+  "installation_readback_verified": true,
+  "hardware_validation_scope": "J1 OFF only: HW100, LEGACY priority14, SW100 GPIO/byte echo. PWM not tested on2515.",
+  "installation_report": "installation_r1/report.json",
+  "idle_modes_report": "idle_modes_r1/report.json",
+  "calibration_unchanged": true,
+  "nucleo_programming_commands": 0,
+  "motor_start_commands": 0,
+  "legacy_throughput_limitation": "68 reads in5s under this collector vs1948 forpriority4; no error. Not a proven NACK fix.",
+  "polling_gap_report": "legacy_polling_gap.json"
+}

@@ -1,0 +1,18 @@
+
+C:\mic_practice\artifacts\live_bench_20261029\foc_fast_budget_fix_r1\nucleo\STM32CubeIDE\Debug\ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08016884 <memcpy>:
+ 8016884:	440a      	add	r2, r1
+ 8016886:	4291      	cmp	r1, r2
+ 8016888:	f100 33ff 	add.w	r3, r0, #4294967295
+ 801688c:	d100      	bne.n	8016890 <memcpy+0xc>
+ 801688e:	4770      	bx	lr
+ 8016890:	b510      	push	{r4, lr}
+ 8016892:	f811 4b01 	ldrb.w	r4, [r1], #1
+ 8016896:	f803 4f01 	strb.w	r4, [r3, #1]!
+ 801689a:	4291      	cmp	r1, r2
+ 801689c:	d1f9      	bne.n	8016892 <memcpy+0xe>
+ 801689e:	bd10      	pop	{r4, pc}

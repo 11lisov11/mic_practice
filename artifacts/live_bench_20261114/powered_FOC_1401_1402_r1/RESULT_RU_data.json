@@ -1,0 +1,81 @@
+{
+  "passed": true,
+  "pair": [
+    2026111401,
+    2026111402
+  ],
+  "start_commands": 1,
+  "clear_commands": 0,
+  "duration_ms": 5000,
+  "physical_rotation_verified": true,
+  "native_FOC_running_proof": [
+    {
+      "pwm": 1,
+      "algorithm_selected": 2,
+      "algorithm_requested": 2,
+      "mc_cmd_mode": 0,
+      "mc_foc_backend": 0,
+      "run_elapsed_ms": 17,
+      "freq": 0.0,
+      "algorithm_fault": 0
+    },
+    {
+      "pwm": 1,
+      "algorithm_selected": 2,
+      "algorithm_requested": 2,
+      "mc_cmd_mode": 6,
+      "mc_foc_backend": 0,
+      "run_elapsed_ms": 1874,
+      "freq": 3.0,
+      "algorithm_fault": 0
+    },
+    {
+      "pwm": 1,
+      "algorithm_selected": 2,
+      "algorithm_requested": 2,
+      "mc_cmd_mode": 6,
+      "mc_foc_backend": 0,
+      "run_elapsed_ms": 3107,
+      "freq": 4.9,
+      "algorithm_fault": 0
+    },
+    {
+      "pwm": 1,
+      "algorithm_selected": 2,
+      "algorithm_requested": 2,
+      "mc_cmd_mode": 6,
+      "mc_foc_backend": 0,
+      "run_elapsed_ms": 4342,
+      "freq": 5.0,
+      "algorithm_fault": 0
+    }
+  ],
+  "faults_after": [
+    0,
+    0,
+    0
+  ],
+  "UART_errors": 0,
+  "Break_record_captured": false,
+  "fast_max_cycles": 4795,
+  "fast_max_us": 28.205882352941178,
+  "fast_budget_cycles": 5312,
+  "observer_max_wall_us": 690.1176470588235,
+  "observer_max_CPU_upper_us": 213.27058823529413,
+  "observer_max_result_age_us": 868.9529411764706,
+  "estimate_age_limit_us": 2000,
+  "last_current_window_ms": 184,
+  "last_current_window_coverage_pct": 100,
+  "last_current_RMS_nominal_A": [
+    0.366,
+    0.365,
+    0.362
+  ],
+  "last_current_peak_nominal_A": [
+    0.748,
+    0.825,
+    0.787
+  ],
+  "absolute_current_scale_qualified": false,
+  "old_captures_preserved": true
+}

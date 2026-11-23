@@ -1,0 +1,42 @@
+"""Save the offline engineering review and exact source provenance."""
+import json,sys
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+import prepare_nucleo_i2c_stop as p
+c=p.OUT
+review={
+ 'pair':list(p.NEW),'installed':False,'hardware_commands_this_work':0,
+ 'finding':'Реальный снимок ISR0x8011: адресный NACK при BUSY без STOPF, до передачи0x0B. Исходный2702 сразу выключал PE; это воспроизведено исходным кодом.',
+ 'fix':[
+  'Первый снимок до очистки, весь ошибочный отсчёт и скорость недействительны; очистка только NACKCF.',
+  'Неблокирующее ожидание автоматического STOP. После100мкс одна команда STOP только при BUSY, START0, STOP0 и отсутствии ARLO.',
+  'Завершение по STOPF+BUSY0+HIGH физических линий. Конечный снимок до очистки STOPF и выключения PE.',
+  'При ARLO STOP не генерируется. Два наблюдения свободной шины с интервалом не менее5мкс.',
+  'После500мкс незавершённой очистки один PEreset. Это выбранный программный бюджет, не требование ST. Выполняется на первом последующем poll: произвольная задержка IRQ не покрыта гарантией500мкс.',
+  'Сохранены3мс бюджет получения данных, период5мс, backoff20мс. Очистка не делает просроченный или неполный ответ успешным.',
+  'Pending cleanup завершается и при configured0 после обнаружения несовпадения конфигурации.',
+  'Нет повторов той же выборки, ручных тактов GPIO или изменения защит. Скорость после ошибки требует новых непрерывных достоверных выборок.'],
+ 'diagnostics':{
+  'capture':'160Б, два слота, формат2: footer содержит регистры ДО очистки STOPF/PE; старый формат1 сохраняет прежнюю семантику post_reset.',
+  'health':'Две43Б CRC32C страницы,14счётчиков; единый замороженный snapshot; отправка в очередь только при OFF; публикация только полного свежего snapshot с TTL2с от peer2704; при PWM/потере связи доступность сбрасывается.',
+  'counts':'NACK/ARLO/OVR/BUSY/SHORT/SETUP — первичная причина попытки; BERR — число очищений одиночного BERR. Deadline наследует насыщаемый16битный счётчик. Категории под ШИМ недоступны, EW total/cause продолжают передаваться.'},
+ 'evidence':{
+  'record_sha256':'fd0fef5599875da3cd892edff34a28a8213175c6389746343b5545f062e64235',
+  'scope':'Точно воспроизведено только входное состояние первого реального события. Продолжение STOP/флагов в host-тестах моделируется и не является записанной осциллограммой.',
+  'tests':'400 комбинаций событий, полный production C driver с W1C MMIO, частичный RX, RXNE+STOP, rollover, насыщение, отсутствие STOP, START pending, ARLO, configuration failure, CRC/peer/TTL/generation.',
+  'isolation':'Полные main и Uno совпадают с установленными после удаления явно перечисленных диагностических вставок и FWID; код motor/PWM/ADC/Break/UART/watchdog/timed-stop/display/UI/RPC libraries сохранён.'},
+ 'not_proven':[
+  'Физический источник первого адресного NACK под ШИМ: снимок не показывает аналоговые уровни и все фронты SCL/SDA.',
+  'Отсутствие NACK/ARLO/BERR и достоверность скорости на работающем стенде после исправления: прошивка ещё не записана.',
+  'Устойчивость к любым помехам и пригодность AS5600 для FOC не доказываются офлайн-проверками.'],
+ 'next_stage':'Запись и проверка чтением обратно при J1OFF и мультиметре<20В. Затем покой без J1 и проверка свежих sensor/status/counters. Установщик не запускает двигатель.',
+ 'sources':[
+  {'url':'https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf','scope':'Релевантные разделы I2C master START/STOP/NBYTES, NACK/STOPF и PE. Полный12МБ PDF локально не скачан, прочтение целиком не заявляется.'},
+  {'url':'https://github.com/STMicroelectronics/stm32g4xx-hal-driver/blob/master/Src/stm32g4xx_hal_i2c.c','sha256':p.sha(p.BASE/'nucleo/Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c.c'),'scope':'Локальный pinned HAL: I2C_IsErrorOccurred, I2C_Master_ISR_IT, I2C_Flush_TXDR; NACKCF затем STOPF и ограниченное завершение.'},
+  {'url':'https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf','scope':'2.11.2: существующий sole-master BERR workaround сохранён.'},
+  {'url':'https://look.ams-osram.com/m/7059eac7531a86fd/original/AS5600-DS000365.pdf','scope':'Адрес0x36, STATUS0x0B, RAW_ANGLE0x0C/0x0D и магнитные флаги; не доказательство физической причины NACK.'}]
+}
+p.write(c/'verification/review.json',json.dumps(review,ensure_ascii=False,indent=2)+'\n')
+p.write(c/'references/source_review.json',json.dumps(review['sources'],ensure_ascii=False,indent=2)+'\n')
+files=[p.ROOT/'tools'/x for x in ('prepare_nucleo_i2c_stop.py','check_nucleo_i2c_stop.py','qualify_nucleo_i2c_stop.py','seal_nucleo_i2c_stop.py','install_nucleo_i2c_stop.py')]+list(p.RES.glob('*'))
+p.write(c/'verification/tool_sources.json',json.dumps({str(f.relative_to(p.ROOT)).replace('\\','/'):p.sha(f) for f in files if f.is_file()},indent=2)+'\n')

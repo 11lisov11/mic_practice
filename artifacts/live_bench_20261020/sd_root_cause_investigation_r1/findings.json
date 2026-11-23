@@ -1,0 +1,210 @@
+{
+  "physical_root_cause_proven": false,
+  "hardware_commands": 0,
+  "motor_commands": 0,
+  "source_run": "C:\\mic_practice\\artifacts\\live_bench_20261020\\sd_break_filter_to_50_r1",
+  "event_tick_ms": 74505,
+  "leading_hypothesis": "Switching-related disturbance on SD or its reference/route; not yet localized.",
+  "nominal_pwm_period_us": 62.494117647058815,
+  "configured_timer_kernel_hz": 170000000,
+  "matching_edges": 6,
+  "total_low_edges": 9,
+  "edges": [
+    {
+      "edge_us": -376.0,
+      "samples": 1,
+      "nearest_pwm_cycles": -6,
+      "residual_us": 0.36470588235283685,
+      "within_600ns": true
+    },
+    {
+      "edge_us": -314.4,
+      "samples": 1,
+      "nearest_pwm_cycles": -5,
+      "residual_us": -0.5294117647059124,
+      "within_600ns": true
+    },
+    {
+      "edge_us": -251.8,
+      "samples": 1,
+      "nearest_pwm_cycles": -4,
+      "residual_us": -0.423529411764747,
+      "within_600ns": true
+    },
+    {
+      "edge_us": -201.6,
+      "samples": 1,
+      "nearest_pwm_cycles": -3,
+      "residual_us": -12.717647058823559,
+      "within_600ns": false
+    },
+    {
+      "edge_us": -126.8,
+      "samples": 1,
+      "nearest_pwm_cycles": -2,
+      "residual_us": -0.41176470588236214,
+      "within_600ns": true
+    },
+    {
+      "edge_us": -104.2,
+      "samples": 1,
+      "nearest_pwm_cycles": -2,
+      "residual_us": 22.188235294117632,
+      "within_600ns": false
+    },
+    {
+      "edge_us": -76.6,
+      "samples": 1,
+      "nearest_pwm_cycles": -1,
+      "residual_us": -12.705882352941174,
+      "within_600ns": false
+    },
+    {
+      "edge_us": -64.2,
+      "samples": 1,
+      "nearest_pwm_cycles": -1,
+      "residual_us": -0.3058823529411896,
+      "within_600ns": true
+    },
+    {
+      "edge_us": -1.4,
+      "samples": 3,
+      "nearest_pwm_cycles": 0,
+      "residual_us": 0.0,
+      "within_600ns": true
+    }
+  ],
+  "phase_comparison_limitations": [
+    "Grid anchored to the last recorded LOW; this is a descriptive comparison, not a statistical significance test.",
+    "A current-sense switching spike can also be PWM synchronous.",
+    "Nominal DMA sampling timing has not been independently calibrated under power."
+  ],
+  "confirmed_facts": [
+    "Actual BKF9 at Break; software filter update was installed.",
+    "CRC/sequence/transport counters remained zero; Uno NOISE advisory reached18.",
+    "The nearest LOW was3 nominal200ns samples; exact analog width is unknown.",
+    "5/10/15/20Hz held;25Hz event,30..50Hz not commanded.",
+    "A different startup event was18.4618ms with MOE0; it must not be merged with this event."
+  ],
+  "module_datasheet": {
+    "oc_hold_typ_us": 24,
+    "uvlo_hold_typ_us": 70,
+    "hold_values_are_guaranteed_minima": false,
+    "cin_threshold_min_typ_max_v": [
+      0.46,
+      0.51,
+      0.56
+    ],
+    "vccl_uvlo_off_min_typ_max_v": [
+      9.0,
+      10.3,
+      11.0
+    ]
+  },
+  "newly_identified_hardware_uncertainty": {
+    "source": "UM2014 Rev3 Figure7 page7 vs BOM page25 item28",
+    "reference_designators": [
+      "R25",
+      "R26",
+      "R27"
+    ],
+    "schematic_shunt_ohm": 0.04,
+    "bom_shunt_ohm": 0.08,
+    "configured_firmware_shunt_ohm": 0.04,
+    "actual_board_value_known": false,
+    "operator_question_sent": true,
+    "operator_answer_received": true,
+    "interpretation": "Verify markings R040/0R04 versus R080/0R08 before treating current scaling or OC threshold as qualified.",
+    "operator_response": "look in datasheet",
+    "documented_nominal_supported_by_st_workbench_and_databrief_ohm": 0.04,
+    "manual_inspection_not_a_prerequisite": true
+  },
+  "immediate_static_check": {
+    "action": "Read actual R25/R26/R27 markings; no MCU flashing or PC connection required.",
+    "state_before_handling": "J1 and J4 off; independently measured DC bus below20V; motor may remain connected.",
+    "note": "Ordinary two-wire resistance measurement cannot reliably establish40 versus80milliohms."
+  },
+  "next_powered_measurement": {
+    "design_only_not_implemented": true,
+    "aim": "Localize the SD disturbance with simultaneous source/receiver observation.",
+    "proposed_probe_input": "PA4 / Nucleo CN7-32 (also A2/CN8-3)",
+    "connection_after_deenergization": "STEVAL TP23 SD to a high-impedance PA4 input; existing PA6/BKIN route preserved.",
+    "existing_input": "PA6 / CN10-13",
+    "board_level": "UM2014 shows3.3V pullup R28=10k and C20=330pF; verify actual level/load before wiring.",
+    "firmware_audit": "PA4 not configured in installed application; same GPIOA IDR DMA word already contains PA4 and PA6 bits.",
+    "adapter_audit": "IHM09M2 labels PA4 as DAC; connector loading must be checked before actual wiring. No prepared firmware claimed.",
+    "sampler": "Joint two-bit recording from one GPIOA IDR read; no extra DMA traffic is inherently required.",
+    "acceptance": "Do not issue another powered motor test until the diagnostic build and off-bus comparison are verified.",
+    "outcomes": [
+      "PA6 LOW but direct TP23 observation HIGH: investigate receiver/route/reference/probe influence; verify by swapping measurement paths.",
+      "Both LOW: event reaches both observation points; does not uniquely identify internal IPM fault versus common reference disturbance.",
+      "Independent observations HIGH while TIM1 BIF sets: investigate other Break sources and recorder timing."
+    ]
+  },
+  "analog_branch": {
+    "required_if_shared_sd_event_remains_unclassified": true,
+    "points": {
+      "SD": "TP23",
+      "CIN": "TP17",
+      "driver_VCC": "TP8",
+      "local_reference": "TP21 or TP22"
+    },
+    "interpretations": [
+      "CIN crossing the actual comparator threshold before SD: qualify phase current and CIN RC/shunt circuit to distinguish real OC from a spike.",
+      "VCC_LS crossing UVLO before SD: inspect supply at the module, C12/C13 decoupling and its return path.",
+      "VCC and CIN quiet but SD glitches: inspect SD pullup/filter/routing and local reference; validate analog bandwidth and thresholds."
+    ],
+    "current_tool_limit": "Existing Saleae is digital-only,24MS/s. It cannot measure0.5V CIN or15V driver supply and must not be directly tied to the energized nonisolated bridge/PC.",
+    "needed_instrument": "Qualified isolated analog inputs or suitable differential probes for this mains-referenced circuit; no ordinary earth-referenced ground clip."
+  },
+  "saleae_auxiliary_only": {
+    "ready_helper": "tools/capture_sd_endpoints_aux.py",
+    "supported_pair": [
+      2026102001,
+      2026102002
+    ],
+    "mapping": {
+      "CH6": "PA6/CN10-13",
+      "CH7": "TP23",
+      "GND": "CN7-19"
+    },
+    "power": "J1 physically unplugged, bus below2V before probes, J4 off before wiring then auxiliary-only capture.",
+    "sample_rate_hz": 24000000,
+    "no_digital_glitch_filter": true,
+    "limitation": "Validates auxiliary signal path/recorder only. No event here does not qualify25Hz powered operation."
+  },
+  "do_not_infer": [
+    "A 600ns nominal record proves a600ns physical pulse.",
+    "Typical24/70us internal timing guarantees every internal fault pulse is longer.",
+    "A51C sensor reading excludes all internal thermal mechanisms.",
+    "Increasing BKF alone fixes the physical SD source.",
+    "Same waveform at two MCU inputs proves an intrinsic IPM fault."
+  ],
+  "sources": [
+    {
+      "title": "Exact module DS10424 Rev10 Tables8/10/11",
+      "url": "https://www.st.com/resource/en/datasheet/stgib15ch60ts-l.pdf"
+    },
+    {
+      "title": "ST AN4694 section5 item5: driver/controller reference inductance",
+      "url": "https://www.st.com/resource/en/application_note/an4694-emc-design-guides-for-motor-control-applications-stmicroelectronics.pdf"
+    },
+    {
+      "title": "UM2014 Rev3 pages7/23/25",
+      "local_path": "C:\\mic_practice\\um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf"
+    },
+    {
+      "title": "UM2505 Rev7 connector mapping",
+      "url": "https://www.st.com/resource/en/user_manual/um2505-stm32g4-nucleo64-boards-mb1367-stmicroelectronics.pdf"
+    },
+    {
+      "title": "IHM09M2 schematic, PA4 DAC routing",
+      "url": "https://www.st.com/resource/en/schematic_pack/x-nucleo-ihm09m2_schematic.pdf"
+    },
+    {
+      "title": "Official installed MCSDK6.4.2 STEVAL-IPM15B profile",
+      "local_path": "C:\\Program Files (x86)\\STMicroelectronics\\MC_SDK_6.4.2\\Utilities\\PC_Software\\STMCWB\\assets\\hardware\\board\\power\\STEVAL-IPM15B.json",
+      "sha256": "305d56bfe9f1c4113f1b0e8c72d4ec05661f6c6c768608d53bdb18742e3576c4"
+    }
+  ]
+}

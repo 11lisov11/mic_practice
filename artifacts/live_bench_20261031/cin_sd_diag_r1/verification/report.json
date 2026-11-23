@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "flash_commands": 0,
+  "actual_target_register_stub_tests_pass": true,
+  "wire_bit_corruptions_rejected_C": 344,
+  "wire_bit_corruptions_rejected_Python": 344,
+  "boot_zero_idle_guards": true,
+  "late_EOC_rejected": true,
+  "native_enable_blocked": true,
+  "HMI_start_blocked": true,
+  "other_native_source_changes": [
+    "Inc/current_shunt.h",
+    "Src/current_shunt.c",
+    "Src/main.c"
+  ],
+  "archived_sources_unchanged": true,
+  "preserved_captures_verified": 13,
+  "limitation": "Register stub and compilation do not validate the physical CIN wire or analog accuracy."
+}

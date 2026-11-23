@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "rpc_GET_only": true,
+  "stable_at_rest": {
+    "rpc_response_timeouts": true,
+    "rpc_send_timeouts": true,
+    "rpc_route_failures": true,
+    "mc_bad_cnt": true,
+    "mc_bad_integrity": true,
+    "mc_bad_sequence": true,
+    "uno_rx_hw_errors": true,
+    "uno_rx_dropped": true,
+    "mc_uart_error_flags": true,
+    "mc_last_uart_error_flags": true,
+    "mc_transport_fault": true
+  },
+  "first": {
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_route_failures": 0,
+    "mc_bad_cnt": 182,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "mc_uart_error_flags": 2,
+    "mc_last_uart_error_flags": 2,
+    "mc_transport_fault": 4
+  },
+  "last": {
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "rpc_route_failures": 0,
+    "mc_bad_cnt": 182,
+    "mc_bad_integrity": 0,
+    "mc_bad_sequence": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_dropped": 0,
+    "mc_uart_error_flags": 2,
+    "mc_last_uart_error_flags": 2,
+    "mc_transport_fault": 4
+  },
+  "native_good_replies_added": 547,
+  "first_sequence": 1477,
+  "autozero": 1,
+  "sd": "HIGH",
+  "bus": 10.0,
+  "uart_qualified_clean": false,
+  "RPC": {
+    "baseline": {
+      "rpc_response_timeouts": 0,
+      "rpc_send_timeouts": 0
+    },
+    "boot_identity": [
+      "49b237b8-fad3-4927-b089-a08ff48036c4",
+      [
+        2026112102,
+        1,
+        67108864,
+        0,
+        4,
+        0,
+        1406669071
+      ]
+    ],
+    "samples": 24,
+    "ready": true,
+    "failure": null,
+    "quiet_window_seconds": 27.437999999994645,
+    "policy": "Stable historical counters allowed; any change latches failure; no rebaseline"
+  },
+  "samples": 24
+}

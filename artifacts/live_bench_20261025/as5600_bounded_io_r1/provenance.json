@@ -1,0 +1,18 @@
+{
+  "zephyr_v420_driver": "https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/v4.2.0/drivers/i2c/i2c_ll_stm32_v2.c",
+  "zephyr_findings": "500ms semaphore wait; NACK/ARLO/ERR/timeout combined into EIO. Source is upstreamv4.2.0, not a bit-identical reconstruction of installed vendor kernel.",
+  "device_read_protocol": "https://cdn.sparkfun.com/assets/f/a/b/b/a/AS5600_Datasheet.pdf",
+  "protocol": "Only volatile register-pointer0x0B then3-byte read at address0x36; no OTP/configuration writes.",
+  "observed": "legacy_powered_5hz_r1:5errors,163successful reads in active snapshots,553464us maximum, unchanged PB10/PB11 config.",
+  "proven_software_defects": [
+    "Original host5s timer began after HTTP START response, delayed5.167s.",
+    "MCU finite run completion latched ESTOP instead of normal STOP.",
+    "Generic native I2C EIO and potentially long transfer give insufficient cause/freshness diagnostics."
+  ],
+  "not_proven": [
+    "Root physical/electrical source of AS5600 errors",
+    "Guaranteed elimination of NACK under PWM",
+    "Actual IGBT PWM-off exactly5000ms; new marks describe Uno dispatch and UART adds latency"
+  ],
+  "test_scope": "Host fault injection and recorded telemetry; no powered test of2516 yet"
+}

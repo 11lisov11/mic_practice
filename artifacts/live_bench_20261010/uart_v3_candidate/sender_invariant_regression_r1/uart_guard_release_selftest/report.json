@@ -1,0 +1,43 @@
+{
+  "schema": "mic_ai.uart_guard_release_test.v1",
+  "pass": true,
+  "results": {
+    "baseline_queue": {
+      "cases": 2240,
+      "starts_after_pending_error": 2240,
+      "next_poll_stops": 2240,
+      "checks": 59072
+    },
+    "production_queue": {
+      "cases": 2240,
+      "starts_after_pending_error": 0,
+      "next_poll_stops": 2240,
+      "checks": 59072
+    },
+    "baseline_api": {
+      "cases": 604,
+      "starts_after_published_fault": 168,
+      "ramps_after_published_fault": 160,
+      "stops_verified": 604,
+      "checks": 21236
+    },
+    "production_api": {
+      "cases": 1844,
+      "starts_after_published_fault": 0,
+      "ramps_after_published_fault": 0,
+      "stops_verified": 1844,
+      "checks": 68324
+    },
+    "commit_mask_mutation": {
+      "cases": 1840,
+      "starts_after_published_fault": 12,
+      "ramps_after_published_fault": 4,
+      "stops_verified": 1840,
+      "checks": 64496
+    }
+  },
+  "source_sha256": "2ba754560a88a411652789e524765cc7ee6727204f8b39f2de34847b8ff789dc",
+  "baseline_sha256": "de5063fdd079a8a7403a766295fba2bd9513117ab938f1a3a105495a97e7c3a2",
+  "hardware_access": false,
+  "scope": "Host IRQ scheduling at queue, guard-return and command-commit boundaries, ENABLE/CLEAR/STOP. UART-only commit-mask negative control. Not instruction-level exhaustive or physical PWM timing validation."
+}

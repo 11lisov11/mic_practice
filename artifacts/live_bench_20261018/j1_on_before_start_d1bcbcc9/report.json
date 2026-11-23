@@ -1,0 +1,46 @@
+{
+  "schema": "mic_ai.j1_before_start_result.v1",
+  "client_date": "2026-10-18",
+  "operator_j1_on_start_not_pressed": true,
+  "motor_start_commands": 0,
+  "fault_clear_commands": 0,
+  "firmware_writes": 0,
+  "evidence": {
+    "prior_j4_only_no_recorded_break": true,
+    "state": "SAFE",
+    "pwm": 0,
+    "arm": 0,
+    "estop": 1,
+    "vbus_v": 323,
+    "temperature_c": 48,
+    "uart_bad_crc_sequence_hardware_transport": 0,
+    "bif": true,
+    "pa6_low_at_irq": true,
+    "moe_at_irq": false,
+    "start_window": false,
+    "cached_context_age_ms": 15,
+    "cached_vbus_v": 10,
+    "wave_valid_samples": 1024,
+    "wave_dma_error": false,
+    "pa6_high_samples": 1023,
+    "pa6_low_samples": 1,
+    "low_interval_right_censored": true
+  },
+  "conclusions": [
+    "A Break was recorded between the J4-only baseline and the readout after J1 was enabled, before any START or PWM activation",
+    "The nonzero-ARR fix produced a full DMA record",
+    "The falling transition is captured but the recovery edge and pulse width are not",
+    "This event does not identify the cause of the earlier 20-25 Hz trip"
+  ],
+  "not_proven": [
+    "SD physical source: IPM comparator, VCC undervoltage, or interference",
+    "Pulse duration: one LOW sample is not a measured 1-us pulse",
+    "Simultaneous J4 voltage or phase current"
+  ],
+  "next_measurement": "Capture the SD recovery edge and correlated driver-supply/comparator evidence; retain protection",
+  "source": {
+    "title": "ST UM2014 Rev3 section 4.3",
+    "url": "https://www.st.com/resource/en/user_manual/um2014-1500-w-motor-control-power-board-based-on-stgib15ch60tsl-sllimm-2nd-series-ipm-stmicroelectronics.pdf",
+    "note": "SD can signal comparator overcurrent or driver VCC undervoltage; fault timings are influenced by the external RC network"
+  }
+}

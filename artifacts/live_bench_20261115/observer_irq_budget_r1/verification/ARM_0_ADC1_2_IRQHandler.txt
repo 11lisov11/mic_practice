@@ -1,0 +1,49 @@
+080119c0 <ADC1_2_IRQHandler>:
+ 80119c0:	b570      	push	{r4, r5, r6, lr}
+ 80119c2:	f3ef 8305 	mrs	r3, IPSR
+ 80119c6:	b11b      	cbz	r3, 80119d0 <ADC1_2_IRQHandler+0x10>
+ 80119c8:	4b1a      	ldr	r3, [pc, #104]	@ (8011a34 <ADC1_2_IRQHandler+0x74>)
+ 80119ca:	685b      	ldr	r3, [r3, #4]
+ 80119cc:	051b      	lsls	r3, r3, #20
+ 80119ce:	d411      	bmi.n	80119f4 <ADC1_2_IRQHandler+0x34>
+ 80119d0:	4c19      	ldr	r4, [pc, #100]	@ (8011a38 <ADC1_2_IRQHandler+0x78>)
+ 80119d2:	6863      	ldr	r3, [r4, #4]
+ 80119d4:	f3bf 8f5f 	dmb	sy
+ 80119d8:	f7f0 f830 	bl	8001a3c <mic_current_adc_irq>
+ 80119dc:	f7ff fc50 	bl	8011280 <RCM_ServiceAfterInjected>
+ 80119e0:	f04f 43a0 	mov.w	r3, #1342177280	@ 0x50000000
+ 80119e4:	2240      	movs	r2, #64	@ 0x40
+ 80119e6:	601a      	str	r2, [r3, #0]
+ 80119e8:	f3bf 8f5f 	dmb	sy
+ 80119ec:	6863      	ldr	r3, [r4, #4]
+ 80119ee:	f3bf 8f5f 	dmb	sy
+ 80119f2:	bd70      	pop	{r4, r5, r6, pc}
+ 80119f4:	4c11      	ldr	r4, [pc, #68]	@ (8011a3c <ADC1_2_IRQHandler+0x7c>)
+ 80119f6:	4d10      	ldr	r5, [pc, #64]	@ (8011a38 <ADC1_2_IRQHandler+0x78>)
+ 80119f8:	686e      	ldr	r6, [r5, #4]
+ 80119fa:	6823      	ldr	r3, [r4, #0]
+ 80119fc:	3301      	adds	r3, #1
+ 80119fe:	6023      	str	r3, [r4, #0]
+ 8011a00:	f3bf 8f5f 	dmb	sy
+ 8011a04:	f7f0 f81a 	bl	8001a3c <mic_current_adc_irq>
+ 8011a08:	f7ff fc3a 	bl	8011280 <RCM_ServiceAfterInjected>
+ 8011a0c:	f04f 43a0 	mov.w	r3, #1342177280	@ 0x50000000
+ 8011a10:	2240      	movs	r2, #64	@ 0x40
+ 8011a12:	601a      	str	r2, [r3, #0]
+ 8011a14:	f3bf 8f5f 	dmb	sy
+ 8011a18:	686a      	ldr	r2, [r5, #4]
+ 8011a1a:	6863      	ldr	r3, [r4, #4]
+ 8011a1c:	4413      	add	r3, r2
+ 8011a1e:	1b9b      	subs	r3, r3, r6
+ 8011a20:	6063      	str	r3, [r4, #4]
+ 8011a22:	68a3      	ldr	r3, [r4, #8]
+ 8011a24:	3301      	adds	r3, #1
+ 8011a26:	60a3      	str	r3, [r4, #8]
+ 8011a28:	6823      	ldr	r3, [r4, #0]
+ 8011a2a:	3301      	adds	r3, #1
+ 8011a2c:	6023      	str	r3, [r4, #0]
+ 8011a2e:	f3bf 8f5f 	dmb	sy
+ 8011a32:	bd70      	pop	{r4, r5, r6, pc}
+ 8011a34:	e000ed00 	.word	0xe000ed00
+ 8011a38:	e0001000 	.word	0xe0001000
+ 8011a3c:	20005de8 	.word	0x20005de8

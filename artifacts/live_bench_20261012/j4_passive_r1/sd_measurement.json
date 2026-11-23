@@ -1,0 +1,17 @@
+{
+  "measurement": "TP23 SD relative to J4 minus",
+  "volts": 2.6,
+  "source": "operator multimeter report",
+  "mains_reported_off": true,
+  "j4_operator_reported_volts": 15,
+  "datasheet": "https://www.st.com/resource/en/datasheet/stm32g431rb.pdf",
+  "table": "53, I/O static characteristics",
+  "guaranteed_vih_formula": "0.7 * VDD",
+  "assumed_vdd_volts": 3.3,
+  "vih_volts_at_assumed_vdd": 2.31,
+  "static_margin_volts": 0.29,
+  "interpretation": "Consistent with HIGH at PA6 if this node shares the MCU reference and input connection; not evidence that brief SD pulses are absent",
+  "vdd_independently_measured": false,
+  "live_pin_digitally_sampled": false,
+  "start_authorized": false
+}

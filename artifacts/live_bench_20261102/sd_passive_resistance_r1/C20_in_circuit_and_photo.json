@@ -1,0 +1,14 @@
+{
+  "operator_measurement": "0.6ohm across still-soldered C20",
+  "photo_sha256": "7a38150c3416f1a0c58b5ecf6665815660f057a4efb7179f1c8ccb07ea84ce27",
+  "source": "ST UM2014 Rev3 Fig7 and TableBOM: C20=330pF50V, parallel SD-to-GND; R28=10kohm pull-up",
+  "interpretation": "In-circuit C20 reading cannot distinguish capacitor failure from the parallel IPM SD or PCB path. C20 has not yet been electrically isolated.",
+  "visual_assessment": "Photo supplied; no definitive solder bridge or component defect established from this view.",
+  "next": "Only on isolated unpowered STEVAL: lift one C20 terminal, measure C20 between its own terminals and board TP23-to-TP21 separately. No power while C20 is isolated; restore original protection network before powered work.",
+  "component_removed": false,
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "old_captures_modified": false
+}

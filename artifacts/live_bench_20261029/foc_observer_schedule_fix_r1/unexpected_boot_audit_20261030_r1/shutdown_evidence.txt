@@ -1,0 +1,37 @@
+lightdm  tty7         :0               Fri Oct 30 12:50 - still logged in
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 12:50 - still running
+lightdm  tty7         :0               Fri Oct 30 12:47 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 12:46 - crash 
+lightdm  tty7         :0               Fri Oct 30 12:31 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 12:31 - crash 
+lightdm  tty7         :0               Fri Oct 30 12:22 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 12:21 - crash 
+lightdm  tty7         :0               Fri Oct 30 11:47 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 11:47 - crash 
+lightdm  tty7         :0               Fri Oct 30 11:41 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 11:40 - crash 
+lightdm  tty7         :0               Fri Oct 30 10:21 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 10:20 - crash 
+lightdm  tty7         :0               Fri Oct 30 10:11 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 10:10 - crash 
+lightdm  tty7         :0               Fri Oct 30 09:06 - crash 
+reboot   system boot  6.16.7-g0dd6551a Fri Oct 30 09:06 - crash 
+
+wtmpdb begins Fri Oct 30 09:06:22 2026
+2026-10-30T12:48:49+00:00 uno-q kernel: wlan0: Limiting TX power to 23 (23 - 0) dBm as advertised by 50:ff:20:eb:4e:62
+2026-10-30T12:47:29+00:00 uno-q kernel: wlan0: Limiting TX power to 20 (20 - 0) dBm as advertised by 50:ff:20:eb:4e:60
+2026-10-30T12:47:24+00:00 uno-q NetworkManager[479]: <info>  [1793364444.3673] device (wlan0): set-hw-addr: reset MAC address to 14:B5:CD:E2:1B:A9 (preserve)
+2026-10-30T12:47:21+00:00 uno-q wireplumber[855]: default: Failed to get percentage from UPower: org.freedesktop.DBus.Error.NameHasNoOwner
+2026-10-30T12:47:20+00:00 uno-q rtkit-daemon[862]: Watchdog thread running.
+2026-10-30T12:47:15+00:00 uno-q containerd[544]: time="2026-10-30T12:47:15.693665287Z" level=info msg="Start cri plugin with config {PluginConfig:{ContainerdConfig:{Snapshotter:overlayfs DefaultRuntimeName:runc DefaultRuntime:{Type: Path: Engine: PodAnnotations:[] ContainerAnnotations:[] Root: Options:map[] PrivilegedWithoutHostDevices:false PrivilegedWithoutHostDevicesAllDevicesAllowed:false BaseRuntimeSpec: NetworkPluginConfDir: NetworkPluginMaxConfNum:0 Snapshotter: SandboxMode:} UntrustedWorkloadRuntime:{Type: Path: Engine: PodAnnotations:[] ContainerAnnotations:[] Root: Options:map[] PrivilegedWithoutHostDevices:false PrivilegedWithoutHostDevicesAllDevicesAllowed:false BaseRuntimeSpec: NetworkPluginConfDir: NetworkPluginMaxConfNum:0 Snapshotter: SandboxMode:} Runtimes:map[runc:{Type:io.containerd.runc.v2 Path: Engine: PodAnnotations:[] ContainerAnnotations:[] Root: Options:map[BinaryName: CriuImagePath: CriuPath: CriuWorkPath: IoGid:0 IoUid:0 NoNewKeyring:false NoPivotRoot:false Root: ShimCgroup: SystemdCgroup:false] PrivilegedWithoutHostDevices:false PrivilegedWithoutHostDevicesAllDevicesAllowed:false BaseRuntimeSpec: NetworkPluginConfDir: NetworkPluginMaxConfNum:0 Snapshotter: SandboxMode:podsandbox}] NoPivot:false DisableSnapshotAnnotations:true DiscardUnpackedLayers:false IgnoreBlockIONotEnabledErrors:false IgnoreRdtNotEnabledErrors:false} CniConfig:{NetworkPluginBinDir:/usr/lib/cni NetworkPluginConfDir:/etc/cni/net.d NetworkPluginMaxConfNum:1 NetworkPluginSetupSerially:false NetworkPluginConfTemplate: IPPreference:} Registry:{ConfigPath: Mirrors:map[] Configs:map[] Auths:map[] Headers:map[]} ImageDecryption:{KeyModel:node} DisableTCPService:true StreamServerAddress:127.0.0.1 StreamServerPort:0 StreamIdleTimeout:4h0m0s EnableSelinux:false SelinuxCategoryRange:1024 SandboxImage:registry.k8s.io/pause:3.8 StatsCollectPeriod:10 SystemdCgroup:false EnableTLSStreaming:false X509KeyPairStreaming:{TLSCertFile: TLSKeyFile:} MaxContainerLogLineSize:16384 DisableCgroup:false DisableApparmor:false RestrictOOMScoreAdj:false MaxConcurrentDownloads:3 DisableProcMount:false UnsetSeccompProfile: TolerateMissingHugetlbController:true DisableHugetlbController:true DeviceOwnershipFromSecurityContext:false IgnoreImageDefinedVolumes:false NetNSMountsUnderStateDir:false EnableUnprivilegedPorts:false EnableUnprivilegedICMP:false EnableCDI:false CDISpecDirs:[/etc/cdi /var/run/cdi] ImagePullProgressTimeout:5m0s DrainExecSyncIOTimeout:0s ImagePullWithSyncFs:false IgnoreDeprecationWarnings:[]} ContainerdRootDir:/var/lib/containerd ContainerdEndpoint:/run/containerd/containerd.sock RootDir:/var/lib/containerd/io.containerd.grpc.v1.cri StateDir:/run/containerd/io.containerd.grpc.v1.cri}"
+2026-10-30T12:47:15+00:00 uno-q arduino-router[563]: 2026/10/30 12:47:15 INFO Registered internal method method=mon/reset
+2026-10-30T12:47:13+00:00 uno-q systemd[1]: Finished wtmpdb-update-boot.service - Write boot and shutdown times into wtmpdb.
+2026-10-30T12:47:12+00:00 uno-q kernel: remoteproc remoteproc0: powering up modem
+2026-10-30T12:47:12+00:00 uno-q cron[413]: (CRON) INFO (Running @reboot jobs)
+2026-10-30T12:47:12+00:00 uno-q systemd[1]: Starting wtmpdb-update-boot.service - Write boot and shutdown times into wtmpdb...
+2026-10-30T12:47:10+00:00 uno-q kernel: remoteproc remoteproc1: powering up adsp
+2026-10-30T12:47:07+00:00 uno-q kernel: PM: genpd: Not disabling unused power domains
+2026-10-30T12:47:07+00:00 uno-q kernel: thermal_sys: Registered thermal governor 'power_allocator'
+2026-10-30T12:47:07+00:00 uno-q kernel: audit: disabled (until reboot)
+
+STDERR:

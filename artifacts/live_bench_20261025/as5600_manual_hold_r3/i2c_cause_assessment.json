@@ -1,0 +1,25 @@
+{
+  "scope": "read-only cause assessment; no change to running test",
+  "physical_cause_proven": false,
+  "observed_fault": "AS5600 I2C transfer failure during PWM; nominal EIO -5",
+  "separate_magnetic_issue": "successful reads report status 0x37: magnet detected, ML weak field flag set",
+  "active_status_count": 280,
+  "active_fresh_bus_ok_statuses": 15,
+  "active_angle_valid_statuses": 0,
+  "active_io_error_codes": [
+    -5,
+    0
+  ],
+  "inference": "PWM-correlated electrical interference, local ground disturbance or sensor supply disturbance are leading hypotheses. Software timing is not excluded. No voltage waveform or I2C error subtype has been captured.",
+  "not_proven": [
+    "faulty sensor IC",
+    "sensor magnetic alignment causing EIO",
+    "specific NACK/BERR/ARLO subtype",
+    "shared cause with SD pulses"
+  ],
+  "driver_poll_hz_nominal": 500,
+  "driver_error_backoff_ms": 100,
+  "i2c_clock_hz": 100000,
+  "current_state": "VF_RUN",
+  "current_pwm": 1
+}

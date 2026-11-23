@@ -1,0 +1,712 @@
+{
+  "available": true,
+  "schema": 3,
+  "firmware": 2026111612,
+  "count": 11,
+  "total_observer_samples": 4999,
+  "valid_samples": 4500,
+  "invalid_samples": 499,
+  "first_loss": null,
+  "control_fault": 0,
+  "record_stride_steps": 500,
+  "samples": [
+    {
+      "cycles": 1283721,
+      "steps": 1,
+      "reason_mask": 20,
+      "estimate_valid": false,
+      "reasons_ru": [
+        "меньше 500 шагов",
+        "поток не выше половины задания"
+      ],
+      "control_sample_sequence": 17,
+      "control_adc_cycles": 1165984,
+      "observer_sample_sequence": 17,
+      "observer_adc_cycles": 1165984,
+      "bin_cycles": 1165984,
+      "rpm_est": 0.0,
+      "flux_alpha_wb": -2.7672038413584232e-05,
+      "flux_beta_wb": 0.0,
+      "flux_wb": 2.7672038413584232e-05,
+      "nis": 1.4287950762081891e-05,
+      "id_A": 0.0,
+      "iq_A": 0.0,
+      "id_ref_A": 0.0050558410584926605,
+      "iq_ref_A": 0.0,
+      "reference_hz": 0.00499952957034111,
+      "observer_ia_A": 0.0,
+      "observer_ib_A": 0.0,
+      "input_va_V": 0.02494904026389122,
+      "input_vb_V": 0.0,
+      "dt_s": 0.0005076705710962415,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.00017890903109218925,
+        0.0
+      ],
+      "innovation_A": [
+        -0.00017890903109218925,
+        0.0
+      ],
+      "innovation_variance_A2": [
+        0.0022402401082217693,
+        0.0022402401082217693
+      ],
+      "NIS_components": [
+        1.4287951228474886e-05,
+        0.0
+      ],
+      "endpoint_active_CCR": [
+        2658,
+        2654,
+        2654
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 1086304,
+      "window_first_cycles": 1006624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 1165984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.00017890903109218925,
+        0.0
+      ]
+    },
+    {
+      "cycles": 86275721,
+      "steps": 501,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 8017,
+      "control_adc_cycles": 86157984,
+      "observer_sample_sequence": 8017,
+      "observer_adc_cycles": 86157984,
+      "bin_cycles": 86157984,
+      "rpm_est": 67.02055358886719,
+      "flux_alpha_wb": -0.1899247169494629,
+      "flux_beta_wb": 0.17567884922027588,
+      "flux_wb": 0.2587169421814003,
+      "nis": 0.6840916872024536,
+      "id_A": 0.5064920783042908,
+      "iq_A": 0.21750850975513458,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.21531134843826294,
+      "reference_hz": 2.5047643184661865,
+      "observer_ia_A": -0.5174539089202881,
+      "observer_ib_A": 0.19559088349342346,
+      "input_va_V": -9.478729248046875,
+      "input_vb_V": -0.880946159362793,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.534832775592804,
+        0.19622287154197693
+      ],
+      "innovation_A": [
+        0.01737886667251587,
+        -0.0006795972585678101
+      ],
+      "innovation_variance_A2": [
+        0.00044216556125320494,
+        0.0004470809653867036
+      ],
+      "NIS_components": [
+        0.6830586397662232,
+        0.0010330398062315237
+      ],
+      "endpoint_active_CCR": [
+        2417,
+        2865,
+        2895
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 86078304,
+      "window_first_cycles": 85998624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 86157984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        -0.534832775592804,
+        0.19627048075199127
+      ]
+    },
+    {
+      "cycles": 171267721,
+      "steps": 1001,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 16017,
+      "control_adc_cycles": 171149984,
+      "observer_sample_sequence": 16017,
+      "observer_adc_cycles": 171149984,
+      "bin_cycles": 171149984,
+      "rpm_est": 304.51995849609375,
+      "flux_alpha_wb": -0.15524418652057648,
+      "flux_beta_wb": -0.20193839073181152,
+      "flux_wb": 0.25471527457101845,
+      "nis": 0.2774921953678131,
+      "id_A": 0.5071786642074585,
+      "iq_A": 0.11069589853286743,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.11680804938077927,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.23444320261478424,
+      "observer_ib_A": -0.4628406763076782,
+      "input_va_V": 4.858127117156982,
+      "input_vb_V": -11.725471496582031,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.23341268301010132,
+        -0.47386300563812256
+      ],
+      "innovation_A": [
+        -0.0010305196046829224,
+        0.011022478342056274
+      ],
+      "innovation_variance_A2": [
+        0.00045035179937258363,
+        0.0004415847361087799
+      ],
+      "NIS_components": [
+        0.0023580912902210044,
+        0.27513412232430645
+      ],
+      "endpoint_active_CCR": [
+        2673,
+        2377,
+        2935
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 171070304,
+      "window_first_cycles": 170990624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 171149984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        -0.23341268301010132,
+        -0.4738631546497345
+      ]
+    },
+    {
+      "cycles": 256259721,
+      "steps": 1501,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 24017,
+      "control_adc_cycles": 256141984,
+      "observer_sample_sequence": 24017,
+      "observer_adc_cycles": 256141984,
+      "bin_cycles": 256141984,
+      "rpm_est": 300.0887451171875,
+      "flux_alpha_wb": -0.23966260254383087,
+      "flux_beta_wb": 0.08371327817440033,
+      "flux_wb": 0.25386231701610773,
+      "nis": 0.17067673802375793,
+      "id_A": 0.5056872963905334,
+      "iq_A": 0.09856224805116653,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10375717282295227,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.5084599256515503,
+      "observer_ib_A": 0.09000647068023682,
+      "input_va_V": -9.475557327270508,
+      "input_vb_V": -7.811129093170166,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.5167685747146606,
+        0.08748887479305267
+      ],
+      "innovation_A": [
+        0.008308649063110352,
+        0.0025659576058387756
+      ],
+      "innovation_variance_A2": [
+        0.000442473276052624,
+        0.0004491514409892261
+      ],
+      "NIS_components": [
+        0.15601766929244842,
+        0.014659061140849812
+      ],
+      "endpoint_active_CCR": [
+        2370,
+        2709,
+        2942
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 256062304,
+      "window_first_cycles": 255982624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 256141984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        -0.5167685747146606,
+        0.08744051307439804
+      ]
+    },
+    {
+      "cycles": 341251721,
+      "steps": 2001,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 32017,
+      "control_adc_cycles": 341133984,
+      "observer_sample_sequence": 32017,
+      "observer_adc_cycles": 341133984,
+      "bin_cycles": 341133984,
+      "rpm_est": 300.3281555175781,
+      "flux_alpha_wb": 0.05825928598642349,
+      "flux_beta_wb": 0.24714551866054535,
+      "flux_wb": 0.2539193805081405,
+      "nis": 0.16779696941375732,
+      "id_A": 0.5062358379364014,
+      "iq_A": 0.09947749227285385,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10305505245923996,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.03537634015083313,
+      "observer_ib_A": 0.514767587184906,
+      "input_va_V": -8.690407752990723,
+      "input_vb_V": 8.574690818786621,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.033612094819545746,
+        0.5231971144676208
+      ],
+      "innovation_A": [
+        0.001764245331287384,
+        -0.008442223072052002
+      ],
+      "innovation_variance_A2": [
+        0.0004485893587116152,
+        0.0004430675180628896
+      ],
+      "NIS_components": [
+        0.006938554222304469,
+        0.1608583962775868
+      ],
+      "endpoint_active_CCR": [
+        2497,
+        2888,
+        2424
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 341054304,
+      "window_first_cycles": 340974624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 341133984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.033612094819545746,
+        0.523209810256958
+      ]
+    },
+    {
+      "cycles": 426243721,
+      "steps": 2501,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 40017,
+      "control_adc_cycles": 426125984,
+      "observer_sample_sequence": 40017,
+      "observer_adc_cycles": 426125984,
+      "bin_cycles": 426125984,
+      "rpm_est": 299.97149658203125,
+      "flux_alpha_wb": 0.2516682744026184,
+      "flux_beta_wb": -0.03297661989927292,
+      "flux_wb": 0.2538195772606454,
+      "nis": 0.07763214409351349,
+      "id_A": 0.5090494751930237,
+      "iq_A": 0.09868546575307846,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10354305803775787,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.5180534720420837,
+      "observer_ib_A": 0.017308928072452545,
+      "input_va_V": 7.626049995422363,
+      "input_vb_V": 9.548887252807617,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.523296058177948,
+        0.019916731864213943
+      ],
+      "innovation_A": [
+        -0.005242586135864258,
+        -0.0026515424251556396
+      ],
+      "innovation_variance_A2": [
+        0.0004437818133737892,
+        0.0004478362388908863
+      ],
+      "NIS_components": [
+        0.061932933174993064,
+        0.015699214627678332
+      ],
+      "endpoint_active_CCR": [
+        2930,
+        2663,
+        2382
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 426046304,
+      "window_first_cycles": 425966624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 426125984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.523296058177948,
+        0.019960470497608185
+      ]
+    },
+    {
+      "cycles": 511235721,
+      "steps": 3001,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 48017,
+      "control_adc_cycles": 511117984,
+      "observer_sample_sequence": 48017,
+      "observer_adc_cycles": 511117984,
+      "bin_cycles": 511117984,
+      "rpm_est": 299.7130432128906,
+      "flux_alpha_wb": -0.0076754591427743435,
+      "flux_beta_wb": -0.25376853346824646,
+      "flux_wb": 0.2538845825403286,
+      "nis": 0.11050307750701904,
+      "id_A": 0.5052478909492493,
+      "iq_A": 0.10139764845371246,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.1038234680891037,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.06775466352701187,
+      "observer_ib_A": -0.5126904845237732,
+      "input_va_V": 10.275238037109375,
+      "input_vb_V": -6.674566268920898,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.07055669277906418,
+        -0.5190929174423218
+      ],
+      "innovation_A": [
+        -0.002802029252052307,
+        0.00642770528793335
+      ],
+      "innovation_variance_A2": [
+        0.0004470858839340508,
+        0.00044452937436290085
+      ],
+      "NIS_components": [
+        0.01756120739100535,
+        0.09294187887524764
+      ],
+      "endpoint_active_CCR": [
+        2945,
+        2367,
+        2774
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 511038304,
+      "window_first_cycles": 510958624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 511117984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.07055669277906418,
+        -0.5191181898117065
+      ]
+    },
+    {
+      "cycles": 596227721,
+      "steps": 3501,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 56017,
+      "control_adc_cycles": 596109984,
+      "observer_sample_sequence": 56017,
+      "observer_adc_cycles": 596109984,
+      "bin_cycles": 596109984,
+      "rpm_est": 300.1138610839844,
+      "flux_alpha_wb": -0.2532123029232025,
+      "flux_beta_wb": -0.01799948140978813,
+      "flux_wb": 0.25385123927744174,
+      "nis": 0.3700106739997864,
+      "id_A": 0.5045888423919678,
+      "iq_A": 0.09542672336101532,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10331375151872635,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.4988662004470825,
+      "observer_ib_A": -0.11631602048873901,
+      "input_va_V": -5.606792449951172,
+      "input_vb_V": -10.896086692810059,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.5090094804763794,
+        -0.12409607321023941
+      ],
+      "innovation_A": [
+        0.010143280029296875,
+        0.007875964045524597
+      ],
+      "innovation_variance_A2": [
+        0.00044540295493789017,
+        0.0004462165234144777
+      ],
+      "NIS_components": [
+        0.2309956155703545,
+        0.13901504402331946
+      ],
+      "endpoint_active_CCR": [
+        2398,
+        2596,
+        2914
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 596030304,
+      "window_first_cycles": 595950624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 596109984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        -0.5090094804763794,
+        -0.12419198453426361
+      ]
+    },
+    {
+      "cycles": 681219721,
+      "steps": 4001,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 64017,
+      "control_adc_cycles": 681101984,
+      "observer_sample_sequence": 64017,
+      "observer_adc_cycles": 681101984,
+      "bin_cycles": 681101984,
+      "rpm_est": 299.8984375,
+      "flux_alpha_wb": -0.04305807501077652,
+      "flux_beta_wb": 0.2502284049987793,
+      "flux_wb": 0.2539059914453906,
+      "nis": 0.1226409450173378,
+      "id_A": 0.5079340934753418,
+      "iq_A": 0.09695620834827423,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10371754318475723,
+      "reference_hz": 5.0,
+      "observer_ia_A": -0.16848725080490112,
+      "observer_ib_A": 0.4898425340652466,
+      "input_va_V": -11.437812805175781,
+      "input_vb_V": 4.469458103179932,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        -0.17481200397014618,
+        0.4936102032661438
+      ],
+      "innovation_A": [
+        0.006324753165245056,
+        -0.0038273632526397705
+      ],
+      "innovation_variance_A2": [
+        0.00044541119132190943,
+        0.0004461897478904575
+      ],
+      "NIS_components": [
+        0.08981027729131885,
+        0.03283067245922835
+      ],
+      "endpoint_active_CCR": [
+        2370,
+        2942,
+        2599
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 681022304,
+      "window_first_cycles": 680942624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 681101984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        -0.17481200397014618,
+        0.49366989731788635
+      ]
+    },
+    {
+      "cycles": 766211721,
+      "steps": 4501,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 72017,
+      "control_adc_cycles": 766093984,
+      "observer_sample_sequence": 72017,
+      "observer_adc_cycles": 766093984,
+      "bin_cycles": 766093984,
+      "rpm_est": 300.12872314453125,
+      "flux_alpha_wb": 0.2444673329591751,
+      "flux_beta_wb": 0.06837528198957443,
+      "flux_wb": 0.2538492782564607,
+      "nis": 0.1485547572374344,
+      "id_A": 0.5014179944992065,
+      "iq_A": 0.09858576208353043,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10326205939054489,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.4688864052295685,
+      "observer_ib_A": 0.21740014851093292,
+      "input_va_V": 3.3281595706939697,
+      "input_vb_V": 11.806111335754395,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.47397834062576294,
+        0.22369904816150665
+      ],
+      "innovation_A": [
+        -0.005091935396194458,
+        -0.006344914436340332
+      ],
+      "innovation_variance_A2": [
+        0.00044709123903885484,
+        0.0004445318190846592
+      ],
+      "NIS_components": [
+        0.057992203414132956,
+        0.0905625592502592
+      ],
+      "endpoint_active_CCR": [
+        2891,
+        2788,
+        2421
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 766014304,
+      "window_first_cycles": 765934624,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 766093984,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.47397834062576294,
+        0.22374506294727325
+      ]
+    },
+    {
+      "cycles": 850863753,
+      "steps": 4999,
+      "reason_mask": 0,
+      "estimate_valid": true,
+      "reasons_ru": [],
+      "control_sample_sequence": 79985,
+      "control_adc_cycles": 850746016,
+      "observer_sample_sequence": 79985,
+      "observer_adc_cycles": 850746016,
+      "bin_cycles": 850746016,
+      "rpm_est": 300.0343933105469,
+      "flux_alpha_wb": 0.07582920789718628,
+      "flux_beta_wb": -0.24236547946929932,
+      "flux_wb": 0.2539509685130144,
+      "nis": 0.10820253938436508,
+      "id_A": 0.5085777640342712,
+      "iq_A": 0.1010882556438446,
+      "id_ref_A": 0.5055840611457825,
+      "iq_ref_A": 0.10350609570741653,
+      "reference_hz": 5.0,
+      "observer_ia_A": 0.2320447713136673,
+      "observer_ib_A": -0.4642253816127777,
+      "input_va_V": 11.918558120727539,
+      "input_vb_V": -2.912716865539551,
+      "dt_s": 0.0009999058675020933,
+      "observer_fault": 0,
+      "published": true,
+      "predicted_current_A": [
+        0.23859740793704987,
+        -0.4664418399333954
+      ],
+      "innovation_A": [
+        -0.006552636623382568,
+        0.002274751663208008
+      ],
+      "innovation_variance_A2": [
+        0.00044432637514546514,
+        0.00044729156070388854
+      ],
+      "NIS_components": [
+        0.09663402651719162,
+        0.011568506057043999
+      ],
+      "endpoint_active_CCR": [
+        2936,
+        2376,
+        2674
+      ],
+      "endpoint_bus_V": 323,
+      "endpoint_arr": 5312,
+      "observation_cycles": 850666336,
+      "window_first_cycles": 850586656,
+      "window_count": 16,
+      "forecast_dt_s": 0.00046870586811564863,
+      "published_estimate_cycles": 850746016,
+      "observer_input_kind": "mean16_at_center_RK4_forecast_to_endpoint",
+      "innovation_kind": "sequential_conditional",
+      "conditional_predicted_current_A": [
+        0.23859740793704987,
+        -0.4665001332759857
+      ]
+    }
+  ],
+  "summary_ru": "После достоверной оценки отказ не записан",
+  "limitation": "Schema3: токи усреднены по16 ADC; EKF корректируется в центре, в регулятор публикуется RK4-прогноз на конец окна. Raw токовая защита не усредняется. Скорость не подтверждена независимым датчиком."
+}

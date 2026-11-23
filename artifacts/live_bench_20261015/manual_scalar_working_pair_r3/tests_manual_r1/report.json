@@ -1,0 +1,28 @@
+{
+  "pass": true,
+  "hardware_commands": 0,
+  "hardware_validated": false,
+  "nucleo": {
+    "pass": true,
+    "assertions": 2103,
+    "single_bit_corruptions": 344,
+    "ne_byte_positions": 43,
+    "hardware_commands": 0
+  },
+  "uno": {
+    "pass": true,
+    "assertions": 9308,
+    "hardware_commands": 0
+  },
+  "http": {
+    "pass": true,
+    "cases": 33,
+    "hardware_commands": 0,
+    "scope": "Real HTTP handlers and manual-session expiry/watchdog forwarding, mocked MCU and motor"
+  },
+  "scope": "Actual Nucleo parser/command/feedback to actual Uno parser; actual Uno manual command/watchdog functions; real HMI HTTP. HAL/MCSDK/motor mocked.",
+  "nucleo_sha256": "1e81d87efa1b3213b8c480151c3dab2d934d5510d3a9a39840402e6d374a94e6",
+  "uno_sha256": "ce1b0960d97a206d00471a582901b2c68149563e01dbea37ac3170839cfbf592",
+  "hmi_sha256": "0c6f750862b1425a25b9e3a12a3cdff74128fe2688e759c1be8fa02e6e595118",
+  "header_sha256": "15c6aa9f84350dcddb4346dd76bc482209a81cf220c99cc5263979bad0db9cee"
+}

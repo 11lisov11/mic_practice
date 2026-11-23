@@ -1,0 +1,73 @@
+{
+  "passed": true,
+  "offline_only": true,
+  "hardware_tested": false,
+  "build": 2026102790,
+  "target_errors": 0,
+  "target_warnings": 0,
+  "native_checks": 928694,
+  "host_cases": 5,
+  "actual_ADC_irq_model_samples": 80000,
+  "ADC_model_samples_accepted": 79999,
+  "actual_math_calls": 80000,
+  "medium_ramp_calls": 2500,
+  "target_math_sections": {
+    "ACIM_VF_Controller": {
+      "identical": true,
+      "bytes": 612,
+      "sha256": "67d20314a110f96655202f82da115a0a42ad7b839870cc0ce2ce179493fb784f"
+    },
+    "ACIM_VF_CalcAngle": {
+      "identical": true,
+      "bytes": 72,
+      "sha256": "ebe24563f238272967fb53482d4698d02cef44da5b9ccac1a244b5ea989ab83d"
+    },
+    "ACIM_VF_FluxFreqCalc": {
+      "identical": true,
+      "bytes": 180,
+      "sha256": "5a3bbc16812b54a0fbf89aa2e73e6cc5b0347e124a1eff7827581e832d6fc0b8"
+    },
+    "ACIM_VF_ExecRamp": {
+      "identical": true,
+      "bytes": 16,
+      "sha256": "cb72356ec7d98be370d5e2dcef3db968647bfb83c2ec79ff0e621c1f0d5cc775"
+    },
+    "PWM_SetPhasePWMOutputs": {
+      "identical": true,
+      "bytes": 252,
+      "sha256": "d78e9b1018e45050f38f29082601ae63343a08578899df57d082761e0547a71c"
+    }
+  },
+  "RAM_margin_above_heap_stack_bytes": 2768,
+  "stack_frames": {
+    "pins_low": 0,
+    "mic_load_active": 0,
+    "mic_load_init": 40,
+    "mic_load_tim_update": 16,
+    "mic_load_medium_update": 8,
+    "mic_load_adc_enter": 8,
+    "mic_load_adc_exit": 4,
+    "mic_load_poll": 328,
+    "mic_current_update_epoch": 4,
+    "mic_current_init": 16,
+    "mic_current_adc_irq": 368,
+    "mic_current_load_quality": 0,
+    "mic_current_packet": 376,
+    "mic_current_peak_packet": 24,
+    "mic_zero_packet": 24
+  },
+  "decoder_negative_cases": 76,
+  "protection_functions_unchanged": true,
+  "UV_not_masked": true,
+  "actual_Vbus_not_forged": true,
+  "phase_pins_static_low": true,
+  "motor_ENABLE_rejected": true,
+  "I2C_state_machine_unchanged": true,
+  "source_and_previous_images_preserved": true,
+  "only_Nucleo_needs_programming": true,
+  "limitations": [
+    "Native register models are not electrical measurements",
+    "Target timing/rates/ADC-path coverage and I2C under load remain to be measured",
+    "The computation image is intentionally unsupported as a normal motor-control peer in the current HMI"
+  ]
+}

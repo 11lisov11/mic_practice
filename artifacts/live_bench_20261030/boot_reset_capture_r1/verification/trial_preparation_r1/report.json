@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "checks": 355,
+  "pair": [
+    2026103013,
+    2026103014
+  ],
+  "sources_verified": 223,
+  "boot": {
+    "identity": [
+      2026103014,
+      1,
+      469762048,
+      0,
+      4,
+      0,
+      436601404
+    ],
+    "Linux_boot_id": "cdcc6f80-5954-4387-997e-4130627055d7",
+    "native_tick_ms": 50710,
+    "record": {
+      "available": true,
+      "fresh": true,
+      "firmware": 2026103014,
+      "retained_sequence": 1,
+      "sequence_is_power_cycle_persistent": false,
+      "csr_raw": 469762048,
+      "previous_csr_raw": 0,
+      "flags": 4,
+      "causes": [
+        "NRST_FLAG",
+        "POWER_ON_OR_BROWNOUT",
+        "SOFTWARE"
+      ],
+      "previous_flags_cleared": false,
+      "current_flags_cleared": true,
+      "previous_boot_continuity": false,
+      "software_request_tag": 0,
+      "early_record_crc": 436601404,
+      "native_tick_ms": 50710,
+      "summary_ru": "флаг NRST, подача питания или просадка напряжения, программный сброс; предыдущая история не подтверждена",
+      "exact_physical_cause_identified": false,
+      "limitation": "BOR не отличает включение от просадки; NRST может сопутствовать другим причинам; первая запись может содержать накопленные флаги."
+    },
+    "packet_hex": "55aae9010100e6e0c378010000000000001c0000000004000000000000003c02061a16c6000000b1c676c9"
+  },
+  "hardware_commands": 0,
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "generic_trial_runner_unchanged": true,
+  "firmware_unchanged": true
+}

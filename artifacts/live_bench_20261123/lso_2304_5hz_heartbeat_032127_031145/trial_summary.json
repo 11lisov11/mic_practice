@@ -1,0 +1,106 @@
+{
+  "counts": {
+    "clear": 1,
+    "arm": 1,
+    "start": 1,
+    "fallback_stop": 1
+  },
+  "auto_stop_verified": false,
+  "observed_pwm": true,
+  "off_confirmed": true,
+  "fault": null,
+  "heartbeat": {
+    "sent": 12,
+    "error": null,
+    "events": [
+      {
+        "at": 203192.937,
+        "ok": true
+      },
+      {
+        "at": 203193.515,
+        "ok": true
+      },
+      {
+        "at": 203194.328,
+        "ok": true
+      },
+      {
+        "at": 203194.953,
+        "ok": true
+      },
+      {
+        "at": 203195.781,
+        "ok": true
+      },
+      {
+        "at": 203196.328,
+        "ok": true
+      },
+      {
+        "at": 203197.093,
+        "ok": true
+      },
+      {
+        "at": 203197.718,
+        "ok": true
+      },
+      {
+        "at": 203198.531,
+        "ok": true
+      },
+      {
+        "at": 203199.14,
+        "ok": true
+      },
+      {
+        "at": 203199.968,
+        "ok": true
+      },
+      {
+        "at": 203200.5,
+        "ok": true
+      }
+    ],
+    "interval_s": 0.5,
+    "motor_commands": 0
+  },
+  "max_heartbeat_gap_s": 0.8279999999795109,
+  "status": {
+    "state": "SAFE",
+    "pwm": 0,
+    "estop": 1,
+    "bp_status": 12,
+    "bp_vdc": 329.0,
+    "mc_fault": 3,
+    "mc_bad": 0,
+    "mc_age_ms": 19,
+    "foc_experiment_flags": 5,
+    "algorithm_fast_cycles": 1325,
+    "algorithm_observer_cycles": 1695,
+    "algorithm_fault": 1,
+    "run_id": 1,
+    "run_limit_ms": 5000,
+    "run_reason": 2,
+    "run_elapsed_ms": 2182,
+    "run_start_ms": 188938,
+    "run_stop_ms": 191120,
+    "hmi_hv_armed": 0,
+    "hmi_hv_started": 0,
+    "hmi_operator_heartbeat_age_s": 0.2,
+    "rpc_response_timeouts": 0,
+    "rpc_send_timeouts": 0,
+    "mc_sd_live": {
+      "available": true,
+      "reason": "observed",
+      "level": "HIGH",
+      "age_ms": 19,
+      "break_irq_enabled": true,
+      "capture_running": false,
+      "first_record_ready": false,
+      "config_ok": true,
+      "summary_ru": "SD \u0441\u0435\u0439\u0447\u0430\u0441 HIGH: \u0437\u0430\u0449\u0438\u0442\u0430 \u043e\u0442\u043f\u0443\u0449\u0435\u043d\u0430",
+      "limitation": "\u0423\u0440\u043e\u0432\u0435\u043d\u044c \u043d\u0430 \u043c\u043e\u043c\u0435\u043d\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 UART; \u043a\u0440\u0430\u0442\u043a\u0438\u0435 \u0438\u043c\u043f\u0443\u043b\u044c\u0441\u044b \u043c\u0435\u0436\u0434\u0443 \u043e\u0442\u0432\u0435\u0442\u0430\u043c\u0438 \u0437\u0434\u0435\u0441\u044c \u043d\u0435 \u0438\u0437\u043c\u0435\u0440\u044f\u044e\u0442\u0441\u044f"
+    }
+  }
+}

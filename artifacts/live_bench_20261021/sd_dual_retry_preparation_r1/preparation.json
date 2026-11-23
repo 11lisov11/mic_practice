@@ -1,0 +1,23 @@
+{
+  "operator_requested_motor_retry_with_probe": true,
+  "probe_wiring": "TP23 -> 1 kohm -> PA4",
+  "probe_to_remove": false,
+  "new_firmware_needed": false,
+  "requested_targets_hz": [
+    5,
+    10,
+    15,
+    20,
+    25
+  ],
+  "host_deadline_s": 60,
+  "operator_watchdog_s": 3,
+  "current_capture_occupied": true,
+  "current_break_irq_enabled": false,
+  "current_dc_bus_v": 320,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "next_physical_step": "J1 off, leave 15 V and powerbanks on; meter <=20 V, one Nucleo RESET, wait 10 s, J1 on via soft-start, do not START. Read fresh status/capture before the authorized run."
+}

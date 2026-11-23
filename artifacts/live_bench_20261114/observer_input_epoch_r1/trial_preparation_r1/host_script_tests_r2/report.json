@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "network_fully_mocked": true,
+  "hardware_commands": 0,
+  "new_motor_runs": 0,
+  "scenarios": {
+    "success": {
+      "passed": true,
+      "simulated_clear": 1,
+      "simulated_START": 1
+    },
+    "failed_clear": {
+      "passed": true,
+      "simulated_clear": 1,
+      "simulated_START": 0
+    },
+    "runtime_fault": {
+      "passed": true,
+      "simulated_clear": 1,
+      "simulated_START": 1
+    },
+    "success_without_clear": {
+      "passed": true,
+      "simulated_clear": 0,
+      "simulated_START": 1
+    },
+    "denied_clear": {
+      "passed": true,
+      "simulated_clear": 0,
+      "simulated_START": 0
+    }
+  }
+}

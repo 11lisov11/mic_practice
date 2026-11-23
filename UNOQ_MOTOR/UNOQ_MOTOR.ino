@@ -31,6 +31,18 @@
 static LinkTiming g_link_timing;
 #include "deferred_log.h"
 static DeferredLogQueue g_deferred_log;
+#include "scoped_control_lock.h"
+#if USE_ROUTER_BRIDGE
+// Loadable sketches cannot rely on kernel iterable-section initialization.
+static struct k_mutex g_control_mutex{};
+struct ControlMutex {
+  void lock() {
+    if (k_mutex_lock(&g_control_mutex, K_FOREVER) != 0) k_panic();
+  }
+  void unlock() { k_mutex_unlock(&g_control_mutex); }
+};
+static ControlMutex g_control_owner;
+#endif
 #if USE_ROUTER_BRIDGE
 #define LOG_SERIAL Monitor
 #elif USE_MSGPACK_RPC
@@ -48,7 +60,7 @@ static DeferredLogQueue g_deferred_log;
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026100804U;
+static const uint32_t FW_BUILD_ID = 2026101002U;
 static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
@@ -2031,10 +2043,16 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
     return true;
 }
 static bool rpc_cmd(String cmd) {
+#if USE_ROUTER_BRIDGE
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
   return handle_command_line_stream(cmd.c_str(), g_null_stream);
 }
 
 static String rpc_get() {
+#if USE_ROUTER_BRIDGE
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
   const uint32_t timing_started = micros();
   const unsigned int timing_key = irq_lock();
   const LinkTiming timing = g_link_timing;
@@ -3882,6 +3900,7 @@ void loop() {
 // ----------------------- Setup / Loop -----------------------
 void setup() {
 #if USE_ROUTER_BRIDGE
+    if (k_mutex_init(&g_control_mutex) != 0) k_panic();
     delay(6000);
     Bridge.begin(RPC_BAUD);
     LOG_SERIAL.begin(RPC_BAUD);
@@ -3935,6 +3954,11 @@ void setup() {
 #endif
 }
 void loop() {
+#if USE_ROUTER_BRIDGE
+  // Router callbacks run on another Zephyr thread. Own state and the complete
+  // UART transaction together; IRQs and Nucleo's protection remain independent.
+  ScopedControlLock<ControlMutex> owner(g_control_owner);
+#endif
   const unsigned int timing_loop_key = irq_lock();
   g_link_timing.loop(micros(), g_pwm_enabled);
   irq_unlock(timing_loop_key);
@@ -4037,6 +4061,9 @@ void loop() {
 #endif
   #endif
   send_telemetry();
+#if USE_ROUTER_BRIDGE
+  owner.release();
+#endif
 #if defined(ARDUINO_ARCH_ZEPHYR)
   k_yield();
 #endif

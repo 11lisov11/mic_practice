@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "hardware_validated": false,
+  "installed": false,
+  "hardware_commands": 0,
+  "checks": [
+    "whole installed motor sketch unchanged outside identity/sensor selector/diagnostics",
+    "angle validity, speed estimator and freshness rules unchanged",
+    "all other control/protocol/ADC/SD headers unchanged",
+    "new diagnostic fields parsed as integers",
+    "legacy defaults",
+    "recorded current/zero/SD telemetry equivalent for new pair",
+    "unknown pair rejected",
+    "historical priority difference isolated; no register/address/clock change in that diff"
+  ]
+}

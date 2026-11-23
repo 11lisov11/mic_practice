@@ -1,0 +1,34 @@
+
+C:\mic_practice\artifacts\live_bench_20261114\current_polarity_budget_r1\verification\polarity_ARM.o:     file format elf32-littlearm
+
+
+Disassembly of section .text.baseline_saturation:
+
+00000000 <baseline_saturation>:
+   0:	eddf 7a12 	vldr	s15, [pc, #72]	@ 4c <baseline_saturation+0x4c>
+   4:	ee80 7a27 	vdiv.f32	s14, s0, s15
+   8:	eeb4 7a47 	vcmp.f32	s14, s14
+   c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+  10:	d618      	bvs.n	44 <baseline_saturation+0x44>
+  12:	eeff 7a00 	vmov.f32	s15, #240	@ 0xbf800000 -1.0
+  16:	eef4 7ac7 	vcmpe.f32	s15, s14
+  1a:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+  1e:	bfd8      	it	le
+  20:	eef0 7a47 	vmovle.f32	s15, s14
+  24:	eeb7 7a00 	vmov.f32	s14, #112	@ 0x3f800000  1.0
+  28:	eef4 7ac7 	vcmpe.f32	s15, s14
+  2c:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
+  30:	bfcc      	ite	gt
+  32:	2301      	movgt	r3, #1
+  34:	2300      	movle	r3, #0
+  36:	2b00      	cmp	r3, #0
+  38:	eeb7 0a00 	vmov.f32	s0, #112	@ 0x3f800000  1.0
+  3c:	bf08      	it	eq
+  3e:	eeb0 0a67 	vmoveq.f32	s0, s15
+  42:	4770      	bx	lr
+  44:	2300      	movs	r3, #0
+  46:	eeff 7a00 	vmov.f32	s15, #240	@ 0xbf800000 -1.0
+  4a:	e7f4      	b.n	36 <baseline_saturation+0x36>
+  4c:	3d4ccccd 	.word	0x3d4ccccd
+
+Disassembly of section .text.candidate_saturation:

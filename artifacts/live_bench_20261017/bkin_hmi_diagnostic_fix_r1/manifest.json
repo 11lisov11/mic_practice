@@ -1,0 +1,25 @@
+{
+  "schema": "mic_ai.bkin_hmi_diagnostic_fix.v1",
+  "candidate": "C:\\mic_practice\\artifacts\\live_bench_20261017\\bkin_hmi_diagnostic_fix_r1",
+  "installed_mcu_pair": [
+    2026101507,
+    2026101506
+  ],
+  "mcu_sources_changed": false,
+  "mcu_flash_commands": 0,
+  "actuation_commands": 0,
+  "hardware_commands": 0,
+  "calibration_changed": false,
+  "hv_release_approved": false,
+  "changes": [
+    "Show the retained trace after five seconds while requiring fresh current telemetry",
+    "Decode the configured active-high PA6 and show the IRQ sample beside the trace",
+    "Treat cached RUN context as runtime when the old start-window flag remained set"
+  ],
+  "sha256": {
+    "server.py": "685aafdf5e81017bff2780524afd4d831d310dbbe34b85b56a211e872679a27c",
+    "static/app.js": "8fa6d83cbb63973f7a7eea937fe3e7454dd9884557fbf97764cfef0f94ba7175",
+    "static/index.html": "41636853532b1fb2512872e2e2cd47fd5bfddb4cc81406a05b9908f3253a743b",
+    "static/style.css": "a9ee1bbb27b27482609436d9f768a3953501679fc8ef1dfafcc7545e04c4697e"
+  }
+}

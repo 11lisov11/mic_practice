@@ -1,0 +1,29 @@
+{
+  "pass": true,
+  "checks": {
+    "raw_and_derived_stop_match": true,
+    "current_stop_context_in_all_api_details": true,
+    "first_fault_fields_preserved": true,
+    "current_fault_estop": true,
+    "no_arm_or_preparation": true,
+    "uart_counters_unchanged": true,
+    "local_stop_in_flight_recorder": true,
+    "local_stop_in_diagnostic_log": true,
+    "local_stop_in_periodic_status_log": true,
+    "downloaded_preexisting_log_lines_retained": true
+  },
+  "samples": 29,
+  "first_fault_fields": {
+    "mc_fault_reason": 8,
+    "mc_uart_error_flags": 0,
+    "mc_fault_current_mask": 4,
+    "mc_fault_occurred_mask": 4,
+    "mc_fault_motor_state": 10,
+    "mc_fault_sequence": 227,
+    "mc_fault_tx_status": 0
+  },
+  "transport": "direct_wifi_http_get_only",
+  "hardware_commands": 0,
+  "active_pwm_stop_timing_measured": false,
+  "button_release_confirmed": false
+}

@@ -1,0 +1,63 @@
+{
+  "firmware": [
+    2026101813,
+    2026101812
+  ],
+  "motor_run_attempted": false,
+  "start_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "motor_preflight_ready": false,
+  "known_undervoltage_ack_allowed": false,
+  "transport_clean": true,
+  "fault_occurred_mask": 1024,
+  "fault_interpretation": "0x0400 MC_DP_FAULT / TIM1 Break, not the allowed 0x0004 startup undervoltage",
+  "event_tick_ms_since_nucleo_boot": 4963,
+  "break_irq": {
+    "bif": true,
+    "b2if": false,
+    "pa6_high_at_irq": false,
+    "bke_at_irq": true,
+    "moe_at_irq": false,
+    "during_start_request_window": false,
+    "start_window_flag_raw": false,
+    "start_window_flag_stale_after_run": false
+  },
+  "cached_motor_context_available": false,
+  "start_window_recorded": false,
+  "pulse_complete": true,
+  "pulse_width_us": 62.0,
+  "wave_tick_matches_snapshot": true,
+  "raw_decode_matches": true,
+  "wave_error_flags": {
+    "dma_error": false,
+    "sampling_overrun": false,
+    "run_overflow": false,
+    "timeout": false
+  },
+  "live_sd": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 29,
+    "break_irq_enabled": false,
+    "capture_running": false,
+    "first_record_ready": true,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "preflight_voltage_v": 325.0,
+  "preflight_reported_temperature_c": 48.0,
+  "physical_cause_identified": false,
+  "limitations": [
+    "MOE was zero at the interrupt; no START was sent in this host session.",
+    "Context was not initialized at this boot event; event bus voltage and temperature are unavailable.",
+    "The SD pulse does not distinguish driver undervoltage, protection input activity or interference.",
+    "This boot event is not proof of the cause of the earlier running-motor 20-Hz trip.",
+    "Live HIGH is not an acknowledgment or rearm; first-event capture is occupied.",
+    "The read-only helper pass refers to transport/archive checks, not permission to START."
+  ]
+}

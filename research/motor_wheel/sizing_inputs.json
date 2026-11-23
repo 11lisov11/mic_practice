@@ -1,0 +1,47 @@
+{
+  "schema": "mic_ai.motor_wheel.sizing_inputs.v1",
+  "input_status": "design_assumptions_not_measurements",
+  "vehicle": {
+    "gross_mass_kg": 120.0,
+    "loaded_wheel_diameter_m": 0.508,
+    "rolling_coefficient": 0.015,
+    "drag_area_m2": 0.6,
+    "air_density_kg_m3": 1.225,
+    "headwind_m_s": 0.0
+  },
+  "energy": {
+    "motor_efficiency_assumption": 0.75,
+    "inverter_efficiency_assumption": 0.95,
+    "auxiliary_power_w": 15.0,
+    "battery_nominal_voltage_v": 36.0,
+    "battery_capacity_ah": 14.0,
+    "usable_energy_fraction": 0.8,
+    "motor_efficiency_sensitivity": [0.65, 0.75, 0.85]
+  },
+  "inverter_screen": {
+    "candidate": "X-NUCLEO-IHM08M1",
+    "datasheet_url": "https://www.st.com/en/evaluation-tools/x-nucleo-ihm08m1.html",
+    "bus_voltages_v": [30.0, 36.0, 42.0],
+    "three_phase_linear_svpwm_voltage_utilization": 0.9,
+    "motor_power_factor_assumption": 0.8,
+    "nominal_output_current_rms_a": 15.0,
+    "proposed_software_sinusoidal_peak_limit_a": 25.0,
+    "datasheet_ocp_peak_a": 30.0,
+    "shaft_power_targets_w": [300.0, 500.0]
+  },
+  "target_envelope": {
+    "continuous_shaft_power_w": 300.0,
+    "continuous_torque_nm": 22.0,
+    "tentative_peak_shaft_power_w": 500.0,
+    "tentative_peak_torque_nm": 25.0,
+    "tentative_peak_duration_s": 5.0
+  },
+  "steady_speeds_kmh": [10.0, 15.0, 20.0, 25.0],
+  "grades_pct": [0.0, 3.0, 5.0],
+  "acceleration_cases": [
+    {"speed_kmh": 5.0, "grade_pct": 0.0, "acceleration_m_s2": 0.5},
+    {"speed_kmh": 10.0, "grade_pct": 0.0, "acceleration_m_s2": 0.5},
+    {"speed_kmh": 5.0, "grade_pct": 5.0, "acceleration_m_s2": 0.5}
+  ],
+  "pole_pair_candidates": [4, 6, 8]
+}

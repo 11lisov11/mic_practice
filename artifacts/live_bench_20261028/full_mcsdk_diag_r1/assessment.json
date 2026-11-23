@@ -1,0 +1,75 @@
+{
+  "passed": true,
+  "build": 2026102803,
+  "scope": "Full MCSDK protected OFF/FAULT application with private VF/current-processing load; no motor RUN or real PWM edges",
+  "actual_bus_v": 0,
+  "active_fault": 4,
+  "active_fault_name": "MC_UNDER_VOLT",
+  "no_protection_weakened": true,
+  "actual_bus_never_forged": true,
+  "snapshot_clear_commands": 0,
+  "elapsed_ms": 5000.021623529412,
+  "task_calls_during_5s": {
+    "MC_Run": 10000,
+    "Safety": 10000,
+    "Medium": 2500,
+    "HighFrequency": 80007
+  },
+  "native_command_dispatch_calls_during_5s": 99,
+  "ADC_IRQ_during_5s": 80008,
+  "ADC_accepted_during_5s": 80007,
+  "TIM_IRQ_max_us": 12.141176470588235,
+  "ADC_IRQ_max_us": 18.558823529411764,
+  "foreground_gap_max_us": 309.1235294117647,
+  "encoder_delta_host_interval": {
+    "reads": 2320,
+    "errors": 0,
+    "NACK": 0,
+    "deadline": 0,
+    "BUSY": 0,
+    "ARLO": 0,
+    "BERR_clears": 0,
+    "forced_resets": 0,
+    "normal_parks": 0
+  },
+  "TX_delta_host_interval": {
+    "queued": 975,
+    "completed": 975,
+    "timeouts": 0,
+    "full_errors": 0,
+    "dma_errors": 0
+  },
+  "host_deltas_interval_note": "Includes before/after debug reads and 10s capture; not exact five-second counts",
+  "Saleae_capture_seconds": 10,
+  "Saleae_complete_AS5600_reads": 2011,
+  "Saleae_target_NACK_count": 0,
+  "Saleae_partial_frames": [
+    {
+      "start_s": 0.00011225,
+      "end_s": 0.002930375,
+      "partial_bits": 3,
+      "end": "repeated_start"
+    }
+  ],
+  "partial_frame_note": "First captured exchange is incomplete near capture start; excluded from qualified reads, cause not established",
+  "native_UART_bad_frames": 0,
+  "native_UART_guard": 0,
+  "all_recorded_PWM_channels_static_LOW": true,
+  "SD_all_rows_HIGH": true,
+  "CSV_rows": 285597,
+  "MOE_off": true,
+  "GPIO_locked_LOW": true,
+  "old_files_hash_verified": 381,
+  "readback_verified": true,
+  "flash_commands": 1,
+  "load_requests": 1,
+  "comparison": {
+    "previous": "combined_io_diag_r2/run_r1",
+    "previous_physical_PWM_I2C_errors": 0,
+    "this_protected_full_application_I2C_errors": 0,
+    "implication": "No I2C fault reproduced in either isolated condition; full MCSDK RUN plus real PWM and powered inverter was not tested"
+  },
+  "motor_current_RMS_qualified": false,
+  "original_powered_I2C_cause_proven": false,
+  "keep_state": "J1 and15V OFF;34pin ribbon disconnected; this GPIO-inhibited diagnostic is not a powered motor firmware"
+}

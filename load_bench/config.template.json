@@ -1,0 +1,50 @@
+{
+  "kit": "HLTNC-T3D-400W-3M-BRAKE",
+  "schema": "mic.t3d.commissioning.v3.stock_firmware",
+  "experiment_mode": "supervised_bench",
+  "bench_url": "http://192.168.1.138:8080",
+  "expected_firmware_pair": [2026112013, 2026111810],
+  "expected_algorithm": null,
+  "require_observer_valid": true,
+  "profile_seed": 20261122,
+  "modbus": {"unit": 1, "baud": 19200, "parity": "E"},
+  "servo_usb": {"port": null, "vid": null, "pid": null, "serial_number": null, "location": null},
+  "red_board": {
+    "backend": "stock_hid",
+    "firmware_policy": "keep_existing_no_flash",
+    "stock_identity": {"vid": 42784, "pid": 63491, "serial_number": "816FAD79CE5", "product": "RNR ECO MOTION 2.0", "version": 768}
+  },
+  "limits": {
+    "rated_torque_nm": 1.27,
+    "max_torque_nm": 0.12,
+    "max_power_w": 5.0,
+    "max_energy_j": 15.0,
+    "min_rpm": 80.0,
+    "max_rpm": 350.0,
+    "slew_nm_s": 0.12,
+    "duration_s": 4.0,
+    "cycle_s": 0.5,
+    "deadline_s": 0.45,
+    "nis_limit": 25.0
+  },
+  "qualification": {
+    "motor_nameplate_checked": false,
+    "driver_revision_checked": false,
+    "mode_and_sign_tested": false,
+    "parameter_readback_checked": false,
+    "independent_czero_watchdog_tested": false,
+    "red_board_output_permit_tested": false,
+    "regen_power_rating_is_continuous": false,
+    "stop_chain_tested": false,
+    "parking_brake_timing_tested": false,
+    "coupling_and_guard_checked": false,
+    "air_loaded_trial_authorized_and_qualified": false,
+    "usb_isolation_checked": false,
+    "actual_rated_torque_nm": null,
+    "di_conducting_bit": null,
+    "do_conducting_bit": null,
+    "watchdog_measured_drop_s": null,
+    "validated_regen_power_w": null,
+    "validated_regen_energy_j": null
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "prepared": true,
+  "pair": [
+    2026111611,
+    2026111612
+  ],
+  "algorithm": "FOC",
+  "frequency_hz": 5,
+  "runlimit_ms": 5000,
+  "native_auto_stop_5000ms_preserved": true,
+  "Uno_auto_stop_requested_ms": 5000,
+  "OFF_fast_budget_cycles": 4000,
+  "RUN_existing_deadline_cycles": 5312,
+  "estimate_age_limit_ms": 2,
+  "trip_A": 1.35,
+  "ADC_UPDATE_limit_ticks": 2048,
+  "CLEAR_by_default": false,
+  "no_retry": true,
+  "hardware_commands_this_preparation": 0,
+  "old_files_verified": 5605,
+  "PC_flow_tests": {
+    "success": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 1
+    },
+    "BIE_blocked": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "CPU4001": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "RPC_new_timeout": {
+      "passed": true,
+      "simulated_START": 0,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 0
+    },
+    "runtime_fault": {
+      "passed": true,
+      "simulated_START": 1,
+      "simulated_CLEAR": 0,
+      "simulated_STOP": 1
+    }
+  },
+  "test_report_SHA256": "d4ea3a2ba4593b99cc03c4dc1dc7b43b70c59977360f8a41ec9a43a7721ef8f1",
+  "script_SHA256": {
+    "tools/run_observer_window_FOC_trial.py": "f45ffa08cd17782dac3196eb644add8e835c9e67fef8aca7c7a6d7bb0d469b7c",
+    "tools/test_observer_window_FOC_trial.py": "bd9674cc708b1f3758a732099bbdbe0e1eac4e44902d7ccc02149123dc02c217",
+    "tools/run_telemetry_deadline_trial.py": "36c743d2a43117350f7c11db5cabe31a321c2bace0cf76a2428ef51aa1ed6f61",
+    "tools/run_observer_input_epoch_trial.py": "95007f0bd6da7feaaddb43fff2fed15321c4ff5159793576f4a87c62d4c4259c",
+    "tools/run_observer_input_epoch_runtime.py": "afa1a6779ba64d4ae36f2508c8ea44249d0e6100112e4f78c1965d8784edcaee",
+    "tools/run_foc_boot_capture_trial.py": "50a9dde651f26ba82d5f9c0c40e3d9e85558581361050667c4ac430d47c2008e",
+    "tools/run_foc_observer_trace_trial.py": "95c3063a07352e9d63bd4236045cd937c1d2dbae5be8a28498f69c5b90038732",
+    "tools/rpc_counter_guard.py": "b6b600e037d1d7e5b5a87a58afd5f2b37400c5c7ecdd09c069da215cfd08c68a",
+    "tools/foc_trial_supervision.py": "e028bb18ba7ff689c4dfb24eddc85615a21861a60392536a734604e73c721f4e",
+    "tools/release_observer_decoder.py": "dfe1a990fca837e612ff08a5253014bc9c315f0ee6801442f2713487c6ebbd56"
+  },
+  "old_records_remain_immutable": true,
+  "powered_readiness_still_requires_live_check": true
+}

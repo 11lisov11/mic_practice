@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "pair": [
+    2026102813,
+    2026102812
+  ],
+  "physical_preparation": {
+    "powerbanks": true,
+    "PC_and_Saleae_disconnected": true,
+    "supply15_on": true,
+    "J1_off": true,
+    "motor_J3_disconnected": true,
+    "confirmed_again_by_user": true
+  },
+  "AS5600_reads_delta": 3743,
+  "AS5600_errors_total": 0,
+  "UART_and_RPC_counter_deltas": 0,
+  "SD_high": true,
+  "Break_IRQ_enabled": true,
+  "zero_ready_verified": true,
+  "zero_history_three_stable_blocks": true,
+  "first_PWM_fault_capture_armed": true,
+  "first_PWM_fault_empty": true,
+  "initial_observation_passed": false,
+  "initial_observation_issue": "AssertionError",
+  "initial_observation_explanation": "One current-telemetry set became stale; native zero-ready bits and3-block calibration history remained valid. Subsequent20.14s/17samples all met existing freshness limits; no firmware or limit changes.",
+  "later_profile_all_current_telemetry_fresh": true,
+  "host_5s_trial_prepared": true,
+  "host_trial_tests": 27,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "reset_commands": 0,
+  "flash_commands": 0,
+  "J1_on_not_yet_confirmed": true
+}

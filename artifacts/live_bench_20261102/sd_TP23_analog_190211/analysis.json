@@ -1,0 +1,37 @@
+{
+  "physical_ADC_source": "TP23 / SD; raw API field cin_sd is a channel label, not CIN in this test",
+  "samples": 6,
+  "TP23_mv_approx_min": 0.0,
+  "TP23_mv_approx_max": 3.213675213675214,
+  "PA6_levels": [
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW",
+    "LOW"
+  ],
+  "ADC_timeouts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "ADC_errors": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "START": 0,
+  "CLEAR": 0,
+  "RESET": 0,
+  "flash_commands": 0,
+  "old_captures_modified": false,
+  "conclusion": "The probe at TP23 also reads near zero and agrees with PA6 LOW. Physical wire continuity and a known nonzero ADC input are not independently validated. No elevated CIN was seen in the preceding CIN observation. This does not identify the fault source or prove IPM failure.",
+  "next_check": "Reuse the same 1k/PB11 lead at C21 positive / STEVAL3V3, with J1OFF and J4OFF while moving, then J4-only ON. Check SD pull-up supply and a nonzero analog input; no new firmware."
+}

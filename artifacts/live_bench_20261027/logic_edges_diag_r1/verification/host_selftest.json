@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "case": "preflight",
+      "exit": 0,
+      "mailbox_writes": []
+    },
+    {
+      "case": "one",
+      "exit": 0,
+      "mailbox_writes": [
+        "request"
+      ]
+    },
+    {
+      "case": "bad_bus",
+      "exit": 1,
+      "mailbox_writes": []
+    },
+    {
+      "case": "write_timeout",
+      "exit": 1,
+      "mailbox_writes": [
+        "request"
+      ]
+    },
+    {
+      "case": "still_running",
+      "exit": 1,
+      "mailbox_writes": [
+        "request",
+        "cancel"
+      ]
+    }
+  ],
+  "actual_hardware_calls": 0,
+  "ambiguous_write_not_retried": true,
+  "motor_start_clear_flash_reset_commands": 0
+}

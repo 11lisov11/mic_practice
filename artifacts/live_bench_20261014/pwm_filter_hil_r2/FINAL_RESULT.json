@@ -1,0 +1,98 @@
+{
+  "schema": "mic_ai.pwm_filter_hardware_result.v1",
+  "task_flash_and_retest_completed": true,
+  "installed_working_pair": [
+    2026101407,
+    2026101406
+  ],
+  "fixture_pair_measured": [
+    2026101496,
+    2026101497
+  ],
+  "working_pair_byte_verified": true,
+  "waveform_qualification_pass": true,
+  "primary_uart_error_free": true,
+  "strict_combined_capture_pass": false,
+  "unresolved_snapshot_rejections": 1,
+  "snapshot_rejection_at_automatic_stop": true,
+  "snapshot_actual_packet_cause_proven": false,
+  "inactive_hft_guard_present_in_target_assembly": true,
+  "boot_false_software_fault_fixed": true,
+  "active_span_s": 2.9743762499999997,
+  "low_tail_s": 3.9590467499999997,
+  "carrier_hz_by_channel": {
+    "0": 16000.00000003729,
+    "1": 16000.00000003729,
+    "2": 16000.00000003729,
+    "3": 16000.00000003729,
+    "4": 16000.00000003729,
+    "5": 16000.00000003729
+  },
+  "minimum_deadtime_us_by_phase": {
+    "U": 1.25,
+    "V": 1.25,
+    "W": 1.25
+  },
+  "phase_relative_to_U_deg": [
+    0.0,
+    -120.18655432355176,
+    119.89280533377848
+  ],
+  "ramp_hz_s": 1.6663913337208107,
+  "final_waveform_frequency_hz": 4.903075666507297,
+  "sinusoidal_r_squared": [
+    0.9985336170653313,
+    0.9987164077555151,
+    0.998564419699597
+  ],
+  "idle_observations": 19,
+  "idle_observed_span_s": 29.437000000005355,
+  "idle_new_good_frames": 586,
+  "final_status": {
+    "state": "SAFE",
+    "pwm": 0,
+    "vdc": 0.0,
+    "hmi_hv_armed": 0,
+    "estop": 0,
+    "bp_fault": 1,
+    "mc_fault_reason": 4,
+    "mc_fault_current_mask": 0,
+    "mc_fault_occurred_mask": 0,
+    "hmi_vbus_hv_calibrated": 0,
+    "bp_bad_cnt": 0,
+    "bp_bad_integrity": 0,
+    "bp_bad_sequence": 0,
+    "bp_ne_observed": 0,
+    "bp_ne_accepted": 0,
+    "uno_rx_hw_errors": 0,
+    "uno_rx_hw_flags": 0,
+    "uno_rx_dropped": 0,
+    "uno_tx_short_writes": 0,
+    "uno_tx_gaps_over_watchdog": 0,
+    "mc_break_rx_bad": 0
+  },
+  "saleae_probes_permanently_connected": true,
+  "operator_disconnects_only_saleae_usb": true,
+  "old_calibration_bytes_preserved": true,
+  "old_calibration_valid_for_new_pair": false,
+  "hmi_sha256": "0e896bfc4df50e53c1783c2eb017a0d4e77d60f67207200dd51cef2917b53902",
+  "hv_release_approved": false,
+  "physical_powered_incident_cause_proven": false,
+  "button_latency_measured": false,
+  "evidence_sha256": {
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\capture.sal": "a452619c3ebc55cc474f423ff5d7d08d77857eb1eee4a8c8239a7dec33167f68",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\csv\\digital.csv": "8463245ea17a1a33bf7571169c0f388b50c5cb22ab42ffc002136a8ecd776125",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\report.json": "a40929b44b63134bede826b4e025bda152cbd5f0b3bf83280d5399abdeced6e6",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\waveform.json": "157a5044dab468e39d4677b98168e49ecc7e457e68331a0917fae15c0f9093a9",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\modulation_ramp.json": "93625e20f9e8fdf66a1bc11d965a64d3bfdd23532ccd2425c191e3a3f5bbaeb2",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\run_1791989745601632900\\status.json": "abc5b637fa97df1ae18bf9ecf41d6aeb78b355c9ae56ee08092b7cf63c0bde89",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\production_nucleo_readback.bin": "fd3ff8a13f4a4e388678dd5333cc856c3128e147ff0670541e30d4279aaae389",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\production_uno.log": "c91b9b946815d6adfecb543bf58540e1cec05d2c7b3f0f82e2403e01ca0f5159",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\production_idle.json": "3213a55375d303208a93380584c64c484ee4dbf08424eba93e2cd822ee42b045",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\capture_remote_logs.log": "40d598df4f1b3f2bceed6ed33f2e502e079eca5df05be81ef2f87be554c662de",
+    "artifacts\\live_bench_20261014\\pwm_filter_hil_r2\\snapshot_policy_replay\\report.json": "8b0f5fb27fcd2dcf6b95e59d6612ff2ad9572db072c4456acb5ae95c56c70c99",
+    "artifacts\\live_bench_20261014\\pwm_filter_pair_r4\\qualification\\production_TSK_HighFrequencyTask.asm": "28a7f309ca06b89dab9a8668cfadfab96b7fc0ebcc0d5549fd49f93ec1bce621",
+    "artifacts\\live_bench_20261014\\pwm_filter_pair_r4\\qualification\\report.json": "7423dcb1f646dbbad686673372803ac37a02b5544c36e8824f95e3967af5b48b",
+    "artifacts\\live_bench_20261014\\pwm_filter_pair_r4\\fastmath\\report.json": "cebf84394ef1aabf515f2c75d52571248a7a5f9990f217bc6c7a547171bb7468"
+  }
+}

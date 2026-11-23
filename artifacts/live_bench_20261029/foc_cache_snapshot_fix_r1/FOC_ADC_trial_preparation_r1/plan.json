@@ -1,0 +1,48 @@
+{
+  "prepared": true,
+  "pair": [
+    2026103007,
+    2026103008
+  ],
+  "runner": "tools/run_foc_cache_snapshot_trial.py",
+  "START": 0,
+  "CLEAR": 0,
+  "ARM": 0,
+  "RESET": 0,
+  "flash": 0,
+  "trip_current_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "cache_age_limit_ms": 1,
+  "preserved_files": 1353,
+  "vbus_V": 10.0,
+  "current_fault_masks": [
+    0,
+    0
+  ],
+  "zero_ready": true,
+  "SD": {
+    "available": true,
+    "reason": "observed",
+    "level": "HIGH",
+    "age_ms": 45,
+    "break_irq_enabled": true,
+    "capture_running": true,
+    "first_record_ready": false,
+    "config_ok": true,
+    "summary_ru": "SD сейчас HIGH: защита отпущена",
+    "limitation": "Уровень на момент ответа UART; краткие импульсы между ответами здесь не измеряются"
+  },
+  "exact_ADC_first_reason_available": true,
+  "trial": {
+    "algorithm": "FOC",
+    "frequency_hz": 5,
+    "limit_ms": 5000,
+    "retries": 0
+  },
+  "physical_run_not_yet_tested": true,
+  "CLEAR_not_authorized": true,
+  "autonomous_preflight_pending": true,
+  "powered_preflight_pending": true,
+  "next_step": "Both boards to powerbanks; disconnect PCUSB and Saleae includingGND;15V unchanged;J1 remainsOFF;no START/RESET.",
+  "subsequent_step": "Verify autonomous status first;then J1throughsoftstart and freshbus/SD/protection checks before one authorized trial."
+}

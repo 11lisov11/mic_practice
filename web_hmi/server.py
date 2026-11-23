@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import copy as _rpc_copy
 import hashlib
 import json
 import math
@@ -98,6 +99,231 @@ ARM_PROFILE_HV = "hv"
 ARM_PROFILE_LV = "lv"
 HV_RUNTIME_BAD_BURST_LIMIT = 3
 HV_RUNTIME_BAD_WINDOW_SEC = 1.0
+UART_V3_TRIAL_PAIR = (2026101007, 2026101006)
+UART_V3_TRIAL_IMAGES = {
+    "production_uno": "b521f692621f9374338b59805d0f0a233e086dfe802c6f9ec28e768b8e4a1e9b",
+    "production_nucleo": "20530ef90893b8cdb074739e3b8fd02d0bb0c478016ab291e036192c4a784479",
+}
+UART_V3_SENDER_TRIAL_PAIR = (2026101008, 2026101006)
+UART_V3_SENDER_TRIAL_IMAGES = {
+    "production_uno": "1ebb68a6bf9180643ec471e240b4ab125c51866f8da1d69c974421bbd403708a",
+    "production_nucleo": UART_V3_TRIAL_IMAGES["production_nucleo"],
+}
+UART_V3_TRIAL_CASES = ("carrier_5", "carrier_20", "STOP", "ESTOP", "FREQ_ZERO",
+                      "RUNLIMIT", "ACTIVE_RPC", "TIM1_BREAK")
+COAST30_PROFILE = "vf_30s_50hz_coast"
+
+
+def validate_powered_trial_qualification(proof: object) -> tuple[bool, str]:
+    """Authenticated host attestation, not certification or an MCU flash reader."""
+    if not isinstance(proof, dict):
+        return False, "missing powered-trial qualification"
+    coast30 = proof.get("schema") == "mic_ai.powered_trial.coast30.v1"
+    sender_delta = coast30 or proof.get("schema") == "mic_ai.powered_trial.sender_delta.v1"
+    if not sender_delta and proof.get("schema") != "mic_ai.powered_trial.v1":
+        return False, "unknown powered-trial qualification schema"
+    expected_pair = UART_V3_SENDER_TRIAL_PAIR if sender_delta else UART_V3_TRIAL_PAIR
+    expected_images = UART_V3_SENDER_TRIAL_IMAGES if sender_delta else UART_V3_TRIAL_IMAGES
+    if (proof.get("pair") != list(expected_pair)
+            or any(type(v) is not int for v in proof["pair"])
+            or proof.get("images") != expected_images):
+        return False, "qualification image/pair mismatch"
+    if sender_delta:
+        if (proof.get("scope") != "unchanged_nucleo_pwm_plus_sender_delta"
+                or proof.get("pwm_evidence_pair") != list(UART_V3_TRIAL_PAIR)
+                or proof.get("pwm_evidence_images") != UART_V3_TRIAL_IMAGES
+                or proof.get("new_pair_active_pwm_measured") is not False
+                or any(proof.get(k) is not True for k in (
+                    "sender_delta_verified", "sender_flash_verified", "fresh_idle_wifi_pass"))):
+            return False, "sender trial needs explicit component-evidence transfer"
+    if coast30:
+        if (proof.get("profile") != COAST30_PROFILE
+                or proof.get("coast_only") is not True
+                or any(proof.get(k) is not True for k in (
+                    "native_coast_profile_pass", "prior_rotation_operator_confirmed", "prior_active_health_clean"))
+                or proof.get("prior_stop_cause_uniquely_verified") is not False
+                or proof.get("current_telemetry_qualified") is not False):
+            return False, "coast trial evidence or scope missing"
+        cap = proof.get("dc_capacitance_uf")
+        if type(cap) not in (int,float) or not math.isfinite(cap) or cap <= 0:
+            return False, "confirmed capacitance required"
+    cases = proof.get("cases")
+    if (not isinstance(cases, dict) or set(cases) != set(UART_V3_TRIAL_CASES)
+            or any(v is not True for v in cases.values())):
+        return False, "eight retained zero-bus scenarios required"
+    for key in ("normal_restore_verified", "offline_pass", "idle_wifi_pass", "physical_idle_pass"):
+        if proof.get(key) is not True:
+            return False, "qualification failed: " + key
+    if type(proof.get("offline_suites")) is not int or proof["offline_suites"] < (44 if coast30 else 41 if sender_delta else 40):
+        return False, "updated trial regression required"
+    if proof.get("hv_release_approved") is not False:
+        return False, "trial attestation must not claim general HV approval"
+    digests = proof.get("evidence_sha256")
+    expected_evidence = {"pwm", "offline", "idle_wifi", "physical_idle"}
+    if sender_delta:
+        expected_evidence |= {"sender_delta", "sender_install"}
+    if coast30:
+        expected_evidence |= {"coast_profile", "powered_review"}
+    if not isinstance(digests, dict) or set(digests) != expected_evidence:
+        return False, "qualification evidence missing"
+    if any(not isinstance(v, str) or len(v) != 64 or any(c not in "0123456789abcdef" for c in v)
+           for v in digests.values()):
+        return False, "invalid evidence fingerprint"
+    issued, expires = proof.get("issued_at"), proof.get("expires_at")
+    if (type(issued) not in (int, float) or type(expires) not in (int, float)
+            or not math.isfinite(issued) or not math.isfinite(expires)
+            or not 0 < expires - issued <= 3600 or not issued <= time.time() < expires):
+        return False, "qualification attestation expired or invalid"
+    return True, "one bounded trial only"
+
+
+class PoweredTrialGate:
+    """One-use permission with fresh powered idle observations; never drives GPIO."""
+
+    def __init__(self, valid_for_sec: float = 3600, pair=UART_V3_TRIAL_PAIR, profile="short") -> None:
+        if (type(valid_for_sec) not in (int, float) or not math.isfinite(valid_for_sec)
+                or not 0 < valid_for_sec <= 3600):
+            raise ValueError("trial preparation lifetime must be within (0,3600] seconds")
+        if pair not in (UART_V3_TRIAL_PAIR, UART_V3_SENDER_TRIAL_PAIR):
+            raise ValueError("unreviewed trial pair")
+        if profile not in ("short", COAST30_PROFILE) or (profile==COAST30_PROFILE and pair!=UART_V3_SENDER_TRIAL_PAIR):
+            raise ValueError("unreviewed trial profile/pair")
+        self.profile = profile
+        self.max_run_s = 33 if profile==COAST30_PROFILE else 3
+        self.stop_after_s = 30 if profile==COAST30_PROFILE else 3
+        self.max_freq_hz = 50 if profile==COAST30_PROFILE else 10
+        self.deadline_reason = f"powered trial independent {self.stop_after_s}-second deadline reached"
+        self.pair = pair
+        self._lock = threading.RLock()
+        self.created = time.monotonic()
+        self.expires_at = self.created + valid_for_sec
+        self.consumed = False
+        self.started_at = None
+        self.reset_observation("awaiting fault-free powered idle telemetry")
+
+    def reset_observation(self, reason: str) -> None:
+        self.begin = None
+        self.last_seen = None
+        self.first_good = None
+        self.last_good = None
+        self.samples = 0
+        self.reason = reason
+
+    @staticmethod
+    def live_check(data: Optional[dict], idle: bool = False,
+                   pair=UART_V3_TRIAL_PAIR, allow_stopped_zero: bool = False, profile="short") -> tuple[bool, str]:
+        if not isinstance(data, dict):
+            return False, "trial telemetry unavailable"
+        if profile not in ("short",COAST30_PROFILE) or (profile==COAST30_PROFILE and pair!=UART_V3_SENDER_TRIAL_PAIR):
+            return False, "unreviewed trial profile/pair"
+        if (any(type(data.get(k)) is not int for k in ("fw_build", "mc_fw_build"))
+                or pair not in (UART_V3_TRIAL_PAIR, UART_V3_SENDER_TRIAL_PAIR)
+                or (data.get("fw_build"), data.get("mc_fw_build")) != pair):
+            return False, "trial peer identity changed"
+        for key in ("mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence", "mc_uart_error_flags",
+                    "mc_last_uart_error_flags", "uno_tx_short_writes", "bp_transport_fault",
+                    "mc_last_bad_reason", "bp_bad", "bp_bad_cnt"):
+            if type(data.get(key)) is not int or data[key] != 0:
+                return False, "trial transport unhealthy: " + key
+        for key in ("mc_age_ms", "bp_age_ms", "bp_vbus_age_ms", "bp_temp_age_ms"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value < 300:
+                return False, "trial telemetry stale: " + key
+        for key in ("vdc", "bp_vdc"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 250 <= value <= 360:
+                return False, "trial bus outside 250..360 V"
+        if abs(data["vdc"] - data["bp_vdc"]) > 1:
+            return False, "trial bus readings disagree"
+        if any(data.get(k) != 1 for k in ("mc_diag_valid", "bp_vbus_valid", "bp_temp_valid",
+                                         "bp_mcsdk_telemetry", "bp_softstart_ready")):
+            return False, "trial diagnostics/measurements not ready"
+        if data.get("estop") != 0 or (idle and data.get("pwm") != 0):
+            return False, "trial observation requires outputs off"
+        temp = data.get("bp_temp_c")
+        if type(temp) not in (int, float) or not math.isfinite(temp) or not -20 <= temp <= 80:
+            return False, "trial heatsink temperature invalid"
+        raw = data.get("bp_vbus_raw")
+        if type(raw) is not int or abs(raw*.1 - data["bp_vdc"]) > 1:
+            return False, "trial bus word disagrees with scaled telemetry"
+        if any(data.get(k) != 0 for k in ("bp_fault", "bp_temp_fault", "precharge", "pfc", "brake", "bp_ext")):
+            return False, "trial fault or service output active"
+        if data.get("mode") != "VF" or data.get("mc_capabilities") != MC_CAP_VF:
+            return False, "trial requires V/f backend"
+        freq = data.get("freq_cmd")
+        stopped_zero = (allow_stopped_zero and not idle and freq == 0
+            and data.get("state") == "SAFE" and data.get("pwm") == 0
+            and not (_as_int(data, "bp_status", 0x22) & 0x22))
+        if (type(freq) not in (int, float) or not math.isfinite(freq)
+                or not ((freq==50 if profile==COAST30_PROFILE else 0 < freq <= 10) or stopped_zero)):
+            return False, "trial frequency target must be within (0,10] Hz"
+        if idle and (data.get("state") != "SAFE" or _as_int(data, "bp_status", 0x22) & 0x22):
+            return False, "trial observation requires SAFE controller"
+        return True, "ok"
+
+    def observe(self, data: Optional[dict], calibrated: bool) -> None:
+        with self._lock:
+            self._observe(data, calibrated)
+
+    def _observe(self, data: Optional[dict], calibrated: bool) -> None:
+        now = time.monotonic()
+        if self.consumed:
+            return
+        ok, reason = self.live_check(data, idle=True, pair=self.pair, profile=self.profile)
+        if not calibrated or not ok:
+            self.reset_observation(reason if calibrated else "trial bus calibration invalid")
+            return
+        good = data.get("bp_good")
+        if type(good) is not int or good < 0:
+            self.reset_observation("trial valid-frame counter unavailable")
+            return
+        if (self.last_seen is not None and (now - self.last_seen > 2
+                or good < self.last_good)):
+            self.reset_observation("observation gap or controller restart")
+        if self.begin is None:
+            self.begin, self.first_good = now, good
+        if self.last_good != good:
+            self.samples += 1
+        self.last_seen, self.last_good = now, good
+        self.reason = "powered idle observation in progress"
+
+    def ready(self, data: Optional[dict], calibrated: bool) -> tuple[bool, str]:
+        with self._lock:
+            return self._ready(data, calibrated)
+
+    def _ready(self, data: Optional[dict], calibrated: bool) -> tuple[bool, str]:
+        self.observe(data, calibrated)
+        if self.consumed:
+            return False, "one-shot powered trial already consumed"
+        if time.monotonic() >= self.expires_at:
+            return False, "powered trial preparation expired"
+        if (self.begin is None or time.monotonic() - self.begin < 30 or self.samples < 20
+                or self.last_good - self.first_good < 100):
+            return False, self.reason + "; need 30 seconds and 100 new valid frames"
+        return True, f"powered idle qualified for one {self.stop_after_s}-second trial"
+
+    def consume(self) -> None:
+        with self._lock:
+            self._consume()
+
+    def _consume(self) -> None:
+        if self.consumed:
+            raise RuntimeError("powered trial already consumed")
+        self.consumed = True
+        self.started_at = time.monotonic()
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return self._snapshot()
+
+    def _snapshot(self) -> dict:
+        return {"hmi_powered_trial_enabled": 1, "hmi_powered_trial_used": int(self.consumed),
+                "hmi_powered_trial_observed_s": round(0 if self.begin is None else time.monotonic()-self.begin, 1),
+                "hmi_powered_trial_samples": self.samples, "hmi_powered_trial_reason": self.reason,
+                "hmi_powered_trial_remaining_s": round(max(0, self.expires_at-time.monotonic()), 1),
+                "hmi_powered_trial_max_run_s": self.max_run_s, "hmi_powered_trial_max_freq_hz": self.max_freq_hz,
+                "hmi_powered_trial_stop_after_s": self.stop_after_s,
+                "hmi_powered_trial_profile": self.profile}
 
 TOOLS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 if TOOLS_DIR not in sys.path:
@@ -258,6 +484,11 @@ def _as_int(data: dict, key: str, default: int = 0) -> int:
         return default
 
 
+def local_stop_latched(data: Optional[dict]) -> int:
+    """Derive the current latch from controller telemetry, independently of first fault."""
+    return int(bool(_as_int(data or {}, "bp_status", 0) & 0x80))
+
+
 def with_motor_controller_aliases(data: dict) -> dict:
     """Publish mc_* as the canonical API while retaining bp_* compatibility."""
     for key, value in list(data.items()):
@@ -266,6 +497,7 @@ def with_motor_controller_aliases(data: dict) -> dict:
     for key, value in list(data.items()):
         if key.startswith("bp_"):
             data.setdefault(f"mc_{key[3:]}", value)
+    data["hmi_local_stop_latched"] = local_stop_latched(data)
     data["mc_fault_detail"] = motor_fault_detail(data)
     if _as_int(data, "bp_mcsdk_telemetry", 0) == 1:
         data["mc_current_telemetry_valid"] = 0
@@ -288,8 +520,9 @@ MCSDK_FAULT_BITS = {
 
 
 def motor_fault_detail(data: dict) -> str:
+    current = "current=LOCAL_STOP_PC13; " if local_stop_latched(data) else ""
     if _as_int(data, "mc_diag_valid", 0) != 1:
-        return "cause unavailable in installed firmware"
+        return current + "cause unavailable in installed firmware"
     reason = _as_int(data, "mc_fault_reason", -1)
     label = MC_FAULT_REASONS.get(reason, f"UNKNOWN_REASON_{reason}")
     uart = _as_int(data, "mc_uart_error_flags", 0)
@@ -302,7 +535,7 @@ def motor_fault_detail(data: dict) -> str:
         if unknown:
             names.append(f"UNKNOWN_BITS_0x{unknown:04X}")
         masks.append(f"0x{mask:04X}[{'|'.join(names) or 'NONE'}]")
-    return (f"first={label} UART={'|'.join(uart_names) or 'NONE'} "
+    return (current + f"first={label} UART={'|'.join(uart_names) or 'NONE'} "
             f"MCSDK_current={masks[0]} MCSDK_occurred={masks[1]} "
             f"state={_as_int(data, 'mc_fault_motor_state', -1)} "
             f"seq={_as_int(data, 'mc_fault_sequence', -1)} "
@@ -327,8 +560,10 @@ class MotorFaultRecorder:
         "mc_last_uart_error_flags", "mc_last_tx_status", "enc_bus_ok", "enc_ok",
         "enc_speed_ok", "enc_reads", "enc_errors", "enc_io_error", "enc_age_ms",
         "enc_status", "hmi_hv_armed", "hmi_operator_heartbeat_age_s",
+        "hmi_local_stop_latched",
     )
     KEY_FIELDS = (
+        "mc_fault", "hmi_local_stop_latched",
         "mc_fw_build", "mc_diag_valid", "mc_fault_reason", "mc_uart_error_flags",
         "mc_fault_current_mask", "mc_fault_occurred_mask", "mc_fault_motor_state",
         "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
@@ -357,6 +592,7 @@ class MotorFaultRecorder:
                 sample[key] = value
             else:
                 sample[key] = None
+        sample["hmi_local_stop_latched"] = local_stop_latched(data)
         return sample
 
     def observe(self, data: dict, now: Optional[float] = None) -> list[str]:
@@ -365,7 +601,7 @@ class MotorFaultRecorder:
         valid = _as_int(data, "mc_diag_valid", 0) == 1
         active = _as_int(data, "bp_fault", 0)
         first_reason = _as_int(data, "mc_fault_reason", 0)
-        has_cause = bool(first_reason or active)
+        has_cause = bool(first_reason or active or local_stop_latched(data))
         key = tuple(sample.get(k) for k in self.KEY_FIELDS) if has_cause else None
         if key is not None and not valid:
             key += (active,)
@@ -382,7 +618,8 @@ class MotorFaultRecorder:
                 uart_names = [name for bit, name in ((1, "PE"), (2, "FE"), (4, "NE"), (8, "ORE")) if flags & bit]
                 label = MC_FAULT_REASONS.get(reason, "UNKNOWN") if valid else "DIAGNOSTICS_UNAVAILABLE"
                 self._event_id = secrets.token_hex(8)
-                self._event_summary = f"{label}; UART={'|'.join(uart_names) or 'NONE'}; physical source not identified"
+                current = "current=LOCAL_STOP_PC13; first=" if local_stop_latched(data) else ""
+                self._event_summary = current + f"{label}; UART={'|'.join(uart_names) or 'NONE'}; physical source not identified"
                 before = [s for s in self._history if 0 <= now - s["observed_monotonic_s"] <= 5]
                 payload = {
                     "schema": "mic_ai.fault_context.v1", "event_id": self._event_id,
@@ -464,6 +701,12 @@ def _vbus_calibration_identity_matches(stored: dict, current: dict) -> bool:
         (2026100802, 2026100801),
         (2026100803, 2026100801),
         (2026100804, 2026100801),
+        (2026101001, 2026100801),
+        (2026101002, 2026100801),
+        (2026101004, 2026101003),
+        (2026101005, 2026101003),
+        (2026101007, 2026101006),
+        (2026101008, 2026101006),
     }
     contract = {
         "rpc_schema_version": 3,
@@ -1087,6 +1330,7 @@ class HvArmConfig:
         min_temp_c: float = DEFAULT_HV_ARM_MIN_TEMP_C,
         max_temp_c: float = DEFAULT_HV_ARM_MAX_TEMP_C,
         profile: str = "hv",
+        trial_gate: Optional[PoweredTrialGate] = None,
     ) -> None:
         self.enabled = bool(enabled)
         self.ttl_sec = max(1.0, float(ttl_sec))
@@ -1096,6 +1340,7 @@ class HvArmConfig:
         self.min_temp_c = float(min_temp_c)
         self.max_temp_c = float(max_temp_c)
         self.profile = str(profile).strip().lower() or "hv"
+        self.trial_gate = trial_gate
 
     @property
     def profile_label(self) -> str:
@@ -1109,9 +1354,21 @@ def hv_arm_precheck(
         return False, "standalone arm mode is disabled"
     calibration_ready = VBUS_HV_CALIBRATION_VALID if vbus_calibrated is None else bool(vbus_calibrated)
     if cfg.profile == ARM_PROFILE_HV and not calibration_ready:
+        if cfg.trial_gate is not None:
+            cfg.trial_gate.observe(data, False)
         return False, "HV Vbus calibration is incomplete; capture a known-voltage point before arming"
     if data is None:
         return False, "status unavailable"
+    if cfg.profile == ARM_PROFILE_HV and (
+        _as_int(data, "fw_build", -1), _as_int(data, "mc_fw_build", -1)
+    ) in ((2026101004, 2026101003), (2026101005, 2026101003), (2026101007, 2026101006),
+          (2026101008, 2026101006)):
+        if cfg.trial_gate is None:
+            return False, "UART v3 requires an explicitly prepared bounded powered trial"
+    if cfg.trial_gate is not None:
+        ok, reason = cfg.trial_gate.ready(data, calibration_ready)
+        if not ok:
+            return False, reason
     state = str(data.get("state", "")).upper()
     state_code = _as_int(data, "state_code", STATE_CODES.get(state, -1))
     if state != "SAFE" and state_code != STATE_CODES["SAFE"]:
@@ -1167,7 +1424,26 @@ def arm_profile_switch_precheck(data: Optional[dict], cfg: HvArmConfig) -> tuple
         return False, "PFC output is active"
     if _as_int(data, "brake", 1) != 0 or _as_float(data, "brake_duty", 1.0) > 0.0001:
         return False, "brake output is active"
-    if _as_int(data, "bp_fault", 255) != 0:
+    restoring_hv_while_discharged = (
+        cfg.profile == ARM_PROFILE_HV
+        and (_as_int(data, "fw_build", -1), _as_int(data, "mc_fw_build", -1)) == (2026101002, 2026100801)
+        and _as_int(data, "bp_fault", 255) == 5
+        and _as_int(data, "mc_diag_valid", 0) == 1
+        and _as_int(data, "mc_fault_reason", -1) == 8
+        and _as_int(data, "mc_fault_current_mask", -1) == 4
+        and _as_int(data, "mc_fault_occurred_mask", -1) == 4
+        and _as_int(data, "mc_uart_error_flags", -1) == 0
+        and _as_int(data, "mc_last_uart_error_flags", -1) == 0
+        and _as_int(data, "bp_vbus_valid", 0) == 1
+        and 0 <= _as_float(data, "bp_vbus_age_ms", 999999.0) < 300.0
+        and 0 <= _as_int(data, "bp_vbus_raw", -1) <= 20
+        and not (_as_int(data, "bp_status", 0x22) & 0x22)
+        and all(math.isfinite(_as_float(data, key, float("nan")))
+                and 0 <= _as_float(data, key, -1) <= 2 for key in ("vdc", "bp_vdc"))
+    )
+    # Selecting a disarmed profile is not ARM/START. Only the expected, measured
+    # zero-bus undervoltage may permit returning to the stricter HV profile.
+    if _as_int(data, "bp_fault", 255) != 0 and not restoring_hv_while_discharged:
         return False, f"motor-controller fault is active: mc_fault={_as_int(data, 'bp_fault', 255)}"
     bad = _status_mc_bad(data)
     if bad != 0:
@@ -1195,6 +1471,15 @@ def hv_runtime_check(
         return False, "HV Vbus calibration is incomplete"
     if data is None:
         return False, "status unavailable"
+    if cfg.trial_gate is not None:
+        ok, reason = cfg.trial_gate.live_check(data, pair=cfg.trial_gate.pair,
+                                              allow_stopped_zero=cfg.trial_gate.consumed,
+                                              profile=cfg.trial_gate.profile)
+        if not ok:
+            return False, reason
+        if (cfg.trial_gate.started_at is not None
+                and time.monotonic() - cfg.trial_gate.started_at >= cfg.trial_gate.stop_after_s):
+            return False, cfg.trial_gate.deadline_reason
     if _as_int(data, "estop", 1) != 0:
         return False, "ESTOP is active"
     if _as_int(data, "bp_fault", 255) != 0:
@@ -1458,6 +1743,8 @@ class RouterClient:
         self._packer = msgpack.Packer(use_bin_type=False)
         self._msgid = 1
         self._lock = threading.Lock()
+        self._flight_lock = threading.Lock()
+        self._get_flight = None
 
     def close(self) -> None:
         if self._sock is not None:
@@ -1468,21 +1755,26 @@ class RouterClient:
         self._sock = None
         self._unpacker = None
 
-    def _connect(self) -> None:
+    def _connect(self, deadline: Optional[float] = None) -> None:
         if self._sock is not None:
             return
+        remaining = 1.0 if deadline is None else min(1.0, deadline - time.monotonic())
+        if remaining <= 0:
+            raise TimeoutError("RPC connection deadline")
         endpoint = self._endpoint
-        if endpoint.startswith("unix:"):
-            path = endpoint[5:]
+        if endpoint.startswith("unix:") or "/" in endpoint or endpoint.startswith("."):
+            path = endpoint[5:] if endpoint.startswith("unix:") else endpoint
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(path)
-        elif "/" in endpoint or endpoint.startswith("."):
-            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            sock.connect(endpoint)
+            sock.settimeout(remaining)
+            try:
+                sock.connect(path)
+            except Exception:
+                sock.close()
+                raise
         else:
             host, port = self._parse_tcp(endpoint)
-            sock = socket.create_connection((host, port), timeout=1.0)
-        sock.settimeout(0.2)
+            sock = socket.create_connection((host, port), timeout=remaining)
+        sock.settimeout(min(0.2, remaining))
         self._sock = sock
         self._unpacker = msgpack.Unpacker(raw=False)
 
@@ -1500,17 +1792,57 @@ class RouterClient:
         return host, port
 
     def call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
+        if method != "get" or params:
+            # Commands and capture-page changes fence all preceding reads.
+            # Never merge, cache or replay a command.
+            with self._flight_lock:
+                self._get_flight = None
+            return self._call_serial(method, params, timeout, retries)
+        with self._flight_lock:
+            flight = self._get_flight
+            leader = flight is None
+            if leader:
+                flight = {"done": threading.Event(), "reply": None}
+                self._get_flight = flight
+        if not leader:
+            budget = max(0.0, timeout) * (max(0, retries) + 1) + 0.05 * max(0, retries)
+            if not flight["done"].wait(budget):
+                return None
+            return _rpc_copy.deepcopy(flight["reply"])
+        reply = None
+        try:
+            reply = self._call_serial(method, params, timeout, retries)
+            return reply
+        finally:
+            with self._flight_lock:
+                flight["reply"] = _rpc_copy.deepcopy(reply)
+                flight["done"].set()
+                if self._get_flight is flight:
+                    self._get_flight = None
+
+    def _call_serial(self, method: str, params: list, timeout: float, retries: int) -> Optional[list]:
         for attempt in range(retries + 1):
-            with self._lock:
+            # Queueing, connection, sending and reading share one attempt budget.
+            # Wall-clock/NTP changes cannot extend a transport deadline.
+            deadline = time.monotonic() + max(0.0, timeout)
+            acquired = self._lock.acquire(timeout=max(0.0, timeout))
+            if acquired:
                 try:
-                    self._connect()
+                    self._connect(deadline)
                     if self._sock is None or self._unpacker is None:
                         raise RuntimeError("no socket")
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError("RPC admission deadline")
+                    self._sock.settimeout(min(0.2, remaining))
                     msgid = self._msgid
                     self._msgid += 1
                     self._sock.sendall(self._packer.pack([0, msgid, method, params]))
-                    deadline = _now_ts() + timeout
-                    while _now_ts() < deadline:
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise TimeoutError("router timeout")
+                        self._sock.settimeout(min(0.2, remaining))
                         try:
                             data = self._sock.recv(4096)
                         except socket.timeout:
@@ -1521,9 +1853,11 @@ class RouterClient:
                         for obj in self._unpacker:
                             if isinstance(obj, list) and len(obj) >= 4 and obj[0] == 1 and obj[1] == msgid:
                                 return obj
-                    raise RuntimeError("router timeout")
                 except Exception:
                     self.close()
+                finally:
+                    self._lock.release()
+            # A caller which never owned the socket must not close another call.
             if attempt < retries:
                 time.sleep(0.05)
         return None
@@ -1717,7 +2051,8 @@ class RpcBridge:
                 self._router = RouterClient(endpoint)
             except RuntimeError:
                 self._router = None
-            self._serial_text = TextSerialClient("/dev/ttyHS1", baud=serial_baud)
+            # The router owns its UART. A text fallback would steal MsgPack
+            # frames and inject ASCII commands into the same byte stream.
 
     def _call(self, method: str, params: list, timeout: float = 1.5, retries: int = 1) -> Optional[list]:
         if self._router is not None:
@@ -2076,6 +2411,8 @@ class RpcBridge:
                 "bp_bad": int(float(kv.get("bp_bad", "999999"))),
                 "bp_bad_integrity": int(float(kv["bp_bad_integrity"])) if "bp_bad_integrity" in kv else None,
                 "bp_bad_sequence": int(float(kv["bp_bad_sequence"])) if "bp_bad_sequence" in kv else None,
+                **{key: int(kv[key]) if key in kv else None for key in (
+                    "bp_ne_accepted", "bp_ne_observed", "bp_ne_flags", "bp_transport_fault")},
                 "bp_superseded": int(float(kv["bp_superseded"])) if "bp_superseded" in kv else None,
                 "bp_clear_pending": int(float(kv["bp_clear_pending"])) if "bp_clear_pending" in kv else None,
                 "bp_age_ms": int(float(kv.get("bp_age_ms", "999999"))),
@@ -2188,6 +2525,101 @@ class AppState:
         self._runtime_bad_monitor = HvRuntimeBadFrameMonitor()
         self._fault_recorder = MotorFaultRecorder()
         self._last_diag_idle_poll = 0.0
+        self._trial_original_cfg = None
+        self._trial_original_runlimit = None
+        self._powered_trial_spent = False
+
+    def prepare_powered_trial(self, proof: object, confirm: str) -> tuple[bool, str]:
+        if confirm not in ("PREPARE UARTV3 TRIAL 3S","PREPARE UARTV3 COAST30 50HZ") or not self.control_access.enabled:
+            return False, "authenticated explicit trial preparation required"
+        ok, reason = validate_powered_trial_qualification(proof)
+        if not ok:
+            return False, reason
+        coast30 = proof.get("schema")=="mic_ai.powered_trial.coast30.v1"
+        if confirm != ("PREPARE UARTV3 COAST30 50HZ" if coast30 else "PREPARE UARTV3 TRIAL 3S"):
+            return False, "qualification/preparation phrase mismatch"
+        if self._powered_trial_spent or self.hv_arm.cfg.trial_gate is not None:
+            return False, "trial already prepared or consumed in this HMI session"
+        cfg = self.hv_arm.cfg
+        read_ok, data, _ = self.rpc.get()
+        if (not read_ok or data is None or cfg.profile != ARM_PROFILE_HV or not cfg.enabled
+                or self.hv_arm.snapshot()["hmi_hv_armed"] or not self.vbus_calibration.is_valid(data)):
+            return False, "trial needs disarmed calibrated HV profile"
+        if ((data.get("fw_build"), data.get("mc_fw_build")) != tuple(proof["pair"])
+                or data.get("state") != "SAFE" or data.get("pwm") != 0 or data.get("estop") != 0
+                or _as_int(data, "bp_status", 0x22) & 0x22
+                or any(data.get(k) != 0 for k in ("precharge", "pfc", "brake", "bp_ext"))):
+            return False, "trial preparation requires qualified peers with outputs off"
+        for key in ("vdc", "bp_vdc"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 2:
+                return False, "prepare only on a discharged bus"
+        if not 0 <= _as_int(data, "bp_vbus_raw", 999999) <= 20 or not _status_link_live(data):
+            return False, "preparation bus word/link invalid"
+        for key in ("mc_bad_cnt", "mc_bad_integrity", "mc_bad_sequence", "mc_uart_error_flags",
+                    "mc_last_uart_error_flags", "uno_tx_short_writes", "bp_transport_fault"):
+            if type(data.get(key)) is not int or data[key] != 0:
+                return False, "preparation transport unhealthy: " + key
+        for key in ("mc_age_ms", "bp_vbus_age_ms", "bp_temp_age_ms"):
+            value = data.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value < 300:
+                return False, "preparation telemetry stale: " + key
+        if (data.get("bp_fault") not in (0, 5) or data.get("mc_diag_valid") != 1
+                or data.get("bp_vbus_valid") != 1 or data.get("bp_temp_valid") != 1
+                or data.get("bp_temp_fault") != 0):
+            return False, "preparation measurements or fault state invalid"
+        if data.get("bp_fault") == 5 and (data.get("mc_fault_reason") != 8
+                or data.get("mc_fault_current_mask") != 4 or data.get("mc_fault_occurred_mask") not in (4, 0x404)):
+            return False, "preparation permits only specifically identified zero-bus undervoltage"
+        # Preparation is not ACK/ARM. Retain a recorded DP occurrence; live
+        # arming still requires fault-free powered telemetry for a full window.
+        remaining = proof["expires_at"] - time.time()
+        if not 0 < remaining <= 3600:
+            return False, "qualification expired during trial preparation"
+        self._trial_original_cfg = cfg
+        gate = PoweredTrialGate(remaining, pair=tuple(proof["pair"]),profile=COAST30_PROFILE if coast30 else "short")
+        self._trial_original_runlimit = self.start_runlimit_sec
+        if coast30:
+            self.start_runlimit_sec = 33
+        self.hv_arm.set_config(HvArmConfig(enabled=cfg.enabled, ttl_sec=45 if coast30 else min(cfg.ttl_sec, 10),
+            min_vdc=max(cfg.min_vdc, 250), max_vdc=min(cfg.max_vdc, 360),
+            min_temp_c=cfg.min_temp_c, max_temp_c=min(cfg.max_temp_c, 80),
+            confirm="ARM UARTV3 COAST30 50HZ" if coast30 else "ARM UARTV3 TRIAL 3S", profile=ARM_PROFILE_HV,
+            trial_gate=gate))
+        self.logs.add("POWERED_TRIAL_PREPARED pair=" + "/".join(map(str, proof["pair"]))
+                      + f" max_run={gate.max_run_s}s max_freq={gate.max_freq_hz}Hz no_START")
+        return True, "prepared, not armed; awaiting 30 seconds of fault-free powered idle observations"
+
+    def cancel_powered_trial(self) -> tuple[bool, str]:
+        ok, reason, _ = self.stop_sequence()
+        if self._trial_original_cfg is not None:
+            self.hv_arm.set_config(self._trial_original_cfg)
+            self._trial_original_cfg = None
+            self.start_runlimit_sec = self._trial_original_runlimit
+            self._trial_original_runlimit = None
+        return ok, reason
+
+    def trial_command_check(self, cmd: str) -> tuple[bool, str]:
+        if self.hv_arm.cfg.trial_gate is None:
+            return True, "ok"
+        parts = [p.upper() for p in _cmd_tokens(cmd)]
+        if parts in (["STOP"], ["ESTOP"], ["CLEAR"], ["MODE", "VF"]):
+            return True, "ok"
+        if len(parts) == 3 and parts[:2] in (["SET", "FREQ"], ["SET", "RUNLIMIT"]):
+            try:
+                value = float(parts[2])
+                gate = self.hv_arm.cfg.trial_gate
+                if gate.profile==COAST30_PROFILE:
+                    if math.isfinite(value) and ((parts[1]=="FREQ" and value in (0,50))
+                            or (parts[1]=="RUNLIMIT" and value==33 and not gate.consumed)):
+                        return True,"ok"
+                    return False,"coast profile fixes 50 Hz and 33 s backup; STOP allowed, active deceleration forbidden"
+                ceiling = gate.max_freq_hz if parts[1] == "FREQ" else gate.max_run_s
+                if math.isfinite(value) and (0 <= value <= ceiling if parts[1] == "FREQ" else .1 <= value <= ceiling):
+                    return True, "ok"
+            except ValueError:
+                pass
+        return False, "powered trial permits only V/f <=10 Hz, run limit <=3 s, CLEAR and stop commands"
 
     def _precharge_off(self) -> tuple[bool, str]:
         return True, "external-autonomous-no-control"
@@ -2258,8 +2690,22 @@ class AppState:
         relay_settle_sec: float = DEFAULT_RELAY_SETTLE_SEC,
         run_timeout_sec: float = DEFAULT_RUN_CONFIRM_TIMEOUT_SEC,
         poll_sec: float = 0.05,
+        runlimit_sec: Optional[float] = None,
     ) -> tuple[bool, str, Optional[dict]]:
         """Confirm safety, then wait for the autonomous AC soft-start and PWM."""
+        effective_limit = self.start_runlimit_sec
+        if self.hv_arm.cfg.trial_gate is not None:
+            gate=self.hv_arm.cfg.trial_gate
+            effective_limit = min(effective_limit, gate.max_run_s)
+            if gate.profile==COAST30_PROFILE and runlimit_sec is not None and runlimit_sec!=33:
+                return False,"coast profile requires its exact 33-second MCU backup limit",None
+            if not self.operator_heartbeat_fresh():
+                return False, "powered trial requires a fresh operator heartbeat", None
+        if runlimit_sec is not None:
+            if (type(runlimit_sec) not in (int, float) or not math.isfinite(runlimit_sec)
+                    or not 0.1 <= runlimit_sec <= effective_limit):
+                return False, "requested run limit must be finite, positive and no greater than profile limit", None
+            effective_limit = float(runlimit_sec)
         st_ok, status, st_err = self.rpc.get()
         allowed, guard_err = command_guard_check(
             "START", status if st_ok else None, self.command_guard
@@ -2281,13 +2727,14 @@ class AppState:
             self.stop_sequence(emergency=False)
             return False, "reserved precharge bit was nonzero; outputs were forced off, retry START", status
 
-        return self._start_without_precharge(status, run_timeout_sec, poll_sec)
+        return self._start_without_precharge(status, run_timeout_sec, poll_sec, effective_limit)
 
     def _start_without_precharge(
         self,
         initial_status: dict,
         run_timeout_sec: float,
         poll_sec: float,
+        effective_limit: Optional[float] = None,
     ) -> tuple[bool, str, Optional[dict]]:
         mcsdk_backend = _as_int(initial_status, "bp_mcsdk_telemetry", 0) == 1
         self.logs.add(
@@ -2301,7 +2748,7 @@ class AppState:
             self.logs.add(f"WIFI_START_FAIL arm_recheck {arm_err}")
             return False, arm_err, initial_status
 
-        runlimit_cmd = f"SET RUNLIMIT {self.start_runlimit_sec:.3f}"
+        runlimit_cmd = f"SET RUNLIMIT {self.start_runlimit_sec if effective_limit is None else effective_limit:.3f}"
         limit_ok, limit_err = self.rpc.cmd(runlimit_cmd)
         if not limit_ok:
             self.stop_sequence(emergency=False)
@@ -2309,6 +2756,17 @@ class AppState:
             self.logs.add(f"WIFI_START_FAIL runlimit {detail}")
             return False, detail, initial_status
 
+        gate = self.hv_arm.cfg.trial_gate
+        if gate is not None:
+            read_ok, current, read_err = self.rpc.get()
+            allowed, reason = self.hv_arm.command_allowed(current if read_ok else None)
+            if not read_ok or not allowed or not self.operator_heartbeat_fresh():
+                self.stop_sequence()
+                return False, "trial final pre-START check failed: " + (read_err or reason), current
+            # Consume before attempting START, including a lost/rejected reply.
+            gate.consume()
+            self._powered_trial_spent = True
+            self.logs.add(f"POWERED_TRIAL_CONSUMED max_run={gate.max_run_s}s stop_after={gate.stop_after_s}s")
         start_ok, start_err = self.rpc.cmd("START")
         if not start_ok:
             self.stop_sequence(emergency=True)
@@ -2379,6 +2837,18 @@ class AppState:
         available = [name for name in (ARM_PROFILE_HV, ARM_PROFILE_LV) if name in self.arm_profiles]
         snapshot["hmi_arm_profiles"] = available
         snapshot["hmi_start_runlimit_s"] = round(self.start_runlimit_sec, 1)
+        gate = self.hv_arm.cfg.trial_gate
+        snapshot["hmi_local_stop_latched"] = local_stop_latched(status)
+        snapshot["hmi_powered_trial_supported"] = 1
+        snapshot["hmi_powered_trial_enabled"] = 0
+        snapshot["hmi_powered_trial_ready"] = 0
+        if gate is not None:
+            ready, reason = gate.ready(status, self.vbus_calibration.is_valid(status))
+            snapshot.update(gate.snapshot())
+            snapshot["hmi_powered_trial_ready"] = int(ready)
+            snapshot["hmi_powered_trial_reason"] = reason
+            snapshot["hmi_start_runlimit_s"] = min(snapshot["hmi_start_runlimit_s"], gate.max_run_s)
+        snapshot["hmi_bounded_start_request_supported"] = 1
         snapshot["hmi_precharge_relay_present"] = 0
         snapshot["hmi_external_softstart_ready"] = int(
             status is not None and _as_int(status, "bp_softstart_ready", 0) == 1
@@ -2404,6 +2874,8 @@ class AppState:
         return snapshot
 
     def switch_arm_profile(self, profile: str, status: Optional[dict]) -> tuple[bool, str]:
+        if self.hv_arm.cfg.trial_gate is not None:
+            return False, "cancel powered trial before changing profile"
         target = str(profile).strip().lower()
         cfg = self.arm_profiles.get(target)
         if cfg is None:
@@ -2461,7 +2933,9 @@ class AppState:
                         elif not live_ok:
                             live_err = bad_err
                     if not live_ok:
-                        reason = f"HV_RUNTIME_REJECT {status_err or live_err}"
+                        gate=self.hv_arm.cfg.trial_gate
+                        reason = ("POWERED_TRIAL_RUNLIMIT" if gate is not None and live_err == gate.deadline_reason
+                                  else f"HV_RUNTIME_REJECT {status_err or live_err}")
                         self.hv_arm.disarm()
             else:
                 self._runtime_bad_monitor.reset()
@@ -2473,10 +2947,22 @@ class AppState:
                     status_ok, status, _ = self.rpc.get()
                     if status_ok and status is not None:
                         self.maybe_log_fault_diagnostics(status)
+                    gate = self.hv_arm.cfg.trial_gate
+                    if gate is not None:
+                        idle = status if status_ok else None
+                        gate.observe(idle, self.vbus_calibration.is_valid(idle))
             if not reason:
                 continue
             stop_ok, stop_err = self.rpc.cmd("STOP")
-            estop_ok, estop_err = self.rpc.cmd("ESTOP")
+            normal_trial_stop = False
+            if reason == "POWERED_TRIAL_RUNLIMIT" and stop_ok:
+                read_ok, stopped, _ = self.rpc.get()
+                normal_trial_stop = bool(read_ok and stopped is not None and _status_link_live(stopped)
+                    and _as_int(stopped, "pwm", 1) == 0 and not (_as_int(stopped, "bp_status", 0x20) & 0x20)
+                    and _as_int(stopped, "bp_ext", 1) == 0)
+            # A normal deadline is not an emergency; unconfirmed STOP still escalates.
+            estop_ok, estop_err = ((True, "not-required-after-confirmed-trial-stop") if normal_trial_stop
+                                  else self.rpc.cmd("ESTOP"))
             relay_ok, relay_err = self._precharge_off()
             self.logs.add(
                 f"{reason} "
@@ -2486,20 +2972,21 @@ class AppState:
             )
 
     def maybe_log_fault_diagnostics(self, data: dict) -> None:
+        data["hmi_local_stop_latched"] = local_stop_latched(data)
+        data["mc_fault_detail"] = motor_fault_detail(data)
         for line in self._fault_recorder.observe(data):
             self.logs.add(line)
         data.update(self._fault_recorder.snapshot())
         reason = _as_int(data, "mc_fault_reason", 0)
         active = _as_int(data, "bp_fault", 0)
         key = None
-        if reason or active:
+        if reason or active or local_stop_latched(data):
             key = tuple(data.get(k) for k in ("mc_fw_build", "mc_diag_valid", "mc_fault_reason",
                                              "mc_uart_error_flags", "mc_fault_current_mask",
                                              "mc_fault_occurred_mask", "mc_fault_motor_state",
                                              "mc_fault_sequence", "mc_fault_tx_status", "mc_bad_cnt",
                                              "mc_last_bad_reason", "mc_last_uart_error_flags", "mc_last_tx_status"))
-            if _as_int(data, "mc_diag_valid", 0) != 1:
-                key += (active,)
+            key += (active, local_stop_latched(data))
         with self._lock:
             if key == self._last_fault_diag_key:
                 return
@@ -2523,6 +3010,7 @@ class AppState:
             f"fan_duty={data.get('fan_duty', 0.0):.2f} bp_fan_rpm={data.get('bp_fan_rpm', 0.0):.0f} "
             f"bp_cmd_mode={data.get('bp_cmd_mode', 0)} bp_foc_backend={data.get('bp_foc_backend', 0)}"
             f" mc_diag_valid={data.get('mc_diag_valid', 0)} mc_fault_reason={data.get('mc_fault_reason', 0)}"
+            f" hmi_local_stop_latched={local_stop_latched(data)}"
         )
         self.logs.add(line)
 
@@ -2618,6 +3106,7 @@ class Handler(BaseHTTPRequestHandler):
             "/api/arm-profile",
             "/api/calibration/vbus",
             "/api/operator-heartbeat",
+            "/api/powered-trial",
         }
         if parsed.path in protected and not self._require_control_access():
             return
@@ -2626,6 +3115,9 @@ class Handler(BaseHTTPRequestHandler):
             return
         if parsed.path == "/api/start-sequence":
             self._handle_start_sequence()
+            return
+        if parsed.path == "/api/powered-trial":
+            self._handle_powered_trial()
             return
         if parsed.path == "/api/stop-sequence":
             self._handle_stop_sequence()
@@ -2674,12 +3166,35 @@ class Handler(BaseHTTPRequestHandler):
 
     def _handle_start_sequence(self) -> None:
         app = self.server.app  # type: ignore[attr-defined]
+        request = self._read_json()
+        if not isinstance(request, dict) or ("runlimit_s" in request and request["runlimit_s"] is None):
+            self._send_json({"ok": False, "error": "numeric runlimit_s required"}, 400)
+            return
         with app.control_lock:
-            ok, detail, status = app.start_sequence()
+            if "runlimit_s" in request:
+                ok, detail, status = app.start_sequence(runlimit_sec=request["runlimit_s"])
+            else:
+                ok, detail, status = app.start_sequence()
         self._send_json(
             {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
             200 if ok else 409,
         )
+
+    def _handle_powered_trial(self) -> None:
+        request = self._read_json()
+        if not isinstance(request, dict):
+            self._send_json({"ok": False, "error": "trial request must be an object"}, 400)
+            return
+        app = self.server.app
+        with app.control_lock:
+            if request.get("action") == "prepare":
+                ok, reason = app.prepare_powered_trial(request.get("qualification"), str(request.get("confirm", "")))
+            elif request.get("action") == "cancel":
+                ok, reason = app.cancel_powered_trial()
+            else:
+                ok, reason = False, "trial action must be prepare or cancel; use the bounded START endpoint"
+        app.logs.add(f"POWERED_TRIAL_ACTION {request.get('action')} ok={int(ok)} {reason}")
+        self._send_json({"ok": ok, "message": reason if ok else "", "error": "" if ok else reason}, 200 if ok else 409)
 
     def _handle_stop_sequence(self) -> None:
         request = self._read_json()
@@ -2715,6 +3230,11 @@ class Handler(BaseHTTPRequestHandler):
                 {"ok": ok, "message": detail if ok else "", "error": "" if ok else detail, "status": status},
                 200 if ok else 500,
             )
+            return
+        allowed, reason = app.trial_command_check(cmd)
+        if not allowed:
+            app.logs.add(f"POWERED_TRIAL_CMD_REJECT {cmd} {reason}")
+            self._send_json({"ok": False, "error": reason}, 409)
             return
         guard_cfg = self.server.app.command_guard  # type: ignore[attr-defined]
         armed_output_command = False

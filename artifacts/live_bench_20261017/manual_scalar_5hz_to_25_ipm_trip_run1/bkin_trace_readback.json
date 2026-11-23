@@ -1,0 +1,27 @@
+{
+  "schema": "mic_ai.bkin_trace_readback.v1",
+  "captured_at_local": "2026-10-17 19:43 MSK",
+  "nucleo_build": 2026101506,
+  "capture_age_ms": 586228,
+  "record_magic": "0x314E4B42",
+  "record_schema": 1,
+  "record_bytes": 160,
+  "sample_period_ns": 1000,
+  "valid_samples": 1024,
+  "trace_high_samples": 0,
+  "trace_low_samples": 1024,
+  "interpretation": "All PA6 samples LOW in 1024-sample window; separate first-break ISR snapshot read PA6 HIGH. TIM1 break polarity configured HIGH. Trace age is greater than HMI 5 s visibility limit; record retained in Nucleo RAM.",
+  "first_break_context": {
+    "B2IF": false,
+    "MOE_at_irq": false,
+    "temperature_c": 60,
+    "PA6_high_at_irq": true,
+    "vbus_v": 318,
+    "occurred_faults": 0,
+    "BIF": true,
+    "current_faults": 0,
+    "BKE": true,
+    "reference_electrical_hz": 22.7
+  },
+  "raw_record_hex": "424b4e3101000000a0000000cb9b1600e803000000040000ff030000030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}

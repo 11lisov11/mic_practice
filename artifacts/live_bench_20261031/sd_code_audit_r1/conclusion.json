@@ -1,0 +1,103 @@
+{
+  "physical_source_identified": false,
+  "firmware_defect_causing_continuous_PA6_LOW_identified": false,
+  "new_evidence": {
+    "complete_live_flash_matches_verified_3016": {
+      "memory_reads_only": true,
+      "bytes_read": 107968,
+      "matches_verified_installation_byte_for_byte": true,
+      "sha256": "667c0ea45d997512e39612227154d0c630c1ec027d7a6ce8bf63c4d91d3c6298",
+      "baseline_sha256": "667c0ea45d997512e39612227154d0c630c1ec027d7a6ce8bf63c4d91d3c6298",
+      "START_CLEAR_ARM_RESET_flash_halt_register_writes": 0
+    },
+    "direct_GPIOA_PA6": {
+      "mode": 2,
+      "open_drain": true,
+      "pull": 1,
+      "high": false,
+      "output_latch": false,
+      "locked": true,
+      "af": 6
+    },
+    "PA11_mode": "analog, not configured as digital output; PA11 IDR is not used to infer its external voltage",
+    "OPAMP1_2_3": "all disabled in live CSR registers",
+    "Break_input": {
+      "BKBID": false,
+      "BKE": true,
+      "MOE": false,
+      "AOE": false,
+      "BIE": false,
+      "BKINE": true,
+      "BKINP": true
+    },
+    "GPIO_config_lock": "PA6 locked; MODER/OTYPER/PUPDR/AFR cannot be ordinarily reconfigured before reset",
+    "ODR_LOW_is_not_cause_proven": "ODR=0 in AF6 input mode does not establish that the pad is driven LOW",
+    "compiled_instructions": "At 0x080064E0..0x0800653F, installed code reads 32-bit GPIOA IDR at 0x48000010, tests bit64, sets SD flag8 only when that bit is1",
+    "same_build_reported_HIGH_before": {
+      "path": "artifacts\\live_bench_20261030\\observer_trace_r1\\autonomous_before_FOC_observer_r1\\final_status.json",
+      "age_ms": 28,
+      "pwm": 0,
+      "config_ok": true
+    }
+  },
+  "source_scan": {
+    "ADC_gpio_pins": [
+      "PA0",
+      "PA1",
+      "PC0",
+      "PC1",
+      "PC2"
+    ],
+    "UART_gpio_pins": [
+      "PA2",
+      "PA3",
+      "PB6",
+      "PB7"
+    ],
+    "passive_capture_gpio_pin": "PA4 input, no pull",
+    "PA6_init": "AF6 open-drain, pull-up; later locked by mc_lock_pins",
+    "internal_OPAMP_parameter": "MC_NULL",
+    "runtime_pin_output_drive_on_PA6": "none found in audited native source",
+    "late_ADC_or_UART_PA6_reassignment": "none found",
+    "native_sources_verified_unchanged": 226
+  },
+  "interpretation_ru": "В проверенной конфигурации STM32 принимает SD, а не выдаёт на него LOW. Сам IDR показывает LOW. После отключения STEVAL в цепи остаются шлейф, переходник, контакт PA6 и возможные внешние соединения. По этим наблюдениям нельзя определить, какой конкретно элемент удерживает уровень, или исключить неисправность самого входа. Это не доказывает универсальное отсутствие всех ошибок ПО.",
+  "changes": {
+    "firmware": false,
+    "protection_thresholds": false,
+    "old_captures": false
+  },
+  "commands": {
+    "START": 0,
+    "CLEAR": 0,
+    "ARM": 0,
+    "RESET": 0,
+    "flash": 0,
+    "halt": 0,
+    "register_writes": 0
+  },
+  "requested_new_connections_or_probes": false,
+  "requested_motor_START": false,
+  "hardware_state_not_changed_by_agent": true,
+  "limitations": [
+    "No complete isolation of IHM09M2/cable from PA6 has been performed in the current test; further connection requests were withdrawn.",
+    "Current physical connection of every auxiliary wire is not independently observed.",
+    "No intrinsic IPM failure is established by this audit."
+  ],
+  "primary_references": {
+    "RM0440_BKBID": "https://www.st.com/resource/en/reference_manual/rm0440-stm32g4-series-advanced-armbased-32bit-mcus-stmicroelectronics.pdf",
+    "ES0431_short_bidirectional_pulse_limitation_not_applicable_to_BKBID0": "https://www.st.com/resource/en/errata_sheet/es0431-stm32g431xx441xx-device-errata-stmicroelectronics.pdf"
+  },
+  "linked_MCSdk_audit": {
+    "symbols": [
+      "08017538 0000004c W R3_2_SwitchOffPWM",
+      "08009f2c 00000018 W TSK_SafetyTask",
+      "08009e60 000000cc W TSK_SafetyTask_PWMOFF"
+    ],
+    "active_safety_task": "TSK_SafetyTask_PWMOFF",
+    "ON_OVER_VOLTAGE": "TURN_OFF_PWM",
+    "HW_OV_CURRENT_PROT_BYPASS": "DISABLE",
+    "digital_brake_output_used_for_SD": false,
+    "note": "Generic MCSDK GPIO helper occurrences do not establish a PA6 write; actual application parameters and live GPIO mode are authoritative."
+  }
+}

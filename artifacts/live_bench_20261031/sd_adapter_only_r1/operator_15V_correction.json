@@ -1,0 +1,9 @@
+{
+  "operator_correction": "User states auxiliary15V had not actually been supplied.",
+  "interpretation": "With STEVAL connected, missing driver supply can produce SD LOW through UVLO. This explanation requires checking with15V actually ON.",
+  "limitation": "It does not by itself explain earlier direct PA6 LOW while STEVAL and then ribbon cable were disconnected. Those observations remain preserved; no intrinsic hardware defect is claimed.",
+  "current_last_confirmed_wiring": "IHM09M2 on Nucleo, no34pin cable, no auxiliaryPA6/PA11 wires; Nucleo USBPC; J1/J4 OFF; PA6HIGH",
+  "next_control": "With J1/J4 OFF reconnect34pin cable; then enable J4 only, leave J1 OFF. GET SD and direct registers, no START/CLEAR/RESET/flash.",
+  "hardware_commands": 0,
+  "old_capture_files_modified": false
+}

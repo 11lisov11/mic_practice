@@ -1,0 +1,117 @@
+{
+  "passed": true,
+  "build": 2026102802,
+  "elapsed_ms": 5000.004035294118,
+  "quiet_ms": 1000,
+  "PWM_seconds": 4.000456625,
+  "phases": [
+    {
+      "stage": "quiet",
+      "reads": 200,
+      "errors": 0,
+      "complete": true
+    },
+    {
+      "stage": "fixed_PWM",
+      "reads": 400,
+      "errors": 0,
+      "complete": true
+    },
+    {
+      "stage": "modulated_PWM",
+      "reads": 400,
+      "errors": 0,
+      "complete": true
+    }
+  ],
+  "AS5600_successes_during5s": 1000,
+  "AS5600_successes_during_PWM": 800,
+  "encoder_error_deltas": {
+    "errors": 0,
+    "NACK": 0,
+    "deadline": 0,
+    "BUSY": 0,
+    "ARLO": 0,
+    "BERR_clears": 0,
+    "forced_resets": 0,
+    "normal_parks": 0
+  },
+  "ADC_IRQs_during5s": 80007,
+  "ADC_hardware_errors": 0,
+  "ADC_max_IRQ_us": 19.794117647058822,
+  "TIM_max_IRQ_us": 12.964705882352941,
+  "foreground_max_gap_us": 244.04705882352943,
+  "UART_counter_deltas": {
+    "rx_bytes": 10621,
+    "rx_frames": 247,
+    "rx_bad": 0,
+    "tx_queued": 620,
+    "tx_completed": 620,
+    "tx_timeouts": 0,
+    "tx_dma_errors": 0,
+    "tx_full_errors": 0
+  },
+  "UART_counter_observation_seconds": 12.4,
+  "UART_deltas_include_before_after_test": true,
+  "UART_RX_frames_per_second": 19.919354838709676,
+  "UART_TX_frames_per_second": 50.0,
+  "UART_guard_requires_recent_good_frame_ms": 300,
+  "ADC_and_main_freshness_limit_ms": 5,
+  "physical_PWM_observed": [
+    "UH",
+    "UL",
+    "VH",
+    "VL",
+    "WH"
+  ],
+  "WL_not_recorded": true,
+  "carrier_hz": {
+    "0": 15999.999999980446,
+    "1": 15999.999999980446,
+    "2": 15999.999999980446,
+    "3": 15999.999999980446,
+    "4": 15999.999999980446
+  },
+  "SD_HIGH_throughout": true,
+  "overlap_intervals": {
+    "U": 0,
+    "V": 0,
+    "W": null
+  },
+  "wire_valid_AS5600_reads_10s": 2011,
+  "wire_complete_AS5600_reads_within_PWM": 800,
+  "wire_target_NACKs": 0,
+  "normal_master_read_final_NACKs": 2011,
+  "incomplete_initial_part": [
+    {
+      "start_s": 6.875e-05,
+      "end_s": 0.001077375,
+      "partial_bits": 6,
+      "end": "repeated_start"
+    }
+  ],
+  "incomplete_initial_part_excluded": true,
+  "incomplete_part_is_before_PWM": true,
+  "initial_SCL": 0,
+  "initial_SDA": 1,
+  "initial_part_incompleteness_source_proven": false,
+  "outputs_off_after": true,
+  "snapshot_race_fix": "Atomic phase/state/MOE snapshot and terminal publication; actual old enable and stop races reproduced in native C-body tests",
+  "first_attempt_report": "../combined_io_diag_r1/run_r1/report.json",
+  "first_attempt_complete5s": false,
+  "production_BKIN_deadtime_ADC_UART_I2C_sources_unchanged": true,
+  "motor_commands": 0,
+  "clear_commands": 0,
+  "full_motor_application_tested": false,
+  "powered_inverter_tested": false,
+  "rotating_sensor_qualified": false,
+  "amperes_RMS_qualified": false,
+  "original_motor_I2C_root_cause_proven": false,
+  "limitations": [
+    "One5s request,1s quiet plus4s physicalPWM",
+    "ADC samples with disconnected ribbon are not motor currents",
+    "RX ISR,TXDMA and CRC parser active; motor command dispatch/fullMCSDK scheduler not run",
+    "Five physical PWM traces plusSD/SCL/SDA; WL not recorded",
+    "8MS/s125ns digital capture cannot qualify analog or sub125ns disturbances"
+  ]
+}

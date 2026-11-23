@@ -1,0 +1,39 @@
+{
+  "pass": true,
+  "assertions": 2106,
+  "single_bit_corruptions": 344,
+  "ne_byte_positions": 43,
+  "hardware_commands": 0,
+  "scope": "Actual Nucleo ISR/ring/command handler/reply -> actual Uno full UART parser and decoder; HAL/MCSDK/BKIN acquisition mocked",
+  "hardware_validated": false,
+  "source_sha256": "fa310ab65a300b0c052939ba8316238d07a140dab0fa595a0e68fa268af90f9e",
+  "header_sha256": "b9eb6be5bc74c62cce6904dcb2c0aabc58ffa6d38bb47051f514521106fff24c",
+  "power_loss_reply_test": true,
+  "uno_source_sha256": "018792e06850b1771cd995e1d10773984cc89bd67f53432440f14724c88d63e9",
+  "hmi_recovery_counter_decode": true,
+  "new_pair_arm_and_separate_recovery_counter": true,
+  "mutations": [
+    {
+      "name": "CRC_removed",
+      "detected": true,
+      "failure": "FAIL true corruption retains its separate budget after NE burst"
+    },
+    {
+      "name": "drop_refreshes_watchdog",
+      "detected": true,
+      "failure": "FAIL corruption cannot apply a command or feed watchdog"
+    },
+    {
+      "name": "budget_three",
+      "detected": true,
+      "failure": "FAIL third damaged packet in 1s latches off"
+    },
+    {
+      "name": "sequence_guard_removed",
+      "detected": true,
+      "failure": "FAIL one loss cannot permit a two-frame gap"
+    }
+  ],
+  "old_shared_NE_budget_regression_detected": true,
+  "intact_ne_metadata_not_counted_as_damaged_packet": true
+}

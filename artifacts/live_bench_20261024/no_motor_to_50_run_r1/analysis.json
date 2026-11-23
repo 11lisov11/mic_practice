@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "powered_no_motor_run_performed": true,
+  "pair": [
+    2026102401,
+    2026102402
+  ],
+  "motor_connected": false,
+  "motor_state_source": "operator confirmation",
+  "targets_settled_hz": [
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "controller_reference_max_hz": 50.0,
+  "samples": 116,
+  "active_samples": 107,
+  "active_observed_span_s": 53.780999999988126,
+  "vdc_range_v": [
+    322.0,
+    324.0
+  ],
+  "reported_temperature_range_c": [
+    48.0,
+    51.0
+  ],
+  "uart_faults_and_recoveries_all_zero": true,
+  "verified_zero_keys": [
+    "mc_bad_integrity",
+    "mc_bad_sequence",
+    "mc_uart_error_flags",
+    "mc_last_uart_error_flags",
+    "mc_transport_fault",
+    "bp_transport_fault",
+    "uno_rx_hw_errors",
+    "uno_rx_hw_flags",
+    "uno_rx_dropped",
+    "mc_ne_accepted",
+    "mc_ne_observed",
+    "mc_recovered_drops",
+    "mc_fault_current_mask",
+    "mc_fault_occurred_mask"
+  ],
+  "new_break_recorded": false,
+  "break_irq_still_enabled": true,
+  "capture_still_running": true,
+  "final_state": "SAFE",
+  "final_pwm": 0,
+  "final_arm": 0,
+  "final_frequency_setting_hz": 0.0,
+  "final_reported_bus_v": 323.0,
+  "start_commands": 1,
+  "clear_commands": 1,
+  "clear_reason": "Single known J1-off undervoltage history, archived before acknowledgment; no run fault cleared",
+  "flash_commands": 0,
+  "calibration_writes": 0,
+  "physical_pwm_waveform_measured": false,
+  "phase_current_measured": false,
+  "diagnosis": "No SD or UART stop reproduced in this unloaded trial on smooth-Vf pair2401/2402. Does not establish motor failure, loaded inverter health, or eliminate load-related wiring/EMI/power effects. Earlier motor trials also used older V/f firmware; a same-firmware motor trial is required for comparison.",
+  "next_step": "For a same-firmware motor comparison, first deenergizeJ1 and15V and confirm bus discharge before reconnectingJ3; controllers may stay on powerbanks, no reflash or PC connection required."
+}

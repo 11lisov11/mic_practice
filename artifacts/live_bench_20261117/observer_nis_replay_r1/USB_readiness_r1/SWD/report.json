@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "source": "passive ST-Link HotPlug reads",
+  "ports": [
+    "COM10",
+    "COM13"
+  ],
+  "physical_authorization_context": "Both USB identities observed; fresh HMI10V/SAFE/PWM0; corroborate native bus directly, not an operator meter confirmation",
+  "native_image_sha256": "c8b5c7e7e3cc95b27ad29a0d9dd2202a8375b5435d55108546356a4248a75506",
+  "image_comparison": "exact HEX with erased FF padding",
+  "hex_erased_padding_offsets": [
+    112172,
+    112173,
+    112174,
+    112175
+  ],
+  "sealed_binary_sha256": "00a2fe08697a095a1c883653267693c96b14cfe49ce0228175e169f532c04cf2",
+  "layout_from_actual_dwarf": {
+    "SensorType": 0,
+    "ConversionFactor": 2,
+    "LatestConv": 4,
+    "AvBusVoltage_d": 6,
+    "FaultState": 8
+  },
+  "rows": [
+    {
+      "tick_ms": 1463561,
+      "bus_volts": 10.1181640625,
+      "conversion_factor": 416,
+      "digital_bus": 1594,
+      "bdtr": 37305458,
+      "moe": false
+    },
+    {
+      "tick_ms": 1464005,
+      "bus_volts": 10.16259765625,
+      "conversion_factor": 416,
+      "digital_bus": 1601,
+      "bdtr": 37305458,
+      "moe": false
+    }
+  ],
+  "tick_delta_ms": 444,
+  "flash_writes": 0,
+  "reset_commands": 0,
+  "halt_commands": 0,
+  "motor_commands": 0
+}

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "MCSDK": {
+    "baseline_reproduced": true,
+    "pending_ACK_interleavings_passed": 12,
+    "OFF_frames_tested": [
+      0,
+      1,
+      8,
+      64
+    ],
+    "fault_masks_tested": [
+      4,
+      1024,
+      1028
+    ],
+    "active_fault_rejects_ACK": true,
+    "normal_STOP_preserved": true,
+    "stand_commands": 0
+  },
+  "ARM_OFF": {
+    "cases": 64,
+    "iterations_per_case": 8,
+    "instruction_trace_counts_unchanged": true,
+    "maximum_executed_instructions": 1571,
+    "DWT_on_target_measured": false
+  },
+  "page_fixture_base_build": 2026112110,
+  "physical_replay_build": 2026112108
+}

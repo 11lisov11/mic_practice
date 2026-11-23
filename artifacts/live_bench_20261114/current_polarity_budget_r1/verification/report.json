@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "numeric": {
+    "polarity_bit_exact_cases": 1016396,
+    "control_bit_exact_cases": 100000,
+    "applied_voltage_bit_exact_cases": 100000,
+    "OFF64_min_removed_divides_per_call": 4,
+    "OFF64_max_removed_divides_per_call": 6,
+    "OFF64_removed_divides_once_each_case": 352
+  },
+  "unchanged_source_files": 159,
+  "thresholds_changed": false,
+  "profiling_work_removed": false,
+  "hardware_commands": 0,
+  "measured_target_cycles_available": false,
+  "baseline_measured_cycles": 4007,
+  "budget_cycles": 4000,
+  "limitation": "PC proves numeric equivalence and removed divisions; MCU DWT must verify the4000-cycle bound after authorized installation."
+}

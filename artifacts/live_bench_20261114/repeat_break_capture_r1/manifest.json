@@ -1,0 +1,62 @@
+{
+  "pair": [
+    2026111401,
+    2026111402
+  ],
+  "base_pair": [
+    2026103013,
+    2026103014
+  ],
+  "built": true,
+  "installed": true,
+  "first_wave_immutable": true,
+  "repeat_slot_immutable": true,
+  "explicit_CLEAR_required": true,
+  "auto_CLEAR": false,
+  "auto_START": false,
+  "thresholds_changed": false,
+  "current_trip_A": 1.35,
+  "ADC_guard_ticks": 2048,
+  "estimate_age_limit_ms": 2,
+  "fast_budget_cycles": 5312,
+  "sample_rate_hz": 5000000,
+  "hardware_commands": 0,
+  "host_tests_passed": true,
+  "hardware_validated": false,
+  "source_files": 156,
+  "preserved_files_verified": 1834,
+  "artifacts": {
+    "release/nucleo_2026111402_expected_readback.bin": "bf3851a205e3898dc2794df3b19f97584249b77fa6e7682857af00ef99626719",
+    "release/nucleo_2026111402_repeat_break.hex": "b990f96b07e13940c225bc07c8dfbc3dd334c8979461e53493acc4eeacaba793",
+    "release/uno_2026111401_repeat_break.elf-zsk.bin": "1edb9316efbdeaaef5aded99c3beccb47cbadabca8b479bc2ccc293ecd0b278e",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.hex": "b990f96b07e13940c225bc07c8dfbc3dd334c8979461e53493acc4eeacaba793",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.bin": "46f16b02932622d0e1d595fbd34372b5de737c2c9b05a3fa6d36048ed71f6472",
+    "nucleo/STM32CubeIDE/Debug/ACIM-NUCLEOG431RB-IPM15B-VF_OL.elf": "d75c4aa0c2e0279e9e10c3c5f856502e92fef14749302413fa9b82df3195f5f0",
+    "build/uno/UNOQ_MOTOR.ino.elf-zsk.bin": "1edb9316efbdeaaef5aded99c3beccb47cbadabca8b479bc2ccc293ecd0b278e"
+  },
+  "native_flash_bytes": 107672,
+  "hex_padding_offsets": [
+    103332,
+    103333,
+    103334,
+    103335
+  ],
+  "verification_sha256": "5b3fa3032f8a73a758b4f6e999d5c95754c519cc4c8ece2ad74cffe9c78c1cbd",
+  "RAM_sections": {
+    ".data": 976,
+    ".bss": 26392,
+    ".noinit": 32,
+    "._user_heap_stack": 1536
+  },
+  "RAM_allocated": 28936,
+  "RAM_unallocated": 3832,
+  "IRQ_has_no_DMA_rearm_or_UART_calls": true,
+  "repeat_irq_timing_measured_on_hardware": false,
+  "readback_verified": true,
+  "installation_evidence": "artifacts/live_bench_20261114/repeat_break_1401_1402_install_r1/installation_acceptance.json",
+  "idle_communication_progress_confirmed": true,
+  "runtime_clean_guard_passed": true,
+  "latched_UART_fault_retained": false,
+  "powered_test_performed": false,
+  "clean_idle_followup_evidence": "artifacts\\live_bench_20261114\\one_CLEAR_1402_idle_155238\\report.json"
+}

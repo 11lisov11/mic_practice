@@ -79,7 +79,6 @@ typedef struct
                                                   Under Voltage Threshold (V) * 65536
                                                   / hConversionFactor */
 
-  int32_t FilterRemainder; /* Fraction retained by the 1/256 IIR. */
 } RDivider_Handle_t;
 
 /* Exported functions ------------------------------------------------------- */

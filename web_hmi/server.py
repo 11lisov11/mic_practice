@@ -77,7 +77,7 @@ def break_wire_status(kv):
                 item["reason"] = "not_received"
             elif len(text) != 184 or any(c not in "0123456789abcdefABCDEF" for c in text):
                 item["reason"] = "invalid_hex"
-            elif peer not in (2026101102, 2026101204, 2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101410, 2026101493, 2026101412, 2026101414, 2026101502, 2026101504, 2026101506, 2026101702, 2026101806, 2026101808, 2026101810, 2026101812, 2026102002, 2026102102, 2026102104, 2026102402, 2026102406, 2026102408, 2026102410, 2026102412, 2026102502, 2026102506, 2026102508, 2026102510, 2026102602, 2026102604, 2026102702, 2026102704, 2026102706, 2026102708,2026102710,2026102812,2026102902,2026112112) or not 0 <= peer_age < 300 or not 0 <= age <= 0xFFFFFFFF:
+            elif peer not in (2026101102, 2026101204, 2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101410, 2026101493, 2026101412, 2026101414, 2026101502, 2026101504, 2026101506, 2026101702, 2026101806, 2026101808, 2026101810, 2026101812, 2026102002, 2026102102, 2026102104, 2026102402, 2026102406, 2026102408, 2026102410, 2026102412, 2026102502, 2026102506, 2026102508, 2026102510, 2026102602, 2026102604, 2026102702, 2026102704, 2026102706, 2026102708,2026102710,2026102812,2026102902,2026112318) or not 0 <= peer_age < 300 or not 0 <= age <= 0xFFFFFFFF:
                 item["reason"] = "invalid_age"
             else:
                 data = bytes.fromhex(text)
@@ -125,7 +125,7 @@ def break_wire_status(kv):
 def uart_reject_status(data):
     """Read-only frozen command-receiver evidence; never authorizes a command."""
     try:
-        if _as_int(data or {},'mc_fw_build',0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+        if _as_int(data or {},'mc_fw_build',0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
             return {'available':False,'reason':'wrong_peer_build'}
         text=data.get('mc_uart_reject_hex','-')
         if text=='-':return {'available':False,'reason':'not_received'}
@@ -194,7 +194,7 @@ def clear_recovery_status(kv):
     if raw in ('','-'):return result
     try:
         p=bytes.fromhex(raw);peer=int(kv.get('bp_fw_build',kv.get('mc_fw_build','0')))
-        if (len(p)!=43 or p[:6]!=bytes([0x55,0xaa,0xee,1,0,0]) or peer!=2026112112
+        if (len(p)!=43 or p[:6]!=bytes([0x55,0xaa,0xee,1,0,0]) or peer!=2026112318
             or int.from_bytes(p[6:10],'little')!=peer or p[37] not in range(1,6)
             or p[38]!=0 or p[26]&0xc0 or current_crc32c(p[:39])!=int.from_bytes(p[39:],'little')):
             raise ValueError('invalid CLEAR record identity/CRC')
@@ -356,7 +356,7 @@ def sd_live_status(data):
     """A fresh GPIO observation is independent of the frozen first waveform."""
     unknown = {'available': False, 'level': None, 'summary_ru': 'Текущий SD: нет измерения'}
     try:
-        if int(data.get('mc_fw_build', 0)) not in (2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+        if int(data.get('mc_fw_build', 0)) not in (2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
             return dict(unknown, reason='unsupported_peer')
         age = int(data.get('mc_age_ms', data.get('bp_age_ms', 999999)))
         if not 0 <= age < 300:
@@ -386,7 +386,7 @@ def dual_sd_wave_status(data):
     an IPM itself generated a LOW. No cause is inferred from coincidence.
     """
     try:
-        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
             return {'available': False, 'reason': 'wrong_peer_build'}
         text = data.get('mc_break_wave_hex', '')
         age = _as_int(data, 'mc_break_wave_age_ms', -1)
@@ -487,7 +487,7 @@ def repeat_capture_status(kv):
             return c^0xffffffff
         state=raw[4];flags=raw[5];peer=int(kv.get('bp_fw_build',0));age=int(kv.get('repeat_meta_age_ms',999999))
         if (len(raw)!=43 or raw[:4]!=bytes.fromhex('55aaed01') or state>4 or flags&~3 or raw[38] or
-            peer!=2026112112 or u(6)!=peer or crc(raw[:39])!=u(39) or (state==2 and (flags!=3 or not u(22)))):
+            peer!=2026112318 or u(6)!=peer or crc(raw[:39])!=u(39) or (state==2 and (flags!=3 or not u(22)))):
             raise ValueError('invalid_repeat_metadata')
         boot_hex=str(kv.get('mc_boot_packet_hex','-'))
         boot=bytes.fromhex(boot_hex) if boot_hex!='-' else b''
@@ -535,7 +535,7 @@ def repeat_capture_status(kv):
 
 
 def bkin_wave_status(data):
-    if _as_int(data or {}, "mc_fw_build", 0) in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+    if _as_int(data or {}, "mc_fw_build", 0) in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
         return dual_sd_wave_status(data)
     """Schema 4: lossless runs of DMA samples, including post-trigger recovery.
 
@@ -544,7 +544,7 @@ def bkin_wave_status(data):
     """
     unknown=0xffffffff
     try:
-        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
             return {'available':False,'reason':'wrong_peer_build'}
         text=data.get('mc_break_wave_hex','')
         age=_as_int(data,'mc_break_wave_age_ms',-1)
@@ -1282,7 +1282,7 @@ def with_shunt_currents(data):
                 mc_current_zero_spans=None, mc_current_zero_attempts=None, mc_current_zero_stable=None,
                 mc_current_flags=0, mc_current_coverage_pct=0, mc_current_reconstructed_mask=0,
                 mc_current_window_ms=0, mc_current_rejected_samples=0)
-    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102509, 2026102510), (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112111,2026112112)):
+    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102509, 2026102510), (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
         return data
 
     def packet(key, version):
@@ -1621,7 +1621,7 @@ def decode_adc_peak_hex(value, expected_build=2026102510):
 
 def with_adc_peak(data):
     data.update(mc_adc_peak_source_valid=0,mc_adc_peak_valid=0,mc_adc_peak=None,mc_adc_peak_status='Ожидание захвата АЦП')
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112111,2026112112)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
         return data
     if data.get('mc_adc_peak_hex','-') == '-':
         if data.get('mc_adc_peak_good',0):
@@ -1654,9 +1654,9 @@ def crc32c(data):
     return crc^0xffffffff
 
 def decode(raw,peer,kind):
-    if len(raw)!=160 or peer not in (2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112) or kind not in (0,1):raise ValueError('Unsupported I2C fault record')
+    if len(raw)!=160 or peer not in (2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) or kind not in (0,1):raise ValueError('Unsupported I2C fault record')
     w=struct.unpack('<40I',raw)
-    cause=w[4]&255;stage=(w[4]>>8)&255;state=(w[4]>>16)&255;n=((w[4]>>24)&3) if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112) else w[4]>>24
+    cause=w[4]&255;stage=(w[4]>>8)&255;state=(w[4]>>16)&255;n=((w[4]>>24)&3) if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) else w[4]>>24
     if w[0]!=0x31434649 or w[1]!=peer or cause not in CAUSES or stage>11 or state>4 or n>3 or not w[32]:
         raise ValueError('Invalid I2C fault record')
     if kind==1 and not(w[16]&32768):raise ValueError('PWM record lacks MOE evidence')
@@ -1672,7 +1672,7 @@ def decode(raw,peer,kind):
         pwm_moe=bool(w[16]&32768),poll_gap_us=w[23]*1e6/w[32],attempt_age_us=w[25]*1e6/w[32],
         registers_changed_during_gpio_sample=w[6]!=w[8],record_crc32c=f'{crc32c(raw):08x}',
         limitation='Sequential MMIO snapshot before PE/reset; not an analog waveform or a simultaneous sample of all registers')
-    if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112112):
+    if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
         for suffix in ('isr','cr1','cr2','gpio','cycles'):
             result['cleanup_terminal_'+suffix]=result.pop('post_reset_'+suffix)
         flags=w[4]>>26
@@ -1682,7 +1682,7 @@ def decode(raw,peer,kind):
     return result
 
 def decode_i2c_release(raw,parent_raw,peer,kind):
-    if peer not in (2026102706,2026102708,2026102710,2026102812,2026102902,2026112112) or len(raw)!=100 or len(parent_raw)!=160 or kind not in (0,1):
+    if peer not in (2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) or len(raw)!=100 or len(parent_raw)!=160 or kind not in (0,1):
         raise ValueError('Unsupported PE release extension')
     decode(parent_raw,peer,kind)
     w=struct.unpack('<25I',raw);parent=struct.unpack('<40I',parent_raw)
@@ -1730,7 +1730,7 @@ def with_bus_clear(data):
     if text=='-':return out
     try:
         b=bytes.fromhex(text);peer=int(out.get('mc_fw_build',0))
-        if (peer not in (2026102708,2026102710,2026102812,2026102902,2026112112) or len(b)!=43 or b[:4]!=bytes((0x55,0xaa,0xde,1)) or
+        if (peer not in (2026102708,2026102710,2026102812,2026102902,2026112318) or len(b)!=43 or b[:4]!=bytes((0x55,0xaa,0xde,1)) or
             struct.unpack_from('<I',b,6)[0]!=peer or current_crc32c(b[:39])!=int.from_bytes(b[39:],'little') or
             not 1<=b[4]<=6 or b[5]>9 or any(x>3 for x in b[10:13]) or b[13] or any(b[26:39]) or
             int.from_bytes(b[14:18],'little')>25000):raise ValueError('Invalid bus clear frame')
@@ -1840,7 +1840,7 @@ def with_zero_history(data):
     import math
     data.update(mc_zero_history_valid=0,mc_zero_history=None,
                 mc_zero_history_status='Ожидание истории блоков автонуля')
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112111,2026112112)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
         return data
     value=data.get('mc_zero_history_hex','-')
     if value=='-':
@@ -1907,14 +1907,14 @@ RESEARCH_BLOCKS = {
 
 
 def research_catalog(data):
-    known=(data.get('fw_build'),data.get('mc_fw_build'))==(2026112111,2026112112)
-    native=known and data.get('research_native_valid')==1 and data.get('research_native_caps')==15
+    known=(data.get('fw_build'),data.get('mc_fw_build'))==(2026112317,2026112318)
+    native=known and data.get('research_native_valid')==1 and data.get('research_native_caps')==2
     rows=[]
     for name in RESEARCH_ORDER:
-        ready=native and (name=='VF_FIXED' or name in ('FOC_FIXED','ADAPTIVE_PWM') and data.get('algorithm_qualification')==7)
+        ready=False  # LSO-only capability
         if name=='FOC_FIXED' and native and data.get('algorithm_qualification')==128:
             ready=bool(data.get('foc_experiment_flags',0)&1) and not data.get('foc_timing_fault',0)
-        if ready:code,text='',('Расчётный FOC: только0–5Гц,5сек,без нагрузки; скорость оценочная.' if name=='FOC_FIXED' and data.get('algorithm_qualification')==128 else 'Алгоритм доступен; перед пуском проверяются питание, токи и защиты.')
+        if ready:code,text='',('LSO-FOC: 5 Гц, 5 с, без нагрузки; скорость оценочная.' if name=='FOC_FIXED' and data.get('algorithm_qualification')==128 else 'Алгоритм доступен; перед пуском проверяются питание, токи и защиты.')
         elif name=='VF_FIXED':code,text='NATIVE_CAPABILITIES_UNAVAILABLE','Нет свежего подтверждения режима от Nucleo.'
         elif name in ('FOC_FIXED','ADAPTIVE_PWM'):code,text='PHYSICAL_FOC_QUALIFICATION_REQUIRED','Код собран и проверен на модели; нужны идентификация двигателя, проверка ампер и времени расчёта на MCU.'
         else:code,text=RESEARCH_BLOCKS[name]
@@ -1923,8 +1923,32 @@ def research_catalog(data):
     return rows
 
 
+def decode_lso_uart_startup(data):
+    try:
+        raw = bytes.fromhex(data.get('mc_uart_startup_hex', '-'))
+        if (len(raw) != 43 or raw[:4] != bytes((0x55, 0xAA, 0xB7, 1)) or
+            not 0 <= data.get('mc_uart_startup_age_ms', 999999) < 300 or
+            int.from_bytes(raw[4:8], 'little') != data.get('mc_fw_build') or
+            crc32c(raw[:39]) != int.from_bytes(raw[39:], 'little')):
+            return {'available': False}
+    except (ValueError, TypeError):
+        return {'available': False}
+    names = ('USART', 'DMA_RX', 'DMA_TX', 'POLL_GAP', 'RX_BATCH', 'PARSER', 'TX_BUSY', 'LEASE')
+    causes = lambda mask: [name for bit, name in enumerate(names) if mask & (1 << bit)]
+    u = lambda offset, width=4: int.from_bytes(raw[offset:offset+width], 'little')
+    flags = raw[10]
+    return dict(available=True, qualified=bool(flags&1), waiting_for_quiet=bool(flags&2),
+                first_in_cold_start=bool(flags&4), fault_latched=bool(flags&8),
+                first_causes=causes(raw[8]), first_latched_causes=causes(raw[9]),
+                last_causes=causes(raw[38]), first_pending_bytes=u(11,2), clean_off_frames=raw[13],
+                first_tick_ms=u(14), first_elapsed_cycles=u(18), first_usart_isr=u(22),
+                first_dma_isr=u(26), first_dma_remaining=u(30,2), cold_resyncs=u(32),
+                first_parser_index=raw[36], first_parser_result=raw[37])
+
+
 def with_research_suite(data):
-    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112111,2026112112):return data
+    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112317,2026112318):return data
+    data['mc_uart_startup']=decode_lso_uart_startup(data)
     data['research_algorithms']=research_catalog(data)
     data['research_suite_version']=1
     data['research_actuator_algorithm']={1:'VF_FIXED',2:'FOC_FIXED',3:'ADAPTIVE_PWM'}.get(data.get('algorithm_selected'))
@@ -1942,7 +1966,7 @@ def with_research_suite(data):
 
 
 def with_current_only_profile(data):
-    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102901,2026102902),(2026112111,2026112112)):
+    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102901,2026102902),(2026112317,2026112318)):
         return data
     data.update(research_profile='air56b2_current_only', configured_load_condition='unloaded',
                 enc_source='disabled', enc_enabled=0, enc_ok=0, enc_speed_ok=0,
@@ -2262,7 +2286,7 @@ def _vbus_calibration_identity_matches(stored: dict, current: dict) -> bool:
         (2026102505, 2026102506),
         (2026102507, 2026102508),
         (2026102509, 2026102510),
-        (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026102921,2026102922), (2026102931,2026102932), (2026102933,2026102934), (2026102935,2026102936), (2026102937,2026102938), (2026102939,2026112112), (2026112111,2026112112),
+        (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026102921,2026102922), (2026102931,2026102932), (2026102933,2026102934), (2026102935,2026102936), (2026102937,2026102938), (2026102939,2026112318), (2026112317,2026112318),
     }
     contract = {
         "rpc_schema_version": 3,
@@ -2544,7 +2568,7 @@ def identification_point_complete(data,initial):
     This never authorizes START and cannot acknowledge any protection fault.
     """
     if not data or not initial:return False
-    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112111,2026112112):return False
+    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112317,2026112318):return False
     if data.get('algorithm_selected')!=4 or initial.get('algorithm_selected')!=4:return False
     if data.get('state')!='SAFE' or data.get('pwm')!=0 or data.get('bp_status',0x22)&0x22:return False
     if not 0<=data.get('mc_age_ms',99999)<300 or data.get('id_valid')!=1:return False
@@ -3177,7 +3201,7 @@ def bounded_run_complete(data, before, limit_s):
     """
     if not data or not before or type(limit_s) not in (int, float) or not math.isfinite(limit_s) or limit_s<=0:
         return False
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112111,2026112112)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
         return False
     keys=('run_id','run_start_ms','run_stop_ms','run_limit_ms','run_elapsed_ms','run_reason')
     if any(type(data.get(k)) is not int or not 0<=data[k]<=0xffffffff for k in keys):
@@ -3195,7 +3219,7 @@ def bounded_run_complete(data, before, limit_s):
 
 
 def manual_scalar_supported(data):
-    return bool(data and (_as_int(data,"fw_build",0),_as_int(data,"mc_fw_build",0)) in ((2026101505,2026101504),(2026101507,2026101506),(2026101703,2026101702),(2026101807,2026101806),(2026101813,2026101812),(2026102001,2026102002),(2026102101,2026102102),(2026102103,2026102104),(2026102401,2026102402),(2026102403,2026102402),(2026102405,2026102406),(2026102407,2026102408),(2026102409,2026102410),(2026102411,2026102412),(2026102501,2026102502),(2026102503,2026102502),(2026102505,2026102506),(2026102507,2026102508),(2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112111,2026112112)) and _as_int(data,"manual_scalar_capable",0)==1)
+    return bool(data and (_as_int(data,"fw_build",0),_as_int(data,"mc_fw_build",0)) in ((2026101505,2026101504),(2026101507,2026101506),(2026101703,2026101702),(2026101807,2026101806),(2026101813,2026101812),(2026102001,2026102002),(2026102101,2026102102),(2026102103,2026102104),(2026102401,2026102402),(2026102403,2026102402),(2026102405,2026102406),(2026102407,2026102408),(2026102409,2026102410),(2026102411,2026102412),(2026102501,2026102502),(2026102503,2026102502),(2026102505,2026102506),(2026102507,2026102508),(2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)) and _as_int(data,"manual_scalar_capable",0)==1)
 
 def manual_status_reference(data):
     if (manual_scalar_supported(data) and _as_int(data,"mc_frequency_reference_valid",0)==1
@@ -3216,6 +3240,7 @@ class HvArmState:
         self._expires_at = 0.0
         self._started = False
         self._manual_session = False
+        self._bounded_run = None
         self._calibration_provider = calibration_provider
 
     def set_calibration_provider(
@@ -3266,10 +3291,32 @@ class HvArmState:
         with self._lock:
             self._manual_session = bool(enabled)
 
-    def mark_started(self) -> None:
+    def mark_started(self, bounded_run=None) -> None:
         with self._lock:
             if self._expires_at > _now_ts():
                 self._started = True
+                self._bounded_run = bounded_run if not self._manual_session else None
+
+    def finish_bounded_run(self, status: dict) -> bool:
+        with self._lock:
+            if not self._started or self._manual_session or self._bounded_run is None:
+                return False
+            before_id, start_ms, pair, limit_s = self._bounded_run
+            sd = status.get("mc_sd_live") or {}
+            if ((status.get("fw_build"), status.get("mc_fw_build")) != pair
+                or status.get("run_start_ms") != start_ms
+                or not 0 <= _as_int(status, "mc_age_ms", 999999) < 300
+                or _as_int(status, "precharge", 1) != 0
+                or _as_int(status, "bp_ext", 0x08) & 0x08
+                or not isinstance(sd, dict) or sd.get("level") != "HIGH"
+                or sd.get("break_irq_enabled") is not True
+                or sd.get("config_ok") is not True
+                or not bounded_run_complete(status, {"run_id": before_id}, limit_s)):
+                return False
+            self._expires_at = 0.0
+            self._started = False
+            self._bounded_run = None
+            return True
 
     def mark_stopped(self) -> None:
         with self._lock:
@@ -3684,7 +3731,7 @@ def parse_capture_page(value, part, page, expected_size):
         raise ValueError("Capture page unavailable")
     identity = tuple(map(int, fields[1:6]))
     chunk = bytes.fromhex(fields[6])
-    if (identity[:4] != (part, page, expected_size, 2026112112)
+    if (identity[:4] != (part, page, expected_size, 2026112318)
             or not 0 <= identity[4] <= 0xffffffff
             or len(chunk) != min(192, expected_size - page * 192)):
         raise ValueError("Capture page identity or length changed")
@@ -3699,7 +3746,7 @@ def receive_capture_pages(fetch, kind):
     for page in range((expected_size + 191) // 192):
         data = fetch(kind, page)
         if (data["part"], data["page"], data["total"], data["firmware"]) != (
-            part, page, expected_size, 2026112112
+            part, page, expected_size, 2026112318
         ):
             raise ValueError("Capture page identity changed")
         if crc is None:
@@ -3711,7 +3758,7 @@ def receive_capture_pages(fetch, kind):
             raise ValueError("Capture page length changed")
         chunks.append(chunk)
     record = b"".join(chunks)
-    if (len(record) != expected_size or int.from_bytes(record[8:12], "little") != 2026112112
+    if (len(record) != expected_size or int.from_bytes(record[8:12], "little") != 2026112318
             or int.from_bytes(record[60:64], "little") != crc
             or crc32c(record[:60] + bytes(4) + record[64:]) != crc):
         raise ValueError("Capture CRC or identity mismatch")
@@ -4304,6 +4351,9 @@ class RpcBridge:
                 **{key: kv.get(key, "-") for key in ("mc_current_packet_hex", "mc_current_detail_hex", "mc_current_quality_hex", "mc_adc_peak_hex", "mc_zero_history_hex", "mc_observer_trace_hex")},
                 **{key: int(kv.get(key, "999999" if "age_ms" in key else "0")) for key in
                    ("mc_current_age_ms", "mc_current_detail_age_ms", "mc_current_quality_age_ms", "mc_current_good", "mc_current_bad", "mc_adc_peak_good", "mc_adc_peak_bad", "mc_adc_peak_complete", "mc_zero_history_good", "mc_zero_history_bad")},
+                "mc_uart_startup_hex": kv.get("mc_uart_startup_hex", "-"),
+                "mc_uart_startup_age_ms": int(kv.get("mc_uart_startup_age_ms","999999")),
+                "mc_lso_page_hex": kv.get("mc_lso_page_hex", "-"),
                 "mc_uart_reject_hex": kv.get("mc_uart_reject_hex", "-"),
                 "mc_uart_reject_good_pages": int(kv.get("mc_uart_reject_good_pages", "0")),
                 "mc_uart_reject_bad_pages": int(kv.get("mc_uart_reject_bad_pages", "0")),
@@ -4560,6 +4610,9 @@ class AppState:
         return ok, reason
 
     def trial_command_check(self, cmd: str) -> tuple[bool, str]:
+        page = _cmd_tokens(cmd)
+        if len(page) == 3 and [p.upper() for p in page[:2]] == ["LSO", "PAGE"]:
+            return (True, "ok") if page[2].isascii() and page[2].isdigit() and len(page[2]) <= 3 and int(page[2]) <= 263 else (False, "invalid LSO page")
         if self.hv_arm.cfg.trial_gate is None:
             return True, "ok"
         parts = [p.upper() for p in _cmd_tokens(cmd)]
@@ -4807,7 +4860,18 @@ class AppState:
                     self.hv_arm.disarm()
                     return True,"Native identification completed before HTTP response",candidate
                 if run_ok and running:
-                    self.hv_arm.mark_started()
+                    bounded_run = None
+                    before_id = initial_status.get("run_id")
+                    start_ms = candidate.get("run_start_ms")
+                    pair = (candidate.get("fw_build"), candidate.get("mc_fw_build"))
+                    if (not self._manual_start_requested and self.hv_arm.cfg.trial_gate is None
+                        and effective_limit is not None and type(before_id) is int
+                        and type(start_ms) is int and candidate.get("run_reason") == 0
+                        and pair == (initial_status.get("fw_build"), initial_status.get("mc_fw_build"))
+                        and candidate.get("run_id") == ((before_id + 1) & 0xffffffff)
+                        and candidate.get("run_limit_ms") == round(effective_limit * 1000)):
+                        bounded_run = (before_id, start_ms, pair, effective_limit)
+                    self.hv_arm.mark_started(bounded_run)
                     self.logs.add(
                         f"WIFI_START_OK state={candidate.get('state')} "
                         f"freq={_as_float(candidate, 'freq', 0.0):.2f} "
@@ -4929,6 +4993,10 @@ class AppState:
                             self.logs.add(f"HV_RUNTIME_UART_WARN {bad_err}")
                         elif not live_ok:
                             live_err = bad_err
+                    if live_ok and status is not None and self.hv_arm.finish_bounded_run(status):
+                        self.logs.add(f"WIFI_BOUNDED_COMPLETE run_id={status['run_id']} outputs off")
+                        self._runtime_bad_monitor.reset()
+                        continue
                     if not live_ok:
                         gate=self.hv_arm.cfg.trial_gate
                         reason = ("POWERED_TRIAL_RUNLIMIT" if gate is not None and live_err == gate.deadline_reason
@@ -5214,7 +5282,7 @@ class Handler(BaseHTTPRequestHandler):
             app=self.server.app
             with app.control_lock:
                 ok,status,err=app.rpc.get()
-                if not ok or not status or (status.get("fw_build"),status.get("mc_fw_build"))!=(2026112111,2026112112) or status.get("research_native_caps")!=15 or status.get("research_native_valid")!=1 or status.get("pwm")!=0 or status.get("state")!="SAFE" or not 0<=status.get("mc_age_ms",9999)<300:
+                if not ok or not status or (status.get("fw_build"),status.get("mc_fw_build"))!=(2026112317,2026112318) or status.get("research_native_caps")!=2 or status.get("research_native_valid")!=1 or status.get("pwm")!=0 or status.get("state")!="SAFE" or not 0<=status.get("mc_age_ms",9999)<300:
                     self._send_json({"ok":False,"error":"Сначала остановите привод; нужна свежая связь"},409);return
                 ok,err=app.rpc.cmd("SET ALGORITHM "+{1:"VF",2:"FOC",3:"ADAPTIVE_PWM",4:"IDENT"}[algorithm])
                 app.logs.add(f"ALGORITHM_CONFIG {algorithm} accepted={int(ok)}")

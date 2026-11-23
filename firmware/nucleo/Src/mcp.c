@@ -22,8 +22,6 @@
 
 #include "mc_type.h"
 #include "mcp.h"
-#include "boot_diag.h"
-#include "boot_record.h"
 #include "register_interface.h"
 #include "mc_config.h"
 #include "mcp_config.h"
@@ -245,6 +243,14 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
 #endif
     packetHeader = (uint16_t *)pHandle->rxBuffer; //cstat !MISRAC2012-Rule-11.3
     command = (uint16_t)(*packetHeader & CMD_MASK);
+    /* Uno alone sets the trial reference and owns the start lease.
+       Motor Pilot still permits reads and an independent stop. */
+    if (command != GET_MCP_VERSION && command != GET_DATA_ELEMENT && command != STOP_MOTOR)
+    {
+      pHandle->txBuffer[0] = MCP_CMD_NOK;
+      pHandle->txLength = 1U;
+      return;
+    }
 
     if ((command & MCP_USER_CMD_MASK) == MCP_USER_CMD)
     {
@@ -276,7 +282,10 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
       case GET_MCP_VERSION:
       {
         pHandle->txLength = 4U;
-        *pHandle->txBuffer = MCP_VERSION;
+        pHandle->txBuffer[0] = MCP_VERSION;
+        pHandle->txBuffer[1] = 0U;
+        pHandle->txBuffer[2] = 0U;
+        pHandle->txBuffer[3] = 0U;
         MCPResponse = MCP_CMD_OK;
         break;
       }
@@ -295,8 +304,7 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
 
       case START_MOTOR:
       {
-        /* MIC_AI safety policy: only the validated UNO Q scalar link may start the motor. */
-        MCPResponse = MCP_CMD_NOK;
+        MCPResponse = (MCI_StartMotor(pMCI) == true) ? MCP_CMD_OK : MCP_CMD_NOK;
         break;
       }
 
@@ -309,7 +317,6 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
 
       case SW_RESET:
       {
-        mic_boot_note_software_reset(MB_MCP_RESET);
         HAL_NVIC_SystemReset();
         MCPResponse = MCP_CMD_OK;
         break;
@@ -334,8 +341,7 @@ void MCP_ReceivedPacket(MCP_Handle_t *pHandle)
         /* Queries the STM and a command start or stop depending on the state */
         if (IDLE == MCI_GetSTMState(pMCI))
         {
-          /* Keep Motor Pilot/MCP as a monitoring and stop path, never as a start bypass. */
-          MCPResponse = MCP_CMD_NOK;
+          MCPResponse = (MCI_StartMotor(pMCI) == true) ? MCP_CMD_OK : MCP_CMD_NOK;
         }
         else
         {

@@ -117,6 +117,10 @@ typedef struct
   float fdbg_Vampl;                             /*!< Voltage amplitude computed by V/f (Vpeak) */
   float fdbg_VoltageOffset_V;                   /*!< */
   float fdbg_MinFreqTH_rads;                    /*!< */
+  /* Fixed motor/observer coefficients, set once by ACIM_LSO_Init. */
+  float invRotorTime, observerK1, observerK3, observerK4Scale;
+  float currentDecay, speedFluxCoupling, directFluxCoupling, voltageGain;
+  float speedUnitDenominator;
 } ACIM_LSO_Handle_t;
 
 
@@ -143,6 +147,7 @@ void ACIM_LSO_Clear(ACIM_LSO_Handle_t *pHandle);
   * @param  pHandle: handler of the current instance of the ACIM_LSO component
   * @retval none
   */
+void ACIM_LSO_CalcAngleVoltage(ACIM_LSO_Handle_t *pHandle, qd_t applied);
 void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle);
 
 

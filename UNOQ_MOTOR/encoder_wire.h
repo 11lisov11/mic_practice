@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "uart_v3_transport.h"
-enum { EW_VERSION=0xDA,EW_FORMAT=2,EW_PEER=2026112112U,EW_TTL_MS=100 };
+enum { EW_VERSION=0xDA,EW_FORMAT=2,EW_PEER=2026112202U,EW_TTL_MS=100 };
 static inline uint16_t ew_u16(const uint8_t*p){return (uint16_t)(p[0]|((uint16_t)p[1]<<8));}
 static inline uint32_t ew_u32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
 static inline void ew_p16(uint8_t*p,uint16_t v){p[0]=(uint8_t)v;p[1]=(uint8_t)(v>>8);}

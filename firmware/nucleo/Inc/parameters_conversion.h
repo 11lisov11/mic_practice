@@ -36,7 +36,7 @@
 stable torque-speed curve region (it is calculated as a 10% of nominal speed (rad/s)*/
 #define PI_VF_SPEED_OUTPUT_LIMIT (0.10f*NOMINAL_FREQ*2.0f*PI) /* The output of speed regulator is the max slip frequency expressed in rad/s */
 
-#define ACIM_VF
+#define ACIM_FOC
 
 #define ADC_REFERENCE_VOLTAGE  3.30
 

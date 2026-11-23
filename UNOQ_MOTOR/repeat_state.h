@@ -5,7 +5,7 @@
 #include <string.h>
 #include "uart_v3_transport.h"
 enum { RP_WAIT=0, RP_ARMED=1, RP_CAPTURED=2, RP_ERROR=3, RP_FIRST_PENDING=4,
-       RPM_VERSION=0xED, RP_NATIVE_BUILD=2026112112U };
+       RPM_VERSION=0xED, RP_NATIVE_BUILD=2026112202U };
 typedef struct {
   uint32_t state,clear_tick,armed_tick,irq_base,event_irq,first_crc,event_tick;
 } rp_state;

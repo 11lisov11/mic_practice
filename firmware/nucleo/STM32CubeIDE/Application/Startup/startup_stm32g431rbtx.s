@@ -82,6 +82,20 @@ LoopCopyDataInit:
   cmp r4, r1
   bcc CopyDataInit
   
+/* Copy motor code to core-coupled SRAM before interrupts can run. */
+  ldr r0, =_siccmram
+  ldr r1, =_sccmram
+  ldr r2, =_eccmram
+LoopCopyCcm:
+  cmp r1, r2
+  bcs DoneCopyCcm
+  ldr r3, [r0], #4
+  str r3, [r1], #4
+  b LoopCopyCcm
+DoneCopyCcm:
+  dsb
+  isb
+
 /* Zero fill the bss segment. */
   ldr r2, =_sbss
   ldr r4, =_ebss

@@ -856,11 +856,10 @@ void ASPEP_HWDataReceivedIT(ASPEP_Handle_t *pHandle)
             {
               //cstat !MISRAC2012-Rule-11.3
               pHandle->rxLengthASPEP = (uint16_t)((*((uint16_t *)pHandle->rxHeader) & 0x1FFF0U) >> (uint16_t)4);
-              if (0U == pHandle->rxLengthASPEP) /* data packet with length 0 is a valid packet */
+              if (pHandle->rxLengthASPEP < 2U)
               {
-                pHandle->NewPacketAvailable = true;
-                /* The receiver is not reconfigure right now on purpose to avoid race condition when the packet will be
-                  *  processed in ASPEP_RXframeProcess */
+                /* A Motor Pilot command must contain the complete MCP header. */
+                pHandle->badPacketFlag = ASPEP_BAD_PACKET_SIZE;
               }
               else if (pHandle->rxLengthASPEP <= pHandle->maxRXPayload)
               {

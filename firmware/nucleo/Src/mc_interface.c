@@ -26,6 +26,7 @@
 #include "speed_torq_ctrl.h"
 
 #include "mc_interface.h"
+#include "main.h"
 
 /** @addtogroup MCSDK
   * @{
@@ -107,6 +108,12 @@ __weak void MCI_Init(MCI_Handle_t *pHandle, SpeednTorqCtrl_Handle_t *pSTC, pFOCV
   */
 __weak void MCI_ExecSpeedRamp(MCI_Handle_t *pHandle,  int16_t hFinalSpeed, uint16_t hDurationms)
 {
+  if (hFinalSpeed < 0 || hFinalSpeed > RPM_2_SPEED_UNIT(300))
+  {
+    pHandle->CommandState = MCI_COMMAND_EXECUTED_UNSUCCESSFULLY;
+    return;
+  }
+  if (hDurationms < 1000U) { hDurationms = 1000U; }
   pHandle->lastCommand = MCI_CMD_EXECSPEEDRAMP;
   pHandle->hFinalSpeed = hFinalSpeed;
   pHandle->hDurationms = hDurationms;
@@ -137,11 +144,9 @@ __weak void MCI_ExecSpeedRamp(MCI_Handle_t *pHandle,  int16_t hFinalSpeed, uint1
   */
 __weak void MCI_ExecTorqueRamp(MCI_Handle_t *pHandle,  int16_t hFinalTorque, uint16_t hDurationms)
 {
-  pHandle->lastCommand = MCI_CMD_EXECTORQUERAMP;
-  pHandle->hFinalTorque = hFinalTorque;
-  pHandle->hDurationms = hDurationms;
-  pHandle->CommandState = MCI_COMMAND_NOT_ALREADY_EXECUTED;
-  pHandle->LastModalitySetByUser = MCM_TORQUE_MODE;
+  (void)hFinalTorque;
+  (void)hDurationms;
+  pHandle->CommandState = MCI_COMMAND_EXECUTED_UNSUCCESSFULLY;
 }
 
 /**
@@ -160,11 +165,8 @@ __weak void MCI_ExecTorqueRamp(MCI_Handle_t *pHandle,  int16_t hFinalTorque, uin
   */
 __weak void MCI_SetCurrentReferences(MCI_Handle_t *pHandle, qd_t Iqdref)
 {
-  pHandle->lastCommand = MCI_CMD_SETCURRENTREFERENCES;
-  pHandle->Iqdref.q = Iqdref.q;
-  pHandle->Iqdref.d = Iqdref.d;
-  pHandle->CommandState = MCI_COMMAND_NOT_ALREADY_EXECUTED;
-  pHandle->LastModalitySetByUser = MCM_TORQUE_MODE;
+  (void)Iqdref;
+  pHandle->CommandState = MCI_COMMAND_EXECUTED_UNSUCCESSFULLY;
 }
 /**
   * @brief  Sets the target motor's control mode to Open loop Current mode.
@@ -259,6 +261,15 @@ __weak void MCI_SetOpenLoopVoltage(MCI_Handle_t *pHandle)
 __weak bool MCI_StartMotor(MCI_Handle_t *pHandle)
 {
   bool RetVal;
+  extern bool AIR56_OffDwtReady(void);
+  extern bool AIR56_UnoOwnsStart(void);
+  if (!AIR56_UnoOwnsStart() || !AIR56_OffDwtReady()) { return false; }
+  const uint32_t break_config = TIM1->BDTR;
+  if (!(GPIOA->IDR & GPIO_PIN_6) || !(break_config & TIM_BDTR_BKE) ||
+      !(TIM1->DIER & TIM_DIER_BIE) || (TIM1->SR & TIM_SR_BIF))
+  {
+    return false;
+  }
 
   if ((IDLE == MCI_GetSTMState(pHandle)) &&
       (MC_NO_FAULTS == MCI_GetOccurredFaults(pHandle)) &&
@@ -455,8 +466,7 @@ __weak bool MCI_StopMotor(MCI_Handle_t *pHandle)
   MCI_State_t State;
 
   State = MCI_GetSTMState(pHandle);
-  /* A fault already inhibits PWM. Keep the scheduler's pending ACK. */
-  if (IDLE == State || ICLWAIT == State || FAULT_NOW == State || FAULT_OVER == State)
+  if (IDLE == State  || ICLWAIT == State)
   {
     status = false;
   }
@@ -546,16 +556,22 @@ __weak void MCI_ExecBufferedCommands(MCI_Handle_t *pHandle)
       {
         case MCI_CMD_EXECSPEEDRAMP:
         {
-          commandHasBeenExecuted = ACIM_VF_ExecRamp(pHandle->pACIM_VF,pHandle->hFinalSpeed, pHandle->hDurationms);
+          pHandle->pFOCVars->bDriveInput = INTERNAL;
+          STC_SetControlMode( pHandle->pSTC, MCM_SPEED_MODE );
+          commandHasBeenExecuted = STC_ExecRamp( pHandle->pSTC, pHandle->hFinalSpeed, pHandle->hDurationms );
         }
         break;
         case MCI_CMD_EXECTORQUERAMP:
         {
-          commandHasBeenExecuted = true;
+          pHandle->pFOCVars->bDriveInput = INTERNAL;
+          STC_SetControlMode( pHandle->pSTC, MCM_TORQUE_MODE );
+          commandHasBeenExecuted = STC_ExecRamp( pHandle->pSTC, pHandle->hFinalTorque, pHandle->hDurationms );
         }
         break;
         case MCI_CMD_SETCURRENTREFERENCES:
         {
+          pHandle->pFOCVars->bDriveInput = EXTERNAL;
+          pHandle->pFOCVars->Iqdref = pHandle->Iqdref;
           commandHasBeenExecuted = true;
         }
         break;
@@ -835,7 +851,7 @@ __weak bool MCI_RampCompleted(MCI_Handle_t *pHandle)
 
     if (RUN == MCI_GetSTMState(pHandle))
   {
-    retVal = ACIM_VF_RampCompleted(pHandle->pACIM_VF);
+    retVal = STC_RampCompleted( pHandle->pSTC );
   }
 
   return retVal;
@@ -851,8 +867,7 @@ __weak bool MCI_RampCompleted(MCI_Handle_t *pHandle)
   */
 __weak bool MCI_StopSpeedRamp(MCI_Handle_t *pHandle)
 {
-  ACIM_VF_StopRamp(pHandle->pACIM_VF);
-  return true;
+  return STC_StopSpeedRamp( pHandle->pSTC );
 }
 
 /**
@@ -861,7 +876,7 @@ __weak bool MCI_StopSpeedRamp(MCI_Handle_t *pHandle)
   */
 __weak void MCI_StopRamp( MCI_Handle_t * pHandle)
 {
-  ACIM_VF_StopRamp(pHandle->pACIM_VF);
+   STC_StopRamp( pHandle->pSTC );
 }
 
 /**
@@ -874,8 +889,8 @@ __weak void MCI_StopRamp( MCI_Handle_t * pHandle)
   */
 __weak bool MCI_GetSpdSensorReliability(MCI_Handle_t *pHandle)
 {
-  (void)pHandle; /* parameter not used */
-  return true;
+  SpeednPosFdbk_Handle_t * SpeedSensor = STC_GetSpeedSensor( pHandle->pSTC );
+  return ( SPD_Check( SpeedSensor ) );
 }
 
 /**
@@ -886,7 +901,9 @@ __weak bool MCI_GetSpdSensorReliability(MCI_Handle_t *pHandle)
   */
 __weak int16_t MCI_GetAvrgMecSpeedUnit(MCI_Handle_t *pHandle)
 {
-  return ACIM_VF_GetMecSpeedRefUnit(pHandle->pACIM_VF);
+  SpeednPosFdbk_Handle_t * SpeedSensor;
+  SpeedSensor = STC_GetSpeedSensor( pHandle->pSTC );
+  return ( SPD_GetAvrgMecSpeedUnit( SpeedSensor ) );
 }
 
 /**
@@ -921,10 +938,9 @@ __weak float_t MCI_GetAvrgMecSpeed_F(MCI_Handle_t *pHandle)
   */
 __weak int16_t MCI_GetMecSpeedRefUnit(MCI_Handle_t *pHandle)
 {
-  /* VF_OL updates the ramp manager and flux frequency. fRotorFreqRef_RPM is
-     updated only by VF_CL and stays zero in open loop. This is a field
-     reference, never a measured rotor speed. */
-  return ACIM_VF_GetMecSpeedRefUnit(pHandle->pACIM_VF);
+  int16_t hRefSpeed = 0;
+  hRefSpeed = ( STC_GetMecSpeedRefUnit( pHandle->pSTC ) );
+  return hRefSpeed;
 }
 
 /**
@@ -1187,7 +1203,7 @@ __weak void MCI_SetIdref(MCI_Handle_t *pHandle, int16_t hNewIdref)
   */
 __weak void MCI_Clear_Iqdref(MCI_Handle_t *pHandle)
 {
-  (void)pHandle; /* paraneter not used */
+  pHandle->pFOCVars->Iqdref = STC_GetDefaultIqdref(pHandle->pSTC);
 }
 
 /**

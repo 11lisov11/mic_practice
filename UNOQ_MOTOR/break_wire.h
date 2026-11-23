@@ -3,7 +3,7 @@
 #include "uart_v3_transport.h"
 
 enum { BW_VERSION=0xD1, BW_BYTES=92, BW_CHUNK=24, BW_PAGES=4, BW_TIMEOUT_MS=2000 };
-#define BW_NUCLEO_BUILD 2026112112UL
+#define BW_NUCLEO_BUILD 2026112202UL
 
 typedef struct {
   uint8_t data[BW_BYTES];

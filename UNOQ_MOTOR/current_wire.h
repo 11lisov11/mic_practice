@@ -4,7 +4,7 @@
 #include "uart_reject_wire.h"
 #include "bkin_wave_wire.h"
 #include <string.h>
-#define CT_PEER_BUILD 2026112112UL
+#define CT_PEER_BUILD 2026112202UL
 enum {CT_SUMMARY=0xD5,CT_DETAIL=0xD6,CT_QUALITY=0xD7};
 static_assert((int)CT_SUMMARY!=(int)URW_VERSION && (int)CT_DETAIL!=(int)URW_VERSION &&
               (int)CT_SUMMARY!=(int)BKW_VERSION && (int)CT_DETAIL!=(int)BKW_VERSION &&

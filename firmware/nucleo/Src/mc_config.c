@@ -45,6 +45,56 @@ PQD_MotorPowMeas_Handle_t PQD_MotorPowMeasM1 =
   */
 PID_Handle_t PIDSpeedHandle_M1 =
 {
+  .hDefKpGain          = (int16_t)PID_SPEED_KP_DEFAULT,
+  .hDefKiGain          = (int16_t)PID_SPEED_KI_DEFAULT,
+  .wUpperIntegralLimit = (int32_t)IQMAX * (int32_t)SP_KIDIV,
+  .wLowerIntegralLimit = -(int32_t)IQMAX * (int32_t)SP_KIDIV,
+  .hUpperOutputLimit   = (int16_t)IQMAX,
+  .hLowerOutputLimit   = -(int16_t)IQMAX,
+  .hKpDivisor          = (uint16_t)SP_KPDIV,
+  .hKiDivisor          = (uint16_t)SP_KIDIV,
+  .hKpDivisorPOW2      = (uint16_t)SP_KPDIV_LOG,
+  .hKiDivisorPOW2      = (uint16_t)SP_KIDIV_LOG,
+  .hDefKdGain          = 0x0000U,
+  .hKdDivisor          = 0x0000U,
+  .hKdDivisorPOW2      = 0x0000U,
+};
+
+/**
+  * @brief  PI / PID Iq loop parameters Motor 1
+  */
+PID_Handle_t PIDIqHandle_M1 =
+{
+  .hDefKpGain          = (int16_t)PID_TORQUE_KP_DEFAULT,
+  .hDefKiGain          = (int16_t)PID_TORQUE_KI_DEFAULT,
+  .wUpperIntegralLimit = (int32_t)INT16_MAX * T_KIDIV,
+  .wLowerIntegralLimit = (int32_t)-INT16_MAX * T_KIDIV,
+  .hUpperOutputLimit   = INT16_MAX,
+  .hLowerOutputLimit   = -INT16_MAX,
+  .hKpDivisor          = (uint16_t)T_KPDIV,
+  .hKiDivisor          = (uint16_t)T_KIDIV,
+  .hKpDivisorPOW2      = (uint16_t)T_KPDIV_LOG,
+  .hKiDivisorPOW2      = (uint16_t)T_KIDIV_LOG,
+  .hDefKdGain          = 0x0000U,
+  .hKdDivisor          = 0x0000U,
+  .hKdDivisorPOW2      = 0x0000U,
+};
+
+/**
+  * @brief  PI / PID Id loop parameters Motor 1
+  */
+PID_Handle_t PIDIdHandle_M1 =
+{
+  .hDefKpGain          = (int16_t)PID_FLUX_KP_DEFAULT,
+  .hDefKiGain          = (int16_t)PID_FLUX_KI_DEFAULT,
+  .wUpperIntegralLimit = (int32_t)INT16_MAX * F_KIDIV,
+  .wLowerIntegralLimit = (int32_t)-INT16_MAX * F_KIDIV,
+  .hUpperOutputLimit   = INT16_MAX,
+  .hLowerOutputLimit   = -INT16_MAX,
+  .hKpDivisor          = (uint16_t)F_KPDIV,
+  .hKiDivisor          = (uint16_t)F_KIDIV,
+  .hKpDivisorPOW2      = (uint16_t)F_KPDIV_LOG,
+  .hKiDivisorPOW2      = (uint16_t)F_KIDIV_LOG,
   .hDefKdGain          = 0x0000U,
   .hKdDivisor          = 0x0000U,
   .hKdDivisorPOW2      = 0x0000U,
@@ -60,8 +110,12 @@ SpeednTorqCtrl_Handle_t SpeednTorqCtrlM1 =
   .MinAppPositiveMecSpeedUnit = (uint16_t)(MIN_APPLICATION_SPEED_UNIT),
   .MaxAppNegativeMecSpeedUnit = (int16_t)(-MIN_APPLICATION_SPEED_UNIT),
   .MinAppNegativeMecSpeedUnit = (int16_t)(-MAX_APPLICATION_SPEED_UNIT),
+  .MaxPositiveTorque          = (int16_t)NOMINAL_CURRENT,
+  .MinNegativeTorque          = -(int16_t)NOMINAL_CURRENT,
   .ModeDefault                = DEFAULT_CONTROL_MODE,
   .MecSpeedRefUnitDefault     = (int16_t)(DEFAULT_TARGET_SPEED_UNIT),
+  .TorqueRefDefault           = (int16_t)DEFAULT_TORQUE_COMPONENT,
+  .IdrefDefault               = (int16_t)DEFAULT_FLUX_COMPONENT_A,
 };
 PWMC_R3_2_Handle_t PWM_Handle_M1 =
 {
@@ -185,12 +239,28 @@ CircleLimitation_Handle_t CircleLimitationM1 =
 };
 MCI_Handle_t Mci[NBR_OF_MOTORS];
 //STM_Handle_t STM[NBR_OF_MOTORS];
+SpeednTorqCtrl_Handle_t *pSTC[NBR_OF_MOTORS] = { &SpeednTorqCtrlM1 };
+PID_Handle_t *pPIDIq[NBR_OF_MOTORS] = {&PIDIqHandle_M1};
+PID_Handle_t *pPIDId[NBR_OF_MOTORS] = {&PIDIdHandle_M1};
 NTC_Handle_t *pTemperatureSensor[NBR_OF_MOTORS] = {&TempSensor_M1};
 PQD_MotorPowMeas_Handle_t *pMPM[NBR_OF_MOTORS] = {&PQD_MotorPowMeasM1};
 
 ACIM_MotorParams_Handle_t ACIM_MotorParams_M1 =
 {
  .bPP           = POLE_PAIR_NUM,
+ .fRs           = RS,
+ .fRr           = RR,
+ .fLls          = LLS,
+ .fLlr          = LLR,
+ .fLms          = LMS,
+ .fLM           = LM,
+ .fLr           = LR,
+ .fLs           = LS,
+ .fsigma        = SIGMA,
+ .ftaur         = TAU_R,
+ .ftaus         = TAU_S,
+ .fImagn_A      = IMAGN_A,
+ .fNominalFrequency_rads = (NOMINAL_FREQ*2.0f*PI)
 };
 
 #if defined(MAIN_IFOC)
@@ -273,23 +343,6 @@ RampExtMngr_Handle_t RampExtMngrVFParamsM1 =
 {
   .FrequencyHz = MEDIUM_FREQUENCY_TASK_RATE /*!< Execution frequency expressed in Hz */
 
-};
-
-/**
-  * @brief  PI VF parameters Motor 1
-  */
-PI_Float_Handle_t PI_VF_Handle_M1 =
-{
-  /* Medium Frequency Task - Speed loop */
-  .fDefKpGain            = PI_VF_SPEED_KP_DEFAULT, /* Tuning performed by GUI, using a Bandwidth w0 = 250 rad/s */
-  .fDefKiGain            = PI_VF_SPEED_KI_DEFAULT, /* Tuning performed by GUI, using a Bandwidth w0 = 250 rad/s */
-  .fKs                   = 0.0f,
-  .bAntiWindUpActivation = (FunctionalState)DISABLE,
-  .fLowerLimit           = -PI_VF_SPEED_OUTPUT_LIMIT, /* The output of speed regulator is the max slip frequency expressed in rad/s */
-  .fUpperLimit           =  PI_VF_SPEED_OUTPUT_LIMIT, /* The output of speed regulator is the max slip frequency expressed in rad/s */
-  .fUpperIntegralLimit   = (float)4294967296,
-  .fLowerIntegralLimit   = -(float)4294967296,
-  .fExecFrequencyHz      = MEDIUM_FREQUENCY_TASK_RATE
 };
 
 ACIM_VF_Handle_t ACIM_VF_Component_M1 =

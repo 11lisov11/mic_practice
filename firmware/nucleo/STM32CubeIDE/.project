@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>ACIM-NUCLEOG431RB-IPM15B-VF_OL</name>
+	<name>ACIM-AIR56B2-LSO_FOC</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -30,22 +30,10 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
 	<linkedResources>
-        <link><name>Application/User/multi_native.c</name><type>1</type>
-        <locationURI>PARENT-1-PROJECT_LOC/Src/multi_native.c</locationURI></link>
 		<link>
-			<name>Application/User/nucleo_encoder.c</name>
+			<name>ACIM-AIR56B2-LSO_FOC.ioc</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/nucleo_encoder.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/current_shunt.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/current_shunt.c</locationURI>
-		</link>
-		<link>
-			<name>ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/ACIM-NUCLEOG431RB-IPM15B-VF_OL.ioc</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/ACIM-AIR56B2-LSO_FOC.ioc</locationURI>
 		</link>
 		<link>
 			<name>Application/User/aspep.c</name>
@@ -371,11 +359,6 @@
 			<name>Middlewares/MotorControl/virtual_speed_sensor.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/MCSDK_v6.4.2-Full/MotorControl/MCSDK/MCLib/Any/Src/virtual_speed_sensor.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/nucleo_i2c_wire.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Src/nucleo_i2c_wire.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

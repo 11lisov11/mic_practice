@@ -31,9 +31,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "r3_2_g4xx_pwm_curr_fdbk.h"
-#include "local_stop.h"
 #include "pwm_common.h"
 #include "mc_type.h"
+#include "current_adc_window_plan.h"
+
+/* Reuse the quiet aperture geometry validated on this three-shunt board. */
+enum { AIR56_ADC_APEX_RESERVE = 128U, AIR56_ADC_SETTLE_TICKS = 771U, AIR56_ADC_ACQUIRE_TICKS = 112U };
 
 /** @addtogroup MCSDK
   * @{
@@ -602,6 +605,10 @@ __weak void R3_2_GetPhaseCurrents(PWMC_Handle_t *pHdl, ab_t *Iab)
     Sector = (uint8_t)pHandle->_Super.Sector;
     ADCDataReg1 = pHandle->pParams_str->ADCDataReg1[Sector]->JDR1;
     ADCDataReg2 = pHandle->pParams_str->ADCDataReg2[Sector]->JDR1;
+    extern volatile uint32_t air56_trip_raw_pair;
+    extern volatile uint32_t air56_trip_adc_timer;
+    air56_trip_raw_pair = (ADCDataReg1 & 0xFFFFU) | (ADCDataReg2 << 16);
+    air56_trip_adc_timer = (TIMx->CNT & 0xFFFFU) | (TIMx->CR1 << 16);
 
     /* Disable ADC trigger source */
     /* LL_TIM_CC_DisableChannel(TIMx, LL_TIM_CHANNEL_CH4) */
@@ -1128,56 +1135,22 @@ uint16_t R3_2_SetADCSampPointSectX(PWMC_Handle_t *pHdl)
 #endif
     PWMC_R3_2_Handle_t *pHandle = (PWMC_R3_2_Handle_t *)pHdl;  //cstat !MISRAC2012-Rule-11.3
 
-    uint16_t SamplingPoint;
-    uint16_t DeltaDuty;
-
-    /* Check if sampling the AB phases in the middle of the PWM period is possible */
-    if ( ( uint16_t )( pHandle->Half_PWMPeriod - pHdl->lowDuty ) > pHandle->pParams_str->Tafter )
+    const uint16_t half = pHandle->Half_PWMPeriod;
+    const mic_current_window_plan plan = mic_plan_current_window(pHdl->CntPhA, pHdl->CntPhB, pHdl->CntPhC,
+        half > AIR56_ADC_APEX_RESERVE ? half - AIR56_ADC_APEX_RESERVE : 0U,
+        AIR56_ADC_SETTLE_TICKS, AIR56_ADC_ACQUIRE_TICKS);
+    if (!plan.valid)
     {
-      /* When it is possible to sample in the middle of the PWM period, always sample the same phases
-       * (AB are chosen) for all sectors in order to not induce current discontinuities when there are
-       * differences between offsets */
-  
-      /* Sector number needed by GetPhaseCurrent, phase A and B are sampled which corresponds to 
-       * sector 4 or 5 */
-      pHandle->_Super.Sector = SECTOR_5;
-
-      /* Set the sampling point in the middle of the PWM period */
-      SamplingPoint = pHandle->Half_PWMPeriod - 1u;
+      /* Do not publish duties for a frame without two settled measurements. */
+      returnValue = MC_DURATION;
     }
     else
     {
-      /* In this case it is necessary to sample phases with maximum and variable complementary duty cycle */
-  
-      /* In every sector there is always one phase with maximum complementary duty, one with minimum 
-       * complementary duty and one with variable complementary duty. In this case, phases with variable 
-       * and maximum complementary duty are converted, always starting with the one with variable 
-       * complementary duty cycle */
-	   
-      DeltaDuty = (uint16_t)(pHdl->lowDuty - pHdl->midDuty);
-
-      /* Definition of crossing point */
-      if (DeltaDuty > ((uint16_t)(pHandle->Half_PWMPeriod - pHdl->lowDuty) * 2U))
-      {
-        SamplingPoint = pHdl->lowDuty - pHandle->pParams_str->Tbefore;
-      }
-      else
-      {
-        SamplingPoint = pHdl->lowDuty + pHandle->pParams_str->Tafter;
-
-        if (SamplingPoint >= pHandle->Half_PWMPeriod)
-        {
-          /* ADC trigger edge must be changed from positive to negative */
-          pHandle->ADCTriggerEdge = LL_ADC_INJ_TRIG_EXT_FALLING;
-          SamplingPoint = (2U * pHandle->Half_PWMPeriod) - SamplingPoint - 1;
-        }
-        else
-        {
-          /* Nothing to do */
-        }
-      }
+      static const uint8_t sectors[] = { SECTOR_5, SECTOR_2, SECTOR_1 }; /* UV, UW, VW */
+      pHdl->Sector = sectors[plan.pair];
+      pHandle->ADCTriggerEdge = LL_ADC_INJ_TRIG_EXT_RISING;
+      returnValue = R3_2_WriteTIMRegisters(pHdl, (uint16_t)plan.trigger);
     }
-    returnValue = R3_2_WriteTIMRegisters( &pHandle->_Super, SamplingPoint );
 #ifdef NULL_PTR_CHECK_R3_2_PWM_CURR_FDB
   }
 #endif
@@ -1441,7 +1414,7 @@ __weak void R3_2_TurnOnLowSides(PWMC_Handle_t *pHdl, uint32_t ticks)
   LL_TIM_OC_EnablePreload(TIMx, LL_TIM_CHANNEL_CH3);
 
   /* Main PWM Output Enable */
-  mic_local_stop_enable_outputs(TIMx);
+  LL_TIM_EnableAllOutputs(TIMx);
 
   if ((ES_GPIO == pHandle->_Super.LowSideOutputs))
   {
@@ -1486,7 +1459,7 @@ __weak void R3_2_SwitchOnPWM(PWMC_Handle_t *pHdl)
 
   /* Main PWM Output Enable */
   TIMx->BDTR |= LL_TIM_OSSI_ENABLE;
-  mic_local_stop_enable_outputs(TIMx);
+  LL_TIM_EnableAllOutputs(TIMx);
 
   if ((ES_GPIO == pHandle->_Super.LowSideOutputs))
   {
@@ -1963,7 +1936,7 @@ static void R3_2_RLTurnOnLowSides(PWMC_Handle_t *pHdl, uint32_t ticks)
   LL_TIM_OC_EnablePreload(TIMx, LL_TIM_CHANNEL_CH1);
 
   /* Main PWM Output Enable */
-  mic_local_stop_enable_outputs(TIMx);
+  LL_TIM_EnableAllOutputs(TIMx);
 
   if (ES_GPIO == pHandle->_Super.LowSideOutputs)
   {
@@ -2009,7 +1982,7 @@ static void R3_2_RLSwitchOnPWM( PWMC_Handle_t *pHdl)
 
     /* Main PWM Output Enable */
     TIMx->BDTR |= LL_TIM_OSSI_ENABLE ;
-    mic_local_stop_enable_outputs(TIMx);
+    LL_TIM_EnableAllOutputs(TIMx);
 
     if (ES_GPIO ==  pHandle->_Super.LowSideOutputs)
     {
@@ -2078,7 +2051,7 @@ void R3_2_RLTurnOnLowSidesAndStart(PWMC_Handle_t *pHdl)
     
     /* Main PWM Output Enable */
     TIMx->BDTR |= LL_TIM_OSSI_ENABLE ;
-    mic_local_stop_enable_outputs(TIMx);
+    LL_TIM_EnableAllOutputs (TIMx);
 
     if (ES_GPIO == pHandle->_Super.LowSideOutputs )
     {

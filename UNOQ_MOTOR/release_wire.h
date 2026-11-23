@@ -2,7 +2,7 @@
 #define MIC_RELEASE_WIRE_H
 #include "uart_v3_transport.h"
 #include "pe_release_probe.h"
-enum { PR_WIRE=0xDD,PR_FORMAT=1,PR_PEER=2026112112U,PR_MAGIC=0x31525053U,
+enum { PR_WIRE=0xDD,PR_FORMAT=1,PR_PEER=2026112202U,PR_MAGIC=0x31525053U,
        PR_WORDS=25,PR_BYTES=100,PR_PAGES=5 };
 static inline uint32_t pr_get(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
 static inline void pr_put(uint8_t*p,uint32_t v){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}

@@ -56,8 +56,8 @@
 
 #define LSO_K                ((float)(1.15))   /* Luenberger State Observer Matrix parameter that fixes the values of k1, k2, k3, k4*/
 #define LSO_BANDWIDTH        ((float)(300))   /* Expressed in rad/s */
-#define LSO_KP               ((float)(5.072))   /* Proportional Term default value for Mech. Speed Estimation */
-#define LSO_KI               ((float)(2475.98366))   /* Integral Term default value for Mech. Speed Estimation */
+#define LSO_KP               ((float)(73.13895))   /* Proportional Term default value for Mech. Speed Estimation */
+#define LSO_KI               ((float)(26106.49849))   /* Integral Term default value for Mech. Speed Estimation */
 
 /* ##@@_USER_CODE_START_##@@ */
 /* ##@@_USER_CODE_END_##@@ */

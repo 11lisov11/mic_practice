@@ -1,7 +1,7 @@
 #ifndef MIC_ENCODER_HEALTH_H
 #define MIC_ENCODER_HEALTH_H
 #include "uart_v3_transport.h"
-enum { EH_WIRE=0xDC,EH_FORMAT=1,EH_PEER=2026112112U,EH_TTL=2000 };
+enum { EH_WIRE=0xDC,EH_FORMAT=1,EH_PEER=2026112202U,EH_TTL=2000 };
 static inline uint32_t eh_u32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
 static inline void eh_put(uint8_t*p,uint32_t v){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
 static inline void eh_packet(uint8_t*p,const uint32_t*v,uint8_t page,uint8_t gen){

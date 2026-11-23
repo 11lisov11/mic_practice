@@ -1,0 +1,154 @@
+{
+  "reference_board": "NUCLEO-G431RB + IHM09M2 + STEVAL-IPM15B",
+  "stock_source_sha256": "49693e2c2b232ae8ec909bdf253c69a978d20bc797732e9ff216d6889a392322",
+  "motor": {
+    "polesPairs": 1,
+    "Rr": 11.00442222558575,
+    "Rs": 12.23,
+    "Lls": 0.033616261757745625,
+    "Llr": 0.033616261757745625,
+    "Lms": 0.3296517325441089,
+    "In": 1.24,
+    "Im": 0.3575019287422944,
+    "Vn": 127.017059,
+    "Fn": 50.0,
+    "maxSpeed": 2720.0,
+    "inertia": 200.0,
+    "friction": 147.90613961630186,
+    "label": "IEK_AIR56B2_D_CALCULATED",
+    "description": "AIR56B2 provisional 2202 parameters"
+  },
+  "profile": "estimated, source 2202 except catalog ratings",
+  "catalog_sha256": "2fcaaf268ba3ba97970a21ef0918e18f91cce6982699b7ee992b1559736f5eb6",
+  "model_sha256": "d96d8f5aaff3262bd0edf70c58ae757afd988736060450b79623d59b4e9f41e6",
+  "vendor_calculator_sha256": "cc58a3d1219565fc4a36809268fc0b2f89088a08edf8bddf80995258d74cef2d",
+  "vendor": {
+    "motorValues": {
+      "IMAGN_A": 0.5055841,
+      "ACIM_POLE_PAIR_NUM": 1,
+      "ACIM_NOMINAL_CURRENT": 2925,
+      "NOMINAL_PHASE_VOLTAGE": 127.017059,
+      "NOMINAL_FREQ": 50,
+      "M1_MOTOR_MAX_SPEED_RPM": 2720,
+      "ACIM_RS": 12.23,
+      "RR": 11.0044222,
+      "LLS": 0.0336163,
+      "LLR": 0.0336163,
+      "LMS": 0.3296517,
+      "LM": 0.4944776,
+      "LR": 0.5280939,
+      "M1_LS": 0.5280939,
+      "TAU_R": 0.0479892,
+      "TAU_S": 0.0431802,
+      "SIGMA": 0.1232596,
+      "WB_UI_FRICTION": 147.9061396,
+      "WB_UI_INERTIA": 200,
+      "ACIM_MAX_APPLICATION_SPEED": 2720,
+      "ACIM_DEFAULT_FLUX_COMPONENT": 843,
+      "ACIM_IQMAX": 2801,
+      "M1_MOTOR_NAME": "IEK_AIR56B2_D_CALCULATED",
+      "WB_UI_MOTOR_DESCRIPTION": "AIR56B2 provisional 2202 parameters"
+    },
+    "currentPI": {
+      "Iq": {
+        "Kp": {
+          "num": 22328,
+          "den": 8192
+        },
+        "Ki": {
+          "num": 1048,
+          "den": 32768
+        }
+      },
+      "Id": {
+        "Kp": {
+          "num": 22328,
+          "den": 8192
+        },
+        "Ki": {
+          "num": 1992,
+          "den": 32768
+        }
+      }
+    },
+    "speedPI": {
+      "Kp": {
+        "num": 29344,
+        "den": 4096
+      },
+      "Ki": {
+        "num": 346,
+        "den": 32768
+      }
+    },
+    "lsoPI": {
+      "Kp": 73.13895,
+      "Ki": 26106.49849
+    }
+  },
+  "applied": {
+    "IMAGN_A": 0.5055841,
+    "ACIM_POLE_PAIR_NUM": 1,
+    "ACIM_NOMINAL_CURRENT": 2925,
+    "NOMINAL_PHASE_VOLTAGE": 127.017059,
+    "NOMINAL_FREQ": 50,
+    "M1_MOTOR_MAX_SPEED_RPM": 2720,
+    "ACIM_RS": 12.23,
+    "RR": 11.0044222,
+    "LLS": 0.0336163,
+    "LLR": 0.0336163,
+    "LMS": 0.3296517,
+    "LM": 0.4944776,
+    "LR": 0.5280939,
+    "M1_LS": 0.5280939,
+    "TAU_R": 0.0479892,
+    "TAU_S": 0.0431802,
+    "SIGMA": 0.1232596,
+    "WB_UI_FRICTION": 147.9061396,
+    "WB_UI_INERTIA": 200,
+    "ACIM_MAX_APPLICATION_SPEED": 300,
+    "ACIM_DEFAULT_FLUX_COMPONENT": 843,
+    "ACIM_IQMAX": 1033,
+    "M1_MOTOR_NAME": "IEK_AIR56B2_D_CALCULATED",
+    "WB_UI_MOTOR_DESCRIPTION": "AIR56B2 provisional 2202 parameters",
+    "M1_MAX_APPLICATION_SPEED": 300,
+    "ACIM_DEFAULT_TARGET_SPEED_RPM": 0,
+    "M1_DEFAULT_TARGET_SPEED_RPM": 0,
+    "CURRENT_CTRL_BANDWIDTH": 400.0,
+    "SPEED_CTRL_BANDWIDTH": 12.0,
+    "M1_NOMINAL_BUS_VOLTAGE_V": 325,
+    "LSO_KP": 73.13895,
+    "LSO_KI": 26106.49849,
+    "FLUX_K": 0.571777653239949,
+    "M1_OV_VOLTAGE_THRESHOLD_V": 350,
+    "M1_UD_VOLTAGE_THRESHOLD_V": 250,
+    "M1_OCP_BKIN_FILTER": 9,
+    "ACIM_PID_TORQUE_KP_DEFAULT": 22328,
+    "T_KPDIV": 8192,
+    "ACIM_PID_TORQUE_KI_DEFAULT": 1048,
+    "T_KIDIV": 32768,
+    "ACIM_PID_FLUX_KP_DEFAULT": 22328,
+    "F_KPDIV": 8192,
+    "ACIM_PID_FLUX_KI_DEFAULT": 1992,
+    "F_KIDIV": 32768,
+    "ACIM_PID_SPEED_KP_DEFAULT": 29344,
+    "ACIM_SP_KPDIV": 4096,
+    "ACIM_PID_SPEED_KI_DEFAULT": 346,
+    "ACIM_SP_KIDIV": 32768
+  },
+  "raw_trip_A": 1.35,
+  "reference_limit_A_peak": 0.8,
+  "reference_limit_counts": 1334,
+  "raw_trip_counts": 2252,
+  "software_bus_range_V": [
+    250,
+    350
+  ],
+  "limits": {
+    "fast_cycles": 4000,
+    "adc_age_us": 2000,
+    "run_limit_ms": 5000
+  },
+  "installed": false,
+  "hardware_commands": 0
+}

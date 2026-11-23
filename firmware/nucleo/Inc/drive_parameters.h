@@ -25,18 +25,62 @@
 #define DRIVE_PARAMETERS_H
 
 /* ACIM mode: define here the control mode as one of the following selection (MAIN_IFOC, MAIN_LSO_FOC, MAIN_VF_OL, MAIN_VF_CL) */
-#define MAIN_VF_OL
+#define MAIN_LSO_FOC
 
 /* PWM frequency */
 #define PWM_FREQUENCY                     16000
 #define REGULATION_EXECUTION_RATE         1 /*!< FOC execution rate in number of PWM cycles */
 
 /*** Speed measurement settings ***/
-#define MAX_APPLICATION_SPEED_RPM         3000 /*!< rpm, mechanical */
+#define MAX_APPLICATION_SPEED_RPM         300 /*!< rpm, mechanical */
+
+/* Currents regulators bandwidth */
+#define CURRENT_CTRL_BANDWIDTH            400.0 /* Expressed in rad/s */
+
+/* Gains values for torque and flux control loops */
+#define PID_TORQUE_KP_DEFAULT             22328
+#define PID_TORQUE_KI_DEFAULT             1048
+
+#define PID_FLUX_KP_DEFAULT               22328
+#define PID_FLUX_KI_DEFAULT               1992
+
+/* Torque/Flux control loop gains dividers*/
+#define T_KPDIV                           8192
+#define T_KIDIV                           32768
+
+#define T_KPDIV_LOG                       LOG2(T_KPDIV)
+#define T_KIDIV_LOG                       LOG2(T_KIDIV)
+
+#define F_KPDIV                           8192
+#define F_KIDIV                           32768
+
+#define F_KPDIV_LOG                       LOG2(F_KPDIV)
+#define F_KIDIV_LOG                       LOG2(F_KIDIV)
+
+/* Number of consecutive Speed Loop task ticks when the measured Id current is into the [Low BW limit, UP BW limit]
+   bandwidth. It is used at any startup to magnetize the motor. */
+#define MAGN_VALIDATION_TICKS             10
+#define LOWER_BW_LIMIT_PERC               ((float)(0.7))
+#define UPPER_BW_LIMIT_PERC               ((float)(1.3))
 
 #define SPEED_LOOP_FREQUENCY_HZ           500 /* Execution rate of speed regulation loop (Hz) */
 
-#define DEFAULT_TARGET_SPEED_RPM          500
+/* Speed control loop */
+#define SPEED_CTRL_BANDWIDTH              12.0 /* Expressed in rad/s */
+#define PID_SPEED_KP_DEFAULT              29344
+#define PID_SPEED_KI_DEFAULT              346
+
+/* Speed PID parameter dividers */
+#define SP_KPDIV                          4096
+#define SP_KIDIV                          32768
+#define SP_KPDIV_LOG                      LOG2(4096)
+#define SP_KIDIV_LOG                      LOG2(32768)
+
+/* Max Output of PI speed regulator*/
+#define IQMAX                             1033
+#define DEFAULT_FLUX_COMPONENT_A           843
+
+#define DEFAULT_TARGET_SPEED_RPM          0
 
 /************************
  *** Motor Parameters ***
@@ -95,8 +139,8 @@
 #define DEFAULT_TORQUE_COMPONENT_A        0
 
 /**************************    FIRMWARE PROTECTIONS SECTION   *****************/
-#define OV_VOLTAGE_THRESHOLD_V            390.0 /*!< Over-voltage threshold */
-#define UD_VOLTAGE_THRESHOLD_V            10.0 /*!< Under-voltage threshold */
+#define OV_VOLTAGE_THRESHOLD_V            350 /*!< Over-voltage threshold */
+#define UD_VOLTAGE_THRESHOLD_V            250 /*!< Under-voltage threshold */
 #if NOT_IMPLEMENTED
 #define ON_OVER_VOLTAGE                   TURN_OFF_PWM /*!< TURN_OFF_PWM, TURN_ON_R_BRAKE or TURN_ON_LOW_SIDES */
 #endif /* NOT_IMPLEMENTED */

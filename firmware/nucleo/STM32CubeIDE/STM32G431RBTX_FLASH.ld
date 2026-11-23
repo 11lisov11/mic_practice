@@ -39,12 +39,14 @@ ENTRY(Reset_Handler)
 _estack = ORIGIN(RAM) + LENGTH(RAM); /* end of "RAM" Ram type memory */
 
 _Min_Heap_Size = 0x200; /* required amount of heap */
-_Min_Stack_Size = 0x1000; /* required amount of stack */
+_Min_Stack_Size = 0x400; /* required amount of stack */
 
 /* Memories definition */
 MEMORY
 {
-  RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 32K
+  RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 22K
+  /* The remaining SRAM is also mapped on the core instruction/data buses. */
+  CCMRAM (xrw)    : ORIGIN = 0x10000000,  LENGTH = 10K
   FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 128K
 }
 
@@ -59,6 +61,26 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
+
+  /* The linker selects the actual function sections from the -Ofast build. */
+  .ccmram :
+  {
+    . = ALIGN(4);
+    _sccmram = .;
+    *(.text.ACIM_LSO_CalcAngle .text.ACIM_LSO_GetElAngle .text.PI_Float_Calc)
+    *(.text.Convert_s16_to_V .text.Convert_s16_to_A .text.Convert_Rad_to16bit)
+    *(.text.VBS_GetAvBusVoltage_V .text.STC_GetMecSpeedRefUnit)
+    *(.text.TSK_HighFrequencyTask .text.AIR56_OffDwtService)
+    *(.text.PWMC_SetPhaseVoltage .text.R3_2_GetPhaseCurrents .text.R3_2_SetADCSampPointSectX)
+    *(.text.MCM_Clarke .text.MCM_Park_Generic .text.MCM_Rev_Park_Generic)
+    *(.text.MCM_Trig_Functions .text.MCM_Sqrt .text.PI_Controller .text.Circle_Limitation)
+    *(.text.ADC1_2_IRQHandler .text.TIM1_UP_TIM16_IRQHandler)
+    *(.text.R3_2_TIMx_UP_IRQHandler .text.AIR56_LsoWatchAdc)
+    . = ALIGN(4);
+    *(.ccmram.air56_start_record)
+    _eccmram = .;
+  } >CCMRAM AT> FLASH
+  _siccmram = LOADADDR(.ccmram);
 
   /* The program code and other data into "FLASH" Rom type memory */
   .text :
@@ -165,13 +187,6 @@ SECTIONS
     __bss_end__ = _ebss;
   } >RAM
 
-  .noinit (NOLOAD) :
-  {
-    . = ALIGN(4);
-    KEEP(*(.noinit.mic_boot))
-    . = ALIGN(4);
-  } >RAM
-
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :
   {
@@ -193,7 +208,3 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
-
-__StackLimit = _estack - _Min_Stack_Size;
-ASSERT((_end + _Min_Heap_Size) <= __StackLimit, "data/noinit/heap overlap stack floor")
-ASSERT((ADDR(.noinit) + SIZEOF(.noinit)) <= __StackLimit, "retained boot overlaps stack")

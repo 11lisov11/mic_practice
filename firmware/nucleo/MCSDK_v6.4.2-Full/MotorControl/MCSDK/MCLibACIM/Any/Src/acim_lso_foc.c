@@ -43,11 +43,37 @@ bool ACIM_LSO_IsNotValidNumber(float fVar);
 */
 void ACIM_LSO_Init(ACIM_LSO_Handle_t *pHandle, BusVoltageSensor_Handle_t *pBVS)
 {
- pHandle->pBVS = pBVS;
- 
- PI_Float_HandleInit(pHandle->fPI);
+  pHandle->pBVS = pBVS;
+  PI_Float_HandleInit(pHandle->fPI);
+  const ACIM_MotorParams_Handle_t *motor = pHandle->pACIM_MotorParams;
+  const float sigma = motor->fsigma;
+  const float k = pHandle->k;
+  const float inv_tr = 1.0f / motor->ftaur;
+  const float inv_ts = 1.0f / motor->ftaus;
+  const float sigma_rest = 1.0f - sigma;
+  pHandle->invRotorTime = inv_tr;
+  pHandle->observerK1 = -((k - 1.0f) / sigma) * (inv_tr + inv_ts);
+  pHandle->observerK3 = ((k - 1.0f) / sigma_rest) * (inv_tr - k * inv_ts);
+  pHandle->observerK4Scale = ((k - 1.0f) * sigma) / sigma_rest;
+  pHandle->currentDecay = -(1.0f / sigma) * (inv_ts + sigma_rest * inv_tr);
+  pHandle->speedFluxCoupling = sigma_rest * (1.0f / sigma);
+  pHandle->directFluxCoupling = sigma_rest / (sigma * motor->ftaur);
+  pHandle->voltageGain = 1.0f / (sigma * motor->fLs);
+  pHandle->speedUnitDenominator = 2.0f * (float)PI * motor->bPP;
   
 }
+
+static inline float ACIM_LSO_WrapAngle(float angle)
+{
+  const float turn = 2.0f * (float)PI;
+  // The running angle usually stays within one turn or crosses by a single turn.
+  if (angle > -turn && angle < turn) { return angle; }
+  if (angle >= turn && angle < 2.0f * turn) { return angle - turn; }
+  if (angle < -turn && angle > -2.0f * turn) { return angle + turn; }
+  if (angle == -turn) { return -0.0f; }
+  return fmodf(angle, turn);
+}
+
 
 #if (defined (CCMRAM) || defined(CCMRAM_ENABLED))
 #if defined (__ICCARM__)
@@ -67,7 +93,7 @@ __attribute__((section ("ccmram")))
   *         
   * @retval 
   */
-void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
+void ACIM_LSO_CalcAngleVoltage(ACIM_LSO_Handle_t *pHandle, qd_t applied)
 {
   
   float fSlipFreq_rads = 0.0f;
@@ -81,47 +107,27 @@ void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
   
   float fSpeedEstError = 0.0f;
     
-  /*Local variables */
-  
-  float k = pHandle->k;
-  float k1;
-  float k2;
-  float k3;
-  float k4;
-  
-  /* Motor params */
-  float fsigma = pHandle->pACIM_MotorParams->fsigma;
-  float ftaur  = pHandle->pACIM_MotorParams->ftaur;
-  float ftaus  = pHandle->pACIM_MotorParams->ftaus;
-  float fLs    = pHandle->pACIM_MotorParams->fLs;
-  float fPP    = pHandle->pACIM_MotorParams->bPP;
-  
-  
+  const ACIM_MotorParams_Handle_t *motor = pHandle->pACIM_MotorParams;
+  const float k1 = pHandle->observerK1;
+  const float k3 = pHandle->observerK3;
+  const float divftaur = pHandle->invRotorTime;
+
   /* Previous values for estimated quantities */
   fRotorFluxFreq_rads    = pHandle->fRotorFluxFreq_rads;
   fRotorElSpeed_obs_rads = pHandle->fRotorElSpeed_obs_rads;
   fIqds_obs_A            = pHandle->fIqds_obs_A;
   fFlux_qdr_obs          = pHandle->fFlux_qdr_obs;
     
-  fVqds_meas_V = Convert_s16_to_V(pHandle->pBVS, pHandle->pFOCVars->Vqd);
+  fVqds_meas_V = Convert_s16_to_V(pHandle->pBVS, applied);
   
   Signal_Components Iqdmeas_A = Convert_s16_to_A(pHandle->pFOCVars[M1].Iqd);
   
   float ids_obs_A = fIqds_obs_A.fS_Component2;
   
   
-  float divftaur = 1/ftaur;
-  float divftaus = 1/ftaus;
-  float divfsigma = 1/fsigma;
-  float fsigmadiff = 1-fsigma;
-  
-  /* Online computation of Observer parameters */
-  k1 = -((k-1)/fsigma)*(divftaur + divftaus);
-  k2 =  (k-1)*fRotorElSpeed_obs_rads;
-  
-  k3 = ((k-1)/(1-fsigma))*(divftaur - k*divftaus);
-  k4 = ((k-1)*fRotorElSpeed_obs_rads*fsigma)/(1-fsigma);
-  
+  const float k2 = (pHandle->k - 1.0f) * fRotorElSpeed_obs_rads;
+  const float k4 = pHandle->observerK4Scale * fRotorElSpeed_obs_rads;
+
   /* STEP 1 - Computing of prediction errors --------------------------------------------------------- */
   /* Iq error(k) */
   pHandle->fIqds_error_A.fS_Component1 = Iqdmeas_A.fS_Component1 - fIqds_obs_A.fS_Component1;
@@ -135,7 +141,7 @@ void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
   pHandle->fRotorElSpeed_obs_rads = PI_Float_Calc(pHandle->fPI, fSpeedEstError);
  
   
-  pHandle->_SpeedEstimator.hAvrMecSpeedUnit =    (int16_t)((pHandle->fRotorElSpeed_obs_rads*10.0f)/(2.0f*(float)PI* fPP));
+  pHandle->_SpeedEstimator.hAvrMecSpeedUnit =    (int16_t)((pHandle->fRotorElSpeed_obs_rads*10.0f)/pHandle->speedUnitDenominator);
   pHandle->fRotorSpeed_RPM = (float)pHandle->_SpeedEstimator.hAvrMecSpeedUnit*6.0f;
   
   
@@ -154,7 +160,7 @@ void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
   }
   
   /* Slip frequency estimation */
-  fSlipFreq_rads = fIqds_obs_A.fS_Component1/(fFlux_dr_tmp * ftaur);
+  fSlipFreq_rads = fIqds_obs_A.fS_Component1/(fFlux_dr_tmp * motor->ftaur);
    
   /* Rotor Flux frequency computation */
   fRotorFluxFreq_rads = fSlipFreq_rads + pHandle->fRotorElSpeed_obs_rads;
@@ -163,18 +169,18 @@ void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
   pHandle->fRotorFlux_Angle_rad +=  fRotorFluxFreq_rads*pHandle->fCalcAngleExecTime_s;
     
   /* Observed Rotor Flux angle between 0 and 2pi */
-  pHandle->fRotorFlux_Angle_rad = (float) fmod((double)pHandle->fRotorFlux_Angle_rad , (double) (2.0f*(float)PI));
+  pHandle->fRotorFlux_Angle_rad = ACIM_LSO_WrapAngle(pHandle->fRotorFlux_Angle_rad);
    
   /* STEP 5 and 6 - Prediction of currents and flux */
  
-  fIqds_obs_A.fS_Component1 +=  ((-fRotorFluxFreq_rads* pHandle->fIqds_obs_A.fS_Component2) + (((-divfsigma)*(divftaus +(fsigmadiff)*divftaur))*pHandle->fIqds_obs_A.fS_Component1)
-                                -((fsigmadiff)*divfsigma*fRotorElSpeed_obs_rads)*pHandle->fFlux_qdr_obs.fS_Component2 
-                                +fVqds_meas_V.fS_Component1/(fsigma* fLs)
+  fIqds_obs_A.fS_Component1 +=  ((-fRotorFluxFreq_rads* pHandle->fIqds_obs_A.fS_Component2) + (pHandle->currentDecay*pHandle->fIqds_obs_A.fS_Component1)
+                                -(pHandle->speedFluxCoupling*fRotorElSpeed_obs_rads)*pHandle->fFlux_qdr_obs.fS_Component2 
+                                +fVqds_meas_V.fS_Component1*pHandle->voltageGain
                                 +k2*((pHandle->fIqds_error_A.fS_Component2)) + k1*((pHandle->fIqds_error_A.fS_Component1)))*pHandle->fCalcAngleExecTime_s;
     
-  fIqds_obs_A.fS_Component2 += ((-divfsigma*(divftaus +(fsigmadiff*divftaur))*(pHandle->fIqds_obs_A.fS_Component2))+ fRotorFluxFreq_rads*pHandle->fIqds_obs_A.fS_Component1                                     
-                                +((fsigmadiff)/(fsigma*ftaur))*(pHandle->fFlux_qdr_obs.fS_Component2)
-                                +fVqds_meas_V.fS_Component2/(fsigma* fLs) 
+  fIqds_obs_A.fS_Component2 += ((pHandle->currentDecay*pHandle->fIqds_obs_A.fS_Component2)+ fRotorFluxFreq_rads*pHandle->fIqds_obs_A.fS_Component1                                     
+                                +pHandle->directFluxCoupling*(pHandle->fFlux_qdr_obs.fS_Component2)
+                                +fVqds_meas_V.fS_Component2*pHandle->voltageGain 
                                 +k1*(pHandle->fIqds_error_A.fS_Component2) - k2*(pHandle->fIqds_error_A.fS_Component1))*pHandle->fCalcAngleExecTime_s;
 
   fFlux_qdr_obs.fS_Component2 += ((ids_obs_A*divftaur)
@@ -187,6 +193,11 @@ void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
 
   
   pHandle->hElAngle = Convert_Rad_to16bit(pHandle->fRotorFlux_Angle_rad);
+}
+
+void ACIM_LSO_CalcAngle(ACIM_LSO_Handle_t *pHandle)
+{
+  ACIM_LSO_CalcAngleVoltage(pHandle, pHandle->pFOCVars->Vqd);
 }
 
 #if (defined (CCMRAM) || defined(CCMRAM_ENABLED))

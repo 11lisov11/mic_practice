@@ -87,9 +87,6 @@ static inline uint16_t RCM_GetRegularConv(const RegConv_t *regConv)
 
 /* This function is used to wait for a the result of a regular conversion. */
 void RCM_WaitForConv(void);
-int RCM_CurrentEpoch(void);
-void RCM_ServiceAfterInjected(void);
-uint16_t RCM_CurrentFault(void);
 
 /**
   * @}

@@ -58,19 +58,34 @@
 #define RAD3DIV3        0.577350269f
 
 /* Motor parameters ----------------------------------------------------------*/
+#define IMAGN_A         ((float)(0.5055841)) /* Magnetizing Current (No-Load current) expressed in Ampere */
+
+#define RR              ((float)(11.0044222)) /* Rotor resistance referred to stator equivalent circuit, (Ohm)*/
+#define LLS             ((float)(0.0336163)) /* Stator leakage inductance, (H)*/
+#define LLR             ((float)(0.0336163)) /* Rotor leakage  inductance referred to the stator equivalent circuit, (H)*/
+#define LMS             ((float)(0.3296517)) /* Motor Magnetizing inductance ((Steady-state model), (H) */
+
+#define LM              ((float)(0.4944776)) /* Motor Magnetizing inductance (Dynamic model), (H) */
+#define LR              ((float)(0.5280939)) /* Global rotor inductance (Dynamic model), Lr = Llr + LM, (H)*/
+#define LS              ((float)(0.5280939)) /* Global stator inductance (Dynamic model), Ls = Lls + LM, (H)*/
+#define TAU_R           ((float)(0.0479892)) /* Rotor Time constant, Lr/Rr, (s) */
+#define TAU_S           ((float)(0.0431802)) /* Statot Time constant, Ls/Rs, (s) */
+
+#define SIGMA           ((float)(0.1232596)) /* Total leakage factor, (dimensionless)*/
+
 #define POLE_PAIR_NUM   1 /* Number of motor pole pairs */
-#define RS              0.35 /* Stator resistance , ohm*/
-#define NOMINAL_CURRENT 1.24
+#define RS              12.23 /* Stator resistance , ohm*/
+#define NOMINAL_CURRENT 2925
 
 /* Required by V/f control */
-#define NOMINAL_PHASE_VOLTAGE  127 /* Nominal stator phase-to-neutral voltage, Vrms */
+#define NOMINAL_PHASE_VOLTAGE  127.017059 /* Nominal stator phase-to-neutral voltage, Vrms */
 
 /* K = Vn/fn , it should be defined considering the pulsation we instead the frequency */
-#define FLUX_K          ((float)(0.5717009))
+#define FLUX_K          ((float)(0.571777653239949))
 
 #define NOMINAL_FREQ    50 /* Nominal frequency, Hz */
 
-#define MOTOR_MAX_SPEED_RPM    3000 /*!< Maximum rated speed  */
+#define MOTOR_MAX_SPEED_RPM    2720 /*!< Maximum rated speed  */
 
 /* ##@@_USER_CODE_START_##@@ */
 /* ##@@_USER_CODE_END_##@@ */

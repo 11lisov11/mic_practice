@@ -2,7 +2,7 @@
 #define MIC_I2C_FAULT_WIRE_H
 #include "uart_v3_transport.h"
 enum { FC_WIRE=0xDB,FC_FORMAT=2,FC_BYTES=160,FC_WORDS=40,FC_PAGES=7,
-       FC_PEER=2026112112U,FC_MAGIC=0x31434649U };
+       FC_PEER=2026112202U,FC_MAGIC=0x31434649U };
 static inline uint32_t fc_get(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)p[1]<<8)|((uint32_t)p[2]<<16)|((uint32_t)p[3]<<24);}
 static inline void fc_put(uint8_t*p,uint32_t v){for(unsigned i=0;i<4;++i)p[i]=(uint8_t)(v>>(i*8));}
 static inline void fc_packet(uint8_t*p,const uint32_t*r,unsigned kind,unsigned page,uint32_t crc){

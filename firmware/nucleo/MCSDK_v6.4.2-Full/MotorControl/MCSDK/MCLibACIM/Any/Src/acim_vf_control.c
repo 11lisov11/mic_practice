@@ -48,15 +48,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "mc_math.h"
 #include "acim_vf_control.h"
-#include <string.h>
-/* Integer classification survives the project's -Ofast finite-math assumptions. */
-static bool mic_float_isfinite(float value)
-{
-  uint32_t bits;
-  memcpy(&bits, &value, sizeof(bits));
-  return (bits & 0x7f800000U) != 0x7f800000U;
-}
-
 #include "math.h"    
 #include "arm_math.h"
 
@@ -252,17 +243,6 @@ __attribute__((section ("ccmram")))
 
 uint16_t ACIM_VF_Controller(ACIM_VF_Handle_t *pHandle)
 {
-  /* A zero/invalid normalizer must never reach duty conversion. */
-  if (!mic_float_isfinite(pHandle->fVoutMax_PWM_Mod_V) || !(pHandle->fVoutMax_PWM_Mod_V > 0.0f) ||
-      !mic_float_isfinite(pHandle->fFlux_Freq_Hz) || !mic_float_isfinite(pHandle->fFlux_Angle_rad) ||
-      !mic_float_isfinite(pHandle->fFlux_K) || pHandle->fFlux_K < 0.0f ||
-      !mic_float_isfinite(pHandle->fMinFreq_TH_Hz) || pHandle->fMinFreq_TH_Hz < 0.0f ||
-      !mic_float_isfinite(pHandle->fVoltage_Offset) || pHandle->fVoltage_Offset < 0.0f ||
-      !mic_float_isfinite(pHandle->fNominalPhaseVoltagePeak_V) || !(pHandle->fNominalPhaseVoltagePeak_V > 0.0f))
-  {
-    return MC_SW_ERROR;
-  }
-
   float vas, vbs, vcs;
   float fdutyA, fdutyB, fdutyC;
   
@@ -274,29 +254,14 @@ uint16_t ACIM_VF_Controller(ACIM_VF_Handle_t *pHandle)
    fFreqHzAbs = -fFreqHzAbs;
   }
   
-  /* C1 low-speed envelope: V(0)=0, V(F/2)=configured low-speed
-     anchor, V(F)=k*F and dV/df(F)=k. Above F the original linear
-     characteristic is unchanged. No DC boost is applied at zero Hz.
-     For this drive: F=10 Hz, V(5 Hz)=20 V phase peak. */
-  const float slope=2.0f*(float)PI*pHandle->fFlux_K;
-  pHandle->VoltageAmpl=2.0f*PI*fFreqHzAbs*pHandle->fFlux_K;
-  if(pHandle->fMinFreq_TH_Hz>0.0f && fFreqHzAbs<pHandle->fMinFreq_TH_Hz)
+  if(fFreqHzAbs >= pHandle->fMinFreq_TH_Hz)
   {
-    const float linear_at_join=slope*pHandle->fMinFreq_TH_Hz;
-    const float boost=pHandle->fVoltage_Offset-0.5f*linear_at_join;
-    if(boost>0.0f)
-    {
-      /* d[x(1-x)^2]/dx >= -1/3. Reject a profile that could make
-         voltage decrease with increasing frequency, before writing CCR. */
-      if(!mic_float_isfinite(linear_at_join) || boost>0.375f*linear_at_join)
-        return MC_SW_ERROR;
-      const float x=fFreqHzAbs/pHandle->fMinFreq_TH_Hz;
-      const float tail=1.0f-x;
-      pHandle->VoltageAmpl+=8.0f*boost*x*tail*tail;
-    }
+    pHandle->VoltageAmpl = 2.0f*PI*fFreqHzAbs * pHandle->fFlux_K;
   }
-  if(!mic_float_isfinite(pHandle->VoltageAmpl) || pHandle->VoltageAmpl<0.0f)
-    return MC_SW_ERROR;
+  else
+  {
+   pHandle->VoltageAmpl = pHandle->fVoltage_Offset;
+  }
   
   float fDeg = ((pHandle->fFlux_Angle_rad)*180.0f)/PI;
   

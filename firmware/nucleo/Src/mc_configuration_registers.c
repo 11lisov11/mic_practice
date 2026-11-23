@@ -42,9 +42,9 @@ const GlobalConfig_reg_t globalConfig_reg =
 
 static const ApplicationConfig_reg_t M1_ApplicationConfig_reg =
 {
-  .maxMechanicalSpeed = 3000,
+  .maxMechanicalSpeed = 300,
   .maxReadableCurrent = M1_MAX_READABLE_CURRENT,
-  .nominalCurrent     = 2925,
+  .nominalCurrent     = 12294,
   .nominalVoltage     = 325,
   .driveType          = DRIVE_TYPE_M1,
 };
@@ -55,10 +55,10 @@ static const MotorConfig_reg_t M1_MotorConfig_reg =
   .polePairs  = 1,
   .ratedFlux  = 24.7,
   .rs         = 2.85,
-  .ls         = 0.1515*1.000,
-  .ld         = 0.1515,
-  .maxCurrent = 2925,
-  .name = "IEK_AIR56B2_D"
+  .ls         = 0.5280939*0.500,
+  .ld         = 0.5280939,
+  .maxCurrent = 12294,
+  .name = "IEK_AIR56B2_D_CALCULATED"
 };
 
 static const FOCFwConfig_reg_t M1_FOCConfig_reg =

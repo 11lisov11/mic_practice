@@ -25,6 +25,39 @@
 #include "usart_aspep_driver.h"
 #include "aspep.h"
 
+// USART A uses one continuously running RX channel. Only MC_Scheduler
+// consumes the ring and changes ASPEP receive spans.
+enum { RX_RING_SIZE = 1024U, RX_RING_MASK = RX_RING_SIZE - 1U };
+static uint8_t rx_ring[RX_RING_SIZE];
+static uint8_t *rx_target;
+static uint16_t rx_size, rx_tail, rx_head_previous;
+static uint32_t rx_last_poll, rx_last_progress;
+static bool rx_resync;
+static bool rx_initialized;
+
+// At 1,843,200 baud an 8N1 sender takes 5.55 ms to lap the ring.
+// The largest pending span is 130 bytes (< 0.71 ms on the wire).
+// Drop ambiguous data if the 0.5 ms scheduler was absent for 4 ms.
+#define RX_MAX_PAUSE (SystemCoreClock / 250U)
+#define RX_PARTIAL_TIMEOUT (SystemCoreClock / 40U)
+#define RX_WIRE_ERRORS (USART_ISR_ORE | USART_ISR_FE | USART_ISR_NE)
+#define RX_CLEAR_ERRORS (USART_ICR_ORECF | USART_ICR_FECF | USART_ICR_NECF)
+
+static uint16_t UASPEP_Head(const UASPEP_Handle_t *hw)
+{
+  return (uint16_t)((RX_RING_SIZE - LL_DMA_GetDataLength(hw->rxDMA, hw->rxChannel)) & RX_RING_MASK);
+}
+
+static void UASPEP_StartRing(UASPEP_Handle_t *hw)
+{
+  LL_DMA_DisableChannel(hw->rxDMA, hw->rxChannel);
+  LL_DMA_ClearFlag_GI2(hw->rxDMA);
+  LL_DMA_SetMode(hw->rxDMA, hw->rxChannel, LL_DMA_MODE_CIRCULAR);
+  LL_DMA_SetMemoryAddress(hw->rxDMA, hw->rxChannel, (uint32_t)rx_ring);
+  LL_DMA_SetDataLength(hw->rxDMA, hw->rxChannel, RX_RING_SIZE);
+  LL_DMA_EnableChannel(hw->rxDMA, hw->rxChannel);
+}
+
 void UASPEP_TX_INIT(UASPEP_Handle_t *pHandle);
 void UASPEP_RX_INIT(UASPEP_Handle_t *pHandle);
 
@@ -100,21 +133,13 @@ void UASPEP_RX_INIT(UASPEP_Handle_t *pHandle)
   else
   {
 #endif
-    /* DMA interrupt not used for all families */
-    /* Enable DMA end of transfer on UART RX channel completion */
-    /* LL_DMA_EnableIT_TC(pHandle->rxDMA, pHandle->rxChannel) */
-    /* Enable Error interrupt (EIE) to unmask Overrun interrupt */
-    LL_USART_EnableIT_ERROR(pHandle->USARTx);
-
-    /* Write the USART_RDR register address in the DMA control register to configure it as
-     * the source of the transfer */
-    //cstat !MISRAC2012-Rule-11.4
-    LL_DMA_SetPeriphAddress(pHandle->rxDMA, pHandle->rxChannel, (uint32_t)&pHandle->USARTx->RDR);
-
-    /* Clear UART ISR */
-    LL_USART_ClearFlag_TC(pHandle->USARTx);
-
+    LL_DMA_SetPeriphAddress(pHandle->rxDMA, pHandle->rxChannel,
+                            (uint32_t)&pHandle->USARTx->RDR);
+    pHandle->USARTx->ICR = RX_CLEAR_ERRORS;
+    UASPEP_StartRing(pHandle);
     LL_USART_EnableDMAReq_RX(pHandle->USARTx);
+    rx_last_poll = rx_last_progress = DWT->CYCCNT;
+    rx_initialized = true;
 #ifdef NULL_PTR_CHECK_USA_ASP_DRV
   }
 #endif
@@ -152,13 +177,9 @@ void UASPEP_CFG_TRANSMISSION(void *pHWHandle, void *data, uint16_t length)
   */
 void UASPEP_CFG_RECEPTION(void *pHWHandle, void* buffer, uint16_t length)
 {
-  UASPEP_Handle_t *pHandle = (UASPEP_Handle_t *)pHWHandle; //cstat !MISRAC2012-Rule-11.5
-  LL_DMA_DisableChannel(pHandle->rxDMA, pHandle->rxChannel);
-  //cstat !MISRAC2012-Rule-11.4 !MISRAC2012-Rule-11.6
-  LL_DMA_SetMemoryAddress(pHandle->rxDMA, pHandle->rxChannel, (uint32_t)buffer);
-  LL_DMA_SetDataLength(pHandle->rxDMA, pHandle->rxChannel, length);
-
-  LL_DMA_EnableChannel(pHandle->rxDMA, pHandle->rxChannel);
+  (void)pHWHandle;
+  rx_target = buffer;
+  rx_size = length;
 }
 
 /**
@@ -168,10 +189,89 @@ void UASPEP_CFG_RECEPTION(void *pHWHandle, void* buffer, uint16_t length)
   */
 void UASPEP_IDLE_ENABLE(void *pHWHandle)
 {
-  UASPEP_Handle_t *pHandle = (UASPEP_Handle_t *)pHWHandle; //cstat !MISRAC2012-Rule-11.5
-  LL_USART_ClearFlag_IDLE(pHandle->USARTx);
-  LL_USART_EnableIT_IDLE(pHandle->USARTx);
+  (void)pHWHandle;
+  rx_resync = true;
 }
+
+void UASPEP_Poll(ASPEP_Handle_t *protocol)
+{
+  if (!rx_initialized) { return; }
+  UASPEP_Handle_t *hw = (UASPEP_Handle_t *)protocol->ASPEPIp;
+  const uint32_t now = DWT->CYCCNT;
+  const uint32_t elapsed = now - rx_last_poll;
+  rx_last_poll = now;
+  const uint16_t head = UASPEP_Head(hw);
+
+  if (LL_DMA_IsActiveFlag_TE2(hw->rxDMA))
+  {
+    UASPEP_StartRing(hw);
+    rx_head_previous = rx_tail = 0U;
+    protocol->NewPacketAvailable = false;
+    rx_resync = true;
+    return;
+  }
+  const uint16_t arrived = (head - rx_head_previous) & RX_RING_MASK;
+  const uint16_t previous_pending = (rx_head_previous - rx_tail) & RX_RING_MASK;
+  rx_head_previous = head;
+  if (arrived) { rx_last_progress = now; }
+
+  if ((hw->USARTx->ISR & RX_WIRE_ERRORS) || elapsed >= RX_MAX_PAUSE ||
+      arrived + previous_pending >= RX_RING_SIZE)
+  {
+    hw->USARTx->ICR = RX_CLEAR_ERRORS;
+    protocol->NewPacketAvailable = false;
+    rx_resync = true;
+    rx_tail = head;
+    rx_last_progress = now;
+    return;
+  }
+  if (rx_resync)
+  {
+    rx_tail = head;
+    // A full scheduler interval with no new bytes provides a quiet boundary.
+    if (!arrived)
+    {
+      rx_resync = false;
+      protocol->NewPacketAvailable = false;
+      ASPEP_HWReset(protocol);
+    }
+    return;
+  }
+
+  // ASPEP arms the payload from the header callback and the next header
+  // after the scheduler consumes the packet. Preserve both boundaries.
+  for (unsigned span = 0; span < 2U && rx_size; ++span)
+  {
+    const uint16_t pending = (head - rx_tail) & RX_RING_MASK;
+    if (pending < rx_size)
+    {
+      if ((pending || protocol->ASPEP_TL_State == WAITING_PAYLOAD) &&
+          now - rx_last_progress >= RX_PARTIAL_TIMEOUT)
+      {
+        rx_resync = true;
+        rx_tail = head;
+      }
+      return;
+    }
+    const uint16_t count = rx_size;
+    __DMB();
+    for (uint16_t i = 0; i < count; ++i)
+    {
+      rx_target[i] = rx_ring[(rx_tail + i) & RX_RING_MASK];
+    }
+    if ((hw->USARTx->ISR & RX_WIRE_ERRORS) ||
+        LL_DMA_IsActiveFlag_TE2(hw->rxDMA) ||
+        DWT->CYCCNT - now >= SystemCoreClock / 2000U)
+    {
+      rx_resync = true;
+      return;
+    }
+    rx_tail = (rx_tail + count) & RX_RING_MASK;
+    rx_size = 0;
+    ASPEP_HWDataReceivedIT(protocol);
+  }
+}
+
 
 /**
   * @}

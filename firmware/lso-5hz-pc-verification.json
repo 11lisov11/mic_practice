@@ -1,0 +1,295 @@
+{
+  "passed": true,
+  "pair": [
+    2026112317,
+    2026112318
+  ],
+  "hardware_commands": 0,
+  "installed": false,
+  "previous_plant_with_loss": {
+    "first_run_ms": null,
+    "start_phase_voltage_vector_peak_V": 13.007988500970045,
+    "current_vector_peak_A": 0.040187016729311936,
+    "selected_adc_pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "checkpoints": [],
+    "stop_ms": null,
+    "simulated_ms": 300,
+    "pole_loss_V": 10.9,
+    "first_fault": 0,
+    "scope": "quantized ADC, averaged PWM1 voltage reconstructed from compiled CCR, nominal calculated motor"
+  },
+  "recorded_current_replay": {
+    "archived_id_peak_A": -0.37705557686941965,
+    "archived_Vd_counts": 2270,
+    "pwm_disabled_at_ms": 400,
+    "fault": 16,
+    "voltage_diagnostic": {
+      "start_ms": 3514,
+      "observer_pole_loss_V": 0.0,
+      "result": "timeout",
+      "steps": [
+        {
+          "limit_at_350_V_DC": 14,
+          "mean_id_A": -0.10790143694196429,
+          "mean_iq_A": 0.026375906808035712
+        }
+      ]
+    }
+  },
+  "adc_window_replay": {
+    "old_trigger_ticks": 5090,
+    "revised_trigger_ticks": 3454,
+    "before_w_ticks": 41,
+    "revised_before_w_ticks": 1677,
+    "required_acquisition_ticks": 112,
+    "no_window_publishes_no_duties": true
+  },
+  "overcurrent_replay": {
+    "unchanged_trip_code": 64,
+    "replay_counts": [
+      1822,
+      -2134,
+      312
+    ]
+  },
+  "plant_models": {
+    "0.0": {
+      "first_run_ms": 98,
+      "start_phase_voltage_vector_peak_V": 9.52497518650266,
+      "current_vector_peak_A": 0.5150778426878727,
+      "selected_adc_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "checkpoints": [
+        {
+          "time_ms": 1000,
+          "rpm": 258.2808589568837,
+          "observer_rpm": 264.0
+        },
+        {
+          "time_ms": 2000,
+          "rpm": 309.9678874132679,
+          "observer_rpm": 312.0
+        },
+        {
+          "time_ms": 3000,
+          "rpm": 305.9120133714579,
+          "observer_rpm": 306.0
+        },
+        {
+          "time_ms": 4000,
+          "rpm": 304.45451700318864,
+          "observer_rpm": 300.0
+        },
+        {
+          "time_ms": 5000,
+          "rpm": 303.40332795955266,
+          "observer_rpm": 306.0
+        }
+      ],
+      "stop_ms": 5000,
+      "simulated_ms": 5000,
+      "pole_loss_V": 0.0,
+      "first_fault": 0,
+      "scope": "quantized ADC, averaged PWM1 voltage reconstructed from compiled CCR, nominal calculated motor",
+      "voltage_diagnostic": {
+        "start_ms": 3514,
+        "observer_pole_loss_V": 0.162,
+        "result": "qualified",
+        "steps": []
+      },
+      "field_fault": null
+    },
+    "10.9": {
+      "first_run_ms": 218,
+      "start_phase_voltage_vector_peak_V": 18.623458946743963,
+      "current_vector_peak_A": 0.5288325886220993,
+      "selected_adc_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "checkpoints": [
+        {
+          "time_ms": 1000,
+          "rpm": 225.87999430664195,
+          "observer_rpm": 216.0
+        },
+        {
+          "time_ms": 2000,
+          "rpm": 311.23030479940894,
+          "observer_rpm": 306.0
+        },
+        {
+          "time_ms": 3000,
+          "rpm": 301.3299025891717,
+          "observer_rpm": 300.0
+        },
+        {
+          "time_ms": 4000,
+          "rpm": 298.61686473290086,
+          "observer_rpm": 300.0
+        },
+        {
+          "time_ms": 5000,
+          "rpm": 297.8926991003388,
+          "observer_rpm": 300.0
+        }
+      ],
+      "stop_ms": 5000,
+      "simulated_ms": 5000,
+      "pole_loss_V": 10.9,
+      "first_fault": 0,
+      "scope": "quantized ADC, averaged PWM1 voltage reconstructed from compiled CCR, nominal calculated motor",
+      "voltage_diagnostic": {
+        "start_ms": 3514,
+        "observer_pole_loss_V": 10.936,
+        "result": "qualified",
+        "steps": [
+          {
+            "limit_at_350_V_DC": 14,
+            "mean_id_A": 0.04316057477678571,
+            "mean_iq_A": 0.0
+          },
+          {
+            "limit_at_350_V_DC": 16,
+            "mean_id_A": 0.11629377092633929,
+            "mean_iq_A": 0.0
+          },
+          {
+            "limit_at_350_V_DC": 18,
+            "mean_id_A": 0.23378644670758927,
+            "mean_iq_A": 0.0
+          }
+        ]
+      },
+      "field_fault": null
+    },
+    "12.46": {
+      "first_run_ms": 232,
+      "start_phase_voltage_vector_peak_V": 20.542670364919896,
+      "current_vector_peak_A": 0.532904552132205,
+      "selected_adc_pairs": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "checkpoints": [
+        {
+          "time_ms": 1000,
+          "rpm": 223.66247816664534,
+          "observer_rpm": 240.0
+        }
+      ],
+      "stop_ms": 1560.0,
+      "simulated_ms": 5000,
+      "pole_loss_V": 12.46,
+      "first_fault": 32,
+      "scope": "quantized ADC, averaged PWM1 voltage reconstructed from compiled CCR, nominal calculated motor",
+      "voltage_diagnostic": {
+        "start_ms": 3514,
+        "observer_pole_loss_V": 12.539,
+        "result": "qualified",
+        "steps": [
+          {
+            "limit_at_350_V_DC": 14,
+            "mean_id_A": 0.03237043108258929,
+            "mean_iq_A": 0.0
+          },
+          {
+            "limit_at_350_V_DC": 16,
+            "mean_id_A": 0.04316057477678571,
+            "mean_iq_A": 0.0
+          },
+          {
+            "limit_at_350_V_DC": 18,
+            "mean_id_A": 0.11749267578125,
+            "mean_iq_A": 0.0
+          },
+          {
+            "limit_at_350_V_DC": 20,
+            "mean_id_A": 0.21820068359375,
+            "mean_iq_A": 0.0
+          }
+        ]
+      },
+      "field_fault": {
+        "start_ms": 3514,
+        "reason": "compensated_rate",
+        "samples": 256,
+        "field_hz": 5.848287105560303,
+        "rotor_hz": 5.491313934326172,
+        "reference_hz": 5.0,
+        "measured_slip_hz": 0.07258306443691254,
+        "current_equivalent_flux_counts": 845.30419921875
+      }
+    }
+  },
+  "off_cases": 64,
+  "off_max_emulator_instructions": 1148,
+  "actual_target_DWT_pending": true,
+  "stack_headroom_bytes": 3088,
+  "DWT_limit": 4000,
+  "ADC_age_limit_us": 2000,
+  "guards": {
+    "Uno_UART3": true,
+    "frequency_millihz": 5000,
+    "power_ready_held_ms": 3500,
+    "SD_LOW_blocks_start": true,
+    "other_MCP_start_rejected": true,
+    "native_auto_stop_ms": 5000,
+    "link_loss_cuts_PWM": true,
+    "corrupt_frame_cuts_PWM": true,
+    "estop_cuts_PWM": true,
+    "adc_2ms_guard_verified": true,
+    "read_during_pwm_blocked": true,
+    "captured_pages_verified": true,
+    "one_shot_preserved": true
+  },
+  "preserved_files": 1192,
+  "web_hmi_sha256": "cb7e6a6d57cf708a67bb72511b3217d3cb2c959ca571738ced364246e2682917",
+  "images_sha256": {
+    "ACIM-AIR56B2-LSO_FOC.bin": "c115c11902addca7b843b4e6f466a924e5ce9ccc898667f0b42f15217ee0af79",
+    "ACIM-AIR56B2-LSO_FOC.elf": "c941ee95c9a2d5f1617c06b4e0d771b6db03ac89a92c712cd33d51781675bf2c",
+    "ACIM-AIR56B2-LSO_FOC.hex": "5f47b827cd5ebbfb2df12e5663ad6cf77591367d0258791bcf336c097d11ca84",
+    "UNOQ-LSO_CAPTURE.elf-zsk.bin": "8b3e75f18859c3b048560c55db840cd000520356b6b0f6ccdad053217219df24"
+  }
+}

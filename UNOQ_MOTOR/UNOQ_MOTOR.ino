@@ -49,7 +49,13 @@ static od_receiver g_observer_trace={};
 static mb_receiver g_native_boot={};
 static ft_receiver g_foc_timing={};
 static xp_receiver g_research_caps={};
-static uint8_t g_ma_algorithm=1;
+static uint8_t g_ma_algorithm=2;
+static uint16_t g_lso_page_index;
+static uint8_t g_lso_page[UV3_FRAME];
+static bool g_lso_page_valid;
+static uint8_t g_uart_startup[UV3_FRAME];
+static uint32_t g_uart_startup_ms;
+static bool g_uart_startup_seen;
 static bool g_ma_pending=false;
 static uint8_t g_ma_op,g_ma_index;
 static uint32_t g_ma_value;
@@ -131,7 +137,7 @@ static NucleoBufferedSerial g_nucleo_serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_P
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026112111U;
+static const uint32_t FW_BUILD_ID = 2026112317U;
 static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
@@ -1401,6 +1407,7 @@ static bool bp_fault_or_timeout(uint32_t now_ms) {
 }
 static const char *start_precheck(uint32_t now_ms) {
   if(g_ma_pending)return "algorithm configuration pending";
+  if(g_freq_cmd != 5.0f)return "LSO trial requires 5 Hz";
   const bool native_fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now_ms-g_bp_last_rsp_ms)<300U;
   if(!xp_fresh(&g_research_caps,native_fresh,now_ms)||g_research_caps.selected!=g_ma_algorithm)
     return "native algorithm acknowledgement missing";
@@ -1483,7 +1490,7 @@ static void rpc_process_request(int32_t msgid, const char *method, const uint8_t
     const char *cmd = cmd_buf;
     while (*cmd == ' ' || *cmd == '\t') cmd++;
     bool handled = true;
-    if (starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
+    if (starts_ci(cmd,"LSO PAGE ") || starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
         starts_ci(cmd, "CONTROL HEARTBEAT") || starts_ci(cmd, "SET RUNMODE") ||
         starts_ci(cmd, "SET ACCEL") || starts_ci(cmd, "SET DECEL") || starts_ci(cmd, "SET DOWNMODE")) {
       handled = manual_command(cmd);
@@ -1978,7 +1985,7 @@ static bool handle_command_line_stream(const char *cmd, Stream &out) {
   line += cmd;
   bridge_notify_line(line);
   bool handled = true;
-  if (starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
+  if (starts_ci(cmd,"LSO PAGE ") || starts_ci(cmd,"NOISE PAGE ") || starts_ci(cmd,"IDENT ") || starts_ci(cmd,"SET ALGORITHM ") || starts_ci(cmd,"MODEL ") ||
         starts_ci(cmd, "CONTROL HEARTBEAT") || starts_ci(cmd, "SET RUNMODE") ||
         starts_ci(cmd, "SET ACCEL") || starts_ci(cmd, "SET DECEL") || starts_ci(cmd, "SET DOWNMODE")) {
       handled = manual_command(cmd);
@@ -2591,6 +2598,23 @@ static String rpc_get() {
   s += " mc_break_wave_good_pages="; s += String((unsigned long)g_bkin_wave.good_pages);
   s += " mc_break_wave_bad_pages="; s += String((unsigned long)g_bkin_wave.bad_pages);
 
+  s += " mc_uart_startup_hex=";
+  if (g_uart_startup_seen && g_bp_fw_build == 2026112318U &&
+      (uint32_t)(millis()-g_bp_last_rsp_ms)<300U) {
+    for (unsigned i=0;i<UV3_FRAME;++i) {
+      s += break_hex[g_uart_startup[i]>>4];
+      s += break_hex[g_uart_startup[i]&15];
+    }
+  } else s += "-";
+  s += " mc_uart_startup_age_ms=";
+  s += String((unsigned long)(g_uart_startup_seen ? millis()-g_uart_startup_ms : 999999U));
+  s += " mc_lso_page_hex=";
+  if (g_lso_page_valid) {
+    for (unsigned i=0;i<UV3_FRAME;++i) {
+      s += break_hex[g_lso_page[i]>>4];
+      s += break_hex[g_lso_page[i]&15];
+    }
+  } else s += "-";
   s += " repeat_meta_hex=";
   if(g_repeat_meta_valid){for(unsigned i=0;i<UV3_FRAME;++i){
     s+=break_hex[g_repeat_meta[i]>>4];s+=break_hex[g_repeat_meta[i]&15];}}
@@ -3136,7 +3160,7 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
       memset(&g_encoder_health,0,sizeof(g_encoder_health));
       bw_reset(&g_break_wire);urw_reset(&g_uart_reject);ct_reset(&g_current);pc_reset(&g_peak);zh_reset(&g_zero_history);
     }
-  g_manual_reference_valid=g_bp_mcsdk_telemetry && g_bp_fw_build==2026112112U && (rx[11]&0xFEU)==0xA0U;
+  g_manual_reference_valid=g_bp_mcsdk_telemetry && g_bp_fw_build==2026112318U && (rx[11]&0xFEU)==0xA0U;
   if (g_manual_reference_valid) {
     const uint16_t reference=(uint16_t)(rx[12] | ((uint16_t)rx[13]<<8));
     if (reference>5000U) return false;
@@ -3289,6 +3313,26 @@ static void nucleo_uart_poll() {
         const uint32_t now=millis();const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
         (void)ft_receive(&g_foc_timing,buf,g_bp_fw_build,fresh,now);continue;
       }
+      if (buf[2] == 0xB7) {
+        const uint32_t now = millis();
+        if (g_bp_fw_build == 2026112318U && (uint32_t)(now-g_bp_last_rsp_ms)<300U &&
+            buf[3] == 1 && xp_u32(buf+4)==g_bp_fw_build && uv3_crc_ok(buf)) {
+          memcpy(g_uart_startup,buf,UV3_FRAME);
+          g_uart_startup_ms=now;
+          g_uart_startup_seen=true;
+        }
+        continue;
+      }
+      if (buf[2] == 0xB6) {
+        const unsigned page = buf[3] | (unsigned)buf[4] << 8;
+        if (!g_pwm_enabled && !(g_bp_status & 0x22U) && g_bp_fw_build == 2026112318U &&
+            (uint32_t)(millis()-g_bp_last_rsp_ms)<300U &&
+            page == g_lso_page_index && uv3_crc_ok(buf)) {
+          memcpy(g_lso_page, buf, UV3_FRAME);
+          g_lso_page_valid = true;
+        }
+        continue;
+      }
       if(buf[2]==XP_WIRE){
         const uint32_t now=millis();
         const bool fresh=g_bp_mcsdk_telemetry&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
@@ -3330,12 +3374,12 @@ static void nucleo_uart_poll() {
         (void)ew_receive(&g_remote_encoder,buf,g_bp_fw_build,fresh,now);continue;
       }
       if(buf[2]==NH_WIRE){
-        (void)nhr_receive(&g_start_history,buf,g_bp_fw_build,2026112112U);continue;
+        (void)nhr_receive(&g_start_history,buf,g_bp_fw_build,2026112318U);continue;
       }
       if(buf[2]==OD_WIRE){
         const uint32_t now=millis();
         const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&(g_bp_status&0x22U)==0U&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
-        (void)odw_receive(&g_observer_trace,buf,g_bp_fw_build,2026112112U,off);continue;
+        (void)odw_receive(&g_observer_trace,buf,g_bp_fw_build,2026112318U,off);continue;
       }
       if(buf[2]==PC_WIRE) {
         const uint32_t now=millis();
@@ -3671,8 +3715,14 @@ static void nucleo_send_pwm(float d_u, float d_v, float d_w, bool enable, bool f
   pkt[16] = (uint8_t)((brake_q15 >> 8) & 0xFF);
   pkt[BP_CMD_FAN_DUTY_LO] = (uint8_t)(fan_q15 & 0xFF);
   pkt[BP_CMD_FAN_DUTY_HI] = (uint8_t)((fan_q15 >> 8) & 0xFF);
-  if(g_ma_pending && ma_config_allowed(enable_eff,estop_eff,clear_eff,force,g_state==STATE_SAFE)){
-    ma_config_encode(pkt,g_ma_op,g_ma_index,g_ma_value);mode=8;g_ma_pending=false;
+  // A read-only LSO page may travel with E-stop asserted. Never clear its flag.
+  const bool stopped_page = g_ma_op == 7 && g_ma_index == 0 && g_ma_value <= 263U && estop_eff &&
+                            !enable_eff && !clear_eff && !force && !g_pwm_enabled && g_state == STATE_SAFE;
+  if (g_ma_pending && (stopped_page || ma_config_allowed(enable_eff,estop_eff,clear_eff,force,g_state==STATE_SAFE))) {
+    ma_config_encode(pkt,g_ma_op,g_ma_index,g_ma_value);
+    if (stopped_page) { pkt[3] = BP_FLAG_ESTOP; }
+    mode = 8;
+    g_ma_pending = false;
   }
   uv3_seal(pkt);
   g_bp_cmd_mode = mode;
@@ -3860,6 +3910,15 @@ static bool manual_set_frequency(float f) {
   return true;
 }
 static bool manual_command(const char *cmd) {
+  if (starts_ci(cmd,"LSO PAGE ")) {
+    unsigned page; char extra;
+    if (g_pwm_enabled || g_start_req || g_state!=STATE_SAFE || g_ma_pending ||
+        sscanf(cmd+9,"%u %c",&page,&extra)!=1 || page>263U) return false;
+    g_lso_page_index = (uint16_t)page;
+    g_lso_page_valid = false;
+    g_ma_op = 7; g_ma_index = 0; g_ma_value = page; g_ma_pending = true;
+    return true;
+  }
   if(starts_ci(cmd,"NOISE PAGE ")){
     unsigned page;char extra;
     if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE||!g_idle_noise.complete||
@@ -3893,7 +3952,7 @@ static bool manual_command(const char *cmd) {
   if(starts_ci(cmd,"SET ALGORITHM ")){
     if(g_pwm_enabled||g_start_req||g_state!=STATE_SAFE||g_ma_pending)return false;
     const char*p=cmd+14;unsigned algo=icmp(p,"VF")?1:icmp(p,"FOC")?2:icmp(p,"ADAPTIVE_PWM")?3:icmp(p,"IDENT")?4:0;
-    if(!algo)return false;
+    if(algo!=2)return false;
     g_ma_algorithm=(uint8_t)algo;g_ma_op=3;g_ma_index=(uint8_t)algo;g_ma_value=0;g_ma_pending=true;
     return true;
   }
@@ -4490,7 +4549,7 @@ static void matrix_update() {
     // Display the accepted Nucleo bus measurement even at zero Hz, ESTOP
     // or an idle fault. Never use the default/stale g_vdc as a zero indication.
     const bool voltage_fresh = NUCLEO_MCSDK_ACIM_BACKEND && g_bp_mcsdk_telemetry &&
-      g_bp_fw_build == 2026112112U && g_bp_vbus_valid &&
+      g_bp_fw_build == 2026112318U && g_bp_vbus_valid &&
       g_bp_vbus_ms != 0U && g_bp_last_rsp_ms != 0U &&
       (uint32_t)(now - g_bp_vbus_ms) <= BP_VBUS_STALE_MS &&
       (uint32_t)(now - g_bp_last_rsp_ms) <= BP_REPLY_TIMEOUT_MS &&

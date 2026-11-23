@@ -11,7 +11,7 @@ static inline uint32_t xp_u32(const uint8_t*p){return (uint32_t)p[0]|((uint32_t)
 static inline void xp_put(uint8_t*p,uint32_t v){for(unsigned i=0;i<4;i++)p[i]=(uint8_t)(v>>(8*i));}
 static inline bool xp_receive(xp_receiver*r,const uint8_t*p,uint32_t peer,bool fresh,uint32_t now){
  bool ok=fresh&&p[0]==0x55&&p[1]==0xaa&&p[2]==XP_WIRE&&p[3]==XP_FORMAT&&uv3_crc_ok(p)&&
-  xp_u32(p+6)==peer&&p[4]==15&&p[5]>=1&&p[5]<=4&&xp_u32(p+10)==16000&&p[18]==1&&
+  xp_u32(p+6)==peer&&p[4]==2&&p[5]>=1&&p[5]<=4&&xp_u32(p+10)==16000&&p[18]==1&&
   (p[14]<=7||p[14]==128)&&p[15]<=1&&p[17]<=1&&p[31]<=1&&p[36]<=7&&p[37]<=7&&p[38]<=64;
  uint32_t raw=xp_u32(p+27);float rpm;memcpy(&rpm,&raw,4);
  if(!isfinite(rpm))ok=false;

@@ -49,16 +49,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "pwm.h"
-#include <string.h>
-/* Integer classification survives the project's -Ofast finite-math assumptions. */
-static bool mic_float_isfinite(float value)
-{
-  uint32_t bits;
-  memcpy(&bits, &value, sizeof(bits));
-  return (bits & 0x7f800000U) != 0x7f800000U;
-}
-
-#include "local_stop.h"
 
 #include "mc_type.h"
 
@@ -122,15 +112,6 @@ __attribute__((section ("ccmram")))
   */
 uint16_t PWM_SetPhasePWMOutputs(PWM_Handle_t *pHandle, float fDuty1, float fDuty2, float fDuty3)
 {
-  /* Reject the whole update before conversion or any CCR publication. */
-  if (!mic_float_isfinite(fDuty1) || !mic_float_isfinite(fDuty2) || !mic_float_isfinite(fDuty3) ||
-      fDuty1 < 0.0f || fDuty1 > 1.0f || fDuty2 < 0.0f || fDuty2 > 1.0f ||
-      fDuty3 < 0.0f || fDuty3 > 1.0f || pHandle->TIMx->ARR < 2U ||
-      pHandle->TIMx->ARR > 65535U)
-  {
-    return MC_SW_ERROR;
-  }
-
 
   uint16_t hAux;
   
@@ -188,7 +169,7 @@ void PWM_SwitchOnPWM(PWM_Handle_t *pHandle)
  
   /* Main PWM Output Enable */
   pHandle->TIMx->BDTR |= LL_TIM_OSSI_ENABLE;
-  mic_local_stop_enable_outputs(pHandle->TIMx);  
+  LL_TIM_EnableAllOutputs (pHandle->TIMx);  
   
 }
 

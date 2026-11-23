@@ -1,4 +1,3 @@
-#include "current_shunt.h"
 
 /**
   ******************************************************************************
@@ -24,8 +23,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "mc_config.h"
-#include "regular_conversion_manager.h"
-#include "foc_timing_irq.h"
 #include "mc_type.h"
 #include "mc_tasks.h"
 #include "parameters_conversion.h"
@@ -35,7 +32,6 @@
 #include "stm32g4xx_hal.h"
 #include "stm32g4xx.h"
 #include "mcp_config.h"
-#include "first_break_snapshot.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -69,7 +65,7 @@ void TIMx_BRK_M1_IRQHandler(void);
 void USART_IRQHandler(void);
 void HardFault_Handler(void);
 void SysTick_Handler(void);
-void EXTI15_10_IRQHandler(void);
+void EXTI15_10_IRQHandler (void);
 
 #if defined (CCMRAM)
 #if defined (__ICCARM__)
@@ -84,13 +80,10 @@ __attribute__((section (".ccmram")))
   */
 void ADC1_2_IRQHandler(void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(3,ADC1_2_IRQn);
   /* USER CODE BEGIN ADC1_2_IRQn 0 */
 
   /* USER CODE END ADC1_2_IRQn 0 */
 
-  mic_current_adc_irq();
-  RCM_ServiceAfterInjected();
   // Clear Flags M1
   LL_ADC_ClearFlag_JEOS( ADC1 );
 
@@ -120,14 +113,14 @@ __attribute__((section (".ccmram")))
   */
 void TIMx_UP_M1_IRQHandler(void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(4,TIM1_UP_TIM16_IRQn);
  /* USER CODE BEGIN TIMx_UP_M1_IRQn 0 */
 
  /* USER CODE END  TIMx_UP_M1_IRQn 0 */
 
     LL_TIM_ClearFlag_UPDATE(TIM1);
-    mic_current_update_epoch();
 #if !defined(ACIM_VF)
+    extern void AIR56_LsoWatchAdc(void);
+    AIR56_LsoWatchAdc();
     R3_2_TIMx_UP_IRQHandler(&PWM_Handle_M1);
 
  /* USER CODE BEGIN TIMx_UP_M1_IRQn 1 */
@@ -139,27 +132,18 @@ void TIMx_UP_M1_IRQHandler(void)
 
 void TIMx_BRK_M1_IRQHandler(void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(5,TIM1_BRK_TIM15_IRQn);
   /* USER CODE BEGIN TIMx_BRK_M1_IRQn 0 */
 
   /* USER CODE END TIMx_BRK_M1_IRQn 0 */
-  mic_break_capture_first(HAL_GetTick());
-  /* BIF cannot clear while the break level is active. Mask only its IRQ;
-     hardware BKE remains enabled. A clean CLEAR rearms BIE in main.c. */
-  if (LL_TIM_IsActiveFlag_BRK(TIM1) || LL_TIM_IsActiveFlag_BRK2(TIM1))
-  {
-    LL_TIM_DisableIT_BRK(TIM1);
-  }
   if (LL_TIM_IsActiveFlag_BRK(TIM1))
   {
     LL_TIM_ClearFlag_BRK(TIM1);
-    /* IPM SD reports driver protection, not DC-bus overvoltage. */
-    PWMC_DP_Handler(&PWM_Handle_M1._Super);
+    PWMC_OCP_Handler(&PWM_Handle_M1._Super);
   }
   if (LL_TIM_IsActiveFlag_BRK2(TIM1))
   {
     LL_TIM_ClearFlag_BRK2(TIM1);
-    PWMC_DP_Handler(&PWM_Handle_M1._Super);
+    PWMC_OVP_Handler(&PWM_Handle_M1._Super, TIM1);
   }
   /* Systick is not executed due low priority so is necessary to call MC_Scheduler here.*/
   MC_Scheduler();
@@ -176,14 +160,9 @@ void TIMx_BRK_M1_IRQHandler(void)
   */
 void USART2_IRQHandler(void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(6,USART2_IRQn);
   /* USER CODE BEGIN USART2_IRQHandler 0 */
 
   /* USER CODE END USART2_IRQHandler 0 */
-  uint32_t flags;
-  uint32_t activeIdleFlag;
-  uint32_t isEnabledIdelFlag;
-
   if (0U == LL_USART_IsActiveFlag_TC(USARTA))
   {
     /* Nothing to do */
@@ -196,53 +175,6 @@ void USART2_IRQHandler(void)
     /* Data Sent by UART*/
     /* Need to free the buffer, and to check pending transfer*/
     ASPEP_HWDataTransmittedIT(&aspepOverUartA);
-  }
-
-  uint32_t oreFlag;
-  uint32_t feFlag;
-  uint32_t neFlag;
-  uint32_t errorMask;
-
-  oreFlag = LL_USART_IsActiveFlag_ORE(USARTA);
-  feFlag = LL_USART_IsActiveFlag_FE(USARTA);
-  neFlag = LL_USART_IsActiveFlag_NE(USARTA);
-  errorMask = LL_USART_IsEnabledIT_ERROR(USARTA);
-
-  flags = ((oreFlag | feFlag | neFlag) & errorMask);
-  if (0U == flags)
-  {
-    /* Nothing to do */
-  }
-  else
-  { /* Stopping the debugger will generate an OverRun error*/
-    WRITE_REG(USARTA->ICR, USART_ICR_FECF | USART_ICR_ORECF | USART_ICR_NECF);
-
-    /* We disable ERROR interrupt to avoid to trig one Overrun IT per additional byte recevied*/
-    LL_USART_DisableIT_ERROR(USARTA);
-    LL_USART_EnableIT_IDLE(USARTA);
-  }
-
-  activeIdleFlag = LL_USART_IsActiveFlag_IDLE(USARTA);
-  isEnabledIdelFlag = LL_USART_IsEnabledIT_IDLE(USARTA);
-
-  flags = activeIdleFlag & isEnabledIdelFlag;
-  if (0U == flags)
-  {
-    /* Nothing to do */
-  }
-  else
-  { /* Stopping the debugger will generate an OverRun error*/
-    LL_USART_DisableIT_IDLE(USARTA);
-    /* Once the complete unexpected data are received, we enable back the error IT*/
-    LL_USART_EnableIT_ERROR(USARTA);
-    /* To be sure we fetch the potential pendig data*/
-    /* We disable the DMA request, Read the dummy data, endable back the DMA request */
-    LL_USART_DisableDMAReq_RX(USARTA);
-    (void)LL_USART_ReceiveData8(USARTA);
-    LL_USART_EnableDMAReq_RX(USARTA);
-    /* Clear pending DMA TC to process only new received packet */
-    LL_DMA_ClearFlag_TC(DMA_RX_A, DMACH_RX_A);
-    ASPEP_HWReset(&aspepOverUartA);
   }
 
   /* USER CODE BEGIN USART2_IRQHandler 1 */
@@ -272,7 +204,6 @@ void HardFault_Handler(void)
 
 void SysTick_Handler(void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(7,SysTick_IRQn);
 
 #ifdef MC_HAL_IS_USED
 static uint8_t SystickDividerCounter = SYSTICK_DIVIDER;
@@ -288,17 +219,6 @@ static uint8_t SystickDividerCounter = SYSTICK_DIVIDER;
   SystickDividerCounter ++;
 #endif /* MC_HAL_IS_USED */
 
-  /* Buffer is ready by the HW layer to be processed */
-  /* NO DMA interrupt */
-  if (LL_DMA_IsActiveFlag_TC(DMA_RX_A, DMACH_RX_A))
-  {
-    LL_DMA_ClearFlag_TC(DMA_RX_A, DMACH_RX_A);
-    ASPEP_HWDataReceivedIT(&aspepOverUartA);
-  }
-  else
-  {
-    /* Nothing to do */
-  }
   /* USER CODE BEGIN SysTick_IRQn 1 */
   /* USER CODE END SysTick_IRQn 1 */
     MC_RunMotorControlTasks();
@@ -310,9 +230,8 @@ static uint8_t SystickDividerCounter = SYSTICK_DIVIDER;
 /**
   * @brief  This function handles Button IRQ on PIN PC13.
   */
-void EXTI15_10_IRQHandler(void)
+void EXTI15_10_IRQHandler (void)
 {
-  MIC_FOC_IRQ_SCOPE_NAMED(8,EXTI15_10_IRQn);
 	/* USER CODE BEGIN START_STOP_BTN */
   if ( LL_EXTI_ReadFlag_0_31(LL_EXTI_LINE_13) )
   {

@@ -68,7 +68,6 @@ __weak void RVBS_Init(RDivider_Handle_t *pHandle)
   {
 #endif
     pHandle->_Super.AvBusVoltage_d = (pHandle->OverVoltageThreshold + pHandle->UnderVoltageThreshold) / 2U;
-    pHandle->FilterRemainder = 0;
 #ifdef NULL_PTR_CHECK_RDIV_BUS_VLT_SNS
   }
 #endif
@@ -95,16 +94,11 @@ __weak uint16_t RVBS_CalcAvVbus(RDivider_Handle_t *pHandle, uint16_t rawValue)
 
     if (0xFFFFU == hAux)
     {
-      /* No new ADC result: do not erase a previously measured voltage fault. */
-      tempValue = pHandle->_Super.FaultState;
+      /* Nothing to do */
     }
     else
     {
-      const int32_t delta = (int32_t)hAux - (int32_t)pHandle->_Super.AvBusVoltage_d;
-      const int32_t total = delta + pHandle->FilterRemainder;
-      const int32_t step = total / 256;
-      pHandle->FilterRemainder = total - step * 256;
-      pHandle->_Super.AvBusVoltage_d = (uint16_t)((int32_t)pHandle->_Super.AvBusVoltage_d + step);
+      pHandle->_Super.AvBusVoltage_d += (hAux - pHandle->_Super.AvBusVoltage_d) >> 8U;
       pHandle->_Super.FaultState = RVBS_CheckFaultState(pHandle);
       tempValue = pHandle->_Super.FaultState;
     }

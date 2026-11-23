@@ -54,14 +54,10 @@
 #ifndef ACIM_VF_PARAMETERS_H
 #define ACIM_VF_PARAMETERS_H
 
-/* Phase-peak voltage anchor at MIN_FREQUENCY_TH/2 for the smooth low-speed envelope. */
-#define VOLTAGE_OFFSET           ((float)(20))
-/* Join frequency: voltage and slope match the original linear V/f branch here. */
-#define MIN_FREQUENCY_TH         ((float)(10))
-
-/* Speed PI for V/F closed loop */
-#define PI_VF_SPEED_KP_DEFAULT   ((float)(1.0))
-#define PI_VF_SPEED_KI_DEFAULT   ((float)(1.0))
+/* The voltage offset to compensate the voltage drop on stator winding under a minimum frequency */
+#define VOLTAGE_OFFSET           ((float)(5.0))
+/* Minimum frequency threshold for voltage offset impressing */
+#define MIN_FREQUENCY_TH         ((float)(5.0))
 
 /* ##@@_USER_CODE_START_##@@ */
 /* ##@@_USER_CODE_END_##@@ */

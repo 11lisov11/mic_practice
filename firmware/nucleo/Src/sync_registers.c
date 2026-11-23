@@ -222,6 +222,60 @@ uint8_t RI_SetRegisterMotor1(uint16_t regID, uint8_t typeID, uint8_t *data, uint
       switch (regID)
       {
 
+        case MC_REG_SPEED_KP:
+        {
+          PID_SetKP(&PIDSpeedHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_SPEED_KI:
+        {
+          PID_SetKI(&PIDSpeedHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_SPEED_KD:
+        {
+          PID_SetKD(&PIDSpeedHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KP:
+        {
+          PID_SetKP(&PIDIqHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KI:
+        {
+          PID_SetKI(&PIDIqHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KD:
+        {
+          PID_SetKD(&PIDIqHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KP:
+        {
+          PID_SetKP(&PIDIdHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KI:
+        {
+          PID_SetKI(&PIDIdHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KD:
+        {
+          PID_SetKD(&PIDIdHandle_M1, (int16_t)regdata16);
+          break;
+        }
+
         case MC_REG_BUS_VOLTAGE:
         case MC_REG_HEATS_TEMP:
         case MC_REG_MOTOR_POWER:
@@ -272,6 +326,60 @@ uint8_t RI_SetRegisterMotor1(uint16_t regID, uint8_t typeID, uint8_t *data, uint
         case MC_REG_DAC_USER1:
         case MC_REG_DAC_USER2:
           break;
+
+        case MC_REG_SPEED_KP_DIV:
+        {
+          PID_SetKPDivisorPOW2(&PIDSpeedHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_SPEED_KI_DIV:
+        {
+          PID_SetKIDivisorPOW2(&PIDSpeedHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_SPEED_KD_DIV:
+        {
+          PID_SetKDDivisorPOW2(&PIDSpeedHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KP_DIV:
+        {
+          PID_SetKPDivisorPOW2(&PIDIdHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KI_DIV:
+        {
+          PID_SetKIDivisorPOW2(&PIDIdHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_D_KD_DIV:
+        {
+          PID_SetKDDivisorPOW2(&PIDIdHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KP_DIV:
+        {
+          PID_SetKPDivisorPOW2(&PIDIqHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KI_DIV:
+        {
+          PID_SetKIDivisorPOW2(&PIDIqHandle_M1, regdata16);
+          break;
+        }
+
+        case MC_REG_I_Q_KD_DIV:
+        {
+          PID_SetKDDivisorPOW2(&PIDIqHandle_M1, regdata16);
+          break;
+        }
 
         default:
         {
@@ -584,6 +692,60 @@ uint8_t RI_GetRegisterGlobal(uint16_t regID,uint8_t typeID,uint8_t * data,uint16
           switch (regID)
           {
 
+            case MC_REG_SPEED_KP:
+            {
+              *regdata16 = PID_GetKP(&PIDSpeedHandle_M1);
+              break;
+            }
+
+            case MC_REG_SPEED_KI:
+            {
+              *regdata16 = PID_GetKI(&PIDSpeedHandle_M1);
+              break;
+            }
+
+            case MC_REG_SPEED_KD:
+            {
+              *regdata16 = PID_GetKD(&PIDSpeedHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KP:
+            {
+              *regdata16 = PID_GetKP(&PIDIqHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KI:
+            {
+              *regdata16 = PID_GetKI(&PIDIqHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KD:
+            {
+              *regdata16 = PID_GetKD(&PIDIqHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_D_KP:
+            {
+              *regdata16 = PID_GetKP(&PIDIdHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_D_KI:
+            {
+              *regdata16 = PID_GetKI(&PIDIdHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_D_KD:
+            {
+              *regdata16 = PID_GetKD(&PIDIdHandle_M1);
+              break;
+            }
+
             case MC_REG_BUS_VOLTAGE:
             {
               *regdataU16 = VBS_GetAvBusVoltage_V(BusVoltageSensor);
@@ -671,6 +833,59 @@ uint8_t RI_GetRegisterGlobal(uint16_t regID,uint8_t typeID,uint8_t * data,uint16
             case MC_REG_DAC_USER1:
             case MC_REG_DAC_USER2:
               break;
+
+            case MC_REG_SPEED_KP_DIV:
+            {
+              *regdataU16 = (uint16_t)PID_GetKPDivisorPOW2(&PIDSpeedHandle_M1);
+              break;
+            }
+
+            case MC_REG_SPEED_KI_DIV:
+            {
+              *regdataU16 = (uint16_t)PID_GetKIDivisorPOW2(&PIDSpeedHandle_M1);
+              break;
+            }
+
+            case MC_REG_SPEED_KD_DIV:
+            {
+              *regdataU16 = PID_GetKDDivisorPOW2(&PIDSpeedHandle_M1);
+              break;
+            }
+            case MC_REG_I_D_KP_DIV:
+            {
+              *regdataU16 = PID_GetKPDivisorPOW2(&PIDIdHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_D_KI_DIV:
+            {
+              *regdataU16 = PID_GetKIDivisorPOW2(&PIDIdHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_D_KD_DIV:
+            {
+              *regdataU16 = PID_GetKDDivisorPOW2(&PIDIdHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KP_DIV:
+            {
+              *regdataU16 = PID_GetKPDivisorPOW2(&PIDIqHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KI_DIV:
+            {
+              *regdataU16 = PID_GetKIDivisorPOW2(&PIDIqHandle_M1);
+              break;
+            }
+
+            case MC_REG_I_Q_KD_DIV:
+            {
+              *regdataU16 = PID_GetKDDivisorPOW2(&PIDIqHandle_M1);
+              break;
+            }
 
             default:
             {

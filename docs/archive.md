@@ -2,6 +2,7 @@
 
 Снимки прежних комплектов, журналы 801/804 и ранние варианты `ready_to_flash` доступны в [архивном снимке репозитория](https://github.com/11lisov11/mic_practice/tree/archive/pre-bench-v0.2.0). Исторические инструкции со ссылками на старые комплекты нужно читать в том же снимке.
 
+- [Архив исходников, моделей и отчётов на 24.11.2026](https://github.com/11lisov11/mic_practice/tree/codex/workspace-snapshot-20261124).
 - [Ранний отчёт об энергетическом выборе измерений](../research/AIR56B2_ENERGY_VALUE_METHOD_RU.md).
 - [Протокол аппаратного эксперимента АИР56Б2](experiments/AIR56B2_PREREGISTRATION_RU.md).
 - [Снимок прежнего репозитория моделирования и его происхождение](../research/mic_ai_theory/PROVENANCE.json).

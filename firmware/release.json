@@ -1,14 +1,14 @@
 {
   "release": "v0.2.0-lso.1",
-  "status": "archived-pc-candidate",
+  "status": "pc-verified-candidate",
   "firmware": {
-    "uno_q": 2026112317,
-    "nucleo_g431rb": 2026112318
+    "uno_q": 2026112319,
+    "nucleo_g431rb": 2026112320
   },
   "sha256": {
-    "nucleo-g431rb.hex": "5f47b827cd5ebbfb2df12e5663ad6cf77591367d0258791bcf336c097d11ca84",
-    "nucleo-g431rb.bin": "c115c11902addca7b843b4e6f466a924e5ce9ccc898667f0b42f15217ee0af79",
-    "uno-q.elf-zsk.bin": "8b3e75f18859c3b048560c55db840cd000520356b6b0f6ccdad053217219df24"
+    "nucleo-g431rb.hex": "7b05c28b0b50caf63b45b25714d6566e93c72cf9e66497f54d43f5ba2f893fbc",
+    "nucleo-g431rb.bin": "35a6f5add2f3223b3ca0afeb941891526a8a59e9eb58aac2450f035a5d524e13",
+    "uno-q.elf-zsk.bin": "16ab38bf231b897c0d696f85bbb7ad1a8b330163801e8c16a5645466fde89859"
   },
   "verification": {
     "pc_report": "lso-5hz-pc-verification.json",
@@ -16,7 +16,7 @@
     "DWT_off_cases_in_emulator": 64,
     "target_DWT_pending": true,
     "powered_trial_complete": false,
-    "known_issue": "A Motor Pilot STOP arriving after CLEAR can overwrite a pending acknowledgement."
+    "host_regressions": 62
   },
   "limits": {
     "raw_current_trip_A": 1.35,

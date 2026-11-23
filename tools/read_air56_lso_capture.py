@@ -19,7 +19,8 @@ FIELD_PAIR = (2026112311, 2026112312)
 HANDOFF_PAIR = (2026112313, 2026112314)
 ADC_WINDOW_PAIR = (2026112315, 2026112316)
 FLUX_VOLTAGE_PAIR = (2026112317, 2026112318)
-START_PAIRS = (START_PAIR, FLUX_PAIR, FIELD_PAIR, HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR)
+CLEAR_ACK_PAIR = (2026112319, 2026112320)
+START_PAIRS = (START_PAIR, FLUX_PAIR, FIELD_PAIR, HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR, CLEAR_ACK_PAIR)
 SUPPORTED_PAIRS = (PAIR, (2026112303, 2026112304), TRIP_PAIR, *START_PAIRS)
 AMP = 3.3 / (65536 * .04 * 2.1)
 MAGIC = 0x324F534C
@@ -202,12 +203,12 @@ def download(url, token_path, out):
         startup = decode_start(diagnostic, start, end, reason)
         (out / 'start_diagnostic.json').write_text(
             json.dumps(startup, indent=2) + '\n', encoding='utf8')
-        if pair in (HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR) and startup['magnetization']:
+        if pair in (HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR, CLEAR_ACK_PAIR) and startup['magnetization']:
             start_q = read_page(262, epoch)[1]
             (out / 'start_quadrature.bin').write_bytes(start_q)
             (out / 'start_quadrature.json').write_text(json.dumps(decode_start_q(start_q, start,
                 startup['magnetization']['checks']), indent=2) + '\n', encoding='utf8')
-            if pair == FLUX_VOLTAGE_PAIR:
+            if pair in (FLUX_VOLTAGE_PAIR, CLEAR_ACK_PAIR):
                 voltage = read_page(263, epoch)[1]
                 (out / 'start_voltage.bin').write_bytes(voltage)
                 (out / 'start_voltage.json').write_text(json.dumps(decode_flux_voltage(voltage, start),
@@ -217,7 +218,7 @@ def download(url, token_path, out):
         (out / 'first_overcurrent.bin').write_bytes(trip)
         (out / 'first_overcurrent.json').write_text(json.dumps(decode_trip(trip, start), indent=2) + '\n',
                                                     encoding='utf8')
-    if pair in (FIELD_PAIR, HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR) and first_fault & 0x20:
+    if pair in (FIELD_PAIR, HANDOFF_PAIR, ADC_WINDOW_PAIR, FLUX_VOLTAGE_PAIR, CLEAR_ACK_PAIR) and first_fault & 0x20:
         field = read_page(261, epoch)[1]
         (out / 'field_fault.bin').write_bytes(field)
         (out / 'field_fault.json').write_text(json.dumps(decode_field_fault(field, start), indent=2) + '\n',

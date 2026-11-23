@@ -466,7 +466,8 @@ __weak bool MCI_StopMotor(MCI_Handle_t *pHandle)
   MCI_State_t State;
 
   State = MCI_GetSTMState(pHandle);
-  if (IDLE == State  || ICLWAIT == State)
+  /* A fault already inhibits PWM. Keep the scheduler's pending ACK. */
+  if (IDLE == State || ICLWAIT == State || FAULT_NOW == State || FAULT_OVER == State)
   {
     status = false;
   }

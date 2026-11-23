@@ -77,7 +77,7 @@ def break_wire_status(kv):
                 item["reason"] = "not_received"
             elif len(text) != 184 or any(c not in "0123456789abcdefABCDEF" for c in text):
                 item["reason"] = "invalid_hex"
-            elif peer not in (2026101102, 2026101204, 2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101410, 2026101493, 2026101412, 2026101414, 2026101502, 2026101504, 2026101506, 2026101702, 2026101806, 2026101808, 2026101810, 2026101812, 2026102002, 2026102102, 2026102104, 2026102402, 2026102406, 2026102408, 2026102410, 2026102412, 2026102502, 2026102506, 2026102508, 2026102510, 2026102602, 2026102604, 2026102702, 2026102704, 2026102706, 2026102708,2026102710,2026102812,2026102902,2026112318) or not 0 <= peer_age < 300 or not 0 <= age <= 0xFFFFFFFF:
+            elif peer not in (2026101102, 2026101204, 2026101404, 2026101499, 2026101406, 2026101497, 2026101408, 2026101495, 2026101410, 2026101493, 2026101412, 2026101414, 2026101502, 2026101504, 2026101506, 2026101702, 2026101806, 2026101808, 2026101810, 2026101812, 2026102002, 2026102102, 2026102104, 2026102402, 2026102406, 2026102408, 2026102410, 2026102412, 2026102502, 2026102506, 2026102508, 2026102510, 2026102602, 2026102604, 2026102702, 2026102704, 2026102706, 2026102708,2026102710,2026102812,2026102902,2026112320) or not 0 <= peer_age < 300 or not 0 <= age <= 0xFFFFFFFF:
                 item["reason"] = "invalid_age"
             else:
                 data = bytes.fromhex(text)
@@ -125,7 +125,7 @@ def break_wire_status(kv):
 def uart_reject_status(data):
     """Read-only frozen command-receiver evidence; never authorizes a command."""
     try:
-        if _as_int(data or {},'mc_fw_build',0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+        if _as_int(data or {},'mc_fw_build',0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
             return {'available':False,'reason':'wrong_peer_build'}
         text=data.get('mc_uart_reject_hex','-')
         if text=='-':return {'available':False,'reason':'not_received'}
@@ -194,7 +194,7 @@ def clear_recovery_status(kv):
     if raw in ('','-'):return result
     try:
         p=bytes.fromhex(raw);peer=int(kv.get('bp_fw_build',kv.get('mc_fw_build','0')))
-        if (len(p)!=43 or p[:6]!=bytes([0x55,0xaa,0xee,1,0,0]) or peer!=2026112318
+        if (len(p)!=43 or p[:6]!=bytes([0x55,0xaa,0xee,1,0,0]) or peer!=2026112320
             or int.from_bytes(p[6:10],'little')!=peer or p[37] not in range(1,6)
             or p[38]!=0 or p[26]&0xc0 or current_crc32c(p[:39])!=int.from_bytes(p[39:],'little')):
             raise ValueError('invalid CLEAR record identity/CRC')
@@ -356,7 +356,7 @@ def sd_live_status(data):
     """A fresh GPIO observation is independent of the frozen first waveform."""
     unknown = {'available': False, 'level': None, 'summary_ru': 'Текущий SD: нет измерения'}
     try:
-        if int(data.get('mc_fw_build', 0)) not in (2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+        if int(data.get('mc_fw_build', 0)) not in (2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
             return dict(unknown, reason='unsupported_peer')
         age = int(data.get('mc_age_ms', data.get('bp_age_ms', 999999)))
         if not 0 <= age < 300:
@@ -386,7 +386,7 @@ def dual_sd_wave_status(data):
     an IPM itself generated a LOW. No cause is inferred from coincidence.
     """
     try:
-        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
             return {'available': False, 'reason': 'wrong_peer_build'}
         text = data.get('mc_break_wave_hex', '')
         age = _as_int(data, 'mc_break_wave_age_ms', -1)
@@ -487,7 +487,7 @@ def repeat_capture_status(kv):
             return c^0xffffffff
         state=raw[4];flags=raw[5];peer=int(kv.get('bp_fw_build',0));age=int(kv.get('repeat_meta_age_ms',999999))
         if (len(raw)!=43 or raw[:4]!=bytes.fromhex('55aaed01') or state>4 or flags&~3 or raw[38] or
-            peer!=2026112318 or u(6)!=peer or crc(raw[:39])!=u(39) or (state==2 and (flags!=3 or not u(22)))):
+            peer!=2026112320 or u(6)!=peer or crc(raw[:39])!=u(39) or (state==2 and (flags!=3 or not u(22)))):
             raise ValueError('invalid_repeat_metadata')
         boot_hex=str(kv.get('mc_boot_packet_hex','-'))
         boot=bytes.fromhex(boot_hex) if boot_hex!='-' else b''
@@ -535,7 +535,7 @@ def repeat_capture_status(kv):
 
 
 def bkin_wave_status(data):
-    if _as_int(data or {}, "mc_fw_build", 0) in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+    if _as_int(data or {}, "mc_fw_build", 0) in (2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
         return dual_sd_wave_status(data)
     """Schema 4: lossless runs of DMA samples, including post-trigger recovery.
 
@@ -544,7 +544,7 @@ def bkin_wave_status(data):
     """
     unknown=0xffffffff
     try:
-        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+        if _as_int(data or {}, 'mc_fw_build', 0) not in (2026101806,2026101808,2026101810,2026101812,2026102002,2026102102,2026102104,2026102402,2026102406,2026102408,2026102410,2026102412,2026102502,2026102506,2026102508,2026102510,2026102602,2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
             return {'available':False,'reason':'wrong_peer_build'}
         text=data.get('mc_break_wave_hex','')
         age=_as_int(data,'mc_break_wave_age_ms',-1)
@@ -1282,7 +1282,7 @@ def with_shunt_currents(data):
                 mc_current_zero_spans=None, mc_current_zero_attempts=None, mc_current_zero_stable=None,
                 mc_current_flags=0, mc_current_coverage_pct=0, mc_current_reconstructed_mask=0,
                 mc_current_window_ms=0, mc_current_rejected_samples=0)
-    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102509, 2026102510), (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
+    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102509, 2026102510), (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112319,2026112320)):
         return data
 
     def packet(key, version):
@@ -1621,7 +1621,7 @@ def decode_adc_peak_hex(value, expected_build=2026102510):
 
 def with_adc_peak(data):
     data.update(mc_adc_peak_source_valid=0,mc_adc_peak_valid=0,mc_adc_peak=None,mc_adc_peak_status='Ожидание захвата АЦП')
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112319,2026112320)):
         return data
     if data.get('mc_adc_peak_hex','-') == '-':
         if data.get('mc_adc_peak_good',0):
@@ -1654,9 +1654,9 @@ def crc32c(data):
     return crc^0xffffffff
 
 def decode(raw,peer,kind):
-    if len(raw)!=160 or peer not in (2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) or kind not in (0,1):raise ValueError('Unsupported I2C fault record')
+    if len(raw)!=160 or peer not in (2026102604,2026102702,2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320) or kind not in (0,1):raise ValueError('Unsupported I2C fault record')
     w=struct.unpack('<40I',raw)
-    cause=w[4]&255;stage=(w[4]>>8)&255;state=(w[4]>>16)&255;n=((w[4]>>24)&3) if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) else w[4]>>24
+    cause=w[4]&255;stage=(w[4]>>8)&255;state=(w[4]>>16)&255;n=((w[4]>>24)&3) if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320) else w[4]>>24
     if w[0]!=0x31434649 or w[1]!=peer or cause not in CAUSES or stage>11 or state>4 or n>3 or not w[32]:
         raise ValueError('Invalid I2C fault record')
     if kind==1 and not(w[16]&32768):raise ValueError('PWM record lacks MOE evidence')
@@ -1672,7 +1672,7 @@ def decode(raw,peer,kind):
         pwm_moe=bool(w[16]&32768),poll_gap_us=w[23]*1e6/w[32],attempt_age_us=w[25]*1e6/w[32],
         registers_changed_during_gpio_sample=w[6]!=w[8],record_crc32c=f'{crc32c(raw):08x}',
         limitation='Sequential MMIO snapshot before PE/reset; not an analog waveform or a simultaneous sample of all registers')
-    if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112318):
+    if peer in (2026102704,2026102706,2026102708,2026102710,2026102812,2026102902,2026112320):
         for suffix in ('isr','cr1','cr2','gpio','cycles'):
             result['cleanup_terminal_'+suffix]=result.pop('post_reset_'+suffix)
         flags=w[4]>>26
@@ -1682,7 +1682,7 @@ def decode(raw,peer,kind):
     return result
 
 def decode_i2c_release(raw,parent_raw,peer,kind):
-    if peer not in (2026102706,2026102708,2026102710,2026102812,2026102902,2026112318) or len(raw)!=100 or len(parent_raw)!=160 or kind not in (0,1):
+    if peer not in (2026102706,2026102708,2026102710,2026102812,2026102902,2026112320) or len(raw)!=100 or len(parent_raw)!=160 or kind not in (0,1):
         raise ValueError('Unsupported PE release extension')
     decode(parent_raw,peer,kind)
     w=struct.unpack('<25I',raw);parent=struct.unpack('<40I',parent_raw)
@@ -1730,7 +1730,7 @@ def with_bus_clear(data):
     if text=='-':return out
     try:
         b=bytes.fromhex(text);peer=int(out.get('mc_fw_build',0))
-        if (peer not in (2026102708,2026102710,2026102812,2026102902,2026112318) or len(b)!=43 or b[:4]!=bytes((0x55,0xaa,0xde,1)) or
+        if (peer not in (2026102708,2026102710,2026102812,2026102902,2026112320) or len(b)!=43 or b[:4]!=bytes((0x55,0xaa,0xde,1)) or
             struct.unpack_from('<I',b,6)[0]!=peer or current_crc32c(b[:39])!=int.from_bytes(b[39:],'little') or
             not 1<=b[4]<=6 or b[5]>9 or any(x>3 for x in b[10:13]) or b[13] or any(b[26:39]) or
             int.from_bytes(b[14:18],'little')>25000):raise ValueError('Invalid bus clear frame')
@@ -1840,7 +1840,7 @@ def with_zero_history(data):
     import math
     data.update(mc_zero_history_valid=0,mc_zero_history=None,
                 mc_zero_history_status='Ожидание истории блоков автонуля')
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112319,2026112320)):
         return data
     value=data.get('mc_zero_history_hex','-')
     if value=='-':
@@ -1907,7 +1907,7 @@ RESEARCH_BLOCKS = {
 
 
 def research_catalog(data):
-    known=(data.get('fw_build'),data.get('mc_fw_build'))==(2026112317,2026112318)
+    known=(data.get('fw_build'),data.get('mc_fw_build'))==(2026112319,2026112320)
     native=known and data.get('research_native_valid')==1 and data.get('research_native_caps')==2
     rows=[]
     for name in RESEARCH_ORDER:
@@ -1947,7 +1947,7 @@ def decode_lso_uart_startup(data):
 
 
 def with_research_suite(data):
-    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112317,2026112318):return data
+    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112319,2026112320):return data
     data['mc_uart_startup']=decode_lso_uart_startup(data)
     data['research_algorithms']=research_catalog(data)
     data['research_suite_version']=1
@@ -1966,7 +1966,7 @@ def with_research_suite(data):
 
 
 def with_current_only_profile(data):
-    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102901,2026102902),(2026112317,2026112318)):
+    if (data.get('fw_build'), data.get('mc_fw_build')) not in ((2026102901,2026102902),(2026112319,2026112320)):
         return data
     data.update(research_profile='air56b2_current_only', configured_load_condition='unloaded',
                 enc_source='disabled', enc_enabled=0, enc_ok=0, enc_speed_ok=0,
@@ -2286,7 +2286,7 @@ def _vbus_calibration_identity_matches(stored: dict, current: dict) -> bool:
         (2026102505, 2026102506),
         (2026102507, 2026102508),
         (2026102509, 2026102510),
-        (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026102921,2026102922), (2026102931,2026102932), (2026102933,2026102934), (2026102935,2026102936), (2026102937,2026102938), (2026102939,2026112318), (2026112317,2026112318),
+        (2026102513, 2026102510), (2026102515, 2026102510), (2026102516, 2026102510), (2026102517, 2026102510), (2026102518, 2026102510), (2026102601, 2026102602),(2026102603, 2026102602),(2026102605, 2026102604),(2026102607, 2026102604),(2026102609, 2026102604),(2026102701, 2026102702),(2026102703, 2026102704),(2026102705, 2026102706),(2026102707, 2026102708),(2026102709, 2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026102921,2026102922), (2026102931,2026102932), (2026102933,2026102934), (2026102935,2026102936), (2026102937,2026102938), (2026102939,2026112320), (2026112319,2026112320),
     }
     contract = {
         "rpc_schema_version": 3,
@@ -2568,7 +2568,7 @@ def identification_point_complete(data,initial):
     This never authorizes START and cannot acknowledge any protection fault.
     """
     if not data or not initial:return False
-    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112317,2026112318):return False
+    if (data.get('fw_build'),data.get('mc_fw_build'))!=(2026112319,2026112320):return False
     if data.get('algorithm_selected')!=4 or initial.get('algorithm_selected')!=4:return False
     if data.get('state')!='SAFE' or data.get('pwm')!=0 or data.get('bp_status',0x22)&0x22:return False
     if not 0<=data.get('mc_age_ms',99999)<300 or data.get('id_valid')!=1:return False
@@ -3201,7 +3201,7 @@ def bounded_run_complete(data, before, limit_s):
     """
     if not data or not before or type(limit_s) not in (int, float) or not math.isfinite(limit_s) or limit_s<=0:
         return False
-    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)):
+    if (data.get('fw_build'),data.get('mc_fw_build')) not in ((2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112319,2026112320)):
         return False
     keys=('run_id','run_start_ms','run_stop_ms','run_limit_ms','run_elapsed_ms','run_reason')
     if any(type(data.get(k)) is not int or not 0<=data[k]<=0xffffffff for k in keys):
@@ -3219,7 +3219,7 @@ def bounded_run_complete(data, before, limit_s):
 
 
 def manual_scalar_supported(data):
-    return bool(data and (_as_int(data,"fw_build",0),_as_int(data,"mc_fw_build",0)) in ((2026101505,2026101504),(2026101507,2026101506),(2026101703,2026101702),(2026101807,2026101806),(2026101813,2026101812),(2026102001,2026102002),(2026102101,2026102102),(2026102103,2026102104),(2026102401,2026102402),(2026102403,2026102402),(2026102405,2026102406),(2026102407,2026102408),(2026102409,2026102410),(2026102411,2026102412),(2026102501,2026102502),(2026102503,2026102502),(2026102505,2026102506),(2026102507,2026102508),(2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112317,2026112318)) and _as_int(data,"manual_scalar_capable",0)==1)
+    return bool(data and (_as_int(data,"fw_build",0),_as_int(data,"mc_fw_build",0)) in ((2026101505,2026101504),(2026101507,2026101506),(2026101703,2026101702),(2026101807,2026101806),(2026101813,2026101812),(2026102001,2026102002),(2026102101,2026102102),(2026102103,2026102104),(2026102401,2026102402),(2026102403,2026102402),(2026102405,2026102406),(2026102407,2026102408),(2026102409,2026102410),(2026102411,2026102412),(2026102501,2026102502),(2026102503,2026102502),(2026102505,2026102506),(2026102507,2026102508),(2026102509,2026102510),(2026102513,2026102510),(2026102515,2026102510),(2026102516,2026102510),(2026102517,2026102510),(2026102518,2026102510),(2026102601,2026102602),(2026102603,2026102602),(2026102605,2026102604),(2026102607,2026102604),(2026102609,2026102604),(2026102701,2026102702),(2026102703,2026102704),(2026102705,2026102706),(2026102707,2026102708),(2026102709,2026102710), (2026102811,2026102812), (2026102813,2026102812), (2026102901,2026102902), (2026112319,2026112320)) and _as_int(data,"manual_scalar_capable",0)==1)
 
 def manual_status_reference(data):
     if (manual_scalar_supported(data) and _as_int(data,"mc_frequency_reference_valid",0)==1
@@ -3731,7 +3731,7 @@ def parse_capture_page(value, part, page, expected_size):
         raise ValueError("Capture page unavailable")
     identity = tuple(map(int, fields[1:6]))
     chunk = bytes.fromhex(fields[6])
-    if (identity[:4] != (part, page, expected_size, 2026112318)
+    if (identity[:4] != (part, page, expected_size, 2026112320)
             or not 0 <= identity[4] <= 0xffffffff
             or len(chunk) != min(192, expected_size - page * 192)):
         raise ValueError("Capture page identity or length changed")
@@ -3746,7 +3746,7 @@ def receive_capture_pages(fetch, kind):
     for page in range((expected_size + 191) // 192):
         data = fetch(kind, page)
         if (data["part"], data["page"], data["total"], data["firmware"]) != (
-            part, page, expected_size, 2026112318
+            part, page, expected_size, 2026112320
         ):
             raise ValueError("Capture page identity changed")
         if crc is None:
@@ -3758,7 +3758,7 @@ def receive_capture_pages(fetch, kind):
             raise ValueError("Capture page length changed")
         chunks.append(chunk)
     record = b"".join(chunks)
-    if (len(record) != expected_size or int.from_bytes(record[8:12], "little") != 2026112318
+    if (len(record) != expected_size or int.from_bytes(record[8:12], "little") != 2026112320
             or int.from_bytes(record[60:64], "little") != crc
             or crc32c(record[:60] + bytes(4) + record[64:]) != crc):
         raise ValueError("Capture CRC or identity mismatch")
@@ -5282,7 +5282,7 @@ class Handler(BaseHTTPRequestHandler):
             app=self.server.app
             with app.control_lock:
                 ok,status,err=app.rpc.get()
-                if not ok or not status or (status.get("fw_build"),status.get("mc_fw_build"))!=(2026112317,2026112318) or status.get("research_native_caps")!=2 or status.get("research_native_valid")!=1 or status.get("pwm")!=0 or status.get("state")!="SAFE" or not 0<=status.get("mc_age_ms",9999)<300:
+                if not ok or not status or (status.get("fw_build"),status.get("mc_fw_build"))!=(2026112319,2026112320) or status.get("research_native_caps")!=2 or status.get("research_native_valid")!=1 or status.get("pwm")!=0 or status.get("state")!="SAFE" or not 0<=status.get("mc_age_ms",9999)<300:
                     self._send_json({"ok":False,"error":"Сначала остановите привод; нужна свежая связь"},409);return
                 ok,err=app.rpc.cmd("SET ALGORITHM "+{1:"VF",2:"FOC",3:"ADAPTIVE_PWM",4:"IDENT"}[algorithm])
                 app.logs.add(f"ALGORITHM_CONFIG {algorithm} accepted={int(ok)}")

@@ -137,7 +137,7 @@ static NucleoBufferedSerial g_nucleo_serial(DEVICE_DT_GET(DT_PHANDLE_BY_IDX(DT_P
 #define UI_SERIAL Serial1
 #endif
 #define RPC_BAUD 115200
-static const uint32_t FW_BUILD_ID = 2026112317U;
+static const uint32_t FW_BUILD_ID = 2026112319U;
 static const uint8_t RPC_SCHEMA_VERSION = 3U;
 static const uint8_t MC_CAP_VF = 0x01U;
 #ifndef UART_ECHO_TEST
@@ -2599,7 +2599,7 @@ static String rpc_get() {
   s += " mc_break_wave_bad_pages="; s += String((unsigned long)g_bkin_wave.bad_pages);
 
   s += " mc_uart_startup_hex=";
-  if (g_uart_startup_seen && g_bp_fw_build == 2026112318U &&
+  if (g_uart_startup_seen && g_bp_fw_build == 2026112320U &&
       (uint32_t)(millis()-g_bp_last_rsp_ms)<300U) {
     for (unsigned i=0;i<UV3_FRAME;++i) {
       s += break_hex[g_uart_startup[i]>>4];
@@ -3160,7 +3160,7 @@ static bool nucleo_check_reply(const uint8_t *rx, bool require_sequence, uint8_t
       memset(&g_encoder_health,0,sizeof(g_encoder_health));
       bw_reset(&g_break_wire);urw_reset(&g_uart_reject);ct_reset(&g_current);pc_reset(&g_peak);zh_reset(&g_zero_history);
     }
-  g_manual_reference_valid=g_bp_mcsdk_telemetry && g_bp_fw_build==2026112318U && (rx[11]&0xFEU)==0xA0U;
+  g_manual_reference_valid=g_bp_mcsdk_telemetry && g_bp_fw_build==2026112320U && (rx[11]&0xFEU)==0xA0U;
   if (g_manual_reference_valid) {
     const uint16_t reference=(uint16_t)(rx[12] | ((uint16_t)rx[13]<<8));
     if (reference>5000U) return false;
@@ -3315,7 +3315,7 @@ static void nucleo_uart_poll() {
       }
       if (buf[2] == 0xB7) {
         const uint32_t now = millis();
-        if (g_bp_fw_build == 2026112318U && (uint32_t)(now-g_bp_last_rsp_ms)<300U &&
+        if (g_bp_fw_build == 2026112320U && (uint32_t)(now-g_bp_last_rsp_ms)<300U &&
             buf[3] == 1 && xp_u32(buf+4)==g_bp_fw_build && uv3_crc_ok(buf)) {
           memcpy(g_uart_startup,buf,UV3_FRAME);
           g_uart_startup_ms=now;
@@ -3325,7 +3325,7 @@ static void nucleo_uart_poll() {
       }
       if (buf[2] == 0xB6) {
         const unsigned page = buf[3] | (unsigned)buf[4] << 8;
-        if (!g_pwm_enabled && !(g_bp_status & 0x22U) && g_bp_fw_build == 2026112318U &&
+        if (!g_pwm_enabled && !(g_bp_status & 0x22U) && g_bp_fw_build == 2026112320U &&
             (uint32_t)(millis()-g_bp_last_rsp_ms)<300U &&
             page == g_lso_page_index && uv3_crc_ok(buf)) {
           memcpy(g_lso_page, buf, UV3_FRAME);
@@ -3374,12 +3374,12 @@ static void nucleo_uart_poll() {
         (void)ew_receive(&g_remote_encoder,buf,g_bp_fw_build,fresh,now);continue;
       }
       if(buf[2]==NH_WIRE){
-        (void)nhr_receive(&g_start_history,buf,g_bp_fw_build,2026112318U);continue;
+        (void)nhr_receive(&g_start_history,buf,g_bp_fw_build,2026112320U);continue;
       }
       if(buf[2]==OD_WIRE){
         const uint32_t now=millis();
         const bool off=g_bp_mcsdk_telemetry&&!g_pwm_enabled&&(g_bp_status&0x22U)==0U&&(uint32_t)(now-g_bp_last_rsp_ms)<300U;
-        (void)odw_receive(&g_observer_trace,buf,g_bp_fw_build,2026112318U,off);continue;
+        (void)odw_receive(&g_observer_trace,buf,g_bp_fw_build,2026112320U,off);continue;
       }
       if(buf[2]==PC_WIRE) {
         const uint32_t now=millis();
@@ -4549,7 +4549,7 @@ static void matrix_update() {
     // Display the accepted Nucleo bus measurement even at zero Hz, ESTOP
     // or an idle fault. Never use the default/stale g_vdc as a zero indication.
     const bool voltage_fresh = NUCLEO_MCSDK_ACIM_BACKEND && g_bp_mcsdk_telemetry &&
-      g_bp_fw_build == 2026112318U && g_bp_vbus_valid &&
+      g_bp_fw_build == 2026112320U && g_bp_vbus_valid &&
       g_bp_vbus_ms != 0U && g_bp_last_rsp_ms != 0U &&
       (uint32_t)(now - g_bp_vbus_ms) <= BP_VBUS_STALE_MS &&
       (uint32_t)(now - g_bp_last_rsp_ms) <= BP_REPLY_TIMEOUT_MS &&

@@ -1,0 +1,91 @@
+{
+  "python_tests": 61,
+  "permit_backend": "stock_hid",
+  "experiment_mode": "supervised_bench",
+  "firmware_changed": false,
+  "new_firmware_required": false,
+  "bluepill_required": false,
+  "swd_required_for_stock_control": false,
+  "autonomous_host_loss_shutdown": false,
+  "hardware_ready": false,
+  "missing": [
+    "motor_nameplate_checked",
+    "driver_revision_checked",
+    "mode_and_sign_tested",
+    "parameter_readback_checked",
+    "stop_chain_tested",
+    "parking_brake_timing_tested",
+    "coupling_and_guard_checked",
+    "air_loaded_trial_authorized_and_qualified",
+    "usb_isolation_checked",
+    "red_board_output_permit_tested",
+    "regen_power_rating_is_continuous",
+    "validated_regen_power_w",
+    "validated_regen_energy_j",
+    "actual_rated_torque_nm",
+    "di_conducting_bit",
+    "do_conducting_bit",
+    "expected_algorithm",
+    "continuous_regen_power_envelope"
+  ],
+  "simulation_summary": [
+    {
+      "profile": "zero",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "permit_backend": "stock_hid",
+      "autonomous_host_loss_shutdown": false
+    },
+    {
+      "profile": "step",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "permit_backend": "stock_hid",
+      "autonomous_host_loss_shutdown": false
+    },
+    {
+      "profile": "ramp",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "permit_backend": "stock_hid",
+      "autonomous_host_loss_shutdown": false
+    },
+    {
+      "profile": "sine",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "permit_backend": "stock_hid",
+      "autonomous_host_loss_shutdown": false
+    },
+    {
+      "profile": "prbs",
+      "completed": true,
+      "simulation": true,
+      "hardware_validated": false,
+      "permit_backend": "stock_hid",
+      "autonomous_host_loss_shutdown": false
+    }
+  ],
+  "original_dump_exists": false,
+  "air_firmware_changed": false,
+  "air_commands_sent_this_revision": 0,
+  "t3d_commands_sent_this_revision": 0,
+  "ui_api_checks": {
+    "stock_backend_selected": true,
+    "no_flash_policy": true,
+    "no_mcu_firmware_dump_gate": true,
+    "physical_setup_still_required": true,
+    "live_blocked_until_physical_setup": true,
+    "wrong_origin_denied": true,
+    "wrong_profile_denied": true,
+    "simulation_accepted": true,
+    "simulation_completed": true,
+    "simulation_labelled": true,
+    "stock_firmware_ui": true,
+    "no_mandatory_new_firmware_ui": true
+  }
+}
